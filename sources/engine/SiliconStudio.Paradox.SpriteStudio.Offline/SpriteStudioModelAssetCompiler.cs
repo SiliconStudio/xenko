@@ -13,6 +13,8 @@ using SiliconStudio.Paradox.SpriteStudio.Runtime;
 using System.Xml.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Offline
 {
@@ -80,6 +82,9 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                 var textures = new List<UFile>();
                 if (!SpriteStudioXmlImport.ParseCellMaps(AssetParameters.Source, textures, cells)) return null;
 
+                var anims = new List<SpriteStudioAnim>();
+                if (!SpriteStudioXmlImport.ParseAnimations(AssetParameters.Source, anims)) return null;             
+
                 var assetManager = new AssetManager();
 
                 var sheet = new SpriteSheet();
@@ -93,6 +98,57 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         IsTransparent = true
                     };
                     sheet.Sprites.Add(sprite);
+                }
+
+                //fill up some basic data for our model using the first animation in the array
+                var anim = anims[0];
+                foreach (var data in anim.NodesData)
+                {
+                    var node = nodes.FirstOrDefault(x => x.Name == data.Key);
+                    if (node == null) continue;
+
+                    foreach (var pair in data.Value.Data)
+                    {
+                        var tag = pair.Key;
+                        if(pair.Value.All(x => x["time"] != "0")) continue;
+                        var value = pair.Value.First()["value"]; //do we always have a frame 0? should be the case actually
+                        switch (tag)
+                        {
+                            case "POSX":
+                                node.BaseState.CurrentXyPrioAngle.X = float.Parse(value, CultureInfo.InvariantCulture);
+                                break;
+                            case "POSY":
+                                node.BaseState.CurrentXyPrioAngle.Y = float.Parse(value, CultureInfo.InvariantCulture);
+                                break;
+                            case "ROTZ":
+                                node.BaseState.CurrentXyPrioAngle.W = MathUtil.DegreesToRadians(float.Parse(value, CultureInfo.InvariantCulture));
+                                break;
+                            case "PRIO":
+                                node.BaseState.CurrentXyPrioAngle.Z = int.Parse(value, CultureInfo.InvariantCulture);
+                                break;
+                            case "SCLX":
+                                node.BaseState.Scale.X = float.Parse(value, CultureInfo.InvariantCulture);
+                                break;
+                            case "SCLY":
+                                node.BaseState.Scale.Y = float.Parse(value, CultureInfo.InvariantCulture);
+                                break;
+                            case "ALPH":
+                                node.BaseState.Transparency = float.Parse(value, CultureInfo.InvariantCulture);
+                                break;
+                            case "HIDE":
+                                node.BaseState.Hide = int.Parse(value, CultureInfo.InvariantCulture) > 0;
+                                break;
+                            case "IFLH":
+                                node.BaseState.HFlipped = int.Parse(value, CultureInfo.InvariantCulture) > 0;
+                                break;
+                            case "IFLV":
+                                node.BaseState.VFlipped = int.Parse(value, CultureInfo.InvariantCulture) > 0;
+                                break;
+                            case "CELL":
+                                node.BaseState.SpriteId = int.Parse(value, CultureInfo.InvariantCulture);
+                                break;
+                        }
+                    }
                 }
 
                 var spriteStudioSheet = new SpriteStudioSheet

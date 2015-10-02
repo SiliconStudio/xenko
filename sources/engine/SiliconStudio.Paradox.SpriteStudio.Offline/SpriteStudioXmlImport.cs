@@ -2,6 +2,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.SpriteStudio.Runtime;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
@@ -192,11 +193,15 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     var posValues = Regex.Split(posData, "\\s+");
                     var sizeData = cellNode.Descendants(nameSpace + "size").First().Value;
                     var sizeValues = Regex.Split(sizeData, "\\s+");
-                    cell.Rectangle = new RectangleF(float.Parse(posValues[0]), float.Parse(posValues[1]), float.Parse(sizeValues[0]), float.Parse(sizeValues[1]));
+                    cell.Rectangle = new RectangleF(
+                        float.Parse(posValues[0], CultureInfo.InvariantCulture), 
+                        float.Parse(posValues[1], CultureInfo.InvariantCulture), 
+                        float.Parse(sizeValues[0], CultureInfo.InvariantCulture), 
+                        float.Parse(sizeValues[1], CultureInfo.InvariantCulture));
 
                     var pivotData = cellNode.Descendants(nameSpace + "pivot").First().Value;
                     var pivotValues = Regex.Split(pivotData, "\\s+");
-                    cell.Pivot = new Vector2((float.Parse(pivotValues[0]) + 0.5f) * cell.Rectangle.Width, (-float.Parse(pivotValues[1]) + 0.5f) * cell.Rectangle.Height);
+                    cell.Pivot = new Vector2((float.Parse(pivotValues[0], CultureInfo.InvariantCulture) + 0.5f) * cell.Rectangle.Width, (-float.Parse(pivotValues[1], CultureInfo.InvariantCulture) + 0.5f) * cell.Rectangle.Height);
 
                     cells.Add(cell);
                 }

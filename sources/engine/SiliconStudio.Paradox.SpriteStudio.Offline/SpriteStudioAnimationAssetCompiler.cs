@@ -8,6 +8,7 @@ using SiliconStudio.Paradox.SpriteStudio.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -74,8 +75,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                         foreach (var nodeData in data.Data["POSX"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToSingle(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             posxCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
@@ -88,8 +89,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                         foreach (var nodeData in data.Data["POSY"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToSingle(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             posyCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
@@ -102,8 +103,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                         foreach (var nodeData in data.Data["ROTZ"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = MathUtil.DegreesToRadians(Convert.ToSingle(nodeData["value"]));
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = MathUtil.DegreesToRadians(float.Parse(nodeData["value"], CultureInfo.InvariantCulture));
                             anglCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
@@ -116,8 +117,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                         foreach (var nodeData in data.Data["PRIO"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToInt32(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             prioCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
@@ -130,8 +131,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                         foreach (var nodeData in data.Data["SCLX"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToSingle(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             scaxCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
@@ -144,8 +145,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                         foreach (var nodeData in data.Data["SCLY"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToSingle(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             scayCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
@@ -158,8 +159,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                         foreach (var nodeData in data.Data["ALPH"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToSingle(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             tranCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
@@ -172,36 +173,36 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                         foreach (var nodeData in data.Data["HIDE"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToInt32(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             hideCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
 
-                    if (data.Data.ContainsKey("FLPH"))
+                    if (data.Data.ContainsKey("IFLH"))
                     {
                         var flphCurve = new AnimationCurve<float>();
                         animation.AddCurve("flph[" + nodeName + "]", flphCurve);
                         flphCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
-                        foreach (var nodeData in data.Data["FLPH"])
+                        foreach (var nodeData in data.Data["IFLH"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToInt32(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             flphCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
 
-                    if (data.Data.ContainsKey("FLPV"))
+                    if (data.Data.ContainsKey("IFLV"))
                     {
                         var flpvCurve = new AnimationCurve<float>();
                         animation.AddCurve("flpv[" + nodeName + "]", flpvCurve);
                         flpvCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
-                        foreach (var nodeData in data.Data["FLPV"])
+                        foreach (var nodeData in data.Data["IFLV"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToInt32(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             flpvCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }
@@ -214,8 +215,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                         foreach (var nodeData in data.Data["CELL"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToInt32(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             cellCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
                     }

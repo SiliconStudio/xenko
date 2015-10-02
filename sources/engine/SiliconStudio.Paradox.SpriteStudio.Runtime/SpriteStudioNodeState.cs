@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 {
+    [DataContract]
     public class SpriteStudioNodeState
     {
         public SpriteStudioNodeState()
@@ -14,10 +16,6 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         public Matrix LocalTransform;
 
         public Matrix ModelTransform;
-
-        public SpriteStudioNodeState ParentNode;
-
-        public List<SpriteStudioNodeState> ChildrenNodes { get; } = new List<SpriteStudioNodeState>();
 
         public bool HFlipped;
 
@@ -31,11 +29,22 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         public bool Hide;
 
+        public int SpriteId;
+
+        [DataMemberIgnore]
         public Sprite Sprite;
 
+        [DataMemberIgnore]
         public SpriteStudioNode BaseNode;
 
+        [DataMemberIgnore]
         public Vector2 DefaultPixelsPerUnit;
+
+        [DataMemberIgnore]
+        public SpriteStudioNodeState ParentNode;
+
+        [DataMemberIgnore]
+        public List<SpriteStudioNodeState> ChildrenNodes { get; } = new List<SpriteStudioNodeState>();
 
         internal void UpdateTransformation()
         {

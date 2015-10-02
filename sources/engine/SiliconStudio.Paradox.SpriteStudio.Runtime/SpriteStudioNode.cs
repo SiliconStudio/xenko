@@ -1,7 +1,5 @@
 ﻿using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 {
@@ -13,14 +11,27 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         Subtraction
     }
 
-    //Everything that has a Base prefix can be animated, in NodeState
     [DataContract]
     public class SpriteStudioNode
     {
+        public SpriteStudioNode()
+        {
+            BaseState = new SpriteStudioNodeState
+            {
+                CurrentXyPrioAngle = Vector4.Zero,
+                Scale = Vector2.One,
+                Transparency = 1.0f,
+                Hide = true,
+                SpriteId = -1
+            };
+        }
+
         public string Name;
         public int Id = -1;
         public int ParentId;
         public bool IsNull;
         public SpriteStudioAlphaBlending AlphaBlending;
+
+        public SpriteStudioNodeState BaseState;
     }
 }

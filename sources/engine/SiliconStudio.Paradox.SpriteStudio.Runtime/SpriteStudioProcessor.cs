@@ -75,15 +75,19 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             {
                 var nodeState = new SpriteStudioNodeState
                 {
-                    CurrentXyPrioAngle = Vector4.Zero,
-                    Scale = Vector2.One,
-                    Transparency = 1.0f,
-                    Hide = false,
-                    Sprite = null,
+                    CurrentXyPrioAngle = node.BaseState.CurrentXyPrioAngle,
+                    Scale = node.BaseState.Scale,
+                    Transparency = node.BaseState.Transparency,
+                    Hide = node.BaseState.Hide,
                     BaseNode = node,
-                    HFlipped = false,
-                    VFlipped = false
+                    HFlipped = node.BaseState.HFlipped,
+                    VFlipped = node.BaseState.VFlipped,
+                    SpriteId = node.BaseState.SpriteId
                 };
+
+                Sprite sprite;
+                nodeState.Sprite = spriteStudioComponent.Sheet.Sprites.TryGetValue(nodeState.SpriteId, out sprite) ? sprite : null;
+
                 spriteStudioComponent.Nodes.Add(nodeState);
             }
 
@@ -180,11 +184,9 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                             else if (channel.PropertyName.StartsWith("cell"))
                             {
                                 var spriteIndex = (int)Math.Round(value, MidpointRounding.AwayFromZero);
+                                node.SpriteId = spriteIndex;
                                 Sprite sprite;
-                                if (data.SpriteStudioComponent.Sheet.Sprites.TryGetValue(spriteIndex, out sprite))
-                                {
-                                    node.Sprite = sprite;
-                                }
+                                node.Sprite = data.SpriteStudioComponent.Sheet.Sprites.TryGetValue(spriteIndex, out sprite) ? sprite : null;
                             }
                         }
                     }
