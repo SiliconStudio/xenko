@@ -179,13 +179,13 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         }
                     }
 
-                    if (data.Data.ContainsKey("IFLH"))
+                    if (data.Data.ContainsKey("FLPH"))
                     {
                         var flphCurve = new AnimationCurve<float>();
                         animation.AddCurve("flph[" + nodeName + "]", flphCurve);
                         flphCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
-                        foreach (var nodeData in data.Data["IFLH"])
+                        foreach (var nodeData in data.Data["FLPH"])
                         {
                             var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
                             var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
@@ -193,13 +193,13 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         }
                     }
 
-                    if (data.Data.ContainsKey("IFLV"))
+                    if (data.Data.ContainsKey("FLPV"))
                     {
                         var flpvCurve = new AnimationCurve<float>();
                         animation.AddCurve("flpv[" + nodeName + "]", flpvCurve);
                         flpvCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
-                        foreach (var nodeData in data.Data["IFLV"])
+                        foreach (var nodeData in data.Data["FLPV"])
                         {
                             var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
                             var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);

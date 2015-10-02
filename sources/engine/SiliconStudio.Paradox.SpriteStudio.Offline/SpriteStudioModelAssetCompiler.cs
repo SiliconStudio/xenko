@@ -138,10 +138,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                             case "HIDE":
                                 node.BaseState.Hide = int.Parse(value, CultureInfo.InvariantCulture) > 0;
                                 break;
-                            case "IFLH":
+                            case "FLPH":
                                 node.BaseState.HFlipped = int.Parse(value, CultureInfo.InvariantCulture) > 0;
                                 break;
-                            case "IFLV":
+                            case "FLPV":
                                 node.BaseState.VFlipped = int.Parse(value, CultureInfo.InvariantCulture) > 0;
                                 break;
                             case "CELL":
