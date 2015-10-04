@@ -25,7 +25,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         public SpriteRotationTests()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
             GraphicsDeviceManager.PreferredBackBufferWidth = ScreenWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = ScreenHeight;
         }

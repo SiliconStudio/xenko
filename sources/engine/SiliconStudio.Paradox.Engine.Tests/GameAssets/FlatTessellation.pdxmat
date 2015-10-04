@@ -8,8 +8,8 @@ Attributes:
         AdjacentEdgeAverage: false
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeColor
-            Value: {R: 0.463069767, G: 0.416126579, B: 0.55025, A: 1}
+            Value: {R: 0.239215687, G: 0.215686277, B: 0.2784314, A: 1.0}
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Overrides:
-        UVScale: {X: 1, Y: 1}
+        UVScale: {X: 1.0, Y: 1.0}
 Layers: []

@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// The vertex color.
         /// </summary>
-        public Color Color;
+        public Color4 Color;
 
         /// <summary>
         /// UV texture coordinates.
@@ -52,14 +52,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Defines structure byte size.
         /// </summary>
-        public static readonly int Size = 32;
+        public static readonly int Size = 44;
 
         /// <summary>
         /// The vertex layout of this struct.
         /// </summary>
         public static readonly VertexDeclaration Layout = new VertexDeclaration(
             VertexElement.Position<Vector4>(),
-            VertexElement.Color<Color>(),
+            VertexElement.Color<Color4>(),
             VertexElement.TextureCoordinate<Vector2>(),
             new VertexElement("BATCH_SWIZZLE", PixelFormat.R32_Float)
             );

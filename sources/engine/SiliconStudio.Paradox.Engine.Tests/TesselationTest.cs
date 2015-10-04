@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         public TesselationTest(bool isDebug)
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
             debug = isDebug;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };

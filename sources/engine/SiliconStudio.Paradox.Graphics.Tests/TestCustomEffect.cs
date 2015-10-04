@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestCustomEffect()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override void RegisterTests()

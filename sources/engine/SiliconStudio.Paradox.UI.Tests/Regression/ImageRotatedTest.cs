@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ImageRotatedTest()
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7;
             GraphicsDeviceManager.PreferredBackBufferWidth = WindowWidth;
             GraphicsDeviceManager.PreferredBackBufferHeight = WindowHeight;
         }

@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public LeaveEnterTest()
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
         }
 
         protected override async Task LoadContent()
