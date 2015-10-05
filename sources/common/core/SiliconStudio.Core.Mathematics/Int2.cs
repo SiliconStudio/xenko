@@ -43,7 +43,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// The size of the <see cref="SiliconStudio.Core.Mathematics.Int2"/> type, in bytes.
         /// </summary>
-        public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Int2));
+        public static readonly int SizeInBytes = Utilities.SizeOf<Int2>();
 
         /// <summary>
         /// A <see cref="SiliconStudio.Core.Mathematics.Int2"/> with all of its components set to zero.
