@@ -1,3 +1,4 @@
+using System.CodeDom;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.SpriteStudio.Runtime;
@@ -92,8 +93,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                             foreach (var key in xElements)
                             {
                                 var values = new Dictionary<string, string>();
-                                var argb = key.Descendants(nameSpace + "value").First().Descendants(nameSpace + "rgba").First().Value;
-                                var color = int.Parse(argb, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
+                                var colorInt = key.Descendants(nameSpace + "value").First().Descendants(nameSpace + "rgba").First().Value;
+                                var color = int.Parse(colorInt, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
                                 values.Add("time", key.Attribute("time").Value);
                                 values.Add("curve", key.Attribute("ipType") != null ? key.Attribute("ipType").Value : "linear");
@@ -198,17 +199,67 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                 var blendingName = xmlNode.Descendants(nameSpace + "alphaBlendType").First().Value;
 
+                var shouldInherit = parentId != -1 && xmlNode.Descendants(nameSpace + "inheritType").First().Value == "parent";
+
                 var node = new SpriteStudioNode
                 {
                     Name = nodeName,
                     Id = nodeId,
                     ParentId = parentId,
-                    IsNull = isNull
+                    IsNull = isNull,
+                    NoInheritance = !shouldInherit
                 };
+
+                var inheritances = xmlNode.Descendants(nameSpace + "ineheritRates");
+                var xElements = inheritances as XElement[] ?? inheritances.ToArray();
+                var alphaInh = xElements.Descendants(nameSpace + "ALPH").FirstOrDefault();
+                if (alphaInh != null)
+                {
+                    node.AlphaInheritance = alphaInh.Value == "1";
+                }
+                var flphInh = xElements.Descendants(nameSpace + "FLPH").FirstOrDefault();
+                if (flphInh != null)
+                {
+                    node.FlphInheritance = flphInh.Value == "1";
+                }
+                var flpvInh = xElements.Descendants(nameSpace + "FLPV").FirstOrDefault();
+                if (flpvInh != null)
+                {
+                    node.FlpvInheritance = flpvInh.Value == "1";
+                }
+                var hideInh = xElements.Descendants(nameSpace + "HIDE").FirstOrDefault();
+                if (hideInh != null)
+                {
+                    node.HideInheritance = hideInh.Value == "1";
+                }
 
                 node.AlphaBlending = ParseBlending(blendingName);
 
                 nodes.Add(node);
+            }
+
+            //pre process inheritances
+            foreach (var node in nodes)
+            {
+                if (node.NoInheritance) continue;
+
+                //go find which parent node controls us
+                var parentId = node.ParentId;
+                while (parentId != -1)
+                {
+                    var parent = nodes[parentId];
+
+                    if (parent.NoInheritance)
+                    {
+                        node.AlphaInheritance = parent.AlphaInheritance;
+                        node.FlphInheritance = parent.FlphInheritance;
+                        node.FlpvInheritance = parent.FlpvInheritance;
+                        node.HideInheritance = parent.HideInheritance;
+                        break;
+                    }
+
+                    parentId = parent.ParentId;
+                }
             }
 
             return true;

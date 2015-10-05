@@ -167,14 +167,14 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     }
                     else
                     {
-//                        if (node.BlendFactor > 0.0f)
-//                        {
-//                            var color4 = Color4.Lerp(new Color4(color), node.BlendColor, node.BlendFactor) * node.Transparency;
-//                            color = new Color(color4);
-//                        }
-//                        else
+                        if (node.BlendFactor > 0.0f)
                         {
-                            var color4 = new Color4(color) * node.Transparency;
+                            var color4 = Color4.Lerp(new Color4(color), node.BlendColor, node.BlendFactor) * node.FinalTransparency;
+                            color = new Color(color4);
+                        }
+                        else
+                        {
+                            var color4 = new Color4(color) * node.FinalTransparency;
                             color = new Color(color4);
                         } 
                     }

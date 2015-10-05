@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
             result.BuildSteps.Add(new AssetBuildStep(AssetItem)
             {
-                new SpriteStudioModelAssetCommand(urlInStorage, asset)
+                new SpriteStudioModelAssetCommand(urlInStorage, asset, colorSpace)
             });
         }
 
@@ -67,9 +67,12 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
         /// </summary>
         private class SpriteStudioModelAssetCommand : AssetCommand<SpriteStudioModelAsset>
         {
-            public SpriteStudioModelAssetCommand(string url, SpriteStudioModelAsset asset)
+            private ColorSpace colorSpace;
+
+            public SpriteStudioModelAssetCommand(string url, SpriteStudioModelAsset asset, ColorSpace colorSpace)
                 : base(url, asset)
             {
+                this.colorSpace = colorSpace;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -148,7 +151,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                                 node.BaseState.SpriteId = int.Parse(value, CultureInfo.InvariantCulture);
                                 break;
                             case "COLV":
-                                node.BaseState.BlendColor = Color.FromArgb(int.Parse(value, CultureInfo.InvariantCulture));
+                                var color = new Color4(Color.FromBgra(int.Parse(value, CultureInfo.InvariantCulture)));
+                                node.BaseState.BlendColor = colorSpace == ColorSpace.Linear ? color.ToLinear() : color;
                                 break;
                             case "COLB":
                                 node.BaseState.BlendType = (SpriteStudioBlending)int.Parse(value, CultureInfo.InvariantCulture);

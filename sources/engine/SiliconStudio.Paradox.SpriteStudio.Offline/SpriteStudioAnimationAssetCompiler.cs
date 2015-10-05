@@ -11,6 +11,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using SiliconStudio.Paradox.Assets;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Offline
 {
@@ -19,9 +21,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath,
             SpriteStudioAnimationAsset asset, AssetCompilerResult result)
         {
+            var colorSpace = context.GetColorSpace();
+
             result.BuildSteps = new AssetBuildStep(AssetItem)
             {
-                new SpriteStudioAnimationAssetCommand(urlInStorage, asset)
+                new SpriteStudioAnimationAssetCommand(urlInStorage, asset, colorSpace)
             };
         }
 
@@ -30,9 +34,12 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
         /// </summary>
         private class SpriteStudioAnimationAssetCommand : AssetCommand<SpriteStudioAnimationAsset>
         {
-            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset)
+            private ColorSpace colorSpace;
+
+            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset, ColorSpace colorSpace)
                 : base(url, asset)
             {
+                this.colorSpace = colorSpace;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
@@ -52,7 +59,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                 var assetManager = new AssetManager();
 
-                var anim = anims.First(x => Url.EndsWith("_" + x.Name));
+                var anim = anims.First(x => x.Name == AssetParameters.AnimationName);
 
                 //Compile the animations
                 var animation = new AnimationClip
@@ -225,13 +232,14 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var colvCurve = new AnimationCurve<Vector4>();
                         animation.AddCurve("colv[" + nodeName + "]", colvCurve);
-                        colvCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        colvCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["COLV"])
                         {
                             var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
-                            var valueArgb = Color.FromArgb(int.Parse(nodeData["value"], CultureInfo.InvariantCulture));
-                            colvCurve.KeyFrames.Add(new KeyFrameData<Vector4>(time, valueArgb.ToVector4()));
+                            var color = new Color4(Color.FromBgra(int.Parse(nodeData["value"], CultureInfo.InvariantCulture)));
+                            color = colorSpace == ColorSpace.Linear ? color.ToLinear() : color;
+                            colvCurve.KeyFrames.Add(new KeyFrameData<Vector4>(time, color.ToVector4()));
                         }
                     }
 

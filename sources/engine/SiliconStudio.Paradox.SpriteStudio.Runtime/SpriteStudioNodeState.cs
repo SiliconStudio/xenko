@@ -50,6 +50,9 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         [DataMemberIgnore]
         public List<SpriteStudioNodeState> ChildrenNodes { get; } = new List<SpriteStudioNodeState>();
 
+        [DataMemberIgnore]
+        public float FinalTransparency;
+
         internal void UpdateTransformation()
         {
             var unit = Sprite?.PixelsPerUnit ?? DefaultPixelsPerUnit;
@@ -58,9 +61,28 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             var pos = Matrix.Translation(CurrentXyPrioAngle.X / unit.X, CurrentXyPrioAngle.Y / unit.Y, 0.0f);
             LocalTransform = scale*rot*pos;
 
+            FinalTransparency = Transparency;
+
             if (ParentNode != null)
             {
                 Matrix.Multiply(ref LocalTransform, ref ParentNode.ModelTransform, out ModelTransform);
+
+                if (BaseNode.AlphaInheritance)
+                {
+                    FinalTransparency = Transparency * ParentNode.FinalTransparency;
+                }
+                if (BaseNode.FlphInheritance)
+                {
+                    HFlipped = ParentNode.HFlipped;
+                }
+                if (BaseNode.FlpvInheritance)
+                {
+                    VFlipped = ParentNode.VFlipped;
+                }
+                if (BaseNode.HideInheritance)
+                {
+                    Hide = ParentNode.Hide;
+                }
             }
             else
             {

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -19,6 +20,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
     {
         [DataMember(1)]
         public AnimationRepeatMode RepeatMode { get; set; } = AnimationRepeatMode.LoopInfinite;
+
+        [DataMember(2)]
+        [Browsable(false)]
+        public string AnimationName;
 
         private class SpriteStudioAnimationAssetFactory : IObjectFactory
         {

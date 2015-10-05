@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
@@ -198,7 +199,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                             }
                             else if (channel.PropertyName.StartsWith("colv"))
                             {
-                                node.BlendColor = new Color4(valueVector4);
+                                Utilities.Read((IntPtr)(structureData + 1), ref node.BlendColor);
                             }
                             else if (channel.PropertyName.StartsWith("colf"))
                             {

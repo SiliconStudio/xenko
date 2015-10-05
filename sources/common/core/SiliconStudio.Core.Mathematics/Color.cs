@@ -650,16 +650,6 @@ namespace SiliconStudio.Core.Mathematics
             return new Color(color);
         }
 
-        public static Color FromArgb(uint color)
-        {
-            return FromArgb(unchecked((int)color));
-        }
-
-        public static Color FromArgb(int color)
-        {
-            return new Color((byte)(color >> 8), (byte)(color >> 16), (byte)(color >> 24), (byte)color);
-        }
-
         /// <summary>
         /// Restricts a value to be within a specified range.
         /// </summary>

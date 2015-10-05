@@ -34,6 +34,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         public int ParentId;
         public bool IsNull;
         public SpriteStudioBlending AlphaBlending;
+        public bool AlphaInheritance;
+        public bool FlphInheritance;
+        public bool FlpvInheritance;
+        public bool HideInheritance;
+        public bool NoInheritance;
 
         public SpriteStudioNodeState BaseState;
     }

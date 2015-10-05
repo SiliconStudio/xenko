@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
                 foreach (var studioAnim in anims)
                 {
-                    var anim = new SpriteStudioAnimationAsset { Source = rawAssetPath };
+                    var anim = new SpriteStudioAnimationAsset { Source = rawAssetPath, AnimationName = studioAnim.Name };
                     outputAssets.Add(new AssetItem(modelName + "_" + studioAnim.Name, anim));
                 }    
             }
