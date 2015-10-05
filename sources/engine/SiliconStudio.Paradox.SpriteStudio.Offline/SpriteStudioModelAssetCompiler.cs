@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
         /// </summary>
         private class SpriteStudioModelAssetCommand : AssetCommand<SpriteStudioModelAsset>
         {
-            private ColorSpace colorSpace;
+            private readonly ColorSpace colorSpace;
 
             public SpriteStudioModelAssetCommand(string url, SpriteStudioModelAsset asset, ColorSpace colorSpace)
                 : base(url, asset)
@@ -118,16 +118,16 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                         switch (tag)
                         {
                             case "POSX":
-                                node.BaseState.CurrentXyPrioAngle.X = float.Parse(value, CultureInfo.InvariantCulture);
+                                node.BaseState.Position.X = float.Parse(value, CultureInfo.InvariantCulture);
                                 break;
                             case "POSY":
-                                node.BaseState.CurrentXyPrioAngle.Y = float.Parse(value, CultureInfo.InvariantCulture);
+                                node.BaseState.Position.Y = float.Parse(value, CultureInfo.InvariantCulture);
                                 break;
                             case "ROTZ":
-                                node.BaseState.CurrentXyPrioAngle.W = MathUtil.DegreesToRadians(float.Parse(value, CultureInfo.InvariantCulture));
+                                node.BaseState.RotationZ = MathUtil.DegreesToRadians(float.Parse(value, CultureInfo.InvariantCulture));
                                 break;
                             case "PRIO":
-                                node.BaseState.CurrentXyPrioAngle.Z = int.Parse(value, CultureInfo.InvariantCulture);
+                                node.BaseState.Priority = int.Parse(value, CultureInfo.InvariantCulture);
                                 break;
                             case "SCLX":
                                 node.BaseState.Scale.X = float.Parse(value, CultureInfo.InvariantCulture);

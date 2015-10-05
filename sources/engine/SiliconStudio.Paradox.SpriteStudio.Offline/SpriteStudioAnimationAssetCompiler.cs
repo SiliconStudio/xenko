@@ -120,7 +120,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var prioCurve = new AnimationCurve<int>();
                         animation.AddCurve("prio[" + nodeName + "]", prioCurve);
-                        prioCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        prioCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["PRIO"])
                         {
@@ -176,7 +176,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var hideCurve = new AnimationCurve<int>();
                         animation.AddCurve("hide[" + nodeName + "]", hideCurve);
-                        hideCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        hideCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["HIDE"])
                         {
@@ -190,7 +190,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var flphCurve = new AnimationCurve<int>();
                         animation.AddCurve("flph[" + nodeName + "]", flphCurve);
-                        flphCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        flphCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["FLPH"])
                         {
@@ -204,7 +204,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var flpvCurve = new AnimationCurve<int>();
                         animation.AddCurve("flpv[" + nodeName + "]", flpvCurve);
-                        flpvCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        flpvCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["FLPV"])
                         {
@@ -218,7 +218,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var cellCurve = new AnimationCurve<int>();
                         animation.AddCurve("cell[" + nodeName + "]", cellCurve);
-                        cellCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        cellCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["CELL"])
                         {
@@ -232,7 +232,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var colvCurve = new AnimationCurve<Vector4>();
                         animation.AddCurve("colv[" + nodeName + "]", colvCurve);
-                        colvCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
+                        colvCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["COLV"])
                         {
@@ -247,7 +247,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
                     {
                         var colbCurve = new AnimationCurve<int>();
                         animation.AddCurve("colb[" + nodeName + "]", colbCurve);
-                        colbCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+                        colbCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["COLB"])
                         {

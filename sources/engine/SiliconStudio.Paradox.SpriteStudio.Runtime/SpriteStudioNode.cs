@@ -18,7 +18,9 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         {
             BaseState = new SpriteStudioNodeState
             {
-                CurrentXyPrioAngle = Vector4.Zero,
+                Position = Vector2.Zero,
+                RotationZ = 0.0f,
+                Priority = 0,
                 Scale = Vector2.One,
                 Transparency = 1.0f,
                 Hide = true,

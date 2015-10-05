@@ -21,7 +21,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         public bool VFlipped;
 
-        public Vector4 CurrentXyPrioAngle;
+        public Vector2 Position;
+
+        public float RotationZ;
+
+        public int Priority;
 
         public Vector2 Scale;
 
@@ -57,8 +61,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         {
             var unit = Sprite?.PixelsPerUnit ?? DefaultPixelsPerUnit;
             var scale = Matrix.Scaling(HFlipped ? -Scale.X : Scale.X, VFlipped ? -Scale.Y : Scale.Y, 1.0f);
-            var rot = Matrix.RotationZ(CurrentXyPrioAngle.W);
-            var pos = Matrix.Translation(CurrentXyPrioAngle.X / unit.X, CurrentXyPrioAngle.Y / unit.Y, 0.0f);
+            var rot = Matrix.RotationZ(RotationZ);
+            var pos = Matrix.Translation(Position.X / unit.X, Position.Y / unit.Y, 0.0f);
             LocalTransform = scale*rot*pos;
 
             FinalTransparency = Transparency;

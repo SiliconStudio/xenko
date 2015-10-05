@@ -76,7 +76,9 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             {
                 var nodeState = new SpriteStudioNodeState
                 {
-                    CurrentXyPrioAngle = node.BaseState.CurrentXyPrioAngle,
+                    Position = node.BaseState.Position,
+                    RotationZ = node.BaseState.RotationZ,
+                    Priority = node.BaseState.Priority,
                     Scale = node.BaseState.Scale,
                     Transparency = node.BaseState.Transparency,
                     Hide = node.BaseState.Hide,
@@ -144,23 +146,22 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
                             var valueFloat = *(structureData + 1);
                             var valueInt = *((int*)structureData + 1);
-                            var valueVector4 = *((Vector4*)structureData + 1);
 
                             if (channel.PropertyName.StartsWith("posx"))
                             {
-                                node.CurrentXyPrioAngle.X = valueFloat;
+                                node.Position.X = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("posy"))
                             {
-                                node.CurrentXyPrioAngle.Y = valueFloat;
+                                node.Position.Y = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("prio"))
                             {
-                                node.CurrentXyPrioAngle.Z = valueFloat;
+                                node.Priority = valueInt;
                             }
                             else if (channel.PropertyName.StartsWith("rotz"))
                             {
-                                node.CurrentXyPrioAngle.W = valueFloat;
+                                node.RotationZ = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("sclx"))
                             {
@@ -214,7 +215,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         private static void SortNodes(Data data, IEnumerable<SpriteStudioNodeState> nodes)
         {
             // TODO: Avoid reallocating
-            data.SpriteStudioComponent.SortedNodes = nodes.OrderBy(x => x.CurrentXyPrioAngle.Z).ToList();
+            data.SpriteStudioComponent.SortedNodes = nodes.OrderBy(x => x.Priority).ToList();
         }
 
         public override void Draw(RenderContext context)
