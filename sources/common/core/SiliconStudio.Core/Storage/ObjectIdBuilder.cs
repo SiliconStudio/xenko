@@ -227,8 +227,8 @@ namespace SiliconStudio.Core.Storage
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write<T>(T[] buffer, int offset, int count) where T : struct
         {
-            var ptr = (byte*)Interop.Fixed(buffer) + offset * Interop.SizeOf<T>();
-            Write(ptr, count * Interop.SizeOf<T>());
+            var ptr = (IntPtr)Interop.Fixed(buffer) + offset * Interop.SizeOf<T>();
+            Write((byte*)ptr, count * Interop.SizeOf<T>());
         }
         
         /// <summary>
