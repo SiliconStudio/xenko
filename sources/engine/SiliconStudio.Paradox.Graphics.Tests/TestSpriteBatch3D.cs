@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestSpriteBatch3D()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
             GraphicsDeviceManager.PreferredBackBufferWidth = 640;
             GraphicsDeviceManager.PreferredBackBufferHeight = 640;
         }
