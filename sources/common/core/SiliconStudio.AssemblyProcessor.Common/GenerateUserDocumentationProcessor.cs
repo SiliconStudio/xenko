@@ -37,29 +37,36 @@ namespace SiliconStudio.AssemblyProcessor
                 var nameAttribute = member.Attribute("name");
                 if (nameAttribute == null)
                     continue;
-                string key = nameAttribute.Value;
-
-                string userdoc = null;
+                
+            
                 foreach (var userdocElement in member.Descendants("userdoc"))
                 {
-                    if (userdoc != null)
+                    string userdoc = null;
+                    var key = nameAttribute.Value;
+
+                    var docOverride = userdocElement.Attribute("override");
+                    if (docOverride != null && key.StartsWith("T")) // if on top of the class we have some overrides we must process them now
+                    {
+                        key = "P" + key.Substring(1) + "." + docOverride.Value; //replace T with M
+                    }
+
+                    if (result.ContainsKey(key))
                     {
                         LogLine("Warning: the member {0} has multiple userdoc, only the first one will be used.", key);
-                        break;
+                        continue;
                     }
                     if (userdocElement.Descendants().Any())
                     {
                         LogLine("Warning: the userdoc of member {0} has descendant nodes, which is not supported.", key);
-                        break;
+                        continue;
                     }
+
                     userdoc = userdocElement.Value;
                     userdoc = userdoc.Replace('\t', ' ').Replace('\r', ' ').Replace('\n', ' ').Trim();
                     // Removes double space.
                     var regex = new Regex(@"[ ]{2,}", RegexOptions.None);
                     userdoc = regex.Replace(userdoc, @" ");
-                }
-                if (userdoc != null)
-                {
+
                     result.Add(key, userdoc);
                 }
             }
