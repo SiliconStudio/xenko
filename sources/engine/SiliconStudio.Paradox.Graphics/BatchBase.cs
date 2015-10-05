@@ -27,6 +27,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Paradox.Rendering;
 using SiliconStudio.Paradox.Graphics.Internals;
+using SiliconStudio.Paradox.Shaders;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -107,6 +108,7 @@ namespace SiliconStudio.Paradox.Graphics
         protected Effect Effect { get; private set; }
         protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
         protected readonly Effect DefaultEffect;
+        protected readonly Effect DefaultEffectSRgb;
 
         protected TextureIdComparer TextureComparer { get; set; }
         protected QueueComparer<ElementInfo> BackToFrontComparer { get; set; }
@@ -114,13 +116,16 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal const float DepthBiasShiftOneUnit = 0.0001f;
 
-        protected BatchBase(GraphicsDevice device, Shaders.EffectBytecode defaultEffectByteCode, ResourceBufferInfo resourceBufferInfo, VertexDeclaration vertexDeclaration, int indexSize = sizeof(short))
+        protected BatchBase(GraphicsDevice device, EffectBytecode defaultEffectByteCode, EffectBytecode defaultEffectByteCodeSRgb, ResourceBufferInfo resourceBufferInfo, VertexDeclaration vertexDeclaration, int indexSize = sizeof(short))
         {
+            if (defaultEffectByteCode == null) throw new ArgumentNullException(nameof(defaultEffectByteCode));
+            if (defaultEffectByteCodeSRgb == null) throw new ArgumentNullException(nameof(defaultEffectByteCodeSRgb));
             if (resourceBufferInfo == null) throw new ArgumentNullException("resourceBufferInfo");
             if (vertexDeclaration == null) throw new ArgumentNullException("vertexDeclaration");
 
             GraphicsDevice = device;
             DefaultEffect = new Effect(device, defaultEffectByteCode) { Name = "BatchDefaultEffect"};
+            DefaultEffectSRgb = new Effect(device, defaultEffectByteCodeSRgb) { Name = "BatchDefaultEffectSRgb"};
 
             drawsQueue = new ElementInfo[resourceBufferInfo.BatchCapacity];
             drawTextures = new DrawTextures[resourceBufferInfo.BatchCapacity];
@@ -178,7 +183,7 @@ namespace SiliconStudio.Paradox.Graphics
             RasterizerState = sessionRasterizerState;
             StencilReferenceValue = stencilValue;
 
-            Effect = effect ?? DefaultEffect;
+            Effect = effect ?? (GraphicsDevice.ColorSpace == ColorSpace.Linear ? DefaultEffectSRgb : DefaultEffect);
             ParameterCollectionGroup = parameterCollectionGroup ?? defaultParameterCollectionGroup;
             if (ParameterCollectionGroup == defaultParameterCollectionGroup && ParameterCollectionGroup.Effect != Effect)
             {

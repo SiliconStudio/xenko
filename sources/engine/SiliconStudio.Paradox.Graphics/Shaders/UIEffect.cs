@@ -6,4 +6,31 @@
 // and re-save the associated .pdxfx.
 // </auto-generated>
 
-// Nothing to generate
+using System;
+using SiliconStudio.Core;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Core.Mathematics;
+using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+
+namespace SiliconStudio.Paradox.Rendering
+{
+    internal static partial class ShaderMixins
+    {
+        internal partial class UIEffect  : IShaderMixinBuilder
+        {
+            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
+            {
+                context.Mixin(mixin, "UIEffectShader", context.GetParam(SpriteBaseKeys.ColorIsSRgb));
+            }
+
+            [ModuleInitializer]
+            internal static void __Initialize__()
+
+            {
+                ShaderMixinManager.Register("UIEffect", new UIEffect());
+            }
+        }
+    }
+}

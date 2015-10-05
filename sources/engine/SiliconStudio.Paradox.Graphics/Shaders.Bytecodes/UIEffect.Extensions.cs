@@ -8,12 +8,21 @@ namespace SiliconStudio.Paradox.Graphics
     internal partial class UIEffect
     {
         private static EffectBytecode bytecode;
+        private static EffectBytecode bytecodeSRgb;
 
-        public static EffectBytecode Bytecode
+        internal static EffectBytecode Bytecode
         {
             get
             {
                 return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode));
+            }
+        }
+
+        internal static EffectBytecode BytecodeSRgb
+        {
+            get
+            {
+                return bytecodeSRgb ?? (bytecodeSRgb = EffectBytecode.FromBytesSafe(binaryBytecodeSRgb));
             }
         }
     }
