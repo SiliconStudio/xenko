@@ -28,7 +28,7 @@ using SiliconStudio.Core.Serialization;
 namespace SiliconStudio.Core.Mathematics
 {
     /// <summary>
-    /// Structure using the same layout than <see cref="System.Drawing.Point"/>.
+    /// A 2D point.
     /// </summary>
     [DataContract]
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
@@ -124,7 +124,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="SharpDX.Vector2"/> to <see cref="Point"/>.
+        /// Performs an implicit conversion from <see cref="Vector2"/> to <see cref="Point"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -134,7 +134,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Point"/> to <see cref="SharpDX.Vector2"/>.
+        /// Performs an explicit conversion from <see cref="Point"/> to <see cref="Vector2"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
