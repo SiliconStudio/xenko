@@ -117,6 +117,7 @@ namespace SiliconStudio.Core.Mathematics
             return !left.Equals(right);
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return string.Format("({0},{1})", X, Y);

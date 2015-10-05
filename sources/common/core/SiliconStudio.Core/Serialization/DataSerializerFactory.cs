@@ -5,18 +5,37 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
 {
+    /// <summary>
+    /// An entry to a serialized object.
+    /// </summary>
     public struct AssemblySerializerEntry
     {
-        public ObjectId Id;
-        public Type ObjectType;
-        public Type SerializerType;
+        /// <summary>
+        /// The id of the object.
+        /// </summary>
+        public readonly ObjectId Id;
 
+        /// <summary>
+        /// The type of the object.
+        /// </summary>
+        public readonly Type ObjectType;
+
+        /// <summary>
+        /// The type of the serialized object.
+        /// </summary>
+        public readonly Type SerializerType;
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="AssemblySerializerEntry"/>.
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="objectType"></param>
+        /// <param name="serializerType"></param>
         public AssemblySerializerEntry(ObjectId id, Type objectType, Type serializerType)
         {
             Id = id;

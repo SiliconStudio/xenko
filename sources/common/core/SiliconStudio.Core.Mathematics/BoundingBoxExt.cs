@@ -118,17 +118,20 @@ namespace SiliconStudio.Core.Mathematics
             result.Extent = (maximum - minimum) / 2;
         }
 
+        /// <inheritdoc/>
         public bool Equals(BoundingBoxExt other)
         {
             return Center.Equals(other.Center) && Extent.Equals(other.Extent);
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             return obj is BoundingBoxExt && Equals((BoundingBoxExt)obj);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             unchecked
