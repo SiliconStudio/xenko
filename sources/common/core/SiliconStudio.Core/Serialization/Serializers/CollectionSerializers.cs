@@ -26,6 +26,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             itemDataSerializer = MemberSerializer<T>.Create(serializerSelector);
         }
 
+        /// <inheritdoc/>
         public override void PreSerialize(ref List<T> obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Deserialize)
@@ -61,6 +62,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
         }
 
+        /// <inheritdoc/>
         public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(T));
@@ -82,6 +84,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             itemDataSerializer = MemberSerializer<T>.Create(serializerSelector);
         }
 
+        /// <inheritdoc/>
         public override void PreSerialize(ref TList obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Deserialize)
@@ -116,6 +119,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
         }
 
+        /// <inheritdoc/>
         public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(T));
@@ -142,6 +146,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             valueSerializer = MemberSerializer<TValue>.Create(serializerSelector);
         }
 
+        /// <inheritdoc/>
         public override void PreSerialize(ref SiliconStudio.Core.Collections.SortedList<TKey, TValue> obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Deserialize)
@@ -181,6 +186,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
         }
 
+        /// <inheritdoc/>
         public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(TKey));
@@ -204,6 +210,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             itemDataSerializer = MemberSerializer<T>.Create(serializerSelector);
         }
 
+        /// <inheritdoc/>
         public override void PreSerialize(ref IList<T> obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Deserialize)
@@ -238,6 +245,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
         }
 
+        /// <inheritdoc/>
         public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(T));
@@ -261,6 +269,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             itemDataSerializer = MemberSerializer<T>.Create(serializerSelector);
         }
 
+        /// <inheritdoc/>
         public override void PreSerialize(ref T[] obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Serialize)
@@ -295,6 +304,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
         }
 
+        /// <inheritdoc/>
         public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(T));
@@ -368,6 +378,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
         }
 
+        /// <inheritdoc/>
         public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(TKey));
@@ -394,6 +405,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             valueSerializer = MemberSerializer<TValue>.Create(serializerSelector);
         }
 
+        /// <inheritdoc/>
         public override void PreSerialize(ref Dictionary<TKey, TValue> obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Deserialize)
@@ -433,6 +445,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
         }
 
+        /// <inheritdoc/>
         public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(TKey));
@@ -454,6 +467,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             valueSerializer = MemberSerializer<TValue>.Create(serializerSelector);
         }
 
+        /// <inheritdoc/>
         public override void PreSerialize(ref TDictionary obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Deserialize)
@@ -493,6 +507,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
         }
 
+        /// <inheritdoc/>
         public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(TKey));
@@ -519,6 +534,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             valueSerializer = MemberSerializer<TValue>.Create(serializerSelector);
         }
 
+        /// <inheritdoc/>
         public override void PreSerialize(ref IDictionary<TKey, TValue> obj, ArchiveMode mode, SerializationStream stream)
         {
             if (mode == ArchiveMode.Deserialize)
@@ -558,6 +574,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
             }
         }
 
+        /// <inheritdoc/>
         public void EnumerateGenericInstantiations(SerializerSelector serializerSelector, IList<Type> genericInstantiations)
         {
             genericInstantiations.Add(typeof(TKey));

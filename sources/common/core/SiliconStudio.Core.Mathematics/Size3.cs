@@ -91,17 +91,20 @@ namespace SiliconStudio.Core.Mathematics
             }
         }
 
+        /// <inheritdoc/>
         public bool Equals(Size3 other)
         {
             return Width == other.Width && Height == other.Height && Depth == other.Depth;
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             return obj is Size3 && Equals((Size3)obj);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             unchecked
@@ -113,11 +116,13 @@ namespace SiliconStudio.Core.Mathematics
             }
         }
 
+        /// <inheritdoc/>
         public int CompareTo(Size3 other)
         {
             return Math.Sign(this.VolumeSize - other.VolumeSize);
         }
 
+        /// <inheritdoc/>
         public override string ToString()
         {
             return string.Format("({0},{1},{2})", Width, Height, Depth);

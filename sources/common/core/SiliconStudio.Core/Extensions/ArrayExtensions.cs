@@ -8,13 +8,24 @@ using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Extensions
 {
+    /// <summary>
+    /// Extensions for list and arrays.
+    /// </summary>
     public static class ArrayExtensions
     {
         // TODO: Merge this file with CollectionExtensions.cs
 
-        // This is not really an extension method, maybe it should go somewhere else.
+        /// <summary>
+        /// Deeply compares of two <see cref="IList{T}"/>.
+        /// </summary>
+        /// <typeparam name="T">Type of the object to compare</typeparam>
+        /// <param name="a1">The list1 to compare</param>
+        /// <param name="a2">The list2 to compare</param>
+        /// <param name="comparer">The comparer to use (or default to the default EqualityComparer for T)</param>
+        /// <returns><c>true</c> if the list are equal</returns>
         public static bool ArraysEqual<T>(IList<T> a1, IList<T> a2, IEqualityComparer<T> comparer = null)
         {
+            // This is not really an extension method, maybe it should go somewhere else.
             if (ReferenceEquals(a1, a2))
                 return true;
 
@@ -35,6 +46,13 @@ namespace SiliconStudio.Core.Extensions
             return true;
         }
 
+        /// <summary>
+        /// Compares of two <see cref="IList{T}"/> using operator !=.
+        /// </summary>
+        /// <typeparam name="T">Type of the object to compare</typeparam>
+        /// <param name="a1">The list1 to compare</param>
+        /// <param name="a2">The list2 to compare</param>
+        /// <returns><c>true</c> if the list are equal</returns>
         public static bool ArraysReferenceEqual<T>(IList<T> a1, IList<T> a2) where T : class
         {
             if (ReferenceEquals(a1, a2))
@@ -55,6 +73,13 @@ namespace SiliconStudio.Core.Extensions
             return true;
         }
 
+        /// <summary>
+        /// Compares of two <see cref="FastListStruct{T}"/> using operator !=.
+        /// </summary>
+        /// <typeparam name="T">Type of the object to compare</typeparam>
+        /// <param name="a1">The list1 to compare</param>
+        /// <param name="a2">The list2 to compare</param>
+        /// <returns><c>true</c> if the list are equal</returns>
         public static bool ArraysReferenceEqual<T>(FastListStruct<T> a1, FastListStruct<T> a2) where T : class
         {
             if (ReferenceEquals(a1.Items, a2.Items))
@@ -75,6 +100,13 @@ namespace SiliconStudio.Core.Extensions
             return true;
         }
 
+        /// <summary>
+        /// Compares of two <see cref="FastListStruct{T}"/> using operator !=.
+        /// </summary>
+        /// <typeparam name="T">Type of the object to compare</typeparam>
+        /// <param name="a1">The list1 to compare</param>
+        /// <param name="a2">The list2 to compare</param>
+        /// <returns><c>true</c> if the list are equal</returns>
         public static bool ArraysReferenceEqual<T>(ref FastListStruct<T> a1, ref FastListStruct<T> a2) where T : class
         {
             if (ReferenceEquals(a1.Items, a2.Items))
@@ -95,6 +127,13 @@ namespace SiliconStudio.Core.Extensions
             return true;
         }
 
+        /// <summary>
+        /// Computes the hash of a collection using hash of each elements.
+        /// </summary>
+        /// <typeparam name="T">Type of the object to calculate the hash</typeparam>
+        /// <param name="data">The list to generates the hash</param>
+        /// <param name="comparer">The comparer to use (or use the default comparer otherwise)</param>
+        /// <returns>The hashcode of the collection.</returns>
         public static int ComputeHash<T>(this ICollection<T> data, IEqualityComparer<T> comparer = null)
         {
             unchecked
@@ -113,6 +152,13 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
+        /// <summary>
+        /// Computes the hash of the array.
+        /// </summary>
+        /// <typeparam name="T">Type of the object to calculate the hash</typeparam>
+        /// <param name="data">The array to generates the hash</param>
+        /// <param name="comparer">The comparer to use (or use the default comparer otherwise)</param>
+        /// <returns>The hashcode of the array.</returns>
         public static int ComputeHash<T>(this T[] data, IEqualityComparer<T> comparer = null)
         {
             unchecked
@@ -131,15 +177,33 @@ namespace SiliconStudio.Core.Extensions
             }
         }
 
+        /// <summary>
+        /// Extracts a sub-array from an array.
+        /// </summary>
+        /// <typeparam name="T">Type of the array element</typeparam>
+        /// <param name="data">The array to slice</param>
+        /// <param name="index">The start of the index to get the data from.</param>
+        /// <param name="length">The length of elements to slice</param>
+        /// <returns>A slice of the array.</returns>
         public static T[] SubArray<T>(this T[] data, int index, int length)
         {
+            if (data == null) throw new ArgumentNullException(nameof(data));
             var result = new T[length];
             Array.Copy(data, index, result, 0, length);
             return result;
         }
 
+        /// <summary>
+        /// Concats two arrays.
+        /// </summary>
+        /// <typeparam name="T">Type of the array element</typeparam>
+        /// <param name="array1">The array1 to concat</param>
+        /// <param name="array2">The array2 to concat</param>
+        /// <returns>The concat of the array.</returns>
         public static T[] Concat<T>(this T[] array1, T[] array2)
         {
+            if (array1 == null) throw new ArgumentNullException(nameof(array1));
+            if (array2 == null) throw new ArgumentNullException(nameof(array2));
             var result = new T[array1.Length + array2.Length];
 
             array1.CopyTo(result, 0);
