@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestImageLoad()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
         }
 
         protected override void RegisterTests()

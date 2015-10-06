@@ -985,7 +985,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="size"></param>
         /// <param name="handle"></param>
         /// <returns></returns>
-        public unsafe static Image LoadFromDDSMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
+        public unsafe static Image LoadFromDDSMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle, bool loadAsSRGB)
         {
             var flags = makeACopy ? DDSFlags.CopyMemory : DDSFlags.None;
 
@@ -999,6 +999,11 @@ namespace SiliconStudio.Paradox.Graphics
             // If the memory pointed is not a DDS memory, return null.
             if (!DecodeDDSHeader(pSource, size, flags, out mdata, out convFlags))
                 return null;
+
+            if (loadAsSRGB)
+                mdata.Format.ToSRgb();
+            else
+                mdata.Format.ToNonSRgb();
 
             int offset = sizeof (uint) + Utilities.SizeOf<DDS.Header>();
             if ((convFlags & ConversionFlags.DX10) != 0)
