@@ -133,11 +133,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
                     var sourceRegion = node.Sprite.Region;
                     var texture = node.Sprite.Texture;
-                    var color = Color.White;
+                    var color = Color4.White;
                     if (isPicking)
                     {
                         // TODO move this code corresponding to picking out of the runtime code.
-                        color = (Color)new Color4(spriteState.SpriteStudioComponent.Id);
+                        color = new Color4(spriteState.SpriteStudioComponent.Id);
                     }
 
                     // skip the sprite if no texture is set.
