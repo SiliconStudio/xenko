@@ -96,8 +96,22 @@ namespace SiliconStudio.Presentation.Controls
             child.SetValue(dp, value);
         }
 
+        /// <inheritdoc/>
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            base.PrepareContainerForItemOverride(element, item);
+            RaiseEvent(new TreeViewItemEventArgs(TreeView.PrepareItemEvent, this, (TreeViewItem)element, item));
+        }
+
+        /// <inheritdoc/>
+        protected override void ClearContainerForItemOverride(DependencyObject element, object item)
+        {
+            RaiseEvent(new TreeViewItemEventArgs(TreeView.ClearItemEvent, this, (TreeViewItem)element, item));
+            base.ClearContainerForItemOverride(element, item);
+        }
+
         /// <summary>
-        ///     This method is invoked when the Items property changes.
+        /// This method is invoked when the Items property changes.
         /// </summary>
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {

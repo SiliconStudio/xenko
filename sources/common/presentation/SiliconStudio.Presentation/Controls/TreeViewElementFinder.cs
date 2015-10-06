@@ -51,23 +51,6 @@ namespace SiliconStudio.Presentation.Controls
             return parentIc.ItemContainerGenerator.ContainerFromIndex(index + 1) as ItemsControl; // returns null if index to large or nothing found
         }
 
-        public static ItemsControl FindNextSiblingRecursive(ItemsControl itemsControl)
-        {
-            while (true)
-            {
-                var parentIc = ItemsControl.ItemsControlFromItemContainer(itemsControl);
-                if (parentIc == null)
-                    return null;
-                var index = parentIc.ItemContainerGenerator.IndexFromContainer(itemsControl);
-                if (index < parentIc.Items.Count - 1)
-                {
-                    return parentIc.ItemContainerGenerator.ContainerFromIndex(index + 1) as ItemsControl; // returns null if index to large or nothing found
-                }
-
-                itemsControl = parentIc;
-            }
-        }
-
         /// <summary>
         /// Returns the first item. If tree is virtualized, it is the first realized item.
         /// </summary>
@@ -118,6 +101,24 @@ namespace SiliconStudio.Presentation.Controls
             {
                 if (!visibleOnly || currentItem.IsVisible) yield return currentItem;
                 currentItem = FindNext(currentItem, visibleOnly);
+            }
+        }
+
+
+        private static ItemsControl FindNextSiblingRecursive(ItemsControl itemsControl)
+        {
+            while (true)
+            {
+                var parentIc = ItemsControl.ItemsControlFromItemContainer(itemsControl);
+                if (parentIc == null)
+                    return null;
+                var index = parentIc.ItemContainerGenerator.IndexFromContainer(itemsControl);
+                if (index < parentIc.Items.Count - 1)
+                {
+                    return parentIc.ItemContainerGenerator.ContainerFromIndex(index + 1) as ItemsControl; // returns null if index to large or nothing found
+                }
+
+                itemsControl = parentIc;
             }
         }
     }

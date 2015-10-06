@@ -31,6 +31,19 @@ namespace SiliconStudio.Presentation.Controls
 
         public static readonly DependencyProperty IsVirtualizingProperty = DependencyProperty.Register("IsVirtualizing", typeof(bool), typeof(TreeView), new PropertyMetadata(false));
 
+        /// <summary>
+        /// Identifies the PreparePropertyItem event.
+        /// This attached routed event may be raised by the PropertyGrid itself or by a PropertyItemBase containing sub-items.
+        /// </summary>
+        public static readonly RoutedEvent PrepareItemEvent = EventManager.RegisterRoutedEvent("PrepareItem", RoutingStrategy.Bubble, typeof(EventHandler<TreeViewItemEventArgs>), typeof(TreeView));
+
+        /// <summary>
+        /// Identifies the ClearPropertyItem event.
+        /// This attached routed event may be raised by the PropertyGrid itself or by a
+        /// PropertyItemBase containing sub items.
+        /// </summary>
+        public static readonly RoutedEvent ClearItemEvent = EventManager.RegisterRoutedEvent("ClearItem", RoutingStrategy.Bubble, typeof(EventHandler<TreeViewItemEventArgs>), typeof(TreeView));
+
         internal static bool IsControlKeyDown => (Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control;
 
         internal static bool IsShiftKeyDown => (Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift;
@@ -69,6 +82,10 @@ namespace SiliconStudio.Presentation.Controls
         public IList SelectedItems { get { return (IList)GetValue(SelectedItemsProperty.DependencyProperty); } private set { SetValue(SelectedItemsProperty, value); } }
 
         public SelectionMode SelectionMode { get { return (SelectionMode)GetValue(SelectionModeProperty); } set { SetValue(SelectionModeProperty, value); } }
+
+        public event EventHandler<TreeViewItemEventArgs> PrepareItem { add { AddHandler(PrepareItemEvent, value); } remove { RemoveHandler(PrepareItemEvent, value); } }
+
+        public event EventHandler<TreeViewItemEventArgs> ClearItem { add { AddHandler(ClearItemEvent, value); } remove { RemoveHandler(ClearItemEvent, value); } }
 
         internal ScrollViewer ScrollViewer => scroller ?? (scroller = (ScrollViewer)Template.FindName("scroller", this));
 
@@ -385,6 +402,13 @@ namespace SiliconStudio.Presentation.Controls
             base.PrepareContainerForItemOverride(element, item);
             //Send down the IsVirtualizing property if it's set on this element.
             TreeViewItem.IsVirtualizingPropagationHelper(this, element);
+            RaiseEvent(new TreeViewItemEventArgs(PrepareItemEvent, this, (TreeViewItem)element, item));
+        }
+
+        protected override void ClearContainerForItemOverride(DependencyObject element, object item)
+        {
+            RaiseEvent(new TreeViewItemEventArgs(ClearItemEvent, this, (TreeViewItem)element, item));
+            base.ClearContainerForItemOverride(element, item);
         }
 
         internal TreeViewItem GetPreviousItem(TreeViewItem item, List<TreeViewItem> items)
