@@ -34,7 +34,8 @@
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <TargetFrameworkVersionTool>v4.5.1</TargetFrameworkVersionTool>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
-    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\Desktop</ParadoxSharpDXSdkBinDir>
+    <ParadoxSharpDXSdkBinDir Condition=" '$(SiliconStudioRuntime)' == '' ">$(ParadoxSharpDXSdkDir)\Bin\Desktop</ParadoxSharpDXSdkBinDir>
+    <ParadoxSharpDXSdkBinDir Condition=" '$(SiliconStudioRuntime)' != '' ">$(ParadoxSharpDXSdkDir)\Bin\Desktop-$(SiliconStudioRuntime)</ParadoxSharpDXSdkBinDir>
     <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
     <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;NET45</SiliconStudioPlatformDefines>
