@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ComplexLayoutTest()
         {
-            CurrentVersion = 9;
+            CurrentVersion = 10;
         }
 
         protected override async Task LoadContent()
