@@ -9,7 +9,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
     public class SpriteStudioRenderer : EntityComponentRendererBase
     {
         // TODO this is temporary code. this should disappear from here later when materials on sprite will be available
-        public static PropertyKey<bool> IsEntitySelected = new PropertyKey<bool>("IsEntitySelected", typeof(SpriteComponentRenderer));
+        public static PropertyKey<bool> IsEntitySelected = new PropertyKey<bool>("IsEntitySelected", typeof(SpriteStudioRenderer));
 
         private Effect selectedSpriteEffect;
         private Effect pickingSpriteEffect;
@@ -20,11 +20,29 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         public override bool SupportPicking => true;
 
+        public BlendState MultBlendState;
+        public BlendState SubBlendState;
+
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
             sprite3DBatch = new Sprite3DBatch(Context.GraphicsDevice);
+
+            var blendDesc = new BlendStateDescription(Blend.SourceAlpha, Blend.One);
+            blendDesc.RenderTargets[0].BlendEnable = true;
+            blendDesc.RenderTargets[0].ColorBlendFunction = BlendFunction.ReverseSubtract;
+            blendDesc.RenderTargets[0].AlphaBlendFunction = BlendFunction.ReverseSubtract;
+            SubBlendState = BlendState.New(Context.GraphicsDevice, blendDesc).DisposeBy(Context.GraphicsDevice);
+            SubBlendState.Name = "Subtraction";
+
+            blendDesc = new BlendStateDescription(Blend.DestinationColor, Blend.InverseSourceAlpha);
+            blendDesc.RenderTargets[0].BlendEnable = true;
+            blendDesc.RenderTargets[0].ColorBlendFunction = BlendFunction.Add;
+            blendDesc.RenderTargets[0].AlphaSourceBlend = Blend.Zero;
+            blendDesc.RenderTargets[0].AlphaBlendFunction = BlendFunction.Add;
+            MultBlendState = BlendState.New(Context.GraphicsDevice, blendDesc).DisposeBy(Context.GraphicsDevice);
+            MultBlendState.Name = "Multiplication";
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
@@ -116,20 +134,20 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
                     // Update the sprite batch
 
-                    BlendState spriteBlending; //todo handle better each case
+                    BlendState spriteBlending;
                     switch (node.BaseNode.AlphaBlending)
                     {
                         case SpriteStudioBlending.Mix:
                             spriteBlending = device.BlendStates.AlphaBlend;
                             break;
                         case SpriteStudioBlending.Multiplication:
-                            spriteBlending = device.BlendStates.AlphaBlend;
+                            spriteBlending = MultBlendState;
                             break;
                         case SpriteStudioBlending.Addition:
                             spriteBlending = device.BlendStates.Additive;
                             break;
                         case SpriteStudioBlending.Subtraction:
-                            spriteBlending = device.BlendStates.AlphaBlend;
+                            spriteBlending = SubBlendState;
                             break;
                         default:
                             throw new ArgumentOutOfRangeException();
@@ -159,24 +177,38 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     if (texture == null)
                         continue;
 
-                    var color = Color.White;
+                    var color4 = Color4.White;
                     if (isPicking)
                     {
                         // TODO move this code corresponding to picking out of the runtime code.
-                        color = (Color)new Color4(spriteState.SpriteStudioComponent.Id);
+                        color4 = new Color4(spriteState.SpriteStudioComponent.Id);
                     }
                     else
                     {
                         if (node.BlendFactor > 0.0f)
                         {
-                            var color4 = Color4.Lerp(new Color4(color), node.BlendColor, node.BlendFactor) * node.FinalTransparency;
-                            color = new Color(color4);
+                            switch (node.BlendType) //todo this should be done in a shader
+                            {
+                                case SpriteStudioBlending.Mix:
+                                    color4 = Color4.Lerp(color4, node.BlendColor, node.BlendFactor) * node.FinalTransparency;
+                                    break;
+                                case SpriteStudioBlending.Multiplication:
+                                    color4 = Color4.Lerp(color4, node.BlendColor, node.BlendFactor) * node.FinalTransparency;
+                                    break;
+                                case SpriteStudioBlending.Addition:
+                                    color4 = Color4.Lerp(color4, node.BlendColor, node.BlendFactor) * node.FinalTransparency;
+                                    break;
+                                case SpriteStudioBlending.Subtraction:
+                                    color4 = Color4.Lerp(color4, node.BlendColor, node.BlendFactor) * node.FinalTransparency;
+                                    break;
+                                default:
+                                    throw new ArgumentOutOfRangeException();
+                            }
                         }
                         else
                         {
-                            var color4 = new Color4(color) * node.FinalTransparency;
-                            color = new Color(color4);
-                        } 
+                            color4 *= node.FinalTransparency;
+                        }
                     }
 
                     var worldMatrix = node.ModelTransform*transfoComp.WorldMatrix;
@@ -196,6 +228,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     worldMatrix.M42 -= centerOffset.X*worldMatrix.M12 + centerOffset.Y*worldMatrix.M22;
 
                     // draw the sprite
+                    var color = (Color)color4;
                     sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref size, ref color, node.Sprite.Orientation, SwizzleMode.None, renderItem.Depth);
                 }
             }
