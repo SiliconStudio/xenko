@@ -20,6 +20,9 @@ namespace SiliconStudio.Paradox.Graphics
         private readonly Effect uiSeparateAlphaEffect;
         private readonly EffectParameterCollectionGroup uiSeparateAlphaParameterCollectionGroup;
 
+        private readonly Effect uiSeparateAlphaEffectSRgb;
+        private readonly EffectParameterCollectionGroup uiSeparateAlphaParameterCollectionGroupSRgb;
+
         private bool separateAlphaEffectBinded;
 
         private const int MaxVerticesPerElement = 16;
@@ -134,14 +137,17 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="device">A valid instance of <see cref="GraphicsDevice"/>.</param>
         public UIBatch(GraphicsDevice device)
-            : base(device, UIEffect.Bytecode,
+            : base(device, UIEffect.Bytecode, UIEffect.BytecodeSRgb,
             ResourceBufferInfo.CreateDynamicIndexBufferInfo("UIBatch.VertexIndexBuffers", MaxIndicesCount, MaxVerticesCount), 
             VertexPositionColorTextureSwizzle.Layout)
         {
             // Create the two ui effects
             uiSeparateAlphaEffect = new Effect(GraphicsDevice, UIEffectSeparateAlpha.Bytecode) {Name = "SeparatedAlphaBatchEffect"};
             uiSeparateAlphaParameterCollectionGroup = new EffectParameterCollectionGroup(device, uiSeparateAlphaEffect, new[] { Parameters });
-            
+
+            uiSeparateAlphaEffectSRgb = new Effect(GraphicsDevice, UIEffectSeparateAlpha.Bytecode) { Name = "SeparatedAlphaBatchEffect" };
+            uiSeparateAlphaParameterCollectionGroupSRgb = new EffectParameterCollectionGroup(device, uiSeparateAlphaEffectSRgb, new[] { Parameters });
+
             // Create a 1x1 pixel white texture
             whiteTexture = GraphicsDevice.GetSharedWhiteTexture();
         }
@@ -312,7 +318,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 End();
                 separateAlphaEffectBinded = !separateAlphaEffectBinded;
-                Begin(separateAlphaEffectBinded? uiSeparateAlphaEffect: null, separateAlphaEffectBinded ? uiSeparateAlphaParameterCollectionGroup : null, SortMode, BlendState, SamplerState, DepthStencilState, RasterizerState, StencilReferenceValue);
+                Begin(separateAlphaEffectBinded? GraphicsDevice.ColorSpace == ColorSpace.Linear ? uiSeparateAlphaEffectSRgb : uiSeparateAlphaEffect : null, separateAlphaEffectBinded ? GraphicsDevice.ColorSpace == ColorSpace.Linear ? uiSeparateAlphaParameterCollectionGroupSRgb : uiSeparateAlphaParameterCollectionGroup : null, SortMode, BlendState, SamplerState, DepthStencilState, RasterizerState, StencilReferenceValue);
             }
 
             // Calculate the information needed to draw.

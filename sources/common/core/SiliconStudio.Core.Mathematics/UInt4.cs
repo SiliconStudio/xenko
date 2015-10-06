@@ -37,7 +37,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         ///   The size of the <see cref = "UInt4" /> type, in bytes.
         /// </summary>
-        public static readonly int SizeInBytes = Marshal.SizeOf(typeof (UInt4));
+        public static readonly int SizeInBytes = Utilities.SizeOf<UInt4>();
 
         /// <summary>
         ///   A <see cref = "UInt4" /> with all of its components set to zero.

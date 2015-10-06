@@ -23,12 +23,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Mathematics
 {
     /// <summary>
-    /// Structure using the same layout than <see cref="System.Drawing.Size"/>.
+    /// Defines a 2D rectangular size (width,height).
     /// </summary>
     [DataContract("!Size2")]
     [DataStyle(DataStyle.Compact)]

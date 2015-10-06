@@ -156,7 +156,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
                         receivedImage.MeanSquareError = mse;
 
-                        if (SaveJson)
+                        if (SaveJson && mse > 0)
                             WriteJson(receivedImage);
 
                         testPerformed = true;

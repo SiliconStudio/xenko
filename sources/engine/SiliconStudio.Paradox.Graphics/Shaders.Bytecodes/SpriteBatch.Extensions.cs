@@ -8,12 +8,21 @@ namespace SiliconStudio.Paradox.Graphics
     public partial class SpriteBatch
     {
         private static EffectBytecode bytecode = null;
+        private static EffectBytecode bytecodeSRgb = null;
 
-        public static EffectBytecode Bytecode
+        internal static EffectBytecode Bytecode
         {
             get
             {
                 return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode));
+            }
+        }
+
+        internal static EffectBytecode BytecodeSRgb
+        {
+            get
+            {
+                return bytecodeSRgb ?? (bytecodeSRgb = EffectBytecode.FromBytesSafe(binaryBytecodeSRgb));
             }
         }
     }

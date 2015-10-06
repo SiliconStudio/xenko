@@ -1,12 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-class UIEffectSeparateAlpha : ShaderBase, Texturing
+class UIEffectShader<bool TSRgb> : ShaderBase, Texturing
 {
     // -------------------------------------
     // streams
     // -------------------------------------
     stage stream float4 Position : POSITION;
     stage stream float4 Color : COLOR;
+    stage stream float Swizzle : BATCH_SWIZZLE;
             
     // -------------------------------------
     // VertexShader
@@ -14,6 +15,10 @@ class UIEffectSeparateAlpha : ShaderBase, Texturing
     stage override void VSMain()
     {
         streams.ShadingPosition = streams.Position;
+        if (TSRgb)
+        {
+            streams.Color = ColorUtility.ToLinear(streams.Color);
+        }
     }
         
     // Shading of the sprite
@@ -24,9 +29,9 @@ class UIEffectSeparateAlpha : ShaderBase, Texturing
 
     stage float4 Shading()
     {
-        float3 color = Texture0.Sample(Sampler, streams.TexCoord).rgb;
-        float alpha  = Texture1.Sample(Sampler, streams.TexCoord).r;
+        float4 sampledColor = Texture0.Sample(Sampler, streams.TexCoord);
+        float4 swizzledColor = streams.Swizzle == 0? sampledColor: sampledColor.rrrr;
 
-        return float4(color, alpha) * streams.Color;
+        return swizzledColor * streams.Color;
     }
 };

@@ -35,6 +35,7 @@
 
   <PropertyGroup Condition="'$(SiliconStudioPublicApi)' == 'true'">
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)public_api.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 
   <!-- Setup compiler targets per platform / language -->

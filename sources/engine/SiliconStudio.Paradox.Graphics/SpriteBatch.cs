@@ -43,7 +43,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="bufferElementCount">The maximum number element that can be batched in one time.</param>
         /// <param name="batchCapacity">The batch capacity default to 64.</param>
         public SpriteBatch(GraphicsDevice graphicsDevice, int bufferElementCount = 1024, int batchCapacity = 64)
-            : base(graphicsDevice, Bytecode, StaticQuadBufferInfo.CreateQuadBufferInfo("SpriteBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), VertexPositionColorTextureSwizzle.Layout)
+            : base(graphicsDevice, Bytecode, BytecodeSRgb, StaticQuadBufferInfo.CreateQuadBufferInfo("SpriteBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), VertexPositionColorTextureSwizzle.Layout)
         {
             DefaultDepth = 200f;
         }
@@ -164,7 +164,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <remarks>
         /// Before making any calls to Draw, you must call Begin. Once all calls to Draw are complete, call End. 
         /// </remarks>
-        public void Draw(Texture texture, RectangleF destinationRectangle, Color color)
+        public void Draw(Texture texture, RectangleF destinationRectangle, Color4 color)
         {
             DrawSprite(texture, ref destinationRectangle, false, ref nullRectangle, color, 0f, ref vector2Zero, SpriteEffects.None, ImageOrientation.AsIs, 0f);
         }
@@ -203,7 +203,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="origin">The sprite origin in the texture in pixels (dependent of image orientation). Default value is (0,0) which represents the upper-left corner.</param>
         /// <param name="effects">Effects to apply.</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
-        public void Draw(Texture texture, RectangleF destinationRectangle, RectangleF? sourceRectangle, Color color, float rotation, Vector2 origin, 
+        public void Draw(Texture texture, RectangleF destinationRectangle, RectangleF? sourceRectangle, Color4 color, float rotation, Vector2 origin, 
             SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0f) 
         {
             DrawSprite(texture, ref destinationRectangle, false, ref sourceRectangle, color, rotation, ref origin, effects, orientation, layerDepth);
@@ -222,7 +222,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effects">Effects to apply.</param>
         /// <param name="orientation">The source image orientation</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
-        public void Draw(Texture texture, Vector2 position, Color color, float rotation, Vector2 origin, float scale = 1.0f, 
+        public void Draw(Texture texture, Vector2 position, Color4 color, float rotation, Vector2 origin, float scale = 1.0f, 
             SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0)
         {
             Draw(texture, position, null, color, rotation, origin, scale, effects, orientation, layerDepth);
@@ -240,7 +240,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effects">Effects to apply.</param>
         /// <param name="orientation">The source image orientation</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
-        public void Draw(Texture texture, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, 
+        public void Draw(Texture texture, Vector2 position, Color4 color, float rotation, Vector2 origin, Vector2 scale, 
             SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0)
         {
             Draw(texture, position, null, color, rotation, origin, scale, effects, orientation, layerDepth);
@@ -253,7 +253,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="position">The location (in screen coordinates) to draw the sprite.</param>
         /// <param name="sourceRectangle">A rectangle that specifies (in texels) the source texels from a texture. Use null to draw the entire texture. </param>
         /// <param name="color">The color to tint a sprite. Use Color.White for full color with no tinting.</param>
-        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color color)
+        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color4 color)
         {
             var destination = new RectangleF(position.X, position.Y, 1f, 1f);
             DrawSprite(texture, ref destination, true, ref sourceRectangle, color, 0f, ref vector2Zero, SpriteEffects.None, ImageOrientation.AsIs, 0f);
@@ -265,14 +265,14 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="texture">A texture.</param>
         /// <param name="position">The location (in screen coordinates) to draw the sprite.</param>
         /// <param name="sourceRectangle">A rectangle that specifies (in texels) the source texels from a texture. Use null to draw the entire texture. </param>
-        /// <param name="color">The color to tint a sprite. Use Color.White for full color with no tinting.</param>
+        /// <param name="color">The color to tint a sprite. Use Color4.White for full color with no tinting.</param>
         /// <param name="rotation">Specifies the angle (in radians) to rotate the sprite about its center.</param>
         /// <param name="origin">The sprite origin in the texture in pixels (dependent of image orientation). Default value is (0,0) which represents the upper-left corner.</param>
         /// <param name="scale">Scale factor.</param>
         /// <param name="effects">Effects to apply.</param>
         /// <param name="orientation">The source image orientation</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
-        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color color, float rotation, 
+        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color4 color, float rotation, 
             Vector2 origin, float scale = 1f, SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0)
         {
             var destination = new RectangleF(position.X, position.Y, scale, scale);
@@ -292,7 +292,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effects">Effects to apply.</param>
         /// <param name="orientation">The source image orientation</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
-        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color color, float rotation, 
+        public void Draw(Texture texture, Vector2 position, RectangleF? sourceRectangle, Color4 color, float rotation, 
             Vector2 origin, Vector2 scale, SpriteEffects effects = SpriteEffects.None, ImageOrientation orientation = ImageOrientation.AsIs, float layerDepth = 0)
         {
             var destination = new RectangleF(position.X, position.Y, scale.X, scale.Y);
@@ -352,7 +352,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="position">The location (in screen coordinates) to draw the sprite.</param>
         /// <param name="color">The color to tint a sprite. Use Color.White for full color with no tinting.</param>
         /// <param name="alignment">Describes how to align the text to draw</param>
-        public void DrawString(SpriteFont spriteFont, string text, Vector2 position, Color color, TextAlignment alignment = TextAlignment.Left)
+        public void DrawString(SpriteFont spriteFont, string text, Vector2 position, Color4 color, TextAlignment alignment = TextAlignment.Left)
         {
             var proxy = new SpriteFont.StringProxy(text);
             DrawString(spriteFont, ref proxy, -1, ref position, ref color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f, alignment);
@@ -364,7 +364,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="position">The location (in screen coordinates) to draw the sprite.</param>
         /// <param name="color">The color to tint a sprite. Use Color.White for full color with no tinting.</param>
         /// <param name="alignment">Describes how to align the text to draw</param>
-        public void DrawString(SpriteFont spriteFont, StringBuilder text, Vector2 position, Color color, TextAlignment alignment = TextAlignment.Left)
+        public void DrawString(SpriteFont spriteFont, StringBuilder text, Vector2 position, Color4 color, TextAlignment alignment = TextAlignment.Left)
         {
             var proxy = new SpriteFont.StringProxy(text);
             DrawString(spriteFont, ref proxy, -1, ref position, ref color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f, alignment);
@@ -377,7 +377,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="position">The location (in screen coordinates) to draw the sprite.</param>
         /// <param name="color">The color to tint a sprite. Use Color.White for full color with no tinting.</param>
         /// <param name="alignment">Describes how to align the text to draw</param>
-        public void DrawString(SpriteFont spriteFont, string text, float fontSize, Vector2 position, Color color, TextAlignment alignment = TextAlignment.Left)
+        public void DrawString(SpriteFont spriteFont, string text, float fontSize, Vector2 position, Color4 color, TextAlignment alignment = TextAlignment.Left)
         {
             var proxy = new SpriteFont.StringProxy(text);
             DrawString(spriteFont, ref proxy, fontSize, ref position, ref color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f, alignment);
@@ -390,7 +390,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="position">The location (in screen coordinates) to draw the sprite.</param>
         /// <param name="color">The color to tint a sprite. Use Color.White for full color with no tinting.</param>
         /// <param name="alignment">Describes how to align the text to draw</param>
-        public void DrawString(SpriteFont spriteFont, StringBuilder text, float fontSize, Vector2 position, Color color, TextAlignment alignment = TextAlignment.Left)
+        public void DrawString(SpriteFont spriteFont, StringBuilder text, float fontSize, Vector2 position, Color4 color, TextAlignment alignment = TextAlignment.Left)
         {
             var proxy = new SpriteFont.StringProxy(text);
             DrawString(spriteFont, ref proxy, fontSize, ref position, ref color, 0, Vector2.Zero, Vector2.One, SpriteEffects.None, 0f, alignment);
@@ -407,7 +407,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effects">Effects to apply.</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
         /// <param name="alignment">Describes how to align the text to draw</param>
-        public void DrawString(SpriteFont spriteFont, string text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
+        public void DrawString(SpriteFont spriteFont, string text, Vector2 position, Color4 color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
         {
             var proxy = new SpriteFont.StringProxy(text);
             DrawString(spriteFont, ref proxy, -1, ref position, ref color, rotation, ref origin, ref scale, effects, layerDepth, alignment);
@@ -424,7 +424,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effects">Effects to apply.</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
         /// <param name="alignment">Describes how to align the text to draw</param>
-        public void DrawString(SpriteFont spriteFont, StringBuilder text, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
+        public void DrawString(SpriteFont spriteFont, StringBuilder text, Vector2 position, Color4 color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
         {
             var proxy = new SpriteFont.StringProxy(text);
             DrawString(spriteFont, ref proxy, -1, ref position, ref color, rotation, ref origin, ref scale, effects, layerDepth, alignment);
@@ -442,7 +442,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effects">Effects to apply.</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
         /// <param name="alignment">Describes how to align the text to draw</param>
-        public void DrawString(SpriteFont spriteFont, string text, float fontSize, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
+        public void DrawString(SpriteFont spriteFont, string text, float fontSize, Vector2 position, Color4 color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
         {
             var proxy = new SpriteFont.StringProxy(text);
             DrawString(spriteFont, ref proxy, fontSize, ref position, ref color, rotation, ref origin, ref scale, effects, layerDepth, alignment);
@@ -460,18 +460,18 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="effects">Effects to apply.</param>
         /// <param name="layerDepth">The depth of a layer. By default, 0 represents the front layer and 1 represents a back layer. Use SpriteSortMode if you want sprites to be sorted during drawing.</param>
         /// <param name="alignment">Describes how to align the text to draw</param>
-        public void DrawString(SpriteFont spriteFont, StringBuilder text, float fontSize, Vector2 position, Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
+        public void DrawString(SpriteFont spriteFont, StringBuilder text, float fontSize, Vector2 position, Color4 color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
         {
             var proxy = new SpriteFont.StringProxy(text);
             DrawString(spriteFont, ref proxy, fontSize, ref position, ref color, rotation, ref origin, ref scale, effects, layerDepth, alignment);
         }
 
-        private void DrawString(SpriteFont spriteFont, ref SpriteFont.StringProxy text, float fontSize, ref Vector2 position, ref Color color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
+        private void DrawString(SpriteFont spriteFont, ref SpriteFont.StringProxy text, float fontSize, ref Vector2 position, ref Color4 color, float rotation, Vector2 origin, Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
         {
             DrawString(spriteFont, ref text, fontSize, ref position, ref color, rotation, ref origin, ref scale, effects, layerDepth, alignment);
         }
 
-        private void DrawString(SpriteFont spriteFont, ref SpriteFont.StringProxy text, float fontSize, ref Vector2 position, ref Color color, float rotation, ref Vector2 origin, ref Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
+        private void DrawString(SpriteFont spriteFont, ref SpriteFont.StringProxy text, float fontSize, ref Vector2 position, ref Color4 color, float rotation, ref Vector2 origin, ref Vector2 scale, SpriteEffects effects, float layerDepth, TextAlignment alignment)
         {
             if (spriteFont == null)
             {
@@ -504,7 +504,7 @@ namespace SiliconStudio.Paradox.Graphics
             spriteFont.InternalDraw(ref text, ref drawCommand, alignment);
         }
         
-        internal unsafe void DrawSprite(Texture texture, ref RectangleF destination, bool scaleDestination, ref RectangleF? sourceRectangle, Color color, 
+        internal unsafe void DrawSprite(Texture texture, ref RectangleF destination, bool scaleDestination, ref RectangleF? sourceRectangle, Color4 color, 
             float rotation, ref Vector2 origin, SpriteEffects effects, ImageOrientation orientation, float depth, SwizzleMode swizzle = SwizzleMode.None, bool realSize = false)
         {
             // Check that texture is not null
@@ -640,7 +640,7 @@ namespace SiliconStudio.Paradox.Graphics
             public float Rotation;
             public float Depth;
             public SpriteEffects SpriteEffects;
-            public Color Color;
+            public Color4 Color;
             public SwizzleMode Swizzle;
             public Vector2 TextureSize;
             public ImageOrientation Orientation;
