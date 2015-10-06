@@ -15,9 +15,21 @@ namespace SiliconStudio.Core.Mathematics
         private readonly List<Rectangle> freeRectangles = new List<Rectangle>();
         private readonly List<Rectangle> tempFreeRectangles = new List<Rectangle>();
 
+        /// <summary>
+        /// A delegate callback used by <see cref="TryInsert"/>
+        /// </summary>
+        /// <param name="cascadeIndex">The index of the rectangle</param>
+        /// <param name="rectangle">The rectangle found</param>
         public delegate void InsertRectangleCallback(int cascadeIndex, ref Rectangle rectangle);
 
+        /// <summary>
+        /// Current width used by the packer.
+        /// </summary>
         public int Width { get; private set; }
+
+        /// <summary>
+        /// Current height used by the packer.
+        /// </summary>
         public int Height { get; private set; }
 
         /// <summary>
@@ -51,11 +63,26 @@ namespace SiliconStudio.Core.Mathematics
             freeRectangles.Add(oldRectangle);
         }
 
+        /// <summary>
+        /// Tries to fit a single rectangle with the specified width and height.
+        /// </summary>
+        /// <param name="width">Width requested.</param>
+        /// <param name="height">Height requested</param>
+        /// <param name="bestRectangle">Fill with the rectangle if it was successfully inserted.</param>
+        /// <returns><c>true</c> if it was successfully inserted.</returns>
         public bool Insert(int width, int height, ref Rectangle bestRectangle)
         {
             return Insert(width, height, freeRectangles, ref bestRectangle);
         }
 
+        /// <summary>
+        /// Tries to fit multiple rectangle with (width, height).
+        /// </summary>
+        /// <param name="width">Width requested.</param>
+        /// <param name="height">Height requested</param>
+        /// <param name="count">The number of rectangle to fit.</param>
+        /// <param name="inserted">A callback called for each rectangle successfully fitted.</param>
+        /// <returns><c>true</c> if all rectangles were successfully fitted.</returns>
         public bool TryInsert(int width, int height, int count, InsertRectangleCallback inserted)
         {
             var bestRectangle = new Rectangle();

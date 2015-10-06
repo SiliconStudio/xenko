@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="bufferElementCount">The maximum number element that can be batched in one time.</param>
         /// <param name="batchCapacity">The batch capacity default to 64.</param>
         public Sprite3DBatch(GraphicsDevice device, int bufferElementCount = 1024, int batchCapacity = 64)
-            : base(device, SpriteBatch.Bytecode, StaticQuadBufferInfo.CreateQuadBufferInfo("Sprite3DBatch.VertexIndexBuffer", false, bufferElementCount, batchCapacity), VertexPositionColorTextureSwizzle.Layout)
+            : base(device, SpriteBatch.Bytecode, SpriteBatch.BytecodeSRgb, StaticQuadBufferInfo.CreateQuadBufferInfo("Sprite3DBatch.VertexIndexBuffer", false, bufferElementCount, batchCapacity), VertexPositionColorTextureSwizzle.Layout)
         {
         }
 

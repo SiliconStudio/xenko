@@ -15,6 +15,7 @@
     <ParadoxBuildTags>*</ParadoxBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
+    <SiliconStudioPublicApi>true</SiliconStudioPublicApi>
   </PropertyGroup>
   <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
     <Reference Include="System" />

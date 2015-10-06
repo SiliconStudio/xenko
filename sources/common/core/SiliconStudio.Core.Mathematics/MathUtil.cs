@@ -30,6 +30,9 @@
 using System;
 namespace SiliconStudio.Core.Mathematics
 {
+    /// <summary>
+    /// Common utility methods for math operations.
+    /// </summary>
     public static class MathUtil
     {
         /// <summary>

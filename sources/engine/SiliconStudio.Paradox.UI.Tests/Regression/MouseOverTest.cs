@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public MouseOverTest()
         {
-            CurrentVersion = 4;
+            CurrentVersion = 5;
         }
 
         protected override async Task LoadContent()

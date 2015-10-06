@@ -111,6 +111,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <typeparam name="T">The content type.</typeparam>
         /// <param name="url">The URL to load from.</param>
         /// <param name="settings">The settings. If null, fallback to <see cref="AssetManagerLoaderSettings.Default" />.</param>
+        /// <remarks>If the asset is already loaded, it just increases the reference count of the asset and return the same instance.</remarks>
         /// <returns></returns>
         public T Load<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
         {
@@ -124,6 +125,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <param name="url">The URL.</param>
         /// <param name="settings">The settings.</param>
         /// <returns></returns>
+        /// <remarks>If the asset is already loaded, it just increases the reference count of the asset and return the same instance.</remarks>
         /// <exception cref="System.ArgumentNullException">url</exception>
         public object Load(Type type, string url, AssetManagerLoaderSettings settings = null)
         {
@@ -176,6 +178,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <typeparam name="T">The content type.</typeparam>
         /// <param name="url">The URL to load from.</param>
         /// <param name="settings">The settings. If null, fallback to <see cref="AssetManagerLoaderSettings.Default" />.</param>
+        /// <remarks>If the asset is already loaded, it just increases the reference count of the asset and return the same instance.</remarks>
         /// <returns></returns>
         public Task<T> LoadAsync<T>(string url, AssetManagerLoaderSettings settings = null) where T : class
         {
@@ -188,6 +191,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <param name="type">The type.</param>
         /// <param name="url">The URL.</param>
         /// <param name="settings">The settings.</param>
+        /// <remarks>If the asset is already loaded, it just increases the reference count of the asset and return the same instance.</remarks>
         /// <returns></returns>
         public Task<object> LoadAsync(Type type, string url, AssetManagerLoaderSettings settings = null)
         {
@@ -200,6 +204,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <typeparam name="T">The type of asset to retrieve.</typeparam>
         /// <param name="url">The URL of the asset to retrieve.</param>
         /// <returns>The loaded asset, or <c>null</c> if the asset has not been loaded.</returns>
+        /// <remarks>This function does not increase the reference count on the asset.</remarks>
         public T Get<T>(string url)
         {
             return (T)Get(typeof(T), url);
@@ -211,6 +216,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <param name="type">The type of asset to retrieve.</param>
         /// <param name="url">The URL of the asset to retrieve.</param>
         /// <returns>The loaded asset, or <c>null</c> if the asset has not been loaded.</returns>
+        /// <remarks>This function does not increase the reference count on the asset.</remarks>
         public object Get(Type type, string url)
         {
             var reference = FindDeserializedObject(url, type);

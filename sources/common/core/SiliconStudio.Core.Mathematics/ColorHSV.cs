@@ -112,11 +112,13 @@ namespace SiliconStudio.Core.Mathematics
             return new ColorHSV(h, (max != 0.0f) ? 1.0f - min / max : 0.0f, max, color.A);
         }
 
+        /// <inheritdoc/>
         public bool Equals(ColorHSV other)
         {
             return other.H.Equals(H) && other.S.Equals(S) && other.V.Equals(V) && other.A.Equals(A);
         }
 
+        /// <inheritdoc/>
         public override bool Equals(object obj)
         {
             if (ReferenceEquals(null, obj)) return false;
@@ -124,6 +126,7 @@ namespace SiliconStudio.Core.Mathematics
             return Equals((ColorHSV)obj);
         }
 
+        /// <inheritdoc/>
         public override int GetHashCode()
         {
             unchecked

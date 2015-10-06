@@ -129,6 +129,11 @@ namespace SiliconStudio.Core.Mathematics
             baseValues = new float[order * order];
         }
 
+        /// <summary>
+        /// Evaluates the color for the specified direction.
+        /// </summary>
+        /// <param name="direction">The direction to evaluate.</param>
+        /// <returns>The color computed for this direction.</returns>
         public override Color3 Evaluate(Vector3 direction)
         {
             var x = direction.X;

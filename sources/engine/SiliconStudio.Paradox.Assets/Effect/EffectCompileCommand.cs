@@ -102,7 +102,18 @@ namespace SiliconStudio.Paradox.Assets.Effect
             if (compilerParameters.ContainsKey(EffectSourceCodeKeys.Enable))
             {
                 var outputDirectory = UPath.Combine(package.RootDirectory, baseUrl);
-                var outputClassFile = effectName + ".bytecode." + compilerParameters.Platform + "." + compilerParameters.Profile + ".cs";
+
+                var fieldName = compilerParameters.Get(EffectSourceCodeKeys.FieldName);
+                if (fieldName.StartsWith("binary"))
+                {
+                    fieldName = fieldName.Substring("binary".Length);
+                    if (char.IsUpper(fieldName[0]))
+                    {
+                        fieldName = char.ToLower(fieldName[0]) + fieldName.Substring(1);
+                    }
+                }
+
+                var outputClassFile = effectName + "." + fieldName + "." + compilerParameters.Platform + "." + compilerParameters.Profile + ".cs";
                 var fullOutputClassFile = Path.Combine(outputDirectory.ToWindowsPath(), outputClassFile);
 
                 commandContext.Logger.Verbose("Writing shader bytecode to .cs source [{0}]", fullOutputClassFile);
