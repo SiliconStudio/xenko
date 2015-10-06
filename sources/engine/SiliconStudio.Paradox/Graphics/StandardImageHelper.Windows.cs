@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Graphics
     /// </summary>
     partial class StandardImageHelper
     {
-        public unsafe static Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle, bool loadAsSRGB)
+        public unsafe static Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
             using (var memoryStream = new UnmanagedMemoryStream((byte*)pSource, size))
             using (var bitmap = (Bitmap)System.Drawing.Image.FromStream(memoryStream))
@@ -24,9 +24,8 @@ namespace SiliconStudio.Paradox.Graphics
                 var sourceArea = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
                 // Lock System.Drawing.Bitmap
 
-                var format = loadAsSRGB ? PixelFormat.B8G8R8A8_UNorm_SRgb : PixelFormat.B8G8R8A8_UNorm;
                 var bitmapData = bitmap.LockBits(sourceArea, ImageLockMode.ReadOnly, System.Drawing.Imaging.PixelFormat.Format32bppPArgb);
-                var image = Image.New2D(bitmap.Width, bitmap.Height, 1, format, 1, bitmapData.Stride);
+                var image = Image.New2D(bitmap.Width, bitmap.Height, 1, PixelFormat.B8G8R8A8_UNorm, 1, bitmapData.Stride);
                 // var dataRect = new DataRectangle(bitmapData.Stride, bitmapData.Scan0);
 
                 try

@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Graphics
         private const string MagicCodeString = "TKTX";
         private static readonly FourCC MagicCode = "TKTX";
 
-        public static unsafe Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle, bool loadAsSRGB)
+        public static unsafe Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
             var stream = new BinarySerializationReader(new NativeMemoryStream((byte*)pSource, size));
 
@@ -27,11 +27,6 @@ namespace SiliconStudio.Paradox.Graphics
             // Read header
             var imageDescription = new ImageDescription();
             imageDescriptionSerializer.Serialize(ref imageDescription, ArchiveMode.Deserialize, stream);
-
-            if (loadAsSRGB)
-                imageDescription.Format.ToSRgb();
-            else
-                imageDescription.Format.ToNonSRgb();
 
             if (makeACopy)
             {

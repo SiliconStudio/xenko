@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.Graphics
     [ContentSerializer(typeof(ImageSerializer))]
     public sealed class Image : IDisposable
     {
-        public delegate Image ImageLoadDelegate(IntPtr dataPointer, int dataSize, bool makeACopy, GCHandle? handle, bool loadAsSRGB);
+        public delegate Image ImageLoadDelegate(IntPtr dataPointer, int dataSize, bool makeACopy, GCHandle? handle);
         public delegate void ImageSaveDelegate(PixelBuffer[] pixelBuffers, int count, ImageDescription description, Stream imageStream);
 
         private const string MagicCodeTKTX = "TKTX";
@@ -662,9 +662,11 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 if (loadSaveDelegate.Load != null)
                 {
-                    var image = loadSaveDelegate.Load(dataPointer, dataSize, makeACopy, handle, loadAsSRGB);
+                    var image = loadSaveDelegate.Load(dataPointer, dataSize, makeACopy, handle);
                     if (image != null)
                     {
+                        image.Description.Format = loadAsSRGB? image.Description.Format.ToSRgb(): image.Description.Format.ToNonSRgb();
+
                         return image;
                     }
                 }
