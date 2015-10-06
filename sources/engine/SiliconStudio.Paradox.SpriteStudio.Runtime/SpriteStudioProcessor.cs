@@ -17,6 +17,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         public SpriteStudioProcessor()
             : base(SpriteStudioComponent.Key, TransformComponent.Key)
         {
+            Order = 550;
         }
 
         public class Data
@@ -214,7 +215,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         private static void SortNodes(Data data, IEnumerable<SpriteStudioNodeState> nodes)
         {
-            // TODO: Avoid reallocating
+//            data.SpriteStudioComponent.SortedNodes.Sort((x, y) =>
+//            {
+//                if (x.Priority > y.Priority) return -1;
+//                return x.Priority == y.Priority ? 0 : 1;
+//            });
             data.SpriteStudioComponent.SortedNodes = nodes.OrderBy(x => x.Priority).ToList();
         }
 
@@ -250,6 +255,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                 data.RootNode = InitializeNodes(data.SpriteStudioComponent);
                 data.Sheet = sheet;
             }
+
+            //data.SpriteStudioComponent.SortedNodes = data.SpriteStudioComponent.Nodes.ToList(); // copy
 
             return (data.RootNode != null);
         }

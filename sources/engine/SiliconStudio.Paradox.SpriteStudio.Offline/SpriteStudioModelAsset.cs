@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
@@ -15,6 +16,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
     [Display("Sprite Studio Sheet")]
     public class SpriteStudioModelAsset : AssetImportTracked
     {
+        [DataMember(1)]
+        [Browsable(false)]
+        public List<string> NodeNames { get; set; } = new List<string>();
+
         [DataMemberIgnore]
         public List<string> BuildTextures { get; } = new List<string>();
 

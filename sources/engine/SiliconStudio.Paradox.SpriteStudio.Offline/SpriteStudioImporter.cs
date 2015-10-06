@@ -44,6 +44,10 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
             if (importParameters.IsTypeSelectedForOutput<SpriteStudioModelAsset>())
             {
                 var model = new SpriteStudioModelAsset { Source = rawAssetPath };
+                foreach (var node in nodes)
+                {
+                    model.NodeNames.Add(node.Name);
+                }
                 outputAssets.Add(new AssetItem(modelName, model));
             }
 

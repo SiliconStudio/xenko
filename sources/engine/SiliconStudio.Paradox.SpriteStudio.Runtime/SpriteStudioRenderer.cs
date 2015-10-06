@@ -6,6 +6,7 @@ using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 {
+    //TODO this whole renderer is not optimized at all! batching is wrong and depth calculation should be done differently
     public class SpriteStudioRenderer : EntityComponentRendererBase
     {
         // TODO this is temporary code. this should disappear from here later when materials on sprite will be available
