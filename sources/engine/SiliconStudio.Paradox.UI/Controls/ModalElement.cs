@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.UI.Controls
 
         public ModalElement()
         {
-            OverlayColorInternal = new Color(0, 0, 0, 0.4f);
+            OverlayColorInternal = new Color(0, 0, 0, 0.6f);
             DrawLayerNumber += 1; // (overlay)
             VerticalAlignment = VerticalAlignment.Center;
             HorizontalAlignment = HorizontalAlignment.Center;

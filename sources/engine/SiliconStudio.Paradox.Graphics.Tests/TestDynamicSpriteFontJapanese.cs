@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestDynamicSpriteFontJapanese()
         {
-            CurrentVersion = 1;
+            CurrentVersion = 2;
         }
 
         protected override void RegisterTests()

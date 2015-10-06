@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public EditTextTest()
         {
-            CurrentVersion = 10;
+            CurrentVersion = 11;
         }
 
         protected override async Task LoadContent()
