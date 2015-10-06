@@ -129,11 +129,11 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
             {
                 if (fontAsset.AntiAlias == FontAntiAliasMode.ClearType)
                 {
-                    BitmapUtils.PremultiplyAlphaClearType(bitmap);
+                    BitmapUtils.PremultiplyAlphaClearType(bitmap, srgb);
                 }
                 else
                 {
-                    BitmapUtils.PremultiplyAlpha(bitmap);
+                    BitmapUtils.PremultiplyAlpha(bitmap, srgb);
                 }
             }
 

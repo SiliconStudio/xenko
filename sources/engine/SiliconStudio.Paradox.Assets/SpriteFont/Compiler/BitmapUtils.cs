@@ -80,6 +80,11 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 
+using SiliconStudio.Core.Mathematics;
+
+using DrawingColor = System.Drawing.Color;
+using Rectangle = System.Drawing.Rectangle;
+
 namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
 {
     // Assorted helpers for doing useful things with bitmaps.
@@ -130,7 +135,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
 
 
         // Checks whether a bitmap contains entirely the specified RGB value.
-        public static bool IsRgbEntirely(Color expectedRgb, Bitmap bitmap)
+        public static bool IsRgbEntirely(DrawingColor expectedRgb, Bitmap bitmap)
         {
             using (var bitmapData = new PixelAccessor(bitmap, ImageLockMode.ReadOnly))
             {
@@ -138,7 +143,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
                 {
                     for (int x = 0; x < bitmap.Width; x++)
                     {
-                        Color color = bitmapData[x, y];
+                        DrawingColor color = bitmapData[x, y];
 
                         if (color.A == 0)
                             continue;
@@ -171,14 +176,14 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
                         // Average the red, green and blue values to compute brightness.
                         var alpha = (color.R + color.G + color.B) / 3;
 
-                        bitmapData[x, y] = Color.FromArgb(alpha, 255, 255, 255);
+                        bitmapData[x, y] = DrawingColor.FromArgb(alpha, 255, 255, 255);
                     }
                 }
             }
         }
 
         // Converts a bitmap to premultiplied alpha format.
-        public static void PremultiplyAlphaClearType(Bitmap bitmap)
+        public static void PremultiplyAlphaClearType(Bitmap bitmap, bool srgb)
         {
             using (var bitmapData = new PixelAccessor(bitmap, ImageLockMode.ReadWrite))
             {
@@ -186,21 +191,31 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
                 {
                     for (int x = 0; x < bitmap.Width; x++)
                     {
-                        Color color = bitmapData[x, y];
+                        DrawingColor color = bitmapData[x, y];
 
-                        int a = (color.R + color.G + color.B) / 3;
+                        int a;
+                        if (srgb)
+                        {
+                            var colorLinear = new Color4(new SiliconStudio.Core.Mathematics.Color(color.R, color.G, color.B)).ToLinear();
+                            var alphaLinear = (colorLinear.R + colorLinear.G + colorLinear.B) / 3.0f;
+                            a = MathUtil.Clamp((int)Math.Round(alphaLinear * 255), 0, 255);
+                        }
+                        else
+                        {
+                            a = (color.R + color.G + color.B) / 3;
+                        }
                         int r = color.R;
                         int g = color.G;
                         int b = color.B;
 
-                        bitmapData[x, y] = Color.FromArgb(a, r, g, b);
+                        bitmapData[x, y] = DrawingColor.FromArgb(a, r, g, b);
                     }
                 }
             }
         }
 
         // Converts a bitmap to premultiplied alpha format.
-        public static void PremultiplyAlpha(Bitmap bitmap)
+        public static void PremultiplyAlpha(Bitmap bitmap, bool srgb)
         {
             using (var bitmapData = new PixelAccessor(bitmap, ImageLockMode.ReadWrite))
             {
@@ -208,14 +223,28 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
                 {
                     for (int x = 0; x < bitmap.Width; x++)
                     {
-                        Color color = bitmapData[x, y];
-
+                        DrawingColor color = bitmapData[x, y];
                         int a = color.A;
-                        int r = color.R * a / 255;
-                        int g = color.G * a / 255;
-                        int b = color.B * a / 255;
+                        int r;
+                        int g;
+                        int b;
+                        if (srgb)
+                        {
+                            var colorLinear = new Color4(new SiliconStudio.Core.Mathematics.Color(color.R, color.G, color.B)).ToLinear();
+                            colorLinear *= color.A / 255.0f;
+                            var colorSRgb = (SiliconStudio.Core.Mathematics.Color)colorLinear.ToSRgb();
+                            r = colorSRgb.R;
+                            g = colorSRgb.G;
+                            b = colorSRgb.B;
+                        }
+                        else
+                        {
+                            r = color.R * a / 255;
+                            g = color.G * a / 255;
+                            b = color.B * a / 255;
+                        }
 
-                        bitmapData[x, y] = Color.FromArgb(a, r, g, b);
+                        bitmapData[x, y] = DrawingColor.FromArgb(a, r, g, b);
                     }
                 }
             }
@@ -256,9 +285,9 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
         // Copies a single pixel within a bitmap, preserving RGB but forcing alpha to zero.
         static void CopyBorderPixel(PixelAccessor bitmapData, int sourceX, int sourceY, int destX, int destY)
         {
-            Color color = bitmapData[sourceX, sourceY];
+            DrawingColor color = bitmapData[sourceX, sourceY];
 
-            bitmapData[destX, destY] = Color.FromArgb(0, color);
+            bitmapData[destX, destY] = DrawingColor.FromArgb(0, color);
         }
 
         
@@ -302,11 +331,11 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
 
 
             // Get or set a pixel value.
-            public Color this[int x, int y]
+            public DrawingColor this[int x, int y]
             {
                 get
                 {
-                    return Color.FromArgb(Marshal.ReadInt32(PixelAddress(x, y)));
+                    return DrawingColor.FromArgb(Marshal.ReadInt32(PixelAddress(x, y)));
                 }
 
                 set
