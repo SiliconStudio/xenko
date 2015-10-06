@@ -9,5 +9,5 @@
     <TargetFrameworkRootPath>$(SolutionDir)\..\CoreFX</TargetFrameworkRootPath>
     <FrameworkPathOverride>$(TargetFrameworkRootPath)\CoreCLR\v5.0</FrameworkPathOverride>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\CoreFX\configs\CoreCLR.CSharp.targets"/>
+  <Import Project="$(SolutionDir)\..\CoreFX\configs\CoreCLR.CSharp.targets"/>
 </Project>
