@@ -32,9 +32,11 @@ Don’t worry, most of it is done automatically for you! We do this by collectin
 
 <img src="http://doc.paradox3d.net/1.3/rn_images/AssetControlExample.png" align="center" width="500"/>
 
-In case you were loading anything in your script using `Asset.Load`, you can still tag those assets specifically with “Mark as Root” in the editor.
+In case you were loading anything in your script using `Asset.Load`, you can still tag those assets specifically by clicking on the inclusion indicator on the top-left corner of their thumbnails.
 
 However, we now recommend to instead create a field in your script and fill it directly in the editor. All the samples have been updated to this new practice, so please check them out.
+
+<img src="http://doc.paradox3d.net/1.3/rn_images/RootAssets.png" align="center" width="495"/>
 
 ### Raw assets
 
@@ -254,6 +256,20 @@ Lastly, node link information is now visible in the scene tree view for easier d
 - Physics: Collision events are removed. An async/await pattern is encouraged from now on.
 - Sprite Sheets: They are now automatically packed. If this affects you, you can simply disable this setting by editing your Sprite Sheet asset.
 
+
+# Version 1.3.4-beta
+
+Release date: 2015/10/05
+
+## Enhancements
+
+- Improved UX to include/exclude assets in/from the compilation
+
+## Issues fixed
+
+- Studio: Fix the recent project list that was sometimes remaining empty
+- Studio: Fix a potential crash when trying to load a large scene in the scene editor
+- Studio: Fix reopening a closed pane from the View menu that was not working
 
 # Version 1.3.3-beta
 
