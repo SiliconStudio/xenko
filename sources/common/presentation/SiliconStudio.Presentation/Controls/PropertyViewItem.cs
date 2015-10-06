@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Input;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Extensions;
 
@@ -135,6 +136,18 @@ namespace SiliconStudio.Presentation.Controls
             RaiseEvent(new PropertyViewItemEventArgs(PropertyView.ClearItemEvent, this, (PropertyViewItem)element, item));
             properties.Remove(container);
             base.ClearContainerForItemOverride(element, item);
+        }
+
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            // base method can handle this event, but we still want to focus on it in this case.
+            bool handled = e.Handled;
+            base.OnMouseLeftButtonDown(e);
+            if (!handled && IsEnabled)
+            {
+                Focus();
+                e.Handled = true;
+            }
         }
 
         // TODO
