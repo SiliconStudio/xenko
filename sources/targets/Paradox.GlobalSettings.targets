@@ -11,7 +11,9 @@
     Global Settings per project
   -->
   <PropertyGroup>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == ''">$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
+    <!-- To preserve existing build layout, if no runtime is specified, we drop it from the name of the build directory -->
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == '' and '$(SiliconStudioRuntime)' == ''">$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == '' and '$(SiliconStudioRuntime)' != ''">$(SiliconStudioPlatform)-$(SiliconStudioRuntime)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
     <ParadoxDependenciesDir Condition="'$(ParadoxDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\..\deps\</ParadoxDependenciesDir>
     <ParadoxDependenciesDir Condition="'$(ParadoxDependenciesDir)' != '' and !HasTrailingSlash('$(ParadoxDependenciesDir)')">$(ParadoxDependenciesDir)\</ParadoxDependenciesDir>
   </PropertyGroup>

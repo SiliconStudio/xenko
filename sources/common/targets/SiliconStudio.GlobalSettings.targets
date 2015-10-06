@@ -16,7 +16,9 @@
   <PropertyGroup>
     <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\deps\</SiliconStudioDependenciesDir>
     <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' != '' and !HasTrailingSlash('$(SiliconStudioDependenciesDir)')">$(SiliconStudioDependenciesDir)\</SiliconStudioDependenciesDir>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == ''">$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
+    <!-- To preserve existing build layout, if no runtime is specified, we drop it from the name of the build directory -->
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == '' and '$(SiliconStudioRuntime)' == ''">$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == '' and '$(SiliconStudioRuntime)' != ''">$(SiliconStudioPlatform)-$(SiliconStudioRuntime)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
     <BaseIntermediateOutputPath Condition=" $(BaseIntermediateOutputPath) == '' ">obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath Condition=" $(IntermediateOutputPath) == '' ">$(BaseIntermediateOutputPath)$(SiliconStudioBuildDirectory)\</IntermediateOutputPath>
     <DefaultOutputPath>Bin\$(SiliconStudioBuildDirectory)\</DefaultOutputPath>
@@ -37,11 +39,6 @@
     <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;NET45</SiliconStudioPlatformDefines>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
-        <!-- The following lines are for compiling against CoreCLR -->
-
-    <TargetFrameworkRootPath Condition="'$(SiliconStudioCoreCLR)' == 'true'">$(SolutionDir)\..\CoreFX</TargetFrameworkRootPath>
-    <FrameworkPathOverride Condition="'$(SiliconStudioCoreCLR)' == 'true'">$(SolutionDir)\..\CoreFX\CoreCLR\v5.0</FrameworkPathOverride>
-    <SiliconStudioPlatformDefines Condition="'$(SiliconStudioCoreCLR)' == 'true'">$(SiliconStudioPlatformDefines);SILICONSTUDIO_RUNTIME_CORECLR</SiliconStudioPlatformDefines>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' ">
@@ -127,7 +124,13 @@
     <MtouchLink>SdkOnly</MtouchLink>
   </PropertyGroup>
 
-
+  <!-- 
+    Settings SiliconStudioRuntime specific
+  -->
+  <PropertyGroup Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
+    <SiliconStudioRuntimeDefines>;SILICONSTUDIO_RUNTIME_CORECLR</SiliconStudioRuntimeDefines>
+  </PropertyGroup>
+ 
   <!-- 
     Global Defines
   -->
@@ -136,14 +139,14 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug'">
-    <DefineConstants>DEBUG;TRACE;$(SiliconStudioPlatformDefines)</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;$(SiliconStudioPlatformDefines)$(SiliconStudioRuntimeDefines)</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release'">
-    <DefineConstants>TRACE;$(SiliconStudioPlatformDefines)</DefineConstants>
+    <DefineConstants>TRACE;$(SiliconStudioPlatformDefines)$(SiliconStudioRuntimeDefines)</DefineConstants>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
   </PropertyGroup>

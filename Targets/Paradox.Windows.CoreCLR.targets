@@ -1,0 +1,13 @@
+<!-- Build file post-included by all Paradox projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+    <!--
+       To avoid duplicating the content we use our Platform .targets and override
+       what we need to make it work for the CoreCLR runtime.
+    -->
+  <Import Project="Paradox.Windows.targets"/>
+  <PropertyGroup>
+    <TargetFrameworkRootPath>$(SolutionDir)\..\CoreFX</TargetFrameworkRootPath>
+    <FrameworkPathOverride>$(TargetFrameworkRootPath)\CoreCLR\v5.0</FrameworkPathOverride>
+  </PropertyGroup>
+  <Import Project="$(SolutionDir)\CoreFX\configs\CoreCLR.CSharp.targets"/>
+</Project>
