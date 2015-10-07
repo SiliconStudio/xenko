@@ -256,10 +256,9 @@ Lastly, node link information is now visible in the scene tree view for easier d
 - Physics: Collision events are removed. An async/await pattern is encouraged from now on.
 - Sprite Sheets: They are now automatically packed. If this affects you, you can simply disable this setting by editing your Sprite Sheet asset.
 
-
 # Version 1.3.4-beta
 
-Release date: 2015/10/05
+Release date: 2015/10/07
 
 ## Enhancements
 
@@ -270,6 +269,7 @@ Release date: 2015/10/05
 - Studio: Fix the recent project list that was sometimes remaining empty
 - Studio: Fix a potential crash when trying to load a large scene in the scene editor
 - Studio: Fix reopening a closed pane from the View menu that was not working
+- Rendering: Improved support for a gamma correct pipeline. Color with SpriteBatch and static SpriteFont are now taking into account the game settings colorspace.
 
 # Version 1.3.3-beta
 
@@ -441,7 +441,6 @@ Almost 1000 commits are included in this release since the previous version of J
 
 # Known Issues
 
-- Rendering: Color used in SpriteBatch is not gamma correct and is considered as Linear It means that if you used a Color to modify a sprite with SpriteBatch, the sprite will appear a bit brighter.
 - Rendering: DynamicFonts are not yet gamma correct.
 - Rendering: Shadow maps are not rendered correctly with orthographic projections
 - Input: Windows Phone touch inputs are sometimes not consistent with other platforms.
