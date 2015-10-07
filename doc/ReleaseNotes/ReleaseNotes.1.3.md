@@ -266,6 +266,12 @@ Release date: 2015/10/07
 
 ## Issues fixed
 
+- Assets: Fix color/alpha substitution in texture asset using alpha key color.  
+- Assets: Fix a merge issue disallowing to reimport a FBX model
+- Assets: Allow asset name with extension
+- Assets: Fix issue when compiling a solution with multiple game projects that could cause one project to fail compiling. 
+- Engine: Some of the camera view parameters were not valid when using custorm aspect ratio
+- Engine: Fix rendering problem when the scene contains model with null materials (ignore the models).
 - Studio: Fix the recent project list that was sometimes remaining empty
 - Studio: Closing the editor with modified assets is now properly asking to save the solution
 - Studio: Deleting images from the sprite editor could make the Game Studio crash.
