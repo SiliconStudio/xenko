@@ -6,6 +6,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering.Sprites;
+using SiliconStudio.Paradox.Shaders.Compiler;
 
 namespace SiliconStudio.Paradox.Rendering
 {
@@ -17,13 +18,14 @@ namespace SiliconStudio.Paradox.Rendering
         // TODO this is temporary code. this should disappear from here later when materials on sprite will be available
         public static PropertyKey<bool> IsEntitySelected = new PropertyKey<bool>("IsEntitySelected", typeof(SpriteComponentRenderer));
         private Effect selectedSpriteEffect;
+        private Effect selectedSpriteEffectSRgb;
         private Effect pickingSpriteEffect;
 
         private Sprite3DBatch sprite3DBatch;
 
         private SpriteProcessor spriteProcessor;
 
-        public override bool SupportPicking { get { return true; } }
+        public override bool SupportPicking => true;
 
         protected override void InitializeCore()
         {
@@ -166,10 +168,25 @@ namespace SiliconStudio.Paradox.Rendering
 
         private Effect GetOrCreateSelectedSpriteEffect()
         {
-            if(selectedSpriteEffect == null)
-                selectedSpriteEffect = EffectSystem.LoadEffect("SelectedSprite").WaitForResult();
+            if (GraphicsDevice.ColorSpace == ColorSpace.Gamma)
+            {
+                return GetOrCreateSelectedSpriteEffect(ref selectedSpriteEffect, true);
+            }
+            else
+            {
+                return GetOrCreateSelectedSpriteEffect(ref selectedSpriteEffectSRgb, false);
+            }
+        }
 
-            return selectedSpriteEffect;
+        private Effect GetOrCreateSelectedSpriteEffect(ref Effect effect, bool isSRgb)
+        {
+            if (effect == null)
+            {
+                var compilerParameters = new CompilerParameters { [SpriteBaseKeys.ColorIsSRgb] = isSRgb};
+                effect = EffectSystem.LoadEffect("SelectedSprite", compilerParameters).WaitForResult();
+            }
+
+            return effect;
         }
 
         private Effect GetOrCreatePickingSpriteEffect()
