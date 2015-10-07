@@ -19,10 +19,14 @@ namespace SiliconStudio.Paradox.Animations
         private AnimationCurveEvaluatorDirectFloatGroup curveEvaluatorFloat = new AnimationCurveEvaluatorDirectFloatGroup();
         private AnimationCurveEvaluatorDirectVector3Group curveEvaluatorVector3 = new AnimationCurveEvaluatorDirectVector3Group();
         private AnimationCurveEvaluatorDirectQuaternionGroup curveEvaluatorQuaternion = new AnimationCurveEvaluatorDirectQuaternionGroup();
+        private AnimationCurveEvaluatorDirectIntGroup curveEvaluatorInt = new AnimationCurveEvaluatorDirectIntGroup();
+        private AnimationCurveEvaluatorDirectVector4Group curveEvaluatorVector4 = new AnimationCurveEvaluatorDirectVector4Group();
 
         private AnimationCurveEvaluatorOptimizedFloatGroup curveEvaluatorOptimizedFloat;
         private AnimationCurveEvaluatorOptimizedVector3Group curveEvaluatorOptimizedVector3;
         private AnimationCurveEvaluatorOptimizedQuaternionGroup curveEvaluatorOptimizedQuaternion;
+        private AnimationCurveEvaluatorOptimizedIntGroup curveEvaluatorOptimizedInt;
+        private AnimationCurveEvaluatorOptimizedVector4Group curveEvaluatorOptimizedVector4;
 
         // Temporarily exposed for MeshAnimationUpdater
         internal FastListStruct<EvaluatorChannel> Channels = new FastListStruct<EvaluatorChannel>(4);
@@ -65,6 +69,20 @@ namespace SiliconStudio.Paradox.Animations
                 curveEvaluatorOptimizedQuaternion.Initialize(clip.OptimizedCurvesQuaternion);
             }
 
+            if (clip.OptimizedCurvesInt != null)
+            {
+                if (curveEvaluatorOptimizedInt == null)
+                    curveEvaluatorOptimizedInt = new AnimationCurveEvaluatorOptimizedIntGroup();
+                curveEvaluatorOptimizedInt.Initialize(clip.OptimizedCurvesInt);
+            }
+
+            if (clip.OptimizedCurvesVector4 != null)
+            {
+                if (curveEvaluatorOptimizedVector4 == null)
+                    curveEvaluatorOptimizedVector4 = new AnimationCurveEvaluatorOptimizedVector4Group();
+                curveEvaluatorOptimizedVector4.Initialize(clip.OptimizedCurvesVector4);
+            }
+
             // Add already existing channels
             for (int index = 0; index < channels.Count; index++)
             {
@@ -78,6 +96,8 @@ namespace SiliconStudio.Paradox.Animations
             curveEvaluatorOptimizedFloat?.Cleanup();
             curveEvaluatorOptimizedVector3?.Cleanup();
             curveEvaluatorOptimizedQuaternion?.Cleanup();
+            curveEvaluatorOptimizedInt?.Cleanup();
+            curveEvaluatorOptimizedVector4?.Cleanup();
 
             Channels.Clear();
             BlenderChannels = null;
@@ -100,25 +120,18 @@ namespace SiliconStudio.Paradox.Animations
                     *structureStart = channel.Factor;
                 }
 
-                if (curveEvaluatorOptimizedFloat != null)
-                {
-                    curveEvaluatorOptimizedFloat.Evaluate(newTime, (IntPtr)structures);
-                }
-                
-                if (curveEvaluatorOptimizedVector3 != null)
-                {
-                    curveEvaluatorOptimizedVector3.Evaluate(newTime, (IntPtr)structures);
-                }
-
-                if (curveEvaluatorOptimizedQuaternion != null)
-                {
-                    curveEvaluatorOptimizedQuaternion.Evaluate(newTime, (IntPtr)structures);
-                }
+                curveEvaluatorOptimizedFloat?.Evaluate(newTime, (IntPtr)structures);
+                curveEvaluatorOptimizedVector3?.Evaluate(newTime, (IntPtr)structures);
+                curveEvaluatorOptimizedQuaternion?.Evaluate(newTime, (IntPtr)structures);
+                curveEvaluatorOptimizedInt?.Evaluate(newTime, (IntPtr)structures);
+                curveEvaluatorOptimizedVector4?.Evaluate(newTime, (IntPtr)structures);
 
                 // Write interpolated data
                 curveEvaluatorFloat.Evaluate(newTime, (IntPtr)structures);
                 curveEvaluatorVector3.Evaluate(newTime, (IntPtr)structures);
                 curveEvaluatorQuaternion.Evaluate(newTime, (IntPtr)structures);
+                curveEvaluatorInt.Evaluate(newTime, (IntPtr)structures);
+                curveEvaluatorVector4.Evaluate(newTime, (IntPtr)structures);
             }
         }
 
@@ -156,6 +169,10 @@ namespace SiliconStudio.Paradox.Animations
                         curveEvaluatorVector3.AddChannel(curve, channel.Offset + sizeof(float));
                     else if (clipChannel.ElementType == typeof(Quaternion))
                         curveEvaluatorQuaternion.AddChannel(curve, channel.Offset + sizeof(float));
+                    else if (clipChannel.ElementType == typeof(int))
+                        curveEvaluatorInt.AddChannel(curve, channel.Offset + sizeof(float));
+                    else if (clipChannel.ElementType == typeof(Vector4))
+                        curveEvaluatorVector4.AddChannel(curve, channel.Offset + sizeof(float));
                     else
                         throw new NotImplementedException("Can't create evaluator with this type of curve channel.");
                 }
@@ -167,6 +184,10 @@ namespace SiliconStudio.Paradox.Animations
                         curveEvaluatorOptimizedVector3.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
                     else if (clipChannel.ElementType == typeof(Quaternion))
                         curveEvaluatorOptimizedQuaternion.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
+                    else if(clipChannel.ElementType == typeof(int))
+                        curveEvaluatorOptimizedInt.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
+                    else if (clipChannel.ElementType == typeof(Vector4))
+                        curveEvaluatorOptimizedVector4.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
                 }
             }
 

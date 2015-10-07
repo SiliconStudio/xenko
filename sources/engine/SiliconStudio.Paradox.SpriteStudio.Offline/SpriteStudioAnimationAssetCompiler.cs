@@ -1,15 +1,18 @@
-using System;
-using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Paradox.Animations;
-using System.Xml.Linq;
-using System.Linq;
-using System.Collections.Generic;
 using SiliconStudio.Paradox.SpriteStudio.Runtime;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
+using SiliconStudio.Paradox.Assets;
+using SiliconStudio.Paradox.Graphics;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Offline
 {
@@ -18,9 +21,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath,
             SpriteStudioAnimationAsset asset, AssetCompilerResult result)
         {
+            var colorSpace = context.GetColorSpace();
+
             result.BuildSteps = new AssetBuildStep(AssetItem)
             {
-                new SpriteStudioAnimationAssetCommand(urlInStorage, asset)
+                new SpriteStudioAnimationAssetCommand(urlInStorage, asset, colorSpace)
             };
         }
 
@@ -29,177 +34,244 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
         /// </summary>
         private class SpriteStudioAnimationAssetCommand : AssetCommand<SpriteStudioAnimationAsset>
         {
-            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset)
+            private ColorSpace colorSpace;
+
+            public SpriteStudioAnimationAssetCommand(string url, SpriteStudioAnimationAsset asset, ColorSpace colorSpace)
                 : base(url, asset)
             {
+                this.colorSpace = colorSpace;
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                var xmlDoc = XDocument.Load(AssetParameters.Source);
-                if (xmlDoc.Root == null) return null;
-
-                var nameSpace = xmlDoc.Root.Name.Namespace;
-
                 var nodes = new List<SpriteStudioNode>();
-                var nodesData = new List<SpriteNodeData>();
-
-                int endFrame, fps;
-                if (!int.TryParse(xmlDoc.Descendants(nameSpace + "EndFrame").First().Value, out endFrame)) return null;
-                if (!int.TryParse(xmlDoc.Descendants(nameSpace + "BaseTickTime").First().Value, out fps)) return null;
-
-                var parts = xmlDoc.Descendants(nameSpace + "Part").ToList();
-                foreach (var part in parts)
+                string modelName;
+                if (!SpriteStudioXmlImport.ParseModel(AssetParameters.Source, nodes, out modelName))
                 {
-                    var type = part.Descendants(nameSpace + "Type").First();
-                    var name = part.Descendants(nameSpace + "Name").First();
-                    if (type.Value == "1")
-                    {
-                        var node = new SpriteStudioNode { Name = name.Value, Id = -1, ParentId = -2 };
-                        nodes.Add(node);
-                        nodesData.Add(new SpriteNodeData());
-                    }
-                    else if (type.Value == "0")
-                    {
-                        int nodeId, parentId;
-                        if (!int.TryParse(part.Descendants(nameSpace + "ID").First().Value, out nodeId)) continue;
-                        if (!int.TryParse(part.Descendants(nameSpace + "ParentID").First().Value, out parentId)) continue;
+                    return null;
+                }
 
-                        int textureId;
-                        if (!int.TryParse(part.Descendants(nameSpace + "PicID").First().Value, out textureId)) continue;
-                        var pictAreaX = part.Descendants(nameSpace + "PictArea").First();
-                        int top, left, bottom, right;
-                        if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Top").First().Value, out top)) continue;
-                        if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Left").First().Value, out left)) continue;
-                        if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Bottom").First().Value, out bottom)) continue;
-                        if (!int.TryParse(pictAreaX.Descendants(nameSpace + "Right").First().Value, out right)) continue;
-                        var rect = new RectangleF(left, top, right - left, bottom - top);
-
-                        int pivotX, pivotY;
-                        if (!int.TryParse(part.Descendants(nameSpace + "OriginX").First().Value, out pivotX)) continue;
-                        if (!int.TryParse(part.Descendants(nameSpace + "OriginY").First().Value, out pivotY)) continue;
-
-                        var node = new SpriteStudioNode
-                        {
-                            Name = name.Value,
-                            Id = nodeId,
-                            ParentId = parentId,
-                            PictureId = textureId,
-                            Rectangle = rect,
-                            Pivot = new Vector2(pivotX, pivotY)
-                        };
-
-                        nodes.Add(node);
-
-                        var nodeData = new SpriteNodeData();
-
-                        var attribs = part.Descendants(nameSpace + "Attribute");
-                        foreach (var attrib in attribs)
-                        {
-                            var tag = attrib.Attributes("Tag").First().Value;
-                            var keys = attrib.Descendants(nameSpace + "Key");
-                            var values = keys.Select(key => new Dictionary<string, string>
-                        {
-                            {"time", key.Attribute("Time").Value}, {"value", key.Descendants(nameSpace + "Value").FirstOrDefault().Value}
-                        }).ToList();
-
-                            switch (tag)
-                            {
-                                case "POSX":
-                                    node.BaseXyPrioAngle.X = Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                                    break;
-
-                                case "POSY":
-                                    node.BaseXyPrioAngle.Y = -Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                                    break;
-
-                                case "PRIO":
-                                    node.BaseXyPrioAngle.Z = Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First());
-                                    break;
-
-                                case "ANGL":
-                                    node.BaseXyPrioAngle.W = MathUtil.DegreesToRadians(Convert.ToSingle(values.Select(x => x.First(y => y.Key == "value").Value).First()));
-                                    break;
-                            }
-
-                            nodeData.Data.Add(tag, values);
-                        }
-
-                        nodesData.Add(nodeData);
-                    }
+                var anims = new List<SpriteStudioAnim>();
+                if (!SpriteStudioXmlImport.ParseAnimations(AssetParameters.Source, anims))
+                {
+                    return null;
                 }
 
                 var assetManager = new AssetManager();
 
+                var anim = anims.First(x => x.Name == AssetParameters.AnimationName);
+
                 //Compile the animations
                 var animation = new AnimationClip
                 {
-                    Duration = TimeSpan.FromSeconds((1.0 / fps) * (endFrame + 1)),
+                    Duration = TimeSpan.FromSeconds((1.0 / anim.Fps) * anim.FrameCount),
                     RepeatMode = AssetParameters.RepeatMode
                 };
 
-                for (var i = 0; i < nodesData.Count; i++)
+                foreach (var pair in anim.NodesData)
                 {
-                    var data = nodesData[i];
-                    var node = nodes[i];
+                    var data = pair.Value;
+                    var nodeName = pair.Key;
                     if (data.Data.Count == 0) continue;
 
-                    var posxCurve = new AnimationCurve<float>();
-                    animation.AddCurve("posx[" + node.Name + "]", posxCurve);
-                    posxCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
-
-                    var posyCurve = new AnimationCurve<float>();
-                    animation.AddCurve("posy[" + node.Name + "]", posyCurve);
-                    posyCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
-
-                    var anglCurve = new AnimationCurve<float>();
-                    animation.AddCurve("angl[" + node.Name + "]", anglCurve);
-                    anglCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
-
-                    var prioCurve = new AnimationCurve<float>();
-                    animation.AddCurve("prio[" + node.Name + "]", prioCurve);
-                    prioCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
-
-                    var hideCurve = new AnimationCurve<float>();
-                    animation.AddCurve("hide[" + node.Name + "]", hideCurve);
-                    hideCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
-
                     if (data.Data.ContainsKey("POSX"))
+                    {
+                        var posxCurve = new AnimationCurve<float>();
+                        animation.AddCurve("posx[" + nodeName + "]", posxCurve);
+                        posxCurve.InterpolationType = data.Data["POSX"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
+
                         foreach (var nodeData in data.Data["POSX"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToSingle(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             posxCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
+                    }
+
                     if (data.Data.ContainsKey("POSY"))
+                    {
+                        var posyCurve = new AnimationCurve<float>();
+                        animation.AddCurve("posy[" + nodeName + "]", posyCurve);
+                        posyCurve.InterpolationType = data.Data["POSY"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
+
                         foreach (var nodeData in data.Data["POSY"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = -Convert.ToSingle(nodeData["value"]);
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
                             posyCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
-                    if (data.Data.ContainsKey("ANGL"))
-                        foreach (var nodeData in data.Data["ANGL"])
+                    }
+
+                    if (data.Data.ContainsKey("ROTZ"))
+                    {
+                        var anglCurve = new AnimationCurve<float>();
+                        animation.AddCurve("rotz[" + nodeName + "]", anglCurve);
+                        anglCurve.InterpolationType = data.Data["ROTZ"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["ROTZ"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = MathUtil.DegreesToRadians(Convert.ToSingle(nodeData["value"]));
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = MathUtil.DegreesToRadians(float.Parse(nodeData["value"], CultureInfo.InvariantCulture));
                             anglCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
                         }
+                    }
+
                     if (data.Data.ContainsKey("PRIO"))
+                    {
+                        var prioCurve = new AnimationCurve<int>();
+                        animation.AddCurve("prio[" + nodeName + "]", prioCurve);
+                        prioCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
+
                         foreach (var nodeData in data.Data["PRIO"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToInt32(nodeData["value"]);
-                            prioCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            prioCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
                         }
+                    }
+
+                    if (data.Data.ContainsKey("SCLX"))
+                    {
+                        var scaxCurve = new AnimationCurve<float>();
+                        animation.AddCurve("sclx[" + nodeName + "]", scaxCurve);
+                        scaxCurve.InterpolationType = data.Data["SCLX"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["SCLX"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            scaxCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("SCLY"))
+                    {
+                        var scayCurve = new AnimationCurve<float>();
+                        animation.AddCurve("scly[" + nodeName + "]", scayCurve);
+                        scayCurve.InterpolationType = data.Data["SCLY"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["SCLY"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            scayCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("ALPH"))
+                    {
+                        var tranCurve = new AnimationCurve<float>();
+                        animation.AddCurve("alph[" + nodeName + "]", tranCurve);
+                        tranCurve.InterpolationType = data.Data["ALPH"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["ALPH"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            tranCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                        }
+                    }
+
                     if (data.Data.ContainsKey("HIDE"))
+                    {
+                        var hideCurve = new AnimationCurve<int>();
+                        animation.AddCurve("hide[" + nodeName + "]", hideCurve);
+                        hideCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
+
                         foreach (var nodeData in data.Data["HIDE"])
                         {
-                            var time = CompressedTimeSpan.FromSeconds((1.0 / fps) * Convert.ToInt32(nodeData["time"]));
-                            var value = Convert.ToInt32(nodeData["value"]);
-                            hideCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            hideCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
                         }
+                    }
+
+                    if (data.Data.ContainsKey("FLPH"))
+                    {
+                        var flphCurve = new AnimationCurve<int>();
+                        animation.AddCurve("flph[" + nodeName + "]", flphCurve);
+                        flphCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
+
+                        foreach (var nodeData in data.Data["FLPH"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            flphCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("FLPV"))
+                    {
+                        var flpvCurve = new AnimationCurve<int>();
+                        animation.AddCurve("flpv[" + nodeName + "]", flpvCurve);
+                        flpvCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
+
+                        foreach (var nodeData in data.Data["FLPV"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            flpvCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("CELL"))
+                    {
+                        var cellCurve = new AnimationCurve<int>();
+                        animation.AddCurve("cell[" + nodeName + "]", cellCurve);
+                        cellCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
+
+                        foreach (var nodeData in data.Data["CELL"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            cellCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("COLV"))
+                    {
+                        var colvCurve = new AnimationCurve<Vector4>();
+                        animation.AddCurve("colv[" + nodeName + "]", colvCurve);
+                        colvCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["COLV"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var color = new Color4(Color.FromBgra(int.Parse(nodeData["value"], CultureInfo.InvariantCulture)));
+                            color = colorSpace == ColorSpace.Linear ? color.ToLinear() : color;
+                            colvCurve.KeyFrames.Add(new KeyFrameData<Vector4>(time, color.ToVector4()));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("COLB"))
+                    {
+                        var colbCurve = new AnimationCurve<int>();
+                        animation.AddCurve("colb[" + nodeName + "]", colbCurve);
+                        colbCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
+
+                        foreach (var nodeData in data.Data["COLB"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = int.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            colbCurve.KeyFrames.Add(new KeyFrameData<int>(time, value));
+                        }
+                    }
+
+                    if (data.Data.ContainsKey("COLF"))
+                    {
+                        var colfCurve = new AnimationCurve<float>();
+                        animation.AddCurve("colf[" + nodeName + "]", colfCurve);
+                        colfCurve.InterpolationType = data.Data["COLF"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
+
+                        foreach (var nodeData in data.Data["COLF"])
+                        {
+                            var time = CompressedTimeSpan.FromSeconds((1.0 / anim.Fps) * int.Parse(nodeData["time"], CultureInfo.InvariantCulture));
+                            var value = float.Parse(nodeData["value"], CultureInfo.InvariantCulture);
+                            colfCurve.KeyFrames.Add(new KeyFrameData<float>(time, value));
+                        }
+                    }
                 }
+
                 animation.Optimize();
 
                 assetManager.Save(Url, animation);

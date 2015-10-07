@@ -210,19 +210,13 @@ namespace SiliconStudio.Assets.Diff
         {
             var node = diff3.Asset1Node ?? diff3.Asset2Node ?? diff3.BaseNode;
             var dataVisitMember = node as DataVisitMember;
-            if (dataVisitMember != null)
+            var diffMember = dataVisitMember?.MemberDescriptor.GetCustomAttributes<DiffMemberAttribute>(true).FirstOrDefault();
+            if (diffMember != null)
             {
-                var specificAssetAttribute = dataVisitMember.MemberDescriptor.GetCustomAttributes<DiffUseSpecificAssetAttribute>(true).FirstOrDefault();
-                if (specificAssetAttribute != null)
-                {
-                    if (specificAssetAttribute is DiffUseAsset1Attribute)
-                        diff3.ChangeType = Diff3ChangeType.MergeFromAsset1;
-                    else if (specificAssetAttribute is DiffUseAsset2Attribute)
-                        diff3.ChangeType = Diff3ChangeType.MergeFromAsset2;
-                    else
-                        throw new InvalidOperationException();
-                    return;
-                }
+                if (diffMember.PreferredChange.HasValue)
+                    diff3.ChangeType = diffMember.PreferredChange.Value;
+
+                diff3.Weight = diffMember.Weight;
             }
 
             var baseAsset1Equals = Equals(baseNodeDesc.Instance, asset1NodeDesc.Instance);
@@ -273,16 +267,19 @@ namespace SiliconStudio.Assets.Diff
 
             // If we have a DiffUseAsset1Attribute, list of Asset1Node becomes authoritative.
             var dataVisitMember = node as DataVisitMember;
-            var specificAssetAttribute = dataVisitMember != null ? dataVisitMember.MemberDescriptor.GetCustomAttributes<DiffUseSpecificAssetAttribute>(true).FirstOrDefault() : null;
-            if (specificAssetAttribute != null)
+            var diffMemberAttribute = dataVisitMember != null ? dataVisitMember.MemberDescriptor.GetCustomAttributes<DiffMemberAttribute>(true).FirstOrDefault() : null;
+            if (diffMemberAttribute != null && diffMemberAttribute.PreferredChange.HasValue)
             {
-                var isFromAsset2 = specificAssetAttribute is DiffUseAsset2Attribute;
-                var diffChange = isFromAsset2
+                diff3.Weight = diffMemberAttribute.Weight;
+            }
+
+            if (diffMemberAttribute != null && diffMemberAttribute.PreferredChange.HasValue)
+            {
+                var diffChange = diffMemberAttribute.PreferredChange.Value == Diff3ChangeType.MergeFromAsset2
                     ? new Diff3Change { ChangeType = SharpDiff.Diff3ChangeType.MergeFrom2, From2 = new Span(0, asset2Items.Count - 1) }
                     : new Diff3Change { ChangeType = SharpDiff.Diff3ChangeType.MergeFrom1, From1 = new Span(0, asset1Items.Count - 1) };
 
                 changes = new[] { diffChange };
-
                 // TODO: Try to merge back data of matching nodes
             }
             else if (firstItem != null && typeof(IDiffKey).IsAssignableFrom(firstItem.InstanceType))

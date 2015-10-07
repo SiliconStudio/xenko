@@ -820,9 +820,9 @@ namespace SiliconStudio.Assets
                 List<AssetItem> possibleMatches;
 
                 // When we are explcitly importing an existing asset, we are going to match the import directly and only with it
-                if (toImportByImporter.PreviousItem != null && toImportByImporter.PreviousItem.Asset.GetType() == assetType)
+                if (toImportByImporter.PreviousItems.Count > 0 && toImportByImporter.PreviousItems.Any(item => item.Asset.GetType() == assetType))
                 {
-                    possibleMatches = new List<AssetItem> { toImportByImporter.PreviousItem };
+                    possibleMatches = new List<AssetItem>(toImportByImporter.PreviousItems.Where(item => item.Asset.GetType() == assetType));
                 }
                 else
                 {
@@ -837,7 +837,8 @@ namespace SiliconStudio.Assets
                 }
 
                 // If there are no merges, just take the original element to importItem
-                if (toImport.Merges.Count == 0)
+                // Or all matching factor are null (meaning most likely something not matching at all)
+                if (!toImport.Merges.HasMatching())
                 {
                     toImport.SelectedItem = toImport.Item;
                 }
@@ -875,10 +876,19 @@ namespace SiliconStudio.Assets
                 Imports.Add(previousEntry);
             }
             // This importer has not been registered yet
-            if (previousEntry.ByImporters.All(byImporter => byImporter.Importer != importer))
+            var byImporter = previousEntry.ByImporters.FirstOrDefault(t => t.Importer == importer);
+            if (byImporter == null)
             {
                 previousEntry.ByImporters.Add(new AssetToImportByImporter(previousEntry, importer, previousItem));
                 previousEntry.ByImporters.Sort((left, right) => left.Importer.Order.CompareTo(right.Importer.Order));
+            }
+            else
+            {
+                // Add the previous item if any
+                if (previousItem != null)
+                {
+                    byImporter.PreviousItems.Add(previousItem);
+                }
             }
 
             return previousEntry;
@@ -1071,8 +1081,22 @@ namespace SiliconStudio.Assets
             // Retrieve the precalculated list of diffs
             var diff3 = assetDiff.Compute();
 
+            // Base matching factor
+            var baseMatchingFactor = 0.0f;
+
             var totalChildren = diff3.CountChildren();
-            var diffList = diff3.FindDifferences().ToList();
+            var diffList = diff3.FindDifferencesWithWeights().ToList();
+
+            // If there are any weighted field/properties without any conflicts, we will match them here
+            for (int i = diffList.Count - 1; i >= 0; i--)
+            {
+                var diffItem = diffList[i];
+                if (diffItem.Weight != 0 && diffItem.ChangeType == Diff3ChangeType.None)
+                {
+                    baseMatchingFactor += diffItem.Weight;
+                    diffList.RemoveAt(i);
+                }
+            }
 
             var conflictCount = diffList.Count(node => node.HasConflict);
 
@@ -1126,7 +1150,23 @@ namespace SiliconStudio.Assets
 
             // Calculate a matching factor
             // In the standard case, we should have subReferenceCount == subReferenceMatch
-            assetMatching.MatchingFactor = 1.0 - (double)(conflictCount + subReferenceCount - subReferenceMatch)/totalChildren;
+            foreach (var diffItem in diffList)
+            {
+                if (diffItem.ChangeType != Diff3ChangeType.Children)
+                {
+                    if (diffItem.ChangeType == Diff3ChangeType.MergeFromAsset1And2)
+                    {
+                        // If both value from 1 and 2 are fine, it is like a match, so we increase the matching based on the weight
+                        baseMatchingFactor += diffItem.Weight;
+                    }
+                    else
+                    {
+                        // If values are different (conflict...etc.), we decrease the matching based on the weight (by default, the weight is 0)
+                        baseMatchingFactor -= diffItem.Weight;
+                    }
+                }
+            }
+            assetMatching.MatchingFactor = baseMatchingFactor + 1.0 - (double)(conflictCount + subReferenceCount - subReferenceMatch) / totalChildren;
 
             toImportMergeGroup.Merges.Add(assetMatching);
         }

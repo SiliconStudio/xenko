@@ -28,6 +28,10 @@ namespace SiliconStudio.Paradox.Animations
                     factor,
                     out *(Vector3*)(location + channel.Offset));
             }
+            else if (channel.InterpolationType == AnimationCurveInterpolationType.Constant)
+            {
+                *(Vector3*)(location + channel.Offset) = channel.ValueStart.Value;
+            }
             else
             {
                 throw new NotImplementedException();

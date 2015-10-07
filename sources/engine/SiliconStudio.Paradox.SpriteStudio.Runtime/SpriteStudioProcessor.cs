@@ -1,7 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.SpriteStudio.Runtime
@@ -13,6 +17,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         public SpriteStudioProcessor()
             : base(SpriteStudioComponent.Key, TransformComponent.Key)
         {
+            Order = 550;
         }
 
         public class Data
@@ -56,14 +61,40 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             if (nodes == null)
                 return null;
 
+            //check if the sheet name dictionary has already been populated
+            if (spriteStudioComponent.Sheet.Sprites == null)
+            {
+                spriteStudioComponent.Sheet.Sprites = new Dictionary<int, Sprite>();
+                var index = 0;
+                foreach (var sprite in spriteStudioComponent.Sheet.SpriteSheet.Sprites)
+                {
+                    spriteStudioComponent.Sheet.Sprites.Add(index, sprite);
+                    index++;
+                }
+            }
+
             foreach (var node in nodes)
             {
                 var nodeState = new SpriteStudioNodeState
                 {
-                    CurrentXyPrioAngle = node.BaseXyPrioAngle,
-                    Sprite = node.Sprite,
-                    BaseNode = node
+                    Position = node.BaseState.Position,
+                    RotationZ = node.BaseState.RotationZ,
+                    Priority = node.BaseState.Priority,
+                    Scale = node.BaseState.Scale,
+                    Transparency = node.BaseState.Transparency,
+                    Hide = node.BaseState.Hide,
+                    BaseNode = node,
+                    HFlipped = node.BaseState.HFlipped,
+                    VFlipped = node.BaseState.VFlipped,
+                    SpriteId = node.BaseState.SpriteId,
+                    BlendColor = node.BaseState.BlendColor,
+                    BlendType = node.BaseState.BlendType,
+                    BlendFactor = node.BaseState.BlendFactor
                 };
+
+                Sprite sprite;
+                nodeState.Sprite = spriteStudioComponent.Sheet.Sprites.TryGetValue(nodeState.SpriteId, out sprite) ? sprite : null;
+
                 spriteStudioComponent.Nodes.Add(nodeState);
             }
 
@@ -73,11 +104,11 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                 var nodeState = spriteStudioComponent.Nodes[i];
                 var nodeAsset = nodes[i];
 
-                if (nodeAsset.Id == -1)
+                if (nodeAsset.ParentId == -1)
                 {
                     rootNode = nodeState;
                 }
-                else if (nodeAsset.Id > -1)
+                else
                 {
                     nodeState.ParentNode = spriteStudioComponent.Nodes.FirstOrDefault(x => x.BaseNode.Id == nodeAsset.ParentId);
                 }
@@ -91,7 +122,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             return rootNode;
         }
 
-        private static unsafe void UpdateNodes(IList<SpriteStudioNodeState> nodes, Data data)
+        private static unsafe void UpdateNodes(IEnumerable<SpriteStudioNodeState> nodes, Data data)
         {
             //foreach (var node in nodes)
             //{
@@ -110,28 +141,71 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                         var channels = results.Channels.Where(x => x.NodeName == node.BaseNode.Name);
                         foreach (var channel in channels)
                         {
-                            if((channel.Offset + (sizeof(float)*2)) > animComp.CurrentFrameResult.Data.Length) throw new Exception("SpriteStudio anim data corruption.");
                             var structureData = (float*)(bytes + channel.Offset);
                             if(structureData == null) continue;
                             if (structureData[0] == 0.0f) continue;
 
-                            var value = structureData[1];
+                            var valueFloat = *(structureData + 1);
+                            var valueInt = *((int*)structureData + 1);
 
                             if (channel.PropertyName.StartsWith("posx"))
                             {
-                                node.CurrentXyPrioAngle.X = value;
+                                node.Position.X = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("posy"))
                             {
-                                node.CurrentXyPrioAngle.Y = value;
+                                node.Position.Y = valueFloat;
                             }
                             else if (channel.PropertyName.StartsWith("prio"))
                             {
-                                node.CurrentXyPrioAngle.Z = value;
+                                node.Priority = valueInt;
                             }
-                            else if (channel.PropertyName.StartsWith("angl"))
+                            else if (channel.PropertyName.StartsWith("rotz"))
                             {
-                                node.CurrentXyPrioAngle.W = value;
+                                node.RotationZ = valueFloat;
+                            }
+                            else if (channel.PropertyName.StartsWith("sclx"))
+                            {
+                                node.Scale.X = valueFloat;
+                            }
+                            else if (channel.PropertyName.StartsWith("scly"))
+                            {
+                                node.Scale.Y = valueFloat;
+                            }
+                            else if (channel.PropertyName.StartsWith("alph"))
+                            {
+                                node.Transparency = valueFloat;
+                            }
+                            else if (channel.PropertyName.StartsWith("hide"))
+                            {
+                                node.Hide = valueInt != 0;
+                            }
+                            else if (channel.PropertyName.StartsWith("flph"))
+                            {
+                                node.HFlipped = valueInt != 0;
+                            }
+                            else if (channel.PropertyName.StartsWith("flpv"))
+                            {
+                                node.VFlipped = valueInt != 0;
+                            }
+                            else if (channel.PropertyName.StartsWith("cell"))
+                            {
+                                var spriteIndex = valueInt;
+                                node.SpriteId = spriteIndex;
+                                Sprite sprite;
+                                node.Sprite = data.SpriteStudioComponent.Sheet.Sprites.TryGetValue(spriteIndex, out sprite) ? sprite : null;
+                            }
+                            else if (channel.PropertyName.StartsWith("colb"))
+                            {
+                                node.BlendType = (SpriteStudioBlending)valueInt;
+                            }
+                            else if (channel.PropertyName.StartsWith("colv"))
+                            {
+                                Utilities.Read((IntPtr)(structureData + 1), ref node.BlendColor);
+                            }
+                            else if (channel.PropertyName.StartsWith("colf"))
+                            {
+                                node.BlendFactor = valueFloat;
                             }
                         }
                     }
@@ -141,8 +215,12 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
 
         private static void SortNodes(Data data, IEnumerable<SpriteStudioNodeState> nodes)
         {
-            // TODO: Avoid reallocating
-            data.SpriteStudioComponent.SortedNodes = nodes.OrderBy(x => x.CurrentXyPrioAngle.Z).ToList();
+//            data.SpriteStudioComponent.SortedNodes.Sort((x, y) =>
+//            {
+//                if (x.Priority > y.Priority) return -1;
+//                return x.Priority == y.Priority ? 0 : 1;
+//            });
+            data.SpriteStudioComponent.SortedNodes = nodes.OrderBy(x => x.Priority).ToList();
         }
 
         public override void Draw(RenderContext context)
@@ -177,6 +255,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                 data.RootNode = InitializeNodes(data.SpriteStudioComponent);
                 data.Sheet = sheet;
             }
+
+            //data.SpriteStudioComponent.SortedNodes = data.SpriteStudioComponent.Nodes.ToList(); // copy
 
             return (data.RootNode != null);
         }
