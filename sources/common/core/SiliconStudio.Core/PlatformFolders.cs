@@ -152,11 +152,14 @@ namespace SiliconStudio.Core
         private static string GetApplicationExecutablePath()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE
+			Assembly currentAssembly;
 #if !SILICONSTUDIO_RUNTIME_CORECLR
-            return (Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly()).Location;
+            currentAssembly = (Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly());
 #else
-            throw new NotImplementedException("Location is not a property defined on System.Reflection.Assembly.");
+            throw new NotImplementedException("GetEntryAssembly or GetExecutingAssembly are not defined on System.Reflection.Assembly.");
 #endif
+			return currentAssembly.GetModules()[0].FullyQualifiedName;
+
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "ParadoxGame.exe"); // Use generic name workaround
 #else
