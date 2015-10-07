@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Paradox.Animations;
@@ -23,6 +24,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
 
         [DataMember(2)]
         [Browsable(false)]
+        [DiffMember(Weight = 100)] // Because AnimationName is like a key, we use a high weight in order to match asset more accurately
         public string AnimationName;
 
         private class SpriteStudioAnimationAssetFactory : IObjectFactory
