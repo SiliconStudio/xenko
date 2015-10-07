@@ -13,7 +13,7 @@ namespace SiliconStudio.Presentation.Controls
     /// <summary>
     /// An item of the TreeView.
     /// </summary>
-    public class TreeViewItem : HeaderedItemsControl
+    public class TreeViewItem : ExpandableItemsControl
     {
         internal double ItemTopInTreeSystem; // for virtualization purposes
         internal int HierachyLevel;// for virtualization purposes
@@ -21,8 +21,6 @@ namespace SiliconStudio.Presentation.Controls
         public static DependencyProperty IsEditableProperty = DependencyProperty.Register("IsEditable", typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(true, null));
 
         public static DependencyProperty IsEditingProperty = DependencyProperty.Register("IsEditing", typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(false, OnIsEditingChanged));
-
-        public static DependencyProperty IsExpandedProperty = DependencyProperty.Register("IsExpanded", typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(true));
 
         public static DependencyProperty IsSelectedProperty = DependencyProperty.Register("IsSelected", typeof(bool), typeof(TreeViewItem), new FrameworkPropertyMetadata(false, null));
 
@@ -51,8 +49,6 @@ namespace SiliconStudio.Presentation.Controls
         public bool IsEditing { get { return (bool)GetValue(IsEditingProperty); } set { SetValue(IsEditingProperty, value); } }
 
         public double Indentation { get { return (double)GetValue(IndentationProperty); } set { SetValue(IndentationProperty, value); } }
-
-        public bool IsExpanded { get { return (bool)GetValue(IsExpandedProperty); } set { SetValue(IsExpandedProperty, value); } }
 
         public bool IsSelected { get { return (bool)GetValue(IsSelectedProperty); } set { SetValue(IsSelectedProperty, value); } }
 
@@ -100,8 +96,22 @@ namespace SiliconStudio.Presentation.Controls
             child.SetValue(dp, value);
         }
 
+        /// <inheritdoc/>
+        protected override void PrepareContainerForItemOverride(DependencyObject element, object item)
+        {
+            base.PrepareContainerForItemOverride(element, item);
+            RaiseEvent(new TreeViewItemEventArgs(TreeView.PrepareItemEvent, this, (TreeViewItem)element, item));
+        }
+
+        /// <inheritdoc/>
+        protected override void ClearContainerForItemOverride(DependencyObject element, object item)
+        {
+            RaiseEvent(new TreeViewItemEventArgs(TreeView.ClearItemEvent, this, (TreeViewItem)element, item));
+            base.ClearContainerForItemOverride(element, item);
+        }
+
         /// <summary>
-        ///     This method is invoked when the Items property changes.
+        /// This method is invoked when the Items property changes.
         /// </summary>
         protected override void OnItemsChanged(NotifyCollectionChangedEventArgs e)
         {

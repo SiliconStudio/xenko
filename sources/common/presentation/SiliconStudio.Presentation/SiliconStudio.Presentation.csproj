@@ -62,6 +62,7 @@
     <Compile Include="Controls\TreeViewElementFinder.cs" />
     <Compile Include="Controls\TreeView.cs" />
     <Compile Include="Controls\TreeViewItem.cs" />
+    <Compile Include="Controls\TreeViewItemEventArgs.cs" />
     <Compile Include="Controls\VirtualizingTreePanel.cs" />
     <Compile Include="Controls\Trimming.cs" />
     <Compile Include="Collections\IObservableCollection.cs" />
