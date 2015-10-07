@@ -267,8 +267,10 @@ Release date: 2015/10/07
 ## Issues fixed
 
 - Studio: Fix the recent project list that was sometimes remaining empty
+- Studio: Closing the editor with modified assets is now properly asking to save the solution
+- Studio: Deleting images from the sprite editor could make the Game Studio crash.
 - Studio: Fix a potential crash when trying to load a large scene in the scene editor
-- Studio: Fix reopening a closed pane from the View menu that was not working
+- Studio: Reopening a closed pane from the View menu that was not working
 - Rendering: Improved support for a gamma correct pipeline. Color with SpriteBatch and static SpriteFont are now taking into account the game settings colorspace.
 
 # Version 1.3.3-beta
