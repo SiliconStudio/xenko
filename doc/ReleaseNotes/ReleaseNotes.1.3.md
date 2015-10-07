@@ -263,6 +263,8 @@ Release date: 2015/10/07
 ## Enhancements
 
 - Improved UX to include/exclude assets in/from the compilation
+- Physics: Added many properties for physics elements directly from Game Studio
+- Physics: Added HeightfieldColliderShape to implement terrain colliders (no support yet from Game Studio, Experimental)
 
 ## Issues fixed
 
@@ -278,6 +280,9 @@ Release date: 2015/10/07
 - Studio: Fix a potential crash when trying to load a large scene in the scene editor
 - Studio: Reopening a closed pane from the View menu that was not working
 - Rendering: Improved support for a gamma correct pipeline. Color with SpriteBatch and static SpriteFont are now taking into account the game settings colorspace.
+- Physics: Fixed continuous collision detection
+- Physics: Fixed PersistentManifoldContactProcessed in the case of multiple scenes or scenes reloading
+- Physics: Re-enabled Simulation ClearForces
 
 # Version 1.3.3-beta
 
