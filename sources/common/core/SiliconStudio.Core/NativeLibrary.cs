@@ -71,12 +71,7 @@ namespace SiliconStudio.Core
                     cpu = IntPtr.Size == 8 ? "x64" : "x86";
 
                 // We are trying to load the dll from a shadow path if it is already registered, otherwise we use it directly from the folder
-#if !SILICONSTUDIO_RUNTIME_CORECLR
-                var dllFolder = NativeLibraryInternal.GetShadowPathForNativeDll(libraryName) ?? Path.Combine(Path.GetDirectoryName(typeof(NativeLibrary).Assembly.Location), cpu);
-#else
-                    // For CoreCLR, we cannot get the location of an assembly, so we assume that everything is in the current working directory.
-                var dllFolder = NativeLibraryInternal.GetShadowPathForNativeDll(libraryName) ?? Path.Combine(Directory.GetCurrentDirectory(), cpu);
-#endif
+                var dllFolder = NativeLibraryInternal.GetShadowPathForNativeDll(libraryName) ?? Path.Combine(Path.GetDirectoryName(typeof(NativeLibrary).GetTypeInfo().Assembly.GetModules()[0].FullyQualifiedName), cpu);
                 var libraryFilename = Path.Combine(dllFolder, libraryName);
                 var result = LoadLibrary(libraryFilename);
 

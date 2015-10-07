@@ -42,13 +42,9 @@ namespace SiliconStudio.Shaders.Convertor
             try
             {
                 // Try to load from the 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
-                var keywordFilePath = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(typeof (GlslKeywords).GetTypeInfo().Assembly.Location)), KeywordsFileName);
+                var keywordFilePath = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(typeof (GlslKeywords).GetTypeInfo().Assembly.GetModules()[0].FullyQualifiedName)), KeywordsFileName);
                 if (File.Exists(keywordFilePath))
                     stream = new FileStream(keywordFilePath, FileMode.Open, FileAccess.Read);
-#else
-                    // FIXME: Manu: We need to find a way to get the location of an assembly!
-#endif
                 if (stream == null) stream = new MemoryStream(Resources.Keywords);
 
                 InitializeFromStream(stream);
