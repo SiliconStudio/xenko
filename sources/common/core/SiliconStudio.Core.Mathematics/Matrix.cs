@@ -54,7 +54,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// The size of the <see cref="SiliconStudio.Core.Mathematics.Matrix"/> type, in bytes.
         /// </summary>
-        public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Matrix));
+        public static readonly int SizeInBytes = Utilities.SizeOf<Matrix>();
 
         /// <summary>
         /// A <see cref="SiliconStudio.Core.Mathematics.Matrix"/> with all of its components set to zero.

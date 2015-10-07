@@ -78,7 +78,7 @@ namespace SiliconStudio.Core.Mathematics
         public float A;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SharpDX.Color4"/> struct.
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
         /// <param name="value">The value that will be assigned to all components.</param>
         public Color4(float value)
@@ -87,7 +87,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SharpDX.Color4"/> struct.
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
         /// <param name="red">The red component of the color.</param>
         /// <param name="green">The green component of the color.</param>
@@ -102,7 +102,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SharpDX.Color4"/> struct.
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
         /// <param name="value">The red, green, blue, and alpha components of the color.</param>
         public Color4(Vector4 value)
@@ -114,7 +114,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SharpDX.Color4"/> struct.
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
         /// <param name="value">The red, green, and blue components of the color.</param>
         /// <param name="alpha">The alpha component of the color.</param>
@@ -127,7 +127,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SharpDX.Color4"/> struct.
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
         /// <param name="rgba">A packed integer containing all four color components in RGBA order.</param>
         public Color4(uint rgba)
@@ -139,7 +139,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SharpDX.Color4"/> struct.
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
         /// <param name="rgba">A packed integer containing all four color components in RGBA order.</param>
         public Color4(int rgba)
@@ -151,7 +151,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SharpDX.Color4"/> struct.
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
         /// <param name="values">The values to assign to the red, green, blue, and alpha components of the color. This must be an array with four elements.</param>
         /// <exception cref="ArgumentNullException">Thrown when <paramref name="values"/> is <c>null</c>.</exception>
@@ -170,9 +170,9 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SharpDX.Color4"/> struct.
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
-        /// <param name="color"><see cref="SharpDX.Color3"/> used to initialize the color.</param>
+        /// <param name="color"><see cref="Color3"/> used to initialize the color.</param>
         public Color4(Color3 color)
         {
             R = color.R;
@@ -206,9 +206,9 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SharpDX.Color4"/> struct.
+        /// Initializes a new instance of the <see cref="Color4"/> struct.
         /// </summary>
-        /// <param name="color"><see cref="SharpDX.Color3"/> used to initialize the color.</param>
+        /// <param name="color"><see cref="Color3"/> used to initialize the color.</param>
         /// <param name="alpha">The alpha component of the color.</param>
         public Color4(Color3 color, float alpha)
         {
@@ -799,7 +799,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SharpDX.Color4"/> to <see cref="SharpDX.Color3"/>.
+        /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="Color3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -809,7 +809,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SharpDX.Color4"/> to <see cref="SharpDX.Vector3"/>.
+        /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="Vector3"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -819,7 +819,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="SharpDX.Color4"/> to <see cref="SharpDX.Vector4"/>.
+        /// Performs an implicit conversion from <see cref="Color4"/> to <see cref="Vector4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -829,7 +829,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SharpDX.Vector3"/> to <see cref="SharpDX.Color4"/>.
+        /// Performs an explicit conversion from <see cref="Vector3"/> to <see cref="Color4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -839,7 +839,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SharpDX.Vector4"/> to <see cref="SharpDX.Color4"/>.
+        /// Performs an explicit conversion from <see cref="Vector4"/> to <see cref="Color4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -849,7 +849,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SharpDX.Vector3"/> to <see cref="SharpDX.Color4"/>.
+        /// Performs an explicit conversion from <see cref="Vector3"/> to <see cref="Color4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -859,7 +859,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SharpDX.Vector4"/> to <see cref="SharpDX.Color4"/>.
+        /// Performs an explicit conversion from <see cref="Vector4"/> to <see cref="Color4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -869,7 +869,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="SharpDX.Color4"/> to <see cref="System.Int32"/>.
+        /// Performs an explicit conversion from <see cref="Color4"/> to <see cref="System.Int32"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>
@@ -881,7 +881,7 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="System.Int32"/> to <see cref="SharpDX.Color4"/>.
+        /// Performs an explicit conversion from <see cref="System.Int32"/> to <see cref="Color4"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>
@@ -960,11 +960,11 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="SharpDX.Color4"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Color4"/> is equal to this instance.
         /// </summary>
-        /// <param name="other">The <see cref="SharpDX.Color4"/> to compare with this instance.</param>
+        /// <param name="other">The <see cref="Color4"/> to compare with this instance.</param>
         /// <returns>
-        /// <c>true</c> if the specified <see cref="SharpDX.Color4"/> is equal to this instance; otherwise, <c>false</c>.
+        /// <c>true</c> if the specified <see cref="Color4"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(Color4 other)
         {

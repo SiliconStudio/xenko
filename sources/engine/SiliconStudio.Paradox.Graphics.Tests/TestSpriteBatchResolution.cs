@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestSpriteBatchResolution()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 4;
         }
 
         protected override void RegisterTests()

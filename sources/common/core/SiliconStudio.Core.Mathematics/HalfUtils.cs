@@ -30,7 +30,6 @@ namespace SiliconStudio.Core.Mathematics
     /// </summary>
     internal class HalfUtils
     {
-
         [StructLayout(LayoutKind.Explicit, Pack = 4)]
         private struct FloatToUint
         {

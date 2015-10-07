@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ModalElementTest()
         {
-            CurrentVersion = 6;
+            CurrentVersion = 7;
         }
 
         protected override async Task LoadContent()

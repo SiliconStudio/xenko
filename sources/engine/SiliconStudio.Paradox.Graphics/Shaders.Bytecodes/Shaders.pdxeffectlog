@@ -12,9 +12,37 @@ UsedParameters:
     CompilerParameters.DebugKey: true
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Paradox.Graphics
+    SpriteBase.ColorIsSRgb: false
+---
+!EffectCompileRequest
+EffectName: SpriteBatch
+UsedParameters:
+    CompilerParameters.DebugKey: true
+    EffectSourceCode.Enable: true
+    EffectSourceCode.Namespace: SiliconStudio.Paradox.Graphics
+    EffectSourceCode.FieldName: binaryBytecodeSRgb
+    SpriteBase.ColorIsSRgb: true
 ---
 !EffectCompileRequest
 EffectName: UIEffect
+UsedParameters:
+    CompilerParameters.DebugKey: true
+    EffectSourceCode.Enable: true
+    EffectSourceCode.Namespace: SiliconStudio.Paradox.Graphics
+    EffectSourceCode.ClassDeclaration: internal partial
+---
+!EffectCompileRequest
+EffectName: UIEffect
+UsedParameters:
+    CompilerParameters.DebugKey: true
+    EffectSourceCode.Enable: true
+    EffectSourceCode.Namespace: SiliconStudio.Paradox.Graphics
+    EffectSourceCode.ClassDeclaration: internal partial
+    EffectSourceCode.FieldName: binaryBytecodeSRgb
+    SpriteBase.ColorIsSRgb: true
+---
+!EffectCompileRequest
+EffectName: UIEffectSeparateAlpha
 UsedParameters:
     CompilerParameters.DebugKey: true
     EffectSourceCode.Enable: true
@@ -28,6 +56,8 @@ UsedParameters:
     EffectSourceCode.Enable: true
     EffectSourceCode.Namespace: SiliconStudio.Paradox.Graphics
     EffectSourceCode.ClassDeclaration: internal partial
+    EffectSourceCode.FieldName: binaryBytecodeSRgb
+    SpriteBase.ColorIsSRgb: true
 ---
 !EffectCompileRequest
 EffectName: BackgroundEffect

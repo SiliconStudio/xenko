@@ -45,7 +45,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// The size of the <see cref="SiliconStudio.Core.Mathematics.Vector4"/> type, in bytes.
         /// </summary>
-        public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Vector4));
+        public static readonly int SizeInBytes = Utilities.SizeOf<Vector4>();
 
         /// <summary>
         /// A <see cref="SiliconStudio.Core.Mathematics.Vector4"/> with all of its components set to zero.

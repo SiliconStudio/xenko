@@ -33,10 +33,17 @@
     <VisualStudioVersion>11.0</VisualStudioVersion>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(SiliconStudioPublicApi)' == 'true'">
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)public_api.ruleset</CodeAnalysisRuleSet>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+
   <!-- Setup compiler targets per platform / language -->
   <PropertyGroup>
     <!-- On Android, everything is library (even Exe) -->
     <OutputType Condition=" '$(SiliconStudioPlatform)' == 'Android' ">Library</OutputType>
+
+    <SiliconStudioGenerateDoc Condition="'$(SiliconStudioPublicApi)' == 'true'">true</SiliconStudioGenerateDoc>
 
     <SiliconStudioCompilerTargets>$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
     <SiliconStudioCompilerTargetsEnable Condition="!Exists('$(SiliconStudioCompilerTargets)')">false</SiliconStudioCompilerTargetsEnable>

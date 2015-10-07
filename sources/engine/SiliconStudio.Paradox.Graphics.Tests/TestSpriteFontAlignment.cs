@@ -35,7 +35,7 @@ One blank line below
 
         public TestSpriteFontAlignment()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
         }
 
         protected override void RegisterTests()

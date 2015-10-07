@@ -47,7 +47,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <summary>
         /// The size of the <see cref="SiliconStudio.Core.Mathematics.Quaternion"/> type, in bytes.
         /// </summary>
-        public static readonly int SizeInBytes = Marshal.SizeOf(typeof(Quaternion));
+        public static readonly int SizeInBytes = Utilities.SizeOf<Quaternion>();
 
         /// <summary>
         /// A <see cref="SiliconStudio.Core.Mathematics.Quaternion"/> with all of its components set to zero.

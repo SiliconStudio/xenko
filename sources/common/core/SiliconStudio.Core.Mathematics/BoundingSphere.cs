@@ -41,6 +41,9 @@ namespace SiliconStudio.Core.Mathematics
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct BoundingSphere : IEquatable<BoundingSphere>, IFormattable
     {
+        /// <summary>
+        /// An empty bounding sphere (Center = 0 and Radius = 0).
+        /// </summary>
         public static readonly BoundingSphere Empty = new BoundingSphere();
 
         /// <summary>

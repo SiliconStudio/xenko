@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
         public TestGeometricPrimitives()
         {
-            CurrentVersion = 7;
+            CurrentVersion = 8;
         }
 
         protected override void RegisterTests()

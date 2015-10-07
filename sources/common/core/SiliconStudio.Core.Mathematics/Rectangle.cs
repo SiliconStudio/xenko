@@ -530,7 +530,8 @@ namespace SiliconStudio.Core.Mathematics
         {
             return new RectangleF(value.X, value.Y, value.Width, value.Height);
         }
-        
+
+        /// <inheritdoc/>
         public override string ToString()
         {
             return string.Format(CultureInfo.CurrentCulture, "X:{0} Y:{1} Width:{2} Height:{3}", X, Y, Width, Height);

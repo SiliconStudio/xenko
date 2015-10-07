@@ -52,7 +52,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
         public ScrollViewerAnchorTest()
         {
-            CurrentVersion = 7;
+            CurrentVersion = 9;
         }
 
         protected override async Task LoadContent()
