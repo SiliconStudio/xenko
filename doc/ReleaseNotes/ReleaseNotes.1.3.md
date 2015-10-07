@@ -266,6 +266,9 @@ Release date: 2015/10/07
 
 ## Issues fixed
 
+- Engine: Some of the camera view parameters were not valid when using custorm aspect ratio
+- Engine: Fix rendering problem when the scene contains model with null materials (ignore the models).
+- Asset: Fix color/alpha substitution in texture asset using alpha key color.  
 - Studio: Fix the recent project list that was sometimes remaining empty
 - Studio: Closing the editor with modified assets is now properly asking to save the solution
 - Studio: Deleting images from the sprite editor could make the Game Studio crash.
