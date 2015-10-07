@@ -197,7 +197,8 @@
     <Message Importance="Normal" Text="Detected Graphics Platform $(SiliconStudioParadoxGraphicsApi)"/>
     <PropertyGroup>
       <SiliconStudioPlatformFullNameOriginal>$(SiliconStudioPlatformFullName)</SiliconStudioPlatformFullNameOriginal>
-      <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
+      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == '' and '$(SiliconStudioRuntime)' == ''">$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
+      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == '' and '$(SiliconStudioRuntime)' != ''">$(SiliconStudioPlatform)-$(SiliconStudioRuntime)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
     </PropertyGroup>
     
     <!-- Rewrite dependencies -->
