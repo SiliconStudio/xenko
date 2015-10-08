@@ -45,14 +45,15 @@ namespace SiliconStudio.Assets.Tests
             return true;
         }
 
-        public Action PrepareForRun(TemplateGeneratorParameters parameters)
+        public Func<bool> PrepareForRun(TemplateGeneratorParameters parameters)
         {
             // Nothing to do in the tests
             return null;
         }
 
-        public void AfterRun(TemplateGeneratorParameters parameters)
+        public bool AfterRun(TemplateGeneratorParameters parameters)
         {
+            return true;
         }
 
         public static void Main()
