@@ -9,6 +9,7 @@ namespace SiliconStudio.Presentation.Core
     /// A class that provides runtime evaluation of member names using <see cref="Expression"/>. Note that this class should not be used when performances matter.
     /// </summary>
     /// <typeparam name="TType">The type that contains the member to retrieve.</typeparam>
+    [Obsolete(message: "Use nameof operator instead (see https://msdn.microsoft.com/en-us/library/dn986596.aspx).", error: true)]
     public static class NameOf<TType>
     {
         /// <summary>
