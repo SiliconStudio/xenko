@@ -25,7 +25,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Engine.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Engine.Tests.xkpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -210,7 +210,7 @@
     <None Include="effects_test.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="SiliconStudio.Xenko.Engine.Tests.pdxpkg" />
+    <None Include="SiliconStudio.Xenko.Engine.Tests.xkpkg" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Icon.png" Label="Xenko.DoNotSync" />

@@ -42,60 +42,60 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
         /// File extensions
         /// </summary>
 		[Export]
-		[FileExtension(".pdxpkg")]
+		[FileExtension(".xkpkg")]
 		[ContentType(Constants.ContentType)]
-		internal static FileExtensionToContentTypeDefinition pdxpkgFileExtensionDefinition = null;
+		internal static FileExtensionToContentTypeDefinition xkpkgFileExtensionDefinition = null;
 		
 		[Export]
-        [FileExtension(".pdxfnt")]
+        [FileExtension(".xkfnt")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition pdxfntFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xkfntFileExtensionDefinition = null;
 
         [Export]
-        [FileExtension(".pdxfxlib")]
+        [FileExtension(".xkfxlib")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition pdxfxlibFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xkfxlibFileExtensionDefinition = null;
 
         [Export]
-        [FileExtension(".pdxlightconf")]
+        [FileExtension(".xklightconf")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition pdxlightconfFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xklightconfFileExtensionDefinition = null;
 
         [Export]
-        [FileExtension(".pdxtex")]
+        [FileExtension(".xktex")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition pdxtexFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xktexFileExtensionDefinition = null;
 
         [Export]
-        [FileExtension(".pdxentity")]
+        [FileExtension(".xkentity")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition pdxentityFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xkentityFileExtensionDefinition = null;
 
 
         [Export]
-        [FileExtension(".pdxm3d")]
+        [FileExtension(".xkm3d")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition pdxm3dFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xkm3dFileExtensionDefinition = null;
 
         [Export]
-        [FileExtension(".pdxanim")]
+        [FileExtension(".xkanim")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition pdxanimFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xkanimFileExtensionDefinition = null;
 
         [Export]
-        [FileExtension(".pdxsnd")]
+        [FileExtension(".xksnd")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition pdxsndFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xksndFileExtensionDefinition = null;
 
         [Export]
-        [FileExtension(".pdxmat")]
+        [FileExtension(".xkmat")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition pdxmatFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xkmatFileExtensionDefinition = null;
 
         [Export]
-        [FileExtension(".pdxsprite")]
+        [FileExtension(".xksprite")]
         [ContentType(Constants.ContentType)]
-        internal static FileExtensionToContentTypeDefinition pdxsprtFileExtensionDefinition = null;
+        internal static FileExtensionToContentTypeDefinition xksprtFileExtensionDefinition = null;
 
         /// <summary>
         /// Classification type definitions

@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 {
     /// <summary>
     /// This class helps to navigate from a text location and try to find the associated definition location 
-    /// (local variables, stage variables, class pdxsl, shaders pdxfx...etc.)
+    /// (local variables, stage variables, class xksl, shaders xkfx...etc.)
     /// </summary>
     public class ShaderNavigation
     {
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
             try
             {
-                if (location.FileSource.EndsWith(".pdxsl", StringComparison.InvariantCultureIgnoreCase))
+                if (location.FileSource.EndsWith(".xksl", StringComparison.InvariantCultureIgnoreCase))
                 {
                     AnalyzeAndGoToDefinition(shaderSource, location, shaderDirectories, navigationResult);
                 }

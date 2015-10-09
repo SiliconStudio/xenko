@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
         /// <summary>
         /// The default file extension used by the <see cref="TextureAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxtex";
+        public const string FileExtension = ".xktex";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureAsset"/> class.

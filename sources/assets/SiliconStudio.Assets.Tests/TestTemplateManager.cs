@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets.Tests
         [Test, Ignore]
         public void TestTemplateDescriptions()
         {
-            // Preload templates defined in Xenko.pdxpkg
+            // Preload templates defined in Xenko.xkpkg
             var descriptions = TemplateManager.FindTemplates().ToList();
 
             // Expect currently 4 templates
@@ -28,7 +28,7 @@ namespace SiliconStudio.Assets.Tests
         {
             TemplateManager.Register(this);
 
-            // Preload templates defined in Xenko.pdxpkg
+            // Preload templates defined in Xenko.xkpkg
             var descriptions = TemplateManager.FindTemplates().ToList();
 
             Assert.IsTrue(descriptions.Count > 0);

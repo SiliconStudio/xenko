@@ -15,7 +15,7 @@ namespace SiliconStudio.Assets.Tests
     [AssetDescription(FileExtension)]
     public class AssetObjectTest : Asset, IEquatable<AssetObjectTest>, IAssetComposer
     {
-        public const string FileExtension = ".pdxtest";
+        public const string FileExtension = ".xktest";
 
         public string Name { get; set; }
 
@@ -71,7 +71,7 @@ namespace SiliconStudio.Assets.Tests
     }
 
     [DataContract("!AssetImportObjectTest")]
-    [AssetDescription(".pdximptest")]
+    [AssetDescription(".xkimptest")]
     public class AssetImportObjectTest : AssetImport
     {
         public AssetImportObjectTest()
@@ -86,7 +86,7 @@ namespace SiliconStudio.Assets.Tests
     }
 
     [DataContract("!AssetObjectTestSub")]
-    [AssetDescription(".pdxtestsub")]
+    [AssetDescription(".xktestsub")]
     public class AssetObjectTestSub : Asset
     {
         public int Value { get; set; }

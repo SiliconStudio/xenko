@@ -78,7 +78,7 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// The file extension used for <see cref="Package"/>.
         /// </summary>
-        public const string PackageFileExtension = ".pdxpkg";
+        public const string PackageFileExtension = ".xkpkg";
 
         /// <summary>
         /// Occurs when an asset dirty changed occured.
@@ -568,7 +568,7 @@ namespace SiliconStudio.Assets
                                 if (project.Items.All(x => x.EvaluatedInclude != codeFile.ToWindowsPath()))
                                 {
                                     project.AddItem(AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType()) == ".cs" ? "Compile" : "None", codeFile.ToWindowsPath());
-                                    //todo None case needs Generator and LastGenOutput properties support! (eg pdxsl)
+                                    //todo None case needs Generator and LastGenOutput properties support! (eg xksl)
                                 }
 
                                 asset.SourceProject = projectFullPath;

@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
                 if (mixinToCompile == null)
                 {
-                    throw new ArgumentException("Unsupported ShaderSource type [{0}]. Supporting only ShaderMixinSource/pdxfx, ShaderClassSource", "shaderSource");
+                    throw new ArgumentException("Unsupported ShaderSource type [{0}]. Supporting only ShaderMixinSource/xkfx, ShaderClassSource", "shaderSource");
                 }
                 if (string.IsNullOrEmpty(mixinToCompile.Name))
                 {
@@ -101,7 +101,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         {
             if (type == null) throw new ArgumentNullException("type");
             // TODO: harcoded values, bad bad bad
-            return DefaultSourceShaderFolder + "/" + type + ".pdxsl";
+            return DefaultSourceShaderFolder + "/" + type + ".xksl";
         }
     }
 }

@@ -322,7 +322,7 @@ MinimumVisualStudioVersion = 10.0.40219.1";
         /// <param name="package">The package.</param>
         public static void SaveProperties(Package package)
         {
-            // Props file is in the same folder as the pdxpkg file, just with a ".props" extension.
+            // Props file is in the same folder as the xkpkg file, just with a ".props" extension.
             var packagePath = package.FullPath;
             var propsFilePath = UPath.Combine(packagePath.GetParent(), (UFile)(packagePath.GetFileName() + ".props")) ;
 
@@ -333,10 +333,10 @@ MinimumVisualStudioVersion = 10.0.40219.1";
             var dependencies = package.FindDependencies(false, false, true);
 
             // Add Xenko version
-            var pdxVersion = dependencies.FirstOrDefault(d => d.Meta.Name == "Xenko");
-            if (pdxVersion != null)
+            var xkVersion = dependencies.FirstOrDefault(d => d.Meta.Name == "Xenko");
+            if (xkVersion != null)
             {
-                var versionText = pdxVersion.Meta.Version.Version.Major + "." + pdxVersion.Meta.Version.Version.Minor;
+                var versionText = xkVersion.Meta.Version.Version.Major + "." + xkVersion.Meta.Version.Version.Minor;
                 commonPropertyGroup.AddProperty("SiliconStudioPackageXenkoVersion", versionText);
             }
 

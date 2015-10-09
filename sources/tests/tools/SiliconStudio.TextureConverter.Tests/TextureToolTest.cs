@@ -171,11 +171,11 @@ namespace SiliconStudio.TextureConverter.Tests
         public void ConvertToXenkoImageTest(string file)
         {
             TexImage image = texTool.Load(Module.PathToInputImages + file);
-            var pdx = texTool.ConvertToXenkoImage(image);
-            Assert.IsTrue(pdx.TotalSizeInBytes == image.DataSize);
-            Assert.IsTrue(pdx.Description.MipLevels == image.MipmapCount);
+            var xk = texTool.ConvertToXenkoImage(image);
+            Assert.IsTrue(xk.TotalSizeInBytes == image.DataSize);
+            Assert.IsTrue(xk.Description.MipLevels == image.MipmapCount);
             image.Dispose();
-            pdx.Dispose();
+            xk.Dispose();
         }
 
         [Ignore]
@@ -184,15 +184,15 @@ namespace SiliconStudio.TextureConverter.Tests
         {
             TexImage image = texTool.Load(Module.PathToInputImages + file);
 
-            var pdx = texTool.ConvertToXenkoImage(image);
+            var xk = texTool.ConvertToXenkoImage(image);
 
-            TexImage pdxImage = texTool.Load(pdx);
+            TexImage xkImage = texTool.Load(xk);
 
-            Assert.IsTrue(image.Equals(pdxImage));
+            Assert.IsTrue(image.Equals(xkImage));
 
-            pdx.Dispose();
+            xk.Dispose();
             image.Dispose();
-            pdxImage.Dispose();
+            xkImage.Dispose();
         }
 
         [Ignore]
@@ -302,7 +302,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [Ignore]
         [TestCase("TextureCube_WMipMaps_BC3.dds", ".pvr", Filter.Rescaling.CatmullRom, PixelFormat.ETC2_RGBA)]
         [TestCase("TextureArray_WMipMaps_PVRTC2_4bpp.pvr", ".dds", Filter.Rescaling.Nearest, PixelFormat.BC3_UNorm)]
-        [TestCase("TextureCube_WMipMaps_ATC_RGBA_Explicit.pdx", ".dds", Filter.Rescaling.Lanczos3, PixelFormat.BC3_UNorm)]
+        [TestCase("TextureCube_WMipMaps_ATC_RGBA_Explicit.xk", ".dds", Filter.Rescaling.Lanczos3, PixelFormat.BC3_UNorm)]
         [TestCase("duck.jpg", ".dds", Filter.Rescaling.Box, PixelFormat.BC3_UNorm)]
         [TestCase("duck.jpg", ".pvr", Filter.Rescaling.BSpline, PixelFormat.PVRTC_II_4bpp)]
         public void ProcessingTest(string source, string extension, Filter.Rescaling rescaleFiler, PixelFormat format)

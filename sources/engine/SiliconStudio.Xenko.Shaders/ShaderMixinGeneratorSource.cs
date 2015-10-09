@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
-    /// A shader source that is linked to a pdxfx effect.
+    /// A shader source that is linked to a xkfx effect.
     /// </summary>
     [DataContract("ShaderMixinGeneratorSource")]
     public sealed class ShaderMixinGeneratorSource : ShaderSource, IEquatable<ShaderMixinGeneratorSource>
@@ -21,16 +21,16 @@ namespace SiliconStudio.Xenko.Shaders
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderMixinGeneratorSource"/> class.
         /// </summary>
-        /// <param name="name">The name of the pdxfx effect.</param>
+        /// <param name="name">The name of the xkfx effect.</param>
         public ShaderMixinGeneratorSource(string name)
         {
             Name = name;
         }
 
         /// <summary>
-        /// Gets or sets the name of the pdxfx effect.
+        /// Gets or sets the name of the xkfx effect.
         /// </summary>
-        /// <value>The name of the pdxfx effect.</value>
+        /// <value>The name of the xkfx effect.</value>
         public string Name { get; set; }
 
         /// <summary>
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Shaders
 
         public override string ToString()
         {
-            return string.Format("pdxfx {0}", Name);
+            return string.Format("xkfx {0}", Name);
         }
     }
 }

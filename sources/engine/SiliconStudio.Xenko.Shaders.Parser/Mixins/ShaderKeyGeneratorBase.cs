@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// </summary>
         protected bool VariableAsParameterKey = true;
 
-        protected bool IsPdxfx = false;
+        protected bool IsXkfx = false;
 
         /// <summary>
         /// Runs the code generation. Results is accessible from <see cref="ShaderWriter.Text"/> property.
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             }
             else
             {
-                if (IsPdxfx)
+                if (IsXkfx)
                 {
                     base.Visit(variable);
                 }

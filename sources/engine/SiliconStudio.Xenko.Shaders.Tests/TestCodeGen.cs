@@ -12,7 +12,7 @@ using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 namespace SiliconStudio.Xenko.Shaders.Tests
 {
     /// <summary>
-    /// Code used to regenerate all cs files from pdxsl/pdxfx in the project
+    /// Code used to regenerate all cs files from xksl/xkfx in the project
     /// </summary>
     [TestFixture]
     public class TestCodeGen
@@ -20,13 +20,13 @@ namespace SiliconStudio.Xenko.Shaders.Tests
         //[Test]
         public void Test()
         {
-            var filePath = @"D:\Code\Xenko\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Mixins\A.pdxsl";
+            var filePath = @"D:\Code\Xenko\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Mixins\A.xksl";
             var source = File.ReadAllText(filePath);
             var content = ShaderMixinCodeGen.GenerateCsharp(source, filePath.Replace("C:", "D:"));
         }
 
         //[Test] // Decomment this line to regenerate all files (sources and samples)
-        public void RebuildAllPdxfxPdxsl()
+        public void RebuildAllXkfxXksl()
         {
             RegenerateDirectory(Path.Combine(Environment.CurrentDirectory, @"..\..\sources"));
             RegenerateDirectory(Path.Combine(Environment.CurrentDirectory, @"..\..\samples"));
@@ -34,13 +34,13 @@ namespace SiliconStudio.Xenko.Shaders.Tests
 
         private static void RegenerateDirectory(string directory)
         {
-            //foreach (var pdxsl in Directory.EnumerateFiles(directory, "*.pdxsl", SearchOption.AllDirectories))
+            //foreach (var xksl in Directory.EnumerateFiles(directory, "*.xksl", SearchOption.AllDirectories))
             //{
-            //    RebuildFile(pdxsl);
+            //    RebuildFile(xksl);
             //}
-            foreach (var pdxfx in Directory.EnumerateFiles(directory, "*.pdxfx", SearchOption.AllDirectories))
+            foreach (var xkfx in Directory.EnumerateFiles(directory, "*.xkfx", SearchOption.AllDirectories))
             {
-                RebuildFile(pdxfx);
+                RebuildFile(xkfx);
             }
         }
 

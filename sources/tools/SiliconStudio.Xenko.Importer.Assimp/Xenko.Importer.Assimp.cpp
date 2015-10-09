@@ -563,7 +563,7 @@ private:
 			auto aiKey = keys[keyId];
 			KeyFrameData<Vector3> key;
 
-			auto time = aiTimeToPdxTimeSpan(aiKey.mTime, ticksPerSec);
+			auto time = aiTimeToXkTimeSpan(aiKey.mTime, ticksPerSec);
 			auto value = aiVector3ToVector3(aiKey.mValue);
 
 			key.Time = time;
@@ -600,7 +600,7 @@ private:
 			auto aiKey = keys[keyId];
 			KeyFrameData<Quaternion> key;
 			
-			auto time = aiTimeToPdxTimeSpan(aiKey.mTime, ticksPerSec);
+			auto time = aiTimeToXkTimeSpan(aiKey.mTime, ticksPerSec);
 			auto value = aiQuaternionToQuaternion(aiKey.mValue);
 			
 			key.Time = time;

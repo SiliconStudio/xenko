@@ -21,7 +21,7 @@
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.UI.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.UI.Tests.xkpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -270,7 +270,7 @@
     <None Include="Resources\ButtonPressed.dds" />
     <None Include="Resources\EditTextInactive.dds" />
     <None Include="Resources\EditTextOverred.dds" />
-    <None Include="SiliconStudio.Xenko.UI.Tests.pdxpkg" />
+    <None Include="SiliconStudio.Xenko.UI.Tests.xkpkg" />
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
     <None Include="Resources\ToggleChecked.dds" />
     <None Include="Resources\ToggleIndetermate.dds" />

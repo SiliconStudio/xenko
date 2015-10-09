@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxgamesettings";
+        public const string FileExtension = ".xkgamesettings";
 
         public const string GameSettingsLocation = GameSettings.AssetUrl;
         public const string DefaultSceneLocation = "MainScene";

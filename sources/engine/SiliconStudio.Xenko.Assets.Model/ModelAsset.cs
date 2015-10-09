@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxm3d";
+        public const string FileExtension = ".xkm3d";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelAsset"/> class.

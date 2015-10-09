@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <summary>
         /// The default file extension used by the <see cref="EntityAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxentity";
+        public const string FileExtension = ".xkentity";
 
         public EntityAsset()
         {

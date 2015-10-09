@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void TestTextureItemAsset()
         {
             // load the project
-            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\TextureDeps\Assets.pdxpkg");
+            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\TextureDeps\Assets.xkpkg");
             var projectSession = projectSessionResult.Session;
             var textureItem = projectSession.RootPackage.Assets.First();
 
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void TestMaterialItemAsset()
         {
             // load the project
-            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\MaterialDeps\Assets.pdxpkg");
+            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\MaterialDeps\Assets.xkpkg");
             var projectSession = projectSessionResult.Session;
             var materialItem = projectSession.RootPackage.Assets.First();
 
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void TestCircularDependencies()
         {
             // load the project
-            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\CircularDeps\Assets.pdxpkg");
+            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\CircularDeps\Assets.xkpkg");
             var projectSession = projectSessionResult.Session;
             var materialItem = projectSession.RootPackage.Assets.First();
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void TestEntityItemAsset()
         {
             // load the project
-            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\EntityDeps\Assets.pdxpkg");
+            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\EntityDeps\Assets.xkpkg");
             var projectSession = projectSessionResult.Session;
             var entityItem = projectSession.RootPackage.Assets.First();
 
@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void TestComplexDependencies()
         {
             // load the project
-            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\ComplexDeps\Assets.pdxpkg");
+            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\ComplexDeps\Assets.xkpkg");
             var projectSession = projectSessionResult.Session;
             var entityItem = projectSession.RootPackage.Assets.First();
 

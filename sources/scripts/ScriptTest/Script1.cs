@@ -251,7 +251,7 @@ namespace ScriptTest
 
                     EffectOld fxaaEffect = engineContext.RenderContext.BuildEffect("Fxaa")
                         .Using(new PostEffectShaderPlugin() { RenderPassPlugin = postEffectPlugin })
-                        .Using(new BasicShaderPlugin("PostEffectFXAA.pdxsl"));
+                        .Using(new BasicShaderPlugin("PostEffectFXAA.xksl"));
 
 
                     // Create post effect meshes: downsampling and blurs
@@ -324,7 +324,7 @@ namespace ScriptTest
                     //fxaa effect setup (fxaa only, no bloom effect)
                     EffectOld fxaaEffect = engineContext.RenderContext.BuildEffect("Fxaa")
                         .Using(new PostEffectShaderPlugin() { RenderPassPlugin = postEffectPlugin })
-                        .Using(new BasicShaderPlugin("..\\..\\sources\\shaders\\posteffect_fxaa.pdxsl"));
+                        .Using(new BasicShaderPlugin("..\\..\\sources\\shaders\\posteffect_fxaa.xksl"));
 
                     var fxaaQuadMesh = new EffectMesh(fxaaEffect, name: "FXAA level");
 

@@ -558,7 +558,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             //VirtualFileSystem.MountFileSystem("/assets/shaders", "../../../../../shaders");
             VirtualFileSystem.MountFileSystem("/assets/shaders", "C:\\Users\\aurelien.serandour\\Desktop\\Shaders");
-            foreach (var file in VirtualFileSystem.ListFiles("/assets/shaders", "*.pdxsl", VirtualSearchOption.TopDirectoryOnly).Result)
+            foreach (var file in VirtualFileSystem.ListFiles("/assets/shaders", "*.xksl", VirtualSearchOption.TopDirectoryOnly).Result)
             {
                 var fileParts = file.Split('.', '/');
                 var className = fileParts[fileParts.Length - 2];
@@ -580,7 +580,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             VirtualFileSystem.MountFileSystem("/assets/shaders", "../../../../../shaders");
             //VirtualFileSystem.MountFileSystem("/assets/shaders", "C:\\Users\\aurelien.serandour\\Desktop\\Shaders\\Maya");
-            foreach (var file in VirtualFileSystem.ListFiles("/assets/shaders", "*.pdxsl", VirtualSearchOption.TopDirectoryOnly).Result)
+            foreach (var file in VirtualFileSystem.ListFiles("/assets/shaders", "*.xksl", VirtualSearchOption.TopDirectoryOnly).Result)
             {
                 var fileParts = file.Split('.', '/');
                 var className = fileParts[fileParts.Length - 2];

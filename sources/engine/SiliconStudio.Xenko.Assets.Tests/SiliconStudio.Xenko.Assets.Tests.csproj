@@ -25,7 +25,7 @@
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Assets.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Assets.Tests.xkpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -161,26 +161,26 @@
       <Link>app_data\SiliconStudio.Xenko.Assets.Tests\TX-Factory_Ground.dds</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="GameAssets\MainScene.pdxscene" />
-    <None Include="materials\testConstantValueKey.pdxmat">
+    <None Include="GameAssets\MainScene.xkscene" />
+    <None Include="materials\testConstantValueKey.xkmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\testEffect.pdxmat">
+    <None Include="materials\testEffect.xkmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\testMaterial.pdxmat">
+    <None Include="materials\testMaterial.xkmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\testReduction.pdxmat">
+    <None Include="materials\testReduction.xkmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="materials\testTextureGeneric.pdxmat">
+    <None Include="materials\testTextureGeneric.xkmat">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="scenes\goblin.fbx">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SiliconStudio.Xenko.Assets.Tests.pdxpkg" />
+    <None Include="SiliconStudio.Xenko.Assets.Tests.xkpkg" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Projects\**\*.*">

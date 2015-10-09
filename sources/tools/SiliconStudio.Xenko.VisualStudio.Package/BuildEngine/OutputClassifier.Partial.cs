@@ -23,12 +23,12 @@ namespace SiliconStudio.Xenko.VisualStudio
             classificationTypes.Add('F', BuildEngineFatal);
         }
 
-        public const string BuildEngineDebug = "pdx.buildengine.debug";
-        public const string BuildEngineVerbose = "pdx.buildengine.verbose";
-        public const string BuildEngineInfo = "pdx.buildengine.info";
-        public const string BuildEngineWarning = "pdx.buildengine.warning";
-        public const string BuildEngineError = "pdx.buildengine.error";
-        public const string BuildEngineFatal = "pdx.buildengine.fatal";
+        public const string BuildEngineDebug = "xk.buildengine.debug";
+        public const string BuildEngineVerbose = "xk.buildengine.verbose";
+        public const string BuildEngineInfo = "xk.buildengine.info";
+        public const string BuildEngineWarning = "xk.buildengine.warning";
+        public const string BuildEngineError = "xk.buildengine.error";
+        public const string BuildEngineFatal = "xk.buildengine.fatal";
 
         [Export]
         [Name(BuildEngineDebug)]

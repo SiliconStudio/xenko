@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// </summary>
         private readonly IVirtualFileProvider fileProvider;
 
-        private const string DefaultEffectFileExtension = ".pdxsl";
+        private const string DefaultEffectFileExtension = ".xksl";
 
         /// <summary>
         /// Gets the directory list.
@@ -187,7 +187,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                                 }
                                 else
                                 {
-                                    throw new Exception(string.Format("Unsupported Stream type to load shader [{0}.pdxsl]", type));
+                                    throw new Exception(string.Format("Unsupported Stream type to load shader [{0}.xksl]", type));
                                 }
                             }
                         }
@@ -196,7 +196,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     }
                     else
                     {
-                        throw new FileNotFoundException(string.Format("Unable to find shader [{0}]", type), string.Format("{0}.pdxsl", type));
+                        throw new FileNotFoundException(string.Format("Unable to find shader [{0}]", type), string.Format("{0}.xksl", type));
                     }
                 }
                 return shaderSource;

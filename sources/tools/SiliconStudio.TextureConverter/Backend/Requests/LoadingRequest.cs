@@ -15,7 +15,7 @@ namespace SiliconStudio.TextureConverter.Requests
         public enum LoadingMode
         {
             TexImage,
-            PdxImage,
+            XkImage,
             FilePath,
         }
 
@@ -39,7 +39,7 @@ namespace SiliconStudio.TextureConverter.Requests
         /// <summary>
         /// The Xenko Image to be loaded
         /// </summary>
-        public Xenko.Graphics.Image PdxImage;
+        public Xenko.Graphics.Image XkImage;
 
         /// <summary>
         /// Indicate if we should keep the original mip-maps during the load
@@ -82,8 +82,8 @@ namespace SiliconStudio.TextureConverter.Requests
         /// <param name="loadAsSRgb">Indicate if the input file should be loaded as in sRGB file</param>
         public LoadingRequest(Xenko.Graphics.Image image, bool loadAsSRgb = false)
         {
-            PdxImage = image;
-            Mode = LoadingMode.PdxImage;
+            XkImage = image;
+            Mode = LoadingMode.XkImage;
             LoadAsSRgb = loadAsSRgb;
         }
     }

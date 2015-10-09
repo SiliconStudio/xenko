@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         internal static ParameterKey<bool> IsFirstPassKey = ParameterKeys.New<bool>();
 
-        // TODO: Currently capturing two effects, because pdxfx permutation triggers DynamicEffectCompiler
+        // TODO: Currently capturing two effects, because xkfx permutation triggers DynamicEffectCompiler
         private ImageEffectShader effectFirstPass, effectNotFirstPass;
 
         private ImageReadback<Vector2> readback;

@@ -28,7 +28,7 @@ namespace SiliconStudio
     /// Internal version used to identify Xenko version.
     /// </summary>
     /// <remarks>
-    /// Note: When modifying the version here, it must be modified also in the Xenko.pdxpkg 
+    /// Note: When modifying the version here, it must be modified also in the Xenko.xkpkg 
     /// </remarks>
     internal class XenkoVersion
     {

@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Assets
             ThirdValue
         }
 
-        public const string FileExtension = ".pdxtest";
+        public const string FileExtension = ".xktest";
 
         public TestAsset()
         {

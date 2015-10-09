@@ -8,7 +8,7 @@ Example of use:
   <PropertyGroup>
     <XenkoRoot>$(MSBuildThisFileDirectory)..\</XenkoRoot>
     <XenkoRootBin>$(XenkoRoot)Bin\Windows-Direct3D11\</XenkoRootBin>
-    <XenkoPackage>$(XenkoRoot)Xenko.pdxpkg</XenkoPackage>
+    <XenkoPackage>$(XenkoRoot)Xenko.xkpkg</XenkoPackage>
     <XenkoSolution>$(XenkoRoot)build\Xenko</XenkoSolution>
     <BuildProperties>Configuration=Release;SiliconStudioGenerateDoc=true;NoWarn=1591;DeployExtension=false</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioSign)' != ''">$(BuildProperties);SiliconStudioSign=$(SiliconStudioSign)</BuildProperties>

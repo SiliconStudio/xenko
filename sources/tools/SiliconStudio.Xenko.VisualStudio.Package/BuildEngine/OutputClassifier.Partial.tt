@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.VisualStudio
 
 <#foreach (var classifier in classifiers)
 {#>
-        public const string BuildEngine<#=classifier.Name#> = "pdx.buildengine.<#=classifier.Name.ToLowerInvariant()#>";
+        public const string BuildEngine<#=classifier.Name#> = "xk.buildengine.<#=classifier.Name.ToLowerInvariant()#>";
 <#}#>
 
 <#foreach (var classifier in classifiers)

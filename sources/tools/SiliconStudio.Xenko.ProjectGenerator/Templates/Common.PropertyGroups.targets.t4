@@ -2,7 +2,7 @@
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)<#= Properties.Package.Meta.Name #>.pdxpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)<#= Properties.Package.Meta.Name #>.xkpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
 <#
 var currentPlatform = (SiliconStudio.Core.PlatformType)Properties.CurrentPlatform;

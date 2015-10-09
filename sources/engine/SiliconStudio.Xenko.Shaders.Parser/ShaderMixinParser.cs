@@ -251,8 +251,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 simplifier.Run(finalShader);
 
                 parsingResult.Reflection = new EffectReflection();
-                var pdxShaderLinker = new ShaderLinker(parsingResult);
-                pdxShaderLinker.Run(finalShader);
+                var xkShaderLinker = new ShaderLinker(parsingResult);
+                xkShaderLinker.Run(finalShader);
 
                 // Return directly if there was any errors
                 if (parsingResult.HasErrors)

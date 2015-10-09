@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <summary>
         /// List of methods that need streams structure.
         /// </summary>
-        private Dictionary<PdxShaderStage, List<MethodDeclaration>> methodsPerShaderStage = new Dictionary<PdxShaderStage, List<MethodDeclaration>>();
+        private Dictionary<XkShaderStage, List<MethodDeclaration>> methodsPerShaderStage = new Dictionary<XkShaderStage, List<MethodDeclaration>>();
 
         /// <summary>
         /// Stream analyzer
@@ -125,13 +125,13 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 return;
             }
             
-            StreamStageUsage streamStageUsageVS = vertexShaderMethod == null ? null : StreamAnalysisPerShader(vertexShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, vertexShaderMethod, PdxShaderStage.Vertex);
-            StreamStageUsage streamStageUsageHS = hullShaderMethod == null ? null : StreamAnalysisPerShader(hullShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, hullShaderMethod, PdxShaderStage.Hull);
-            StreamStageUsage streamStageUsageHSCS = hullConstantShaderMethod == null ? null : StreamAnalysisPerShader(hullConstantShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, hullConstantShaderMethod, PdxShaderStage.Constant);
-            StreamStageUsage streamStageUsageDS = domainShaderMethod == null ? null : StreamAnalysisPerShader(domainShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, domainShaderMethod, PdxShaderStage.Domain);
-            StreamStageUsage streamStageUsageGS = geometryShaderMethod == null ? null : StreamAnalysisPerShader(geometryShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, geometryShaderMethod, PdxShaderStage.Geometry);
-            StreamStageUsage streamStageUsagePS = pixelShaderMethod == null ? null : StreamAnalysisPerShader(pixelShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, pixelShaderMethod, PdxShaderStage.Pixel);
-            StreamStageUsage streamStageUsageCS = computeShaderMethod == null ? null : StreamAnalysisPerShader(computeShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, computeShaderMethod, PdxShaderStage.Compute);
+            StreamStageUsage streamStageUsageVS = vertexShaderMethod == null ? null : StreamAnalysisPerShader(vertexShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, vertexShaderMethod, XkShaderStage.Vertex);
+            StreamStageUsage streamStageUsageHS = hullShaderMethod == null ? null : StreamAnalysisPerShader(hullShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, hullShaderMethod, XkShaderStage.Hull);
+            StreamStageUsage streamStageUsageHSCS = hullConstantShaderMethod == null ? null : StreamAnalysisPerShader(hullConstantShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, hullConstantShaderMethod, XkShaderStage.Constant);
+            StreamStageUsage streamStageUsageDS = domainShaderMethod == null ? null : StreamAnalysisPerShader(domainShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, domainShaderMethod, XkShaderStage.Domain);
+            StreamStageUsage streamStageUsageGS = geometryShaderMethod == null ? null : StreamAnalysisPerShader(geometryShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, geometryShaderMethod, XkShaderStage.Geometry);
+            StreamStageUsage streamStageUsagePS = pixelShaderMethod == null ? null : StreamAnalysisPerShader(pixelShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, pixelShaderMethod, XkShaderStage.Pixel);
+            StreamStageUsage streamStageUsageCS = computeShaderMethod == null ? null : StreamAnalysisPerShader(computeShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, computeShaderMethod, XkShaderStage.Compute);
             
             // pathc some usage so that variables are correctly passed even if they are not explicitely used.
             if (streamStageUsageGS != null && streamStageUsageVS != null)
@@ -330,7 +330,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <param name="moduleMixin">the current module mixin</param>
         /// <param name="entryPoint">the entrypoint method</param>
         /// <returns>a StreamStageUsage containing the streams usages</returns>
-        private StreamStageUsage StreamAnalysisPerShader(ModuleMixin moduleMixin, MethodDeclaration entryPoint, PdxShaderStage shaderStage)
+        private StreamStageUsage StreamAnalysisPerShader(ModuleMixin moduleMixin, MethodDeclaration entryPoint, XkShaderStage shaderStage)
         {
             var visitedMethods = new List<MethodDeclaration>();
             var streamStageUsage = new StreamStageUsage { ShaderStage = shaderStage };
@@ -405,7 +405,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 var prevStreamUsage = streamStageUsages[i - 1];
 
                 // pixel output is only SV_Targetx and SV_Depth, everything else intermediate variable
-                if (nextStreamUsage.ShaderStage == PdxShaderStage.Pixel)
+                if (nextStreamUsage.ShaderStage == XkShaderStage.Pixel)
                 {
                     var semVar = new List<IDeclaration>();
                     var nonSemVar = new List<IDeclaration>();
@@ -441,9 +441,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 {
                     var sem = (variable as Variable).Qualifiers.OfType<Semantic>().FirstOrDefault();
                     if (nextStreamUsage.InStreamList.Contains(variable)
-                        || ((nextStreamUsage.ShaderStage == PdxShaderStage.Pixel || nextStreamUsage.ShaderStage == PdxShaderStage.Geometry) && sem != null && sem.Name.Text == "SV_Position"))
+                        || ((nextStreamUsage.ShaderStage == XkShaderStage.Pixel || nextStreamUsage.ShaderStage == XkShaderStage.Geometry) && sem != null && sem.Name.Text == "SV_Position"))
                         toKeep.Add(variable);
-                    else if (nextStreamUsage.ShaderStage == PdxShaderStage.Pixel && prevStreamUsage.ShaderStage == PdxShaderStage.Geometry && sem != null && sem.Name.Text == "SV_RenderTargetArrayIndex")
+                    else if (nextStreamUsage.ShaderStage == XkShaderStage.Pixel && prevStreamUsage.ShaderStage == XkShaderStage.Geometry && sem != null && sem.Name.Text == "SV_RenderTargetArrayIndex")
                     {
                         toKeep.Add(variable);
                         nextStreamUsage.InStreamList.Add(variable);
@@ -463,7 +463,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// <param name="streamStageUsage">the StreamStageUsage of the compute stage</param>
         private void ComputeShaderStreamAnalysis(StreamStageUsage streamStageUsage)
         {
-            if (streamStageUsage.ShaderStage == PdxShaderStage.Compute)
+            if (streamStageUsage.ShaderStage == XkShaderStage.Compute)
             {
                 streamStageUsage.InterStreamList.AddRange(streamStageUsage.OutStreamList);
                 streamStageUsage.OutStreamList.Clear();
@@ -926,7 +926,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         /// </summary>
         /// <param name="shaderStage">The current shader stage to check.</param>
         /// <param name="methodsWithStreams">The list of methods that need streams in that stage.</param>
-        private void CheckCrossStageMethodCall(PdxShaderStage shaderStage, List<MethodDeclaration> methodsWithStreams)
+        private void CheckCrossStageMethodCall(XkShaderStage shaderStage, List<MethodDeclaration> methodsWithStreams)
         {
             foreach (var stageList in methodsPerShaderStage)
             {
@@ -1146,7 +1146,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         #endregion
     }
 
-    enum PdxShaderStage
+    enum XkShaderStage
     {
         Vertex,
         Hull,
@@ -1160,7 +1160,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
     class StreamStageUsage
     {
-        public PdxShaderStage ShaderStage = PdxShaderStage.None;
+        public XkShaderStage ShaderStage = XkShaderStage.None;
         public List<IDeclaration> InStreamList = new List<IDeclaration>();
         public List<IDeclaration> InterStreamList = new List<IDeclaration>();
         public List<IDeclaration> OutStreamList = new List<IDeclaration>();

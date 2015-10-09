@@ -140,35 +140,35 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>BackgroundEffect.pdxsl</DependentUpon>
+      <DependentUpon>BackgroundEffect.xksl</DependentUpon>
     </Compile>
     <Compile Include="Shaders\ColorUtility.cs">
-      <DependentUpon>ColorUtility.pdxsl</DependentUpon>
+      <DependentUpon>ColorUtility.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\UIEffectSeparateAlpha.cs">
-      <DependentUpon>UIEffectSeparateAlpha.pdxfx</DependentUpon>
+      <DependentUpon>UIEffectSeparateAlpha.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\UIEffect.cs">
-      <DependentUpon>UIEffect.pdxfx</DependentUpon>
+      <DependentUpon>UIEffect.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\SpriteBatch.cs">
-      <DependentUpon>SpriteBatch.pdxfx</DependentUpon>
+      <DependentUpon>SpriteBatch.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Sprite3DBatch.cs" />
     <Compile Include="Shaders\ShaderBaseStream.cs">
-      <DependentUpon>ShaderBaseStream.pdxsl</DependentUpon>
+      <DependentUpon>ShaderBaseStream.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -248,32 +248,32 @@
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecode.OpenGLES.Level_9_1.cs" />
     <Compile Include="Shaders\TexturingKeys.cs" />
     <Compile Include="Shaders\UIEffectSeparateAlphaShader.cs">
-      <DependentUpon>UIEffectSeparateAlphaShader.pdxsl</DependentUpon>
+      <DependentUpon>UIEffectSeparateAlphaShader.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders.Bytecodes\SpriteBatch.Extensions.cs" />
     <Compile Include="Shaders\SpriteBase.cs">
-      <DependentUpon>SpriteBase.pdxsl</DependentUpon>
+      <DependentUpon>SpriteBase.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\SpriteBatchShader.cs">
-      <DependentUpon>SpriteBatchShader.pdxsl</DependentUpon>
+      <DependentUpon>SpriteBatchShader.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\ShaderBase.cs">
-      <DependentUpon>ShaderBase.pdxsl</DependentUpon>
+      <DependentUpon>ShaderBase.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\SpriteEffect.cs">
-      <DependentUpon>SpriteEffect.pdxsl</DependentUpon>
+      <DependentUpon>SpriteEffect.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -281,7 +281,7 @@
     <Compile Include="Shaders.Bytecodes\SpriteEffect.Extensions.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBaseKeys.cs" />
     <Compile Include="Shaders\Texturing.cs">
-      <DependentUpon>Texturing.pdxsl</DependentUpon>
+      <DependentUpon>Texturing.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -291,7 +291,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>UIEffectShader.pdxsl</DependentUpon>
+      <DependentUpon>UIEffectShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.Extensions.cs" />
     <Compile Include="Sprite.Extensions.cs" />
@@ -514,57 +514,57 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
-    <None Include="Shaders.Bytecodes\Graphics.pdxpkg" />
-    <None Include="Shaders.Bytecodes\Shaders.pdxeffectlog" />
-    <None Include="Shaders\BackgroundEffect.pdxsl">
+    <None Include="Shaders.Bytecodes\Graphics.xkpkg" />
+    <None Include="Shaders.Bytecodes\Shaders.xkeffectlog" />
+    <None Include="Shaders\BackgroundEffect.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\UIEffectSeparateAlpha.pdxfx">
+    <None Include="Shaders\UIEffectSeparateAlpha.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffectSeparateAlpha.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\UIEffect.pdxfx">
+    <None Include="Shaders\UIEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffect.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\SpriteBatch.pdxfx">
+    <None Include="Shaders\SpriteBatch.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SpriteBatch.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\ShaderBaseStream.pdxsl">
+    <None Include="Shaders\ShaderBaseStream.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShaderBaseStream.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\ColorUtility.pdxsl">
+    <None Include="Shaders\ColorUtility.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ColorUtility.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\UIEffectSeparateAlphaShader.pdxsl">
+    <None Include="Shaders\UIEffectSeparateAlphaShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffectSeparateAlphaShader.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\SpriteBase.pdxsl">
+    <None Include="Shaders\SpriteBase.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SpriteBase.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\SpriteBatchShader.pdxsl">
+    <None Include="Shaders\SpriteBatchShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SpriteBatchShader.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\ShaderBase.pdxsl">
+    <None Include="Shaders\ShaderBase.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShaderBase.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\SpriteEffect.pdxsl">
+    <None Include="Shaders\SpriteEffect.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SpriteEffect.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\Texturing.pdxsl">
+    <None Include="Shaders\Texturing.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Texturing.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\UIEffectShader.pdxsl">
+    <None Include="Shaders\UIEffectShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffectShader.cs</LastGenOutput>
     </None>

@@ -215,10 +215,10 @@ namespace SiliconStudio.Xenko.Shaders.Tests
                 var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
                 AssetManager.GetFileProvider = () => database;
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\shaders", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\shaders", "*.xksl"))
                     CopyStream(database, shaderName);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Compiler", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Compiler", "*.xksl"))
                     CopyStream(database, shaderName);
 
                 var compiler = new EffectCompiler();

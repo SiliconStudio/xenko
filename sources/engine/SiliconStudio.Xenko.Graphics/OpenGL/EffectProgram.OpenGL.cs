@@ -28,9 +28,9 @@ namespace SiliconStudio.Xenko.Graphics
     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // The ProgramParameter.ActiveUniformBlocks enum is not defined in OpenTK for OpenGL ES
-        public const ProgramParameter PdxActiveUniformBlocks = (ProgramParameter)0x8A36;
+        public const ProgramParameter XkActiveUniformBlocks = (ProgramParameter)0x8A36;
 #else
-        public const ProgramParameter PdxActiveUniformBlocks = ProgramParameter.ActiveUniformBlocks;
+        public const ProgramParameter XkActiveUniformBlocks = ProgramParameter.ActiveUniformBlocks;
 #endif
 
         private LoggerResult reflectionResult = new LoggerResult();
@@ -236,7 +236,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.UseProgram(resourceId);
 
             int uniformBlockCount;
-            GL.GetProgram(resourceId, PdxActiveUniformBlocks, out uniformBlockCount);
+            GL.GetProgram(resourceId, XkActiveUniformBlocks, out uniformBlockCount);
 
             for (int uniformBlockIndex = 0; uniformBlockIndex < uniformBlockCount; ++uniformBlockIndex)
             {

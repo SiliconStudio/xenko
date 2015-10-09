@@ -4,7 +4,7 @@
 //     Xenko Effect Compiler File Generated:
 //     Effect [PhysicsDebugEffect]
 //
-//     Command Line: C:\Users\giova_000\Xenko\xenko\sources\engine\SiliconStudio.Xenko.Physics\Shaders.Bytecode\..\..\..\..\Bin\Windows-Direct3D11\SiliconStudio.Assets.CompilerApp.exe --platform=Windows --profile=Windows --output-path=C:\Users\giova_000\Xenko\xenko\sources\engine\SiliconStudio.Xenko.Physics\Shaders.Bytecode\obj\app_data --build-path=C:\Users\giova_000\Xenko\xenko\sources\engine\SiliconStudio.Xenko.Physics\Shaders.Bytecode\obj\build_app_data --package-file=Physics.pdxpkg
+//     Command Line: C:\Users\giova_000\Xenko\xenko\sources\engine\SiliconStudio.Xenko.Physics\Shaders.Bytecode\..\..\..\..\Bin\Windows-Direct3D11\SiliconStudio.Assets.CompilerApp.exe --platform=Windows --profile=Windows --output-path=C:\Users\giova_000\Xenko\xenko\sources\engine\SiliconStudio.Xenko.Physics\Shaders.Bytecode\obj\app_data --build-path=C:\Users\giova_000\Xenko\xenko\sources\engine\SiliconStudio.Xenko.Physics\Shaders.Bytecode\obj\build_app_data --package-file=Physics.xkpkg
 //     Changes to this file may cause incorrect behavior and will be lost if
 //     the code is regenerated.
 // </auto-generated>

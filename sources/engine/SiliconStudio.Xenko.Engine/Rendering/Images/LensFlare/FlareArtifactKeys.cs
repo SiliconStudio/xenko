@@ -6,7 +6,7 @@ using System.Linq;
 namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
-    /// Keys used by <see cref="FlareArtifact"/> and FlareArtifactEffect pdxfx.
+    /// Keys used by <see cref="FlareArtifact"/> and FlareArtifactEffect xkfx.
     /// </summary>
     internal static class FlareArtifactKeys
     {

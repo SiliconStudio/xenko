@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Console.WriteLine(serializedVersion);
 
                 stream.Position = 0;
-                var entityAsset2 = AssetSerializer.Load(stream, "pdxentity");
+                var entityAsset2 = AssetSerializer.Load(stream, "xkentity");
             }
         }
     }

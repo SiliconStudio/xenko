@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Shaders
     public static class EffectSourceCodeKeys
     {
         /// <summary>
-        /// When compiling a pdxsl, this will generate a source code file
+        /// When compiling a xksl, this will generate a source code file
         /// </summary>
         public static readonly ParameterKey<bool> Enable = ParameterKeys.New<bool>();
 

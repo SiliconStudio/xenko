@@ -72,9 +72,9 @@ namespace SiliconStudio.Xenko.Rendering
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             Enabled = true;
-            directoryWatcher = new DirectoryWatcher("*.pdxsl");
+            directoryWatcher = new DirectoryWatcher("*.xksl");
             directoryWatcher.Modified += FileModifiedEvent;
-            // TODO: pdxfx too
+            // TODO: xkfx too
 #endif
 
             // Make sure default compiler is created (local if possible otherwise none) if nothing else was explicitely set/requested (i.e. by GameSettings)
@@ -242,14 +242,14 @@ namespace SiliconStudio.Xenko.Rendering
 #endif
 
             // Compile shader
-            var isPdxfx = ShaderMixinManager.Contains(effectName);
+            var isXkfx = ShaderMixinManager.Contains(effectName);
 
             // getting the effect from the used parameters only makes sense when the source files are the same
             // TODO: improve this by updating earlyCompilerCache - cache can still be relevant
 
             CompilerResults compilerResult = null;
 
-            if (isPdxfx)
+            if (isXkfx)
             {
                 // perform an early test only based on the parameters
                 compilerResult = GetShaderFromParameters(effectName, compilerParameters);
@@ -257,7 +257,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (compilerResult == null)
             {
-                var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
+                var source = isXkfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
                 compilerResult = compiler.Compile(source, compilerParameters);
 
                 var effectRequested = EffectUsed;
@@ -266,7 +266,7 @@ namespace SiliconStudio.Xenko.Rendering
                     effectRequested(new EffectCompileRequest(effectName, compilerResult.UsedParameters));
                 }
                 
-                if (!compilerResult.HasErrors && isPdxfx)
+                if (!compilerResult.HasErrors && isXkfx)
                 {
                     lock (earlyCompilerCache)
                     {

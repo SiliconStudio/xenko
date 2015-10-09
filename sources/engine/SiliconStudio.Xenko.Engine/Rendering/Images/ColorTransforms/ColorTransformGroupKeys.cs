@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
-    /// Keys used by <see cref="ToneMap"/> and ToneMapEffect pdxfx
+    /// Keys used by <see cref="ToneMap"/> and ToneMapEffect xkfx
     /// </summary>
     internal static class ColorTransformGroupKeys
     {

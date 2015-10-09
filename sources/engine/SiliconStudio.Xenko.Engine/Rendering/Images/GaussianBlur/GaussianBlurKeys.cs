@@ -6,7 +6,7 @@ using System.Linq;
 namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
-    /// Keys used by <see cref="GaussianBlur"/> and GaussianBlurEffect pdxfx
+    /// Keys used by <see cref="GaussianBlur"/> and GaussianBlurEffect xkfx
     /// </summary>
     internal static class GaussianBlurKeys
     {

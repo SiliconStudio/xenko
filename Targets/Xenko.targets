@@ -177,7 +177,7 @@
     <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
     <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
     
-    <!-- Get the real graphics platform from .pdxpkg -->
+    <!-- Get the real graphics platform from .xkpkg -->
     <Exec WorkingDirectory="$(TargetDir)" ConsoleToMSBuild="true"
           Command="&quot;$(SiliconStudioXenkoCompileAssetCommand)&quot; --platform=$(SiliconStudioPlatform) --profile=$(SiliconStudioBuildProfile) --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --get-graphics-platform">
       <Output TaskParameter="ConsoleOutput" PropertyName="SiliconStudioXenkoGraphicsApiComputed" />

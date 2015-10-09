@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Assets.Effect
 {
     /// <summary>
-    /// Describes a shader effect asset (pdxsl).
+    /// Describes a shader effect asset (xksl).
     /// </summary>
     [DataContract("EffectCompositorAsset")]
     [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true)]
@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
         /// <summary>
         /// The default file extension used by the <see cref="EffectLibraryAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxfx";
+        public const string FileExtension = ".xkfx";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EffectLibraryAsset"/> class.

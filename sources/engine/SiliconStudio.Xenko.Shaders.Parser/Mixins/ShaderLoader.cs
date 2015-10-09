@@ -307,7 +307,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
                 var shader = parsingResult.Shader;
 
-                // As shaders can be embedded in namespaces, get only the shader class and make sure there is only one in a pdxsl.
+                // As shaders can be embedded in namespaces, get only the shader class and make sure there is only one in a xksl.
                 var shaderClassTypes = XenkoShaderParser.GetShaderClassTypes(shader.Declarations).ToList();
                 if (shaderClassTypes.Count != 1)
                 {

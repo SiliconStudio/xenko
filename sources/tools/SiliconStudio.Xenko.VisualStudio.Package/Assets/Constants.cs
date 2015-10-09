@@ -4,7 +4,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Assets
 {
     public static class Constants
     {
-        public const string ContentType = "pdxasset";
+        public const string ContentType = "xkasset";
 
         public const string EditorType = "AssetObjectEditor";
     }

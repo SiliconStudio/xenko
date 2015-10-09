@@ -233,7 +233,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             //            if (foundTextureDiffuse != foundTextureTransparent)
             //            {
             //                var alphaMixNode = new MaterialBinaryComputeNode(diffuseNode, transparentNode, BinaryOperator.SubstituteAlpha);
-            //                material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseWithAlpha", alphaMixNode);
+            //                material.AddColorNode(MaterialParameters.AlbedoDiffuse, "xk_diffuseWithAlpha", alphaMixNode);
             //            }
             //        }
 
@@ -255,7 +255,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
             //            // add the new one
             //            var opaqueNode = new MaterialBinaryComputeNode(diffuseNode, null, BinaryOperator.Opaque);
-            //            material.AddColorNode(MaterialParameters.AlbedoDiffuse, "pdx_diffuseOpaque", opaqueNode);
+            //            material.AddColorNode(MaterialParameters.AlbedoDiffuse, "xk_diffuseOpaque", opaqueNode);
             //        }
             //    }
             //}

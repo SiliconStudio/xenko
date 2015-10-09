@@ -21,7 +21,7 @@ namespace SiliconStudio.TextureConverter.Requests
         /// <summary>
         /// The xenko <see cref="Image"/> which will contains the exported texture.
         /// </summary>
-        public Image PdxImage { get; set; }
+        public Image XkImage { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ExportToXenkoRequest"/> class.

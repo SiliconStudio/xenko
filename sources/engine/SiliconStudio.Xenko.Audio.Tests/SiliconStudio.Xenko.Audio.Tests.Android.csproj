@@ -32,7 +32,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Audio.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Audio.Tests.xkpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Android' ">
     <DebugSymbols>true</DebugSymbols>
@@ -202,29 +202,29 @@
     <Compile Include="TestSoundEffectInstance.cs" />
     <Compile Include="TestSoundMusic.cs" />
     <Compile Include="TestWaveStreamReader.cs" />
-    <None Include="AudioAssets\a.pdxsnd" />
-    <None Include="AudioAssets\ae.pdxsnd" />
-    <None Include="AudioAssets\a_Music.pdxsnd" />
-    <None Include="AudioAssets\wave1HeaderCorrupted_Music.pdxsnd" />
-    <None Include="AudioAssets\wave1_4Channels_Music.pdxsnd" />
-    <None Include="AudioAssets\fiveptone_Music.pdxsnd" />
-    <None Include="AudioAssets\stereo_Music.pdxsnd" />
-    <None Include="AudioAssets\wave1_Music.pdxsnd" />
-    <None Include="AudioAssets\wave1MP3.pdxsnd" />
-    <None Include="AudioAssets\bizet.pdxsnd" />
-    <None Include="AudioAssets\sayuriWAV.pdxsnd" />
-    <None Include="AudioAssets\stereoOGG.pdxsnd" />
-    <None Include="AudioAssets\InvalidAudioFile.pdxsnd" />
-    <None Include="AudioAssets\fiveptone.pdxsnd" />
-    <None Include="AudioAssets\sayuri.pdxsnd" />
-    <None Include="AudioAssets\sayuriPart.pdxsnd" />
-    <None Include="AudioAssets\stereo.pdxsnd" />
-    <None Include="AudioAssets\wave1.pdxsnd" />
-    <None Include="AudioAssets\wave1HeaderCorrupted.pdxsnd" />
-    <None Include="AudioAssets\wave1_24bits.pdxsnd" />
-    <None Include="AudioAssets\wave1_4Channels.pdxsnd" />
-    <None Include="AudioAssets\wave2.pdxsnd" />
-    <None Include="SiliconStudio.Xenko.Audio.Tests.pdxpkg" />
+    <None Include="AudioAssets\a.xksnd" />
+    <None Include="AudioAssets\ae.xksnd" />
+    <None Include="AudioAssets\a_Music.xksnd" />
+    <None Include="AudioAssets\wave1HeaderCorrupted_Music.xksnd" />
+    <None Include="AudioAssets\wave1_4Channels_Music.xksnd" />
+    <None Include="AudioAssets\fiveptone_Music.xksnd" />
+    <None Include="AudioAssets\stereo_Music.xksnd" />
+    <None Include="AudioAssets\wave1_Music.xksnd" />
+    <None Include="AudioAssets\wave1MP3.xksnd" />
+    <None Include="AudioAssets\bizet.xksnd" />
+    <None Include="AudioAssets\sayuriWAV.xksnd" />
+    <None Include="AudioAssets\stereoOGG.xksnd" />
+    <None Include="AudioAssets\InvalidAudioFile.xksnd" />
+    <None Include="AudioAssets\fiveptone.xksnd" />
+    <None Include="AudioAssets\sayuri.xksnd" />
+    <None Include="AudioAssets\sayuriPart.xksnd" />
+    <None Include="AudioAssets\stereo.xksnd" />
+    <None Include="AudioAssets\wave1.xksnd" />
+    <None Include="AudioAssets\wave1HeaderCorrupted.xksnd" />
+    <None Include="AudioAssets\wave1_24bits.xksnd" />
+    <None Include="AudioAssets\wave1_4Channels.xksnd" />
+    <None Include="AudioAssets\wave2.xksnd" />
+    <None Include="SiliconStudio.Xenko.Audio.Tests.xkpkg" />
   </ItemGroup>
   <ItemGroup>
     <AndroidResource Label="Xenko.DoNotSync" Include="Resources\Layout\Main.axml" />

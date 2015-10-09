@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets or sets the effect to use to render the models in the scene.
         /// </summary>
         /// <value>The main model effect.</value>
-        /// <userdoc>The name of the effect to use to render models (a '.pdxsl' or '.pdxfx' filename without the extension).</userdoc>
+        /// <userdoc>The name of the effect to use to render models (a '.xksl' or '.xkfx' filename without the extension).</userdoc>
         [DataMember(10)]
         public abstract string ModelEffect { get; set; }// TODO: This is not a good extensibility point. Check how to improve this
 

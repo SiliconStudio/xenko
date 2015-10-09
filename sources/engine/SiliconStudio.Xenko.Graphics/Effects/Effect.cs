@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="device">The device.</param>
         /// <param name="bytecode">The bytecode.</param>
-        /// <param name="usedParameters">The parameters used to create this shader (from a pdxfx).</param>
+        /// <param name="usedParameters">The parameters used to create this shader (from a xkfx).</param>
         /// <exception cref="System.ArgumentNullException">
         /// device
         /// or

@@ -22,7 +22,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Graphics.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Graphics.Tests.xkpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -187,13 +187,13 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Compile Include="Assets\ComputeShaderTestEffect.cs">
-      <DependentUpon>ComputeShaderTestEffect.pdxfx</DependentUpon>
+      <DependentUpon>ComputeShaderTestEffect.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Assets\HammersleyTest.cs">
-      <DependentUpon>HammersleyTest.pdxsl</DependentUpon>
+      <DependentUpon>HammersleyTest.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -202,34 +202,34 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultipleRenderTargetsEffect.pdxfx</DependentUpon>
+      <DependentUpon>MultipleRenderTargetsEffect.xkfx</DependentUpon>
     </Compile>
     <Compile Include="Assets\MultipleRenderTargetsEffectShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultipleRenderTargetsEffectShader.pdxsl</DependentUpon>
+      <DependentUpon>MultipleRenderTargetsEffectShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Assets\ComputeShaderTest.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeShaderTest.pdxsl</DependentUpon>
+      <DependentUpon>ComputeShaderTest.xksl</DependentUpon>
     </Compile>
     <Compile Include="Assets\CustomEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CustomEffect.pdxfx</DependentUpon>
+      <DependentUpon>CustomEffect.xkfx</DependentUpon>
     </Compile>
     <Compile Include="Assets\MyCustomColorTransformShader.cs">
-      <DependentUpon>MyCustomColorTransformShader.pdxsl</DependentUpon>
+      <DependentUpon>MyCustomColorTransformShader.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Assets\CustomShader2.cs">
-      <DependentUpon>CustomShader2.pdxsl</DependentUpon>
+      <DependentUpon>CustomShader2.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -238,41 +238,41 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CustomShader.pdxsl</DependentUpon>
+      <DependentUpon>CustomShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Assets\CubemapSprite.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CubemapSprite.pdxsl</DependentUpon>
+      <DependentUpon>CubemapSprite.xksl</DependentUpon>
     </Compile>
     <Compile Include="Compiler\MultiTexturesSpriteEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultiTexturesSpriteEffect.pdxfx</DependentUpon>
+      <DependentUpon>MultiTexturesSpriteEffect.xkfx</DependentUpon>
     </Compile>
     <Compile Include="Compiler\MultiTexturesSpriteShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultiTexturesSpriteShader.pdxsl</DependentUpon>
+      <DependentUpon>MultiTexturesSpriteShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Compiler\SimpleEffect.cs">
-      <DependentUpon>SimpleEffect.pdxfx</DependentUpon>
+      <DependentUpon>SimpleEffect.xkfx</DependentUpon>
       <SubType>Code</SubType>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <AutoGen>True</AutoGen>
     </Compile>
     <Compile Include="Compiler\SimpleShader.cs">
-      <DependentUpon>SimpleShader.pdxsl</DependentUpon>
+      <DependentUpon>SimpleShader.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Compiler\ToGlslEffect.cs">
-      <DependentUpon>ToGlslEffect.pdxfx</DependentUpon>
+      <DependentUpon>ToGlslEffect.xkfx</DependentUpon>
       <SubType>Code</SubType>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -282,7 +282,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ToGlslShader.pdxsl</DependentUpon>
+      <DependentUpon>ToGlslShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Module.cs" />
     <Compile Include="Regression\TestMultipleTextures.cs" />
@@ -321,71 +321,71 @@
     <Compile Include="TestTexture.cs" />
     <Compile Include="TestGraphicsApiCheck.cs" />
     <Compile Include="TestTextureSampling.cs" />
-    <None Include="Assets\ComputeShaderTestEffect.pdxfx">
+    <None Include="Assets\ComputeShaderTestEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeShaderTestEffect.cs</LastGenOutput>
     </None>
-    <None Include="Assets\HammersleyTest.pdxsl">
+    <None Include="Assets\HammersleyTest.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>HammersleyTest.cs</LastGenOutput>
     </None>
-    <None Include="Assets\MultipleRenderTargetsEffect.pdxfx">
+    <None Include="Assets\MultipleRenderTargetsEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
     </None>
-    <None Include="Assets\MultipleRenderTargetsEffectShader.pdxsl">
+    <None Include="Assets\MultipleRenderTargetsEffectShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultipleRenderTargetsEffectShader.cs</LastGenOutput>
     </None>
-    <None Include="Assets\ComputeShaderTest.pdxsl">
+    <None Include="Assets\ComputeShaderTest.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeShaderTest.cs</LastGenOutput>
     </None>
-    <None Include="Assets\CustomEffect.pdxfx">
+    <None Include="Assets\CustomEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CustomEffect.cs</LastGenOutput>
     </None>
-    <None Include="Assets\MyCustomColorTransformShader.pdxsl">
+    <None Include="Assets\MyCustomColorTransformShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MyCustomColorTransformShader.cs</LastGenOutput>
     </None>
-    <None Include="Assets\CustomShader2.pdxsl">
+    <None Include="Assets\CustomShader2.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CustomShader2.cs</LastGenOutput>
     </None>
-    <None Include="Assets\CustomShader.pdxsl">
+    <None Include="Assets\CustomShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CustomShader.cs</LastGenOutput>
     </None>
-    <None Include="Assets\CubemapSprite.pdxsl">
+    <None Include="Assets\CubemapSprite.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapSprite.cs</LastGenOutput>
     </None>
-    <None Include="Compiler\MultiTexturesSpriteEffect.pdxfx">
+    <None Include="Compiler\MultiTexturesSpriteEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultiTexturesSpriteEffect.cs</LastGenOutput>
     </None>
-    <None Include="Compiler\MultiTexturesSpriteShader.pdxsl">
+    <None Include="Compiler\MultiTexturesSpriteShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultiTexturesSpriteShader.cs</LastGenOutput>
     </None>
-    <None Include="Compiler\SimpleEffect.pdxfx">
+    <None Include="Compiler\SimpleEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SimpleEffect.cs</LastGenOutput>
     </None>
-    <None Include="Compiler\SimpleShader.pdxsl">
+    <None Include="Compiler\SimpleShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SimpleShader.cs</LastGenOutput>
     </None>
-    <None Include="Compiler\ToGlslEffect.pdxfx">
+    <None Include="Compiler\ToGlslEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ToGlslEffect.cs</LastGenOutput>
     </None>
-    <None Include="Compiler\ToGlslShader.pdxsl">
+    <None Include="Compiler\ToGlslShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ToGlslShader.cs</LastGenOutput>
     </None>
-    <None Include="SiliconStudio.Xenko.Graphics.Tests.pdxpkg" />
+    <None Include="SiliconStudio.Xenko.Graphics.Tests.xkpkg" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Icon.png" Label="Xenko.DoNotSync" />

@@ -6,7 +6,7 @@ using System.Linq;
 namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
-    /// Keys used by <see cref="LightStreak"/> and LightStreakEffect pdxfx.
+    /// Keys used by <see cref="LightStreak"/> and LightStreakEffect xkfx.
     /// </summary>
     internal static class LightStreakKeys
     {

@@ -71,7 +71,7 @@ namespace ScriptTest
             return (urlAsLowerCase.EndsWith(".png")
                 || urlAsLowerCase.EndsWith(".jpg")
                 //|| urlAsLowerCase.EndsWith(".fbx")
-                || urlAsLowerCase.EndsWith(".pdxsl"));
+                || urlAsLowerCase.EndsWith(".xksl"));
         }
     }
 
@@ -172,7 +172,7 @@ namespace ScriptTest
                                             var separatorIndex = file.IndexOf('/', url.Length + 1);
                                             return file.Substring(url.Length, separatorIndex != -1 ? separatorIndex - url.Length + 1 : file.Length - url.Length);
                                         })
-                                    .Where(x => x.Key.EndsWith("/") || x.Key.EndsWith(".dat") || x.Key.EndsWith(".pdxsl"))
+                                    .Where(x => x.Key.EndsWith("/") || x.Key.EndsWith(".dat") || x.Key.EndsWith(".xksl"))
                                     .Select(x => new ViewModelReference(KeyValuePair.Create(UrlType.FileTracker, url + x.Key), this))
                             )));
                     }

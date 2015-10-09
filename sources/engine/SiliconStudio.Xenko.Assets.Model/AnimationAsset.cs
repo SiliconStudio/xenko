@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxanim";
+        public const string FileExtension = ".xkanim";
 
         /// <summary>
         /// Gets or sets the scale import.

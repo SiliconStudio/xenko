@@ -66,10 +66,10 @@ namespace SiliconStudio.Xenko.Graphics
                 assetIndexMap.LoadNewValues();
                 var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\shaders", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\shaders", "*.xksl"))
                     CopyStream(database, shaderName);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"Compiler", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"Compiler", "*.xksl"))
                     CopyStream(database, shaderName);
 
                 var compiler = new EffectCompiler();
@@ -108,13 +108,13 @@ namespace SiliconStudio.Xenko.Graphics
                 assetIndexMap.LoadNewValues();
                 var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\shaders", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\shaders", "*.xksl"))
                     CopyStream(database, shaderName);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"Compiler", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"Compiler", "*.xksl"))
                     CopyStream(database, shaderName);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\engine\SiliconStudio.Xenko.Graphics\Shaders", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\engine\SiliconStudio.Xenko.Graphics\Shaders", "*.xksl"))
                     CopyStream(database, shaderName);
 
                 var compiler = new EffectCompiler();
@@ -153,13 +153,13 @@ namespace SiliconStudio.Xenko.Graphics
                 assetIndexMap.LoadNewValues();
                 var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\shaders", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\shaders", "*.xksl"))
                     CopyStream(database, shaderName);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"Compiler", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"Compiler", "*.xksl"))
                     CopyStream(database, shaderName);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\engine\SiliconStudio.Xenko.Graphics\Shaders", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\engine\SiliconStudio.Xenko.Graphics\Shaders", "*.xksl"))
                     CopyStream(database, shaderName);
 
                 var compiler = new EffectCompiler();

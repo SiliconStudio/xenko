@@ -30,8 +30,8 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
         [Ignore]
-        [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx")]
-        [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx")]
+        [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.xk")]
+        [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.xk")]
         public void StartLibraryTest(string file)
         {
             TexImage image = LoadInput(file);
@@ -45,8 +45,8 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
         [Ignore]
-        [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx")]
-        [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx")]
+        [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.xk")]
+        [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.xk")]
         public void EndLibraryTest(string file)
         {
             TexImage image = LoadInput(file);
@@ -69,7 +69,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [Test, Ignore]
         public void CanHandleRequestTest()
         {
-            TexImage image = LoadInput("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx");
+            TexImage image = LoadInput("TextureArray_WMipMaps_ATC_RGBA_Explicit.xk");
 
             Assert.IsTrue(library.CanHandleRequest(image, new DecompressingRequest(false)));
             Assert.IsTrue(library.CanHandleRequest(image, new CompressingRequest(Xenko.Graphics.PixelFormat.ATC_RGBA_Explicit)));
@@ -80,9 +80,9 @@ namespace SiliconStudio.TextureConverter.Tests
 
 
         [Ignore]
-        [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx")]
-        [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx")]
-        [TestCase("TextureCube_WMipMaps_ATC_RGBA_Explicit.pdx")]
+        [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.xk")]
+        [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.xk")]
+        [TestCase("TextureCube_WMipMaps_ATC_RGBA_Explicit.xk")]
         public void DecompressTest(string file)
         {
             TexImage image = LoadInput(file);
@@ -93,9 +93,9 @@ namespace SiliconStudio.TextureConverter.Tests
         }
 
         [Ignore]
-        [TestCase("Texture3D_WMipMap_RGBA8888.pdx", Xenko.Graphics.PixelFormat.ATC_RGBA_Explicit)]
-        [TestCase("TextureArray_WMipMaps_RGBA8888.pdx", Xenko.Graphics.PixelFormat.ATC_RGBA_Interpolated)]
-        [TestCase("TextureCube_WMipMaps_RGBA8888.pdx", Xenko.Graphics.PixelFormat.ATC_RGBA_Explicit)]
+        [TestCase("Texture3D_WMipMap_RGBA8888.xk", Xenko.Graphics.PixelFormat.ATC_RGBA_Explicit)]
+        [TestCase("TextureArray_WMipMaps_RGBA8888.xk", Xenko.Graphics.PixelFormat.ATC_RGBA_Interpolated)]
+        [TestCase("TextureCube_WMipMaps_RGBA8888.xk", Xenko.Graphics.PixelFormat.ATC_RGBA_Explicit)]
         public void CompressTest(string file, Xenko.Graphics.PixelFormat format)
         {
             TexImage image = LoadInput(file);

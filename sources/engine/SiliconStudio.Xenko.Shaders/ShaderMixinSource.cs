@@ -27,9 +27,9 @@ namespace SiliconStudio.Xenko.Shaders
         }
 
         /// <summary>
-        /// Gets or sets the name of the pdxfx effect linked to this node.
+        /// Gets or sets the name of the xkfx effect linked to this node.
         /// </summary>
-        /// <value>The name of the pdxfx effect.</value>
+        /// <value>The name of the xkfx effect.</value>
         public string Name { get; set; }
 
         [DataMemberIgnore]

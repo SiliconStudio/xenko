@@ -23,7 +23,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <summary>
         /// The <see cref="Image"/> image
         /// </summary>
-        public Image PdxImage;
+        public Image XkImage;
     }
 
 
@@ -33,7 +33,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
     internal class XenkoTexLibrary : ITexLibrary
     {
         private static Logger Log = GlobalLogger.GetLogger("XenkoTexLibrary");
-        public static readonly string Extension = ".pdx";
+        public static readonly string Extension = ".xk";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XenkoTexLibrary"/> class.
@@ -49,7 +49,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         public void Dispose(TexImage image)
         {
             XenkoTextureLibraryData libraryData = (XenkoTextureLibraryData)image.LibraryData[this];
-            if (libraryData.PdxImage != null) libraryData.PdxImage.Dispose();
+            if (libraryData.XkImage != null) libraryData.XkImage.Dispose();
         }
 
         public bool SupportBGRAOrder()
@@ -83,7 +83,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
                 case RequestType.Loading: // Xenko can load dds file or his own format or a Xenko <see cref="Image"/> instance.
                     LoadingRequest load = (LoadingRequest)request;
-                    if(load.Mode == LoadingRequest.LoadingMode.PdxImage) return true;
+                    if(load.Mode == LoadingRequest.LoadingMode.XkImage) return true;
                     else if(load.Mode == LoadingRequest.LoadingMode.FilePath)
                     {
                         string extension = Path.GetExtension(load.FilePath);
@@ -132,7 +132,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         {
             Log.Debug("Exporting to " + request.FilePath + " ...");
 
-            Image pdxImage = null;
+            Image xkImage = null;
 
             if (request.MinimumMipMapSize > 1) // Check whether a minimum mipmap size was requested
             {
@@ -159,7 +159,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     int SubImagePerArrayElement = image.SubImageArray.Length / image.ArraySize; // number of SubImage in each texture array element.
 
                     // Initializing library native data according to the new mipmap level
-                    pdxImage = Image.New3D(image.Width, image.Height, image.Depth, newMipMapCount, image.Format);
+                    xkImage = Image.New3D(image.Width, image.Height, image.Depth, newMipMapCount, image.Format);
 
                     try
                     {
@@ -168,14 +168,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         {
                             for (int j = 0; j < ct; ++j)
                             {
-                                Utilities.CopyMemory(pdxImage.PixelBuffer[ct2].DataPointer, pdxImage.PixelBuffer[j + i * SubImagePerArrayElement].DataPointer, pdxImage.PixelBuffer[j + i * SubImagePerArrayElement].BufferStride);
+                                Utilities.CopyMemory(xkImage.PixelBuffer[ct2].DataPointer, xkImage.PixelBuffer[j + i * SubImagePerArrayElement].DataPointer, xkImage.PixelBuffer[j + i * SubImagePerArrayElement].BufferStride);
                                 ++ct2;
                             }
                         }
                     }
                     catch (AccessViolationException e)
                     {
-                        pdxImage.Dispose();
+                        xkImage.Dispose();
                         Log.Error("Failed to export texture with the mipmap minimum size request. ", e);
                         throw new TextureToolsException("Failed to export texture with the mipmap minimum size request. ", e);
                     }
@@ -198,19 +198,19 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     switch (image.Dimension)
                     {
                         case TexImage.TextureDimension.Texture1D:
-                            pdxImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
+                            xkImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
                         case TexImage.TextureDimension.Texture2D:
-                            pdxImage = Image.New2D(image.Width, image.Height, newMipMapCount, image.Format, image.ArraySize); break;
+                            xkImage = Image.New2D(image.Width, image.Height, newMipMapCount, image.Format, image.ArraySize); break;
                         case TexImage.TextureDimension.TextureCube:
-                            pdxImage = Image.NewCube(image.Width, newMipMapCount, image.Format); break;
+                            xkImage = Image.NewCube(image.Width, newMipMapCount, image.Format); break;
                     }
-                    if (pdxImage == null)
+                    if (xkImage == null)
                     {
                         Log.Error("Image could not be created.");
                         throw new InvalidOperationException("Image could not be created.");
                     }
 
-                    if (pdxImage.TotalSizeInBytes != dataSize)
+                    if (xkImage.TotalSizeInBytes != dataSize)
                     {
                         Log.Error("Image size different than expected.");
                         throw new InvalidOperationException("Image size different than expected.");
@@ -223,13 +223,13 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         for (int i = 0; i < image.ArraySize * newMipMapCount; ++i)
                         {
                             if (i == newMipMapCount || (i > newMipMapCount && (i % newMipMapCount == 0))) j += gap;
-                            Utilities.CopyMemory(pdxImage.PixelBuffer[i].DataPointer, image.SubImageArray[j].Data, image.SubImageArray[j].DataSize);
+                            Utilities.CopyMemory(xkImage.PixelBuffer[i].DataPointer, image.SubImageArray[j].Data, image.SubImageArray[j].DataSize);
                             ++j;
                         }
                     }
                     catch (AccessViolationException e)
                     {
-                        pdxImage.Dispose();
+                        xkImage.Dispose();
                         Log.Error("Failed to export texture with the mipmap minimum size request. ", e);
                         throw new TextureToolsException("Failed to export texture with the mipmap minimum size request. ", e);
                     }
@@ -240,36 +240,36 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 switch (image.Dimension)
                 {
                     case TexImage.TextureDimension.Texture1D:
-                        pdxImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
+                        xkImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
                     case TexImage.TextureDimension.Texture2D:
-                        pdxImage = Image.New2D(image.Width, image.Height, image.MipmapCount, image.Format, image.ArraySize); break;
+                        xkImage = Image.New2D(image.Width, image.Height, image.MipmapCount, image.Format, image.ArraySize); break;
                     case TexImage.TextureDimension.Texture3D:
-                        pdxImage = Image.New3D(image.Width, image.Height, image.Depth, image.MipmapCount, image.Format); break;
+                        xkImage = Image.New3D(image.Width, image.Height, image.Depth, image.MipmapCount, image.Format); break;
                     case TexImage.TextureDimension.TextureCube:
-                        pdxImage = Image.NewCube(image.Width, image.MipmapCount, image.Format); break;
+                        xkImage = Image.NewCube(image.Width, image.MipmapCount, image.Format); break;
                 }
-                if (pdxImage == null)
+                if (xkImage == null)
                 {
                     Log.Error("Image could not be created.");
                     throw new InvalidOperationException("Image could not be created.");
                 }
 
-                if (pdxImage.TotalSizeInBytes != image.DataSize)
+                if (xkImage.TotalSizeInBytes != image.DataSize)
                 {
                     Log.Error("Image size different than expected.");
                     throw new InvalidOperationException("Image size different than expected.");
                 }
 
-                Utilities.CopyMemory(pdxImage.DataPointer, image.Data, image.DataSize);
+                Utilities.CopyMemory(xkImage.DataPointer, image.Data, image.DataSize);
             }
 
             using (var fileStream = new FileStream(request.FilePath, FileMode.Create, FileAccess.Write))
             {
                 String extension = Path.GetExtension(request.FilePath);
                 if(extension.Equals(Extension))
-                    pdxImage.Save(fileStream, ImageFileType.Xenko);
+                    xkImage.Save(fileStream, ImageFileType.Xenko);
                 else if (extension.Equals(".dds"))
-                    pdxImage.Save(fileStream, ImageFileType.Dds);
+                    xkImage.Save(fileStream, ImageFileType.Dds);
                 else
                 {
                     Log.Error("Unsupported file extension.");
@@ -277,7 +277,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 }
             }
 
-            pdxImage.Dispose();
+            xkImage.Dispose();
             image.Save(request.FilePath);
         }
 
@@ -298,33 +298,33 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         {
             Log.Debug("Exporting to Xenko Image ...");
 
-            Image pdxImage = null;
+            Image xkImage = null;
             switch (image.Dimension)
             {
                 case TexImage.TextureDimension.Texture1D:
-                    pdxImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
+                    xkImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
                 case TexImage.TextureDimension.Texture2D:
-                    pdxImage = Image.New2D(image.Width, image.Height, image.MipmapCount, image.Format, image.ArraySize); break;
+                    xkImage = Image.New2D(image.Width, image.Height, image.MipmapCount, image.Format, image.ArraySize); break;
                 case TexImage.TextureDimension.Texture3D:
-                    pdxImage = Image.New3D(image.Width, image.Height, image.Depth, image.MipmapCount, image.Format); break;
+                    xkImage = Image.New3D(image.Width, image.Height, image.Depth, image.MipmapCount, image.Format); break;
                 case TexImage.TextureDimension.TextureCube:
-                    pdxImage = Image.NewCube(image.Width, image.MipmapCount, image.Format); break;
+                    xkImage = Image.NewCube(image.Width, image.MipmapCount, image.Format); break;
             }
-            if (pdxImage == null)
+            if (xkImage == null)
             {
                 Log.Error("Image could not be created.");
                 throw new InvalidOperationException("Image could not be created.");
             }
 
-            if (pdxImage.TotalSizeInBytes != image.DataSize)
+            if (xkImage.TotalSizeInBytes != image.DataSize)
             {
                 Log.Error("Image size different than expected.");
                 throw new InvalidOperationException("Image size different than expected.");
             }
 
-            Utilities.CopyMemory(pdxImage.DataPointer, image.Data, image.DataSize);
+            Utilities.CopyMemory(xkImage.DataPointer, image.Data, image.DataSize);
 
-            request.PdxImage = pdxImage;
+            request.XkImage = xkImage;
         }
 
 
@@ -341,16 +341,16 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             image.LibraryData[this] = libraryData;
 
             Image inputImage;
-            if (request.Mode == LoadingRequest.LoadingMode.PdxImage)
+            if (request.Mode == LoadingRequest.LoadingMode.XkImage)
             {
-                inputImage = request.PdxImage;
+                inputImage = request.XkImage;
             }
             else if (request.Mode == LoadingRequest.LoadingMode.FilePath)
             {
                 using (var fileStream = new FileStream(request.FilePath, FileMode.Open, FileAccess.Read))
                     inputImage = Image.Load(fileStream);
 
-                libraryData.PdxImage = inputImage; // the image need to be disposed by the xenko text library
+                libraryData.XkImage = inputImage; // the image need to be disposed by the xenko text library
             }
             else
             {

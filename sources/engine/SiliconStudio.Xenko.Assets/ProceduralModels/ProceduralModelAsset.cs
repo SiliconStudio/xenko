@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.ProceduralModels
         /// <summary>
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxpromodel";
+        public const string FileExtension = ".xkpromodel";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProceduralModelAsset"/> class.

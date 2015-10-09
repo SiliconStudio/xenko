@@ -22,7 +22,7 @@
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Input.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Input.Tests.xkpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -194,7 +194,7 @@
     <Compile Include="AdvancedInputTest.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="SensorGameTest.cs" />
-    <None Include="SiliconStudio.Xenko.Input.Tests.pdxpkg" />
+    <None Include="SiliconStudio.Xenko.Input.Tests.xkpkg" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Icon.png" Label="Xenko.DoNotSync" />

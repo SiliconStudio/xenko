@@ -52,14 +52,14 @@ namespace SiliconStudio.Assets.CompilerApp
             RuntimeHelpers.RunModuleConstructor(typeof(ModelAsset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(SpriteStudioAnimationAsset).Module.ModuleHandle);
             //var project = new Package();
-            //project.Save("test.pdxpkg");
+            //project.Save("test.xkpkg");
 
             //Thread.Sleep(10000);
             //var spriteFontAsset = StaticFontAsset.New();
-            //Asset.Save("test.pdxfnt", spriteFontAsset);
+            //Asset.Save("test.xkfnt", spriteFontAsset);
             //project.Refresh();
 
-            //args = new string[] { "test.pdxpkg", "-o:app_data", "-b:tmp", "-t:1" };
+            //args = new string[] { "test.xkpkg", "-o:app_data", "-b:tmp", "-t:1" };
 
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;
@@ -89,7 +89,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 { "project-configuration=", "Project configuration", v => options.ProjectConfiguration = v },
                 { "platform=", "Platform name", v => options.Platform = (PlatformType)Enum.Parse(typeof(PlatformType), v) },
                 { "graphics-platform=", "Graphics Platform name", v => options.GraphicsPlatform = (GraphicsPlatform)Enum.Parse(typeof(GraphicsPlatform), v) },
-                { "get-graphics-platform", "Get Graphics Platform name (needs a pdxpkg and a profile)", v => options.GetGraphicsPlatform = v != null },
+                { "get-graphics-platform", "Get Graphics Platform name (needs a xkpkg and a profile)", v => options.GetGraphicsPlatform = v != null },
                 { "solution-file=", "Solution File Name", v => options.SolutionFile = v },
                 { "package-id=", "Package Id from the solution file", v => options.PackageId = Guid.Parse(v) },
                 { "package-file=", "Input Package File Name", v => options.PackageFile = v },

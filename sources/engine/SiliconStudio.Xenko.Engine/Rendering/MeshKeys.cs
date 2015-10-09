@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering
     public class MeshKeys
     {
         /// <summary>
-        /// When compiling effect with an EffectLibraryAsset (pdxfxlib), set it to true to allow permutation based on the 
+        /// When compiling effect with an EffectLibraryAsset (xkfxlib), set it to true to allow permutation based on the 
         /// parameters of all meshes.
         /// </summary>
         /// TODO: allow permutation for a specific mesh

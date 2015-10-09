@@ -31,7 +31,7 @@
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Engine.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Engine.Tests.xkpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -164,7 +164,7 @@
     <None Include="effects_test.xml">
       <SubType>Designer</SubType>
     </None>
-    <None Include="SiliconStudio.Xenko.Engine.Tests.pdxpkg" />
+    <None Include="SiliconStudio.Xenko.Engine.Tests.xkpkg" />
   </ItemGroup>
   <ItemGroup>
     <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />

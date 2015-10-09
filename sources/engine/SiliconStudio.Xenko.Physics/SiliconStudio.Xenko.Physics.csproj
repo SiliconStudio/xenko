@@ -82,7 +82,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>PhysicsDebugEffect.pdxsl</DependentUpon>
+      <DependentUpon>PhysicsDebugEffect.xksl</DependentUpon>
     </Compile>
     <Compile Include="ShapeOrientation.cs" />
     <Compile Include="Shapes\Box2DColliderShape.cs" />
@@ -118,7 +118,7 @@
     <Compile Include="RigidBodyTypes.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\PhysicsDebugEffect.pdxsl">
+    <None Include="Shaders\PhysicsDebugEffect.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>PhysicsDebugEffect.cs</LastGenOutput>
     </None>

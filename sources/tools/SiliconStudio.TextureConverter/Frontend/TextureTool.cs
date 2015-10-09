@@ -967,22 +967,22 @@ namespace SiliconStudio.TextureConverter
             region.Height = Math.Max(0, Math.Min(region.Height, texImage.Height - region.Y));
 
             // create the xenko image
-            var pdxImage = Image.New2D(region.Width, region.Height, 1, texImage.Format);
-            if (pdxImage == null)
+            var xkImage = Image.New2D(region.Width, region.Height, 1, texImage.Format);
+            if (xkImage == null)
             {
                 Log.Error("Image could not be created.");
                 throw new InvalidOperationException("Image could not be created.");
             }
 
             // get the row pitch of the xenko image
-            var pixelBuffer = pdxImage.GetPixelBuffer(0, 0);
+            var pixelBuffer = xkImage.GetPixelBuffer(0, 0);
             var dstRowPitch = pixelBuffer.RowStride;
 
             // copy the data
             if (texImage.ArraySize > 0)
             {
                 var rowSrcPtr = texImage.SubImageArray[0].Data;
-                var rowDstPtr = pdxImage.DataPointer;
+                var rowDstPtr = xkImage.DataPointer;
                 rowSrcPtr = IntPtr.Add(rowSrcPtr, region.Y * texImage.RowPitch);
                 for (int i = 0; i < region.Height; i++)
                 {
@@ -997,7 +997,7 @@ namespace SiliconStudio.TextureConverter
                 }
             }
 
-            return pdxImage;
+            return xkImage;
         }
 
 
@@ -1013,7 +1013,7 @@ namespace SiliconStudio.TextureConverter
 
             ExecuteRequest(image, request);
 
-            return request.PdxImage;
+            return request.XkImage;
         }
 
 

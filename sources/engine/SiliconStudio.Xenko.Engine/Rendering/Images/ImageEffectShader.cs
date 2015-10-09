@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Graphics.Internals;
 namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
-    /// Post effect using an <see cref="Effect"/> (either pdxfx or pdxsl).
+    /// Post effect using an <see cref="Effect"/> (either xkfx or xksl).
     /// </summary>
     [DataContract("ImageEffectShader")]
     public class ImageEffectShader : ImageEffect

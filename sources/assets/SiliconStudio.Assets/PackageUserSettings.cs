@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     public class PackageUserSettings
     {
-        private const string SettingsExtension = ".pdxpkg.user";
+        private const string SettingsExtension = ".xkpkg.user";
         private readonly Package package;
         private readonly SettingsProfile profile;
 

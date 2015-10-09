@@ -44,7 +44,7 @@ namespace NShader
         public const string CG_CGFX = ".cgfx";
 
         // Xenko file extensions
-        public const string Xenko_Shader = ".pdxsl";
-        public const string Xenko_Effect = ".pdxfx";
+        public const string Xenko_Shader = ".xksl";
+        public const string Xenko_Effect = ".xkfx";
     }
 }
