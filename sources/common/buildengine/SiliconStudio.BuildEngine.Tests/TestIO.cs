@@ -120,6 +120,7 @@ namespace SiliconStudio.BuildEngine.Tests
             builder1.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1" });
             builder1.Run(Builder.Mode.Build);
 
+            // TODO: fix this
             VirtualFileSystem.FileDelete("/data/db/index");
 
             var builder2 = Utils.CreateBuilder();
@@ -232,6 +233,7 @@ namespace SiliconStudio.BuildEngine.Tests
             BuildStep.LinkBuildSteps(step, childStep);
             builder1.Run(Builder.Mode.Build);
 
+            // TODO: fix this
             VirtualFileSystem.FileDelete("/data/db/index");
 
             var builder2 = Utils.CreateBuilder();

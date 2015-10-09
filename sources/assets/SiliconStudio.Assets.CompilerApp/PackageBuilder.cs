@@ -284,8 +284,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
             PrepareDatabases();
 
-            VirtualFileSystem.CreateDirectory("/data/");
-            VirtualFileSystem.CreateDirectory("/data/db/");
+            VirtualFileSystem.CreateDirectory(VirtualFileSystem.ApplicationDatabasePath);
 
             // Open WCF channel with master builder
             var namedPipeBinding = new NetNamedPipeBinding(NetNamedPipeSecurityMode.None) { SendTimeout = TimeSpan.FromSeconds(300.0) };

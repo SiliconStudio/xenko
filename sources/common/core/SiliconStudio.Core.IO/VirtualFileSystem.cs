@@ -19,7 +19,8 @@ namespace SiliconStudio.Core.IO
         public static readonly char DirectorySeparatorChar = '/';
         public static readonly char AltDirectorySeparatorChar = '\\';
         public static readonly char[] AllDirectorySeparatorChars = new[] { DirectorySeparatorChar, AltDirectorySeparatorChar };
-
+        public static readonly string ApplicationDatabasePath = "/data/db";
+        public static readonly string LocalDatabasePath = "/local/db";
         private static readonly Regex pathSplitRegex = new Regex(@"(\\|/)");
 
         // As opposed to real Path.GetTempFileName, we don't have a 65536 limit.

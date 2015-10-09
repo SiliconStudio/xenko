@@ -31,8 +31,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
             // Create database directory
             ((FileSystemProvider)VirtualFileSystem.ApplicationData).ChangeBasePath(BuildPath);
-            VirtualFileSystem.CreateDirectory("/data");
-            VirtualFileSystem.CreateDirectory("/data/db");
+            VirtualFileSystem.CreateDirectory(VirtualFileSystem.ApplicationDatabasePath);
 
             // Delete source folder if exists
             if (Directory.Exists(FileSourceFolder))

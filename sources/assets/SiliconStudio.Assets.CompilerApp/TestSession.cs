@@ -89,7 +89,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 Directory.Delete(dbPath, true);
 
             Directory.CreateDirectory(dbPath);
-            VirtualFileSystem.MountFileSystem("/data/db", dbPath);
+            VirtualFileSystem.MountFileSystem(VirtualFileSystem.ApplicationDatabasePath, dbPath);
 
             logger.ActivateLog(LogMessageType.Debug);
             var builder = new Builder(appPath, "Windows", "index", logger) { BuilderName = "TestBuilder" };

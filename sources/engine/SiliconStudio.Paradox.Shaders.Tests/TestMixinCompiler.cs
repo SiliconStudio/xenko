@@ -209,7 +209,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void TestNoClean(out CompilerResults left, out CompilerResults right)
         {
             // Create and mount database file system
-            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var objDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, "index", VirtualFileSystem.LocalDatabasePath);
             using (var assetIndexMap = AssetIndexMap.Load())
             {
                 var database = new DatabaseFileProvider(assetIndexMap, objDatabase);

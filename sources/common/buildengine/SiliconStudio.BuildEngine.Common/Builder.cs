@@ -166,11 +166,6 @@ namespace SiliconStudio.BuildEngine
         private readonly string buildProfile;
 
         /// <summary>
-        /// The path of the data base from the build path
-        /// </summary>
-        private const string DatabasePath = "/data/db/";
-
-        /// <summary>
         /// Cancellation token source used for cancellation.
         /// </summary>
         private CancellationTokenSource cancellationTokenSource;
@@ -199,7 +194,7 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// The full path of the index file from the build directory.
         /// </summary>
-        private string IndexFileFullPath => DatabasePath + indexFilename;
+        private string IndexFileFullPath => VirtualFileSystem.ApplicationDatabasePath + '/' + indexFilename;
 
         public Builder(string buildPath, string buildProfile, string indexFilename, ILogger logger)
         {
@@ -229,7 +224,7 @@ namespace SiliconStudio.BuildEngine
 
             // Check current database version, and erase it if too old
             int currentVersion = 0;
-            var versionFile = Path.Combine(VirtualFileSystem.GetAbsolutePath(DatabasePath), "version");
+            var versionFile = Path.Combine(VirtualFileSystem.GetAbsolutePath(VirtualFileSystem.ApplicationDatabasePath), "version");
             if (File.Exists(versionFile))
             {
                 try
@@ -270,7 +265,7 @@ namespace SiliconStudio.BuildEngine
 
             // Prepare data base directories
             AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
-            var databasePathSplits = DatabasePath.Split('/');
+            var databasePathSplits = VirtualFileSystem.ApplicationDatabasePath.Split('/');
             var accumulatorPath = "/";
             foreach (var pathPart in databasePathSplits.Where(x=>x!=""))
             {
@@ -286,7 +281,7 @@ namespace SiliconStudio.BuildEngine
             // Mount build path
             ((FileSystemProvider)VirtualFileSystem.ApplicationData).ChangeBasePath(buildPath);
             if (IndexFileCommand.ObjectDatabase == null)
-                IndexFileCommand.ObjectDatabase = new ObjectDatabase(DatabasePath, loadDefaultBundle: false); // note: this has to be done after VFS.ChangeBasePath
+                IndexFileCommand.ObjectDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, loadDefaultBundle: false); // note: this has to be done after VFS.ChangeBasePath
         }
 
         public static void ReleaseBuildPath()
