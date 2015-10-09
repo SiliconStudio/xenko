@@ -18,9 +18,10 @@ namespace SiliconStudio.Assets.Templates
 
         /// <summary>
         /// Prepares this generator with the specified parameters and return a runnable function that must be run just after 
-        /// this method. The function should return true if it succeeded or false otherwise.
+        /// this method. The returned runnable function should return true if it succeeded or false otherwise.
         /// </summary>
-        /// <remarks>This method can also return <see langword="null"/></remarks>
+        /// <remarks>This method can also return <see langword="null"/> in case the preparation did not complete and nothing
+        /// can be further executed.</remarks>
         /// <param name="parameters">The parameters.</param>
         Func<bool> PrepareForRun(TemplateGeneratorParameters parameters);
 
