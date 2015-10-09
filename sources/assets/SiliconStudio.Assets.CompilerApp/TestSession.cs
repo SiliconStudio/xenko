@@ -92,7 +92,7 @@ namespace SiliconStudio.Assets.CompilerApp
             VirtualFileSystem.MountFileSystem("/data/db", dbPath);
 
             logger.ActivateLog(LogMessageType.Debug);
-            var builder = new Builder(appPath, "Windows", "index", "inputHashes", logger) { BuilderName = "TestBuilder" };
+            var builder = new Builder(appPath, "Windows", "index", logger) { BuilderName = "TestBuilder" };
             var steps = new List<BuildStep>();
             const int StepsPerLevel = 5;
             const int MaxLevel = 5;

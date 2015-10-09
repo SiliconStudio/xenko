@@ -16,15 +16,6 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Data.SQLite, Version=1.0.88.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\deps\SQLite\x86\System.Data.SQLite.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Data.SQLite.Linq, Version=1.0.88.0, Culture=neutral, PublicKeyToken=db937bc2d44ff139, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\deps\SQLite\x86\System.Data.SQLite.Linq.dll</HintPath>
-    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Xml" />
@@ -44,11 +35,6 @@
     <Compile Include="FileVersionStorage.cs" />
     <Compile Include="IBuildStepProvider.cs" />
     <Compile Include="IForwardSerializableLogRemote.cs" />
-    <Compile Include="Metadata\IMetadataProvider.cs" />
-    <Compile Include="Metadata\IObjectMetadata.cs" />
-    <Compile Include="Metadata\MetadataKey.cs" />
-    <Compile Include="Metadata\ObjectMetadata.cs" />
-    <Compile Include="Metadata\QueryMetadataProvider.cs" />
     <Compile Include="OutputEnumerationBuildStep.cs" />
     <Compile Include="PathExt.cs" />
     <Compile Include="PluginResolver.cs" />

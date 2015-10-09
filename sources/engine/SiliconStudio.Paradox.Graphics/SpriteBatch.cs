@@ -576,7 +576,7 @@ namespace SiliconStudio.Paradox.Graphics
             elementInfo.IndexCount = StaticQuadBufferInfo.IndicesByElement;
             elementInfo.Depth = depth;
 
-            Draw(texture, null, ref elementInfo);
+            Draw(texture, ref elementInfo);
         }
 
         protected override unsafe void UpdateBufferValuesFromElementInfo(ref ElementInfo elementInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset)

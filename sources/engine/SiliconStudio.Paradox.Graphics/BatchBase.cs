@@ -81,18 +81,16 @@ namespace SiliconStudio.Paradox.Graphics
         protected DepthStencilState DepthStencilState;
         protected int StencilReferenceValue;
         protected SpriteSortMode SortMode;
-        private EffectParameterResourceBinding? texture0Updater;
-        private EffectParameterResourceBinding? texture1Updater;
+        private EffectParameterResourceBinding? textureUpdater;
 
         private int[] sortIndices;
         private ElementInfo[] sortedDraws;
         private ElementInfo[] drawsQueue;
         private int drawsQueueCount;
-        private DrawTextures[] drawTextures;
+        private Texture[] drawTextures;
 
         private readonly int vertexStructSize;
         private readonly int indexStructSize;
-        private readonly VertexDeclaration vertexDeclaration;
 
         private readonly ParameterCollection parameters;
         private EffectParameterCollectionGroup defaultParameterCollectionGroup;
@@ -128,7 +126,7 @@ namespace SiliconStudio.Paradox.Graphics
             DefaultEffectSRgb = new Effect(device, defaultEffectByteCodeSRgb) { Name = "BatchDefaultEffectSRgb"};
 
             drawsQueue = new ElementInfo[resourceBufferInfo.BatchCapacity];
-            drawTextures = new DrawTextures[resourceBufferInfo.BatchCapacity];
+            drawTextures = new Texture[resourceBufferInfo.BatchCapacity];
 
             TextureComparer = new TextureIdComparer();
             BackToFrontComparer = new SpriteBackToFrontComparer();
@@ -136,7 +134,6 @@ namespace SiliconStudio.Paradox.Graphics
 
             // set the vertex layout and size
             indexStructSize = indexSize;
-            this.vertexDeclaration = vertexDeclaration;
             vertexStructSize = vertexDeclaration.CalculateSize();
 
             parameters = new ParameterCollection();
@@ -192,20 +189,13 @@ namespace SiliconStudio.Paradox.Graphics
                 ParameterCollectionGroup = defaultParameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, Effect, new[] { parameters });
             }
 
-            texture0Updater = null;
-            texture1Updater = null;
+            textureUpdater = null;
             if (Effect.HasParameter(TexturingKeys.Texture0))
-                texture0Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture0);
+                textureUpdater = Effect.GetParameterFastUpdater(TexturingKeys.Texture0);
             if (Effect.HasParameter(TexturingKeys.TextureCube0))
-                texture0Updater = Effect.GetParameterFastUpdater(TexturingKeys.TextureCube0);
+                textureUpdater = Effect.GetParameterFastUpdater(TexturingKeys.TextureCube0);
             if (Effect.HasParameter(TexturingKeys.Texture3D0))
-                texture0Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture3D0);
-            if (Effect.HasParameter(TexturingKeys.Texture1))
-                texture1Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture1);
-            if (Effect.HasParameter(TexturingKeys.TextureCube1))
-                texture1Updater = Effect.GetParameterFastUpdater(TexturingKeys.TextureCube1);
-            if (Effect.HasParameter(TexturingKeys.Texture3D1))
-                texture1Updater = Effect.GetParameterFastUpdater(TexturingKeys.Texture3D1);
+                textureUpdater = Effect.GetParameterFastUpdater(TexturingKeys.Texture3D0);
 
             // Immediate mode, then prepare for rendering here instead of End()
             if (sessionSortMode == SpriteSortMode.Immediate)
@@ -349,10 +339,10 @@ namespace SiliconStudio.Paradox.Graphics
 
             // Iterate on all sprites and group batch per texture.
             int offset = 0;
-            var previousTexture = new DrawTextures();
+            Texture previousTexture = null;
             for (int i = 0; i < drawsQueueCount; i++)
             {
-                DrawTextures texture;
+                Texture texture;
 
                 if (SortMode == SpriteSortMode.Deferred)
                 {
@@ -368,11 +358,11 @@ namespace SiliconStudio.Paradox.Graphics
                     texture = drawTextures[index];
                 }
 
-                if (DrawTextures.NotEqual(ref texture, ref previousTexture))
+                if (texture != previousTexture)
                 {
                     if (i > offset)
                     {
-                        DrawBatchPerTexture(previousTexture.Texture0, previousTexture.Texture1, spriteQueueForBatch, offset, i - offset);
+                        DrawBatchPerTexture(previousTexture, spriteQueueForBatch, offset, i - offset);
                     }
 
                     offset = i;
@@ -381,7 +371,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
 
             // Draw the last batch
-            DrawBatchPerTexture(previousTexture.Texture0, previousTexture.Texture1, spriteQueueForBatch, offset, drawsQueueCount - offset);
+            DrawBatchPerTexture(previousTexture, spriteQueueForBatch, offset, drawsQueueCount - offset);
 
             // Reset the queue.
             Array.Clear(drawTextures, 0, drawsQueueCount);
@@ -396,16 +386,13 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        private void DrawBatchPerTexture(Texture texture, Texture texture1, ElementInfo[] sprites, int offset, int count)
+        private void DrawBatchPerTexture(Texture texture, ElementInfo[] sprites, int offset, int count)
         {
             // Sets the texture for this sprite effect.
             // Use an optimized version in order to avoid to reapply the sprite effect here just to change texture
             // We are calling directly the PixelShaderStage. We assume that the texture is on slot 0 as it is
             // setup in the original BasicEffect.fx shader.
-            if (texture0Updater.HasValue)
-                texture0Updater.Value.ApplyParameter(GraphicsDevice, texture);
-            if (texture1Updater.HasValue)
-                texture1Updater.Value.ApplyParameter(GraphicsDevice, texture1);
+            textureUpdater?.ApplyParameter(GraphicsDevice, texture);
 
             // Draw the batch of sprites
             DrawBatchPerTextureAndPass(sprites, offset, count);
@@ -515,7 +502,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-        protected void Draw(Texture texture, Texture texture1, ref ElementInfo elementInfo)
+        protected void Draw(Texture texture, ref ElementInfo elementInfo)
         {
             // Make sure that Begin was called
             CheckBeginHasBeenCalled("draw");
@@ -532,7 +519,7 @@ namespace SiliconStudio.Paradox.Graphics
             // If we are in immediate mode, render the sprite directly
             if (SortMode == SpriteSortMode.Immediate)
             {
-                DrawBatchPerTexture(texture, texture1, drawsQueue, 0, 1);
+                DrawBatchPerTexture(texture, drawsQueue, 0, 1);
             }
             else
             {
@@ -540,8 +527,7 @@ namespace SiliconStudio.Paradox.Graphics
                 {
                     Array.Resize(ref drawTextures, drawsQueue.Length);
                 }
-                drawTextures[drawsQueueCount].Texture0 = texture;
-                drawTextures[drawsQueueCount].Texture1 = texture1;
+                drawTextures[drawsQueueCount] = texture;
                 drawsQueueCount++;
             }
         }
@@ -560,11 +546,10 @@ namespace SiliconStudio.Paradox.Graphics
         protected struct DrawTextures
         {
             public Texture Texture0;
-            public Texture Texture1;
             
             public static bool NotEqual(ref DrawTextures left, ref DrawTextures right)
             {
-                return left.Texture0 != right.Texture0 || left.Texture1 != right.Texture1;
+                return left.Texture0 != right.Texture0;
             }
         }
 
@@ -690,11 +675,11 @@ namespace SiliconStudio.Paradox.Graphics
 
         protected class TextureIdComparer : IComparer<int>
         {
-            public DrawTextures[] SpriteTextures;
+            public Texture[] SpriteTextures;
 
             public int Compare(int left, int right)
             {
-                return SpriteTextures[left].Texture0.Id.CompareTo(SpriteTextures[right].Texture0.Id);
+                return SpriteTextures[left].Id.CompareTo(SpriteTextures[right].Id);
             }
         }
 

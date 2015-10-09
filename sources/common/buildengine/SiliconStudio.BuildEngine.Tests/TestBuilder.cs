@@ -5,7 +5,6 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.BuildEngine.Tests.Commands;
-using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.BuildEngine.Tests
 {

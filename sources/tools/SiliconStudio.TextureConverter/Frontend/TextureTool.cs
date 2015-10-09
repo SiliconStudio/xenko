@@ -346,7 +346,7 @@ namespace SiliconStudio.TextureConverter
         /// <param name="isSRgb">Indicate if the input file contains sRGB data</param>
         /// <remarks>The ownership of the provided image is not taken by the tex tool. The user has to dispose it him-self</remarks>
         /// <returns>An instance of the class <see cref="TexImage"/> containing your loaded image</returns>
-        public TexImage Load(Image image, bool isSRgb = false)
+        public TexImage Load(Image image, bool isSRgb)
         {
             if (image == null) throw new ArgumentNullException("image");
             return Load(new LoadingRequest(image, isSRgb));
