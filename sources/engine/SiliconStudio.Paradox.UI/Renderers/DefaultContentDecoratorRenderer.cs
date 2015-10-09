@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
             var image = decorator.BackgroundImage;
             var color = decorator.RenderOpacity * Color.White;
 
-            Batch.DrawImage(image.Texture, null, ref decorator.WorldMatrixInternal, ref image.RegionInternal,
+            Batch.DrawImage(image.Texture, ref decorator.WorldMatrixInternal, ref image.RegionInternal,
                             ref decorator.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
         }
     }

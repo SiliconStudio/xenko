@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// Otherwise, all the meshes of model are merged and the node information is lost.
         /// Nodes should be preserved in order to be animated or linked to entities.
         /// </userdoc>
-        [DataMember(50), DiffUseAsset2]
+        [DataMember(50), DiffMember(Diff3ChangeType.MergeFromAsset2)]
         public List<NodeInformation> Nodes { get; private set; }
 
         /// <summary>

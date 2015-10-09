@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// </value>
         /// <userdoc>The .</userdoc>
         /// <userdoc>The name of the material as written in the imported model and the reference to the corresponding material asset.</userdoc>
-        [DataMember(10), DiffUseAsset2]
+        [DataMember(10), DiffMember(Diff3ChangeType.MergeFromAsset2)]
         public string Name { get; set; }
 
         /// <summary>

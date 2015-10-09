@@ -14,13 +14,13 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// The name of the node.
         /// </summary>
         /// <userdoc>The name of the node (as it is written in the imported file).</userdoc>
-        [DataMember(10), DiffUseAsset2]
+        [DataMember(10), DiffMember(Diff3ChangeType.MergeFromAsset2)]
         public string Name { get; set; }
 
         /// <summary>
         ///  The index of the parent.
         /// </summary>
-        [DataMember(20), DiffUseAsset2]
+        [DataMember(20), DiffMember(Diff3ChangeType.MergeFromAsset2)]
         public int Depth { get; set; }
 
         /// <summary>

@@ -50,6 +50,10 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Animations\AnimationCurveEvaluatorDirectIntGroup.cs" />
+    <Compile Include="Animations\AnimationCurveEvaluatorDirectVector4Group.cs" />
+    <Compile Include="Animations\AnimationCurveEvaluatorOptimizedIntGroup.cs" />
+    <Compile Include="Animations\AnimationCurveEvaluatorOptimizedVector4Group.cs" />
     <Compile Include="Engine\ActivableEntityComponent.cs" />
     <Compile Include="Engine\AsyncScript.cs" />
     <Compile Include="Animations\AnimationBlendOperation.cs" />

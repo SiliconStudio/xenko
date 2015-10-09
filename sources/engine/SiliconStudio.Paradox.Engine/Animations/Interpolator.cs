@@ -37,6 +37,33 @@ namespace SiliconStudio.Paradox.Animations
             }
         }
 
+        public static class Vector4
+        {
+            public static void Cubic(ref Core.Mathematics.Vector4 value1, ref Core.Mathematics.Vector4 value2, ref Core.Mathematics.Vector4 value3, ref Core.Mathematics.Vector4 value4, float t, out Core.Mathematics.Vector4 result)
+            {
+                // http://en.wikipedia.org/wiki/Cubic_Hermite_spline#Interpolation_on_the_unit_interval_without_exact_derivatives
+                float t2 = t * t;
+                float t3 = t2 * t;
+
+                float factor0 = -t3 + 2.0f * t2 - t;
+                float factor1 = 3.0f * t3 - 5.0f * t2 + 2.0f;
+                float factor2 = -3.0f * t3 + 4.0f * t2 + t;
+                float factor3 = t3 - t2;
+
+                // TODO: Use Vector3(ref,out) functions
+                result.X = 0.5f * (value1.X * factor0 + value2.X * factor1 + value3.X * factor2 + value4.X * factor3);
+                result.Y = 0.5f * (value1.Y * factor0 + value2.Y * factor1 + value3.Y * factor2 + value4.Y * factor3);
+                result.Z = 0.5f * (value1.Z * factor0 + value2.Z * factor1 + value3.Z * factor2 + value4.Z * factor3);
+                result.W = 0.5f * (value1.W * factor0 + value2.W * factor1 + value3.W * factor2 + value4.W * factor3);
+            }
+
+            [MethodImpl(MethodImplOptions.AggressiveInlining)]
+            public static void Linear(ref Core.Mathematics.Vector4 value1, ref Core.Mathematics.Vector4 value2, float t, out Core.Mathematics.Vector4 result)
+            {
+                Core.Mathematics.Vector4.Lerp(ref value1, ref value2, t, out result);
+            }
+        }
+
         public static class Quaternion
         {
             public static void Cubic(ref Core.Mathematics.Quaternion value1, ref Core.Mathematics.Quaternion value2, ref Core.Mathematics.Quaternion value3, ref Core.Mathematics.Quaternion value4, float t, out Core.Mathematics.Quaternion result)

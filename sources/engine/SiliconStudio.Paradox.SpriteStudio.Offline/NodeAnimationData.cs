@@ -4,9 +4,9 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Paradox.SpriteStudio.Offline
 {
     [DataContract]
-    public class SpriteNodeData
+    public class NodeAnimationData
     {
-        public SpriteNodeData()
+        public NodeAnimationData()
         {
             Data = new Dictionary<string, List<Dictionary<string, string>>>();
         }

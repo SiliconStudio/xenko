@@ -125,7 +125,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             var elementInfo = new ElementInfo(StaticQuadBufferInfo.VertexByElement, StaticQuadBufferInfo.IndicesByElement, ref drawInfo, depthSprite);
 
-            Draw(texture, null, ref elementInfo);
+            Draw(texture, ref elementInfo);
         }
 
         protected override void PrepareForRendering()

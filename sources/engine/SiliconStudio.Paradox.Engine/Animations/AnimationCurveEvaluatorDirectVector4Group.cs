@@ -1,12 +1,9 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
 using System;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Animations
 {
-    public class AnimationCurveEvaluatorDirectFloatGroup : AnimationCurveEvaluatorDirectGroup<float>
+    public class AnimationCurveEvaluatorDirectVector4Group : AnimationCurveEvaluatorDirectGroup<Vector4>
     {
         protected unsafe override void ProcessChannel(ref Channel channel, CompressedTimeSpan newTime, IntPtr location)
         {
@@ -28,20 +25,25 @@ namespace SiliconStudio.Paradox.Animations
 
             if (channel.InterpolationType == AnimationCurveInterpolationType.Cubic)
             {
-                *(float*)(location + channel.Offset) = Interpolator.Cubic(
-                    keyFramesItems[currentIndex > 0 ? currentIndex - 1 : 0].Value,
-                    keyFramesItems[currentIndex].Value,
-                    keyFramesItems[currentIndex + 1].Value,
-                    keyFramesItems[currentIndex + 2 >= keyFramesCount ? currentIndex + 1 : currentIndex + 2].Value,
-                    t);
+                Interpolator.Vector4.Cubic(
+                    ref keyFramesItems[currentIndex > 0 ? currentIndex - 1 : 0].Value,
+                    ref keyFramesItems[currentIndex].Value,
+                    ref keyFramesItems[currentIndex + 1].Value,
+                    ref keyFramesItems[currentIndex + 2 >= keyFramesCount ? currentIndex + 1 : currentIndex + 2].Value,
+                    t,
+                    out *(Vector4*)(location + channel.Offset));
             }
             else if (channel.InterpolationType == AnimationCurveInterpolationType.Linear)
             {
-                *(float*)(location + channel.Offset) = MathUtil.Lerp(keyFramesItems[currentIndex].Value, keyFramesItems[currentIndex + 1].Value, t);
+                Interpolator.Vector4.Linear(
+                    ref keyFramesItems[currentIndex].Value,
+                    ref keyFramesItems[currentIndex + 1].Value,
+                    t,
+                    out *(Vector4*)(location + channel.Offset));
             }
             else if (channel.InterpolationType == AnimationCurveInterpolationType.Constant)
             {
-                *(float*)(location + channel.Offset) = keyFrames[currentIndex].Value;
+                *(Vector4*)(location + channel.Offset) = keyFrames[currentIndex].Value;
             }
             else
             {

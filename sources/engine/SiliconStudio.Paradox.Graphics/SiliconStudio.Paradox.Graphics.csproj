@@ -133,9 +133,6 @@
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecodeSRgb.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
     <Compile Include="Shaders\BackgroundEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -144,12 +141,6 @@
     </Compile>
     <Compile Include="Shaders\ColorUtility.cs">
       <DependentUpon>ColorUtility.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Shaders\UIEffectSeparateAlpha.cs">
-      <DependentUpon>UIEffectSeparateAlpha.pdxfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -243,16 +234,7 @@
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecode.Direct3D11.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecode.OpenGL.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.bytecode.OpenGLES.Level_9_1.cs" />
     <Compile Include="Shaders\TexturingKeys.cs" />
-    <Compile Include="Shaders\UIEffectSeparateAlphaShader.cs">
-      <DependentUpon>UIEffectSeparateAlphaShader.pdxsl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Shaders.Bytecodes\SpriteBatch.Extensions.cs" />
     <Compile Include="Shaders\SpriteBase.cs">
       <DependentUpon>SpriteBase.pdxsl</DependentUpon>
@@ -293,7 +275,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>UIEffectShader.pdxsl</DependentUpon>
     </Compile>
-    <Compile Include="Shaders.Bytecodes\UIEffectSeparateAlpha.Extensions.cs" />
     <Compile Include="Sprite.Extensions.cs" />
     <Compile Include="SpriteBatch.cs" />
     <Compile Include="SpriteEffects.cs" />
@@ -520,10 +501,6 @@
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\UIEffectSeparateAlpha.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>UIEffectSeparateAlpha.cs</LastGenOutput>
-    </None>
     <None Include="Shaders\UIEffect.pdxfx">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffect.cs</LastGenOutput>
@@ -539,10 +516,6 @@
     <None Include="Shaders\ColorUtility.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>
       <LastGenOutput>ColorUtility.cs</LastGenOutput>
-    </None>
-    <None Include="Shaders\UIEffectSeparateAlphaShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
-      <LastGenOutput>UIEffectSeparateAlphaShader.cs</LastGenOutput>
     </None>
     <None Include="Shaders\SpriteBase.pdxsl">
       <Generator>ParadoxShaderKeyGenerator</Generator>

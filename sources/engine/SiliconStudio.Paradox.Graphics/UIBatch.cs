@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics.Internals;
 
 namespace SiliconStudio.Paradox.Graphics
 {
@@ -16,14 +15,6 @@ namespace SiliconStudio.Paradox.Graphics
     public class UIBatch : BatchBase<UIBatch.UIImageDrawInfo>
     {
         private static readonly List<short[]> PrimiteTypeToIndices = new List<short[]>(4);
-
-        private readonly Effect uiSeparateAlphaEffect;
-        private readonly EffectParameterCollectionGroup uiSeparateAlphaParameterCollectionGroup;
-
-        private readonly Effect uiSeparateAlphaEffectSRgb;
-        private readonly EffectParameterCollectionGroup uiSeparateAlphaParameterCollectionGroupSRgb;
-
-        private bool separateAlphaEffectBinded;
 
         private const int MaxVerticesPerElement = 16;
         private const int MaxIndicesPerElement = 54;
@@ -141,13 +132,6 @@ namespace SiliconStudio.Paradox.Graphics
             ResourceBufferInfo.CreateDynamicIndexBufferInfo("UIBatch.VertexIndexBuffers", MaxIndicesCount, MaxVerticesCount), 
             VertexPositionColorTextureSwizzle.Layout)
         {
-            // Create the two ui effects
-            uiSeparateAlphaEffect = new Effect(GraphicsDevice, UIEffectSeparateAlpha.Bytecode) {Name = "SeparatedAlphaBatchEffect"};
-            uiSeparateAlphaParameterCollectionGroup = new EffectParameterCollectionGroup(device, uiSeparateAlphaEffect, new[] { Parameters });
-
-            uiSeparateAlphaEffectSRgb = new Effect(GraphicsDevice, UIEffectSeparateAlpha.Bytecode) { Name = "SeparatedAlphaBatchEffect" };
-            uiSeparateAlphaParameterCollectionGroupSRgb = new EffectParameterCollectionGroup(device, uiSeparateAlphaEffectSRgb, new[] { Parameters });
-
             // Create a 1x1 pixel white texture
             whiteTexture = GraphicsDevice.GetSharedWhiteTexture();
         }
@@ -177,7 +161,6 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="stencilValue">The value of the stencil buffer to take as reference</param>
         public void Begin(ref Matrix viewProjection, BlendState blendState, SamplerState samplerState, RasterizerState rasterizerState, DepthStencilState depthStencilState, int stencilValue)
         {
-            separateAlphaEffectBinded = false;
             viewProjectionMatrix = viewProjection;
 
             Begin(null, null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
@@ -224,7 +207,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             var elementInfo = new ElementInfo(4, 6, ref drawInfo, depthBias);
 
-            Draw(whiteTexture, whiteTexture, ref elementInfo);
+            Draw(whiteTexture, ref elementInfo);
         }
 
         /// <summary>
@@ -285,14 +268,13 @@ namespace SiliconStudio.Paradox.Graphics
 
             var elementInfo = new ElementInfo(8, 6 * 6, ref drawInfo, depthBias);
 
-            Draw(whiteTexture, whiteTexture, ref elementInfo);
+            Draw(whiteTexture, ref elementInfo);
         }
 
         /// <summary>
         /// Batch a new border image draw to the draw list.
         /// </summary>
         /// <param name="texture">The texture to use during the draw</param>
-        /// <param name="texture1">An optional texture that can be used to substitute <paramref name="texture"/>'s alpha</param>
         /// <param name="worldMatrix">The world matrix of the element</param>
         /// <param name="sourceRectangle">The rectangle indicating the source region of the texture to use</param>
         /// <param name="elementSize">The size of the ui element</param>
@@ -302,7 +284,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="imageOrientation">The rotation to apply on the image uv</param>
         /// <param name="swizzle">Swizzle mode indicating the swizzle use when sampling the texture in the shader</param>
         /// <param name="snapImage">Indicate if the image needs to be snapped or not</param>
-        public void DrawImage(Texture texture, Texture texture1, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector3 elementSize, ref Vector4 borderSize, 
+        public void DrawImage(Texture texture, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector3 elementSize, ref Vector4 borderSize, 
             ref Color color, int depthBias, ImageOrientation imageOrientation = ImageOrientation.AsIs, SwizzleMode swizzle = SwizzleMode.None, bool snapImage = false)
         {
             // Check that texture is not null
@@ -312,14 +294,6 @@ namespace SiliconStudio.Paradox.Graphics
             // Skip items with null size
             if (elementSize.Length() < MathUtil.ZeroTolerance)
                 return;
-
-            // End the current batching session and change the effect if required
-            if (texture1 == null && separateAlphaEffectBinded || texture1 != null && !separateAlphaEffectBinded)
-            {
-                End();
-                separateAlphaEffectBinded = !separateAlphaEffectBinded;
-                Begin(separateAlphaEffectBinded? GraphicsDevice.ColorSpace == ColorSpace.Linear ? uiSeparateAlphaEffectSRgb : uiSeparateAlphaEffect : null, separateAlphaEffectBinded ? GraphicsDevice.ColorSpace == ColorSpace.Linear ? uiSeparateAlphaParameterCollectionGroupSRgb : uiSeparateAlphaParameterCollectionGroup : null, SortMode, BlendState, SamplerState, DepthStencilState, RasterizerState, StencilReferenceValue);
-            }
 
             // Calculate the information needed to draw.
             var drawInfo = new UIImageDrawInfo
@@ -379,7 +353,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             var elementInfo = new ElementInfo(verticesPerElement, indicesPerElement, ref drawInfo, depthBias);
 
-            Draw(texture, texture1, ref elementInfo);
+            Draw(texture, ref elementInfo);
         }
 
         internal void DrawCharacter(Texture texture, ref Matrix worldViewProjectionMatrix, ref RectangleF sourceRectangle, ref Color color, int depthBias, SwizzleMode swizzle)
@@ -387,14 +361,6 @@ namespace SiliconStudio.Paradox.Graphics
             // Check that texture is not null
             if (texture == null)
                 throw new ArgumentNullException("texture");
-
-            // End the current batching session and change the effect if required
-            if (separateAlphaEffectBinded)
-            {
-                End();
-                separateAlphaEffectBinded = !separateAlphaEffectBinded;
-                Begin(separateAlphaEffectBinded ? uiSeparateAlphaEffect : null, separateAlphaEffectBinded ? uiSeparateAlphaParameterCollectionGroup : null, SortMode, BlendState, SamplerState, DepthStencilState, RasterizerState, StencilReferenceValue);
-            }
 
             // Calculate the information needed to draw.
             var drawInfo = new UIImageDrawInfo
@@ -418,7 +384,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             var elementInfo = new ElementInfo(4, 6, ref drawInfo, depthBias);
 
-            Draw(texture, null, ref elementInfo);
+            Draw(texture, ref elementInfo);
         }
 
         /// <summary>
