@@ -7,13 +7,14 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 
 using System.Linq;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.BuildEngine.Tests
 {
     [TestFixture]
     class TestIO
     {
-        void CommonSingleOutput(bool executeRemotely)
+        private static void CommonSingleOutput(bool executeRemotely)
         {
             var builder = Utils.CreateBuilder();
             CommandBuildStep step = builder.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1", ExecuteRemotely = executeRemotely });
@@ -325,10 +326,9 @@ namespace SiliconStudio.BuildEngine.Tests
             BuildStep.LinkBuildSteps(step, concurrencyStep1);
             BuildStep.LinkBuildSteps(step, concurrencyStep2);
 
-            Utils.StartCapturingLog();
             builder.Run(Builder.Mode.Build);
-            string log = Utils.StopCapturingLog();
-            Assert.That(log.Contains("Command InputOutputCommand /db/url1 > /db/url1 is writing /db/url1 while command InputOutputCommand /db/url1 > /db/url2 is reading it"));
+            var logger = (LoggerResult)builder.Logger;
+            Assert.That(logger.Messages.Any(x => x.Text.Contains("Command InputOutputCommand /db/url1 > /db/url1 is writing /db/url1 while command InputOutputCommand /db/url1 > /db/url2 is reading it")));
         }
 
         [Test]
@@ -348,10 +348,9 @@ namespace SiliconStudio.BuildEngine.Tests
             BuildStep.LinkBuildSteps(step1, concurrencyStep1);
             BuildStep.LinkBuildSteps(step2, concurrencyStep2);
 
-            Utils.StartCapturingLog();
             builder.Run(Builder.Mode.Build);
-            string log = Utils.StopCapturingLog();
-            Assert.That(log.Contains("Commands InputOutputCommand /db/url2 > /db/url and InputOutputCommand /db/url1 > /db/url are both writing /db/url at the same time"));
+            var logger = (LoggerResult)builder.Logger;
+            Assert.That(logger.Messages.Any(x => x.Text.Contains("Commands InputOutputCommand /db/url2 > /db/url and InputOutputCommand /db/url1 > /db/url are both writing /db/url at the same time")));
         }
 
         [Test]
@@ -379,7 +378,6 @@ namespace SiliconStudio.BuildEngine.Tests
             builder.Root.Add(buildStepList1);
             builder.Root.Add(buildStepList2);
 
-            Utils.StartCapturingLog();
             var buildResult = builder.Run(Builder.Mode.Build);
             Assert.That(buildResult, Is.EqualTo(BuildResultCode.Successful));
         }

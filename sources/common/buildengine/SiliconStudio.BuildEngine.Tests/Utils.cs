@@ -19,7 +19,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
         private const string FileSourceFolder = "source";
 
-        public static string BuildPath { get { return Path.Combine(PlatformFolders.ApplicationBinaryDirectory, Assembly.GetEntryAssembly() == null? TestContext.CurrentContext.Test.Name: "data/"+Assembly.GetEntryAssembly().GetName().Name); } }
+        public static string BuildPath => Path.Combine(PlatformFolders.ApplicationBinaryDirectory, Assembly.GetEntryAssembly() == null? TestContext.CurrentContext.Test.Name: "data/"+Assembly.GetEntryAssembly().GetName().Name);
 
         private static StringBuilder logCollecter;
 
@@ -38,6 +38,8 @@ namespace SiliconStudio.BuildEngine.Tests
             if (Directory.Exists(FileSourceFolder))
                 Directory.Delete(FileSourceFolder, true);
 
+            IndexFileCommand.ObjectDatabase = null;
+
             TestCommand.ResetCounter();
             if (!loggerHandled)
             {
@@ -50,7 +52,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
         public static Builder CreateBuilder()
         {
-            var logger = GlobalLogger.GetLogger("Builder");
+            var logger = new LoggerResult();
             logger.ActivateLog(LogMessageType.Debug);
             var builder = new Builder(BuildPath, "Windows", "index", "inputHashes", logger) { BuilderName = "TestBuilder", SlaveBuilderPath = @"SiliconStudio.BuildEngine.exe" };
             return builder;
@@ -73,32 +75,6 @@ namespace SiliconStudio.BuildEngine.Tests
         {
             // TODO: return a path in the temporary folder
             return Path.Combine(FileSourceFolder, filename);
-        }
-
-        public static void StartCapturingLog()
-        {
-            if (logCollecter != null)
-                throw new InvalidOperationException("Log are already being captured");
-            logCollecter = new StringBuilder();
-
-            GlobalLogger.GlobalMessageLogged += CaptureLog;
-        }
-
-        public static string StopCapturingLog()
-        {
-            if (logCollecter == null)
-                throw new InvalidOperationException("Log are not being captured");
-
-            GlobalLogger.GlobalMessageLogged -= CaptureLog;
-
-            string result = logCollecter.ToString();
-            logCollecter = null;
-            return result;
-        }
-
-        private static void CaptureLog(ILogMessage obj)
-        {
-            logCollecter.AppendLine(obj.Text);
         }
     }
 }
