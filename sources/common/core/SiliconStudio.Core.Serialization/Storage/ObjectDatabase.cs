@@ -37,7 +37,7 @@ namespace SiliconStudio.Core.Storage
 
             // Try to open file backends
             bool isReadOnly = Platform.Type != PlatformType.Windows;
-            var backend = new FileOdbBackend(vfsMainUrl, isReadOnly, indexName);
+            var backend = new FileOdbBackend(vfsMainUrl, indexName, isReadOnly);
 
             AssetIndexMap.Merge(backend.AssetIndexMap);
             if (backend.IsReadOnly)
@@ -45,7 +45,7 @@ namespace SiliconStudio.Core.Storage
                 backendRead1 = backend;
                 if (vfsAdditionalUrl != null)
                 {
-                    backendWrite = backendRead2 = new FileOdbBackend(vfsAdditionalUrl, false);
+                    backendWrite = backendRead2 = new FileOdbBackend(vfsAdditionalUrl, indexName, false);
                     AssetIndexMap.Merge(backendWrite.AssetIndexMap);
                 }
             }
