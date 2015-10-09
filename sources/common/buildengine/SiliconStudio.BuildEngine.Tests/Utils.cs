@@ -53,7 +53,7 @@ namespace SiliconStudio.BuildEngine.Tests
         {
             var logger = new LoggerResult();
             logger.ActivateLog(LogMessageType.Debug);
-            var builder = new Builder(BuildPath, "Windows", "index", logger) { BuilderName = "TestBuilder", SlaveBuilderPath = @"SiliconStudio.BuildEngine.exe" };
+            var builder = new Builder(BuildPath, "Windows", VirtualFileSystem.ApplicationDatabaseIndexName, logger) { BuilderName = "TestBuilder", SlaveBuilderPath = @"SiliconStudio.BuildEngine.exe" };
             return builder;
         }
 

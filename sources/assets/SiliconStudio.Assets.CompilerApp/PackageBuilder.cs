@@ -303,7 +303,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 string buildPath = builderOptions.BuildDirectory;
                 string buildProfile = builderOptions.BuildProfile;
 
-                Builder.SetupBuildPath(buildPath);
+                Builder.SetupBuildPath(buildPath, VirtualFileSystem.ApplicationDatabaseIndexName);
 
                 var logger = builderOptions.Logger;
                 MicroThread microthread = scheduler.Add(async () =>

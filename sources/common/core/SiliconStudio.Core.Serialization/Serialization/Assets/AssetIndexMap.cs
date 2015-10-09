@@ -21,12 +21,9 @@ namespace SiliconStudio.Core.Serialization.Assets
         {
         }
 
-        public static AssetIndexMap NewTool(string indexName = null)
+        public static AssetIndexMap NewTool(string indexName)
         {
-            if (string.IsNullOrWhiteSpace(indexName))
-            {
-                indexName = "index";
-            }
+            if (indexName == null) throw new ArgumentNullException(nameof(indexName));
 
             var result = new AssetIndexMap
             {
@@ -39,13 +36,6 @@ namespace SiliconStudio.Core.Serialization.Assets
             };
 
             return result;
-        }
-
-        [Obsolete]
-        public static AssetIndexMap Load(bool isReadOnly = false)
-        {
-            string indexFile = VirtualFileSystem.ApplicationDatabasePath + "/index";
-            return Load(indexFile, isReadOnly);
         }
 
         public static AssetIndexMap Load(string indexFile, bool isReadOnly = false)
