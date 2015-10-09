@@ -1013,9 +1013,9 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="stream">The stream to load the texture from.</param>
         /// <param name="textureFlags">True to load the texture with unordered access enabled. Default is false.</param>
         /// <param name="usage">Usage of the resource. Default is <see cref="GraphicsResourceUsage.Immutable"/> </param>
-        /// <param name="loadAsSRGB">Indicate if the texture should be loaded as an sRGB texture</param>
+        /// <param name="loadAsSRGB">Indicate if the texture should be loaded as an sRGB texture. If false, the texture is load in its default format.</param>
         /// <returns>A texture</returns>
-        public static Texture Load(GraphicsDevice device, Stream stream, TextureFlags textureFlags = TextureFlags.ShaderResource, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable, bool loadAsSRGB = true)
+        public static Texture Load(GraphicsDevice device, Stream stream, TextureFlags textureFlags = TextureFlags.ShaderResource, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable, bool loadAsSRGB = false)
         {
             using (var image = Image.Load(stream, loadAsSRGB))
                 return New(device, image, textureFlags, usage);

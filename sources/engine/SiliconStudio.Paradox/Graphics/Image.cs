@@ -533,10 +533,10 @@ namespace SiliconStudio.Paradox.Graphics
         /// Loads the specified image from a stream.
         /// </summary>
         /// <param name="imageStream">The image stream.</param>
-        /// <param name="loadAsSRGB">Indicate if the image should be loaded as an sRGB texture</param>
+        /// <param name="loadAsSRGB">Indicate if the image should be loaded as an sRGB texture. If false, the image is loaded in its default format.</param>
         /// <returns>An new image.</returns>
         /// <remarks>This method support the following format: <c>dds, bmp, jpg, png, gif, tiff, wmp, tga</c>.</remarks>
-        public static Image Load(Stream imageStream, bool loadAsSRGB = true)
+        public static Image Load(Stream imageStream, bool loadAsSRGB = false)
         {
             if (imageStream == null) throw new ArgumentNullException("imageStream");
             // Read the whole stream into memory.
@@ -665,7 +665,8 @@ namespace SiliconStudio.Paradox.Graphics
                     var image = loadSaveDelegate.Load(dataPointer, dataSize, makeACopy, handle);
                     if (image != null)
                     {
-                        image.Description.Format = loadAsSRGB? image.Description.Format.ToSRgb(): image.Description.Format.ToNonSRgb();
+                        if(loadAsSRGB)
+                            image.Description.Format = image.Description.Format.ToSRgb();
 
                         return image;
                     }
