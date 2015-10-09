@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
             base.RenderColor(element, context);
 
             var image = (ImageElement)element;
-            var imageColor = element.RenderOpacity * Color.White;
+            var imageColor = element.RenderOpacity * image.Color;
 
             if(image.Source == null)
                 return;
