@@ -14,8 +14,6 @@ namespace SiliconStudio.BuildEngine
         LoggerResult Logger { get; }
         BuildParameterCollection BuildParameters { get; }
 
-        IMetadataProvider MetadataProvider { get; }
-
         Task<ResultStatus> ScheduleAndExecuteCommand(Command command);
 
         IEnumerable<IDictionary<ObjectUrl, OutputObject>> GetOutputObjectsGroups();
