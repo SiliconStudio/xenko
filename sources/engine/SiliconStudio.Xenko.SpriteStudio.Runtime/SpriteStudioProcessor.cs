@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Runtime
+namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     public class SpriteStudioProcessor : EntityProcessor<SpriteStudioProcessor.Data>
     {

@@ -26,7 +26,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using Foundation;
 using UIKit;
-using SiliconStudio.Paradox.UnitTesting.UI;
+using SiliconStudio.Xenko.UnitTesting.UI;
 
 namespace SiliconStudio.Tests
 {

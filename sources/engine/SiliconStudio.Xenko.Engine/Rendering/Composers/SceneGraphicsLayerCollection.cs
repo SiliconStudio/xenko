@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Composers
 {
     /// <summary>
     /// A Collection of <see cref="SceneGraphicsLayer"/>.

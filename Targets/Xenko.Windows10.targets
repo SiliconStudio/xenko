@@ -1,4 +1,4 @@
-<!-- Build file post-included by all Paradox projects -->
+<!-- Build file post-included by all Xenko projects -->
 <Project InitialTargets="SiliconStudioRemapPlatforms" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Target Name="SiliconStudioRemapPlatforms">
     <!-- Remap real platform for Windows10 -->
@@ -26,9 +26,9 @@
   
   <!-- Embed native libraries -->
   <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\$(SiliconStudioCPU)\freetype.dll" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\$(SiliconStudioCPU)\libcore.dll"/>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\$(SiliconStudioCPU)\libbulletc.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\freetype.dll" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libcore.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libbulletc.dll"/>
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\$(SiliconStudioCPU)\*.dll" />
   </ItemGroup>

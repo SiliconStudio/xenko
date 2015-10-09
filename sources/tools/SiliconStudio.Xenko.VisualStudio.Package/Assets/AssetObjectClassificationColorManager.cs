@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Shell;
-using SiliconStudio.Paradox.VisualStudio.Classifiers;
+using SiliconStudio.Xenko.VisualStudio.Classifiers;
 
-namespace SiliconStudio.Paradox.VisualStudio.Assets
+namespace SiliconStudio.Xenko.VisualStudio.Assets
 {
     [Export]
     public class AssetObjectClassificationColorManager : ClassificationColorManager

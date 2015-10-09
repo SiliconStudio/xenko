@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 using SharpDX.XInput;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManager
     {

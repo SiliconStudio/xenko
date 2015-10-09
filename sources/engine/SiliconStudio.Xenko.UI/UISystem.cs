@@ -5,12 +5,12 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Input;
-using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.UI.Controls;
 
-namespace SiliconStudio.Paradox.UI
+namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
     /// Interface of the UI system.

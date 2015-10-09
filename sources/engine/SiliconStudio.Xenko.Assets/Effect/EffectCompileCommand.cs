@@ -12,10 +12,10 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Assets.Effect
+namespace SiliconStudio.Xenko.Assets.Effect
 {
     /// <summary>
     /// This command is responsible to compile a single permutation of an effect (pdxfx or pdxsl)

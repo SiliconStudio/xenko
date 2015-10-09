@@ -1,6 +1,6 @@
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("StaticColliderElement")]
     [Display(40, "Static Collider")]

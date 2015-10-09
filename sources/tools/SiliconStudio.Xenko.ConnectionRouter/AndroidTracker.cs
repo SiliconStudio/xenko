@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Engine.Network;
+using SiliconStudio.Xenko.Engine.Network;
 
-namespace SiliconStudio.Paradox.ConnectionRouter
+namespace SiliconStudio.Xenko.ConnectionRouter
 {
     /// <summary>
     /// Track android devices (with adb.exe) and establish port mapping.

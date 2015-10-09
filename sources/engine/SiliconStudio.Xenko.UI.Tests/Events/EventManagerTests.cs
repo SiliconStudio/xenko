@@ -6,9 +6,9 @@ using NUnit.Framework;
 
 using System.Linq;
 
-using SiliconStudio.Paradox.UI.Events;
+using SiliconStudio.Xenko.UI.Events;
 
-namespace SiliconStudio.Paradox.UI.Tests.Events
+namespace SiliconStudio.Xenko.UI.Tests.Events
 {
     /// <summary>
     /// Test class for the <see cref="EventManager"/> class.

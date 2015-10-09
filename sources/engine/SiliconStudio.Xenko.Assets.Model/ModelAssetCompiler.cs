@@ -9,11 +9,11 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Data;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     public class ModelAssetCompiler : AssetCompilerBase<ModelAsset>
     {

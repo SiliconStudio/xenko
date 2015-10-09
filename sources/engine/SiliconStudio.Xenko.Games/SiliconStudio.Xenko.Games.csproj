@@ -3,43 +3,43 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Paradox.Games</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Games</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Games</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Games</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
-    <ParadoxProjectPlatformDependentWindows>true</ParadoxProjectPlatformDependentWindows>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
+    <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(ParadoxGraphicsApi)' == 'Direct3D11' ">
+  <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D11">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DXGI">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Android\AndroidParadoxGameView.cs" />
+    <Compile Include="Android\AndroidXenkoGameView.cs" />
     <Compile Include="Android\GamePlatformAndroid.cs" />
     <Compile Include="Android\GameWindowAndroid.cs" />
     <Compile Include="AssemblyDoc.cs" />
@@ -88,7 +88,7 @@
     <Compile Include="IUpdateable.cs" />
     <Compile Include="LaunchParameters.cs" />
     <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="ParadoxGameController.iOS.cs" />
+    <Compile Include="XenkoGameController.iOS.cs" />
     <Compile Include="PreparingDeviceSettingsEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\GameResources.Designer.cs" Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
@@ -113,9 +113,9 @@
       <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
@@ -123,9 +123,9 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -140,7 +140,7 @@
     <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'"/>
   </ItemGroup>
   <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' And '$(ParadoxGraphicsApi)' == 'OpenGLES' ">
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' And '$(XenkoGraphicsApi)' == 'OpenGLES' ">
       <ItemGroup>
         <Content Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>

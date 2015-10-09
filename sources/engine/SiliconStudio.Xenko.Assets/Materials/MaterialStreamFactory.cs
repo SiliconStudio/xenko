@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Materials;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Xenko.Assets.Materials
 {
     /// <summary>
     /// <see cref="MaterialStreamDescriptor"/> factory.

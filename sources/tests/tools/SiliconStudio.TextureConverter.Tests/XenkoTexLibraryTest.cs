@@ -8,14 +8,14 @@ using SiliconStudio.TextureConverter.TexLibraries;
 namespace SiliconStudio.TextureConverter.Tests
 {
     [TestFixture]
-    class ParadoxTexLibraryTest
+    class XenkoTexLibraryTest
     {
-        ParadoxTexLibrary library;
+        XenkoTexLibrary library;
 
         [TestFixtureSetUp]
         public void TestSetUp()
         {
-            library = new ParadoxTexLibrary();
+            library = new XenkoTexLibrary();
             Assert.IsTrue(library.SupportBGRAOrder());
         }
 
@@ -46,10 +46,10 @@ namespace SiliconStudio.TextureConverter.Tests
             TexImage image = TestTools.Load(library, "Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx");
             Assert.IsFalse(library.CanHandleRequest(image, new DecompressingRequest(false)));
             Assert.IsFalse(library.CanHandleRequest(image, new LoadingRequest(new TexImage())));
-            Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest(Paradox.Graphics.Image.New1D(5, 0, Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit))));
+            Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest(Xenko.Graphics.Image.New1D(5, 0, Xenko.Graphics.PixelFormat.ATC_RGBA_Explicit))));
             Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest("TextureArray_WMipMaps_BC3.dds", false)));
             Assert.IsTrue(library.CanHandleRequest(image, new ExportRequest("TextureArray_WMipMaps_BC3.pdx", 0)));
-            Assert.IsTrue(library.CanHandleRequest(image, new ExportToParadoxRequest()));
+            Assert.IsTrue(library.CanHandleRequest(image, new ExportToXenkoRequest()));
             image.Dispose();
         }
 
@@ -84,11 +84,11 @@ namespace SiliconStudio.TextureConverter.Tests
         [TestCase("Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx")]
         [TestCase("TextureCube_WMipMaps_RGBA8888.pdx")]
-        public void ExportToParadoxTest(string file)
+        public void ExportToXenkoTest(string file)
         {
             TexImage image = TestTools.Load(library, file);
 
-            ExportToParadoxRequest request = new ExportToParadoxRequest();
+            ExportToXenkoRequest request = new ExportToXenkoRequest();
             library.Execute(image, request);
 
             var pdx = request.PdxImage;

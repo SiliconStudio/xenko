@@ -5,10 +5,10 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Audio;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Audio;
+using SiliconStudio.Xenko.Engine.Design;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Component representing an audio emitter.

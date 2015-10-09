@@ -4,7 +4,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Stores transformation in a TRS format (Position, Rotation and Scale).

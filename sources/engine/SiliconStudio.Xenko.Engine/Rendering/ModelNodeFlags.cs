@@ -3,7 +3,7 @@
 using System;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Flags describing state of a <see cref="ModelNodeDefinition"/>.

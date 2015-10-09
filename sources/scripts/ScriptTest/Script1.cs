@@ -3,21 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Configuration;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Configuration;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Games.IO;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Games.MicroThreading;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Particles;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Games.IO;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Games.MicroThreading;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Particles;
 using SiliconStudio.Shaders;
 using ScriptShader.Effects;
 
@@ -28,10 +28,10 @@ using TaskEx = System.Threading.Tasks.Task;
 
 namespace ScriptTest
 {
-    [ParadoxScript]
+    [XenkoScript]
     public class Script1
     {
-        [ParadoxScript(ScriptFlags.None)]
+        [XenkoScript(ScriptFlags.None)]
         public static async Task Run3()
         {
             for (int i = 0; i < 100; i++)
@@ -42,7 +42,7 @@ namespace ScriptTest
             }
         }
 
-        [ParadoxScript(ScriptFlags.None)]
+        [XenkoScript(ScriptFlags.None)]
         public static async Task Run2(EngineContext engineContext)
         {
             for (int i = 0; i < 10; i++)
@@ -76,7 +76,7 @@ namespace ScriptTest
             renderingSetup.Initialize(engineContext, effectFilename, optionalFeatures);
         }
 
-        [ParadoxScript(ScriptFlags.AssemblyStartup)]
+        [XenkoScript(ScriptFlags.AssemblyStartup)]
         public static async Task Run(EngineContext engineContext)
         {
             var config = AppConfig.GetConfiguration<Config>("Script1");
@@ -130,7 +130,7 @@ namespace ScriptTest
             }
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task LoadDude(EngineContext engineContext)
         {
             var mainPlugin = engineContext.RenderContext.RenderPassPlugins.OfType<MainPlugin>().FirstOrDefault();
@@ -149,7 +149,7 @@ namespace ScriptTest
             await AnimScript.AnimateFBXModel(engineContext, characterEntity);
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task SetupFactory(EngineContext engineContext, string effectName = "Simple")
         {
             var renderingSetup = RenderingSetup.Singleton;
@@ -180,7 +180,7 @@ namespace ScriptTest
         private static void SetupParticles(EngineContext engineContext)
         {
             // Create particle system
-            var particleSystem = new SiliconStudio.Paradox.Particles.ParticleSystem();
+            var particleSystem = new SiliconStudio.Xenko.Particles.ParticleSystem();
 
             // Set particle default size to 10.0f
             particleSystem.GetOrCreateFieldWithDefault(ParticleFields.Size, 10.0f);
@@ -205,7 +205,7 @@ namespace ScriptTest
             engineContext.RenderContext.GlobalMeshes.AddMesh(particleMesh);
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task SetupPostEffects(EngineContext engineContext)
         {
             var config = AppConfig.GetConfiguration<Config>("Script1");
@@ -397,20 +397,20 @@ namespace ScriptTest
         }
     }
 
-    [ParadoxScript]
+    [XenkoScript]
     public class Script2
     {
-        [ParadoxScript(ScriptFlags.None)]
+        [XenkoScript(ScriptFlags.None)]
         public static async Task Run(EngineContext engineContext)
         {
             await TaskEx.Delay(1000);
         }
     }
 
-    [ParadoxScript]
+    [XenkoScript]
     public class Script3
     {
-        [ParadoxScript(ScriptFlags.None)]
+        [XenkoScript(ScriptFlags.None)]
         public static async Task Run(EngineContext engineContext)
         {
             await TaskEx.Delay(1000);

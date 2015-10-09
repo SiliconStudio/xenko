@@ -4,9 +4,9 @@
 using System;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering.Images;
+using SiliconStudio.Xenko.Rendering.Images;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// The base class in charge of applying and drawing an effect.

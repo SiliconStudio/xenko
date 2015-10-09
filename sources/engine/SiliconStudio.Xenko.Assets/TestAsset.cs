@@ -7,7 +7,7 @@ using SiliconStudio.Core.Serialization;
 
 using YamlDotNet.Serialization;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
     [DataContract("TestAsset")]
     [AssetAlias("AssetTest")]

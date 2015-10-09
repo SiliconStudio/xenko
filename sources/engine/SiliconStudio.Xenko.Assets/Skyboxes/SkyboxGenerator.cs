@@ -7,17 +7,17 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.ComputeEffect.GGXPrefiltering;
-using SiliconStudio.Paradox.Rendering.ComputeEffect.LambertianPrefiltering;
-using SiliconStudio.Paradox.Rendering.Skyboxes;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering;
+using SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Assets.Skyboxes
+namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     public class SkyboxGeneratorContext : ShaderGeneratorContextBase, IDisposable
     {

@@ -5,7 +5,7 @@
 #include "UtilityFunctions.h"
 
 using namespace System::Text;
-using namespace SiliconStudio::Paradox::Engine;
+using namespace SiliconStudio::Xenko::Engine;
 
 
 String^ aiStringToString(aiString str)

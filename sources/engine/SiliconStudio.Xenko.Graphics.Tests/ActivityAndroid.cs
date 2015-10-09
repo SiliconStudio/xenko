@@ -1,13 +1,13 @@
 using System.Runtime.CompilerServices;
 using Android.App;
 using Android.OS;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Starter;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Starter;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    [Activity(Label = "Paradox Graphics", MainLauncher = true, Icon = "@drawable/icon")]
-    public class ActivityAndroid : AndroidParadoxActivity
+    [Activity(Label = "Xenko Graphics", MainLauncher = true, Icon = "@drawable/icon")]
+    public class ActivityAndroid : AndroidXenkoActivity
     {
         protected override void OnCreate(Bundle bundle)
         {

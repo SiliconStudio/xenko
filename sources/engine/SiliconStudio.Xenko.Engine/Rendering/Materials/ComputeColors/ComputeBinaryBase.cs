@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
+namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 {
     /// <summary>
     /// A node that describe a binary operation between two <see cref="IComputeNode"/>

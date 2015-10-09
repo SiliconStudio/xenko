@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{E136B568-3E3F-498F-A8B4-2877B7768560}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Paradox.VisualStudio.Commands</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.VisualStudio.Commands</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.VisualStudio.Commands</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.VisualStudio.Commands</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -55,7 +55,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="PackageBuildMonitorRemote.cs" />
-    <Compile Include="ParadoxCommands.cs" />
+    <Compile Include="XenkoCommands.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Shaders\ShaderKeyFileHelper.cs" />
   </ItemGroup>
@@ -111,14 +111,14 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
-      <Name>SiliconStudio.Paradox.Engine</Name>
+      <Name>SiliconStudio.Xenko.Engine</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Shaders.Parser\SiliconStudio.Xenko.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
-      <Name>SiliconStudio.Paradox.Shaders.Parser</Name>
+      <Name>SiliconStudio.Xenko.Shaders.Parser</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
@@ -126,14 +126,14 @@
       <Name>SiliconStudio.BuildEngine.Common</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
-      <Name>SiliconStudio.Paradox.Shaders</Name>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.VisualStudio.Package\SiliconStudio.Paradox.VisualStudio.Package.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.csproj">
       <Project>{0BD41ADD-2704-4A77-A9AB-15460A2ABDC6}</Project>
-      <Name>SiliconStudio.Paradox.VisualStudio.Package</Name>
+      <Name>SiliconStudio.Xenko.VisualStudio.Package</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

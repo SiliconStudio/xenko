@@ -2,69 +2,69 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Shaders.Ast.Hlsl;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Ast
+namespace SiliconStudio.Xenko.Shaders.Parser.Ast
 {
-    public class ParadoxStorageQualifier : StorageQualifier
+    public class XenkoStorageQualifier : StorageQualifier
     {
         /// <summary>
         ///   Stream keyword (stream).
         /// </summary>
-        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Stream = new ParadoxStorageQualifier("stream");
+        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Stream = new XenkoStorageQualifier("stream");
 
         /// <summary>
         ///   Patch stream keyword (patchstream).
         /// </summary>
-        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier PatchStream = new ParadoxStorageQualifier("patchstream");
+        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier PatchStream = new XenkoStorageQualifier("patchstream");
 
         /// <summary>
         ///   Stage keyword (stage).
         /// </summary>
-        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Stage = new ParadoxStorageQualifier("stage");
+        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Stage = new XenkoStorageQualifier("stage");
 
         /// <summary>
         ///   Clone keyword (clone).
         /// </summary>
-        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Clone = new ParadoxStorageQualifier("clone");
+        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Clone = new XenkoStorageQualifier("clone");
 
         /// <summary>
         ///   Override keyword (override).
         /// </summary>
-        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Override = new ParadoxStorageQualifier("override");
+        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Override = new XenkoStorageQualifier("override");
 
         /// <summary>
         ///   Override keyword (override).
         /// </summary>
-        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Abstract = new ParadoxStorageQualifier("abstract");
+        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Abstract = new XenkoStorageQualifier("abstract");
 
         /// <summary>
         ///   Compose keyword (compose).
         /// </summary>
-        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Compose = new ParadoxStorageQualifier("compose");
+        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Compose = new XenkoStorageQualifier("compose");
 
         /// <summary>
         ///   Internal keyword (internal).
         /// </summary>
-        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Internal = new ParadoxStorageQualifier("internal");
+        public static readonly SiliconStudio.Shaders.Ast.StorageQualifier Internal = new XenkoStorageQualifier("internal");
 
         /// <summary>
         ///   Internal map used for parsing.
         /// </summary>
-        private static readonly StringEnumMap Map = PrepareParsing<ParadoxStorageQualifier>();
+        private static readonly StringEnumMap Map = PrepareParsing<XenkoStorageQualifier>();
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParadoxStorageQualifier"/> class.
+        /// Initializes a new instance of the <see cref="XenkoStorageQualifier"/> class.
         /// </summary>
-        public ParadoxStorageQualifier()
+        public XenkoStorageQualifier()
         {
         }
         
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParadoxStorageQualifier"/> class.
+        /// Initializes a new instance of the <see cref="XenkoStorageQualifier"/> class.
         /// </summary>
         /// <param name="key">
         /// The key.
         /// </param>
-        public ParadoxStorageQualifier(string key)
+        public XenkoStorageQualifier(string key)
             : base(key)
         {
         }
@@ -93,7 +93,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Ast
         /// <returns>
         ///   The result of the operator.
         /// </returns>
-        public static ParadoxStorageQualifier operator &(ParadoxStorageQualifier left, ParadoxStorageQualifier right)
+        public static XenkoStorageQualifier operator &(XenkoStorageQualifier left, XenkoStorageQualifier right)
         {
             return OperatorAnd(left, right);
         }
@@ -106,7 +106,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Ast
         /// <returns>
         ///   The result of the operator.
         /// </returns>
-        public static ParadoxStorageQualifier operator |(ParadoxStorageQualifier left, ParadoxStorageQualifier right)
+        public static XenkoStorageQualifier operator |(XenkoStorageQualifier left, XenkoStorageQualifier right)
         {
             return OperatorOr(left, right);
         }
@@ -119,7 +119,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Ast
         /// <returns>
         ///   The result of the operator.
         /// </returns>
-        public static ParadoxStorageQualifier operator ^(ParadoxStorageQualifier left, ParadoxStorageQualifier right)
+        public static XenkoStorageQualifier operator ^(XenkoStorageQualifier left, XenkoStorageQualifier right)
         {
             return OperatorXor(left, right);
         }

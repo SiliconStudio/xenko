@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     public class AnimationClipResult
     {

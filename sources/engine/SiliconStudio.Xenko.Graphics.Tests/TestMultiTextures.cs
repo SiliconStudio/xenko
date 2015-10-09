@@ -10,13 +10,13 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     class TestMultiTextures : TestGameBase
@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 foreach (var shaderName in Directory.EnumerateFiles(@"Compiler", "*.pdxsl"))
                     CopyStream(database, shaderName);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\engine\SiliconStudio.Paradox.Graphics\Shaders", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\engine\SiliconStudio.Xenko.Graphics\Shaders", "*.pdxsl"))
                     CopyStream(database, shaderName);
 
                 var compiler = new EffectCompiler();

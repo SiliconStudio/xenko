@@ -10,7 +10,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Assets.Textures
+namespace SiliconStudio.Xenko.Assets.Textures
 {
     /// <summary>
     /// Describes a texture asset.

@@ -3,7 +3,7 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.Audio
+namespace SiliconStudio.Xenko.Assets.Audio
 {
     [DataContract]
     public abstract class SoundAsset : AssetImport

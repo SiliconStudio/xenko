@@ -10,9 +10,9 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Xenko.Animations;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     public class AnimationAssetCompiler : AssetCompilerBase<AnimationAsset>
     {

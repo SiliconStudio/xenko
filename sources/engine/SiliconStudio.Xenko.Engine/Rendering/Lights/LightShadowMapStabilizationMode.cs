@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
     /// The stabilization mode used for the shadow maps.

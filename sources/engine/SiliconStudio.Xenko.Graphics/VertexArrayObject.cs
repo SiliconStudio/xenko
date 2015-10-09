@@ -7,7 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.ReferenceCounting;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public partial class VertexArrayObject : GraphicsResourceBase
     {

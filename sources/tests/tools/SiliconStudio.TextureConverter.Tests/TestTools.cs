@@ -59,7 +59,7 @@ namespace SiliconStudio.TextureConverter.Tests
         private TestTools() {
             Checksum = new Dictionary<string, string>
             {
-                // ParadoxTexLibrary
+                // XenkoTexLibrary
                 {"ExportTest_Texture3D_WMipMaps_ATC_RGBA_Explicit.pdx", "b351c27d236ee7bd1dfd4c0e8a5a5c785a2b9c53"},
                 {"ExportTest_TextureArray_WMipMaps_ATC_RGBA_Explicit.pdx", "cb04d7f022623eaf16741dc8820f6354ffe101f4"},
                 {"ExportTest_TextureCube_WMipMaps_RGBA8888.pdx", "a1d07aced830ba66c965c2c7ab24fcc38a8ce9e7"},

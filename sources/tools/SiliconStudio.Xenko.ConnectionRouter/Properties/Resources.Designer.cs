@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SiliconStudio.Paradox.ConnectionRouter.Properties {
+namespace SiliconStudio.Xenko.ConnectionRouter.Properties {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter.Properties {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SiliconStudio.Paradox.ConnectionRouter.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SiliconStudio.Xenko.ConnectionRouter.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

@@ -3,7 +3,7 @@
 using System;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// A shader source that is linked to a pdxfx effect.

@@ -36,7 +36,7 @@
             {
                 string line;
                 var searchPattern = page + "".htm|"";
-                string title = ""Paradox Documentation"";
+                string title = ""Xenko Documentation"";
 
                 // Read the file and display it line by line.
                 using (System.IO.StreamReader file = new System.IO.StreamReader(Server.MapPath(""index.txt"")))
@@ -60,11 +60,11 @@
                     title = Request.QueryString[""page""];
                 }
                 
-                Response.Write(title + "" - Paradox Documentation"");
+                Response.Write(title + "" - Xenko Documentation"");
             }
             else
             {
-                Response.Write(""Paradox Documentation"");
+                Response.Write(""Xenko Documentation"");
             }
         %>")
     </title>

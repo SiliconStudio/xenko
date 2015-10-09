@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// Material for Point-Normal tessellation.
@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
                 return;
 
             // set the tessellation method used enumeration
-            context.Material.TessellationMethod |= ParadoxTessellationMethod.PointNormal;
+            context.Material.TessellationMethod |= XenkoTessellationMethod.PointNormal;
 
             // create and affect the shader source
             var tessellationShader = new ShaderMixinSource();

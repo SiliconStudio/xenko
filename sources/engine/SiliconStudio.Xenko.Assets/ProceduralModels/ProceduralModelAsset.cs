@@ -15,11 +15,11 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.ProceduralModels;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
-namespace SiliconStudio.Paradox.Assets.ProceduralModels
+namespace SiliconStudio.Xenko.Assets.ProceduralModels
 {
     /// <summary>
     /// The geometric primitive asset.

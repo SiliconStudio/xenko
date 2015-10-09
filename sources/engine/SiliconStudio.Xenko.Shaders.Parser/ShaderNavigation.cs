@@ -6,11 +6,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.Shaders.Parser
+namespace SiliconStudio.Xenko.Shaders.Parser
 {
     /// <summary>
     /// This class helps to navigate from a text location and try to find the associated definition location 

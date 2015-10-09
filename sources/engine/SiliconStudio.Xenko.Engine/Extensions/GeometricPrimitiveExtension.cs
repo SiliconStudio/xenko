@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
 
-namespace SiliconStudio.Paradox.Extensions
+namespace SiliconStudio.Xenko.Extensions
 {
     /// <summary>
     /// An extension class for the <see cref="GeometricPrimitive"/>

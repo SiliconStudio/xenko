@@ -3,13 +3,13 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
-    class ParadoxMotionState : BulletSharp.SharpMotionState
+    class XenkoMotionState : BulletSharp.SharpMotionState
     {
         private readonly RigidBody rigidBody;
 
-        public ParadoxMotionState(RigidBody rb)
+        public XenkoMotionState(RigidBody rb)
         {
             rigidBody = rb;
         }

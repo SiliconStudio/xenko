@@ -6,11 +6,11 @@ using System.Diagnostics;
 using System.Drawing;
 using OpenTK.Platform.iPhoneOS;
 using OpenGLES;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.OpenGL;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.OpenGL;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// An abstract window.

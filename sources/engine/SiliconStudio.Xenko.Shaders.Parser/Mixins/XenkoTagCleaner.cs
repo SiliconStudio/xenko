@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Visitor;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class ParadoxTagCleaner : ShaderVisitor
+    internal class XenkoTagCleaner : ShaderVisitor
     {
-        public ParadoxTagCleaner()
+        public XenkoTagCleaner()
             : base(false, false)
         {
         }
@@ -21,15 +21,15 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         [Visit]
         protected override Node Visit(Node node)
         {
-            node.RemoveTag(ParadoxTags.ConstantBuffer);
-            node.RemoveTag(ParadoxTags.ShaderScope);
-            node.RemoveTag(ParadoxTags.StaticRef);
-            node.RemoveTag(ParadoxTags.ExternRef);
-            node.RemoveTag(ParadoxTags.StageInitRef);
-            node.RemoveTag(ParadoxTags.CurrentShader);
-            node.RemoveTag(ParadoxTags.VirtualTableReference);
-            node.RemoveTag(ParadoxTags.BaseDeclarationMixin);
-            node.RemoveTag(ParadoxTags.ShaderScope);
+            node.RemoveTag(XenkoTags.ConstantBuffer);
+            node.RemoveTag(XenkoTags.ShaderScope);
+            node.RemoveTag(XenkoTags.StaticRef);
+            node.RemoveTag(XenkoTags.ExternRef);
+            node.RemoveTag(XenkoTags.StageInitRef);
+            node.RemoveTag(XenkoTags.CurrentShader);
+            node.RemoveTag(XenkoTags.VirtualTableReference);
+            node.RemoveTag(XenkoTags.BaseDeclarationMixin);
+            node.RemoveTag(XenkoTags.ShaderScope);
             return base.Visit(node);
         }
     }

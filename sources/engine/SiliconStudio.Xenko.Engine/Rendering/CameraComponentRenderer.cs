@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Updates the parameters in the 

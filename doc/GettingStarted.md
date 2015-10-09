@@ -8,11 +8,11 @@
 
 ## Build Instructions
 
-1. Clone Paradox with submodules: `git clone --recursive git@github.com:SiliconStudio/paradox.git <ParadoxDir>`
-2. Set *SiliconStudioParadoxDir* environment variable to point to your `<ParadoxDir>`
-3. Open `<ParadoxDir>\build\Paradox.sln` with Visual Studio 2013, and build.
-4. Open `<ParadoxDir>\samples\ParadoxSamples.sln` and play with the samples.
-5. Optionally, open and build `Paradox.Android.sln`, `Paradox.iOS.sln`, etc...
+1. Clone Xenko with submodules: `git clone --recursive git@github.com:SiliconStudio/xenko.git <XenkoDir>`
+2. Set *SiliconStudioXenkoDir* environment variable to point to your `<XenkoDir>`
+3. Open `<XenkoDir>\build\Xenko.sln` with Visual Studio 2013, and build.
+4. Open `<XenkoDir>\samples\XenkoSamples.sln` and play with the samples.
+5. Optionally, open and build `Xenko.Android.sln`, `Xenko.iOS.sln`, etc...
 
 ## Using the editor
 

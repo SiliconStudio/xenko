@@ -20,10 +20,10 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
-    /// The <see cref="SiliconStudio.Paradox.Games"/> namespace provides a high level Game API.
+    /// The <see cref="SiliconStudio.Xenko.Games"/> namespace provides a high level Game API.
     /// </summary>
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute()]
     class NamespaceDoc

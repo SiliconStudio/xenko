@@ -45,14 +45,14 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 */
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System.Runtime.InteropServices;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Default Rendering Form on windows desktop.
@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.Games
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
         public GameForm()
-            : this("Paradox Game")
+            : this("Xenko Game")
         {
         }
 

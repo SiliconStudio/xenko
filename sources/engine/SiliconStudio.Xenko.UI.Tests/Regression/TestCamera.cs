@@ -4,11 +4,11 @@ using System;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Input;
 
-namespace SiliconStudio.Paradox.UI.Tests.Regression
+namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
     /// <summary>
     /// The default script for the scene editor camera.

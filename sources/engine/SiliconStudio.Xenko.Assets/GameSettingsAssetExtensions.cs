@@ -1,6 +1,6 @@
 using SiliconStudio.Assets;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
     public static class GameSettingsAssetExtensions
     {

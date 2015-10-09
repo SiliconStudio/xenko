@@ -3,7 +3,7 @@
 #if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID
 using NUnit.Framework.Internal;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public class TestNamespace : TestSuite
     {

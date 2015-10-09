@@ -4,7 +4,7 @@ using System.Runtime.InteropServices;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     [DataContract]
     [StructLayout(LayoutKind.Sequential)]

@@ -17,12 +17,12 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Model;
-using SiliconStudio.Paradox.Assets.SpriteFont;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Rendering.ProceduralModels;
-using SiliconStudio.Paradox.SpriteStudio.Offline;
+using SiliconStudio.Xenko.Assets.Model;
+using SiliconStudio.Xenko.Assets.SpriteFont;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.ProceduralModels;
+using SiliconStudio.Xenko.SpriteStudio.Offline;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
@@ -69,7 +69,7 @@ namespace SiliconStudio.Assets.CompilerApp
             var p = new OptionSet
             {
                 "Copyright (C) 2011-2014 Silicon Studio Corporation. All Rights Reserved",
-                "Paradox Build Tool - Version: "
+                "Xenko Build Tool - Version: "
                 +
                 String.Format(
                     "{0}.{1}.{2}",
@@ -284,7 +284,7 @@ namespace SiliconStudio.Assets.CompilerApp
         private static string FormatLog(ILogMessage message)
         {
             //$filename($row,$column): $error_type $error_code: $error_message
-            //C:\Code\Paradox\sources\assets\SiliconStudio.Assets.CompilerApp\PackageBuilder.cs(89,13,89,70): warning CS1717: Assignment made to same variable; did you mean to assign something else?
+            //C:\Code\Xenko\sources\assets\SiliconStudio.Assets.CompilerApp\PackageBuilder.cs(89,13,89,70): warning CS1717: Assignment made to same variable; did you mean to assign something else?
             var builder = new StringBuilder();
             builder.Append(message.Module ?? "AssetCompiler");
             builder.Append(": ");

@@ -8,11 +8,11 @@ using Microsoft.Build.Execution;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace SiliconStudio.Paradox.VisualStudio
+namespace SiliconStudio.Xenko.VisualStudio
 {
     public class BuildLogPipeGenerator
     {
-        private string logPipeUrl = "net.pipe://localhost/Paradox.BuildEngine.Monitor." + Guid.NewGuid();
+        private string logPipeUrl = "net.pipe://localhost/Xenko.BuildEngine.Monitor." + Guid.NewGuid();
         private SolutionEventsListener solutionEventsListener;
 
         public string LogPipeUrl
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.VisualStudio
 
         public BuildLogPipeGenerator(IServiceProvider serviceProvider)
         {
-            // Initialize the solution listener that will set ParadoxVSBuilderMonitorGuid for this instance of VisualStudio.
+            // Initialize the solution listener that will set XenkoVSBuilderMonitorGuid for this instance of VisualStudio.
             solutionEventsListener = new SolutionEventsListener(serviceProvider);
             solutionEventsListener.AfterProjectOpened += OnProjectOpened;
 

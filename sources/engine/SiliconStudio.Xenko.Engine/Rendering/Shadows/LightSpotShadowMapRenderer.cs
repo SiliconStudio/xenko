@@ -3,11 +3,11 @@
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Lights;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Lights;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Shadows
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     /// <summary>
     /// Renders a shadow map from a directional light.

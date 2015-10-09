@@ -5,10 +5,10 @@ using System.Threading;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics.Font;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics.Font;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     /// <summary>
     /// Test the class <see cref="FontManager"/>

@@ -9,13 +9,13 @@ using System.Runtime.CompilerServices;
 using NUnit.Framework;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Analysis;
-using SiliconStudio.Paradox.Assets.SpriteFont;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Assets.SpriteFont;
+using SiliconStudio.Xenko.Rendering;
 
 using System.Linq;
 
-using SiliconStudio.Paradox.Graphics;
-namespace SiliconStudio.Paradox.Assets.Tests
+using SiliconStudio.Xenko.Graphics;
+namespace SiliconStudio.Xenko.Assets.Tests
 
 {
     [TestFixture]
@@ -27,13 +27,13 @@ namespace SiliconStudio.Paradox.Assets.Tests
             RuntimeHelpers.RunModuleConstructor(typeof(Asset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(SpriteFontAsset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(MaterialKeys).Module.ModuleHandle);
-            RuntimeHelpers.RunModuleConstructor(typeof(SiliconStudio.Paradox.Assets.Model.ModelAsset).Module.ModuleHandle);
+            RuntimeHelpers.RunModuleConstructor(typeof(SiliconStudio.Xenko.Assets.Model.ModelAsset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(IVertex).Module.ModuleHandle);
 
             // load assembly to register the assets extensions
-            var assetAssembly = Assembly.Load("SiliconStudio.Paradox.Assets");
+            var assetAssembly = Assembly.Load("SiliconStudio.Xenko.Assets");
             AssetRegistry.RegisterAssembly(assetAssembly); 
-            assetAssembly = Assembly.Load("SiliconStudio.Paradox.Assets.Model");
+            assetAssembly = Assembly.Load("SiliconStudio.Xenko.Assets.Model");
             AssetRegistry.RegisterAssembly(assetAssembly);
         }
 
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestTextureItemAsset()
         {
             // load the project
-            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Paradox.Assets.Tests\Projects\TextureDeps\Assets.pdxpkg");
+            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\TextureDeps\Assets.pdxpkg");
             var projectSession = projectSessionResult.Session;
             var textureItem = projectSession.RootPackage.Assets.First();
 
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestMaterialItemAsset()
         {
             // load the project
-            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Paradox.Assets.Tests\Projects\MaterialDeps\Assets.pdxpkg");
+            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\MaterialDeps\Assets.pdxpkg");
             var projectSession = projectSessionResult.Session;
             var materialItem = projectSession.RootPackage.Assets.First();
 
@@ -71,7 +71,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestCircularDependencies()
         {
             // load the project
-            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Paradox.Assets.Tests\Projects\CircularDeps\Assets.pdxpkg");
+            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\CircularDeps\Assets.pdxpkg");
             var projectSession = projectSessionResult.Session;
             var materialItem = projectSession.RootPackage.Assets.First();
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestEntityItemAsset()
         {
             // load the project
-            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Paradox.Assets.Tests\Projects\EntityDeps\Assets.pdxpkg");
+            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\EntityDeps\Assets.pdxpkg");
             var projectSession = projectSessionResult.Session;
             var entityItem = projectSession.RootPackage.Assets.First();
 
@@ -104,7 +104,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         public void TestComplexDependencies()
         {
             // load the project
-            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Paradox.Assets.Tests\Projects\ComplexDeps\Assets.pdxpkg");
+            var projectSessionResult = PackageSession.Load(@"SiliconStudio.Xenko.Assets.Tests\Projects\ComplexDeps\Assets.pdxpkg");
             var projectSession = projectSessionResult.Session;
             var entityItem = projectSession.RootPackage.Assets.First();
 

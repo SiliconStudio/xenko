@@ -20,7 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
@@ -28,7 +28,7 @@ using System.Security;
 using SharpDX.Win32;
 using SharpDX.Mathematics.Interop;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Internal class to interact with Native Message

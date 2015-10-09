@@ -6,13 +6,13 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Games.Collections;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Games.ViewModel;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Games.Serialization.Packages;
-using SiliconStudio.Paradox.Games.IO;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Games.Collections;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Games.ViewModel;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Games.Serialization.Packages;
+using SiliconStudio.Xenko.Games.IO;
 
 namespace ScriptTest
 {

@@ -8,13 +8,13 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// The effect system.
@@ -234,10 +234,10 @@ namespace SiliconStudio.Paradox.Rendering
         private CompilerResults GetCompilerResults(string effectName, CompilerParameters compilerParameters)
         {
             compilerParameters.Profile = GraphicsDevice.ShaderProfile.HasValue ? GraphicsDevice.ShaderProfile.Value : GraphicsDevice.Features.Profile;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLCORE
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
             compilerParameters.Platform = GraphicsPlatform.OpenGL;
 #endif
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES 
             compilerParameters.Platform = GraphicsPlatform.OpenGLES;
 #endif
 
@@ -386,7 +386,7 @@ namespace SiliconStudio.Paradox.Rendering
         {
             EffectCompilerBase compiler = null;
 
-#if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
+#if SILICONSTUDIO_XENKO_EFFECT_COMPILER
             if ((effectCompilationMode & EffectCompilationMode.Local) != 0)
             {
                 // Local allowed and available, let's use that

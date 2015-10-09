@@ -8,8 +8,8 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Paradox.Input.Tests</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Input.Tests</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Input.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Input.Tests</AssemblyName>
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AndroidApplication>true</AndroidApplication>
@@ -26,20 +26,20 @@
     <SiliconStudioPlatform>Android</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>Android</SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{6d251236-da95-409a-8f4b-7d42ae1fd32c}</SiliconStudioPackageGuid>
-    <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioParadoxDir>
+    <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioXenkoDir>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Paradox.Input.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Input.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Android' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
-    <SiliconStudioParadoxGraphicsApi>OpenGLES</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\Android\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -51,7 +51,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
-    <SiliconStudioParadoxGraphicsApi>OpenGLES</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\Android\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -63,7 +63,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
-    <SiliconStudioParadoxGraphicsApi>OpenGLES</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\Android\Testing\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -75,7 +75,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
-    <SiliconStudioParadoxGraphicsApi>OpenGLES</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\Android\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
@@ -84,14 +84,14 @@
     <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Android" Label="Paradox.DoNotSync" />
+    <Reference Include="Mono.Android" Label="Xenko.DoNotSync" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
-    <Content Label="Paradox.DoNotSync" Include="Properties\AndroidManifest.xml" />
-    <AndroidResource Label="Paradox.DoNotSync" Include="Resources\Drawable\Icon.png" />
-    <Compile Label="Paradox.DoNotSync" Include="Resources\Resource.Designer.cs" />
-    <Compile Label="Paradox.DoNotSync" Include="..\..\..\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.Android.cs">
+    <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
+    <Content Label="Xenko.DoNotSync" Include="Properties\AndroidManifest.xml" />
+    <AndroidResource Label="Xenko.DoNotSync" Include="Resources\Drawable\Icon.png" />
+    <Compile Label="Xenko.DoNotSync" Include="Resources\Resource.Designer.cs" />
+    <Compile Label="Xenko.DoNotSync" Include="..\..\..\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.Android.cs">
       <Link>NUnitLiteLauncher.Android.cs</Link>
     </Compile>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -124,39 +124,39 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Input\SiliconStudio.Paradox.Input.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
       <Project>{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}</Project>
-      <Name>SiliconStudio.Paradox.Input</Name>
+      <Name>SiliconStudio.Xenko.Input</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
-      <Name>SiliconStudio.Paradox.Shaders.Compiler</Name>
+      <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders.Parser\SiliconStudio.Xenko.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
-      <Name>SiliconStudio.Paradox.Shaders.Parser</Name>
+      <Name>SiliconStudio.Xenko.Shaders.Parser</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
-      <Name>SiliconStudio.Paradox.Shaders</Name>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
-      <Name>SiliconStudio.Paradox.Engine</Name>
+      <Name>SiliconStudio.Xenko.Engine</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
@@ -164,21 +164,21 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
-      <Name>SiliconStudio.Paradox.Games</Name>
+      <Name>SiliconStudio.Xenko.Games</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics.Regression\SiliconStudio.Paradox.Graphics.Regression.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.csproj">
       <Project>{D002FEB1-00A6-4AB1-A83F-1F253465E64D}</Project>
-      <Name>SiliconStudio.Paradox.Graphics.Regression</Name>
+      <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
-      <Name>SiliconStudio.Paradox.Physics</Name>
+      <Name>SiliconStudio.Xenko.Physics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.UI\SiliconStudio.Paradox.UI.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
       <Project>{bb9deeef-f18c-40d8-b016-6434cc71b8c3}</Project>
-      <Name>SiliconStudio.Paradox.UI</Name>
+      <Name>SiliconStudio.Xenko.UI</Name>
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -186,14 +186,14 @@
     <Compile Include="AdvancedInputTest.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="SensorGameTest.cs" />
-    <None Include="SiliconStudio.Paradox.Input.Tests.pdxpkg" />
+    <None Include="SiliconStudio.Xenko.Input.Tests.pdxpkg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
-  <Import Project="$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets" Condition="Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" />
-  <Target Name="EnsureSiliconStudioParadoxInstalled" BeforeTargets="PrepareForBuild">
-    <Error Condition="'$(SiliconStudioParadoxDir)' == ''" Text="Paradox SDK was not found. Check Paradox is installed and the global env variable [SiliconStudioParadoxDir] is setup correctly" />
-    <Error Condition="!Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" Text="Invalid Paradox SDK installation. Target file [$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets] was not found." />
+  <Import Project="$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets" Condition="Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" />
+  <Target Name="EnsureSiliconStudioXenkoInstalled" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(SiliconStudioXenkoDir)' == ''" Text="Xenko SDK was not found. Check Xenko is installed and the global env variable [SiliconStudioXenkoDir] is setup correctly" />
+    <Error Condition="!Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" Text="Invalid Xenko SDK installation. Target file [$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets] was not found." />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
     Other similar extension points exist, see Microsoft.Common.targets.

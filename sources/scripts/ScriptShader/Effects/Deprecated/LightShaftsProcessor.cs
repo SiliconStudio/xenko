@@ -1,7 +1,7 @@
 using System;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Core;
 
 namespace ScriptShader.Effects

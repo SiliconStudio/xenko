@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
 using QuickGraph;
 using QuickGraph.Algorithms;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Posteffect manager.

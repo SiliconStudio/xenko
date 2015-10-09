@@ -80,7 +80,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     // Helper for arranging many small bitmaps onto a single larger surface.
     internal static class GlyphPacker

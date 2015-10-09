@@ -619,7 +619,7 @@ namespace SiliconStudio.Assets
 
                 Assets.IsDirty = false;
 
-                // Save properties like the Paradox version used
+                // Save properties like the Xenko version used
                 PackageSessionHelper.SaveProperties(this);
             }
             finally

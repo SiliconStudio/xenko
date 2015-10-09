@@ -11,9 +11,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SiliconStudio.Paradox.Framework.ViewModel;
+using SiliconStudio.Xenko.Framework.ViewModel;
 
-namespace SiliconStudio.Paradox.DebugTools
+namespace SiliconStudio.Xenko.DebugTools
 {
     /// <summary>
     /// Interaction logic for PropertyGridTestControl.xaml

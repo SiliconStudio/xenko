@@ -81,9 +81,9 @@ using System.Runtime.InteropServices;
 using SharpDX.WIC;
 using SiliconStudio.Core;
 using WIC = SharpDX.WIC;
-using Format = SiliconStudio.Paradox.Graphics.PixelFormat;
+using Format = SiliconStudio.Xenko.Graphics.PixelFormat;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public class WICHelper
     {

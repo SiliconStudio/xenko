@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// Keys used by <see cref="ToneMap"/> and ToneMapEffect pdxfx

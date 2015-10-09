@@ -10,7 +10,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 
-namespace SiliconStudio.Paradox.Graphics.Font
+namespace SiliconStudio.Xenko.Graphics.Font
 {
     /// <summary>
     /// A font manager is in charge of loading in memory the ttf files, looking for font informations, rendering and then caching the <see cref="CharacterBitmap"/>s on the CPU . 

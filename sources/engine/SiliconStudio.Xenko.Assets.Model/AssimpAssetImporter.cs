@@ -4,9 +4,9 @@ using System;
 
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Importer.Common;
+using SiliconStudio.Xenko.Importer.Common;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     public class AssimpAssetImporter : ModelAssetImporter
     {

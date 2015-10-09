@@ -7,9 +7,9 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Audio.Tests.Engine
+namespace SiliconStudio.Xenko.Audio.Tests.Engine
 {
     /// <summary>
     /// Test the <see cref="AudioEmitterComponent"/>. Some of the test depends on internal implementation and can failed if implementation has been modified.

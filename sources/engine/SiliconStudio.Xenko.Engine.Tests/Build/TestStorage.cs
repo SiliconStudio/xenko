@@ -111,53 +111,53 @@ namespace SiliconStudio.Core.Tests.Build
             string s2 = "abcdefghijklmnopqrstuvwxyz";
             string s3 = "abcdefghijklmnopqrstuvwxyzabcdefghijklmnopqrstuvwxyz123456789";
 
-            ObjectId paradoxHash;
+            ObjectId xenkoHash;
             ObjectId dotNetHash;
             using (var ds = new DigestStream(new MemoryStream()))
             {
                 ds.Write(Encoding.ASCII.GetBytes(s1), 0, s1.Length);
-                paradoxHash = ds.CurrentHash;
+                xenkoHash = ds.CurrentHash;
             }
             using (var hashAlgorithm = new System.Security.Cryptography.SHA1Managed())
             {
                 dotNetHash = new ObjectId(hashAlgorithm.ComputeHash(Encoding.ASCII.GetBytes(s1)));
             }
-            Assert.That(paradoxHash, Is.EqualTo(dotNetHash));
+            Assert.That(xenkoHash, Is.EqualTo(dotNetHash));
 
             using (var ds = new DigestStream(new MemoryStream()))
             {
                 ds.Write(Encoding.ASCII.GetBytes(s2), 0, s2.Length);
-                paradoxHash = ds.CurrentHash;
+                xenkoHash = ds.CurrentHash;
             }
             using (var hashAlgorithm = new System.Security.Cryptography.SHA1Managed())
             {
                 dotNetHash = new ObjectId(hashAlgorithm.ComputeHash(Encoding.ASCII.GetBytes(s2)));
             }
-            Assert.That(paradoxHash, Is.EqualTo(dotNetHash));
+            Assert.That(xenkoHash, Is.EqualTo(dotNetHash));
 
             using (var ds = new DigestStream(new MemoryStream()))
             {
                 ds.Write(Encoding.ASCII.GetBytes(s3), 0, s3.Length);
-                paradoxHash = ds.CurrentHash;
+                xenkoHash = ds.CurrentHash;
             }
             using (var hashAlgorithm = new System.Security.Cryptography.SHA1Managed())
             {
                 dotNetHash = new ObjectId(hashAlgorithm.ComputeHash(Encoding.ASCII.GetBytes(s3)));
             }
-            Assert.That(paradoxHash, Is.EqualTo(dotNetHash));
+            Assert.That(xenkoHash, Is.EqualTo(dotNetHash));
 
             using (var ds = new DigestStream(new MemoryStream()))
             {
                 ds.Write(Encoding.ASCII.GetBytes(s1), 0, s1.Length);
                 ds.Write(Encoding.ASCII.GetBytes(s2), 0, s2.Length);
                 ds.Write(Encoding.ASCII.GetBytes(s3), 0, s3.Length);
-                paradoxHash = ds.CurrentHash;
+                xenkoHash = ds.CurrentHash;
             }
             using (var hashAlgorithm = new System.Security.Cryptography.SHA1Managed())
             {
                 dotNetHash = new ObjectId(hashAlgorithm.ComputeHash(Encoding.ASCII.GetBytes(s1 + s2 + s3)));
             }
-            Assert.That(paradoxHash, Is.EqualTo(dotNetHash));
+            Assert.That(xenkoHash, Is.EqualTo(dotNetHash));
         }
 
         class TemporaryObjectDatabase : IDisposable

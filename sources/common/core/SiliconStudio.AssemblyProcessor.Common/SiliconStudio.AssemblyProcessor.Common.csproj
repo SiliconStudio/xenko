@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
-    <ParadoxGraphicsApi>Direct3D11</ParadoxGraphicsApi>
+    <XenkoGraphicsApi>Direct3D11</XenkoGraphicsApi>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\..\..\build\</SolutionDir>
     <RestorePackages>true</RestorePackages>
   </PropertyGroup>
@@ -20,7 +20,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.AssemblyProcessor</RootNamespace>
     <AssemblyName>SiliconStudio.AssemblyProcessor.Common</AssemblyName>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <DefineConstants>$(DefineConstants);ASSEMBLY_PROCESSOR</DefineConstants>
   </PropertyGroup>
   <ItemGroup>

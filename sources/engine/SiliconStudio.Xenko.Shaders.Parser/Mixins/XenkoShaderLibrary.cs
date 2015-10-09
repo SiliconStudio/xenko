@@ -7,15 +7,15 @@ using System.Text;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class ParadoxShaderLibrary
+    internal class XenkoShaderLibrary
     {
         #region Delegate
 
@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         #region Constructor
 
-        public ParadoxShaderLibrary(ShaderLoader loader)
+        public XenkoShaderLibrary(ShaderLoader loader)
         {
             ShaderLoader = loader;
         }
@@ -331,7 +331,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 if (classSource.GenericArguments == null || classSource.GenericArguments.Length == 0 || shaderClass.GenericParameters.Count > classSource.GenericArguments.Length)
                 {
                     mixinInfo.Instanciated = false;
-                    mixinInfo.Log.Error(ParadoxMessageCode.ErrorClassSourceNotInstantiated, shaderClass.Span, classSource.ClassName);
+                    mixinInfo.Log.Error(XenkoMessageCode.ErrorClassSourceNotInstantiated, shaderClass.Span, classSource.ClassName);
                 }
                 else
                 {

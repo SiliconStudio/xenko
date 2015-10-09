@@ -5,9 +5,9 @@
 
   <!-- Embed native libraries -->
   <ItemGroup>
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\libfreetype.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\libcore.a" />
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageParadoxPlatformBin)\libbulletc.a" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libfreetype.a" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libcore.a" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\libbulletc.a" />
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\*.a" />
   </ItemGroup>
@@ -33,14 +33,14 @@
 
   <Target Name="EnsureXamarinVersion" BeforeTargets="PrepareForBuild">
     <Error Condition="'$(XamarinVersion)' == ''" Text="Xamarin iOS version was not found. Ensure HKEY_LOCAL_MACHINE\SOFTWARE\Xamarin\iOS\InstalledVersion is properly set."/>
-    <Error Condition="($(XamarinIOSMajorVersion) == 7 and $(XamarinIOSMinorVersion) >= 3) or ($(XamarinIOSMajorVersion) == 8 and $(XamarinIOSMinorVersion) &lt; 2)" Text="Xamarin iOS versions 7.3 to 8.1 are not compatible with Paradox (https://bugzilla.xamarin.com/show_bug.cgi?id=22906). Either downgrade to 7.2 (Xamarin 3.3) or upgrade to 8.2 (Xamarin 3.7)."/>
-    <Error Condition="($(XamarinIOSMajorVersion) == 8 and $(XamarinIOSMinorVersion) >= 6 and $(XamarinIOSMinorVersion) &lt; 9)" Text="Xamarin iOS versions 8.6 to 8.8 are not compatible with Paradox. Please upgrade to 8.9 (Xamarin 3.9)."/>
+    <Error Condition="($(XamarinIOSMajorVersion) == 7 and $(XamarinIOSMinorVersion) >= 3) or ($(XamarinIOSMajorVersion) == 8 and $(XamarinIOSMinorVersion) &lt; 2)" Text="Xamarin iOS versions 7.3 to 8.1 are not compatible with Xenko (https://bugzilla.xamarin.com/show_bug.cgi?id=22906). Either downgrade to 7.2 (Xamarin 3.3) or upgrade to 8.2 (Xamarin 3.7)."/>
+    <Error Condition="($(XamarinIOSMajorVersion) == 8 and $(XamarinIOSMinorVersion) >= 6 and $(XamarinIOSMinorVersion) &lt; 9)" Text="Xamarin iOS versions 8.6 to 8.8 are not compatible with Xenko. Please upgrade to 8.9 (Xamarin 3.9)."/>
   </Target>
 
   <!-- Rewrite BuildDependsOn and ResolveReferencesDependsOn -->
   <PropertyGroup Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
     <BuildDependsOn>
-      CopyParadoxNativeiOsLibrary;
+      CopyXenkoNativeiOsLibrary;
       $(BuildDependsOn);
     </BuildDependsOn>
     <!-- iOS: Ensure assets have been deployed before calling _CollectBundleResources (on Xamarin iOS 7 we use BeforeTargets) -->
@@ -52,7 +52,7 @@
 
   <!-- Override PostSettings target CopySiliconStudioNativeLibraries. 
        Copy the libcore.a library to the project root directory for future native link. -->
-  <Target Name="CopyParadoxNativeiOsLibrary" Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
+  <Target Name="CopyXenkoNativeiOsLibrary" Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
     <!-- Xamarin iOS 7.3- (deprecated) -->
     <Copy Condition="$(XamarinIOSMajorVersion) &lt;= 7" SourceFiles="@(ResolvedSiliconStudioEmbeddedNativeLibrary)" DestinationFiles="@(_SiliconStudioEmbeddedNativeLibrary->'$(ProjectDir)%(Filename)%(Extension)')"/>
     <!-- Xamarin iOS 8.2+

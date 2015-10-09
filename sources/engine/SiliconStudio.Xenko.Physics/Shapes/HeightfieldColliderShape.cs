@@ -7,7 +7,7 @@ using System.IO;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Physics.Shapes
+namespace SiliconStudio.Xenko.Physics.Shapes
 {
     enum BulletPhyScalarType
     {

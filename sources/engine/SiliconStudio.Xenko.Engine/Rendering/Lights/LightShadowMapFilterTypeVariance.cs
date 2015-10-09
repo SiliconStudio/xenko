@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Xenko.Rendering.Lights
 {
     ///// <summary>
     ///// No shadowmap filter.

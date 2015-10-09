@@ -4,10 +4,10 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Images;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Images;
 
-namespace SiliconStudio.Paradox.Rendering.ComputeEffect.GGXPrefiltering
+namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
 {
     /// <summary>
     /// A class for radiance pre-filtering using the GGX distribution function.

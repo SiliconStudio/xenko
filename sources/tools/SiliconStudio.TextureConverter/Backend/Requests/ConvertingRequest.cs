@@ -14,13 +14,13 @@ namespace SiliconStudio.TextureConverter.Requests
         /// <summary>
         /// The destination format.
         /// </summary>
-        public SiliconStudio.Paradox.Graphics.PixelFormat Format { get; private set; }
+        public SiliconStudio.Xenko.Graphics.PixelFormat Format { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ConvertingRequest"/> class.
         /// </summary>
         /// <param name="format">The destination format.</param>
-        public ConvertingRequest(SiliconStudio.Paradox.Graphics.PixelFormat format)
+        public ConvertingRequest(SiliconStudio.Xenko.Graphics.PixelFormat format)
         {
             this.Format = format;
         }

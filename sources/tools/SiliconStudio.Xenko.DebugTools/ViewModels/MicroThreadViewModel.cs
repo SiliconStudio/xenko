@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SiliconStudio.Paradox.Framework.MicroThreading;
+using SiliconStudio.Xenko.Framework.MicroThreading;
 using System.Windows.Input;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation;
 
-namespace SiliconStudio.Paradox.DebugTools.ViewModels
+namespace SiliconStudio.Xenko.DebugTools.ViewModels
 {
     public class MicroThreadViewModel : DeprecatedViewModelBase
     {

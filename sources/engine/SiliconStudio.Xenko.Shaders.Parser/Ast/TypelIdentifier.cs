@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Shaders.Ast;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Ast
+namespace SiliconStudio.Xenko.Shaders.Parser.Ast
 {
     public class TypeIdentifier : Identifier
     {

@@ -7,7 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public class ImageHelper
     {

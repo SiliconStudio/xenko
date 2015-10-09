@@ -1,10 +1,10 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using System.Runtime.InteropServices;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using RenderbufferStorage = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
@@ -25,7 +25,7 @@ using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
 #endif
 
 // TODO: remove these when OpenTK API is consistent between OpenGL, mobile OpenGL ES and desktop OpenGL ES
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using CompressedInternalFormat2D = OpenTK.Graphics.ES30.CompressedInternalFormat;
 using CompressedInternalFormat3D = OpenTK.Graphics.ES30.CompressedInternalFormat;
@@ -44,14 +44,14 @@ using TextureComponentCount2D = OpenTK.Graphics.OpenGL.PixelInternalFormat;
 using TextureComponentCount3D = OpenTK.Graphics.OpenGL.PixelInternalFormat;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Abstract class for all textures
     /// </summary>
     public partial class Texture
     {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && SILICONSTUDIO_PLATFORM_MONO_MOBILE
         private const BufferUsageHint BufferUsageHintStreamRead = (BufferUsageHint)0x88E1;
 #else
         private const BufferUsageHint BufferUsageHintStreamRead = BufferUsageHint.StreamRead;
@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.Graphics
             get { return resourceIdStencil; }
         }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         public IntPtr StagingData { get; set; }
 #endif
 
@@ -220,7 +220,7 @@ namespace SiliconStudio.Paradox.Graphics
                         GL.TexParameter(Target, TextureParameterName.TextureWrapT, (int)TextureWrapMode.ClampToEdge);
                         BoundSamplerState = GraphicsDevice.SamplerStates.PointClamp;
                     }
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     else if (Description.MipLevels <= 1)
                     {
                         GL.TexParameter(Target, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
@@ -228,7 +228,7 @@ namespace SiliconStudio.Paradox.Graphics
                     }
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (!GraphicsDevice.IsOpenGLES2)
 #endif
                     {
@@ -285,7 +285,7 @@ namespace SiliconStudio.Paradox.Graphics
                                         width, height, depth, 0, format, type, data);
                                 }
                             }
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                             else if (setSize == 1)
                             {
                                 if (compressed)
@@ -312,7 +312,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <inheritdoc/>
         protected override void DestroyImpl()
         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (StagingData != IntPtr.Zero)
             {
                 Marshal.FreeHGlobal(StagingData);
@@ -354,7 +354,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case PixelFormat.D16_UNorm:
                     depthFormat = RenderbufferStorage.DepthComponent16;
                     break;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 case PixelFormat.D24_UNorm_S8_UInt:
                     depthFormat = RenderbufferStorage.Depth24Stencil8;
                     break;
@@ -417,7 +417,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         private static TextureTarget2d GetTextureTargetForDataSet2D(TextureTarget target, int arrayIndex)
         {
             // TODO: Proxy from ES 3.1?
@@ -438,7 +438,7 @@ namespace SiliconStudio.Paradox.Graphics
                 return TextureTarget.TextureCubeMapPositiveX + arrayIndex;
             return target;
         }
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private static TextureTarget3D GetTextureTargetForDataSet3D(TextureTarget target)
         {
             return (TextureTarget3D)target;
@@ -454,7 +454,7 @@ namespace SiliconStudio.Paradox.Graphics
         private static int TextureSetSize(TextureTarget target)
         {
             // TODO: improve that
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (target == TextureTarget.Texture1D)
                 return 1;
 #endif
@@ -484,7 +484,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (Description.Usage == GraphicsResourceUsage.Staging)
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (GraphicsDevice.IsOpenGLES2)
                 {
                     StagingData = Marshal.AllocHGlobal(DepthPitch);
@@ -497,7 +497,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
             else if (Description.Usage == GraphicsResourceUsage.Dynamic)
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // unable to create PBO on OpenGL ES 2 but we do not throw an exception. It will be thrown if the code tries performs writes on the texture.
                 if (!GraphicsDevice.IsOpenGLES2)
 #endif

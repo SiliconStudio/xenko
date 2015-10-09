@@ -5,7 +5,7 @@ using SiliconStudio.Core.Mathematics;
 using OpenTK;
 using OpenTK.Platform.Android;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public class SwapChainGraphicsPresenter : GraphicsPresenter
     {

@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.Textures
+namespace SiliconStudio.Xenko.Assets.Textures
 {
     /// <summary>
     /// The desired texture quality.

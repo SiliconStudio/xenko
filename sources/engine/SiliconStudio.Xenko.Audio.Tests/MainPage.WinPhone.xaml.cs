@@ -1,6 +1,6 @@
 ﻿using Microsoft.Phone.Controls;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     public partial class MainPage : PhoneApplicationPage
     {

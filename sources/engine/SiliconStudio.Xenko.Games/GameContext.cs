@@ -21,9 +21,9 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Contains context used to render the game (Control for WinForm, a DrawingSurface for WP8...etc.).

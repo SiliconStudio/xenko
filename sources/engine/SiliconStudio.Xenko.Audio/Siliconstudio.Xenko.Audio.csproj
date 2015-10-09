@@ -3,17 +3,17 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{DE042125-C270-4D1D-9270-0759C167567A}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Paradox.Audio</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Audio</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Audio</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Audio</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -22,15 +22,15 @@
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10'">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.XAudio2">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxSharpDXAudioSdkBinDir)\SharpDX.XAudio2.dll</HintPath>
+      <HintPath>$(XenkoSharpDXAudioSdkBinDir)\SharpDX.XAudio2.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.MediaFoundation">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.MediaFoundation.dll</HintPath>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.MediaFoundation.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -111,9 +111,9 @@
       <Name>SiliconStudio.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

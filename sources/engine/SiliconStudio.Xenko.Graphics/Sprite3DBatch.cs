@@ -5,10 +5,10 @@ using System;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics.Internals;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics.Internals;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// A batcher for sprite in the 3D world.

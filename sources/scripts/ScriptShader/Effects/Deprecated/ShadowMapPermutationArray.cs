@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class ShadowMapPermutationArray : PermutationArray
     {

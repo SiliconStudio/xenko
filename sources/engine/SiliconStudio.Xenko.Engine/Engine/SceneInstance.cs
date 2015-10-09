@@ -8,13 +8,13 @@ using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Composers;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Composers;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Manage a collection of entities within a <see cref="Scene"/>.
@@ -104,7 +104,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets the current scene valid only from a rendering context. May be null.
         /// </summary>
         /// <param name="context">The context.</param>
-        /// <returns>SiliconStudio.Paradox.Engine.SceneInstance.</returns>
+        /// <returns>SiliconStudio.Xenko.Engine.SceneInstance.</returns>
         public static SceneInstance GetCurrent(RenderContext context)
         {
             return context.Tags.GetSafe(Current);

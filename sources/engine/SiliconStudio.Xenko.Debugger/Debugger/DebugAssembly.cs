@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
-namespace SiliconStudio.Paradox.Debugger.Target
+namespace SiliconStudio.Xenko.Debugger.Target
 {
     /// <summary>
     /// Represents a loaded assembly in the debug process.

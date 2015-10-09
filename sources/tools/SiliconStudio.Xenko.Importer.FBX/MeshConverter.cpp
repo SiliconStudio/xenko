@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #include "stdafx.h"
-#include "../SiliconStudio.Paradox.Importer.Common/ImporterUtils.h"
+#include "../SiliconStudio.Xenko.Importer.Common/ImporterUtils.h"
 
 #include "SceneMapping.h"
 #include "AnimationConverter.h"
@@ -17,19 +17,19 @@ using namespace SiliconStudio::Core::Mathematics;
 using namespace SiliconStudio::Core::Serialization;
 using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
-using namespace SiliconStudio::Paradox::Rendering::Materials;
-using namespace SiliconStudio::Paradox::Rendering::Materials::ComputeColors;
-using namespace SiliconStudio::Paradox::Assets::Materials;
-using namespace SiliconStudio::Paradox::Animations;
-using namespace SiliconStudio::Paradox::Engine;
-using namespace SiliconStudio::Paradox::Extensions;
-using namespace SiliconStudio::Paradox::Graphics;
-using namespace SiliconStudio::Paradox::Graphics::Data;
-using namespace SiliconStudio::Paradox::Shaders;
+using namespace SiliconStudio::Xenko::Rendering::Materials;
+using namespace SiliconStudio::Xenko::Rendering::Materials::ComputeColors;
+using namespace SiliconStudio::Xenko::Assets::Materials;
+using namespace SiliconStudio::Xenko::Animations;
+using namespace SiliconStudio::Xenko::Engine;
+using namespace SiliconStudio::Xenko::Extensions;
+using namespace SiliconStudio::Xenko::Graphics;
+using namespace SiliconStudio::Xenko::Graphics::Data;
+using namespace SiliconStudio::Xenko::Shaders;
 
-using namespace SiliconStudio::Paradox::Importer::Common;
+using namespace SiliconStudio::Xenko::Importer::Common;
 
-namespace SiliconStudio { namespace Paradox { namespace Importer { namespace FBX {
+namespace SiliconStudio { namespace Xenko { namespace Importer { namespace FBX {
 	
 public ref class MaterialInstantiation
 {
@@ -619,7 +619,7 @@ public:
 		auto textureMap = gcnew Dictionary<IntPtr, ComputeTextureColor^>();
 		std::map<std::string, int> textureNameCount;
 
-		auto finalMaterial = gcnew SiliconStudio::Paradox::Assets::Materials::MaterialAsset();
+		auto finalMaterial = gcnew SiliconStudio::Xenko::Assets::Materials::MaterialAsset();
 		
 		auto phongSurface = FbxCast<FbxSurfacePhong>(lMaterial);
 		auto lambertSurface = FbxCast<FbxSurfaceLambert>(lMaterial);
@@ -938,7 +938,7 @@ public:
 
 	IComputeNode^ GenerateSurfaceTextureTree(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, ComputeTextureColor^>^ textureMap,
 												std::map<std::string, int>& textureNameCount, char const* surfaceMaterial, char const* surfaceMaterialFactor,
-												SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
+												SiliconStudio::Xenko::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		auto compositionTrees = gcnew cli::array<IComputeColor^>(2);
 
@@ -1137,7 +1137,7 @@ public:
 		return fileNameToUse;
 	}
 
-	ComputeTextureColor^ GenerateMaterialTextureNodeFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, ComputeTextureColor^>^ textureMap, std::map<std::string, int>& textureNameCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
+	ComputeTextureColor^ GenerateMaterialTextureNodeFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, ComputeTextureColor^>^ textureMap, std::map<std::string, int>& textureNameCount, SiliconStudio::Xenko::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		auto texScale = lFileTexture->GetUVScaling();		
 		auto texturePath = FindFilePath(lFileTexture);

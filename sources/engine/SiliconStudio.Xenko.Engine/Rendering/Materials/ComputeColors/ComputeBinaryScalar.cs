@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
+namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 {
     /// <summary>
     /// A node that describe a binary operation between two <see cref="IComputeScalar"/>

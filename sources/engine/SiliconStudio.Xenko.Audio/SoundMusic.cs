@@ -5,7 +5,7 @@ using System.IO;
 using System.Threading;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
     /// This class provides a sound resource which is playable but not localizable. 

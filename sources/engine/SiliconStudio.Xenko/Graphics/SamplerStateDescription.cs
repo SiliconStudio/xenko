@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Describes a sampler state.

@@ -4,10 +4,10 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering.Shadows
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     /// <summary>
     /// An atlas of shadow maps.

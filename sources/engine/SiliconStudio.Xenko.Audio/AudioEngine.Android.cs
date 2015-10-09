@@ -10,7 +10,7 @@ using Android.Media;
 using Java.IO;
 using Java.Lang;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     partial class AudioEngine
     {

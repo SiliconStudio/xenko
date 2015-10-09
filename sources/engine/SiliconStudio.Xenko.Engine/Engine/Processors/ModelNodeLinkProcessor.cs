@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Engine.Processors
+namespace SiliconStudio.Xenko.Engine.Processors
 {
     public class ModelNodeLinkProcessor : EntityProcessor<ModelNodeLinkComponent>
     {

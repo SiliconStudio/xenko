@@ -1214,7 +1214,7 @@ namespace SiliconStudio.Assets
 
                     if (file == null)
                     {
-                        // TODO: We need to support automatic download of packages. This is not supported yet when only Paradox
+                        // TODO: We need to support automatic download of packages. This is not supported yet when only Xenko
                         // package is supposed to be installed, but It will be required for full store
                         log.Error("Unable to find package {0} not installed", packageDependency);
                         packageDependencyErrors = true;

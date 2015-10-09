@@ -75,7 +75,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 using System;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     [Flags]
     internal enum WICFlags

@@ -7,23 +7,23 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SiliconStudio.Paradox.Assets.BuilderApp")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Assets.BuilderApp")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Microsoft")]
-[assembly: AssemblyProduct("SiliconStudio.Paradox.Assets.BuilderApp")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Assets.BuilderApp")]
 [assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
 // #if !DEBUG
 // [assembly: ObfuscateAssembly(false)]
-// [assembly: Obfuscation(Feature = "embed Paradox.Effects.Modules.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Paradox.Engine.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Paradox.Framework.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Paradox.Framework.Graphics.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Paradox.Importer.FBX.dll", Exclude = false)]
-// [assembly: Obfuscation(Feature = "embed Paradox.Importer.Assimp.dll", Exclude = false)]
+// [assembly: Obfuscation(Feature = "embed Xenko.Effects.Modules.dll", Exclude = false)]
+// [assembly: Obfuscation(Feature = "embed Xenko.Engine.dll", Exclude = false)]
+// [assembly: Obfuscation(Feature = "embed Xenko.Framework.dll", Exclude = false)]
+// [assembly: Obfuscation(Feature = "embed Xenko.Framework.Graphics.dll", Exclude = false)]
+// [assembly: Obfuscation(Feature = "embed Xenko.Importer.FBX.dll", Exclude = false)]
+// [assembly: Obfuscation(Feature = "embed Xenko.Importer.Assimp.dll", Exclude = false)]
 // [assembly: Obfuscation(Feature = "embed Mono.Options.dll", Exclude = false)]
 // [assembly: Obfuscation(Feature = "embed SharpDX.dll", Exclude = false)]
 // [assembly: Obfuscation(Feature = "embed SharpDX.D3DCompiler.dll", Exclude = false)]

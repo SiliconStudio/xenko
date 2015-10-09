@@ -11,11 +11,11 @@ using Android.Media;
 using Android.Runtime;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Audio.Wave;
+using SiliconStudio.Xenko.Audio.Wave;
 
 using Math = System.Math;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     partial class SoundEffectInstance
     {

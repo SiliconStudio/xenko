@@ -26,7 +26,7 @@ using System.ComponentModel.Composition;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace SiliconStudio.Paradox.VisualStudio.Assets
+namespace SiliconStudio.Xenko.VisualStudio.Assets
 {
 	internal static class AssetObjectDefinitions
 	{
@@ -103,26 +103,26 @@ namespace SiliconStudio.Paradox.VisualStudio.Assets
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(AnchorClassificationName)]
 		internal static ClassificationTypeDefinition YamlAnchorType = null;
-	    public const string AnchorClassificationName = "Paradox.YamlAnchor";
+	    public const string AnchorClassificationName = "Xenko.YamlAnchor";
 
 		[Export(typeof(ClassificationTypeDefinition))]
         [Name(AliasClassificationName)]
 		internal static ClassificationTypeDefinition YamlAliasType = null;
-        public const string AliasClassificationName = "Paradox.YamlAlias";
+        public const string AliasClassificationName = "Xenko.YamlAlias";
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(NumberClassificationName)]
         internal static ClassificationTypeDefinition YamlNumberType = null;
-        public const string NumberClassificationName = "Paradox.YamlNumber";
+        public const string NumberClassificationName = "Xenko.YamlNumber";
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(KeyClassificationName)]
         internal static ClassificationTypeDefinition YamlKeyType = null;
-        public const string KeyClassificationName = "Paradox.YamlKey";
+        public const string KeyClassificationName = "Xenko.YamlKey";
 
         [Export(typeof(ClassificationTypeDefinition))]
         [Name(ErrorClassificationName)]
         internal static ClassificationTypeDefinition YamlErrorType = null;
-        public const string ErrorClassificationName = "Paradox.YamlError";
+        public const string ErrorClassificationName = "Xenko.YamlError";
     }
 }

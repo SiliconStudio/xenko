@@ -4,10 +4,10 @@ using System;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.UI.Events;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.UI.Events;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// Represent a UI toggle button. A toggle but can have two or three states depending on the <see cref="IsThreeState"/> property.

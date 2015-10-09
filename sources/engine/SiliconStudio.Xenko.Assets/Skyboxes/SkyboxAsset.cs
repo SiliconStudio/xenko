@@ -8,7 +8,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Paradox.Assets.Skyboxes
+namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     /// <summary>
     /// The skybox asset.

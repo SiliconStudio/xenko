@@ -7,7 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Describes a blend state.

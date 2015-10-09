@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// Manages <see cref="IShaderMixinBuilder"/> and generation of shader mixins.

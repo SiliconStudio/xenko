@@ -7,18 +7,18 @@
     <ProjectGuid>{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Paradox.Graphics.Tests</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Graphics.Tests</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Graphics.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Graphics.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <XenkoBuildTags>*</XenkoBuildTags>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{04ed1618-1a06-4a69-ac34-1006a978af11}</SiliconStudioPackageGuid>
-    <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioParadoxDir>
+    <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioXenkoDir>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
-    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == ''">Direct3D11</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == ''">Direct3D11</SiliconStudioXenkoGraphicsApi>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -26,14 +26,14 @@
   <!--Import Local Pre Settings for the solution being loaded -->
   <Import Project="$(SolutionDir)$(SolutionName).PreSettings.Local.targets" Condition="Exists('$(SolutionDir)$(SolutionName).PreSettings.Local.targets')" />
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Paradox.Graphics.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Graphics.Tests.pdxpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
-    <OutputPath>..\..\..\Bin\Windows-$(SiliconStudioParadoxGraphicsApi)\</OutputPath>
+    <OutputPath>..\..\..\Bin\Windows-$(SiliconStudioXenkoGraphicsApi)\</OutputPath>
     <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -44,14 +44,14 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
-    <OutputPath>..\..\..\Bin\Windows-$(SiliconStudioParadoxGraphicsApi)\</OutputPath>
+    <OutputPath>..\..\..\Bin\Windows-$(SiliconStudioXenkoGraphicsApi)\</OutputPath>
     <IntermediateOutputPath>obj\Windows\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Paradox.Graphics.Tests.TestSpriteBatch3D</StartupObject>
+    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestSpriteBatch3D</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -84,39 +84,39 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Input\SiliconStudio.Paradox.Input.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
       <Project>{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}</Project>
-      <Name>SiliconStudio.Paradox.Input</Name>
+      <Name>SiliconStudio.Xenko.Input</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
-      <Name>SiliconStudio.Paradox.Shaders.Compiler</Name>
+      <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders.Parser\SiliconStudio.Xenko.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
-      <Name>SiliconStudio.Paradox.Shaders.Parser</Name>
+      <Name>SiliconStudio.Xenko.Shaders.Parser</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
-      <Name>SiliconStudio.Paradox.Shaders</Name>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
-      <Name>SiliconStudio.Paradox.Engine</Name>
+      <Name>SiliconStudio.Xenko.Engine</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
@@ -124,17 +124,17 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
-      <Name>SiliconStudio.Paradox.Games</Name>
+      <Name>SiliconStudio.Xenko.Games</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics.Regression\SiliconStudio.Paradox.Graphics.Regression.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.csproj">
       <Project>{D002FEB1-00A6-4AB1-A83F-1F253465E64D}</Project>
-      <Name>SiliconStudio.Paradox.Graphics.Regression</Name>
+      <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
-      <Name>SiliconStudio.Paradox.Physics</Name>
+      <Name>SiliconStudio.Xenko.Physics</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -202,7 +202,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CubemapSprite.pdxsl</DependentUpon>
     </Compile>
-    <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
+    <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Compiler\MultiTexturesSpriteEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -279,77 +279,77 @@
     <Compile Include="TestGraphicsApiCheck.cs" />
     <Compile Include="TestTextureSampling.cs" />
     <None Include="Assets\ComputeShaderTestEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeShaderTestEffect.cs</LastGenOutput>
     </None>
     <None Include="Assets\HammersleyTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>HammersleyTest.cs</LastGenOutput>
     </None>
     <None Include="Assets\MultipleRenderTargetsEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
     </None>
     <None Include="Assets\MultipleRenderTargetsEffectShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultipleRenderTargetsEffectShader.cs</LastGenOutput>
     </None>
     <None Include="Assets\ComputeShaderTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeShaderTest.cs</LastGenOutput>
     </None>
     <None Include="Assets\CustomEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CustomEffect.cs</LastGenOutput>
     </None>
     <None Include="Assets\MyCustomColorTransformShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MyCustomColorTransformShader.cs</LastGenOutput>
     </None>
     <None Include="Assets\CustomShader2.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CustomShader2.cs</LastGenOutput>
     </None>
     <None Include="Assets\CustomShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CustomShader.cs</LastGenOutput>
     </None>
     <None Include="Assets\CubemapSprite.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CubemapSprite.cs</LastGenOutput>
     </None>
     <None Include="Compiler\MultiTexturesSpriteEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultiTexturesSpriteEffect.cs</LastGenOutput>
     </None>
     <None Include="Compiler\MultiTexturesSpriteShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultiTexturesSpriteShader.cs</LastGenOutput>
     </None>
     <None Include="Compiler\SimpleEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SimpleEffect.cs</LastGenOutput>
     </None>
     <None Include="Compiler\SimpleShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SimpleShader.cs</LastGenOutput>
     </None>
     <None Include="Compiler\ToGlslEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ToGlslEffect.cs</LastGenOutput>
     </None>
     <None Include="Compiler\ToGlslShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ToGlslShader.cs</LastGenOutput>
     </None>
-    <None Include="SiliconStudio.Paradox.Graphics.Tests.pdxpkg" />
+    <None Include="SiliconStudio.Xenko.Graphics.Tests.pdxpkg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
-  <Import Project="$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets" Condition="Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" />
-  <Target Name="EnsureSiliconStudioParadoxInstalled" BeforeTargets="PrepareForBuild">
-    <Error Condition="'$(SiliconStudioParadoxDir)' == ''" Text="Paradox SDK was not found. Check Paradox is installed and the global env variable [SiliconStudioParadoxDir] is setup correctly" />
-    <Error Condition="!Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" Text="Invalid Paradox SDK installation. Target file [$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets] was not found." />
+  <Import Project="$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets" Condition="Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" />
+  <Target Name="EnsureSiliconStudioXenkoInstalled" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(SiliconStudioXenkoDir)' == ''" Text="Xenko SDK was not found. Check Xenko is installed and the global env variable [SiliconStudioXenkoDir] is setup correctly" />
+    <Error Condition="!Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" Text="Invalid Xenko SDK installation. Target file [$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets] was not found." />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
     Other similar extension points exist, see Microsoft.Common.targets.

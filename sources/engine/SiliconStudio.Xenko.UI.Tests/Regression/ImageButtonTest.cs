@@ -4,10 +4,10 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.UI.Controls;
 
-namespace SiliconStudio.Paradox.UI.Tests.Regression
+namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
     /// <summary>
     /// Class for rendering tests on the <see cref="ImageButton"/> 

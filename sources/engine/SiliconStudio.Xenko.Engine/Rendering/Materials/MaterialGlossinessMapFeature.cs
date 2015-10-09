@@ -6,10 +6,10 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// A smoothness map for the micro-surface material feature.

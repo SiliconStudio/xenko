@@ -12,9 +12,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("Model")]
     [AssetDescription(FileExtension, false)]

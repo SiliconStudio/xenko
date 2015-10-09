@@ -9,7 +9,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// A descriptor of a <see cref="Material"/>.

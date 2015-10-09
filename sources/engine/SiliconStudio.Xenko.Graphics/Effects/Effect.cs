@@ -7,12 +7,12 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics.Internals;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics.Internals;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     [ContentSerializer(typeof(DataContentSerializer<Effect>))]
     [DataSerializer(typeof(EffectSerializer))]

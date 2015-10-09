@@ -4,7 +4,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.Scripts
+namespace SiliconStudio.Xenko.Assets.Scripts
 {
     public interface IScriptTypesProvider
     {

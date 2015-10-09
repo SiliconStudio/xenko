@@ -4,12 +4,12 @@
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.UI;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.UI;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Add an <see cref="UIElement"/> to an <see cref="Entity"/>.

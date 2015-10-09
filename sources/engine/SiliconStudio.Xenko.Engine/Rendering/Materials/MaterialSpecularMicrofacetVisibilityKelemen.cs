@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// Kelemen Geometric Shadowing.

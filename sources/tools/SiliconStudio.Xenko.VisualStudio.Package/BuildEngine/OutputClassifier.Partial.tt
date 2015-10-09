@@ -22,9 +22,9 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-using SiliconStudio.Paradox.VisualStudio.BuildEngine;
+using SiliconStudio.Xenko.VisualStudio.BuildEngine;
 
-namespace SiliconStudio.Paradox.VisualStudio
+namespace SiliconStudio.Xenko.VisualStudio
 {
     public partial class OutputClassifier
     {
@@ -62,7 +62,7 @@ namespace SiliconStudio.Paradox.VisualStudio
             [ImportingConstructor]
             public BuildEngine<#=classifier.Name#>Format(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Paradox BuildEngine <#=classifier.Name#>";
+                DisplayName = "Xenko BuildEngine <#=classifier.Name#>";
                 this.IsBold = <#=classifier.IsBold.ToString().ToLower()#>;
                 var classificationColor = colorManager.GetClassificationColor(BuildEngine<#=classifier.Name#>);
                 ForegroundColor = classificationColor.ForegroundColor;

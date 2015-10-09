@@ -23,17 +23,17 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
-    /// Image file format used by <see cref="Image.Save(string,SiliconStudio.Paradox.Graphics.ImageFileType)"/>
+    /// Image file format used by <see cref="Image.Save(string,SiliconStudio.Xenko.Graphics.ImageFileType)"/>
     /// </summary>
     public enum ImageFileType
     {
         /// <summary>
-        /// Paradox image file.
+        /// Xenko image file.
         /// </summary>
-        Paradox,
+        Xenko,
 
         /// <summary>
         /// A DDS file.
@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             switch (fileType)
             {
-                case ImageFileType.Paradox:
+                case ImageFileType.Xenko:
                     return ".pdximage";
                 default:
                     return "." + fileType.ToString().ToLowerInvariant();

@@ -9,12 +9,12 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Rendering.Materials.Processor.Visitors;
-using SiliconStudio.Paradox.Assets.Model;
-using SiliconStudio.Paradox.Assets.Textures;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors;
+using SiliconStudio.Xenko.Assets.Model;
+using SiliconStudio.Xenko.Assets.Textures;
 
-namespace SiliconStudio.Paradox.Assets.Tests
+namespace SiliconStudio.Xenko.Assets.Tests
 {
     /*
         TODO: TO REWRITE WITH new AssetImportSession
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [TestFixture]
         public class AssetImportTest
         {
-            public const string DirectoryTestBase = @"data\SiliconStudio.Paradox.Assets.Tests\";
+            public const string DirectoryTestBase = @"data\SiliconStudio.Xenko.Assets.Tests\";
 
             [TestFixtureSetUp]
             public void Initialize()

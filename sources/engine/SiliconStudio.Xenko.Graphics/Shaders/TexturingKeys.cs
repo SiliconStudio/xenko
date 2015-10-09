@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public partial class TexturingKeys
     {

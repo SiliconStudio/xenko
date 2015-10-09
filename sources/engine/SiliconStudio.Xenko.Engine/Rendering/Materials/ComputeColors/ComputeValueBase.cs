@@ -4,7 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
+namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 {
     /// <summary>
     /// Base class for a constant value for <see cref="ComputeNode"/>.

@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.Requests;
@@ -16,9 +16,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 {
 
     /// <summary>
-    /// Class containing the needed native Data used by Paradox
+    /// Class containing the needed native Data used by Xenko
     /// </summary>
-    internal class ParadoxTextureLibraryData : ITextureLibraryData
+    internal class XenkoTextureLibraryData : ITextureLibraryData
     {
         /// <summary>
         /// The <see cref="Image"/> image
@@ -28,17 +28,17 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
 
     /// <summary>
-    /// Peforms requests from <see cref="TextureTool" /> using Paradox framework.
+    /// Peforms requests from <see cref="TextureTool" /> using Xenko framework.
     /// </summary>
-    internal class ParadoxTexLibrary : ITexLibrary
+    internal class XenkoTexLibrary : ITexLibrary
     {
-        private static Logger Log = GlobalLogger.GetLogger("ParadoxTexLibrary");
+        private static Logger Log = GlobalLogger.GetLogger("XenkoTexLibrary");
         public static readonly string Extension = ".pdx";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParadoxTexLibrary"/> class.
+        /// Initializes a new instance of the <see cref="XenkoTexLibrary"/> class.
         /// </summary>
-        public ParadoxTexLibrary(){}
+        public XenkoTexLibrary(){}
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. Nothing in this case
@@ -48,7 +48,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
         public void Dispose(TexImage image)
         {
-            ParadoxTextureLibraryData libraryData = (ParadoxTextureLibraryData)image.LibraryData[this];
+            XenkoTextureLibraryData libraryData = (XenkoTextureLibraryData)image.LibraryData[this];
             if (libraryData.PdxImage != null) libraryData.PdxImage.Dispose();
         }
 
@@ -59,7 +59,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
         public void StartLibrary(TexImage image)
         {
-            ParadoxTextureLibraryData libraryData = new ParadoxTextureLibraryData();
+            XenkoTextureLibraryData libraryData = new XenkoTextureLibraryData();
             image.LibraryData[this] = libraryData;
         }
 
@@ -78,10 +78,10 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         return extension.Equals(".dds") || extension.Equals(Extension);
                     }
 
-                case RequestType.ExportToParadox:
+                case RequestType.ExportToXenko:
                     return true;
 
-                case RequestType.Loading: // Paradox can load dds file or his own format or a Paradox <see cref="Image"/> instance.
+                case RequestType.Loading: // Xenko can load dds file or his own format or a Xenko <see cref="Image"/> instance.
                     LoadingRequest load = (LoadingRequest)request;
                     if(load.Mode == LoadingRequest.LoadingMode.PdxImage) return true;
                     else if(load.Mode == LoadingRequest.LoadingMode.FilePath)
@@ -96,7 +96,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
         public void Execute(TexImage image, IRequest request)
         {
-            ParadoxTextureLibraryData libraryData = image.LibraryData.ContainsKey(this) ? (ParadoxTextureLibraryData)image.LibraryData[this] : null;
+            XenkoTextureLibraryData libraryData = image.LibraryData.ContainsKey(this) ? (XenkoTextureLibraryData)image.LibraryData[this] : null;
 
             switch (request.Type)
             {
@@ -104,8 +104,8 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     Export(image, libraryData, (ExportRequest)request);
                     break;
 
-                case RequestType.ExportToParadox:
-                    ExportToParadox(image, libraryData, (ExportToParadoxRequest)request);
+                case RequestType.ExportToXenko:
+                    ExportToXenko(image, libraryData, (ExportToXenkoRequest)request);
                     break;
 
                 case RequestType.Loading:
@@ -116,7 +116,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
 
         /// <summary>
-        /// Exports the specified image into regular DDS file or a Paradox own file format.
+        /// Exports the specified image into regular DDS file or a Xenko own file format.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
@@ -128,7 +128,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// </exception>
         /// <exception cref="System.NotImplementedException"></exception>
         /// <exception cref="TexLibraryException">Unsupported file extension.</exception>
-        private void Export(TexImage image, ParadoxTextureLibraryData libraryDataf, ExportRequest request)
+        private void Export(TexImage image, XenkoTextureLibraryData libraryDataf, ExportRequest request)
         {
             Log.Debug("Exporting to " + request.FilePath + " ...");
 
@@ -267,7 +267,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             {
                 String extension = Path.GetExtension(request.FilePath);
                 if(extension.Equals(Extension))
-                    pdxImage.Save(fileStream, ImageFileType.Paradox);
+                    pdxImage.Save(fileStream, ImageFileType.Xenko);
                 else if (extension.Equals(".dds"))
                     pdxImage.Save(fileStream, ImageFileType.Dds);
                 else
@@ -283,7 +283,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
 
         /// <summary>
-        /// Exports to Paradox <see cref="Image"/>. An instance will be stored in the <see cref="ExportToParadoxRequest"/> instance.
+        /// Exports to Xenko <see cref="Image"/>. An instance will be stored in the <see cref="ExportToXenkoRequest"/> instance.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
@@ -291,12 +291,12 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="System.InvalidOperationException">
         /// Image size different than expected.
         /// or
-        /// Failed to convert texture into Paradox Image.
+        /// Failed to convert texture into Xenko Image.
         /// </exception>
         /// <exception cref="System.NotImplementedException"></exception>
-        private void ExportToParadox(TexImage image, ParadoxTextureLibraryData libraryData, ExportToParadoxRequest request)
+        private void ExportToXenko(TexImage image, XenkoTextureLibraryData libraryData, ExportToXenkoRequest request)
         {
-            Log.Debug("Exporting to Paradox Image ...");
+            Log.Debug("Exporting to Xenko Image ...");
 
             Image pdxImage = null;
             switch (image.Dimension)
@@ -335,9 +335,9 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="request">The request.</param>
         private void Load(TexImage image, LoadingRequest request)
         {
-            Log.Debug("Loading Paradox Image ...");
+            Log.Debug("Loading Xenko Image ...");
 
-            var libraryData = new ParadoxTextureLibraryData();
+            var libraryData = new XenkoTextureLibraryData();
             image.LibraryData[this] = libraryData;
 
             Image inputImage;
@@ -350,7 +350,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 using (var fileStream = new FileStream(request.FilePath, FileMode.Open, FileAccess.Read))
                     inputImage = Image.Load(fileStream);
 
-                libraryData.PdxImage = inputImage; // the image need to be disposed by the paradox text library
+                libraryData.PdxImage = inputImage; // the image need to be disposed by the xenko text library
             }
             else
             {

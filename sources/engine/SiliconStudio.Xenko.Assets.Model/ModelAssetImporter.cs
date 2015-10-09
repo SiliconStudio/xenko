@@ -10,15 +10,15 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Assets.Entities;
-using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Importer.Common;
+using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.Assets.Materials;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Importer.Common;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     public abstract class ModelAssetImporter : AssetImporterBase
     {
@@ -150,7 +150,7 @@ namespace SiliconStudio.Paradox.Assets.Model
                         asset.Materials.Add(new ModelMaterial { Name = material.Key, MaterialInstance = new MaterialInstance() { Material = AttachedReferenceManager.CreateSerializableVersion<Material>(foundMaterial.Id, foundMaterial.Location) } });
                 }
                 //handle the case where during import we imported no materials at all
-                //todo Instead of null material add a default paradox material
+                //todo Instead of null material add a default xenko material
                 if (entityInfo.Materials.Count == 0)
                 {
                     asset.Materials.Add(new ModelMaterial { Name = "Material" , MaterialInstance = new MaterialInstance() });

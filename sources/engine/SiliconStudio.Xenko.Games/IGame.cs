@@ -3,11 +3,11 @@
 using System;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Games.Time;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Games.Time;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Serialization.Assets;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     public interface IGame
     {

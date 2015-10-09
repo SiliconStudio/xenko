@@ -1,7 +1,7 @@
 ﻿using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Runtime
+namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     public enum SpriteStudioBlending
     {

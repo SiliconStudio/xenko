@@ -4,7 +4,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     internal sealed class GestureRecognizerComposite : GestureRecognizerContMotion
     {

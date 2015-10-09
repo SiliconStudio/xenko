@@ -316,7 +316,7 @@ MinimumVisualStudioVersion = 10.0.40219.1";
         }
 
         /// <summary>
-        /// Saves a .props file for the specified package, containing the paradox version (only Major.Minor)
+        /// Saves a .props file for the specified package, containing the xenko version (only Major.Minor)
         /// used to compile the package. 
         /// </summary>
         /// <param name="package">The package.</param>
@@ -332,12 +332,12 @@ MinimumVisualStudioVersion = 10.0.40219.1";
 
             var dependencies = package.FindDependencies(false, false, true);
 
-            // Add Paradox version
-            var pdxVersion = dependencies.FirstOrDefault(d => d.Meta.Name == "Paradox");
+            // Add Xenko version
+            var pdxVersion = dependencies.FirstOrDefault(d => d.Meta.Name == "Xenko");
             if (pdxVersion != null)
             {
                 var versionText = pdxVersion.Meta.Version.Version.Major + "." + pdxVersion.Meta.Version.Version.Minor;
-                commonPropertyGroup.AddProperty("SiliconStudioPackageParadoxVersion", versionText);
+                commonPropertyGroup.AddProperty("SiliconStudioPackageXenkoVersion", versionText);
             }
 
             if (File.Exists(propsFilePath))

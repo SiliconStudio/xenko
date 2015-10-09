@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_EFFECT_COMPILER
+#if SILICONSTUDIO_XENKO_EFFECT_COMPILER
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,16 +9,16 @@ using System.Text.RegularExpressions;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Grammar;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Grammar;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Parser;
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     /// <summary>
     /// Provides methods for loading a <see cref="ShaderClassType"/>.
@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                 if (shaderClassSource.GenericArguments.Length != shaderClassType.ShaderGenerics.Count)
                 {
-                    log.Error(ParadoxMessageCode.WrongGenericNumber, shaderClassType.Span, shaderClassSource.ClassName);
+                    log.Error(XenkoMessageCode.WrongGenericNumber, shaderClassType.Span, shaderClassSource.ClassName);
                     return null;
                 }
 
@@ -126,7 +126,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     foreach (var genericCompare in shaderClassType.ShaderGenerics.Where(x => x != generic))
                     {
                         if (generic.Name.Text == genericCompare.Name.Text)
-                            log.Error(ParadoxMessageCode.SameNameGenerics, generic.Span, generic, genericCompare, shaderClassSource.ClassName);
+                            log.Error(XenkoMessageCode.SameNameGenerics, generic.Span, generic, genericCompare, shaderClassSource.ClassName);
                     }
                 }
 
@@ -143,7 +143,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var genericAssociation = CreateGenericAssociation(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
                 var identifierGenerics = GenerateIdentifierFromGenerics(genericAssociation);
                 var expressionGenerics = GenerateGenericsExpressionValues(shaderClassType.ShaderGenerics, shaderClassSource.GenericArguments);
-                ParadoxClassInstantiator.Instantiate(shaderClassType, expressionGenerics, identifierGenerics, autoGenericInstances, log);
+                XenkoClassInstantiator.Instantiate(shaderClassType, expressionGenerics, identifierGenerics, autoGenericInstances, log);
                 shaderClassType.ShaderGenerics.Clear();
                 shaderClassType.IsInstanciated = true;
             }
@@ -260,7 +260,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         Expression CreateExpressionFromString(string name)
         {
             // TODO: catch errors
-            var result = ShaderParser.GetParser<ParadoxGrammar>(ShaderParser.GetGrammar<ParadoxGrammar>().ExpressionNonTerminal).Parser.Parse(name, "");
+            var result = ShaderParser.GetParser<XenkoGrammar>(ShaderParser.GetGrammar<XenkoGrammar>().ExpressionNonTerminal).Parser.Parse(name, "");
             return (Expression)result.Root.AstNode;
         }
 
@@ -297,7 +297,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var hashPreprocessSource = ObjectId.FromBytes(byteArray);
    
                 // Compile
-                var parsingResult = ParadoxShaderParser.TryParse(preprocessedSource, shaderSource.Path);
+                var parsingResult = XenkoShaderParser.TryParse(preprocessedSource, shaderSource.Path);
                 parsingResult.CopyTo(log);
 
                 if (parsingResult.HasErrors)
@@ -308,7 +308,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var shader = parsingResult.Shader;
 
                 // As shaders can be embedded in namespaces, get only the shader class and make sure there is only one in a pdxsl.
-                var shaderClassTypes = ParadoxShaderParser.GetShaderClassTypes(shader.Declarations).ToList();
+                var shaderClassTypes = XenkoShaderParser.GetShaderClassTypes(shader.Declarations).ToList();
                 if (shaderClassTypes.Count != 1)
                 {
                     var sourceSpan = new SourceSpan(new SourceLocation(shaderSource.Path, 0, 0, 0), 1);
@@ -316,7 +316,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     {
                         sourceSpan = shaderClassTypes[1].Span;
                     }
-                    log.Error(ParadoxMessageCode.ShaderMustContainSingleClassDeclaration, sourceSpan, type);
+                    log.Error(XenkoMessageCode.ShaderMustContainSingleClassDeclaration, sourceSpan, type);
                     return null;
                 }
 
@@ -332,7 +332,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 // If the file name is not matching the class name, provide an error
                 if (shaderClass.Name.Text != type)
                 {
-                    log.Error(ParadoxMessageCode.FileNameNotMatchingClassName, shaderClass.Name.Span, type, shaderClass.Name.Text);
+                    log.Error(XenkoMessageCode.FileNameNotMatchingClassName, shaderClass.Name.Span, type, shaderClass.Name.Text);
                     return null;
                 }
 
@@ -344,7 +344,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         public static ShaderClassType ParseSource(string shaderSource, LoggerResult log)
         {
-            var parsingResult = ParadoxShaderParser.TryParse(shaderSource, null);
+            var parsingResult = XenkoShaderParser.TryParse(shaderSource, null);
             parsingResult.CopyTo(log);
 
             if (parsingResult.HasErrors)

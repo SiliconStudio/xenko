@@ -3,11 +3,11 @@
 
 using System;
 
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// The main renderer for <see cref="ModelComponent"/>.
@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Rendering
             if (isPickingRendering)
             {
                 effectName += ".Picking";
-                Context.Parameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, PickingEffect);
+                Context.Parameters.Set(XenkoEffectBaseKeys.ExtensionPostVertexStageShader, PickingEffect);
             }
 
             modelRenderer.EffectName = effectName;

@@ -12,7 +12,7 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     /// <summary>
     /// Class ShaderSourceManager

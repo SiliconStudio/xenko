@@ -5,12 +5,12 @@ using System;
 namespace SiliconStudio.TextureConverter.Requests
 {
     /// <summary>
-    /// Request to load a texture, either from a file, or from memory with an <see cref="TexImage"/> or a <see cref="SiliconStudio.Paradox.Graphics.Image"/>
+    /// Request to load a texture, either from a file, or from memory with an <see cref="TexImage"/> or a <see cref="SiliconStudio.Xenko.Graphics.Image"/>
     /// </summary>
     internal class LoadingRequest : IRequest
     {
         /// <summary>
-        /// The different loading mode : TexImage, file, Paradox Image
+        /// The different loading mode : TexImage, file, Xenko Image
         /// </summary>
         public enum LoadingMode
         {
@@ -37,9 +37,9 @@ namespace SiliconStudio.TextureConverter.Requests
         public TexImage Image { set; get; }
 
         /// <summary>
-        /// The Paradox Image to be loaded
+        /// The Xenko Image to be loaded
         /// </summary>
-        public Paradox.Graphics.Image PdxImage;
+        public Xenko.Graphics.Image PdxImage;
 
         /// <summary>
         /// Indicate if we should keep the original mip-maps during the load
@@ -76,11 +76,11 @@ namespace SiliconStudio.TextureConverter.Requests
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="LoadingRequest"/> class to load a texture from a <see cref="SiliconStudio.Paradox.Graphics.Image"/> instance.
+        /// Initializes a new instance of the <see cref="LoadingRequest"/> class to load a texture from a <see cref="SiliconStudio.Xenko.Graphics.Image"/> instance.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="loadAsSRgb">Indicate if the input file should be loaded as in sRGB file</param>
-        public LoadingRequest(Paradox.Graphics.Image image, bool loadAsSRgb = false)
+        public LoadingRequest(Xenko.Graphics.Image image, bool loadAsSRgb = false)
         {
             PdxImage = image;
             Mode = LoadingMode.PdxImage;

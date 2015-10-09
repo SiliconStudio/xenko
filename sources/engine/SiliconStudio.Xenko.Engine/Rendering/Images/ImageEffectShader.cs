@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Internals;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Internals;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// Post effect using an <see cref="Effect"/> (either pdxfx or pdxsl).

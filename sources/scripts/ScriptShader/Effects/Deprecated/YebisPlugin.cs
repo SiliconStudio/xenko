@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2011 ReShader - Alexandre Mutel
 
 using System;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Yebis;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Yebis;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class YebisPlugin : RenderPassPlugin, IRenderPassPluginSource, IRenderPassPluginTarget
     {

@@ -3,7 +3,7 @@
 
 
 using SiliconStudio.Core.Mathematics;
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// A texture combiner allows to mix up to 10 textures with different weights.

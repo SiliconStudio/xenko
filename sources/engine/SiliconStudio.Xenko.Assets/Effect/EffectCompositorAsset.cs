@@ -3,7 +3,7 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.Effect
+namespace SiliconStudio.Xenko.Assets.Effect
 {
     /// <summary>
     /// Describes a shader effect asset (pdxsl).

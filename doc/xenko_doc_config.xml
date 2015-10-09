@@ -1,32 +1,32 @@
 <?xml version="1.0"?>
 <!--
-// Copyright (c) 2010-2013 Paradox - Silicon Studio
+// Copyright (c) 2010-2013 Xenko - Silicon Studio
 // 
 // TODO: Insert proper license text here
 // *****************************************************************************
-// Config file for Paradox documentation
+// Config file for Xenko documentation
 // *****************************************************************************
 -->
 <config xmlns="SharpDoc">
   <!-- Title of the generated documentation -->
-  <title>Paradox Documentation</title>
+  <title>Xenko Documentation</title>
 
-  <!-- Defines the styles used. Apply first Paradox and after Standard style -->
-  <style>Paradox</style>
+  <!-- Defines the styles used. Apply first Xenko and after Standard style -->
+  <style>Xenko</style>
   <style-dir>Style</style-dir>
 
   <!-- Generate default and docpak -->
-  <output-dir>.\paradox_doc_output</output-dir>
+  <output-dir>.\xenko_doc_output</output-dir>
 
   <!-- If a new topic is referenced but the file is not yet created, use sharpdoc-template.html file as a template -->
   <!-- Disabled for the moment
-  <topic-template>paradox-template.html</topic-template>
+  <topic-template>xenko-template.html</topic-template>
   -->
 
   <!-- Topics -->
-  <topic id="Paradox" page-id="main" name="Paradox Documentation" webdoc="confluence:PDXDOC/Paradox+Documentation">
+  <topic id="Xenko" page-id="main" name="Xenko Documentation" webdoc="confluence:PDXDOC/Xenko+Documentation">
   
-    <topic id="Paradox" page-id="main_topics" name="Main Topics" webdoc="confluence:PDXDOC/Main+Topics" inline="true"/>
+    <topic id="Xenko" page-id="main_topics" name="Main Topics" webdoc="confluence:PDXDOC/Main+Topics" inline="true"/>
     
     <!-- Special topic X:ClassLibrary to include generated class library references. No filename to setup as it is generated -->
     <topic id="X:ClassLibraryReference" page-id="api" name="Class Library Reference" async-load="true" index="100" on-url="true"/>
@@ -46,12 +46,12 @@
   <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Core.MicroThreading.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Core.MicroThreading.dll</source>
   <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Core.Serialization.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Core.Serialization.dll</source>
   <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Assets.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Assets.dll</source>
-  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.dll</source>
-  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Audio.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Audio.dll</source>
-  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Engine.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Engine.dll</source>
-  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Games.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Games.dll</source>
-  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Shaders.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Shaders.dll</source>
-  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Graphics.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Graphics.dll</source>
-  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Input.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.Input.dll</source>
-  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.UI.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Paradox.UI.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Audio.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Audio.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Engine.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Engine.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Games.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Games.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Shaders.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Shaders.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Graphics.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Graphics.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Input.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.Input.dll</source>
+  <source api="default|Windows Desktop - .NET 4.5" xml="..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.UI.xml">..\Bin\Windows-Direct3D11\SiliconStudio.Xenko.UI.dll</source>
  </config>

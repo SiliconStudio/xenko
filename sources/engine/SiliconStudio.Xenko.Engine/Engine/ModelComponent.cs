@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Add a <see cref="Model"/> to an <see cref="Entity"/>, that will be used during rendering.
@@ -70,10 +70,10 @@ namespace SiliconStudio.Paradox.Engine
         }
 
         /// <summary>
-        /// Gets the materials; non-null ones will override materials from <see cref="SiliconStudio.Paradox.Rendering.Model.Materials"/> (same slots should be used).
+        /// Gets the materials; non-null ones will override materials from <see cref="SiliconStudio.Xenko.Rendering.Model.Materials"/> (same slots should be used).
         /// </summary>
         /// <value>
-        /// The materials overriding <see cref="SiliconStudio.Paradox.Rendering.Model.Materials"/> ones.
+        /// The materials overriding <see cref="SiliconStudio.Xenko.Rendering.Model.Materials"/> ones.
         /// </value>
         /// <userdoc>The list of materials to use with the model. This list overrides the default materials of the model.</userdoc>
         [DataMember(20)]

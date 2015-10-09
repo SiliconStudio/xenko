@@ -34,7 +34,7 @@ using MonoTouch.Dialog;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Api;
 
-namespace SiliconStudio.Paradox.UnitTesting.UI {
+namespace SiliconStudio.Xenko.UnitTesting.UI {
 
 	abstract class TestElement : StyledMultilineElement {
 		

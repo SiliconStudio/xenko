@@ -38,10 +38,10 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Initializes a new instance of the <see cref="PackageStore"/> class.
         /// </summary>
-        /// <exception cref="System.InvalidOperationException">Unable to find a valid Paradox installation path</exception>
-        private PackageStore(string installationPath = null, string defaultPackageName = "Paradox", string defaultPackageVersion = ParadoxVersion.CurrentAsText)
+        /// <exception cref="System.InvalidOperationException">Unable to find a valid Xenko installation path</exception>
+        private PackageStore(string installationPath = null, string defaultPackageName = "Xenko", string defaultPackageVersion = XenkoVersion.CurrentAsText)
         {
-            // TODO: these are currently hardcoded to Paradox
+            // TODO: these are currently hardcoded to Xenko
             DefaultPackageName = defaultPackageName;
             DefaultPackageVersion = new PackageVersion(defaultPackageVersion);
             defaultPackageDirectory = DirectoryHelper.GetPackageDirectory(defaultPackageName);
@@ -51,14 +51,14 @@ namespace SiliconStudio.Assets
             {
                 if (!DirectoryHelper.IsInstallationDirectory(installationPath))
                 {
-                    throw new ArgumentException("Invalid Paradox installation path [{0}]".ToFormat(installationPath), "installationPath");
+                    throw new ArgumentException("Invalid Xenko installation path [{0}]".ToFormat(installationPath), "installationPath");
                 }
 
                 globalInstallationPath = installationPath;
             }
 
             // 2. Try to resolve an installation path from the path of this assembly
-            // We need to be able to use the package manager from an official Paradox install as well as from a developer folder
+            // We need to be able to use the package manager from an official Xenko install as well as from a developer folder
             if (globalInstallationPath == null)
             {
                 globalInstallationPath = DirectoryHelper.GetInstallationDirectory(DefaultPackageName);
@@ -67,7 +67,7 @@ namespace SiliconStudio.Assets
             // If there is no root, this is an error
             if (globalInstallationPath == null)
             {
-                throw new InvalidOperationException("Unable to find a valid Paradox installation or dev path");
+                throw new InvalidOperationException("Unable to find a valid Xenko installation or dev path");
             }
 
             // Preload default package

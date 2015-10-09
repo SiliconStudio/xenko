@@ -24,7 +24,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// A simple wrapper to specify number of mipmaps.

@@ -5,7 +5,7 @@ using System.Text;
 using System.Windows.Interactivity;
 using SiliconStudio.Presentation.Controls;
 
-namespace SiliconStudio.Paradox.DebugTools.Behaviors
+namespace SiliconStudio.Xenko.DebugTools.Behaviors
 {
     public class TimeBarCurrentTimeSetterBehavior : Behavior<ScaleBar>
     {

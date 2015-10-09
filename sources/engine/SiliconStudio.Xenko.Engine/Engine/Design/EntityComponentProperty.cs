@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     [DataContract]
     public class EntityComponentProperty

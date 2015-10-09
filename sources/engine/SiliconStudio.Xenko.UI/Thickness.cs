@@ -3,7 +3,7 @@
 using System;
 using System.Diagnostics;
 
-namespace SiliconStudio.Paradox.UI
+namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
     /// Describes the thickness of a frame around a cuboid. Six float values describe the Left, Top, Right, Bottom, Front, and Back sides of the cuboid, respectively.

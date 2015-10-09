@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// A RGBA channel selected when performing texture sampling.

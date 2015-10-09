@@ -12,7 +12,7 @@
     <RootNamespace>SiliconStudio.Core.MicroThreading</RootNamespace>
     <AssemblyName>SiliconStudio.Core.MicroThreading</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <XenkoBuildTags>*</XenkoBuildTags>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
@@ -36,7 +36,7 @@
     <Compile Include="MicroThreadSynchronizationContext.cs" />
     <Compile Include="MicroThreadYieldAwaiter.cs" />
     <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="ParadoxScriptAttribute.cs" />
+    <Compile Include="XenkoScriptAttribute.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScheduleMode.cs" />
     <Compile Include="Scheduler.cs" />

@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler
+namespace SiliconStudio.Xenko.Shaders.Compiler
 {
     /// <summary>
     /// Base class for implementations of <see cref="IEffectCompiler"/>, providing some helper functions.

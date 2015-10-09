@@ -4,9 +4,9 @@ using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
 using ScriptShader.Effects;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public struct LightBinding
     {

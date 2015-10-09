@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SiliconStudio.Paradox.Graphics {
+namespace SiliconStudio.Xenko.Graphics {
     using System;
     using System.Reflection;
     
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Graphics {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SiliconStudio.Paradox.Graphics.FrameworkResources", typeof(FrameworkResources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SiliconStudio.Xenko.Graphics.FrameworkResources", typeof(FrameworkResources).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

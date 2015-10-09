@@ -14,12 +14,12 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering.Lights;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering.Lights;
 
 using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
     /// A scene asset.

@@ -4,7 +4,7 @@
 using System.ComponentModel;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// The U2Filmic operator.

@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Engine.Design;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
     /// Temporary representation of <see cref="EntityHierarchyData"/> used during diff/merge, to map reimported node mapping easily.

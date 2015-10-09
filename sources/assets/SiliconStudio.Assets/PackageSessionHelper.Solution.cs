@@ -27,7 +27,7 @@ namespace SiliconStudio.Assets
             {
                 foreach (var packageFullPath in EnumeratePackageFullPaths(fullPath))
                 {
-                    // Load the package as a Yaml dynamic node, so that we can check Paradox version from dependencies
+                    // Load the package as a Yaml dynamic node, so that we can check Xenko version from dependencies
                     var input = new StringReader(File.ReadAllText(packageFullPath));
                     var yamlStream = new YamlStream();
                     yamlStream.Load(input);
@@ -37,11 +37,11 @@ namespace SiliconStudio.Assets
 
                     foreach (var dependency in yamlRootNode.Meta.Dependencies)
                     {
-                        if ((string)dependency.Name == "Paradox")
+                        if ((string)dependency.Name == "Xenko")
                         {
                             dependencyVersion = new SemanticVersion((string)dependency.Version);
 
-                            // Paradox 1.1 was having incorrect version set (1.0), read it from .props file
+                            // Xenko 1.1 was having incorrect version set (1.0), read it from .props file
                             if (dependencyVersion.Version.Major == 1 && dependencyVersion.Version.Minor == 0)
                             {
                                 var propsFilePath = Path.Combine(Path.GetDirectoryName(packageFullPath) ?? "", Path.GetFileNameWithoutExtension(packageFullPath) + ".props");
@@ -50,7 +50,7 @@ namespace SiliconStudio.Assets
                                     using (XmlReader propsReader = XmlReader.Create(propsFilePath))
                                     {
                                         propsReader.MoveToContent();
-                                        if (propsReader.ReadToDescendant("SiliconStudioPackageParadoxVersion"))
+                                        if (propsReader.ReadToDescendant("SiliconStudioPackageXenkoVersion"))
                                         {
                                             if (propsReader.Read())
                                             {

@@ -5,7 +5,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>PDX Graphics</string>
 	<key>CFBundleIdentifier</key>
-	<string>jp.co.siliconstudio.paradox.graphics.tests</string>
+	<string>jp.co.siliconstudio.xenko.graphics.tests</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>

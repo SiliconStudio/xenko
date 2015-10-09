@@ -2,10 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Engine.Processors;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Engine.Processors;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// A link to a scene that is rendered by a parent <see cref="Scene"/>.

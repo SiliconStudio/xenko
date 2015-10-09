@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics.Internals;
+using SiliconStudio.Xenko.Graphics.Internals;
 
-namespace SiliconStudio.Paradox.Rendering.ComputeEffect
+namespace SiliconStudio.Xenko.Rendering.ComputeEffect
 {
     /// <summary>
     /// A compute effect based directly on a single compute shader.

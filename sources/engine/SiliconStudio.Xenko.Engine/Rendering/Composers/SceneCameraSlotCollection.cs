@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Composers
 {
     /// <summary>
     /// A collection of <see cref="CameraComponent"/>.
@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Rendering.Composers
         /// Gets the camera for the specified slotIndex or null if empty
         /// </summary>
         /// <param name="cameraSlotIndex">The camera slotIndex.</param>
-        /// <returns>SiliconStudio.Paradox.Engine.CameraComponent.</returns>
+        /// <returns>SiliconStudio.Xenko.Engine.CameraComponent.</returns>
         public CameraComponent GetCamera(SceneCameraSlotIndex cameraSlotIndex)
         {
             int index = cameraSlotIndex;

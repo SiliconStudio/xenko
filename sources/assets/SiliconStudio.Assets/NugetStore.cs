@@ -282,7 +282,7 @@ namespace SiliconStudio.Assets
                 var packageTarget = String.Format(@"$(MSBuildThisFileDirectory)..\{0}\{1}.{2}\Targets\{1}.targets", RepositoryPath, package.Id, "$(" + packageVar + ")");
 
                 // Add import
-                // <Import Project="..\Packages\Paradox$(SiliconStudioPackageParadoxVersion)\Targets\Paradox.targets" Condition="Exists('..\Packages\Paradox.$(SiliconStudioPackageParadoxVersion)\Targets\Paradox.targets')" />
+                // <Import Project="..\Packages\Xenko$(SiliconStudioPackageXenkoVersion)\Targets\Xenko.targets" Condition="Exists('..\Packages\Xenko.$(SiliconStudioPackageXenkoVersion)\Targets\Xenko.targets')" />
                 var importElement = project.Xml.AddImport(packageTarget);
                 importElement.Condition = String.Format(@"Exists('{0}')", packageTarget);
 
@@ -292,11 +292,11 @@ namespace SiliconStudio.Assets
                 var packageVarRevision = packageVar + "Revision";
                 var packageVarOverride = packageVar + "Override";
 
-                // <SiliconStudioPackageParadoxVersion Condition="'$(SiliconStudioPackageParadoxVersionOverride)' != ''">$(SiliconStudioPackageParadoxVersionOverride)</SiliconStudioPackageParadoxVersion>
+                // <SiliconStudioPackageXenkoVersion Condition="'$(SiliconStudioPackageXenkoVersionOverride)' != ''">$(SiliconStudioPackageXenkoVersionOverride)</SiliconStudioPackageXenkoVersion>
                 var versionFromOverrideProperty = commonPropertyGroup.AddProperty(packageVar, "$(" + packageVarOverride + ")");
                 versionFromOverrideProperty.Condition = "'$(" + packageVarOverride + ")' != ''";
 
-                // <SiliconStudioPackageParadoxVersionSaved>$(SiliconStudioPackageParadoxVersion)</SiliconStudioPackageParadoxVersionSaved>
+                // <SiliconStudioPackageXenkoVersionSaved>$(SiliconStudioPackageXenkoVersion)</SiliconStudioPackageXenkoVersionSaved>
                 commonPropertyGroup.AddProperty(packageVarSaved, "$(" + packageVar + ")");
 
                 // List all the correspondances: Major.minor -> latest installed explicit version
@@ -310,27 +310,27 @@ namespace SiliconStudio.Assets
                     foreach (var minor in minorPkg)
                     {
                         var latestPackage = minor.First();
-                        // <SiliconStudioPackageParadoxVersionRevision Condition="'$(SiliconStudioPackageParadoxVersion)' == '0.5'">0.5.0-alpha09</SiliconStudioPackageParadoxVersionRevision>
+                        // <SiliconStudioPackageXenkoVersionRevision Condition="'$(SiliconStudioPackageXenkoVersion)' == '0.5'">0.5.0-alpha09</SiliconStudioPackageXenkoVersionRevision>
                         var revisionVersionProperty = commonPropertyGroup.AddProperty(packageVarRevision, latestPackage.Version.ToString());
                         revisionVersionProperty.Condition = "'$(" + packageVar + ")' == '" + majorVersion + "." + minor.Key + "'";
                     }
                 }
 
                 // Replace the version Major.minor by the full revision name
-                // <SiliconStudioPackageParadoxVersion>$(SiliconStudioPackageParadoxVersionRevision)</SiliconStudioPackageParadoxVersion>
+                // <SiliconStudioPackageXenkoVersion>$(SiliconStudioPackageXenkoVersionRevision)</SiliconStudioPackageXenkoVersion>
                 commonPropertyGroup.AddProperty(packageVar, "$(" + packageVarRevision + ")");
 
-                // <SiliconStudioPackageParadoxVersionInvalid Condition="'$(SiliconStudioPackageParadoxVersion)' == '' or !Exists('..\Packages\Paradox.$(SiliconStudioPackageParadoxVersion)\Targets\Paradox.targets')">true</SiliconStudioPackageParadoxVersionInvalid>
+                // <SiliconStudioPackageXenkoVersionInvalid Condition="'$(SiliconStudioPackageXenkoVersion)' == '' or !Exists('..\Packages\Xenko.$(SiliconStudioPackageXenkoVersion)\Targets\Xenko.targets')">true</SiliconStudioPackageXenkoVersionInvalid>
                 commonPropertyGroup.AddProperty(packageVarInvalid, "true").Condition = "'$(" + packageVar + ")' == '' or !" + importElement.Condition;
 
-                // <SiliconStudioPackageParadoxVersion Condition="'$(SiliconStudioPackageParadoxVersionInvalid)' == 'true'">1.0.0-alpha01</SiliconStudioPackageParadoxVersion>
+                // <SiliconStudioPackageXenkoVersion Condition="'$(SiliconStudioPackageXenkoVersionInvalid)' == 'true'">1.0.0-alpha01</SiliconStudioPackageXenkoVersion>
                 // Special case: if major version 1.0 still exists, use it as default (new projects should be created with props file)
                 var defaultPackageVersion = LocalRepository.FindPackagesById(package.Id).Select(x => x.Version).FirstOrDefault(x => x.Version.Major == 1 && x.Version.Minor == 0) ?? package.Version;
                 var invalidProperty = commonPropertyGroup.AddProperty(packageVar, defaultPackageVersion.ToString());
                 invalidProperty.Condition = "'$(" + packageVarInvalid + ")' == 'true'";
 
                 // Add in CheckPackages target
-                // <Warning Condition="$(SiliconStudioPackageParadoxVersionInvalid) == 'true'"  Text="Package Paradox $(SiliconStudioPackageParadoxVersionSaved) not found. Use version $(SiliconStudioPackageParadoxVersion) instead"/>
+                // <Warning Condition="$(SiliconStudioPackageXenkoVersionInvalid) == 'true'"  Text="Package Xenko $(SiliconStudioPackageXenkoVersionSaved) not found. Use version $(SiliconStudioPackageXenkoVersion) instead"/>
                 // Disable Warning and use only Message for now
                 // TODO: Provide a better diagnostic message (in case the version is really not found or rerouted to a newer version)
                 var warningTask = target.AddTask("Message");

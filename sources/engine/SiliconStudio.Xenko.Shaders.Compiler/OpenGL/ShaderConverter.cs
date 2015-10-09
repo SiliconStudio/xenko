@@ -8,9 +8,9 @@ using SiliconStudio.Shaders.Analysis.Hlsl;
 using SiliconStudio.Shaders.Convertor;
 using SiliconStudio.Shaders.Parser;
 using SiliconStudio.Shaders.Parser.Hlsl;
-using ShaderMacro = SiliconStudio.Paradox.Shaders.ShaderMacro;
+using ShaderMacro = SiliconStudio.Xenko.Shaders.ShaderMacro;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
+namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 {
     /// <summary>
     /// Converts from HLSL shader sourcecode to a GLSL sourcecode.
@@ -139,7 +139,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
                     UseSemanticForVariable = true,
                     IsPointSpriteShader = false,
                     ViewFrustumRemap = true,
-                    FlipRenderTargetFlag = "ParadoxFlipRendertarget",
+                    FlipRenderTargetFlag = "XenkoFlipRendertarget",
                     KeepNonUniformArrayInitializers = !isOpenGLES,
                     IsOpenGLES2 = isOpenGLES && !isOpenGLES3
                 };

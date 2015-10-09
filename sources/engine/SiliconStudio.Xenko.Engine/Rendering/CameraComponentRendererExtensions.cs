@@ -1,10 +1,10 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering.Composers;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering.Composers;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public static class CameraComponentRendererExtensions
     {

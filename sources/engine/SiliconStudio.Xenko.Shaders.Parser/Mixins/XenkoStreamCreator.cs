@@ -4,8 +4,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
@@ -13,9 +13,9 @@ using SiliconStudio.Shaders.Visitor;
 
 using ParameterQualifier = SiliconStudio.Shaders.Ast.ParameterQualifier;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal  class ParadoxStreamCreator
+    internal  class XenkoStreamCreator
     {
         #region private static members
 
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <summary>
         /// Stream analyzer
         /// </summary>
-        private ParadoxStreamAnalyzer streamAnalyzer;
+        private XenkoStreamAnalyzer streamAnalyzer;
 
         /// <summary>
         /// the error logger
@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         #region Constructor
 
-        private ParadoxStreamCreator(ShaderClassType shaderClassType, ModuleMixin mixin, List<ModuleMixin> mixins, LoggerResult errorLog)
+        private XenkoStreamCreator(ShaderClassType shaderClassType, ModuleMixin mixin, List<ModuleMixin> mixins, LoggerResult errorLog)
         {
             shader = shaderClassType;
             mainModuleMixin = mixin;
@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         public static void Run(ShaderClassType shaderClassType, ModuleMixin mixin, List<ModuleMixin> mixins, LoggerResult errorLog)
         {
-            var streamCreator = new ParadoxStreamCreator(shaderClassType, mixin, mixins, errorLog);
+            var streamCreator = new XenkoStreamCreator(shaderClassType, mixin, mixins, errorLog);
             streamCreator.Run();
         }
 
@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         public void Run()
         {
-            streamAnalyzer = new ParadoxStreamAnalyzer(errorWarningLog);
+            streamAnalyzer = new XenkoStreamAnalyzer(errorWarningLog);
             streamAnalyzer.Run(shader);
 
             if (errorWarningLog.HasErrors)
@@ -121,17 +121,17 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             if (!(hullShaderMethod == null && hullConstantShaderMethod == null && domainShaderMethod == null) && (hullShaderMethod == null || hullConstantShaderMethod == null || domainShaderMethod == null))
             {
-                errorWarningLog.Error(ParadoxMessageCode.ErrorIncompleteTesselationShader, new SourceSpan());
+                errorWarningLog.Error(XenkoMessageCode.ErrorIncompleteTesselationShader, new SourceSpan());
                 return;
             }
             
-            StreamStageUsage streamStageUsageVS = vertexShaderMethod == null ? null : StreamAnalysisPerShader(vertexShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, vertexShaderMethod, PdxShaderStage.Vertex);
-            StreamStageUsage streamStageUsageHS = hullShaderMethod == null ? null : StreamAnalysisPerShader(hullShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, hullShaderMethod, PdxShaderStage.Hull);
-            StreamStageUsage streamStageUsageHSCS = hullConstantShaderMethod == null ? null : StreamAnalysisPerShader(hullConstantShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, hullConstantShaderMethod, PdxShaderStage.Constant);
-            StreamStageUsage streamStageUsageDS = domainShaderMethod == null ? null : StreamAnalysisPerShader(domainShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, domainShaderMethod, PdxShaderStage.Domain);
-            StreamStageUsage streamStageUsageGS = geometryShaderMethod == null ? null : StreamAnalysisPerShader(geometryShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, geometryShaderMethod, PdxShaderStage.Geometry);
-            StreamStageUsage streamStageUsagePS = pixelShaderMethod == null ? null : StreamAnalysisPerShader(pixelShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, pixelShaderMethod, PdxShaderStage.Pixel);
-            StreamStageUsage streamStageUsageCS = computeShaderMethod == null ? null : StreamAnalysisPerShader(computeShaderMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin, computeShaderMethod, PdxShaderStage.Compute);
+            StreamStageUsage streamStageUsageVS = vertexShaderMethod == null ? null : StreamAnalysisPerShader(vertexShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, vertexShaderMethod, PdxShaderStage.Vertex);
+            StreamStageUsage streamStageUsageHS = hullShaderMethod == null ? null : StreamAnalysisPerShader(hullShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, hullShaderMethod, PdxShaderStage.Hull);
+            StreamStageUsage streamStageUsageHSCS = hullConstantShaderMethod == null ? null : StreamAnalysisPerShader(hullConstantShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, hullConstantShaderMethod, PdxShaderStage.Constant);
+            StreamStageUsage streamStageUsageDS = domainShaderMethod == null ? null : StreamAnalysisPerShader(domainShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, domainShaderMethod, PdxShaderStage.Domain);
+            StreamStageUsage streamStageUsageGS = geometryShaderMethod == null ? null : StreamAnalysisPerShader(geometryShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, geometryShaderMethod, PdxShaderStage.Geometry);
+            StreamStageUsage streamStageUsagePS = pixelShaderMethod == null ? null : StreamAnalysisPerShader(pixelShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, pixelShaderMethod, PdxShaderStage.Pixel);
+            StreamStageUsage streamStageUsageCS = computeShaderMethod == null ? null : StreamAnalysisPerShader(computeShaderMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin, computeShaderMethod, PdxShaderStage.Compute);
             
             // pathc some usage so that variables are correctly passed even if they are not explicitely used.
             if (streamStageUsageGS != null && streamStageUsageVS != null)
@@ -211,7 +211,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             StructType outputStructure = null;
 
             // remove the now useless tags and typeinferences to accelerate cloning
-            var tagCleaner = new ParadoxTagCleaner();
+            var tagCleaner = new XenkoTagCleaner();
             tagCleaner.Run(shader);
             
             outputStructure = GenerateStreams(vertexShaderMethod, streamStageUsageVS, "VS", outputStructure);
@@ -318,7 +318,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 }
 
                 var method = mixin.LocalVirtualTable.Methods.FirstOrDefault(x => x.Method.Name.Text == name && x.Method is MethodDefinition);
-                if (method != null && (count == 0 || method.Method.Qualifiers.Contains(ParadoxStorageQualifier.Clone)))
+                if (method != null && (count == 0 || method.Method.Qualifiers.Contains(XenkoStorageQualifier.Clone)))
                     return method.Method as MethodDefinition;
             }
             return null;
@@ -351,7 +351,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             if (visitedMethods.Contains(currentMethod))
             {
-                errorWarningLog.Error(ParadoxMessageCode.ErrorRecursiveCall, currentMethod.Span, currentMethod);
+                errorWarningLog.Error(XenkoMessageCode.ErrorRecursiveCall, currentMethod.Span, currentMethod);
                 return;
             }
 
@@ -387,7 +387,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                                 FindStreamsUsage(streamUsage.MethodDeclaration, inStreamList, outStreamList, newListVisitedMethods);
                         }
                         else if (streamUsage.CallType != StreamCallType.Direct) // should not happen
-                            errorWarningLog.Error(ParadoxMessageCode.ErrorStreamUsageInitialization, streamUsage.Expression.Span, streamUsage.Expression);
+                            errorWarningLog.Error(XenkoMessageCode.ErrorStreamUsageInitialization, streamUsage.Expression.Span, streamUsage.Expression);
                     }
                 }
             }
@@ -538,7 +538,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var inStreamStruct = prevOuputStructure ?? CreateStreamStructure(streamStageUsage.InStreamList, stageName + "_INPUT");
                 var outStreamStruct = CreateStreamStructure(streamStageUsage.OutStreamList, stageName + "_OUTPUT");
 
-                var mixin = entryPoint.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+                var mixin = entryPoint.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
 
                 var intermediateStreamStruct = CreateIntermediateStructType(streamStageUsage, stageName);
 
@@ -550,7 +550,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var outputStatements = CreateOutputFromStream(outStreamStruct, "output", intermediateStreamStruct, "streams").ToList();
                 var outputVre = new VariableReferenceExpression(((outputStatements.First() as DeclarationStatement).Content as Variable).Name);
 
-                var replacor = new ParadoxReplaceAppend(streamAnalyzer.AppendMethodCalls, outputStatements, outputVre);
+                var replacor = new XenkoReplaceAppend(streamAnalyzer.AppendMethodCalls, outputStatements, outputVre);
                 ReplaceAppendMethod(entryPoint, replacor);
                 
                 var visitedMethods = new Stack<MethodDeclaration>();
@@ -581,7 +581,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// </summary>
         /// <param name="entryPoint">the entrypoint method</param>
         /// <param name="replacor">the visitor</param>
-        private void ReplaceAppendMethod(MethodDefinition entryPoint, ParadoxReplaceAppend replacor)
+        private void ReplaceAppendMethod(MethodDefinition entryPoint, XenkoReplaceAppend replacor)
         {
             replacor.Run(entryPoint);
 
@@ -648,7 +648,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             if (entryPoint != null)
             {
-                var constStreamStruct = CreateStreamStructure(mainModuleMixin.VirtualTable.Variables.Select(x => x.Variable).Where(x => x.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream)).Distinct().ToList<IDeclaration>(), "HS_CONSTANTS");
+                var constStreamStruct = CreateStreamStructure(mainModuleMixin.VirtualTable.Variables.Select(x => x.Variable).Where(x => x.Qualifiers.Contains(XenkoStorageQualifier.PatchStream)).Distinct().ToList<IDeclaration>(), "HS_CONSTANTS");
                 var typeConst = new TypeName(constStreamStruct.Name);
 
                 var visitedMethods = new Stack<MethodDeclaration>();
@@ -901,22 +901,22 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             if (inputName != null)
             {
-                var replacor = new ParadoxReplaceVisitor(StreamsType.Input, inputName);
+                var replacor = new XenkoReplaceVisitor(StreamsType.Input, inputName);
                 replacor.Run(methodDeclaration);
             }
             if (input2Name != null)
             {
-                var replacor = new ParadoxReplaceVisitor(StreamsType.Input2, input2Name);
+                var replacor = new XenkoReplaceVisitor(StreamsType.Input2, input2Name);
                 replacor.Run(methodDeclaration);
             }
             if (outputName != null)
             {
-                var replacor = new ParadoxReplaceVisitor(StreamsType.Output, outputName);
+                var replacor = new XenkoReplaceVisitor(StreamsType.Output, outputName);
                 replacor.Run(methodDeclaration);
             }
             if (constantsName != null)
             {
-                var replacor = new ParadoxReplaceVisitor(StreamsType.Constants, constantsName);
+                var replacor = new XenkoReplaceVisitor(StreamsType.Constants, constantsName);
                 replacor.Run(methodDeclaration);
             }
         }
@@ -937,7 +937,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     {
                         if (stageList.Value.Contains(method))
                         {
-                            errorWarningLog.Error(ParadoxMessageCode.ErrorCrossStageMethodCall, method.Span, method, stage, shaderStage);
+                            errorWarningLog.Error(XenkoMessageCode.ErrorCrossStageMethodCall, method.Span, method, stage, shaderStage);
                         }
                     }
                 }
@@ -997,7 +997,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                             var forLoop = new ForStatement(start, condition, next);
 
                             var fieldAssigner = new StreamFieldVisitor(field, new VariableReferenceExpression(iterator));
-                            var clonedExpression = fieldAssigner.Run(ParadoxAssignmentCloner.Run(initialValue));
+                            var clonedExpression = fieldAssigner.Run(XenkoAssignmentCloner.Run(initialValue));
                             
                             forLoop.Body = new ExpressionStatement(
                                 new AssignmentExpression(
@@ -1011,7 +1011,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         {
                             var fieldAssigner = new StreamFieldVisitor(field);
                             //var clonedExpression = fieldAssigner.Run(initialValue.DeepClone());
-                            var clonedExpression = fieldAssigner.Run(ParadoxAssignmentCloner.Run(initialValue));
+                            var clonedExpression = fieldAssigner.Run(XenkoAssignmentCloner.Run(initialValue));
                             
                             yield return new ExpressionStatement(
                                 new AssignmentExpression(

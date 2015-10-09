@@ -27,7 +27,7 @@ namespace SiliconStudio.NugetPackageRewriter
             var p = new OptionSet
                 {
                     "Copyright (C) 2011-2013 Silicon Studio Corporation. All Rights Reserved",
-                    "Paradox Transform Alpha to Beta: "
+                    "Xenko Transform Alpha to Beta: "
                     +
                     String.Format(
                         "{0}.{1}.{2}",
@@ -66,7 +66,7 @@ namespace SiliconStudio.NugetPackageRewriter
                         if (nupkgSuffix != null)
                         {
                             var outputFile = inputFile.Replace("-beta", nupkgSuffix);
-                            var filesToUpdates = new[] { "Paradox.nuspec" };
+                            var filesToUpdates = new[] { "Xenko.nuspec" };
 
                             Console.WriteLine("Rename {0} into {1}", inputFile, outputFile);
                             File.Copy(inputFile, outputFile, true);

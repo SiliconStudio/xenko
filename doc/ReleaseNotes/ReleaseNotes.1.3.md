@@ -17,7 +17,7 @@ Graphics Profile (DX9, 10 or 11)
 HDR or LDR mode
 Color Space: Gamma or Linear (more details below)
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/GameSettings13.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/GameSettings13.png" align="center" />
 
 It will automatically be created when opening an old project with version 1.3.
 We plan to add many more options to this asset from now on.
@@ -30,13 +30,13 @@ Starting with version 1.3, we compile only assets required by your game. This ma
 
 Don’t worry, most of it is done automatically for you! We do this by collecting dependencies from the new Game Settings asset. Since it references the Default Scene, we can easily detect all the required asset references (Models, Materials, Asset referenced by your scripts and so on).
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/AssetControlExample.png" align="center" width="500"/>
+<img src="http://doc.xenko3d.net/1.3/rn_images/AssetControlExample.png" align="center" width="500"/>
 
 In case you were loading anything in your script using `Asset.Load`, you can still tag those assets specifically by clicking on the inclusion indicator on the top-left corner of their thumbnails.
 
 However, we now recommend to instead create a field in your script and fill it directly in the editor. All the samples have been updated to this new practice, so please check them out.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/RootAssets.png" align="center" width="495"/>
+<img src="http://doc.xenko3d.net/1.3/rn_images/RootAssets.png" align="center" width="495"/>
 
 ### Raw assets
 
@@ -46,13 +46,13 @@ We have added support for raw assets. You can now easily add your own config/xml
 
 We encourage users to organize their raw assets (such as FBX, PNG, JPG files) in a specific subfolder (just like the samples are doing it).
 
-However, if you prefer to have your raw assets copied side by side with Paradox assets, it is now possible by checking “Keep Source Side by Side” on assets.
+However, if you prefer to have your raw assets copied side by side with Xenko assets, it is now possible by checking “Keep Source Side by Side” on assets.
 
-When doing so, source assets will be copied alongside the Paradox asset with the same name. Those changes happen when saving the project. In case some irreversible changes happen (i.e. delete or overwrite an existing file), a confirmation will be required by the user.
+When doing so, source assets will be copied alongside the Xenko asset with the same name. Those changes happen when saving the project. In case some irreversible changes happen (i.e. delete or overwrite an existing file), a confirmation will be required by the user.
 
 This option is still off by default when importing new assets, but we plan to make it a project setting if you want to manage project that way for your whole team.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/AssetConsolidation.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/AssetConsolidation.png" align="center" />
 
 Don’t forget to save new versions of your raw assets at the new location.
 
@@ -68,7 +68,7 @@ Animation pipeline is very similar to a 3D model with smooth interpolations.
 
 Check out our new Sprite Studio Demo in the samples:
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/SpriteStudioDemo.jpg" align="center" width="500"/>
+<img src="http://doc.xenko3d.net/1.3/rn_images/SpriteStudioDemo.jpg" align="center" width="500"/>
 
 
 ### Materials: Vertex stream, Shader nodes…
@@ -77,7 +77,7 @@ In addition to the current color providers supported by materials (texture, scal
 
 You can now use a color/values coming from **vertex attributes/stream** and use them directly in material color providers:
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/RenderingMaterialsVertexStream.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/RenderingMaterialsVertexStream.png" align="center" />
 
 This allows for example to blend two textures in a diffuse material, based on the value of a color coming from the vertex buffer.
 
@@ -91,11 +91,11 @@ In this version, the engine is now able to fully support pipelines that are HDR 
 
 By default, all new games are now created with `Linear` colorspace. This setting can be changed in the GameSettings:
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/GameSettingsColorSpace.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/GameSettingsColorSpace.png" align="center" />
 
 The texture importer by default now automatically uses the color space defined at game level:
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/TextureColorSpace.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/TextureColorSpace.png" align="center" />
 
 ___
 
@@ -105,7 +105,7 @@ ___
 
 We have added support to create automatically atlas texture generated from sprite sheets. This feature is optional and the user can continue generating their atlas manually if they prefer. It supports sprite border size.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/SpriteSheetTextureAtlas.png" align="center"/>
+<img src="http://doc.xenko3d.net/1.3/rn_images/SpriteSheetTextureAtlas.png" align="center"/>
 
 ### Alpha detection
 
@@ -115,11 +115,11 @@ We have also improve automatic alpha detection of textures and sprites. In addit
 
 The sprite editor has been improved in several ways. First, the left pane now let you select the sheet type (sprites or UI) and the color key. To easily set the color key from the image itself, a color picking tool has been added. It is also possible to duplicate an existing sprite so you don’t have to enter the same parameters again and again.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/SpriteEditorLeft.png" align="center"/>
+<img src="http://doc.xenko3d.net/1.3/rn_images/SpriteEditorLeft.png" align="center"/>
 
 Selecting the area of each sprite in a sheet can be annoying, so we added a magic wand tool to easily create a rectangle that fit the edges of the sprite you click on, using either transparency, or the color key to determine sprite limits.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/MagicWand.gif" align="center"/>
+<img src="http://doc.xenko3d.net/1.3/rn_images/MagicWand.gif" align="center"/>
 
  ___
 
@@ -127,19 +127,19 @@ Selecting the area of each sprite in a sheet can be annoying, so we added a magi
 
 We made several improvements to manage the hierarchy of entities. First, the root node representing the scene has been removed. You can now access the graphics compositor and editor settings via the *Scene settings* button.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/SceneSettings.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/SceneSettings.png" align="center" />
 
 Also, to help you sort and filter entities in your scene, we added the concept of folders. You can create folders either at root level, or inside an entity, and move other folders/entities into them. Folders are completely virtual and exist only at design time. The actual hierarchy of entities is not affected by them.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/SceneFolders.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/SceneFolders.png" align="center" />
 
 
 Aligning the camera along coordinate axes was cumbersome. We added a new nativation gizmo to the top-right corner of the scene editor, which allows you to easily rotate the camera around axes in 45° increments. Clicking on the center of the cube a second time, will switch between perspective and orthographic projection. Camera controls have also been improved when working in orthographic mode, to make it easier to move around in 2D worlds.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/NavigationGizmo.gif" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/NavigationGizmo.gif" align="center" />
 Finally, the camera menu has been improved to allow you to customize various options related to the editor camera. These options were previously available in the editor settings section of the scene properties. This section has been removed.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/CameraMenu.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/CameraMenu.png" align="center" />
 
 
 The material selection mode, introduced in the previous version, has been improved to allow you to perform close-ups on single meshes of a model. Hovering over the desired mesh and pressing ‘F’, while in material mode, will now center the camera on it.
@@ -155,7 +155,7 @@ The physics system is now **loaded automatically** - no need anymore to load it 
 
 Physics elements have been simplified. To reduce confusion between object types some element types have been removed/merged with others. Each element type is now represented by separate class (instead of having a type property). This provides a clearer abstraction and easier configuration from the editor. Physics gizmos are **color coded** by element type.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/physics_elements_new.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/physics_elements_new.png" align="center" />
 
 ### Linking to bones
 
@@ -163,7 +163,7 @@ You can now properly link physics elements to bones of a model hierarchy. This m
 You currently still need to set up constraints programmatically. This will also be possible from the editor in the future.
 Also, complex entity hierarchies are now well handled.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/physics_nodes.png" align="center" width="500"/>
+<img src="http://doc.xenko3d.net/1.3/rn_images/physics_nodes.png" align="center" width="500"/>
 
 ### Async scripting for collision handling
 
@@ -191,7 +191,7 @@ You can now declare collider shapes right **inside of a physics component**, for
 
 A **Convex Hull collider shape** has been added, providing a shape that is shrink wrapped to a model. For more complex model, a shape is wrapped to each mesh. In the future we also hope to provide complex convex decomposition.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/physics_inlineshapes_new.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/physics_inlineshapes_new.png" align="center" />
 
  ___
 
@@ -199,7 +199,7 @@ A **Convex Hull collider shape** has been added, providing a shape that is shrin
 
 Scripts are now a new special type of asset.
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/script_asset.png" align="center" width="500"/>
+<img src="http://doc.xenko3d.net/1.3/rn_images/script_asset.png" align="center" width="500"/>
 
 You can now create scripts straight from the Game Studio, without any need to have visual studio installed if wanted, Just fire your favorite code editor and start making scripts for your game!
 
@@ -235,13 +235,13 @@ Model Node Link components allows you to make one entity follow a given model no
 
 Firstly, if no target model is set, they will now automatically use the parent entity’s model. When editing the target node, the editor will now display a list of available model nodes to choose from:
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/ModelNodeLinkNodeSelection.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/ModelNodeLinkNodeSelection.png" align="center" />
 
 Also, transformation is not ignored anymore. It is now possible to apply an offset, relative to the node.
 
 Lastly, node link information is now visible in the scene tree view for easier discoverability:
 
-<img src="http://doc.paradox3d.net/1.3/rn_images/ModelNodeLinkSceneTreeInfo.png" align="center" />
+<img src="http://doc.xenko3d.net/1.3/rn_images/ModelNodeLinkSceneTreeInfo.png" align="center" />
 
  ___
 
@@ -252,7 +252,7 @@ Lastly, node link information is now visible in the scene tree view for easier d
 - Engine: Script execution order was previously undefined but is now controlled by Script.Priority. Please make sure it didn’t affect your game.
 - Rendering: Remove post effect GammaTransform as the new pipeline is now using sRGB render targets for gamma correct pipeline.
 - Rendering: Remove `LightShadowImportance`. Switch to a single configuration done through the `LightShadiwMapSize` enum.
-- Rendering: Rename ILightColor to IColorProvider and move to namespace Engine.Rendering.Colors. Add extensions methods (github issue [#296](https://github.com/SiliconStudio/paradox/issues/296)) 
+- Rendering: Rename ILightColor to IColorProvider and move to namespace Engine.Rendering.Colors. Add extensions methods (github issue [#296](https://github.com/SiliconStudio/xenko/issues/296)) 
 - Physics: Collision events are removed. An async/await pattern is encouraged from now on.
 - Sprite Sheets: They are now automatically packed. If this affects you, you can simply disable this setting by editing your Sprite Sheet asset.
 
@@ -321,7 +321,7 @@ Almost 1000 commits are included in this release since the previous version of J
 
 ### General
 
-- Switched Paradox to VS2015. You can still compile your games with VS2013, but you will need to ship VS2015 C++ redistributables instead of VS2013 ones.
+- Switched Xenko to VS2015. You can still compile your games with VS2013, but you will need to ship VS2015 C++ redistributables instead of VS2013 ones.
 - Graphics platform is not part of user projects anymore, it is either automatically deduced and will likely be controllable from new Game Settings asset
 - Visual Studio Solution configuration is now switched automatically based on the startup project and vice versa.
 - On Android, we better detect ADB (check registry, running process before trying to find on PATH)
@@ -363,12 +363,12 @@ Almost 1000 commits are included in this release since the previous version of J
 - Background asset compiler for faster asset compiling tasks.
 - Added concept of “Root” assets (auto collect game assets, and user can manually mark additional ones)
 - Added a new undeletable GameSettings asset where you can configure various global settings.
-- Added a “Keep Source Side by Side” to force raw assets to be copied alongside their Paradox asset counterpart while saving.
+- Added a “Keep Source Side by Side” to force raw assets to be copied alongside their Xenko asset counterpart while saving.
 - Switch to FBX SDK 2016 when handling FBX assets
 
 ### Engine
 
-- Added Entity.AddChild() and Entity.GetParent() extension methods ([#251](https://github.com/SiliconStudio/paradox/issues/251))
+- Added Entity.AddChild() and Entity.GetParent() extension methods ([#251](https://github.com/SiliconStudio/xenko/issues/251))
 - Added Script.Priority to give better control of script order of execution. Also interleaves execution of AsyncScript and SyncScript in the same scheduler.
 - If ModelNodeLinkComponent.Model is null, it now automatically uses parent model
 - ModelNodeLinkComponent now uses TransformationComponent values to applies an additional relative offset on top of the node transformation
@@ -398,7 +398,7 @@ Almost 1000 commits are included in this release since the previous version of J
 - Obj + mtl file import support
 - Fixed .blend assimp import
 - Assimp imported meshes scale property support.
-- Custom assets are now loaded correctly when used in the package they are defined in ([#280](https://github.com/SiliconStudio/paradox/issues/280))
+- Custom assets are now loaded correctly when used in the package they are defined in ([#280](https://github.com/SiliconStudio/xenko/issues/280))
 - Local packages are now correctly loaded after their dependencies
 - If you use “Keep Source Side by Side” on assets with raw assets, they will be copied alongside the asset while saving the project
 
@@ -409,7 +409,7 @@ Almost 1000 commits are included in this release since the previous version of J
 
 ### Engine
 
-- Fixed an issue when creating StartupScripts in other StartupScripts ([#294](https://github.com/SiliconStudio/paradox/issues/294))
+- Fixed an issue when creating StartupScripts in other StartupScripts ([#294](https://github.com/SiliconStudio/xenko/issues/294))
 
 ### Game Studio
 
@@ -436,16 +436,16 @@ Almost 1000 commits are included in this release since the previous version of J
 
 - Fix ImageReadBack latency to force readback on first frame if previous frames were not available.
 - Ensure recursive materials are generating an log error instead of a StackOverflowException 
-- Fixed issue where not all enabled lights would be rendered ([#297](https://github.com/SiliconStudio/paradox/issues/297))
+- Fixed issue where not all enabled lights would be rendered ([#297](https://github.com/SiliconStudio/xenko/issues/297))
 
 ### Shaders
 
 - Swizzling scalars now works on OpenGL platforms
-- Display a proper error message when variables of different types have the same semantic ([#197](https://github.com/SiliconStudio/paradox/issues/197))
+- Display a proper error message when variables of different types have the same semantic ([#197](https://github.com/SiliconStudio/xenko/issues/197))
 
 ### Samples
 
-- Fixed corrupted scene of the ‘Sprite entity sample ([#281](https://github.com/SiliconStudio/paradox/issues/281))
+- Fixed corrupted scene of the ‘Sprite entity sample ([#281](https://github.com/SiliconStudio/xenko/issues/281))
 
 # Known Issues
 

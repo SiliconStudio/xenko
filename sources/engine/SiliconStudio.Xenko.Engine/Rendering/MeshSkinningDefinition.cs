@@ -3,7 +3,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Describes skinning for a <see cref="Mesh"/>, through a collection of <see cref="MeshBoneDefinition"/>.

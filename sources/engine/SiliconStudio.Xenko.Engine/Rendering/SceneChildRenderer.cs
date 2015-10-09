@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Composers;
+using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Composers;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// A renderer for a child scene defined by a <see cref="ChildSceneComponent"/>.

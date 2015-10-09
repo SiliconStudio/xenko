@@ -6,9 +6,9 @@ using NUnit.Framework;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Xenko.UI.Controls;
 
-namespace SiliconStudio.Paradox.UI.Tests.Layering
+namespace SiliconStudio.Xenko.UI.Tests.Layering
 {
     class ContentControlTest : ContentControl
     {

@@ -3,10 +3,10 @@
 
 using System;
 using System.Threading.Tasks;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Audio.Tests.Engine
+namespace SiliconStudio.Xenko.Audio.Tests.Engine
 {
     class GameClassForTests : Game
     {

@@ -5,7 +5,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering.Colors
+namespace SiliconStudio.Xenko.Rendering.Colors
 {
     /// <summary>
     /// A light color described by a rgb color

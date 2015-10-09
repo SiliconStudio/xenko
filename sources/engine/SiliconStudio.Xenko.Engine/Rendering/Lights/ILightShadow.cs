@@ -1,9 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Paradox.Rendering.Shadows;
+using SiliconStudio.Xenko.Rendering.Shadows;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
     /// Interface for the shadow of a light.

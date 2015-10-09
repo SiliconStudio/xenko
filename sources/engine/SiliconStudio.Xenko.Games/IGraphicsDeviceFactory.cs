@@ -23,9 +23,9 @@
 
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     public interface IGraphicsDeviceFactory
     {

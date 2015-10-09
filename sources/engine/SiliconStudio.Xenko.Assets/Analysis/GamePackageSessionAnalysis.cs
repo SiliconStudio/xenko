@@ -10,10 +10,10 @@ using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Assets.Entities;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Assets.Analysis
+namespace SiliconStudio.Xenko.Assets.Analysis
 {
     /// <summary>
     /// Analyses a game package, checks the default scene exists.

@@ -7,7 +7,7 @@ using System.Text;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// A mixin performing a combination of <see cref="ShaderClassSource"/> and other mixins.

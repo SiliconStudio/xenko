@@ -74,7 +74,7 @@
 // particular purpose and non-infringement.
 using System;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Flags used by <see cref="DDSHelper.LoadFromDDSMemory"/>.

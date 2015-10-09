@@ -10,7 +10,7 @@ using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// A shader class used for mixin.

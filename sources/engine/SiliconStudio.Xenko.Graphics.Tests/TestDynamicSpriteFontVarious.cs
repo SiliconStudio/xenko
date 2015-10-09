@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics.Font;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics.Font;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     [Description("Check Dynamic Font various")]

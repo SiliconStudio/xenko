@@ -1,8 +1,8 @@
 // Copyright (c) 2011 Silicon Studio
 
-using Paradox.Framework.Mathematics;
+using Xenko.Framework.Mathematics;
 
-namespace Paradox.Effects.Modules
+namespace Xenko.Effects.Modules
 {
     /// <summary>
     /// Keys used by transformations.

@@ -9,10 +9,10 @@ using System.Runtime.InteropServices;
 using AudioToolbox;
 using AudioUnit;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Audio.Wave;
+using SiliconStudio.Xenko.Audio.Wave;
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     internal unsafe class AudioVoice : ComponentBase
     {

@@ -7,9 +7,9 @@ using System.Text;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 
-namespace SiliconStudio.Paradox.Shaders.Tests
+namespace SiliconStudio.Xenko.Shaders.Tests
 {
     /// <summary>
     /// Code used to regenerate all cs files from pdxsl/pdxfx in the project
@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         //[Test]
         public void Test()
         {
-            var filePath = @"D:\Code\Paradox\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins\A.pdxsl";
+            var filePath = @"D:\Code\Xenko\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Mixins\A.pdxsl";
             var source = File.ReadAllText(filePath);
             var content = ShaderMixinCodeGen.GenerateCsharp(source, filePath.Replace("C:", "D:"));
         }

@@ -8,13 +8,13 @@ using NUnit.Framework;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Compiler;
-using EffectCompiler = SiliconStudio.Paradox.Shaders.Compiler.EffectCompiler;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Shaders.Compiler;
+using EffectCompiler = SiliconStudio.Xenko.Shaders.Compiler.EffectCompiler;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     [TestFixture]
     public class TestEffect : Game
@@ -114,7 +114,7 @@ namespace SiliconStudio.Paradox.Graphics
                 foreach (var shaderName in Directory.EnumerateFiles(@"Compiler", "*.pdxsl"))
                     CopyStream(database, shaderName);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\engine\SiliconStudio.Paradox.Graphics\Shaders", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\engine\SiliconStudio.Xenko.Graphics\Shaders", "*.pdxsl"))
                     CopyStream(database, shaderName);
 
                 var compiler = new EffectCompiler();
@@ -159,7 +159,7 @@ namespace SiliconStudio.Paradox.Graphics
                 foreach (var shaderName in Directory.EnumerateFiles(@"Compiler", "*.pdxsl"))
                     CopyStream(database, shaderName);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\engine\SiliconStudio.Paradox.Graphics\Shaders", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\..\..\engine\SiliconStudio.Xenko.Graphics\Shaders", "*.pdxsl"))
                     CopyStream(database, shaderName);
 
                 var compiler = new EffectCompiler();

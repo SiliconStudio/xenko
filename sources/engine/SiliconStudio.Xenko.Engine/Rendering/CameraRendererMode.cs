@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Defines the type of rendering (Forward, Deferred...etc.)

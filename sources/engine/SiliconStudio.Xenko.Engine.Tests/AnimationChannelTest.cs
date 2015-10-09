@@ -3,9 +3,9 @@
 using System;
 
 using NUnit.Framework;
-using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Xenko.Animations;
 
-namespace SiliconStudio.Paradox.Engine.Tests
+namespace SiliconStudio.Xenko.Engine.Tests
 {
     [TestFixture]
     public class AnimationChannelTest

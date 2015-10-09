@@ -7,7 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("AdditiveAnimation")]
     [ObjectFactory(typeof(AdditiveAnimationFactory))]

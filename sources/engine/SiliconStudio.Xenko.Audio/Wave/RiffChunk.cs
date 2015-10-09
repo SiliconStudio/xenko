@@ -25,7 +25,7 @@ using System;
 using System.IO;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Audio.Wave
+namespace SiliconStudio.Xenko.Audio.Wave
 {
     /// <summary>
     /// A chunk of a Riff stream.

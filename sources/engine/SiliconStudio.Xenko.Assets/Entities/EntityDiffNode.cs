@@ -6,10 +6,10 @@ using System.Collections.Generic;
 
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract("EntityDiffNode")]
     public class EntityDiffNode : IDiffKey

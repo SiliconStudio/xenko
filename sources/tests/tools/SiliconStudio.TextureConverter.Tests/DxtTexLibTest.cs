@@ -75,8 +75,8 @@ namespace SiliconStudio.TextureConverter.Tests
             Assert.IsTrue(library.CanHandleRequest(image, new NormalMapGenerationRequest(1)));
             Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest("TextureArray_WMipMaps_BC3.dds", false)));
             Assert.IsTrue(library.CanHandleRequest(image, new ExportRequest("TextureArray_WMipMaps_BC3.dds", 0)));
-            Assert.IsTrue(library.CanHandleRequest(image, new CompressingRequest(Paradox.Graphics.PixelFormat.BC3_UNorm)));
-            Assert.IsFalse(library.CanHandleRequest(image, new CompressingRequest(Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit)));
+            Assert.IsTrue(library.CanHandleRequest(image, new CompressingRequest(Xenko.Graphics.PixelFormat.BC3_UNorm)));
+            Assert.IsFalse(library.CanHandleRequest(image, new CompressingRequest(Xenko.Graphics.PixelFormat.ATC_RGBA_Explicit)));
             Assert.IsFalse(library.CanHandleRequest(image, new GammaCorrectionRequest(0)));
             image.Dispose();
         }
@@ -101,7 +101,7 @@ namespace SiliconStudio.TextureConverter.Tests
         {
             TexImage image = TestTools.Load(library, file);
 
-            Assert.IsTrue(image.Format == Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm);
+            Assert.IsTrue(image.Format == Xenko.Graphics.PixelFormat.B8G8R8A8_UNorm);
 
             try
             {
@@ -118,13 +118,13 @@ namespace SiliconStudio.TextureConverter.Tests
 
 
         [Ignore]
-        [TestCase("TextureArray_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        [TestCase("TextureCube_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        [TestCase("Texture3D_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC3_UNorm)]
-        [TestCase("TextureArray_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC1_UNorm)]
-        [TestCase("TextureCube_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC1_UNorm)]
-        [TestCase("Texture3D_WMipMaps_BGRA8888.dds", Paradox.Graphics.PixelFormat.BC1_UNorm)]
-        public void CompressTest(string file, Paradox.Graphics.PixelFormat format)
+        [TestCase("TextureArray_WMipMaps_BGRA8888.dds", Xenko.Graphics.PixelFormat.BC3_UNorm)]
+        [TestCase("TextureCube_WMipMaps_BGRA8888.dds", Xenko.Graphics.PixelFormat.BC3_UNorm)]
+        [TestCase("Texture3D_WMipMaps_BGRA8888.dds", Xenko.Graphics.PixelFormat.BC3_UNorm)]
+        [TestCase("TextureArray_WMipMaps_BGRA8888.dds", Xenko.Graphics.PixelFormat.BC1_UNorm)]
+        [TestCase("TextureCube_WMipMaps_BGRA8888.dds", Xenko.Graphics.PixelFormat.BC1_UNorm)]
+        [TestCase("Texture3D_WMipMaps_BGRA8888.dds", Xenko.Graphics.PixelFormat.BC1_UNorm)]
+        public void CompressTest(string file, Xenko.Graphics.PixelFormat format)
         {
             TexImage image = TestTools.Load(library, file);
 

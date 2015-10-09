@@ -6,10 +6,10 @@ using System;
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
 
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     //[YamlSerializerFactory]
     public class EntitySerializer : ObjectSerializer //, IDataCustomVisitor

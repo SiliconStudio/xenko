@@ -3,11 +3,11 @@ using Mono.Debugging.Soft;
 using MonoDevelop.Debugger.Soft;
 using Mono.Debugging.Client;
 
-namespace MonoDevelop.Debugger.Soft.Paradox
+namespace MonoDevelop.Debugger.Soft.Xenko
 {
-	public class ParadoxRemoteSoftDebuggerSession : SoftDebuggerSession
+	public class XenkoRemoteSoftDebuggerSession : SoftDebuggerSession
 	{
-		public ParadoxRemoteSoftDebuggerSession()
+		public XenkoRemoteSoftDebuggerSession()
 		{
 			
 		}

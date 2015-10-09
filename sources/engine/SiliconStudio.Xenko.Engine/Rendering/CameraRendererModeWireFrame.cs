@@ -6,11 +6,11 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A wireframe rendering mode (rendering only ModelComponent for now).
@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Rendering
     [Display("WireFrame")]
     public sealed class CameraRendererModeWireFrame : CameraRendererMode
     {
-        private const string WireFrameEffect = "ParadoxWireFrameShadingEffect";
+        private const string WireFrameEffect = "XenkoWireFrameShadingEffect";
 
         private readonly ModelComponentAndPickingRenderer modelComponentAndPickingRenderer;
 

@@ -3,18 +3,18 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{72390339-B2A1-4F61-A800-31ED0975B515}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Paradox</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -30,15 +30,15 @@
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.DXGI">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.Direct2D1">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>

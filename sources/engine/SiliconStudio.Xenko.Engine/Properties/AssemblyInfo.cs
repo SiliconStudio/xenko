@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SiliconStudio.Paradox.Engine")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Engine")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyProduct("SiliconStudio.Paradox.Engine")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Engine")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -21,17 +21,17 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
-// Make internals Paradox visible to Paradox assemblies
+// Make internals Xenko visible to Xenko assemblies
 // TODO: Needed for ParameterCollection getters, but it would be better to avoid this kind of dependency.
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Serializers" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Shaders" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Assets.Tests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Regression" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Debugger" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio.Tests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxAudioTests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Audio.Tests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Tests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxGraphicsTests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Tests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxEngineTests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine.Serializers" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine.Shaders" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Assets.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Graphics.Regression" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Debugger" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Audio.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioXenkoAudioTests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine.Audio.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Graphics.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioXenkoGraphicsTests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioXenkoEngineTests" + SiliconStudio.PublicKeys.Default)]

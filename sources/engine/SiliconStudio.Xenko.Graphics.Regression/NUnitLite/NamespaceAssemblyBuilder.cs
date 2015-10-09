@@ -7,7 +7,7 @@ using System.Reflection;
 using NUnit.Framework.Api;
 using NUnit.Framework.Internal;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     /// <summary>
     /// Reprocess result of another <see cref="ITestAssemblyBuilder"/> by regrouping test of a given namespace into a TestSuite containing that name.

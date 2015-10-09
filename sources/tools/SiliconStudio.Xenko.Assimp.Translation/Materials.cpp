@@ -9,9 +9,9 @@
 #pragma make_public(aiTextureType)
 
 using namespace SiliconStudio::Core::Mathematics;
-using namespace SiliconStudio::Paradox::AssimpNet;
+using namespace SiliconStudio::Xenko::AssimpNet;
 namespace SiliconStudio {
-	namespace Paradox {
+	namespace Xenko {
 		namespace AssimpNet {
 			namespace NetTranslation {
 			/// <summary>

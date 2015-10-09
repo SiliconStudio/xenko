@@ -3,12 +3,12 @@ Id: 04ed1618-1a06-4a69-ac34-1006a978af11
 SerializedVersion: 1
 Tags: []
 Meta:
-    Name: SiliconStudio.Paradox.Assets.Tests
+    Name: SiliconStudio.Xenko.Assets.Tests
     Version: 1.0.0.0
     Authors: []
     Owners: []
     Dependencies:
-        -   Name: Paradox
+        -   Name: Xenko
             Version: 1.3.0-beta
             RootAssets: []
 LocalDependencies: []
@@ -22,7 +22,7 @@ Profiles:
         Properties: {}
         ProjectReferences:
             -   Id: 117bf9f8-d2d9-4d32-9702-251c3e038090
-                Location: SiliconStudio.Paradox.Assets.Tests.csproj
+                Location: SiliconStudio.Xenko.Assets.Tests.csproj
                 Type: Library
     -   Name: Windows
         Platform: Windows
@@ -33,7 +33,7 @@ Profiles:
         Properties: {}
         ProjectReferences:
             -   Id: 117bf9f8-d2d9-4d32-9702-251c3e038090
-                Location: SiliconStudio.Paradox.Assets.Tests.csproj
+                Location: SiliconStudio.Xenko.Assets.Tests.csproj
                 Type: Executable
 ExplicitFolders: []
 Bundles: []

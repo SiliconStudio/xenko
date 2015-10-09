@@ -4,10 +4,10 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler
+namespace SiliconStudio.Xenko.Shaders.Compiler
 {
     /// <summary>
     /// Parameters used for compilation.

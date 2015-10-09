@@ -6,9 +6,9 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Assets.RenderFrames
+namespace SiliconStudio.Xenko.Assets.RenderFrames
 {
     /// <summary>
     /// Describes a texture asset.

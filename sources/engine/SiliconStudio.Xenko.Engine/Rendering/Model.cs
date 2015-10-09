@@ -11,12 +11,12 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
 
-using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Collection of <see cref="Mesh"/>, each one usually being a different LOD of the same Model.

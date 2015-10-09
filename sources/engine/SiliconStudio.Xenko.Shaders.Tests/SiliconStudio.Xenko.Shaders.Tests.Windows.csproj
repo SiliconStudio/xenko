@@ -7,16 +7,16 @@
     <ProjectGuid>{1BE90177-FE4D-4519-839E-7EB7D78AC973}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Paradox.Shaders.Tests</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Shaders.Tests</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Shaders.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Shaders.Tests</AssemblyName>
     <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>Windows</SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{3fb96652-1efa-47e5-8a78-acbf06d50f24}</SiliconStudioPackageGuid>
-    <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioParadoxDir>
-    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == ''">Direct3D11</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)..\..\..</SiliconStudioXenkoDir>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == ''">Direct3D11</SiliconStudioXenkoGraphicsApi>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -33,7 +33,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
-    <OutputPath>..\..\..\Bin\Windows-$(SiliconStudioParadoxGraphicsApi)\</OutputPath>
+    <OutputPath>..\..\..\Bin\Windows-$(SiliconStudioXenkoGraphicsApi)\</OutputPath>
     <IntermediateOutputPath>obj\Windows\Debug\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -42,7 +42,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP</DefineConstants>
-    <OutputPath>..\..\..\Bin\Windows-$(SiliconStudioParadoxGraphicsApi)\</OutputPath>
+    <OutputPath>..\..\..\Bin\Windows-$(SiliconStudioXenkoGraphicsApi)\</OutputPath>
     <IntermediateOutputPath>obj\Windows\Release\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -78,24 +78,24 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
-      <Name>SiliconStudio.Paradox.Shaders.Compiler</Name>
+      <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders.Parser\SiliconStudio.Xenko.Shaders.Parser.csproj">
       <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
-      <Name>SiliconStudio.Paradox.Shaders.Parser</Name>
+      <Name>SiliconStudio.Xenko.Shaders.Parser</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
-      <Name>SiliconStudio.Paradox.Shaders</Name>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
@@ -111,17 +111,17 @@
       <Project>{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Assets\SiliconStudio.Paradox.Assets.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Assets\SiliconStudio.Xenko.Assets.csproj">
       <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
-      <Name>SiliconStudio.Paradox.Assets</Name>
+      <Name>SiliconStudio.Xenko.Assets</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
-      <Name>SiliconStudio.Paradox.Engine</Name>
+      <Name>SiliconStudio.Xenko.Engine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -679,390 +679,390 @@
     <Compile Include="TestShaderMixer2.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
+    <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="GameAssets\Compiler\SimpleEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SimpleEffect.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Compiler\SimpleShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SimpleShader.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Compiler\ToGlslEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ToGlslEffect.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Compiler\TestStream.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestStream.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Compiler\ToGlslShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ToGlslShader.cs</LastGenOutput>
     </None>
     <Content Include="GameAssets\Mixins\A.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>A.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Mixins\B.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>B.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Mixins\C.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>C.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Mixins\C1.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>C1.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Mixins\ComputeColor.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColor.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Mixins\ComputeColor2.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColor2.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Mixins\ComputeColorRedirect.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorRedirect.cs</LastGenOutput>
     </Content>
     <None Include="GameAssets\Mixins\test_mixin_compose_keys.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>test_mixin_compose_keys.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Mixins\test_mixin_complex_params.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>test_mixin_complex_params.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Mixins\test_mixin_simple.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>test_mixin_simple.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Mixins\test_mixin_simple_child.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>test_mixin_simple_child.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Mixins\test_mixin_simple_child_params.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>test_mixin_simple_child_params.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Mixins\test_mixin_simple_clone.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>test_mixin_simple_clone.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Mixins\test_mixin_simple_compose.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>test_mixin_simple_compose.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Mixins\test_mixin_simple_params.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>test_mixin_simple_params.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\TestMacrosArray.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestMacrosArray1.cs</LastGenOutput>
     </None>
     <Content Include="GameAssets\Shaders\BaseTestChild.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BaseTestChild.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\BaseTestInter.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BaseTestInter.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\BaseTestParent.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BaseTestParent.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\BasicMixin.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BasicMixin.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\BasicMixin2.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BasicMixin2.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\Child.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Child.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\ChildError.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ChildError.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\CyclicTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CyclicTest.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\DeepExtern.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>DeepExtern.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\DeepExternTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>DeepExternTest.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\ExternMixin.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ExternMixin.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\ExternTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ExternTest.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\GenericCall.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>GenericCall.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\GenericExtern.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>GenericExtern.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\GenericTexcoord.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>GenericTexcoord.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\GeometryShaderTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>GeometryShaderTest.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\InternalReferenceMixin.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>InternalReferenceMixin.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\MixinNameClash.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MixinNameClash.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\MixinNoNameClash.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MixinNoNameClash.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\Parent.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Parent.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\StaticCallMixin.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StaticCallMixin.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\StaticMixin.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StaticMixin.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\TessellationTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TessellationTest.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\TestGenerics.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestGenerics.cs</LastGenOutput>
     </Content>
     <None Include="GameAssets\Shaders\GenericClass2.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>GenericClass2.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\MacroTestBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MacroTestBase.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\ConstantBufferTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ConstantBufferTest.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\ForEachTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ForEachTest1.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\GenericClass.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>GenericClass.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\MacroTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MacroTest1.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\MacroTestChild.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MacroTestChild1.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\NonStageStreamTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>NonStageStreamTest.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\Simple.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Simple.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\StageBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StageBase.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\StreamChild.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StreamChild.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\StreamParent0.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StreamParent0.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\CloneTestBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CloneTestBase.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\CloneTestExtern.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CloneTestExtern.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\ExternClone.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ExternClone.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\CloneTestRoot.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CloneTestRoot.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\SemanticTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SemanticTest1.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameAssets\Shaders\StageDecl.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StageDecl.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\StageValueReference.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StageValueReference.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameAssets\Shaders\ExternCloneTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ExternCloneTest.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\MixinFunctionParamaterTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MixinFunctionParamaterTest.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\TestPixelStream.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestPixelStream.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\TestScreenPosition.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestScreenPosition.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\TestStreams.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestStreams.cs</LastGenOutput>
     </Content>
     <Content Include="GameAssets\Shaders\TestVertexStream.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestVertexStream.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameAssets\Shaders\InterfaceTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>InterfaceTest.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameAssets\Shaders\TestGenericComplex.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestGenericComplex.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameAssets\Shaders\TestStructure.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestStructure.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameAssets\Shaders\TestStructInheritance.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestStructInheritance.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameAssets\Shaders\TestGenericMacro.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestGenericMacro.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <Content Include="GameAssets\Shaders\StructuredBufferTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StructuredBufferTest.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <ItemGroup>
     <None Include="GameAssets\Shaders\StageCallExtern.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StageCallExtern.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\StageValueTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StageValueTest.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\StaticStageCallTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StaticStageCallTest.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\StreamParent1.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StreamParent1.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\StreamError.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StreamError.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\StreamParent2.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StreamParent21.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\StreamSolverExternTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StreamSolverExternTest.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\StreamTest.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>StreamTest.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\TestComputeShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestComputeShader1.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\TestErrors.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestErrors.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\TestExternArray.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestExternArray.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\TestMacros.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestMacros.cs</LastGenOutput>
     </None>
     <None Include="GameAssets\Shaders\TestMultipleStatic.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>TestMultipleStatic.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
-  <Import Project="$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets" Condition="Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" />
-  <Target Name="EnsureSiliconStudioParadoxInstalled" BeforeTargets="PrepareForBuild">
-    <Error Condition="'$(SiliconStudioParadoxDir)' == ''" Text="Paradox SDK was not found. Check Paradox is installed and the global env variable [SiliconStudioParadoxDir] is setup correctly" />
-    <Error Condition="!Exists('$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets')" Text="Invalid Paradox SDK installation. Target file [$(SiliconStudioParadoxDir)\sources\targets\Paradox.UnitTests.targets] was not found." />
+  <Import Project="$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets" Condition="Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" />
+  <Target Name="EnsureSiliconStudioXenkoInstalled" BeforeTargets="PrepareForBuild">
+    <Error Condition="'$(SiliconStudioXenkoDir)' == ''" Text="Xenko SDK was not found. Check Xenko is installed and the global env variable [SiliconStudioXenkoDir] is setup correctly" />
+    <Error Condition="!Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" Text="Invalid Xenko SDK installation. Target file [$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets] was not found." />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
     Other similar extension points exist, see Microsoft.Common.targets.

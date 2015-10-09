@@ -4,7 +4,7 @@
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Paradox.Assets.Audio
+namespace SiliconStudio.Xenko.Assets.Audio
 {
     public class SoundAssetCompiler : AssetCompilerBase<SoundAsset>
     {

@@ -4,7 +4,7 @@ using System.Linq;
 
 using NUnit.Framework;
 
-namespace SiliconStudio.Paradox.Shaders.Tests
+namespace SiliconStudio.Xenko.Shaders.Tests
 {
     /// <summary>
     /// Extension methods used by <see cref="TestMixinGenerator"/>

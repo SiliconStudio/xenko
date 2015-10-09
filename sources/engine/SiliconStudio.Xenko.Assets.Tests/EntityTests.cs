@@ -6,11 +6,11 @@ using System.IO;
 using System.Text;
 using NUnit.Framework;
 using SiliconStudio.Assets;
-using SiliconStudio.Paradox.Assets.Entities;
-using SiliconStudio.Paradox.Assets.Model;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.Assets.Model;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Assets.Tests
+namespace SiliconStudio.Xenko.Assets.Tests
 {
     [TestFixture]
     public class EntityTests

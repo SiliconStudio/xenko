@@ -7,9 +7,9 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Assets.RenderFrames
+namespace SiliconStudio.Xenko.Assets.RenderFrames
 {
     public class RenderFrameAssetCompiler : AssetCompilerBase<RenderFrameAsset>
     {

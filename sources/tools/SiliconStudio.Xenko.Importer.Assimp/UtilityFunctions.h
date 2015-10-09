@@ -4,7 +4,7 @@
 
 
 using namespace System;
-using namespace SiliconStudio::Paradox::Animations;
+using namespace SiliconStudio::Xenko::Animations;
 using namespace SiliconStudio::Core::Diagnostics;
 using namespace SiliconStudio::Core::Mathematics;
 

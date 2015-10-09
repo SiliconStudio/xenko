@@ -5,7 +5,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-namespace SiliconStudio.Paradox.UI
+namespace SiliconStudio.Xenko.UI
 {
     public static class DefaultDesigns
     {

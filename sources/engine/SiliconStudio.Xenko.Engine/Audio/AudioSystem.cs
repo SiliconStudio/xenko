@@ -4,10 +4,10 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
     /// The Audio System.

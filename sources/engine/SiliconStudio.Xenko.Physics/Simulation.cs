@@ -5,9 +5,9 @@ using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class Simulation : IDisposable
     {

@@ -5,7 +5,7 @@ using System;
 using System.IO;
 using System.Threading.Tasks;
 
-namespace SiliconStudio.Paradox.Engine.Network
+namespace SiliconStudio.Xenko.Engine.Network
 {
     public static class SocketExtensions
     {

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Visitor;
@@ -12,7 +12,7 @@ using SiliconStudio.Shaders.Writer;
 
 using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     public class ShaderKeyGeneratorBase : ShaderWriter
     {
@@ -91,10 +91,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             // Don't generate a parameter key for variable stored storage qualifier: extern, const, compose, stream
             if (variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Extern)
                 || variable.Qualifiers.Contains(StorageQualifier.Const)
-                || variable.Qualifiers.Contains(ParadoxStorageQualifier.Compose)
-                || variable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream)
+                || variable.Qualifiers.Contains(XenkoStorageQualifier.Compose)
+                || variable.Qualifiers.Contains(XenkoStorageQualifier.PatchStream)
                 || variable.Qualifiers.Contains(SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier.Groupshared)
-                || variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream))
+                || variable.Qualifiers.Contains(XenkoStorageQualifier.Stream))
                 return false;
 
             // Don't generate a parameter key for [Link] or [RenameLink]

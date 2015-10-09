@@ -78,7 +78,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     internal class DDSHelper
     {
@@ -989,7 +989,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             var flags = makeACopy ? DDSFlags.CopyMemory : DDSFlags.None;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             // Directly load image as RGBA instead of BGRA, because OpenGL ES devices don't support it out of the box (extension).
             flags |= DDSFlags.ForceRgb;
 #endif

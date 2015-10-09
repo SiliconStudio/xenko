@@ -4,7 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// A collection of <see cref="ColorTransformBase"/>
