@@ -46,11 +46,12 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(14, 15, typeof(EntityDesignUpgrader))]
     [AssetUpgrader(15, 16, typeof(NewElementLayoutUpgrader3))]
     [AssetUpgrader(16, 17, typeof(NewElementLayoutUpgrader4))]
-    [AssetUpgrader(17, 18, typeof(RemoveSceneEditorCameraSettings))]    
+    [AssetUpgrader(17, 18, typeof(RemoveSceneEditorCameraSettings))]
+    [AssetUpgrader(18, 19, typeof(ChangeSpriteColorType))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
-        private const int CurrentVersion = 18;
+        private const int CurrentVersion = 19;
 
         public const string FileSceneExtension = ".pdxscene";
 
@@ -573,6 +574,26 @@ namespace SiliconStudio.Paradox.Assets.Entities
             protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 asset.Hierarchy.SceneSettings.EditorSettings.Camera = DynamicYamlEmpty.Default;
+            }
+        }
+
+
+        class ChangeSpriteColorType : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Entity.Components;
+                    var spriteComponent = components["SpriteComponent.Key"];
+                    if (spriteComponent != null)
+                    {
+                        var color = spriteComponent.Color;
+                        spriteComponent.Color = DynamicYamlExtensions.ConvertFrom((Color4)DynamicYamlExtensions.ConvertTo<Color>(color));
+                    }
+                }
             }
         }
 

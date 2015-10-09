@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <userdoc>The color to apply to the sprite.</userdoc>
         [DataMember(40)]
         [Display("Color")]
-        public Color Color = Color.White;
+        public Color4 Color = Color4.White;
 
         /// <summary>
         /// Gets or sets a value indicating whether the sprite is a pre-multiplied alpha (default is true).

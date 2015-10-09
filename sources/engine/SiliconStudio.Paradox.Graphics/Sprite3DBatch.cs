@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="imageOrientation">The rotation to apply on the image uv</param>
         /// <param name="swizzle">Swizzle mode indicating the swizzle use when sampling the texture in the shader</param>
         /// <param name="depth">The depth of the element. If null, it is calculated using world and view-projection matrix.</param>
-        public void Draw(Texture texture, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector2 elementSize, ref Color color, 
+        public void Draw(Texture texture, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector2 elementSize, ref Color4 color, 
                          ImageOrientation imageOrientation = ImageOrientation.AsIs, SwizzleMode swizzle = SwizzleMode.None, float? depth = null)
         {
             // Check that texture is not null
@@ -181,7 +181,7 @@ namespace SiliconStudio.Paradox.Graphics
             public Vector4 UnitXWorld;
             public Vector4 UnitYWorld;
             public RectangleF Source;
-            public Color Color;
+            public Color4 Color;
             public SwizzleMode Swizzle;
         }
     }
