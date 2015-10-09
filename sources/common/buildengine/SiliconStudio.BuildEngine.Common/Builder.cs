@@ -156,11 +156,6 @@ namespace SiliconStudio.BuildEngine
         private readonly string indexFilename;
 
         /// <summary>
-        /// The name on the disk of the file caching the input file hashes
-        /// </summary>
-        private readonly string inputHashesFilename;
-
-        /// <summary>
         /// The path on the disk where to perform the build
         /// </summary>
         private readonly string buildPath;
@@ -206,16 +201,10 @@ namespace SiliconStudio.BuildEngine
         /// </summary>
         private string IndexFileFullPath => DatabasePath + indexFilename;
 
-        /// <summary>
-        /// The full path of the input hashes file from the build directory.
-        /// </summary>
-        private string InputHashesFileFullPath => DatabasePath + inputHashesFilename;
-
-        public Builder(string buildPath, string buildProfile, string indexFilename, string inputHashesFilename, ILogger logger)
+        public Builder(string buildPath, string buildProfile, string indexFilename, ILogger logger)
         {
             if (buildPath == null) throw new ArgumentNullException(nameof(buildPath));
             if (indexFilename == null) throw new ArgumentNullException(nameof(indexFilename));
-            if (inputHashesFilename == null) throw new ArgumentNullException(nameof(inputHashesFilename));
 
             MonitorPipeNames = new List<string>();
             startTime = DateTime.Now;
@@ -226,7 +215,6 @@ namespace SiliconStudio.BuildEngine
                 AppDomain.CurrentDomain.BaseDirectory,
                 entryAssembly != null ? Path.GetFileName(entryAssembly.Location) : "SiliconStudio.Assets.CompilerApp.exe"); // TODO: Hardcoded value of CompilerApp
             Logger = logger;
-            this.inputHashesFilename = inputHashesFilename;
             this.buildPath = buildPath;
             Root = new ListBuildStep();
             ioMonitor = new CommandIOMonitor(Logger);
@@ -722,18 +710,6 @@ namespace SiliconStudio.BuildEngine
             }
             else
             {
-                // Clean input hashes file
-                if (VirtualFileSystem.FileExists(InputHashesFileFullPath))
-                {
-                    try
-                    {
-                        VirtualFileSystem.FileDelete(InputHashesFileFullPath);
-                    }
-                    catch (IOException)
-                    {
-                        return BuildResultCode.BuildError;
-                    }
-                }
                 string modeName;
                 switch (runMode)
                 {
