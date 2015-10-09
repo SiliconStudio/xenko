@@ -37,11 +37,12 @@ namespace SiliconStudio.Assets
 
                     foreach (var dependency in yamlRootNode.Meta.Dependencies)
                     {
-                        if ((string)dependency.Name == "Xenko")
+                        // Support paradox legacy projects
+                        if ((string)dependency.Name == "Xenko" || (string)dependency.Name == "Paradox")
                         {
                             dependencyVersion = new SemanticVersion((string)dependency.Version);
 
-                            // Xenko 1.1 was having incorrect version set (1.0), read it from .props file
+                            // Paradox 1.1 was having incorrect version set (1.0), read it from .props file
                             if (dependencyVersion.Version.Major == 1 && dependencyVersion.Version.Minor == 0)
                             {
                                 var propsFilePath = Path.Combine(Path.GetDirectoryName(packageFullPath) ?? "", Path.GetFileNameWithoutExtension(packageFullPath) + ".props");
@@ -50,7 +51,7 @@ namespace SiliconStudio.Assets
                                     using (XmlReader propsReader = XmlReader.Create(propsFilePath))
                                     {
                                         propsReader.MoveToContent();
-                                        if (propsReader.ReadToDescendant("SiliconStudioPackageXenkoVersion"))
+                                        if (propsReader.ReadToDescendant("SiliconStudioPackageParadoxVersion"))
                                         {
                                             if (propsReader.Read())
                                             {

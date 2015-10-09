@@ -228,6 +228,7 @@
     <Compile Include="CodeGenerator\BaseCodeGenerator.cs" />
     <Compile Include="CodeGenerator\BaseCodeGeneratorWithSite.cs" />
     <Compile Include="Commands\BuildMonitorCallback.cs" />
+    <Compile Include="Commands\IParadoxCommands.cs" />
     <Compile Include="Commands\IXenkoCommands.cs" />
     <Compile Include="Commands\XenkoCommandsProxy.cs" />
     <Compile Include="MyControl.xaml.cs">
