@@ -42,6 +42,7 @@ namespace SiliconStudio.Paradox.Physics
             {
                 PhysicsComponent = entity.Get(PhysicsComponent.Key),
                 TransformComponent = entity.Get(TransformComponent.Key),
+                ModelComponent = entity.Get(ModelComponent.Key),
             };
 
             data.PhysicsComponent.Simulation = simulation;
@@ -49,9 +50,12 @@ namespace SiliconStudio.Paradox.Physics
             return data;
         }
 
-        protected override void UpdateAssociatedData(Entity entity, ref AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
         {
-            associatedData.ModelComponent = entity.Get(ModelComponent.Key);
+            return
+                entity.Get(PhysicsComponent.Key) == associatedData.PhysicsComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent &&
+                entity.Get(ModelComponent.Key) == associatedData.ModelComponent;
         }
 
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.

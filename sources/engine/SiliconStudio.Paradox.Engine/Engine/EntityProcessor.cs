@@ -186,7 +186,6 @@ namespace SiliconStudio.Paradox.Engine
                 
                 // Need to add entity
                 entityData = GenerateAssociatedData(entity);
-                UpdateAssociatedData(entity, ref entityData);
 
                 processors.Add(this);
                 OnEntityAdding(entity, entityData);
@@ -215,7 +214,20 @@ namespace SiliconStudio.Paradox.Engine
             {
                 // one of the components of the entity changed we need to regenerate the AssociatedData
                 entityData = matchingEntities[entity];
-                UpdateAssociatedData(entity, ref entityData);
+
+                var needsReadding = IsAssociatedDataValid(entity, entityData);
+
+                if (needsReadding)
+                {
+                    OnEntityRemoved(entity, entityData);
+                }
+
+                entityData = GenerateAssociatedData(entity);
+
+                if (needsReadding)
+                { 
+                    OnEntityAdding(entity, entityData);
+                }
 
                 matchingEntities[entity] = entityData;
                 if (EntityManager.IsEnabled(entity))
@@ -229,11 +241,13 @@ namespace SiliconStudio.Paradox.Engine
         /// <returns>The associated data.</returns>
         protected abstract T GenerateAssociatedData(Entity entity);
 
-        /// <summary>Updates an entity's associated data when components after it's components have changed.</summary>
+        /// <summary>Checks if the current associated data is valid, or if readding the entity is required.</summary>
         /// <param name="entity">The entity.</param>
         /// <param name="associatedData">The associated data.</param>
-        protected virtual void UpdateAssociatedData(Entity entity, ref T associatedData)
+        /// <returns>True if the change in associated data requires the entity to be readded, false otherwise.</returns>
+        protected virtual bool IsAssociatedDataValid(Entity entity, T associatedData)
         {
+            return GenerateAssociatedData(entity).Equals(associatedData);
         }
 
         protected virtual bool EntityMatch(Entity entity)

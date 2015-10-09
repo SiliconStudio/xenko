@@ -35,12 +35,16 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             {
                 SpriteStudioComponent = entity.Get<SpriteStudioComponent>(),
                 TransformComponent = entity.Transform,
+                AnimationComponent = entity.Get<AnimationComponent>()
             };
         }
 
-        protected override void UpdateAssociatedData(Entity entity, ref Data associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, Data associatedData)
         {
-            associatedData.AnimationComponent = entity.Get<AnimationComponent>();
+            return
+                entity.Get(SpriteStudioComponent.Key) == associatedData.SpriteStudioComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent &&
+                entity.Get(AnimationComponent.Key) == associatedData.AnimationComponent;
         }
 
         protected override void OnEntityAdding(Entity entity, Data data)

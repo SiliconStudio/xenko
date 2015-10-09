@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Audio
         /// Create a new instance of the processor.
         /// </summary>
         public AudioEmitterProcessor()
-            : base(new PropertyKey[] { AudioEmitterComponent.Key, TransformComponent.Key })
+            : base(AudioEmitterComponent.Key, TransformComponent.Key)
         {
         }
 
@@ -82,6 +82,13 @@ namespace SiliconStudio.Paradox.Audio
                 TransformComponent = entity.Get(TransformComponent.Key),
                 ListenerControllerToSoundInstance = new Dictionary<Tuple<AudioListenerComponent, AudioEmitterSoundController>, SoundEffectInstance>()
             };
+        }
+
+        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        {
+            return
+                entity.Get(AudioEmitterComponent.Key) == associatedData.AudioEmitterComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
         }
 
         protected internal override void OnSystemRemove()
