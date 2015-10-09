@@ -10,8 +10,8 @@ Meta:
       - Silicon Studio Corp.
     Copyright: © Silicon Studio Corp. All rights reserved.
     Description: Xenko Game Package
-    LicenseUrl: http://xenko3d.net/license.txt
-    ProjectUrl: http://xenko3d.net
+    LicenseUrl: http://xenko.com/license.txt
+    ProjectUrl: http://xenko.com
 Profiles:
     - Name: Shared
       AssetFolders:

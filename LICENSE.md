@@ -3,7 +3,7 @@ Xenko Licensing
 
 ## Binary Release version
 
-Xenko binary release (as distributed on the [official website](http://xenko3d.net), with unmodified signed assemblies) is under the "Xenko 1.x version" License Agreement (see below).
+Xenko binary release (as distributed on the [official website](http://xenko.com), with unmodified signed assemblies) is under the "Xenko 1.x version" License Agreement (see below).
 
 It allows you to create games and distribute them freely and royalty-free, as long as you use the signed binary runtime.
 
@@ -20,7 +20,7 @@ as well as any changes to Xenko that you might have done (as per GPLv3 license).
 Even for Binary Release version users, it allows to easily browse the sources and understand what's happening inside Xenko.
 
 If you want specific license terms (i.e. use a modified and/or self-compiled version of Xenko for your project),
-feel free to contact us at contact@xenko3d.net
+feel free to contact us at contact@xenko.com
 
 ## Contributions
 

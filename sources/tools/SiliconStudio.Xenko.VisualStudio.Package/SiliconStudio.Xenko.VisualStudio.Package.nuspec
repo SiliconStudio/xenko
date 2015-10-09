@@ -5,8 +5,8 @@
     <version>1.3.0</version>
     <authors>Silicon Studio Corp.</authors>
     <owners>Silicon Studio Corp.</owners>
-    <licenseUrl>http://xenko3d.net/license.txt</licenseUrl>
-    <projectUrl>http://xenko3d.net/</projectUrl>
+    <licenseUrl>http://xenko.com/license.txt</licenseUrl>
+    <projectUrl>http://xenko.com/</projectUrl>
     <copyright>&#169; SiliconStudio Corp. All rights reserved.</copyright>
     <description>Visual Studio Integration Plugin for Xenko</description>
     <tags>internal</tags>
