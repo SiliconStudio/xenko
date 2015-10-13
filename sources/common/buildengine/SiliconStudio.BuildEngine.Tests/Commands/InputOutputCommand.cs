@@ -81,7 +81,7 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
                         result = DataContainer.Load(fileStream);
                     }
                     break;
-                case UrlType.Internal:
+                case UrlType.ContentLink:
                      var container = assetManager.Load<DataContainer>(Source.Path);
 
                         if (!WaitDelay())
@@ -103,7 +103,7 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
             return ResultStatus.Successful;
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles()
+        protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
         {
             yield return Source;
         }

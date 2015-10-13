@@ -40,8 +40,11 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
                     var gameSettingsAsset = context.GetGameSettingsAsset();
 
+                    // Select the best graphics profile
+                    var graphicsProfile = gameSettingsAsset.DefaultGraphicsProfile >= GraphicsProfile.Level_10_0 ? gameSettingsAsset.DefaultGraphicsProfile : GraphicsProfile.Level_10_0;
+
                     // Create and add the texture command.
-                    var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, GraphicsProfile.Level_10_0, gameSettingsAsset.TextureQuality, colorSpace);
+                    var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, graphicsProfile, gameSettingsAsset.TextureQuality, colorSpace);
                     result.BuildSteps.Add(new AssetBuildStep(AssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters) });
                 }
             }
@@ -66,13 +69,14 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
             }
 
             /// <inheritdoc/>
-            public override IEnumerable<ObjectUrl> GetInputFiles()
+            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
                 if (AssetParameters.Model != null)
                 {
                     foreach (var dependency in AssetParameters.Model.GetDependencies())
                     {
-                        yield return new ObjectUrl(UrlType.Internal, dependency.Location);
+                        // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
+                        yield return new ObjectUrl(UrlType.Content, dependency.Location);
                     }
                 }
             }

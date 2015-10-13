@@ -40,15 +40,13 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 assetUrl = new UFile(url);
             }
 
-            public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
+            protected override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
                 // TODO: Add textures when we will bake them
-
-                //var materialTextureVisitor = new MaterialTextureVisitor(asset.Material);
-                //foreach (var textureLocation in materialTextureVisitor.GetAllTextureValues().Where(IsTextureReferenceValid).Select(x => x.Texture.Location).Distinct())
-                //    yield return new ObjectUrl(UrlType.Internal, textureLocation);
-                foreach (var inputFile in base.GetInputFiles())
-                    yield return inputFile;
+                foreach (var compileTimeDependency in ((MaterialAsset)assetItem.Asset).EnumerateCompileTimeDependencies())
+                {
+                    yield return new ObjectUrl(UrlType.ContentLink, compileTimeDependency.Location);
+                }
             }
 
             protected override void ComputeParameterHash(BinarySerializationWriter writer)

@@ -3,13 +3,14 @@
 using System;
 
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets.Compiler
 {
     /// <summary>
     /// Represents a list of <see cref="BuildStep"/> instances that compiles a given asset.
     /// </summary>
-    public class AssetBuildStep : ListBuildStep
+    public class AssetBuildStep : ListBuildStep, IContentReference
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetBuildStep"/> class.
@@ -31,5 +32,9 @@ namespace SiliconStudio.Assets.Compiler
         {
             return string.Format("Asset build steps [{0}:'{1}'] ({2} items)", AssetItem.Asset != null ? AssetItem.Asset.GetType().Name : "(null)", AssetItem.Location, Count);
         }
+
+        public Guid Id => AssetItem.Id;
+
+        public string Location => AssetItem.Location;
     }
 }

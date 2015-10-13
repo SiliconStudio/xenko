@@ -8,6 +8,7 @@ using SiliconStudio.Core.Serialization.Assets;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -17,6 +18,8 @@ namespace SiliconStudio.BuildEngine
     [DataContract(Inherited = true)]
     public abstract class Command
     {
+        private List<ObjectUrl> cachedInputFiles;
+
         /// <summary>
         /// The command cache version, should be bumped when binary serialization format changes (so that cache gets invalidated)
         /// </summary>
@@ -107,7 +110,12 @@ namespace SiliconStudio.BuildEngine
         /// Gets the list of input files (that can be deduced without running the command, only from command parameters).
         /// </summary>
         /// <returns></returns>
-        public virtual IEnumerable<ObjectUrl> GetInputFiles()
+        public IEnumerable<ObjectUrl> GetInputFiles()
+        {
+            return cachedInputFiles ?? (cachedInputFiles = GetInputFilesImpl().ToList());
+        }
+
+        protected virtual IEnumerable<ObjectUrl> GetInputFilesImpl()
         {
             yield break;
         }
