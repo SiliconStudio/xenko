@@ -213,25 +213,16 @@ namespace SiliconStudio.Paradox.Engine
             else if (entityMatch) // && entityMatch
             {
                 // one of the components of the entity changed we need to regenerate the AssociatedData
-                entityData = matchingEntities[entity];
-
-                var needsReadding = IsAssociatedDataValid(entity, entityData);
-
-                if (needsReadding)
+                if (!IsAssociatedDataValid(entity, entityData))
                 {
                     OnEntityRemoved(entity, entityData);
-                }
-
-                entityData = GenerateAssociatedData(entity);
-
-                if (needsReadding)
-                { 
+                    entityData = GenerateAssociatedData(entity);
                     OnEntityAdding(entity, entityData);
-                }
 
-                matchingEntities[entity] = entityData;
-                if (EntityManager.IsEnabled(entity))
-                    enabledEntities[entity] = entityData;
+                    matchingEntities[entity] = entityData;
+                    if (EntityManager.IsEnabled(entity))
+                        enabledEntities[entity] = entityData;
+                }
             }
         }
 
