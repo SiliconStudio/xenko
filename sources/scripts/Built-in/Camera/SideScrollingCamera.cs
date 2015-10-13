@@ -60,7 +60,7 @@ namespace Xenko.Scripts
             Component.UseCustomAspectRatio = true;
             Reset();
 
-            Input.CenterAndLockMousePosition();
+            Input.LockMousePosition(true);
 
             while (!IsDisposed)
             {
@@ -100,7 +100,7 @@ namespace Xenko.Scripts
                 }
                 else
                 {
-                    Input.CenterAndLockMousePosition();
+                    Input.LockMousePosition(true);
                 }
             }
 

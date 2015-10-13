@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Engine.Processors;
 using SiliconStudio.Paradox.Input;
 using System;
 using System.Threading.Tasks;
-using SiliconStudio.Core;
 
 namespace Xenko.Scripts
 {
@@ -27,6 +27,11 @@ namespace Xenko.Scripts
         /// Gets the camera component used to visualized the scene.
         /// </summary>
         private CameraComponent Component => Entity?.Get<CameraComponent>();
+
+        /// <summary>
+        /// Useful when attached to a character controller, where the controller should be the source of motion
+        /// </summary>
+        public bool RotationOnly { get; set; }
 
         /// <summary>
         /// Gets or sets the moving speed of the camera (in units/second).
@@ -82,10 +87,10 @@ namespace Xenko.Scripts
             if (!Platform.IsWindowsDesktop)
             {
                 Input.ActivatedGestures.Add(new GestureConfigDrag());
-                Input.ActivatedGestures.Add(new GestureConfigTap {RequiredNumberOfTaps = 2});
+                Input.ActivatedGestures.Add(new GestureConfigTap { RequiredNumberOfTaps = 2 });
             }
 
-            Input.CenterAndLockMousePosition();
+            Input.LockMousePosition(true);
 
             while (!IsDisposed)
             {
@@ -102,7 +107,7 @@ namespace Xenko.Scripts
                     (float)
                         Math.Asin(2 * Entity.Transform.Rotation.X * Entity.Transform.Rotation.Y +
                                   2 * Entity.Transform.Rotation.Z * Entity.Transform.Rotation.W);
-            ;
+
             desiredPitch =
                 Pitch =
                     (float)
@@ -111,7 +116,7 @@ namespace Xenko.Scripts
                             2 * Entity.Transform.Rotation.Y * Entity.Transform.Rotation.Z,
                             1 - 2 * Entity.Transform.Rotation.X * Entity.Transform.Rotation.X -
                             2 * Entity.Transform.Rotation.Z * Entity.Transform.Rotation.Z);
-            ;
+
             position = Entity.Transform.Position;
         }
 
@@ -154,7 +159,7 @@ namespace Xenko.Scripts
             }
 
             // Compute translation speed according to framerate and modifiers
-            var translationSpeed = MoveSpeed*(float) Game.UpdateTime.Elapsed.TotalSeconds;
+            var translationSpeed = MoveSpeed * (float)Game.UpdateTime.Elapsed.TotalSeconds;
 
             var oldPitch = Pitch;
 
@@ -175,39 +180,42 @@ namespace Xenko.Scripts
             desiredYaw = Yaw -= 1.333f * rotationDelta.X * RotationSpeed; // we want to rotate faster Horizontally and Vertically
             desiredPitch = Pitch = MathUtil.Clamp(Pitch - rotationDelta.Y * RotationSpeed, -MathUtil.PiOverTwo, MathUtil.PiOverTwo);
 
-            // Compute base vectors for camera movement
-            var rotation = Matrix.RotationYawPitchRoll(Yaw, Pitch, 0);
-            var forward = Vector3.TransformNormal(ForwardVector, rotation);
-            var up = Vector3.TransformNormal(UpVector, rotation);
-            var right = Vector3.Cross(forward, up);
-
-            // Update camera move: Dolly (WADS model/arrow keys)
-            var movePosition = Vector3.Zero;
-            if (Input.IsKeyDown(Keys.A) || Input.IsKeyDown(Keys.Left))
-                movePosition += -right;
-            if (Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right))
-                movePosition += right;
-            if (Input.IsKeyDown(Keys.S) || Input.IsKeyDown(Keys.Down))
-                movePosition += Component.Projection == CameraProjectionMode.Perspective ? -forward : -up;
-            if (Input.IsKeyDown(Keys.W) || Input.IsKeyDown(Keys.Up) || doubleTapped)
-                movePosition += Component.Projection == CameraProjectionMode.Perspective ? forward : up;
-            if (Input.IsKeyDown(Keys.Q))
-                movePosition += Component.Projection == CameraProjectionMode.Perspective ? -up : -forward;
-            if (Input.IsKeyDown(Keys.E))
-                movePosition += Component.Projection == CameraProjectionMode.Perspective ? up : forward;
-
-            position += (Vector3.Normalize(movePosition) * translationSpeed);
-
-            if (doubleTapped)
+            if (!RotationOnly)
             {
-                desiredPitch = Pitch = oldPitch;
-                desiredYaw = Yaw;
+                // Compute base vectors for camera movement
+                var rotation = Matrix.RotationYawPitchRoll(Yaw, Pitch, 0);
+                var forward = Vector3.TransformNormal(ForwardVector, rotation);
+                var up = Vector3.TransformNormal(UpVector, rotation);
+                var right = Vector3.Cross(forward, up);
 
-                forward = -Vector3.Transform(ForwardVector, Quaternion.RotationYawPitchRoll(Yaw, Pitch, 0));
-                var projectedForward = Vector3.Normalize(new Vector3(forward.X, 0, forward.Z)); // camera forward vector project on the XZ plane
-                position -= projectedForward * translationSpeed * MouseMoveSpeedFactor;
+                // Update camera move: Dolly (WADS model/arrow keys)
+                var movePosition = Vector3.Zero;
+                if (Input.IsKeyDown(Keys.A) || Input.IsKeyDown(Keys.Left))
+                    movePosition += -right;
+                if (Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right))
+                    movePosition += right;
+                if (Input.IsKeyDown(Keys.S) || Input.IsKeyDown(Keys.Down))
+                    movePosition += Component.Projection == CameraProjectionMode.Perspective ? -forward : -up;
+                if (Input.IsKeyDown(Keys.W) || Input.IsKeyDown(Keys.Up) || doubleTapped)
+                    movePosition += Component.Projection == CameraProjectionMode.Perspective ? forward : up;
+                if (Input.IsKeyDown(Keys.Q))
+                    movePosition += Component.Projection == CameraProjectionMode.Perspective ? -up : -forward;
+                if (Input.IsKeyDown(Keys.E))
+                    movePosition += Component.Projection == CameraProjectionMode.Perspective ? up : forward;
+
+                position += (Vector3.Normalize(movePosition) * translationSpeed);
+
+                if (doubleTapped)
+                {
+                    desiredPitch = Pitch = oldPitch;
+                    desiredYaw = Yaw;
+
+                    forward = -Vector3.Transform(ForwardVector, Quaternion.RotationYawPitchRoll(Yaw, Pitch, 0));
+                    var projectedForward = Vector3.Normalize(new Vector3(forward.X, 0, forward.Z));
+                    position -= projectedForward * translationSpeed * MouseMoveSpeedFactor;
+                }
             }
-  
+
             // Update the camera view matrix
             UpdateViewMatrix();
         }
@@ -215,7 +223,7 @@ namespace Xenko.Scripts
         private void UpdateViewMatrix()
         {
             var camera = Component;
-            if (camera == null) return; ;
+            if (camera == null) return;
             var rotation = Quaternion.Invert(Quaternion.RotationYawPitchRoll(Yaw, Pitch, 0));
             var viewMatrix = Matrix.Translation(-position) * Matrix.RotationQuaternion(rotation);
             camera.ViewMatrix = viewMatrix;
