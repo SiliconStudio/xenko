@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Input
                 Game.IsMouseVisible = false;
                 if (forceCenter)
                 {
-                    capturedPosition = uiControl.PointToScreen(new System.Drawing.Point(uiControl.ClientRectangle.Width / 2, uiControl.ClientRectangle.Height / 2));
+                    SetMousePosition(new Vector2(0.5f, 0.5f));
                 }
                 capturedPosition = Cursor.Position;
                 IsMousePositionLocked = true;
