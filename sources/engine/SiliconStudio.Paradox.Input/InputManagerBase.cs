@@ -231,18 +231,11 @@ namespace SiliconStudio.Paradox.Input
         }
 
         /// <summary>
-        /// Centers the mouse within the client window, locks position and hides it until the next call to <see cref="UnlockMousePosition"/>.
-        /// </summary>
-        /// <remarks>This function has no effects on devices that does not have mouse</remarks>
-        public virtual void CenterAndLockMousePosition()
-        {
-        }
-
-        /// <summary>
         /// Lock the mouse's position and hides it until the next call to <see cref="UnlockMousePosition"/>.
         /// </summary>
+        /// <param name="forceCenter">If true will make sure that the mouse cursor position moves to the center of the client window</param>
         /// <remarks>This function has no effects on devices that does not have mouse</remarks>
-        public virtual void LockMousePosition()
+        public virtual void LockMousePosition(bool forceCenter = false)
         {
         }
 
