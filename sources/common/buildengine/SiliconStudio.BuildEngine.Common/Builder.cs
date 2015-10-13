@@ -153,7 +153,7 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// The name on the disk of the index file name.
         /// </summary>
-        private readonly string indexFilename;
+        private readonly string indexName;
 
         /// <summary>
         /// The path on the disk where to perform the build
@@ -164,11 +164,6 @@ namespace SiliconStudio.BuildEngine
         /// The build profile
         /// </summary>
         private readonly string buildProfile;
-
-        /// <summary>
-        /// The path of the data base from the build path
-        /// </summary>
-        private const string DatabasePath = "/data/db/";
 
         /// <summary>
         /// Cancellation token source used for cancellation.
@@ -199,17 +194,16 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// The full path of the index file from the build directory.
         /// </summary>
-        private string IndexFileFullPath => DatabasePath + indexFilename;
+        private string IndexFileFullPath => indexName != null ? VirtualFileSystem.ApplicationDatabasePath + indexName : null;
 
-        public Builder(string buildPath, string buildProfile, string indexFilename, ILogger logger)
+        public Builder(ILogger logger, string buildPath, string buildProfile, string indexName)
         {
             if (buildPath == null) throw new ArgumentNullException(nameof(buildPath));
-            if (indexFilename == null) throw new ArgumentNullException(nameof(indexFilename));
 
             MonitorPipeNames = new List<string>();
             startTime = DateTime.Now;
             this.buildProfile = buildProfile;
-            this.indexFilename = indexFilename;
+            this.indexName = indexName;
             var entryAssembly = Assembly.GetEntryAssembly();
             SlaveBuilderPath = Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
@@ -223,13 +217,13 @@ namespace SiliconStudio.BuildEngine
             BuilderId = Guid.NewGuid();
             InitialVariables = new Dictionary<string, string>();
 
-            SetupBuildPath(buildPath);
+            SetupBuildPath(buildPath, indexName);
 
             var objectDatabase = IndexFileCommand.ObjectDatabase;
 
             // Check current database version, and erase it if too old
             int currentVersion = 0;
-            var versionFile = Path.Combine(VirtualFileSystem.GetAbsolutePath(DatabasePath), "version");
+            var versionFile = Path.Combine(VirtualFileSystem.GetAbsolutePath(VirtualFileSystem.ApplicationDatabasePath), "version");
             if (File.Exists(versionFile))
             {
                 try
@@ -270,7 +264,7 @@ namespace SiliconStudio.BuildEngine
 
             // Prepare data base directories
             AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
-            var databasePathSplits = DatabasePath.Split('/');
+            var databasePathSplits = VirtualFileSystem.ApplicationDatabasePath.Split('/');
             var accumulatorPath = "/";
             foreach (var pathPart in databasePathSplits.Where(x=>x!=""))
             {
@@ -281,12 +275,12 @@ namespace SiliconStudio.BuildEngine
             }
         }
 
-        public static void SetupBuildPath(string buildPath)
+        public static void SetupBuildPath(string buildPath, string indexName)
         {
             // Mount build path
             ((FileSystemProvider)VirtualFileSystem.ApplicationData).ChangeBasePath(buildPath);
             if (IndexFileCommand.ObjectDatabase == null)
-                IndexFileCommand.ObjectDatabase = new ObjectDatabase(DatabasePath, loadDefaultBundle: false); // note: this has to be done after VFS.ChangeBasePath
+                IndexFileCommand.ObjectDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, indexName, null, false); // note: this has to be done after VFS.ChangeBasePath
         }
 
         public static void ReleaseBuildPath()
@@ -599,7 +593,7 @@ namespace SiliconStudio.BuildEngine
                 }
             }
 
-            using (var indexFile = AssetIndexMap.NewTool(indexFilename))
+            using (var indexFile = AssetIndexMap.NewTool(indexName))
             {
                 // Filter database Location
                 indexFile.AddValues(

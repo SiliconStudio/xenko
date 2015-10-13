@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.Graphics
             EffectBytecode effectBytecode;
 
             // Create and mount database file system
-            var objDatabase = new ObjectDatabase("/data/db");
+            var objDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath);
             using (var assetIndexMap = new AssetIndexMap("/assets"))
             {
                 assetIndexMap.LoadNewValues();
@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.Graphics
             EffectBytecode effectBytecode;
 
             // Create and mount database file system
-            var objDatabase = new ObjectDatabase("/data/db");
+            var objDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath);
             using (var assetIndexMap = new AssetIndexMap("/assets"))
             {
                 assetIndexMap.LoadNewValues();
@@ -147,7 +147,7 @@ namespace SiliconStudio.Paradox.Graphics
             EffectBytecode effectBytecode;
 
             // Create and mount database file system
-            var objDatabase = new ObjectDatabase("/data/db");
+            var objDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath);
             using (var assetIndexMap = new AssetIndexMap("/assets"))
             {
                 assetIndexMap.LoadNewValues();

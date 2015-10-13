@@ -31,8 +31,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
             // Create database directory
             ((FileSystemProvider)VirtualFileSystem.ApplicationData).ChangeBasePath(BuildPath);
-            VirtualFileSystem.CreateDirectory("/data");
-            VirtualFileSystem.CreateDirectory("/data/db");
+            VirtualFileSystem.CreateDirectory(VirtualFileSystem.ApplicationDatabasePath);
 
             // Delete source folder if exists
             if (Directory.Exists(FileSourceFolder))
@@ -50,11 +49,12 @@ namespace SiliconStudio.BuildEngine.Tests
             return GlobalLogger.GetLogger("UnitTest");
         }
 
-        public static Builder CreateBuilder()
+        public static Builder CreateBuilder(bool createIndexFile)
         {
             var logger = new LoggerResult();
             logger.ActivateLog(LogMessageType.Debug);
-            var builder = new Builder(BuildPath, "Windows", "index", logger) { BuilderName = "TestBuilder", SlaveBuilderPath = @"SiliconStudio.BuildEngine.exe" };
+            var indexName = createIndexFile ? VirtualFileSystem.ApplicationDatabaseIndexName : null;
+            var builder = new Builder(logger, BuildPath, "Windows", indexName) { BuilderName = "TestBuilder", SlaveBuilderPath = @"SiliconStudio.BuildEngine.exe" };
             return builder;
         }
 

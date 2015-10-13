@@ -72,9 +72,8 @@ namespace SiliconStudio.Core.Tests
         [TestFixtureSetUp]
         public void SetupDatabase()
         {
-            VirtualFileSystem.CreateDirectory("/data");
-            VirtualFileSystem.CreateDirectory("/data/db");
-            var databaseFileProvider = new DatabaseFileProvider(AssetIndexMap.NewTool(), new ObjectDatabase("/data/db"));
+            VirtualFileSystem.CreateDirectory(VirtualFileSystem.ApplicationDatabasePath);
+            var databaseFileProvider = new DatabaseFileProvider(AssetIndexMap.NewTool(VirtualFileSystem.ApplicationDatabaseIndexName), new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, VirtualFileSystem.ApplicationDatabaseIndexName));
             AssetManager.GetFileProvider = () => databaseFileProvider;
         }
 
