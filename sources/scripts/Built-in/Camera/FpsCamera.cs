@@ -90,9 +90,7 @@ namespace Xenko.Scripts
                 Input.ActivatedGestures.Add(new GestureConfigTap { RequiredNumberOfTaps = 2 });
             }
 
-            Input.MousePosition = new Vector2(0.5f, 0.5f);
-            Input.LockMousePosition();
-            ///Input.CenterAndLockMousePosition();
+            Input.LockMousePosition(true);
 
             while (!IsDisposed)
             {
