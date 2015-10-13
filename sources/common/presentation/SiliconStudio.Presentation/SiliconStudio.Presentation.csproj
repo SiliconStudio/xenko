@@ -146,7 +146,6 @@
     <Compile Include="Controls\Vector4Editor.cs" />
     <Compile Include="Controls\VirtualizingTilePanel.cs" />
     <Compile Include="Core\AnonymousEventHandler.cs" />
-    <Compile Include="Core\NameOf.cs" />
     <Compile Include="Diagnostics\TriggerTracing.cs" />
     <Compile Include="Services\DialogResult.cs" />
     <Compile Include="Services\FileDialogFilter.cs" />
