@@ -67,6 +67,18 @@ namespace SiliconStudio.Paradox.Input
         private IntPtr defaultWndProc;
         private Win32Native.WndProc inputWndProc;
 
+        public override void CenterAndLockMousePosition()
+        {
+            if (!IsMousePositionLocked)
+            {
+                wasMouseVisibleBeforeCapture = Game.IsMouseVisible;
+                Game.IsMouseVisible = false;
+                capturedPosition = uiControl.PointToScreen(new System.Drawing.Point(uiControl.ClientRectangle.Width / 2, uiControl.ClientRectangle.Height / 2));
+                Cursor.Position = capturedPosition;
+                IsMousePositionLocked = true;
+            }
+        }
+
         public override void LockMousePosition()
         {
             if (!IsMousePositionLocked)
@@ -86,6 +98,13 @@ namespace SiliconStudio.Paradox.Input
                 capturedPosition = System.Drawing.Point.Empty;
                 Game.IsMouseVisible = wasMouseVisibleBeforeCapture;
             }
+        }
+
+        protected override void SetMousePosition(Vector2 normalizedPosition)
+        {
+            var newPos = uiControl.PointToScreen(
+                new System.Drawing.Point((int)(uiControl.ClientRectangle.Width*normalizedPosition.X), (int)(uiControl.ClientRectangle.Height*normalizedPosition.Y)));
+            Cursor.Position = newPos;
         }
 
         private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)

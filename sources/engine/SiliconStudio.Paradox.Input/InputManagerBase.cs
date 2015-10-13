@@ -231,6 +231,14 @@ namespace SiliconStudio.Paradox.Input
         }
 
         /// <summary>
+        /// Centers the mouse within the client window, locks position and hides it until the next call to <see cref="UnlockMousePosition"/>.
+        /// </summary>
+        /// <remarks>This function has no effects on devices that does not have mouse</remarks>
+        public virtual void CenterAndLockMousePosition()
+        {
+        }
+
+        /// <summary>
         /// Lock the mouse's position and hides it until the next call to <see cref="UnlockMousePosition"/>.
         /// </summary>
         /// <remarks>This function has no effects on devices that does not have mouse</remarks>
@@ -400,17 +408,33 @@ namespace SiliconStudio.Paradox.Input
         /// <value>The key events.</value>
         public List<KeyEvent> KeyEvents { get; private set; }
 
+        private Vector2 mousePosition;
+
         /// <summary>
         /// Gets the mouse position.
         /// </summary>
         /// <value>The mouse position.</value>
-        public Vector2 MousePosition { get; private set; }
+        public Vector2 MousePosition
+        {
+            get
+            {
+                return mousePosition;
+            }
+            set
+            {
+                SetMousePosition(value);
+            }
+        }
 
         /// <summary>
         /// Gets the mouse delta.
         /// </summary>
         /// <value>The mouse position.</value>
         public Vector2 MouseDelta { get; private set; }
+
+        protected virtual void SetMousePosition(Vector2 normalizedPosition)
+        {         
+        }
 
         /// <summary>
         /// Gets a binding value for the specified name and the specified config extract from the current <see cref="VirtualButtonConfigSet"/>.
@@ -797,7 +821,7 @@ namespace SiliconStudio.Paradox.Input
                 }
                 MouseInputEvents.Clear();
 
-                MousePosition = CurrentMousePosition;
+                mousePosition = CurrentMousePosition;
                 MouseDelta = CurrentMouseDelta;
                 CurrentMouseDelta = Vector2.Zero;
             }
