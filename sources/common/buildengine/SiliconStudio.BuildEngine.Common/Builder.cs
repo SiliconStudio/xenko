@@ -194,12 +194,11 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// The full path of the index file from the build directory.
         /// </summary>
-        private string IndexFileFullPath => VirtualFileSystem.ApplicationDatabasePath + '/' + indexName;
+        private string IndexFileFullPath => indexName != null ? VirtualFileSystem.ApplicationDatabasePath + indexName : null;
 
-        public Builder(string buildPath, string buildProfile, string indexName, ILogger logger)
+        public Builder(ILogger logger, string buildPath, string buildProfile, string indexName)
         {
             if (buildPath == null) throw new ArgumentNullException(nameof(buildPath));
-            if (indexName == null) throw new ArgumentNullException(nameof(indexName));
 
             MonitorPipeNames = new List<string>();
             startTime = DateTime.Now;

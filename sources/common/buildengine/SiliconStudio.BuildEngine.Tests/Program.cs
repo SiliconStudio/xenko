@@ -7,10 +7,12 @@ namespace SiliconStudio.BuildEngine.Tests
     {
         static void Main()
         {
-            var testCancellation = new TestCancellation();
-            testCancellation.TestCancellationToken();
-            testCancellation.TestCancelCallback();
-            testCancellation.TestCancelPrerequisites();
+            //var testCancellation = new TestCancellation();
+            //testCancellation.TestCancellationToken();
+            //testCancellation.TestCancelCallback();
+            //testCancellation.TestCancelPrerequisites();
+            TestIO test = new TestIO();
+            test.TestInputFromPreviousOutputWithCache();
         }
     }
 }

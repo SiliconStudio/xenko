@@ -38,6 +38,13 @@ namespace SiliconStudio.Core.Serialization.Assets
             return result;
         }
 
+        public static AssetIndexMap CreateInMemory()
+        {
+            var result = new AssetIndexMap { stream = new MemoryStream() };
+            result.LoadNewValues();
+            return result;
+        }
+
         public static AssetIndexMap Load(string indexFile, bool isReadOnly = false)
         {
             if (indexFile == null) throw new ArgumentNullException(nameof(indexFile));

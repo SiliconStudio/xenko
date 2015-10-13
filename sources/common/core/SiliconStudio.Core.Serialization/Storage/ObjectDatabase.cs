@@ -30,7 +30,6 @@ namespace SiliconStudio.Core.Storage
         public ObjectDatabase(string vfsMainUrl, string indexName, string vfsAdditionalUrl = null, bool loadDefaultBundle = true)
         {
             if (vfsMainUrl == null) throw new ArgumentNullException(nameof(vfsMainUrl));
-            if (indexName == null) throw new ArgumentNullException(nameof(indexName));
 
             // Create the merged asset index map
             AssetIndexMap = new ObjectDatabaseAssetIndexMap();

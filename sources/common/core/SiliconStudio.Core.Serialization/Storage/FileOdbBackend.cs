@@ -36,7 +36,8 @@ namespace SiliconStudio.Core.Storage
 
             IsReadOnly = isReadOnly;
 
-            assetIndexMap = Serialization.Assets.AssetIndexMap.Load(vfsRootUrl + VirtualFileSystem.DirectorySeparatorChar + indexName, isReadOnly);
+            assetIndexMap = !string.IsNullOrEmpty(indexName) ? Serialization.Assets.AssetIndexMap.Load(vfsRootUrl + VirtualFileSystem.DirectorySeparatorChar + indexName, isReadOnly)
+                                                             : Serialization.Assets.AssetIndexMap.CreateInMemory();
             if (!isReadOnly && !virtualFileProvider.DirectoryExists(vfsTempUrl))
             {
                 try
