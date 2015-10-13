@@ -85,7 +85,7 @@ namespace Xenko.Scripts
                 Input.ActivatedGestures.Add(new GestureConfigTap {RequiredNumberOfTaps = 2});
             }
 
-            Input.LockMousePosition();
+            Input.CenterAndLockMousePosition();
 
             while (!IsDisposed)
             {

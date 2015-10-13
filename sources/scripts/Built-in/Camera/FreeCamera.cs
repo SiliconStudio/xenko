@@ -131,7 +131,7 @@ namespace Xenko.Scripts
             // Capture/release mouse when the button is pressed/released
             if ((Input.IsMouseButtonPressed(MouseButton.Left)) || Input.IsMouseButtonPressed(MouseButton.Right) || Input.IsMouseButtonPressed(MouseButton.Middle))
             {
-                Input.LockMousePosition();
+                Input.CenterAndLockMousePosition();
             }
             else if (Input.IsMouseButtonReleased(MouseButton.Right) || Input.IsMouseButtonReleased(MouseButton.Left) || Input.IsMouseButtonReleased(MouseButton.Middle))
             {
