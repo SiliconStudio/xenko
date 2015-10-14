@@ -1,24 +1,24 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.Physics;
-using SiliconStudio.Paradox.Rendering;
+using System;
+using System.Linq;
 
 namespace VolumeTrigger13
 {
     public class CharacterController : SyncScript
     {
+        private static readonly Vector3 UpVector = new Vector3(0, 1, 0);
         private static readonly Vector3 ForwardVector = new Vector3(0, 0, -1);
 
-        public float Speed { get; set; } = 0.25f;
+        public float Speed { get; set; } = 5.0f;
+        public Entity CameraEntity { get; set; }
 
         private Character character;
+        private CharacterElement characterElement;
+        private Quaternion baseCameraRotation;
 
         public override void Start()
         {
@@ -45,10 +45,57 @@ namespace VolumeTrigger13
             Input.LockMousePosition(true);
             Game.IsMouseVisible = false;
 
-            character = Entity.Get<PhysicsComponent>().Elements.First(x => x is CharacterElement).Character;
-        }
+            var physComponent = Entity.Get<PhysicsComponent>();
+            if (physComponent == null)
+            {
+                physComponent = new PhysicsComponent();
+                Entity.Add(physComponent);
+            }
 
-        private Vector3 pointerVector;
+            var element = Entity.Get<PhysicsComponent>().Elements.FirstOrDefault(x => x is CharacterElement);
+            if (element != null)
+            {
+                characterElement = (CharacterElement)element;
+            }
+            else
+            {
+                Log.Error("Could not find a physics character element. (" + Entity.Name + ")");
+
+                characterElement = new CharacterElement();
+                characterElement.ColliderShapes.Add(new ColliderShapeAssetDesc { Shape = PhysicsColliderShape.New(new CapsuleColliderShapeDesc()) });
+                physComponent.Elements.Add(characterElement);
+
+                //this is currently the only way to make sure the physics element is actually created.
+                SceneSystem.SceneInstance.Scene.Entities.Remove(Entity);
+                SceneSystem.SceneInstance.Scene.Entities.Add(Entity);
+            }
+
+            character = characterElement.Character;
+
+            if (CameraEntity == null)
+            {
+                for (int index = 0; index < Entity.Transform.Children.Count; index++)
+                {
+                    var child = Entity.Transform.Children[index];
+                    var camera = child.Entity.Get<CameraComponent>();
+                    if (camera != null)
+                    {
+                        CameraEntity = child.Entity;
+                        break;
+                    }
+                }
+
+                if (CameraEntity == null)
+                {
+                    Log.Error("Could not find a camera component. (" + Entity.Name + ")");
+                }
+            }
+
+            if (CameraEntity != null)
+            {
+                baseCameraRotation = CameraEntity.Transform.Rotation;
+            }
+        }
 
         private float yaw, desiredYaw;
         private float pitch, desiredPitch;
@@ -117,20 +164,27 @@ namespace VolumeTrigger13
             desiredYaw = yaw -= 1.333f * rotationDelta.X * RotationSpeed; // we want to rotate faster Horizontally and Vertically
             desiredPitch = pitch = MathUtil.Clamp(pitch - rotationDelta.Y * RotationSpeed, -MathUtil.PiOverTwo, MathUtil.PiOverTwo);
 
-            Entity.Transform.Rotation = Quaternion.RotationYawPitchRoll(yaw, pitch, 0);
+            if (CameraEntity != null)
+            {
+                //we need to pitch only the camera node
+                CameraEntity.Transform.Rotation = baseCameraRotation * Quaternion.RotationYawPitchRoll(0, pitch, 0);
+            }
+            Entity.Transform.Rotation = Quaternion.RotationYawPitchRoll(yaw, 0, 0); //do not apply pitch to our controller
 
             var move = new Vector3();
 
             var forward = Vector3.Transform(ForwardVector, Entity.Transform.Rotation);
             var projectedForward = Vector3.Normalize(new Vector3(forward.X, 0, forward.Z));
+            var up = Vector3.TransformNormal(UpVector, Matrix.RotationQuaternion(Entity.Transform.Rotation));
+            var right = Vector3.Cross(forward, up);
 
             if (Input.IsKeyDown(Keys.A) || Input.IsKeyDown(Keys.Left))
             {
-                move += -Vector3.UnitX;
+                move += -right;
             }
             if (Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right))
             {
-                move += Vector3.UnitX;
+                move += right;
             }
             if (Input.IsKeyDown(Keys.W) || Input.IsKeyDown(Keys.Up))
             {
@@ -174,6 +228,7 @@ namespace VolumeTrigger13
 
             move *= translationSpeed;
 
+            //please note that the default character controller ignores rotation, in the case of complex collisions you would have more kinematic elements within your model anyway.
             character.Move(move);
         }
     }
