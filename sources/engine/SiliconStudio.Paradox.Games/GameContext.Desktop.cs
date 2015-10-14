@@ -104,12 +104,7 @@ namespace SiliconStudio.Paradox.Games
 #endif
         private static Control CreateForm()
         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             return new GameForm();
-#else
-            throw new NotImplementedException("Use WCL to create a window");
-            return null;
-#endif
         }
     }
 }

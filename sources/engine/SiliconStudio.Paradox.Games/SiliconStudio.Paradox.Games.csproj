@@ -20,6 +20,9 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="WCL">
+      <HintPath>..\..\..\..\..\Projects\WCL\CGens\Release\bin\WCL.exe</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(ParadoxGraphicsApi)' == 'Direct3D11' ">
     <Reference Include="SharpDX">

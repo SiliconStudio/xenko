@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Games
         {
             return new GameWindow[]
             {
-                null,
+                new GameWindowDesktop()
             };
         }
 
