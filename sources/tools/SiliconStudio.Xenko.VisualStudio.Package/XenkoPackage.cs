@@ -382,7 +382,7 @@ namespace SiliconStudio.Xenko.VisualStudio
             var generalOutputPane = GetGeneralOutputPane();
 
             // If a package is associated with the solution, check if the correct version was found
-            var xenkoPackageInfo = XenkoCommandsProxy.XenkoPackageInfo;
+            var xenkoPackageInfo = XenkoCommandsProxy.CurrentPackageInfo;
             if (xenkoPackageInfo.ExpectedVersion != null && xenkoPackageInfo.ExpectedVersion != xenkoPackageInfo.LoadedVersion)
             {
                 if (xenkoPackageInfo.ExpectedVersion < XenkoCommandsProxy.MinimumVersion)
