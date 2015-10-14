@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Input
             base.Initialize();
         }
 
-        public override void LockMousePosition()
+        public override void LockMousePosition(bool forceCenter = false)
         {
         }
 
