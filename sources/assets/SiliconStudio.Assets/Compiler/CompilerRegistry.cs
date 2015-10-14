@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets.Compiler
     /// A registry containing the compiler associated to all the asset types
     /// </summary>
     /// <typeparam name="T">The type of the class implementing the <see cref="IAssetCompiler"/> interface to register.</typeparam>
-    public abstract class CompilerRegistry<T> where T: class, IAssetCompiler
+    public abstract class CompilerRegistry<T> : ICompilerRegistry<T> where T: class, IAssetCompiler
     {
         private readonly Dictionary<Type, T> typeToCompiler = new Dictionary<Type, T>();
 
@@ -47,10 +47,7 @@ namespace SiliconStudio.Assets.Compiler
             AssertAssetType(type);
             EnsureTypes();
 
-            if (!typeToCompiler.ContainsKey(type))
-                return DefaultCompiler;
-
-            return typeToCompiler[type];
+            return typeToCompiler.ContainsKey(type) ? typeToCompiler[type] : DefaultCompiler;
         }
 
         protected virtual void EnsureTypes()

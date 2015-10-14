@@ -30,7 +30,6 @@ namespace SiliconStudio.Paradox.Assets.Sprite
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
     [ObjectFactory(typeof(SpriteSheetFactory))]
-    [ThumbnailCompiler(PreviewerCompilerNames.SpriteSheetThumbnailCompilerQualifiedName, true)]
     [Display(160, "Sprite Sheet", "A sheet of sprites")]
     public class SpriteSheetAsset : Asset
     {

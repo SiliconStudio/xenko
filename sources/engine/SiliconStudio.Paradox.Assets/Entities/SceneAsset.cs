@@ -27,7 +27,6 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [DataContract("SceneAsset")]
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
-    [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
     [AssetFormatVersion(CurrentVersion)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
