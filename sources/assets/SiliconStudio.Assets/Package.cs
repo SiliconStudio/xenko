@@ -945,11 +945,15 @@ namespace SiliconStudio.Assets
             if (assetFile.Deleted)
             {
                 IsDirty = true;
-                filesToDelete.Add(assetFile.FilePath);
+
+                lock (filesToDelete)
+                {
+                    filesToDelete.Add(assetFile.FilePath);
+                }
             }
 
-                // An exception can occur here, so we make sure that loading a single asset is not going to break 
-                // the loop
+            // An exception can occur here, so we make sure that loading a single asset is not going to break 
+            // the loop
             try
             {
                 AssetMigration.MigrateAssetIfNeeded(context, assetFile);
