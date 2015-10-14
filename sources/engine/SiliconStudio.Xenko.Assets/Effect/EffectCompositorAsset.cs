@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
         /// <summary>
         /// The default file extension used by the <see cref="EffectLibraryAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkfx";
+        public const string FileExtension = ".xkfx;.pdxfx";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EffectLibraryAsset"/> class.

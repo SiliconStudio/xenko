@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// <summary>
         /// The default file extension used by the <see cref="SpriteSheetAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xksheet;.xksprite;.xkuiimage";
+        public const string FileExtension = ".xksheet;.pdxsheet;.pdxsprite;.pdxuiimage";
         
         /// <summary>
         /// Create an empty sprite sheet asset.

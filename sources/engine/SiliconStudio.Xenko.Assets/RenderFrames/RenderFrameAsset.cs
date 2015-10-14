@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.RenderFrames
         /// <summary>
         /// The default file extension used by the <see cref="RenderFrameAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkframe";
+        public const string FileExtension = ".xkframe;.pdxframe";
 
         /// <summary>
         /// Gets or sets the descriptor of the render frame.

@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
     [Display("Collider Shape", "A physics collider shape")]
     public class ColliderShapeAsset : Asset, IAssetCompileTimeDependencies
     {
-        public const string FileExtension = ".xkphy";
+        public const string FileExtension = ".xkphy;pdxphy";
 
         public ColliderShapeAsset()
         {

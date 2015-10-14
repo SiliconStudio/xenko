@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     {
         private const int CurrentVersion = 18;
 
-        public const string FileSceneExtension = ".xkscene";
+        public const string FileSceneExtension = ".xkscene;.pdxscene";
 
         public static SceneAsset Create()
         {

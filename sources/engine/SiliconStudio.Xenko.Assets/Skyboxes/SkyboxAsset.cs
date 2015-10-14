@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
         /// <summary>
         /// The default file extension used by the <see cref="SkyboxAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xksky";
+        public const string FileExtension = ".xksky;.pdxsky";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SkyboxAsset"/> class.
