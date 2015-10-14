@@ -296,16 +296,16 @@ namespace SiliconStudio.CoreCLRBuilder
                     // Depending on whether we want the very latest of reference assemblies or not.
                 foreach (var assemblyDir in topDir.EnumerateDirectories())
                 {
-                    Version minVersion = null;
+                    Version maxVersion = null;
                     IEnumerable<FileInfo> assemblies = null;
                     foreach (var versionDir in assemblyDir.EnumerateDirectories())
                     {
                         Version version = new Version(versionDir.Name);
 
                             // Take all the assemblies we found that matched the lowest version.
-                        if ((minVersion == null) || (minVersion < version))
+                        if ((maxVersion == null) || (maxVersion < version))
                         {
-                            minVersion = version;
+                            maxVersion = version;
                             assemblies = EnumerateDlls(versionDir);
                         }
                     }
