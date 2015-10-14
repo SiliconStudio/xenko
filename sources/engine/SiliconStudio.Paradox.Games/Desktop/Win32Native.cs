@@ -97,7 +97,10 @@ namespace SiliconStudio.Paradox.Games
 
         [DllImport("kernel32.dll", EntryPoint = "GetModuleHandle", CharSet = CharSet.Unicode)]
         public static extern IntPtr GetModuleHandle(string lpModuleName);
-        
+
+        [DllImport("ole32.dll")]
+        public static extern int CoInitialize(IntPtr pvReserved);
+
         public const int WM_SIZE = 0x0005;
 
         public const int WM_ACTIVATEAPP = 0x001C;

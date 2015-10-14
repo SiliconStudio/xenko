@@ -21,6 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_RUNTIME_CORECLR
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Paradox.Graphics;
@@ -31,6 +32,8 @@ namespace SiliconStudio.Paradox.Games
     {
         public GamePlatformDesktopCoreCLR(GameBase game) : base(game)
         {
+                // This is required by the Audio subsystem of SharpDX.
+            Win32Native.CoInitialize(IntPtr.Zero);
         }
 
         public override string DefaultAppDirectory
