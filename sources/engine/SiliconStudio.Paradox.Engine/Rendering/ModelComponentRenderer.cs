@@ -285,7 +285,6 @@ namespace SiliconStudio.Paradox.Rendering
         private void PrepareModels(RenderContext context, List<RenderModel> renderModels, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             var preRenderModel = Callbacks.PreRenderModel;
-
             foreach (var renderModel in renderModels)
             {
                 var modelComponent = renderModel.ModelComponent;

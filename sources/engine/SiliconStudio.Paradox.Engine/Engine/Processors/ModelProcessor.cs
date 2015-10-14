@@ -57,6 +57,9 @@ namespace SiliconStudio.Paradox.Engine.Processors
 
         protected override void OnEntityRemoved(Entity entity, RenderModelItem data)
         {
+            // Dispose the RenderModel and all associated data
+            data.RenderModel.Dispose();
+
             // Unregister model view hierarchy update
             entity.Transform.PostOperations.Remove(data.TransformOperation);
         }

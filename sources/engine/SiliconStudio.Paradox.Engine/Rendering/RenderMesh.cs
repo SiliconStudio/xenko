@@ -269,5 +269,20 @@ namespace SiliconStudio.Paradox.Rendering
             // TODO: Should we add RenderMesh.Parameters before ModelComponent.Parameters to allow user overiddes at component level?
             parameterCollections.Add(parameters);
         }
+
+        public override void Dispose()
+        {
+            if (vertexArrayObject != null)
+            {
+                vertexArrayObject.Dispose();
+                vertexArrayObject = null;
+            }
+
+            if (vertexArrayObjectAEN != null)
+            {
+                vertexArrayObjectAEN.Dispose();
+                vertexArrayObjectAEN = null;
+            }
+        }
     }
 }
