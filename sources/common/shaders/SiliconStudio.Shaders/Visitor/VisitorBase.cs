@@ -210,8 +210,8 @@ namespace SiliconStudio.Shaders.Visitor
 
             foreach (var method in methods)
             {
-                var attributes = method.GetCustomAttributes(typeof(VisitAttribute), true);
-                if (attributes.Count() > 0)
+                var attributes = method.GetCustomAttributes<VisitAttribute>(true);
+                if (attributes.Any())
                 {
                     Type parameterType;
                     var function = BuildMethodVisitor(method, out parameterType);
