@@ -37,11 +37,6 @@ namespace Xenko.Scripts
                             1 - 2 * Entity.Transform.Rotation.X * Entity.Transform.Rotation.X -
                             2 * Entity.Transform.Rotation.Z * Entity.Transform.Rotation.Z);
 
-            if (!Platform.IsWindowsDesktop)
-            {
-                Input.ActivatedGestures.Add(new GestureConfigDrag());
-            }
-
             Input.LockMousePosition(true);
             Game.IsMouseVisible = false;
 
@@ -116,33 +111,6 @@ namespace Xenko.Scripts
         public override void Update()
         {
             var rotationDelta = Input.MouseDelta;
-            foreach (var gestureEvent in Input.GestureEvents)
-            {
-                switch (gestureEvent.Type)
-                {
-                    case GestureType.Drag:
-                        {
-                            var drag = (GestureEventDrag)gestureEvent;
-                            rotationDelta = drag.DeltaTranslation;
-                        }
-                        break;
-
-                    case GestureType.Flick:
-                        break;
-
-                    case GestureType.LongPress:
-                        break;
-
-                    case GestureType.Composite:
-                        break;
-
-                    case GestureType.Tap:
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException();
-                }
-            }
 
             // Compute translation speed according to framerate and modifiers
             var translationSpeed = Speed * (float)Game.UpdateTime.Elapsed.TotalSeconds;
@@ -194,37 +162,6 @@ namespace Xenko.Scripts
             {
                 move += -projectedForward;
             }
-
-            //            if (Input.PointerEvents.Any())
-            //            {
-            //                var last = Input.PointerEvents.Last();
-            //                if (last != null)
-            //                {
-            //                    switch (last.State)
-            //                    {
-            //                        case PointerState.Down:
-            //                            if (last.Position.X < 0.5)
-            //                            {
-            //                                pointerVector = -Vector3.UnitX;
-            //                            }
-            //                            else
-            //                            {
-            //                                pointerVector = Vector3.UnitX;
-            //                            }
-            //                            break;
-            //                        case PointerState.Up:
-            //                        case PointerState.Out:
-            //                        case PointerState.Cancel:
-            //                            pointerVector = Vector3.Zero;
-            //                            break;
-            //                    }
-            //                }
-            //            }
-            //
-            //            if (pointerVector != Vector3.Zero)
-            //            {
-            //                move = pointerVector;
-            //            }
 
             move *= translationSpeed;
 
