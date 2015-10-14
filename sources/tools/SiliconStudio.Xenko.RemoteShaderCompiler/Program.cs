@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SiliconStudio.Paradox.Engine.Network;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Engine.Network;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.RemoteShaderCompiler
+namespace SiliconStudio.Xenko.RemoteShaderCompiler
 {
     class Program
     {

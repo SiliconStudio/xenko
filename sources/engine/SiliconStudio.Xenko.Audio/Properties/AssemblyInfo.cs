@@ -3,13 +3,13 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyProduct("SiliconStudio.Paradox.Audio")]
-[assembly: AssemblyTitle("SiliconStudio.Paradox.Audio")]
-[assembly: AssemblyDescription("Paradox Audio Framework assembly")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Audio")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Audio")]
+[assembly: AssemblyDescription("Xenko Audio Framework assembly")]
 
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio.Serializers" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio.Tests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxAudioTests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Audio.Serializers" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Audio.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioXenkoAudioTests" + SiliconStudio.PublicKeys.Default)]

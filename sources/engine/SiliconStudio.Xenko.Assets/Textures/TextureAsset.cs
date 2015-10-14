@@ -10,7 +10,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Assets.Textures
+namespace SiliconStudio.Xenko.Assets.Textures
 {
     /// <summary>
     /// Describes a texture asset.
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
         /// <summary>
         /// The default file extension used by the <see cref="TextureAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxtex";
+        public const string FileExtension = ".xktex";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureAsset"/> class.

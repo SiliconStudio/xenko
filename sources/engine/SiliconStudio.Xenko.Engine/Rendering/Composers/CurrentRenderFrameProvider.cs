@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Composers
 {
     /// <summary>
     /// Output to the Direct (same as the output of the master layer).

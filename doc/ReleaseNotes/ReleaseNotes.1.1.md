@@ -1,8 +1,8 @@
-## Paradox 1.1
+## Xenko 1.1
 
 Highlights:
 
-- A brand new **scene editor** that is now the central piece of Paradox to assemble your game levels, test the rendering, script your entities.
+- A brand new **scene editor** that is now the central piece of Xenko to assemble your game levels, test the rendering, script your entities.
 - **Physically Based Rendering** with Layered Material System
 - **Scene rendering compositor**, offering a new way to define precisely how to render scenes in your game, apply post effects...etc.
 - Easy-to-use and powerful **post-effects API** coming along many built-in effects (Depth Of Field, Bloom, Lens Flare, Glare, ToneMapping, Vignetting, Film Grain, Antialiasing...)
@@ -40,7 +40,7 @@ Release date: 2015/06/11
 - Engine: Restored frustum culling.
 - Engine: Fixed an issue when rendering shadow maps from a child renderer
 - Sample: Fixed Forward Lighting sample.
-- Shaders: Directional shadow maps were requiring Shader Model 5.0. ([#222](https://github.com/SiliconStudio/paradox/issues/222)).
+- Shaders: Directional shadow maps were requiring Shader Model 5.0. ([#222](https://github.com/SiliconStudio/xenko/issues/222)).
 - Importers: Unicode characters in model node names are correctly imported.
 
 #### Breaking changes
@@ -89,12 +89,12 @@ Release date: 2015/05/14
 - Studio: Entities can now be drag/dropped in component and entity properties of the property grid.
 
 #### Issues fixed
-- Studio: Allows DX10 device as well to display scene -- note that it won't work for scene containing skybox since it requires compute shader 5.0 for prefiltering, i.e. Material sample ([#212](https://github.com/SiliconStudio/paradox/issues/212))
-- Studio: Scene loading was stuck in a deadlock on single-core and dual-core CPUs ([#215](https://github.com/SiliconStudio/paradox/issues/215))
-- Studio: Fix issues related to non-english locales (numeric inputs and settings save/load) ([#211](https://github.com/SiliconStudio/paradox/issues/211))
+- Studio: Allows DX10 device as well to display scene -- note that it won't work for scene containing skybox since it requires compute shader 5.0 for prefiltering, i.e. Material sample ([#212](https://github.com/SiliconStudio/xenko/issues/212))
+- Studio: Scene loading was stuck in a deadlock on single-core and dual-core CPUs ([#215](https://github.com/SiliconStudio/xenko/issues/215))
+- Studio: Fix issues related to non-english locales (numeric inputs and settings save/load) ([#211](https://github.com/SiliconStudio/xenko/issues/211))
 - Studio: In some cases, the materials in the scene editor were not properly refreshed after making a change in the related assets.
 - Studio: ".jpeg" is now a valid extension for the texture importer.
-- Studio: Putting an empty string in the Source or CharacterSet property of the Sprite Font does not cause errors anymore ([#210](https://github.com/SiliconStudio/paradox/issues/210))
+- Studio: Putting an empty string in the Source or CharacterSet property of the Sprite Font does not cause errors anymore ([#210](https://github.com/SiliconStudio/xenko/issues/210))
 
 #### Known Issues
 - Platforms: Shaders can’t compile due to lack of a proper workflow on other platforms than Windows Desktop  (this will be fixed soon)
@@ -112,7 +112,7 @@ Release date: 2015/05/14
 Release date: 2015/04/28
 
 #### New Features
-- Launcher: New **launcher** can now manage several versions of the Paradox SDK
+- Launcher: New **launcher** can now manage several versions of the Xenko SDK
 - Studio: Introducing a brand new **scene editor**
 - Studio: The scene editor is now the central component of the Studio
 - Studio: The asset log panel now display logs (errors, etc.) of the seleced assets and their dependencies
@@ -169,7 +169,7 @@ Release date: 2015/04/28
 - Graphics: Add the possibility to bind TextureCube and Texture3D to the `SpriteBatch`
 - Effects: Infrastructure for recording shader compilations in a Yaml asset and regenerate shaders on different platforms (no UI yet)
 - Engine: The local transformation of entity linked with a `ModelNodeLinkComponent` is now taken in account in final world matrix calculation
-- Engine: Added `ScriptComponent` to easily add behavior and data to entities directly inside Paradox Studio
+- Engine: Added `ScriptComponent` to easily add behavior and data to entities directly inside Xenko Studio
 - Engine: Materials are defined on Model, but can be overridden in `ModelComponent`
 - Engine: Add access to the `SpriteAnimationSystem` from the script context.
 - Mathematics: Add `MathUtil.NextPowerOfTwo`
@@ -221,7 +221,7 @@ Release date: 2015/04/28
 #### Breaking changes
 - Android: Android projects should be compiled against Android API v5.0 (only a compile-time requirement, runtime requirement is still Android 2.3+)
 - Assets: The entity asset has been removed, entities should be created inside a scene.
-- General: Previous Paradox 1.0.x projects cannot be loaded in this new version
+- General: Previous Xenko 1.0.x projects cannot be loaded in this new version
 - Engine: Deferred lighting was removed. We will later add support for Forward+ and Deferred GBuffer shading
 - Engine: `ScriptSystem.Add` has been renamed `ScriptSystem.AddTask`. `Add` is now used only to add scripts
 - Engine: Sprites of `SpriteComponents` are now rendered in 3D. Their size is defined by the scale of the entity

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SiliconStudio.Paradox.Framework.MicroThreading;
+using SiliconStudio.Xenko.Framework.MicroThreading;
 
-namespace SiliconStudio.Paradox.DebugTools.DataStructures
+namespace SiliconStudio.Xenko.DebugTools.DataStructures
 {
     internal class MicroThreadPendingState
     {

@@ -20,8 +20,8 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_NULL 
-namespace SiliconStudio.Paradox.Graphics
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_NULL 
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Base class for texture resources.

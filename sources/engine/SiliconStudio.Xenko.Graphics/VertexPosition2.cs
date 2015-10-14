@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Describes a custom vertex format structure that contains position as a Vector2. 

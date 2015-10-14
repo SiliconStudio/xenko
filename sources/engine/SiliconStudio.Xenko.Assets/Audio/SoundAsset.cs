@@ -3,7 +3,7 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.Audio
+namespace SiliconStudio.Xenko.Assets.Audio
 {
     [DataContract]
     public abstract class SoundAsset : AssetImport
@@ -11,6 +11,6 @@ namespace SiliconStudio.Paradox.Assets.Audio
         /// <summary>
         /// The default file extension used by the <see cref="SoundMusicAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxsnd";
+        public const string FileExtension = ".xksnd";
     }
 }

@@ -32,7 +32,7 @@ using System.Runtime.InteropServices;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Audio.Wave
+namespace SiliconStudio.Xenko.Audio.Wave
 {
     /// <summary>
     /// Represents a Wave file format

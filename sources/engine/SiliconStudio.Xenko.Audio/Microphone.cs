@@ -4,7 +4,7 @@
 using System;
 using System.Diagnostics;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
     /// Class implementing the IRecoder interface designed to capture microphone audio input. Refer to <see cref="IRecorder"/> for more details.

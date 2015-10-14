@@ -2,7 +2,7 @@ using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Offline
+namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     public static class Module
     {

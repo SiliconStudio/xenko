@@ -1,7 +1,7 @@
 using System.CodeDom;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.SpriteStudio.Runtime;
+using SiliconStudio.Xenko.SpriteStudio.Runtime;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using System.Xml.Linq;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Offline
+namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioXmlImport
     {

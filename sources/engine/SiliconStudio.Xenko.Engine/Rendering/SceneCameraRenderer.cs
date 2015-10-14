@@ -6,10 +6,10 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering.Composers;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering.Composers;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A camera renderer.

@@ -4,10 +4,10 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Composers
 {
     /// <summary>
     /// Describes the <see cref="RenderFrame"/> to render to.

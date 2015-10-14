@@ -7,7 +7,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
@@ -24,7 +24,7 @@ using WindowsGyroscope = Windows.Devices.Sensors.Gyrometer;
 using WindowsOrientation = Windows.Devices.Sensors.OrientationSensor;
 using WindowsCompass = Windows.Devices.Sensors.Compass;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManager
     {
@@ -391,7 +391,7 @@ namespace SiliconStudio.Paradox.Input
         {
             base.OnApplicationResumed(sender, e);
 
-            // reset the paradox sampling rate to activated sensors
+            // reset the xenko sampling rate to activated sensors
 
             if (Accelerometer.IsEnabled || Gravity.IsEnabled || UserAcceleration.IsEnabled)
                 windowsAccelerometer.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsAccelerometer.MinimumReportInterval);

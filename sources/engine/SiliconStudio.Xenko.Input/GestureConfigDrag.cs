@@ -4,7 +4,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// Configuration class for the Drag gesture.

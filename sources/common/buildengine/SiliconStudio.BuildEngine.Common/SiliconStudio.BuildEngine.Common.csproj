@@ -77,15 +77,15 @@
     <Compile Include="IProcessBuilderRemote.cs" />
     <Compile Include="ListBuildStep.cs" />
     <Compile Include="LocalCommandContext.cs" />
-    <Compile Include="ParadoxDataContractOperationBehavior.cs" />
+    <Compile Include="XenkoDataContractOperationBehavior.cs" />
     <Compile Include="OutputObject.cs" />
-    <Compile Include="ParadoxXmlObjectSerializer.cs" />
+    <Compile Include="XenkoXmlObjectSerializer.cs" />
     <Compile Include="ParamFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultStatus.cs" />
     <Compile Include="BuildStepEventArgs.cs" />
     <Compile Include="TagSymbol.cs" />
-    <Compile Include="UseParadoxDataContractSerializerAttribute.cs" />
+    <Compile Include="UseXenkoDataContractSerializerAttribute.cs" />
     <Compile Include="WaitBuildStep.cs" />
   </ItemGroup>
   <ItemGroup>

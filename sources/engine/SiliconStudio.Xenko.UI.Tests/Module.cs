@@ -4,7 +4,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.UI.Tests
+namespace SiliconStudio.Xenko.UI.Tests
 {
 
     // Somehow it helps Resharper NUnit to run module initializer first (to determine unit test configuration).

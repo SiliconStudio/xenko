@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// This class represents a sensor of type user acceleration. It measures the acceleration applied by the user (no gravity) onto the device.

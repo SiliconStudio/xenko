@@ -12,10 +12,10 @@ using SharpYaml.Serialization.Descriptors;
 using SharpYaml.Serialization.Logging;
 using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
 
-namespace SiliconStudio.Paradox.Assets.Serializers
+namespace SiliconStudio.Xenko.Assets.Serializers
 {
     /// <summary>
     /// Error resistant Script loading. It should work even if there is missing properties, members or types.

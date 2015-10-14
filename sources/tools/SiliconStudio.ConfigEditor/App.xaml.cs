@@ -5,7 +5,7 @@ using System.Data;
 using System.Linq;
 using System.Windows;
 
-namespace SiliconStudio.Paradox.ConfigEditor
+namespace SiliconStudio.Xenko.ConfigEditor
 {
     /// <summary>
     /// Interaction logic for App.xaml

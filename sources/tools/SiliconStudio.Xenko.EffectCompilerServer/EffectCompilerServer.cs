@@ -7,13 +7,13 @@ using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Assets.Effect;
-using SiliconStudio.Paradox.ConnectionRouter;
-using SiliconStudio.Paradox.Engine.Network;
-using SiliconStudio.Paradox.Shaders.Compiler;
-using SiliconStudio.Paradox.Shaders.Compiler.Internals;
+using SiliconStudio.Xenko.Assets.Effect;
+using SiliconStudio.Xenko.ConnectionRouter;
+using SiliconStudio.Xenko.Engine.Network;
+using SiliconStudio.Xenko.Shaders.Compiler;
+using SiliconStudio.Xenko.Shaders.Compiler.Internals;
 
-namespace SiliconStudio.Paradox.EffectCompilerServer
+namespace SiliconStudio.Xenko.EffectCompilerServer
 {
     /// <summary>
     /// Shader compiler host (over network)
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
     {
         private Dictionary<Guid, SocketMessageLayer> gameStudioPerPackageId = new Dictionary<Guid, SocketMessageLayer>();
 
-        public EffectCompilerServer() : base(string.Format("/service/{0}/SiliconStudio.Paradox.EffectCompilerServer.exe", ParadoxVersion.CurrentAsText))
+        public EffectCompilerServer() : base(string.Format("/service/{0}/SiliconStudio.Xenko.EffectCompilerServer.exe", XenkoVersion.CurrentAsText))
         {
             // TODO: Asynchronously initialize Irony grammars to improve first compilation request performance?a
         }

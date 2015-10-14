@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Graphics.Font
+namespace SiliconStudio.Xenko.Graphics.Font
 {
     /// <summary>
     /// The interface to create and manage fonts.

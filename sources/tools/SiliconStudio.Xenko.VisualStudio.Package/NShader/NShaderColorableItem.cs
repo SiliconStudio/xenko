@@ -19,7 +19,7 @@ using System.Drawing;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.TextManager.Interop;
-using SiliconStudio.Paradox.VisualStudio.Classifiers;
+using SiliconStudio.Xenko.VisualStudio.Classifiers;
 
 namespace NShader
 {

@@ -8,14 +8,14 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Shadows;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Shadows;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
     /// TODO: Refactor this class

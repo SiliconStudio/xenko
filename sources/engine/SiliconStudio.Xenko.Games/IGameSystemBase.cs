@@ -23,7 +23,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Defines a generic game system.

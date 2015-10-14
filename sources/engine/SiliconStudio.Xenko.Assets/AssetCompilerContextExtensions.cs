@@ -6,10 +6,10 @@ using System;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
     public static class AssetCompilerContextExtensions
     {
@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Assets
             return graphicsPlatform;
         }
 
-        public static Paradox.Graphics.GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)
+        public static Xenko.Graphics.GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)
         {
             switch (platformType)
             {
@@ -58,10 +58,10 @@ namespace SiliconStudio.Paradox.Assets
                 case PlatformType.WindowsPhone:
                 case PlatformType.WindowsStore:
                 case PlatformType.Windows10:
-                    return Paradox.Graphics.GraphicsPlatform.Direct3D11;
+                    return Xenko.Graphics.GraphicsPlatform.Direct3D11;
                 case PlatformType.Android:
                 case PlatformType.iOS:
-                    return Paradox.Graphics.GraphicsPlatform.OpenGLES;
+                    return Xenko.Graphics.GraphicsPlatform.OpenGLES;
                 default:
                     throw new ArgumentOutOfRangeException();
             }
@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Assets
 
         /*public static TextureQuality GetTextureQuality(this AssetCompilerContext context)
         {
-            return context.PackageProperties.Get(ParadoxConfig.TextureQuality);
+            return context.PackageProperties.Get(XenkoConfig.TextureQuality);
         }
 
         public static GraphicsProfile GetGraphicsProfile(this AssetCompilerContext context)

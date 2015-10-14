@@ -27,7 +27,7 @@ using System.Collections.Specialized;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>A collection of game components.</summary>
     public class GameSystemCollection : TrackingCollection<IGameSystemBase>

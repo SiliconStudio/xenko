@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox
+namespace SiliconStudio.Xenko
 {
     namespace AssimpNet
     {

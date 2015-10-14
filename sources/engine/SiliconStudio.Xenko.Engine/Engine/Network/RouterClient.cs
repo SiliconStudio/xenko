@@ -4,7 +4,7 @@ using System;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Paradox.Engine.Network
+namespace SiliconStudio.Xenko.Engine.Network
 {
     public class RouterClient
     {

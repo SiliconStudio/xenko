@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core.Collections;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// This processor will take care of adding/removing children of every Entity added/removed in the SceneInstance.

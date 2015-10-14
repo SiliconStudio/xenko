@@ -9,9 +9,9 @@ using System.ServiceModel;
 using System.Threading;
 using Mono.Options;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Debugger.Target;
+using SiliconStudio.Xenko.Debugger.Target;
 
-namespace SiliconStudio.Paradox
+namespace SiliconStudio.Xenko
 {
     public static class Program
     {
@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox
             var p = new OptionSet
             {
                 "Copyright (C) 2015 Silicon Studio Corporation. All Rights Reserved",
-                "Paradox Debugger Host tool - Version: "
+                "Xenko Debugger Host tool - Version: "
                 +
                 String.Format(
                     "{0}.{1}.{2}",

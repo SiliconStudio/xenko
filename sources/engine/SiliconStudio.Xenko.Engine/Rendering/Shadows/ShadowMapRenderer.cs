@@ -8,13 +8,13 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Lights;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Lights;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Shadows
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     /// <summary>
     /// Handles rendering of shadow map casters.
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
             };
 
             shadowCasterParameters = new ParameterCollection();
-            shadowCasterParameters.Set(ParadoxEffectBaseKeys.ExtensionPostVertexStageShader, ShadowMapCasterExtension);
+            shadowCasterParameters.Set(XenkoEffectBaseKeys.ExtensionPostVertexStageShader, ShadowMapCasterExtension);
         }
 
         /// <summary>

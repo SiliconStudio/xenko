@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// An occlusion map for the occlusion material feature.

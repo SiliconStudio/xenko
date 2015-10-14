@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{73AA8A18-15C4-405B-BBF4-5D41C1CE44AD}</ProjectGuid>
     <OutputType>Exe</OutputType>
-    <RootNamespace>SiliconStudio.Paradox</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Debugger</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Debugger</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
   <PropertyGroup>
     <StartupObject />
@@ -67,19 +67,19 @@
       <Name>SiliconStudio.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Assets\SiliconStudio.Paradox.Assets.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Assets\SiliconStudio.Xenko.Assets.csproj">
       <Project>{39AE9C77-E94B-404F-8768-B6261B3C1E0E}</Project>
-      <Name>SiliconStudio.Paradox.Assets</Name>
+      <Name>SiliconStudio.Xenko.Assets</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
-      <Name>SiliconStudio.Paradox.Engine</Name>
+      <Name>SiliconStudio.Xenko.Engine</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
       <Project>{42780cbd-3fe7-48e3-bd5b-59945ea20137}</Project>
-      <Name>SiliconStudio.Paradox.Games</Name>
+      <Name>SiliconStudio.Xenko.Games</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

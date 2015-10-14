@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// Base interface for vector/color based compute color nodes.

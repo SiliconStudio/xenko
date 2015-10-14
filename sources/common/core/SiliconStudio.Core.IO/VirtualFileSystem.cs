@@ -340,7 +340,7 @@ namespace SiliconStudio.Core.IO
             string filename;
             do
             {
-                filename = "pdx" + ((tempFileRandom.Next() + 1)).ToString("x") + ".tmp";
+                filename = "xk" + ((tempFileRandom.Next() + 1)).ToString("x") + ".tmp";
                 try
                 {
                     stream = ApplicationTemporary.OpenStream(filename, VirtualFileMode.CreateNew, VirtualFileAccess.ReadWrite);

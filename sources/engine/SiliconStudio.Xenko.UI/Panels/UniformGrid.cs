@@ -6,7 +6,7 @@ using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI.Panels
+namespace SiliconStudio.Xenko.UI.Panels
 {
     /// <summary>
     /// Represents the grid where all the rows and columns have an uniform size.

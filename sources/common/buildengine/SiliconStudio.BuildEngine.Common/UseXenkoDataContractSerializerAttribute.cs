@@ -6,7 +6,7 @@ using System.ServiceModel.Description;
 
 namespace SiliconStudio.BuildEngine
 {
-    public class UseParadoxDataContractSerializerAttribute : Attribute, IOperationBehavior
+    public class UseXenkoDataContractSerializerAttribute : Attribute, IOperationBehavior
     {
         public void AddBindingParameters(OperationDescription description,
                                          BindingParameterCollection parameters)
@@ -38,7 +38,7 @@ namespace SiliconStudio.BuildEngine
             if (dcsOperationBehavior != null)
             {
                 description.Behaviors.Remove(dcsOperationBehavior);
-                description.Behaviors.Add(new ParadoxDataContractOperationBehavior(description));
+                description.Behaviors.Add(new XenkoDataContractOperationBehavior(description));
             }
         }
     }

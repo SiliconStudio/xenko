@@ -18,7 +18,7 @@ namespace SiliconStudio.Assets.Serializers
         {
             // Because a PropertyKey<> inherits directly from PropertyKey, we can directly check the base only
             // ParameterKey<> inherits from ParameterKey, so it won't conflict with the custom ParameterKeyYamlSerializer
-            // defined in the SiliconStudio.Paradox.Assets assembly
+            // defined in the SiliconStudio.Xenko.Assets assembly
 
             if (type == typeof(PropertyKey))
             {

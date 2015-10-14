@@ -5,7 +5,7 @@ using Microsoft.VisualStudio.Text;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace SiliconStudio.Paradox.VisualStudio.BuildEngine
+namespace SiliconStudio.Xenko.VisualStudio.BuildEngine
 {
     [ContentType("output")]
     [Export(typeof(IClassifierProvider))]

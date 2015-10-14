@@ -4,10 +4,10 @@
 using NUnit.Framework;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics.Regression;
 
-namespace SiliconStudio.Paradox.Audio.Tests.Engine
+namespace SiliconStudio.Xenko.Audio.Tests.Engine
 {
     /// <summary>
     /// Test the <see cref="ScriptContext"/> class augmented with the audio services.

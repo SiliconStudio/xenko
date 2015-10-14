@@ -81,11 +81,11 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 
-using SiliconStudio.Paradox.Graphics.Font;
+using SiliconStudio.Xenko.Graphics.Font;
 
 using System.Linq;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     /// <summary>
     /// Main class used to compile a Font file XML file.

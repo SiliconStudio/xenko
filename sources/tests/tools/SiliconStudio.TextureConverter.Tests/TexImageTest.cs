@@ -16,7 +16,7 @@ namespace SiliconStudio.TextureConverter.Tests
         [SetUp]
         public void SetUp()
         {
-            image = new TexImage(Marshal.AllocHGlobal(699104), 699104, 512, 512, 1, SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm, 10, 2, TexImage.TextureDimension.Texture2D);
+            image = new TexImage(Marshal.AllocHGlobal(699104), 699104, 512, 512, 1, SiliconStudio.Xenko.Graphics.PixelFormat.BC3_UNorm, 10, 2, TexImage.TextureDimension.Texture2D);
         }
 
         [TearDown]
@@ -28,10 +28,10 @@ namespace SiliconStudio.TextureConverter.Tests
         [Test, Ignore]
         public void TestEquals()
         {
-            TexImage image2 = new TexImage(new IntPtr(), 699104, 512, 512, 1, SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm, 10, 2, TexImage.TextureDimension.Texture2D);
+            TexImage image2 = new TexImage(new IntPtr(), 699104, 512, 512, 1, SiliconStudio.Xenko.Graphics.PixelFormat.BC3_UNorm, 10, 2, TexImage.TextureDimension.Texture2D);
             Assert.IsTrue(image.Equals(image2));
 
-            image2 = new TexImage(new IntPtr(), 699104, 512, 256, 1, SiliconStudio.Paradox.Graphics.PixelFormat.BC3_UNorm, 10, 2, TexImage.TextureDimension.Texture2D);
+            image2 = new TexImage(new IntPtr(), 699104, 512, 256, 1, SiliconStudio.Xenko.Graphics.PixelFormat.BC3_UNorm, 10, 2, TexImage.TextureDimension.Texture2D);
             Assert.IsFalse(image.Equals(image2));
         }
 

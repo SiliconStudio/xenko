@@ -7,7 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Paradox.ConnectionRouter
+namespace SiliconStudio.Xenko.ConnectionRouter
 {
     static class DeviceHelper
     {

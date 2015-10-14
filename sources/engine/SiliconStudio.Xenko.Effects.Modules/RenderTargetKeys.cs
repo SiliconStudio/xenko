@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2011 Silicon Studio
 
-using Paradox.Framework.Graphics;
+using Xenko.Framework.Graphics;
 
-namespace Paradox.Effects.Modules
+namespace Xenko.Effects.Modules
 {
     /// <summary>
     /// Keys used for render target settings.

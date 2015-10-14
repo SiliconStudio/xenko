@@ -13,12 +13,12 @@ using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Debugging;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Engine.Processors;
+using SiliconStudio.Xenko.Assets.Debugging;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Engine.Processors;
 
-namespace SiliconStudio.Paradox.Debugger.Target
+namespace SiliconStudio.Xenko.Debugger.Target
 {
     public class LiveAssemblyReloader : AssemblyReloader
     {

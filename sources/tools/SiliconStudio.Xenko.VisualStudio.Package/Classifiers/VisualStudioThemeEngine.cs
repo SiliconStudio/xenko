@@ -24,7 +24,7 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.Win32;
 
-namespace SiliconStudio.Paradox.VisualStudio.Classifiers
+namespace SiliconStudio.Xenko.VisualStudio.Classifiers
 {
     internal class VisualStudioThemeEngine : IVsBroadcastMessageEvents, IDisposable
     {

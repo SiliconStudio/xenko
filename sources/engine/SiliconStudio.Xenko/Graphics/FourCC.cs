@@ -26,7 +26,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
-namespace SiliconStudio.Paradox
+namespace SiliconStudio.Xenko
 {
     /// <summary>
     /// A FourCC descriptor.

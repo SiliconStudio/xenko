@@ -13,11 +13,11 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("ParadoxImporterCommon")];
+[assembly:AssemblyTitleAttribute("XenkoImporterCommon")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("")];
-[assembly:AssemblyProductAttribute("ParadoxImporterCommon")];
+[assembly:AssemblyProductAttribute("XenkoImporterCommon")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c)  2013")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];

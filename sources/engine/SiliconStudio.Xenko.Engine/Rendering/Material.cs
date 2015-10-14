@@ -8,11 +8,11 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A compiled version of <see cref="MaterialDescriptor"/>.
@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// <summary>
         /// The tessellation method used by the material.
         /// </summary>
-        public ParadoxTessellationMethod TessellationMethod;
+        public XenkoTessellationMethod TessellationMethod;
 
         /// <summary>
         /// Gets or sets a value indicating whether this instance has transparent.

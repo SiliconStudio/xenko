@@ -1,4 +1,4 @@
-﻿namespace Paradox.Effects.Modules
+﻿namespace Xenko.Effects.Modules
 {
     public class TessellationKeys
     {

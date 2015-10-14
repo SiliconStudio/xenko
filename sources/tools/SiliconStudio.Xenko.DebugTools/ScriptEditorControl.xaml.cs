@@ -13,7 +13,7 @@ using System.Windows.Navigation;
 using System.Windows.Shapes;
 using System.IO;
 
-namespace SiliconStudio.Paradox.DebugTools
+namespace SiliconStudio.Xenko.DebugTools
 {
     /// <summary>
     /// Interaction logic for ScriptEditorControl.xaml

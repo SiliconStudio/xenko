@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 using System;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// An interface that is called by <see cref="GameBase.Update"/>.

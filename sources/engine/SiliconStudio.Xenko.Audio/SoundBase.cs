@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
     /// Base class for all the sounds and sound instances.

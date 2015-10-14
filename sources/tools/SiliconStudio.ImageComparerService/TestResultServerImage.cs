@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.ImageComparerService
 {

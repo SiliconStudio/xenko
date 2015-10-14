@@ -5,14 +5,14 @@ using System;
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Images;
-using SiliconStudio.Paradox.Rendering.Lights;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Images;
+using SiliconStudio.Xenko.Rendering.Lights;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Shadows
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     /// <summary>
     /// Renders a shadow map from a directional light.

@@ -11,9 +11,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Graphics.Font;
+using SiliconStudio.Xenko.Graphics.Font;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont
+namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
     /// <summary>
     /// Description of a font.
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont
         /// <summary>
         /// The default file extension used by the <see cref="SpriteFontAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxfnt";
+        public const string FileExtension = ".xkfnt";
 
         /// <summary>
         /// Gets or sets the source file containing the font data. This can be a TTF file or a bitmap file.

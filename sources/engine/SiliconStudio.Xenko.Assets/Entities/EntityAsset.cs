@@ -15,11 +15,11 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
 using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract("EntityAsset")]
     [AssetDescription(FileExtension, false)]
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Assets.Entities
         /// <summary>
         /// The default file extension used by the <see cref="EntityAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxentity";
+        public const string FileExtension = ".xkentity";
 
         public EntityAsset()
         {

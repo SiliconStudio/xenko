@@ -10,9 +10,9 @@ using System.Runtime.ExceptionServices;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Engine.Network;
+using SiliconStudio.Xenko.Engine.Network;
 
-namespace SiliconStudio.Paradox.ConnectionRouter
+namespace SiliconStudio.Xenko.ConnectionRouter
 {
     public class Router
     {
@@ -196,17 +196,17 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                         throw new InvalidOperationException();
                     }
 
-                    var paradoxVersion = urlSegments[1];
+                    var xenkoVersion = urlSegments[1];
                     var serviceExe = urlSegments[2];
 
-                    var paradoxSdkDir = RouterHelper.FindParadoxSdkDir(paradoxVersion);
-                    if (paradoxSdkDir == null)
+                    var xenkoSdkDir = RouterHelper.FindXenkoSdkDir(xenkoVersion);
+                    if (xenkoSdkDir == null)
                     {
-                        Log.Error("{0} action URL {1} references a Paradox version which is not installed", RouterMessage.ClientRequestServer, url);
+                        Log.Error("{0} action URL {1} references a Xenko version which is not installed", RouterMessage.ClientRequestServer, url);
                         throw new InvalidOperationException();
                     }
 
-                    var servicePath = Path.Combine(paradoxSdkDir, @"Bin\Windows-Direct3D11", serviceExe);
+                    var servicePath = Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11", serviceExe);
                     RunServiceProcessAndLog(servicePath);
                 }
             }

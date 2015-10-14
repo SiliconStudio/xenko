@@ -29,14 +29,14 @@
     <SiliconStudioPlatform><#= Properties.CurrentPlatform #></SiliconStudioPlatform>
     <SiliconStudioBuildProfile><#= Properties.CurrentPlatformName #></SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{<#= Properties.Package.Id  #>}</SiliconStudioPackageGuid>
-    <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)<#= Properties.ParadoxSdkRelativeDir #></SiliconStudioParadoxDir>
+    <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)<#= Properties.XenkoSdkRelativeDir #></SiliconStudioXenkoDir>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 <#@ include file="..\Common.PropertyGroups.targets.t4" #>
   <ItemGroup>
-    <Reference Include="Mono.Android" Label="Paradox.DoNotSync" />
+    <Reference Include="Mono.Android" Label="Xenko.DoNotSync" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -44,11 +44,11 @@
     <Compile Include="TestClass1.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
-    <Content Label="Paradox.DoNotSync" Include="Properties\AndroidManifest.xml" />
-    <AndroidResource Label="Paradox.DoNotSync" Include="Resources\Drawable\Icon.png" />
-    <Compile Label="Paradox.DoNotSync" Include="Resources\Resource.Designer.cs" />
-    <Compile Label="Paradox.DoNotSync" Include="<#= Properties.ParadoxSdkRelativeDir #>\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.Android.cs">
+    <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
+    <Content Label="Xenko.DoNotSync" Include="Properties\AndroidManifest.xml" />
+    <AndroidResource Label="Xenko.DoNotSync" Include="Resources\Drawable\Icon.png" />
+    <Compile Label="Xenko.DoNotSync" Include="Resources\Resource.Designer.cs" />
+    <Compile Label="Xenko.DoNotSync" Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.Android.cs">
       <Link>NUnitLiteLauncher.Android.cs</Link>
     </Compile>
   </ItemGroup>

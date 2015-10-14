@@ -13,7 +13,7 @@ using SharpDX.RawInput;
 
 using WinFormsKeys = System.Windows.Forms.Keys;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManager
     {

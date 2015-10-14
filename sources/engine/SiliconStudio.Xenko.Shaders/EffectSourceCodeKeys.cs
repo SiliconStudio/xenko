@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// Keys used for sourcecode generation.
@@ -10,7 +10,7 @@ namespace SiliconStudio.Paradox.Shaders
     public static class EffectSourceCodeKeys
     {
         /// <summary>
-        /// When compiling a pdxsl, this will generate a source code file
+        /// When compiling a xksl, this will generate a source code file
         /// </summary>
         public static readonly ParameterKey<bool> Enable = ParameterKeys.New<bool>();
 

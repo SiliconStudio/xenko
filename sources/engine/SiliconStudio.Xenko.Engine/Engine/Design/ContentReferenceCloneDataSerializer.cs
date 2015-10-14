@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     public class ContentReferenceCloneDataSerializer<T> : DataSerializer<ContentReference<T>> where T : class
     {

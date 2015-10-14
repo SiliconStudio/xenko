@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Xenko.Rendering.Lights
 {
 
     public sealed class LightPermutationsEntry

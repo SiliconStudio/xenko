@@ -6,22 +6,22 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Games.Mathematics;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Games.Mathematics;
 using System.Linq;
 
 using ScriptShader.Effects;
-using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
-//using Vector2 = Paradox.Framework.Mathematics.Vector2;
-//using R32G32B32_Float = Paradox.Framework.Mathematics.R32G32B32_Float;
+//using Vector2 = Xenko.Framework.Mathematics.Vector2;
+//using R32G32B32_Float = Xenko.Framework.Mathematics.R32G32B32_Float;
 
 namespace ScriptTest
 {

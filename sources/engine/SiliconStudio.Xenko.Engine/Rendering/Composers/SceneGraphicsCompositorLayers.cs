@@ -6,7 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Paradox.Rendering.Composers
+namespace SiliconStudio.Xenko.Rendering.Composers
 {
     /// <summary>
     /// A Graphics Composer using layers.

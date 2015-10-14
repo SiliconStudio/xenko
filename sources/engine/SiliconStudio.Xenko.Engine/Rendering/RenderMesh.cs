@@ -4,15 +4,15 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Internals;
-using SiliconStudio.Paradox.Rendering.Utils;
-using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Internals;
+using SiliconStudio.Xenko.Rendering.Utils;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// An mesh associated with an effect to be rendered.
@@ -153,7 +153,7 @@ namespace SiliconStudio.Paradox.Rendering
                 parameters.Set(Effect.BlendStateKey, null);
             }
 
-            if (material != null && material.TessellationMethod != ParadoxTessellationMethod.None)
+            if (material != null && material.TessellationMethod != XenkoTessellationMethod.None)
             {
                 var tessellationMethod = material.TessellationMethod;
 

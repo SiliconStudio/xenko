@@ -5,7 +5,7 @@ using System.Text;
 using MonoDevelop.Components.Commands;
 using MonoDevelop.Ide;
 
-namespace MonoDevelop.Debugger.Soft.Paradox
+namespace MonoDevelop.Debugger.Soft.Xenko
 {
     public enum Commands
     {
@@ -16,7 +16,7 @@ namespace MonoDevelop.Debugger.Soft.Paradox
     {
         protected override void Run()
         {
-            IdeApp.ProjectOperations.DebugApplication("ParadoxDebugServer");
+            IdeApp.ProjectOperations.DebugApplication("XenkoDebugServer");
         }
     }
 
@@ -24,7 +24,7 @@ namespace MonoDevelop.Debugger.Soft.Paradox
     {
         protected override void Run()
         {
-            IdeApp.ProjectOperations.DebugApplication("ParadoxDebugClient");
+            IdeApp.ProjectOperations.DebugApplication("XenkoDebugClient");
         }
     }
 }

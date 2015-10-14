@@ -4,7 +4,7 @@
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.MicroThreading;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// A script whose <see cref="Update"/> will be called every frame.

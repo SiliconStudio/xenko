@@ -9,11 +9,11 @@ using SharpYaml.Serialization;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Serializers;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Assets.Serializers;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
 
-namespace SiliconStudio.Paradox.Assets.Debugging
+namespace SiliconStudio.Xenko.Assets.Debugging
 {
     /// <summary>
     /// Helper to reload game assemblies at runtime. It will update currently running scripts.

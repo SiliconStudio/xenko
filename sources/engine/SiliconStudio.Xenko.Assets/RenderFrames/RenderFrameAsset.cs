@@ -6,9 +6,9 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Assets.RenderFrames
+namespace SiliconStudio.Xenko.Assets.RenderFrames
 {
     /// <summary>
     /// Describes a texture asset.
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.RenderFrames
         /// <summary>
         /// The default file extension used by the <see cref="RenderFrameAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxframe";
+        public const string FileExtension = ".xkframe";
 
         /// <summary>
         /// Gets or sets the descriptor of the render frame.

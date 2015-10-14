@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#pragma warning disable 436 // The type 'type' in 'assembly' conflicts with the imported type 'type2' in 'assembly' (due to ParadoxVersion being duplicated)
+#pragma warning disable 436 // The type 'type' in 'assembly' conflicts with the imported type 'type2' in 'assembly' (due to XenkoVersion being duplicated)
 using System;
 using System.Reflection;
 using SiliconStudio;
@@ -11,10 +11,10 @@ using SiliconStudio;
 [assembly:AssemblyTrademark("")]
 [assembly:AssemblyCulture("")]
 
-[assembly: AssemblyVersion(ParadoxVersion.CurrentAssemblyAsText)]
-[assembly: AssemblyFileVersion(ParadoxVersion.CurrentAssemblyAsText)]
+[assembly: AssemblyVersion(XenkoVersion.CurrentAssemblyAsText)]
+[assembly: AssemblyFileVersion(XenkoVersion.CurrentAssemblyAsText)]
 
-[assembly: AssemblyInformationalVersion(ParadoxVersion.CurrentAsText)]
+[assembly: AssemblyInformationalVersion(XenkoVersion.CurrentAsText)]
 
 #if DEBUG
 [assembly:AssemblyConfiguration("Debug")]
@@ -25,12 +25,12 @@ using SiliconStudio;
 namespace SiliconStudio
 {
     /// <summary>
-    /// Internal version used to identify Paradox version.
+    /// Internal version used to identify Xenko version.
     /// </summary>
     /// <remarks>
-    /// Note: When modifying the version here, it must be modified also in the Paradox.pdxpkg 
+    /// Note: When modifying the version here, it must be modified also in the Xenko.xkpkg 
     /// </remarks>
-    internal class ParadoxVersion
+    internal class XenkoVersion
     {
         /// <summary>
         /// The .NET current assembly version as text, not including pre-release (alpha, beta...) information.

@@ -8,9 +8,9 @@ using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Audio.Tests.Engine
+namespace SiliconStudio.Xenko.Audio.Tests.Engine
 {
     /// <summary>
     /// Test the <see cref="AudioEmitterComponent"/>. All the test are performed on internal members. 

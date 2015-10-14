@@ -5,10 +5,10 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering.Sprites
+namespace SiliconStudio.Xenko.Rendering.Sprites
 {
     /// <summary>
     /// A <see cref="Sprite"/> provider from a <see cref="Texture"/>.

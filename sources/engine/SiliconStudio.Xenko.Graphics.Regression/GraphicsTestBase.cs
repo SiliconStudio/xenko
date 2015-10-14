@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     [TestFixture]
     public abstract class GraphicsTestBase : TestGameBase
@@ -53,12 +53,12 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // get build number
             int buildNumber;
-            if (ImageTester.ImageTestResultConnection.BuildNumber <= 0 && Int32.TryParse(Environment.GetEnvironmentVariable("PARADOX_BUILD_NUMBER"), out buildNumber))
+            if (ImageTester.ImageTestResultConnection.BuildNumber <= 0 && Int32.TryParse(Environment.GetEnvironmentVariable("XENKO_BUILD_NUMBER"), out buildNumber))
                 ImageTester.ImageTestResultConnection.BuildNumber = buildNumber;
 
             // get branch name
             if (String.IsNullOrEmpty(ImageTester.ImageTestResultConnection.BranchName))
-                ImageTester.ImageTestResultConnection.BranchName = Environment.GetEnvironmentVariable("PARADOX_BRANCH_NAME") ?? "";
+                ImageTester.ImageTestResultConnection.BranchName = Environment.GetEnvironmentVariable("XENKO_BRANCH_NAME") ?? "";
 #endif
         }
 

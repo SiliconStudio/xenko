@@ -3,7 +3,7 @@
 using System;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Defines how vertex data is ordered.

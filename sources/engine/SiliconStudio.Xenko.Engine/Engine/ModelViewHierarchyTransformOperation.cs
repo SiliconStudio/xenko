@@ -1,6 +1,6 @@
 using System;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Updates <see cref="ModelComponent.ModelViewHierarchy"/>.

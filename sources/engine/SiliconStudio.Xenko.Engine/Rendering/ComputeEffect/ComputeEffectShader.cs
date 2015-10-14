@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics.Internals;
+using SiliconStudio.Xenko.Graphics.Internals;
 
-namespace SiliconStudio.Paradox.Rendering.ComputeEffect
+namespace SiliconStudio.Xenko.Rendering.ComputeEffect
 {
     /// <summary>
     /// A compute effect based directly on a single compute shader.
@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Rendering.ComputeEffect
         public Int3 ThreadNumbers { get; set; }
 
         /// <summary>
-        /// Gets or sets the name of the input compute shader file (.pdxsl)
+        /// Gets or sets the name of the input compute shader file (.xksl)
         /// </summary>
         public string ShaderSourceName { get; set; }
 

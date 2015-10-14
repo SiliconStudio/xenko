@@ -25,7 +25,7 @@ using System;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// A description for <see cref="Image"/>.

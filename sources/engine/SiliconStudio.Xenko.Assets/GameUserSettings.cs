@@ -3,9 +3,9 @@
 
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Settings;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Engine.Design;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
     public static class GameUserSettings
     {

@@ -6,9 +6,9 @@ using System.Linq;
 
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Extensions
+namespace SiliconStudio.Xenko.Extensions
 {
     public static class EntityExtensions
     {

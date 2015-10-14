@@ -3,7 +3,7 @@
 
 using System.Linq;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// Keys used by the DepthAwareDirectionalBlurEffect

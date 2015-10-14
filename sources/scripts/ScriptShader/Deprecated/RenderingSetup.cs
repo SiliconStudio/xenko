@@ -3,23 +3,23 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
-using SiliconStudio.Paradox.Engine.Xaml;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Engine.Xaml;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Xaml;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering;
-#if PARADOX_YEBIS
-using SiliconStudio.Paradox.Rendering.Yebis;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering;
+#if XENKO_YEBIS
+using SiliconStudio.Xenko.Rendering.Yebis;
 #endif
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Configuration;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Configuration;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.ObjectModel;
+using SiliconStudio.Xenko.ObjectModel;
 using ScriptShader.Effects;
 
 namespace ScriptTest
@@ -58,7 +58,7 @@ namespace ScriptTest
             if (effectFilename == null)
                 effectFilename = Path.Combine("/shaders/effects.xml");
 
-            var context = new ParadoxXamlSchemaContext(dataContext);
+            var context = new XenkoXamlSchemaContext(dataContext);
             var xamlObjectWriter = new XamlObjectWriter(context);
 
             using (var fileStream = VirtualFileSystem.OpenStream(effectFilename, VirtualFileMode.Open, VirtualFileAccess.Read))
@@ -157,7 +157,7 @@ namespace ScriptTest
                 this.effectSystemOld.Effects.Add(effectBuilder);
             }
 
-#if PARADOX_YEBIS
+#if XENKO_YEBIS
             YebisPlugin yebisPlugin;
             if (RenderConfigContext.RenderPassPlugins.TryGetValueCast("YebisPlugin", out yebisPlugin))
             {

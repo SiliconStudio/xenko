@@ -25,9 +25,9 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Graphics.Data;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// All-in-One Buffer class linked <see cref="SharpDX.Direct3D11.Buffer"/>.

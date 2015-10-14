@@ -1,10 +1,10 @@
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Xaml.Markup;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     [ContentProperty("Effect")]
     public class PostEffectMeshPlugin : PostEffectPlugin, IRenderPassPluginSource, IRenderPassPluginTarget

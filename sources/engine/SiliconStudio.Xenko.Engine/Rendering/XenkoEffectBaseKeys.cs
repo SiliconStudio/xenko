@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
-    public static class ParadoxEffectBaseKeys
+    public static class XenkoEffectBaseKeys
     {
         public static readonly ParameterKey<ShaderSource> ExtensionPostVertexStageShader = ParameterKeys.New<ShaderSource>();
     }

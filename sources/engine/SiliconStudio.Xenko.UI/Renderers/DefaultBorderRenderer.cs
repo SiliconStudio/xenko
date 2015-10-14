@@ -4,9 +4,9 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Xenko.UI.Controls;
 
-namespace SiliconStudio.Paradox.UI.Renderers
+namespace SiliconStudio.Xenko.UI.Renderers
 {
     /// <summary>
     /// The default renderer for <see cref="Border"/>.

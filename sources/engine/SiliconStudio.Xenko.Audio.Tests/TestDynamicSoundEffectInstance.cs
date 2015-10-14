@@ -9,10 +9,10 @@ using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Audio.Wave;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Audio.Wave;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     /// <summary>
     /// Tests for <see cref="DynamicSoundEffectInstance"/>.

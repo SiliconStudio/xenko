@@ -5,10 +5,10 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Composers;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Composers;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Base implementation for a <see cref="ISceneRenderer"/>.

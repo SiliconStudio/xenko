@@ -8,7 +8,7 @@ using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Engine.Network
+namespace SiliconStudio.Xenko.Engine.Network
 {
     [DataContract(Inherited = true)]
     public class SocketMessage

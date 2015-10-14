@@ -31,8 +31,8 @@ using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Formatting;
 using Microsoft.VisualStudio.TextManager.Interop;
-using SiliconStudio.Paradox.VisualStudio.Classifiers;
-using SiliconStudio.Paradox.VisualStudio.Commands;
+using SiliconStudio.Xenko.VisualStudio.Classifiers;
+using SiliconStudio.Xenko.VisualStudio.Commands;
 
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 using VsShell = Microsoft.VisualStudio.Shell.VsShellUtilities;
@@ -72,14 +72,14 @@ namespace NShader
 
             m_colorableItems = new NShaderColorableItem[]
                                    {
-                                        /*1*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Keyword", "Paradox Shader Language - Keyword", COLORINDEX.CI_BLUE, COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(86, 156, 214), Color.Empty, FONTFLAGS.FF_DEFAULT),
-                                        /*2*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Comment", "Paradox Shader Language - Comment", COLORINDEX.CI_DARKGREEN, COLORINDEX.CI_GREEN, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(87, 166, 74), Color.Empty, FONTFLAGS.FF_DEFAULT),
-                                        /*3*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Identifier", "Paradox Shader Language - Identifier", COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_USERTEXT_BK, FONTFLAGS.FF_DEFAULT),
-                                        /*4*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - String", "Paradox Shader Language - String", COLORINDEX.CI_RED, COLORINDEX.CI_RED, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(214, 157, 133), Color.Empty, FONTFLAGS.FF_DEFAULT),
-                                        /*5*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Number", "Paradox Shader Language - Number", COLORINDEX.CI_DARKBLUE, COLORINDEX.CI_BLUE, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(181, 206, 168), Color.Empty, FONTFLAGS.FF_DEFAULT),
-                                        /*6*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Intrinsic", "Paradox Shader Language - Intrinsic", COLORINDEX.CI_MAROON, COLORINDEX.CI_CYAN, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(239, 242, 132), Color.Empty, FONTFLAGS.FF_BOLD),
-                                        /*7*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Special", "Paradox Shader Language - Special", COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_MAGENTA, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(78, 201, 176), Color.Empty, FONTFLAGS.FF_DEFAULT),
-                                        /*8*/ new NShaderColorableItem(currentTheme, "Paradox Shader Language - Preprocessor", "Paradox Shader Language - Preprocessor", COLORINDEX.CI_DARKGRAY, COLORINDEX.CI_LIGHTGRAY, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(155, 155, 155), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*1*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Keyword", "Xenko Shader Language - Keyword", COLORINDEX.CI_BLUE, COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(86, 156, 214), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*2*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Comment", "Xenko Shader Language - Comment", COLORINDEX.CI_DARKGREEN, COLORINDEX.CI_GREEN, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(87, 166, 74), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*3*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Identifier", "Xenko Shader Language - Identifier", COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_SYSPLAINTEXT_FG, COLORINDEX.CI_USERTEXT_BK, FONTFLAGS.FF_DEFAULT),
+                                        /*4*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - String", "Xenko Shader Language - String", COLORINDEX.CI_RED, COLORINDEX.CI_RED, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(214, 157, 133), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*5*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Number", "Xenko Shader Language - Number", COLORINDEX.CI_DARKBLUE, COLORINDEX.CI_BLUE, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(181, 206, 168), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*6*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Intrinsic", "Xenko Shader Language - Intrinsic", COLORINDEX.CI_MAROON, COLORINDEX.CI_CYAN, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(239, 242, 132), Color.Empty, FONTFLAGS.FF_BOLD),
+                                        /*7*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Special", "Xenko Shader Language - Special", COLORINDEX.CI_AQUAMARINE, COLORINDEX.CI_MAGENTA, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(78, 201, 176), Color.Empty, FONTFLAGS.FF_DEFAULT),
+                                        /*8*/ new NShaderColorableItem(currentTheme, "Xenko Shader Language - Preprocessor", "Xenko Shader Language - Preprocessor", COLORINDEX.CI_DARKGRAY, COLORINDEX.CI_LIGHTGRAY, COLORINDEX.CI_USERTEXT_BK, Color.Empty, Color.FromArgb(155, 155, 155), Color.Empty, FONTFLAGS.FF_DEFAULT),
                                    };
         }
 
@@ -255,7 +255,7 @@ namespace NShader
                             {
                                 try
                                 {
-                                    var result = ParadoxCommandsProxy.GetProxy().AnalyzeAndGoToDefinition(text, new RawSourceSpan(sourcePath, 1, 1));
+                                    var result = XenkoCommandsProxy.GetProxy().AnalyzeAndGoToDefinition(text, new RawSourceSpan(sourcePath, 1, 1));
                                     OutputAnalysisMessages(result, source);
                                 }
                                 catch (Exception ex)
@@ -300,7 +300,7 @@ namespace NShader
 
         public override string Name
         {
-            get { return "Paradox Shader Language"; }
+            get { return "Xenko Shader Language"; }
         }
 
         public void OutputAnalysisAndGotoLocation(RawShaderNavigationResult result, IVsTextView textView)

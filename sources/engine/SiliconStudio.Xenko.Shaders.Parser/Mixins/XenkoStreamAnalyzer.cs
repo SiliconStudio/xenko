@@ -4,17 +4,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Analysis;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Analysis;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
 using SiliconStudio.Shaders.Visitor;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class ParadoxStreamAnalyzer : ShaderVisitor
+    internal class XenkoStreamAnalyzer : ShaderVisitor
     {
         #region Private members
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         #region Constructor
 
-        public ParadoxStreamAnalyzer(LoggerResult errorLog)
+        public XenkoStreamAnalyzer(LoggerResult errorLog)
             : base(false, true)
         {
             errorWarningLog = errorLog ?? new LoggerResult();
@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             if (methodDecl != null)
             {
                 // Stream analysis
-                if (methodDecl.ContainsTag(ParadoxTags.ShaderScope)) // this will prevent built-in function to appear in the list
+                if (methodDecl.ContainsTag(XenkoTags.ShaderScope)) // this will prevent built-in function to appear in the list
                 {
                     // test if the method was previously added
                     if (!alreadyAddedMethodsList.Contains(methodDecl))
@@ -162,7 +162,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             if (expression.TypeInference.Declaration is Variable)
             {
-                return (expression.TypeInference.Declaration as Variable).Qualifiers.Contains(ParadoxStorageQualifier.Stream);
+                return (expression.TypeInference.Declaration as Variable).Qualifiers.Contains(XenkoStorageQualifier.Stream);
             }
             return false;
         }
@@ -222,7 +222,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private void Visit(AssignmentExpression assignmentExpression)
         {
             if (currentAssignmentOperatorStatus != AssignmentOperatorStatus.Read)
-                errorWarningLog.Error(ParadoxMessageCode.ErrorNestedAssignment, assignmentExpression.Span, assignmentExpression, shaderName);
+                errorWarningLog.Error(XenkoMessageCode.ErrorNestedAssignment, assignmentExpression.Span, assignmentExpression, shaderName);
 
             var prevStreamUsage = currentStreamUsage;
             currentStreamUsage = StreamUsage.Read;

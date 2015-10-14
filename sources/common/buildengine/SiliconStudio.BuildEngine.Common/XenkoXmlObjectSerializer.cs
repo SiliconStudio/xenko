@@ -9,7 +9,7 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.BuildEngine
 {
-    public class ParadoxXmlObjectSerializer : XmlObjectSerializer
+    public class XenkoXmlObjectSerializer : XmlObjectSerializer
     {
         public override void WriteObject(XmlDictionaryWriter writer, object graph)
         {

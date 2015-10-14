@@ -12,13 +12,13 @@ using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Effect;
-using SiliconStudio.Paradox.Assets.Effect.ValueGenerators;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Xenko.Assets.Effect;
+using SiliconStudio.Xenko.Assets.Effect.ValueGenerators;
+using SiliconStudio.Xenko.Effects;
 
 using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 
-namespace SiliconStudio.Paradox.Assets.Serializers
+namespace SiliconStudio.Xenko.Assets.Serializers
 {
     [YamlSerializerFactory]
     internal class EffectParameterKeyStandardGeneratorSerializer : DictionarySerializer, IDataCustomVisitor

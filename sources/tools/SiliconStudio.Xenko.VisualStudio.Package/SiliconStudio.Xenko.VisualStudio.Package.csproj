@@ -19,7 +19,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -28,9 +28,9 @@
     <ProjectTypeGuids>{82b43b9b-a64c-4715-b499-d71e9ca2bd60};{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Paradox.VisualStudio</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.VisualStudio.Package</AssemblyName>
-    <TargetVsixContainerName>SiliconStudio.Paradox.vsix</TargetVsixContainerName>
+    <RootNamespace>SiliconStudio.Xenko.VisualStudio</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.VisualStudio.Package</AssemblyName>
+    <TargetVsixContainerName>SiliconStudio.Xenko.vsix</TargetVsixContainerName>
     <TargetVsixContainer>$(OutputPath)$(TargetVsixContainerName)</TargetVsixContainer>
     <OutputPath>bin\$(Configuration)\</OutputPath>
     <SignAssembly>false</SignAssembly>
@@ -38,8 +38,8 @@
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
-    <ParadoxIncludeVSIX>BuiltProjectOutputGroup;BuiltProjectOutputGroupDependencies;GetCopyToOutputDirectoryItems</ParadoxIncludeVSIX>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <XenkoIncludeVSIX>BuiltProjectOutputGroup;BuiltProjectOutputGroupDependencies;GetCopyToOutputDirectoryItems</XenkoIncludeVSIX>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Build, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />
@@ -229,7 +229,8 @@
     <Compile Include="CodeGenerator\BaseCodeGeneratorWithSite.cs" />
     <Compile Include="Commands\BuildMonitorCallback.cs" />
     <Compile Include="Commands\IParadoxCommands.cs" />
-    <Compile Include="Commands\ParadoxCommandsProxy.cs" />
+    <Compile Include="Commands\IXenkoCommands.cs" />
+    <Compile Include="Commands\XenkoCommandsProxy.cs" />
     <Compile Include="MyControl.xaml.cs">
       <DependentUpon>MyControl.xaml</DependentUpon>
     </Compile>
@@ -243,7 +244,7 @@
       <DependentUpon>OutputClassifier.Partial.tt</DependentUpon>
     </Compile>
     <Compile Include="BuildEngine\OutputClassifierProvider.cs" />
-    <Compile Include="NShader\Common\ParadoxShaderTokenProvider.cs" />
+    <Compile Include="NShader\Common\XenkoShaderTokenProvider.cs" />
     <Compile Include="NShader\Common\EnumMap.cs" />
     <Compile Include="NShader\Common\GLSLShaderTokenProvider.cs" />
     <Compile Include="NShader\Common\HLSLShaderTokenProvider.cs" />
@@ -263,15 +264,15 @@
     <Compile Include="NShader\RawShaderAnalysisMessage.cs" />
     <Compile Include="NShader\RawShaderNavigationResult.cs" />
     <Compile Include="NShader\RawSourceSpan.cs" />
-    <Compile Include="ParadoxCommands.cs" />
+    <Compile Include="XenkoCommands.cs" />
     <Compile Include="Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
-    <Compile Include="ParadoxPackage.cs" />
+    <Compile Include="XenkoPackage.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ParadoxPackageCmdIdList.cs" />
+    <Compile Include="XenkoPackageCmdIdList.cs" />
     <Compile Include="Shaders\ShaderKeyFileGenerator.cs" />
     <Compile Include="SolutionEventsListener.cs" />
     <Compile Include="VsHelper.cs" />
@@ -294,10 +295,10 @@
     </None>
     <EmbeddedResource Include="NShader\Common\GLSLKeywords.map" />
     <EmbeddedResource Include="NShader\Common\HLSLKeywords.map" />
-    <EmbeddedResource Include="NShader\Common\ParadoxShaderKeywords.map" />
+    <EmbeddedResource Include="NShader\Common\XenkoShaderKeywords.map" />
     <None Include="NShader\Common\ShaderMPLexer.lex" />
     <None Include="packages.config" />
-    <None Include="SiliconStudio.Paradox.VisualStudio.Package.nuspec" />
+    <None Include="SiliconStudio.Xenko.VisualStudio.Package.nuspec" />
     <None Include="source.extension.vsixmanifest">
       <SubType>Designer</SubType>
     </None>
@@ -306,7 +307,7 @@
     <None Include="Key.snk" />
   </ItemGroup>
   <ItemGroup>
-    <VSCTCompile Include="ParadoxPackage.vsct">
+    <VSCTCompile Include="XenkoPackage.vsct">
       <ResourceName>Menus.ctmenu</ResourceName>
       <SubType>Designer</SubType>
     </VSCTCompile>

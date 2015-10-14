@@ -11,9 +11,9 @@ using System.Reflection;
 using System.Text;
 using System.Threading;
 using Mono.Options;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Graphics.Regression;
 
-namespace SiliconStudio.Paradox.TestRunner2
+namespace SiliconStudio.Xenko.TestRunner2
 {
     class TestServerHost
     {
@@ -144,11 +144,11 @@ namespace SiliconStudio.Paradox.TestRunner2
                 var parameters = new StringBuilder();
                 parameters.Append("-s "); parameters.Append(device.Serial);
                 parameters.Append(@" shell am start -a android.intent.action.MAIN -n " + packageName + "/nunitlite.tests.MainActivity");
-                AddAndroidParameter(parameters, TestRunner.ParadoxServerIp, serverAddresses);
-                AddAndroidParameter(parameters, TestRunner.ParadoxServerPort, ((IPEndPoint)server.Server.LocalEndPoint).Port.ToString());
-                AddAndroidParameter(parameters, TestRunner.ParadoxBuildNumber, buildNumber.ToString());
+                AddAndroidParameter(parameters, TestRunner.XenkoServerIp, serverAddresses);
+                AddAndroidParameter(parameters, TestRunner.XenkoServerPort, ((IPEndPoint)server.Server.LocalEndPoint).Port.ToString());
+                AddAndroidParameter(parameters, TestRunner.XenkoBuildNumber, buildNumber.ToString());
                 if (!String.IsNullOrEmpty(branchName))
-                    AddAndroidParameter(parameters, TestRunner.ParadoxBranchName, branchName);
+                    AddAndroidParameter(parameters, TestRunner.XenkoBranchName, branchName);
                 Console.WriteLine(parameters.ToString());
 
                 adbOutputs = ShellHelper.RunProcessAndGetOutput(adbPath, parameters.ToString());
@@ -238,7 +238,7 @@ namespace SiliconStudio.Paradox.TestRunner2
             var p = new OptionSet
                 {
                     "Copyright (C) 2011-2013 Silicon Studio Corporation. All Rights Reserved",
-                    "Paradox Test Suite Tool - Version: "
+                    "Xenko Test Suite Tool - Version: "
                     +
                     String.Format(
                         "{0}.{1}.{2}",
@@ -285,11 +285,11 @@ namespace SiliconStudio.Paradox.TestRunner2
 
             // get build number
             int buildNumber;
-            if (!Int32.TryParse(Environment.GetEnvironmentVariable("PARADOX_BUILD_NUMBER"), out buildNumber))
+            if (!Int32.TryParse(Environment.GetEnvironmentVariable("XENKO_BUILD_NUMBER"), out buildNumber))
                 buildNumber = -1;
 
             // get branch name
-            var branchName = Environment.GetEnvironmentVariable("PARADOX_BRANCH_NAME");
+            var branchName = Environment.GetEnvironmentVariable("XENKO_BRANCH_NAME");
 
             var exitCode = 0;
 

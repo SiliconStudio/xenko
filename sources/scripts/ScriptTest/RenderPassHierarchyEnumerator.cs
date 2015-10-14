@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Games.ViewModel;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.ViewModel;
 
 namespace ScriptTest
 {

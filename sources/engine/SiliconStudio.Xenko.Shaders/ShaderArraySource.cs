@@ -7,7 +7,7 @@ using System.Linq;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// An array of <see cref="ShaderSource"/> used only in shader mixin compositions.

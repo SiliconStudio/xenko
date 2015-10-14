@@ -5,9 +5,9 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Internals;
+using SiliconStudio.Xenko.Internals;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     /// <summary>
     /// Untyped base class for animation curves.

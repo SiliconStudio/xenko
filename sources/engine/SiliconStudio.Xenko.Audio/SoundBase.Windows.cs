@@ -5,7 +5,7 @@
 using SharpDX.XAudio2;
 
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     public partial class SoundBase
     {

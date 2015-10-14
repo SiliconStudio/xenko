@@ -4,10 +4,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Analysis;
+using SiliconStudio.Xenko.Shaders.Parser.Analysis;
 using SiliconStudio.Shaders.Ast;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     [DebuggerDisplay("Variables[{VariablesReferences.Count}] Methods[{MethodsReferences.Count}]")]
     internal class ReferencesPool

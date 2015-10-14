@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
@@ -43,29 +43,29 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\engine\Paradox.Effects.Modules\Paradox.Effects.Modules.csproj">
+    <ProjectReference Include="..\..\engine\Xenko.Effects.Modules\Xenko.Effects.Modules.csproj">
       <Project>{0342C3E7-4A38-46B4-A8EC-E728D50085D3}</Project>
-      <Name>Paradox.Effects.Modules</Name>
+      <Name>Xenko.Effects.Modules</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\Paradox.Engine.D3D\Paradox.Engine.D3D.csproj">
+    <ProjectReference Include="..\..\engine\Xenko.Engine.D3D\Xenko.Engine.D3D.csproj">
       <Project>{277482AC-7EAE-4DF1-896E-539E0ED0C90D}</Project>
-      <Name>Paradox.Engine.D3D</Name>
+      <Name>Xenko.Engine.D3D</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\Paradox.Engine\Paradox.Engine.csproj">
+    <ProjectReference Include="..\..\engine\Xenko.Engine\Xenko.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
-      <Name>Paradox.Engine</Name>
+      <Name>Xenko.Engine</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\framework\Paradox.Framework.Graphics.Direct3D\Paradox.Framework.Graphics.Direct3D.csproj">
+    <ProjectReference Include="..\..\framework\Xenko.Framework.Graphics.Direct3D\Xenko.Framework.Graphics.Direct3D.csproj">
       <Project>{94E5C98F-B906-4103-AAD8-BCBBF5A12648}</Project>
-      <Name>Paradox.Framework.Graphics.Direct3D</Name>
+      <Name>Xenko.Framework.Graphics.Direct3D</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\framework\Paradox.Framework.Graphics\Paradox.Framework.Graphics.csproj">
+    <ProjectReference Include="..\..\framework\Xenko.Framework.Graphics\Xenko.Framework.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>Paradox.Framework.Graphics</Name>
+      <Name>Xenko.Framework.Graphics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\framework\Paradox.Framework.Shaders\Paradox.Framework.Shaders.csproj">
+    <ProjectReference Include="..\..\framework\Xenko.Framework.Shaders\Xenko.Framework.Shaders.csproj">
       <Project>{E9D4E7D3-9345-48E4-8F1C-78CD6B2D8142}</Project>
-      <Name>Paradox.Framework.Shaders</Name>
+      <Name>Xenko.Framework.Shaders</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

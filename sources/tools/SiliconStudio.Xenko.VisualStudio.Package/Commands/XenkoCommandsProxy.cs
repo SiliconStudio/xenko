@@ -9,13 +9,14 @@ using System.Reflection;
 using NShader;
 using NuGet;
 using SiliconStudio.Assets;
+using SiliconStudio.Paradox.VisualStudio.Commands;
 
-namespace SiliconStudio.Paradox.VisualStudio.Commands
+namespace SiliconStudio.Xenko.VisualStudio.Commands
 {
     /// <summary>
-    /// Proxies commands to real <see cref="IParadoxCommands"/> implementation.
+    /// Proxies commands to real <see cref="IXenkoCommands"/> implementation.
     /// </summary>
-    public class ParadoxCommandsProxy : MarshalByRefObject, IParadoxCommands
+    public class XenkoCommandsProxy : MarshalByRefObject
     {
         public static readonly Version MinimumVersion = new Version(1, 1);
 
@@ -26,43 +27,55 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             public Version ExpectedVersion;
 
             public Version LoadedVersion;
+
+            public bool IsLegacy => LoadedVersion != null && LoadedVersion < new Version(1, 4);
         }
 
-        private static object computedParadoxPackageInfoLock = new object();
-        private static PackageInfo computedParadoxPackageInfo;
+        private static object computedXenkoPackageInfoLock = new object();
+        private static PackageInfo computedXenkoPackageInfo;
         private static string solution;
         private static bool solutionChanged;
-        private IParadoxCommands remote;
+        private IXenkoCommands remote;
+        private IParadoxCommands legacyRemote;
         private List<Tuple<string, DateTime>> assembliesLoaded = new List<Tuple<string, DateTime>>();
 
-        private static readonly object paradoxCommandProxyLock = new object();
-        private static ParadoxCommandsProxy currentInstance;
+        private static readonly object xenkoCommandProxyLock = new object();
+        private static XenkoCommandsProxy currentInstance;
         private static AppDomain currentAppDomain;
 
-        static ParadoxCommandsProxy()
+        static XenkoCommandsProxy()
         {
             // This assembly resolve is only used to resolve the GetExecutingAssembly on the Default Domain
-            // when casting to ParadoxCommandsProxy in the ParadoxCommandsProxy.GetProxy method
+            // when casting to XenkoCommandsProxy in the XenkoCommandsProxy.GetProxy method
             AppDomain.CurrentDomain.AssemblyResolve += DefaultDomainAssemblyResolve;
         }
 
-        public ParadoxCommandsProxy()
+        public XenkoCommandsProxy()
         {
-            AppDomain.CurrentDomain.AssemblyResolve += ParadoxDomainAssemblyResolve;
-            var assembly = Assembly.Load("SiliconStudio.Paradox.VisualStudio.Commands");
-            remote = (IParadoxCommands)assembly.CreateInstance("SiliconStudio.Paradox.VisualStudio.Commands.ParadoxCommands");
+            AppDomain.CurrentDomain.AssemblyResolve += XenkoDomainAssemblyResolve;
+
+            if (XenkoPackageInfo.IsLegacy)
+            {
+                var assembly = Assembly.Load("SiliconStudio.Paradox.VisualStudio.Commands");
+                legacyRemote = (IParadoxCommands)assembly.CreateInstance("SiliconStudio.Paradox.VisualStudio.Commands.ParadoxCommands");
+            }
+            else
+            {
+                var assembly = Assembly.Load("SiliconStudio.Xenko.VisualStudio.Commands");
+                remote = (IXenkoCommands)assembly.CreateInstance("SiliconStudio.Xenko.VisualStudio.Commands.XenkoCommands");
+            }
         }
 
-        public static PackageInfo ParadoxPackageInfo
+        public static PackageInfo XenkoPackageInfo
         {
             get
             {
-                lock (computedParadoxPackageInfoLock)
+                lock (computedXenkoPackageInfoLock)
                 {
-                    if (computedParadoxPackageInfo.SdkPath == null)
-                        computedParadoxPackageInfo = FindParadoxSdkDir();
+                    if (computedXenkoPackageInfo.SdkPath == null)
+                        computedXenkoPackageInfo = FindXenkoSdkDir();
 
-                    return computedParadoxPackageInfo;
+                    return computedXenkoPackageInfo;
                 }
             }
         }
@@ -76,14 +89,14 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         {
             if (domain == null)
             {
-                lock (computedParadoxPackageInfoLock)
+                lock (computedXenkoPackageInfoLock)
                 {
                     // Set the new solution and clear the package info, so it will be recomputed
                     solution = solutionPath;
-                    computedParadoxPackageInfo = new PackageInfo();
+                    computedXenkoPackageInfo = new PackageInfo();
                 }
 
-                lock (paradoxCommandProxyLock)
+                lock (xenkoCommandProxyLock)
                 {
                     solutionChanged = true;
                 }
@@ -114,10 +127,10 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         /// <summary>
         /// Gets the current proxy.
         /// </summary>
-        /// <returns>ParadoxCommandsProxy.</returns>
-        public static ParadoxCommandsProxy GetProxy()
+        /// <returns>XenkoCommandsProxy.</returns>
+        public static XenkoCommandsProxy GetProxy()
         {
-            lock (paradoxCommandProxyLock)
+            lock (xenkoCommandProxyLock)
             {
                 // New instance?
                 bool shouldReload = currentInstance == null || solutionChanged;
@@ -139,11 +152,11 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
                         }
                         catch (Exception ex)
                         {
-                            Trace.WriteLine(string.Format("Unexpected exception when unloading AppDomain for ParadoxCommandsProxy: {0}", ex));
+                            Trace.WriteLine(string.Format("Unexpected exception when unloading AppDomain for XenkoCommandsProxy: {0}", ex));
                         }
                     }
 
-                    currentAppDomain = CreateParadoxDomain();
+                    currentAppDomain = CreateXenkoDomain();
                     InitialzeFromSolution(solution, currentAppDomain);
                     currentInstance = CreateProxy(currentAppDomain);
                     currentInstance.Initialize();
@@ -155,32 +168,39 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         }
 
         /// <summary>
-        /// Creates the paradox domain.
+        /// Creates the xenko domain.
         /// </summary>
         /// <returns>AppDomain.</returns>
-        public static AppDomain CreateParadoxDomain()
+        public static AppDomain CreateXenkoDomain()
         {
-            return AppDomain.CreateDomain("paradox-domain");
+            return AppDomain.CreateDomain("xenko-domain");
         }
 
         /// <summary>
         /// Gets the current proxy.
         /// </summary>
-        /// <returns>ParadoxCommandsProxy.</returns>
-        public static ParadoxCommandsProxy CreateProxy(AppDomain domain)
+        /// <returns>XenkoCommandsProxy.</returns>
+        public static XenkoCommandsProxy CreateProxy(AppDomain domain)
         {
             if (domain == null) throw new ArgumentNullException("domain");
-            return (ParadoxCommandsProxy)domain.CreateInstanceFromAndUnwrap(typeof(ParadoxCommandsProxy).Assembly.Location, typeof(ParadoxCommandsProxy).FullName);
+            return (XenkoCommandsProxy)domain.CreateInstanceFromAndUnwrap(typeof(XenkoCommandsProxy).Assembly.Location, typeof(XenkoCommandsProxy).FullName);
         }
 
-        public void Initialize(string paradoxSdkDir)
+        public void Initialize(string xenkoSdkDir)
         {
             Initialize();
         }
 
         public void Initialize()
         {
-            remote.Initialize(ParadoxPackageInfo.SdkPath);
+            if (remote != null)
+            {
+                remote.Initialize(XenkoPackageInfo.SdkPath);
+            }
+            else
+            {
+                legacyRemote.Initialize(XenkoPackageInfo.SdkPath);
+            }
         }
 
         public bool ShouldReload()
@@ -206,51 +226,72 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
             return false;
         }
 
-        public void StartRemoteBuildLogServer(IBuildMonitorCallback buildMonitorCallback, string logPipeUrl)
+        public void StartRemoteBuildLogServer(BuildMonitorCallback buildMonitorCallback, string logPipeUrl)
         {
-            remote.StartRemoteBuildLogServer(buildMonitorCallback, logPipeUrl);
+            if (remote != null)
+            {
+                remote.StartRemoteBuildLogServer(buildMonitorCallback, logPipeUrl);
+            }
+            else
+            {
+                legacyRemote.StartRemoteBuildLogServer(buildMonitorCallback, logPipeUrl);
+            }
         }
 
         public byte[] GenerateShaderKeys(string inputFileName, string inputFileContent)
         {
-            return remote.GenerateShaderKeys(inputFileName, inputFileContent);
+            if (remote != null)
+            {
+                return remote.GenerateShaderKeys(inputFileName, inputFileContent);
+            }
+            else
+            {
+                return legacyRemote.GenerateShaderKeys(inputFileName, inputFileContent);
+            }
         }
 
         public RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span)
         {
             // TODO: We need to know which package is currently selected in order to query all valid shaders
-            return remote.AnalyzeAndGoToDefinition(sourceCode, span);
+            if (remote != null)
+            {
+                return remote.AnalyzeAndGoToDefinition(sourceCode, span);
+            }
+            else
+            {
+                return legacyRemote.AnalyzeAndGoToDefinition(sourceCode, span);
+            }
         }
 
         private static Assembly DefaultDomainAssemblyResolve(object sender, ResolveEventArgs args)
         {
             // This assembly resolve is only used to resolve the GetExecutingAssembly on the Default Domain
-            // when casting to ParadoxCommandsProxy in the ParadoxCommandsProxy.GetProxy method
+            // when casting to XenkoCommandsProxy in the XenkoCommandsProxy.GetProxy method
             var executingAssembly = Assembly.GetExecutingAssembly();
 
             // Redirect requests for earlier package versions to the current one
             var assemblyName = new AssemblyName(args.Name);
-            if (assemblyName.Name == executingAssembly.GetName().Name)
+            if (assemblyName.Name == executingAssembly.GetName().Name || assemblyName.Name.StartsWith("SiliconStudio.Paradox.VisualStudio.Package"))
                 return executingAssembly;
 
             return null;
         }
 
-        private Assembly ParadoxDomainAssemblyResolve(object sender, ResolveEventArgs args)
+        private Assembly XenkoDomainAssemblyResolve(object sender, ResolveEventArgs args)
         {
-            var paradoxSdkDir = ParadoxPackageInfo.SdkPath;
-            if (paradoxSdkDir == null)
+            var xenkoSdkDir = XenkoPackageInfo.SdkPath;
+            if (xenkoSdkDir == null)
                 return null;
 
-            var paradoxSdkBinDir = Path.Combine(paradoxSdkDir, @"Bin\Windows-Direct3D11");
+            var xenkoSdkBinDir = Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11");
 
-            // Try to load .dll/.exe from Paradox SDK directory
+            // Try to load .dll/.exe from Xenko SDK directory
             var assemblyName = new AssemblyName(args.Name);
-            var assemblyFile = Path.Combine(paradoxSdkBinDir, assemblyName.Name + ".dll");
+            var assemblyFile = Path.Combine(xenkoSdkBinDir, assemblyName.Name + ".dll");
             if (File.Exists(assemblyFile))
                 return LoadAssembly(assemblyFile);
 
-            assemblyFile = Path.Combine(paradoxSdkBinDir, assemblyName.Name + ".exe");
+            assemblyFile = Path.Combine(xenkoSdkBinDir, assemblyName.Name + ".exe");
             if (File.Exists(assemblyFile))
                 return LoadAssembly(assemblyFile);
 
@@ -282,51 +323,51 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands
         }
 
         /// <summary>
-        /// Gets the paradox SDK dir.
+        /// Gets the xenko SDK dir.
         /// </summary>
         /// <returns></returns>
-        private static PackageInfo FindParadoxSdkDir()
+        private static PackageInfo FindXenkoSdkDir()
         {
             // Resolve the sdk version to load from the solution's package
             var packageInfo = new PackageInfo { ExpectedVersion = PackageSessionHelper.GetPackageVersion(solution) };
 
             // TODO: Maybe move it in some common class somewhere? (in this case it would be included with "Add as link" in VSPackage)
-            var paradoxSdkDir = Environment.GetEnvironmentVariable("SiliconStudioParadoxDir");
+            var xenkoSdkDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") ?? Environment.GetEnvironmentVariable("SiliconStudioParadoxDir");
 
-            // Failed to locate paradox
-            if (paradoxSdkDir == null)
+            // Failed to locate xenko
+            if (xenkoSdkDir == null)
                 return packageInfo;
 
             // If we are in a dev directory, assume we have the right version
-            if (File.Exists(Path.Combine(paradoxSdkDir, "build\\Paradox.sln")))
+            if (File.Exists(Path.Combine(xenkoSdkDir, "build\\Xenko.sln")))
             {
-                packageInfo.SdkPath = paradoxSdkDir;
+                packageInfo.SdkPath = xenkoSdkDir;
                 packageInfo.LoadedVersion = packageInfo.ExpectedVersion;
                 return packageInfo;
             }
 
             // Check if we are in a root directory with store/packages facilities
-            if (NugetStore.IsStoreDirectory(paradoxSdkDir))
+            if (NugetStore.IsStoreDirectory(xenkoSdkDir))
             {
-                var store = new NugetStore(paradoxSdkDir);
-                IPackage paradoxPackage = null;
+                var store = new NugetStore(xenkoSdkDir);
+                IPackage xenkoPackage = null;
 
                 // Try to find the package with the expected version
                 if (packageInfo.ExpectedVersion != null && packageInfo.ExpectedVersion >= MinimumVersion)
-                    paradoxPackage = store.GetPackagesInstalled(store.MainPackageId).FirstOrDefault(package => GetVersion(package) == packageInfo.ExpectedVersion);
+                    xenkoPackage = store.GetPackagesInstalled(store.MainPackageId).FirstOrDefault(package => GetVersion(package) == packageInfo.ExpectedVersion);
 
                 // If the expected version is not found, get the latest package
-                if (paradoxPackage == null)
-                    paradoxPackage = store.GetLatestPackageInstalled(store.MainPackageId);
+                if (xenkoPackage == null)
+                    xenkoPackage = store.GetLatestPackageInstalled(store.MainPackageId);
 
                 // If no package was found, return no sdk path
-                if (paradoxPackage == null)
+                if (xenkoPackage == null)
                     return packageInfo;
 
                 // Return the loaded version and the sdk path
-                var packageDirectory = store.PathResolver.GetPackageDirectory(paradoxPackage);
-                packageInfo.LoadedVersion = GetVersion(paradoxPackage);
-                packageInfo.SdkPath = Path.Combine(paradoxSdkDir, store.RepositoryPath, packageDirectory);
+                var packageDirectory = store.PathResolver.GetPackageDirectory(xenkoPackage);
+                packageInfo.LoadedVersion = GetVersion(xenkoPackage);
+                packageInfo.SdkPath = Path.Combine(xenkoSdkDir, store.RepositoryPath, packageDirectory);
             }
 
             return packageInfo;

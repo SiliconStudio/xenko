@@ -6,9 +6,9 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering.ProceduralModels
+namespace SiliconStudio.Xenko.Rendering.ProceduralModels
 {
     internal class ProceduralModelDescriptorContentSerializer : ContentSerializerBase<Model>
     {

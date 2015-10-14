@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Assets.Textures.Packing
+namespace SiliconStudio.Xenko.Assets.Textures.Packing
 {
     /// <summary>
     /// This specifies the full layout of an atlas texture.

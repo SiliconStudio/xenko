@@ -3,11 +3,11 @@
 using System.IO;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics.Regression;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics.Regression;
+using SiliconStudio.Xenko.Input;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public class TestGameBase : GraphicsTestBase
     {

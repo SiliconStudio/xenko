@@ -77,7 +77,7 @@
 
 using System.Drawing;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     // Crops unused space from around the edge of a glyph bitmap.
     internal static class GlyphCropper

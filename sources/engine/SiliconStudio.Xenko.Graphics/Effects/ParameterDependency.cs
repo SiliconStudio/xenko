@@ -1,9 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Text;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Graphics.Internals
+namespace SiliconStudio.Xenko.Graphics.Internals
 {
     // Used internally by Effect and EffectParameterUpdaterDefinition
     struct ParameterDependency

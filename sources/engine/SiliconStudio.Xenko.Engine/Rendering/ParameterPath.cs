@@ -5,7 +5,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     [Obsolete]
     internal class ParameterPath

@@ -4,9 +4,9 @@
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Assets.Skyboxes
+namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     /// <summary>
     /// Interface for a skybox model (cubemap, cubecross, latlong, facelist...etc.)

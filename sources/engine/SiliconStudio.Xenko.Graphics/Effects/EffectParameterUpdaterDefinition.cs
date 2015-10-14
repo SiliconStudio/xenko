@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Graphics.Internals
+namespace SiliconStudio.Xenko.Graphics.Internals
 {
     // Used internally by EffectParameterCollectionGroup
     class EffectParameterUpdaterDefinition : ParameterUpdaterDefinition

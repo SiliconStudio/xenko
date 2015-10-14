@@ -4,9 +4,9 @@ using System;
 using System.Diagnostics;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.UI.Events;
+using SiliconStudio.Xenko.UI.Events;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// Represents the base primitive for all the button-like controls

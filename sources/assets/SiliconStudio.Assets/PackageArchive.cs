@@ -48,8 +48,8 @@ namespace SiliconStudio.Assets
                 {
                     // TODO: handle exclude in asset folders
                     //files.Add(NewFile(source, target, @"**\*.cs;**\*.hlsl;**\*.csproj;**\*.csproj.user;**\obj\**"));
-                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.pdxsl", target));
-                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.pdxfx", target));
+                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xksl", target));
+                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkfx", target));
                 }
 
                 var targetProfile = new PackageProfile(profile.Name);
@@ -88,7 +88,7 @@ namespace SiliconStudio.Assets
 
             // Create temp package for archive
             newPackage.TemplateFolders.Add(targetFolder);
-            var newPackageFileName = "temp" + Guid.NewGuid() + ".pdxpkg";
+            var newPackageFileName = "temp" + Guid.NewGuid() + ".xkpkg";
             newPackage.FullPath = package.RootDirectory + "/" + newPackageFileName;
             var result = newPackage.Save();
             if (result.HasErrors)

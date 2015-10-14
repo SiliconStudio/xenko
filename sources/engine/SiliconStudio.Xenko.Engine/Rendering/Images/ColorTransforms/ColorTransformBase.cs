@@ -7,7 +7,7 @@ using System.Reflection;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// Base class for a <see cref="ColorTransformBase"/> used by <see cref="ColorTransform"/> and <see cref="ToneMapOperator"/>.

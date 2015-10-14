@@ -8,11 +8,11 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Base implementation of <see cref="IGraphicsRenderer"/>

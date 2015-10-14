@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 using System.ComponentModel;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<SphereColliderShapeDesc>))]
     [DataContract("SphereColliderShapeDesc")]

@@ -14,7 +14,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace SiliconStudio.Paradox.VisualStudio
+namespace SiliconStudio.Xenko.VisualStudio
 {
     /// <summary>
     /// Interaction logic for MyControl.xaml
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.VisualStudio
         private void button1_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show(string.Format(System.Globalization.CultureInfo.CurrentUICulture, "We are inside {0}.button1_Click()", this.ToString()),
-                            "Paradox View");
+                            "Xenko View");
 
         }
     }

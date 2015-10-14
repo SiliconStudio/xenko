@@ -3,9 +3,9 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering.Materials.Processor.Visitors;
+using SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors;
 
-namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
+namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 {
     /// <summary>
     /// A compute scalar producing a scalar from a stream.

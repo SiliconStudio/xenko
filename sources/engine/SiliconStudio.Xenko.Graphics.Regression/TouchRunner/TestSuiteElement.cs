@@ -35,7 +35,7 @@ using MonoTouch.Dialog;
 
 using NUnit.Framework.Internal;
 
-namespace SiliconStudio.Paradox.UnitTesting.UI {
+namespace SiliconStudio.Xenko.UnitTesting.UI {
 
 	class TestSuiteElement : TestElement {
 

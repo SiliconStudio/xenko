@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Core.Reflection;
 using System.Reflection;
-using SiliconStudio.Paradox.SpriteStudio.Runtime;
+using SiliconStudio.Xenko.SpriteStudio.Runtime;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("SpriteStudioComponent")]
     [Display(99, "Sprite Studio", Expand = ExpandRule.Once)]

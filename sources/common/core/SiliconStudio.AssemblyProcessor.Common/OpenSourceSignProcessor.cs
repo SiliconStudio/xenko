@@ -20,7 +20,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             // We have a delay signed assembly that is not strong name signed yet.
             // Let's strong sign it now (a.k.a. OSS, OpenSourceSign)
-            // Note: Maybe we should make sure it's actually Paradox key?
+            // Note: Maybe we should make sure it's actually Xenko key?
             assembly.MainModule.Attributes |= ModuleAttributes.StrongNameSigned;
 
             return true;

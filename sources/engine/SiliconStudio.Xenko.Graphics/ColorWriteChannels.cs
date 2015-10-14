@@ -3,7 +3,7 @@
 using System;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>	
     /// Identify which components of each pixel of a render target are writable during blending.	

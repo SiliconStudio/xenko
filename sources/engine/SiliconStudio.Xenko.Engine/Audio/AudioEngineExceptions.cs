@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
     /// The exception that is thrown when an internal error happened in the Audio System. That is an error that is not due to the user behavior.

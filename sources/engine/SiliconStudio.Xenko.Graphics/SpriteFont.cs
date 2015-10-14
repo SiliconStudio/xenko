@@ -10,12 +10,12 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Graphics.Font;
+using SiliconStudio.Xenko.Graphics.Font;
 
 using Color = SiliconStudio.Core.Mathematics.Color;
 using RectangleF = SiliconStudio.Core.Mathematics.RectangleF;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// SpriteFont to use with <see cref="SpriteBatch"/>. See <see cref="SpriteFont"/> to learn how to use it.
@@ -102,7 +102,7 @@ namespace SiliconStudio.Paradox.Graphics
         protected SwizzleMode Swizzle;
 
         /// <summary>
-        /// The <see cref="SiliconStudio.Paradox.Graphics.Font.FontSystem"/> that is managing this sprite font.
+        /// The <see cref="SiliconStudio.Xenko.Graphics.Font.FontSystem"/> that is managing this sprite font.
         /// </summary>
         [DataMemberIgnore]
         internal virtual FontSystem FontSystem

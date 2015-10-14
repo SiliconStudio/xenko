@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// A resource allocated by <see cref="GraphicsResourceAllocator"/> providing allocation informations.

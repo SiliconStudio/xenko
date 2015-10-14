@@ -2,14 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Parser;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
+namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
 {
-    internal class ParadoxParsingInfo
+    internal class XenkoParsingInfo
     {
         #region Public properties
 
@@ -92,7 +92,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
 
         #region Constructor
 
-        public ParadoxParsingInfo()
+        public XenkoParsingInfo()
         {
             StageInitializedVariables = new HashSet<Variable>();
             Typedefs = new List<Typedef>();

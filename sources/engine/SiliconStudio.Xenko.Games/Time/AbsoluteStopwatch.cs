@@ -6,7 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Diagnostics;
 
-namespace SiliconStudio.Paradox.Games.Time
+namespace SiliconStudio.Xenko.Games.Time
 {
     /// <summary>
     /// Represent an absolute time measurement stopwatch. (with as few internal overhead as possible)

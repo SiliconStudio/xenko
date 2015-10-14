@@ -3,10 +3,10 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
 
-namespace SiliconStudio.Paradox.Rendering.ProceduralModels
+namespace SiliconStudio.Xenko.Rendering.ProceduralModels
 {
     /// <summary>
     /// A cube procedural model

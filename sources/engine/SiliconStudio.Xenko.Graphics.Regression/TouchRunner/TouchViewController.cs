@@ -41,7 +41,7 @@ using MonoTouch.Dialog;
 using CGSize = global::System.Drawing.SizeF;
 #endif
 
-namespace SiliconStudio.Paradox.UnitTesting.UI {
+namespace SiliconStudio.Xenko.UnitTesting.UI {
 
 	[CLSCompliant (false)]
 	public partial class TouchViewController : DialogViewController {

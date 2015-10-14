@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     public class AnimationCurveEvaluatorOptimizedQuaternionGroup : AnimationCurveEvaluatorOptimizedGroup<Quaternion>
     {

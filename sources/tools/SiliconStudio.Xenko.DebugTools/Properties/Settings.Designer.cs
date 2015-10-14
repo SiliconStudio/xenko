@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SiliconStudio.Paradox.DebugTools.Properties
+namespace SiliconStudio.Xenko.DebugTools.Properties
 {
 
 

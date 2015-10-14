@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A collection of <see cref="RenderItem"/>.

@@ -7,10 +7,10 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
     public class GameSettingsAssetCompiler : AssetCompilerBase<GameSettingsAsset>
     {

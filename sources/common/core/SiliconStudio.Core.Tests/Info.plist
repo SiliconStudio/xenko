@@ -24,6 +24,6 @@
     <key>CFBundleDisplayName</key>
     <string>SiliconStudioCoreTests</string>
     <key>CFBundleIdentifier</key>
-    <string>jp.co.siliconstudio.paradox.core.tests</string>
+    <string>jp.co.siliconstudio.xenko.core.tests</string>
   </dict>
 </plist>

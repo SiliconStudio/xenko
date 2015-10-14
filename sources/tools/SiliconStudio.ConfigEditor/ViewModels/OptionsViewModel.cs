@@ -8,7 +8,7 @@ using System.Windows;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.ViewModel;
 
-namespace SiliconStudio.Paradox.ConfigEditor.ViewModels
+namespace SiliconStudio.Xenko.ConfigEditor.ViewModels
 {
     public class OptionsViewModel : ViewModelBase
     {
@@ -18,11 +18,11 @@ namespace SiliconStudio.Paradox.ConfigEditor.ViewModels
         {
             Options = Options.Load() ?? new Options();
 
-            ParadoxPath = Options.ParadoxPath;
-            ParadoxConfigFilename = Options.ParadoxConfigFilename;
+            XenkoPath = Options.XenkoPath;
+            XenkoConfigFilename = Options.XenkoConfigFilename;
 
-            CheckParadoxPath();
-            CheckParadoxConfigFilename();
+            CheckXenkoPath();
+            CheckXenkoConfigFilename();
 
             BrowsePathCommand = new AnonymousCommand(BrowsePath);
             BrowseConfigFileCommand = new AnonymousCommand(BrowseConfigFile);
@@ -41,83 +41,83 @@ namespace SiliconStudio.Paradox.ConfigEditor.ViewModels
         {
             var dialog = new System.Windows.Forms.FolderBrowserDialog
             {
-                Description = "Select Paradox base directory",
+                Description = "Select Xenko base directory",
                 ShowNewFolderButton = true,
             };
 
             if (dialog.ShowDialog() == System.Windows.Forms.DialogResult.OK)
-                ParadoxPath = dialog.SelectedPath;
+                XenkoPath = dialog.SelectedPath;
         }
 
         private void BrowseConfigFile()
         {
             var dialog = new Microsoft.Win32.OpenFileDialog
             {
-                Title = "Select the Paradox configuration file",
+                Title = "Select the Xenko configuration file",
                 Filter = "Xml Files (*.xml)|*.xml|All Files (*.*)|*.*",
                 Multiselect = false,
                 CheckFileExists = true,
             };
 
             if (dialog.ShowDialog() == true)
-                ParadoxConfigFilename = dialog.FileName;
+                XenkoConfigFilename = dialog.FileName;
         }
 
-        private string paradoxPath;
-        public string ParadoxPath
+        private string xenkoPath;
+        public string XenkoPath
         {
-            get { return paradoxPath; }
+            get { return xenkoPath; }
             set
             {
-                if (SetValue(ref paradoxPath, value, "ParadoxPath"))
-                    CheckParadoxPath();
+                if (SetValue(ref xenkoPath, value, "XenkoPath"))
+                    CheckXenkoPath();
             }
         }
 
-        private bool isParadoxPathValid;
-        public bool IsParadoxPathValid
+        private bool isXenkoPathValid;
+        public bool IsXenkoPathValid
         {
-            get { return isParadoxPathValid; }
-            set { SetValue(ref isParadoxPathValid, value, "IsParadoxPathValid"); }
+            get { return isXenkoPathValid; }
+            set { SetValue(ref isXenkoPathValid, value, "IsXenkoPathValid"); }
         }
 
-        private void CheckParadoxPath()
+        private void CheckXenkoPath()
         {
-            IsParadoxPathValid = Directory.Exists(ParadoxPath);
+            IsXenkoPathValid = Directory.Exists(XenkoPath);
         }
 
-        private string paradoxConfigFilename;
-        public string ParadoxConfigFilename
+        private string xenkoConfigFilename;
+        public string XenkoConfigFilename
         {
-            get { return paradoxConfigFilename; }
+            get { return xenkoConfigFilename; }
             set
             {
-                if (SetValue(ref paradoxConfigFilename, value, "ParadoxConfigFilename"))
-                    CheckParadoxConfigFilename();
+                if (SetValue(ref xenkoConfigFilename, value, "XenkoConfigFilename"))
+                    CheckXenkoConfigFilename();
             }
         }
 
-        private bool isParadoxConfigFilenameValid;
-        public bool IsParadoxConfigFilenameValid
+        private bool isXenkoConfigFilenameValid;
+        public bool IsXenkoConfigFilenameValid
         {
-            get { return isParadoxConfigFilenameValid; }
-            set { SetValue(ref isParadoxConfigFilenameValid, value, "IsParadoxConfigFilenameValid"); }
+            get { return isXenkoConfigFilenameValid; }
+            set { SetValue(ref isXenkoConfigFilenameValid, value, "IsXenkoConfigFilenameValid"); }
         }
 
-        private void CheckParadoxConfigFilename()
+        private void CheckXenkoConfigFilename()
         {
-            if (string.IsNullOrWhiteSpace(ParadoxConfigFilename))
+            if (string.IsNullOrWhiteSpace(XenkoConfigFilename))
             {
-                IsParadoxConfigFilenameValid = true;
+                IsXenkoConfigFilenameValid = true;
                 return;
             }
 
-            var tempFilename = ParadoxConfigFilename;
+            var tempFilename = XenkoConfigFilename;
 
             if (Path.IsPathRooted(tempFilename) == false)
-                tempFilename = Path.Combine(ParadoxPath, ParadoxConfigFilename);
+                tempFilename = Path.Combine(XenkoPath, XenkoConfigFilename);
 
-            IsParadoxConfigFilenameValid = File.Exists(tempFilename);
+            IsXenkoConfigFilenameValid = File.Exists(tempFilename);
         }
 
         private ICommand acceptCommand;
@@ -133,21 +133,21 @@ namespace SiliconStudio.Paradox.ConfigEditor.ViewModels
 
         private void Accept()
         {
-            if (string.IsNullOrWhiteSpace(ParadoxPath))
+            if (string.IsNullOrWhiteSpace(XenkoPath))
             {
-                MessageBox.Show("Invalid Paradox Path, this field must not be empty.", "Paradox Path Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Invalid Xenko Path, this field must not be empty.", "Xenko Path Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            if (Directory.Exists(ParadoxPath) == false)
+            if (Directory.Exists(XenkoPath) == false)
             {
-                string message = string.Format("Invalid Paradox Path, the directory '{0}' does not exit.", ParadoxPath);
-                MessageBox.Show(message, "Paradox Path Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                string message = string.Format("Invalid Xenko Path, the directory '{0}' does not exit.", XenkoPath);
+                MessageBox.Show(message, "Xenko Path Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            Options.ParadoxPath = ParadoxPath;
-            Options.ParadoxConfigFilename = ParadoxConfigFilename;
+            Options.XenkoPath = XenkoPath;
+            Options.XenkoConfigFilename = XenkoConfigFilename;
 
             Options.Save();
 

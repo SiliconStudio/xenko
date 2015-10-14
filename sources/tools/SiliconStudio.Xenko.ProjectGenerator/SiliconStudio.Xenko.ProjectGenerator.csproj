@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,10 +9,10 @@
     <ProjectGuid>{4B299721-18EA-4B6D-AFD5-2D6E188B97BD}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Paradox.ProjectGenerator</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.ProjectGenerator</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.ProjectGenerator</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.ProjectGenerator</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
@@ -67,14 +67,14 @@
       <Name>SiliconStudio.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Assets\SiliconStudio.Paradox.Assets.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Assets\SiliconStudio.Xenko.Assets.csproj">
       <Project>{39AE9C77-E94B-404F-8768-B6261B3C1E0E}</Project>
-      <Name>SiliconStudio.Paradox.Assets</Name>
+      <Name>SiliconStudio.Xenko.Assets</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.ProjectTemplating\SiliconStudio.ProjectTemplating.csproj">
@@ -88,47 +88,47 @@
       <Generator>TextTemplatingFilePreprocessor</Generator>
       <LastGenOutput>ResharperDotSettings.cs</LastGenOutput>
     </None>
-    <None Include="Templates\Paradox.UnitTests\%24ProjectName%24.Android.csproj.t4">
+    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Android.csproj.t4">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Templates\Paradox.UnitTests\%24ProjectName%24.iOS.csproj.t4">
+    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.iOS.csproj.t4">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Templates\Paradox.UnitTests\%24ProjectName%24.Windows.csproj.t4">
+    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.Windows.csproj.t4">
       <SubType>Designer</SubType>
     </None>
     <None Include="Templates\Common.Imports.targets.t4">
       <SubType>Designer</SubType>
     </None>
     <None Include="Templates\Common.PropertyGroups.targets.t4" />
-    <None Include="Templates\Paradox.UnitTests\%24ProjectName%24.WindowsPhone.csproj.t4" />
-    <None Include="Templates\Paradox.UnitTests\%24ProjectName%24.WindowsStore.csproj.t4" />
-    <None Include="Templates\Paradox.UnitTests\MainPage.xaml.cs.t4" />
-    <None Include="Templates\Paradox.UnitTests\MainPage.xaml.t4" />
-    <None Include="Templates\Paradox.UnitTests\App.xaml.cs.t4" />
-    <None Include="Templates\Paradox.UnitTests\App.xaml.t4" />
-    <None Include="Templates\Paradox.UnitTests\Info.plist.t4" />
-    <None Include="Templates\Paradox.UnitTests\PackageWindowsPhone.appxmanifest.t4" />
-    <None Include="Templates\Paradox.UnitTests\PackageWindowsStore.appxmanifest.t4" />
-    <None Include="Templates\Paradox.UnitTests\Paradox.UnitTests.ttproj" />
-    <None Include="Templates\Paradox.UnitTests\Properties\AndroidManifest.xml.t4">
+    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.WindowsPhone.csproj.t4" />
+    <None Include="Templates\Xenko.UnitTests\%24ProjectName%24.WindowsStore.csproj.t4" />
+    <None Include="Templates\Xenko.UnitTests\MainPage.xaml.cs.t4" />
+    <None Include="Templates\Xenko.UnitTests\MainPage.xaml.t4" />
+    <None Include="Templates\Xenko.UnitTests\App.xaml.cs.t4" />
+    <None Include="Templates\Xenko.UnitTests\App.xaml.t4" />
+    <None Include="Templates\Xenko.UnitTests\Info.plist.t4" />
+    <None Include="Templates\Xenko.UnitTests\PackageWindowsPhone.appxmanifest.t4" />
+    <None Include="Templates\Xenko.UnitTests\PackageWindowsStore.appxmanifest.t4" />
+    <None Include="Templates\Xenko.UnitTests\Xenko.UnitTests.ttproj" />
+    <None Include="Templates\Xenko.UnitTests\Properties\AndroidManifest.xml.t4">
       <SubType>Designer</SubType>
     </None>
-    <None Include="Templates\Paradox.UnitTests\Properties\AssemblyInfo.cs.t4" />
-    <None Include="Templates\Paradox.UnitTests\TestClass1.cs.t4" />
+    <None Include="Templates\Xenko.UnitTests\Properties\AssemblyInfo.cs.t4" />
+    <None Include="Templates\Xenko.UnitTests\TestClass1.cs.t4" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Templates\Paradox.UnitTests\Resources\drawable\Icon.png" />
+    <None Include="Templates\Xenko.UnitTests\Resources\drawable\Icon.png" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Templates\Paradox.GraphicsRegressionTests\" />
+    <Folder Include="Templates\Xenko.GraphicsRegressionTests\" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Templates\Paradox.UnitTests\Assets\ParadoxSplashScreen620x300.png" />
-    <Resource Include="Templates\Paradox.UnitTests\Assets\ParadoxSplashScreen480x800.png" />
-    <Resource Include="Templates\Paradox.UnitTests\Assets\ParadoxIcon106x106.png" />
-    <Content Include="Templates\Paradox.UnitTests\Assets\ParadoxIcon150x150.png" />
-    <Resource Include="Templates\Paradox.UnitTests\Assets\ParadoxIcon54x54.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoSplashScreen620x300.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoSplashScreen480x800.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoIcon106x106.png" />
+    <Content Include="Templates\Xenko.UnitTests\Assets\XenkoIcon150x150.png" />
+    <Resource Include="Templates\Xenko.UnitTests\Assets\XenkoIcon54x54.png" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

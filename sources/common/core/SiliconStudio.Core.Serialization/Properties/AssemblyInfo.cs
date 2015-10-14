@@ -9,5 +9,5 @@ using System.Runtime.CompilerServices;
 
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
-// Make internals Paradox.Framework.visible to all Paradox.Framework.assemblies
+// Make internals Xenko.Framework.visible to all Xenko.Framework.assemblies
 [assembly: InternalsVisibleTo("SiliconStudio.Core.Serialization.Serializers" + SiliconStudio.PublicKeys.Default)]

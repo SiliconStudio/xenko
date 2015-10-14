@@ -14,13 +14,13 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets.SpriteFont.Compiler;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Font;
+using SiliconStudio.Xenko.Assets.SpriteFont.Compiler;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
 
 using Font = SharpDX.DirectWrite.Font;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont
+namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
     public class SpriteFontAssetCompiler : AssetCompilerBase<SpriteFontAsset>
     {

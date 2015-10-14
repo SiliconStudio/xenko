@@ -3,22 +3,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading;
-using SiliconStudio.Paradox.Framework.Time;
+using SiliconStudio.Xenko.Framework.Time;
 using SiliconStudio.Presentation.Extensions;
 using System.Collections.ObjectModel;
-using SiliconStudio.Paradox.Framework.MicroThreading;
+using SiliconStudio.Xenko.Framework.MicroThreading;
 using System.Windows.Threading;
 using System.Windows.Input;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
 using System.Windows.Shapes;
-using SiliconStudio.Paradox.Framework.Diagnostics;
-using SiliconStudio.Paradox.DebugTools.DataStructures;
+using SiliconStudio.Xenko.Framework.Diagnostics;
+using SiliconStudio.Xenko.DebugTools.DataStructures;
 using SiliconStudio.Presentation;
 using SiliconStudio.Presentation.Commands;
 
-namespace SiliconStudio.Paradox.DebugTools.ViewModels
+namespace SiliconStudio.Xenko.DebugTools.ViewModels
 {
     public class RootViewModel : DeprecatedViewModelBase
     {

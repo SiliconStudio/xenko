@@ -27,7 +27,7 @@ using Android.Widget;
 using MonoDroid.Dialog;
 using NUnit.Framework.Api;
 using NUnit.Framework.Internal;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace Android.NUnitLite.UI {
 

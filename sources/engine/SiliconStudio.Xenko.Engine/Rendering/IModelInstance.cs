@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Instance of a model with its parameters.

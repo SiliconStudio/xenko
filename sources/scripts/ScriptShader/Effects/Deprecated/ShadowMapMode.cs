@@ -1,6 +1,6 @@
 using System;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     [Flags]
     public enum ShadowMapMode

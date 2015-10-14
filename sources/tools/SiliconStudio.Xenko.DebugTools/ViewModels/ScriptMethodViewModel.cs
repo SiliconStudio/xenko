@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using SiliconStudio.Paradox.Framework.MicroThreading;
-using SiliconStudio.Paradox.Extensions;
+using SiliconStudio.Xenko.Framework.MicroThreading;
+using SiliconStudio.Xenko.Extensions;
 using System.Windows.Input;
 using SiliconStudio.Presentation;
 using SiliconStudio.Presentation.Commands;
 
-namespace SiliconStudio.Paradox.DebugTools.ViewModels
+namespace SiliconStudio.Xenko.DebugTools.ViewModels
 {
     public class ScriptMethodViewModel : DeprecatedViewModelBase
     {

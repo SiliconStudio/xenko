@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Engine.Shaders.Mixins;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Engine.Shaders.Mixins;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Shaders.Compiler;
 using SiliconStudio.Shaders.Utility;
 
 namespace SiliconStudio.Shaders.Tests

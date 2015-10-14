@@ -3,18 +3,18 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Animations;
-using SiliconStudio.Paradox.SpriteStudio.Runtime;
+using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.SpriteStudio.Runtime;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using SiliconStudio.Paradox.Assets;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Assets;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Offline
+namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioAnimationAssetCompiler : AssetCompilerBase<SpriteStudioAnimationAsset>
     {

@@ -7,19 +7,19 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Text;
 using Microsoft.VisualStudio.Shell;
-using SiliconStudio.Paradox.VisualStudio.CodeGenerator;
-using SiliconStudio.Paradox.VisualStudio.Commands;
+using SiliconStudio.Xenko.VisualStudio.CodeGenerator;
+using SiliconStudio.Xenko.VisualStudio.Commands;
 
-namespace SiliconStudio.Paradox.VisualStudio.Shaders
+namespace SiliconStudio.Xenko.VisualStudio.Shaders
 {
     [ComVisible(true)]
     [ClassInterface(ClassInterfaceType.None)]
-    [Guid(GuidList.guidParadox_VisualStudio_ShaderKeyFileGenerator)]
+    [Guid(GuidList.guidXenko_VisualStudio_ShaderKeyFileGenerator)]
     [ProvideObject(typeof(ShaderKeyFileGenerator), RegisterUsing = RegistrationMethod.CodeBase)]
     public class ShaderKeyFileGenerator : BaseCodeGeneratorWithSite
     {
-        public const string DisplayName = "Paradox Shader C# Key Generator";
-        public const string InternalName = "ParadoxShaderKeyGenerator";
+        public const string DisplayName = "Xenko Shader C# Key Generator";
+        public const string InternalName = "XenkoShaderKeyGenerator";
 
         protected override string GetDefaultExtension()
         {
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Shaders
         {
             try
             {
-                var remoteCommands = ParadoxCommandsProxy.GetProxy();
+                var remoteCommands = XenkoCommandsProxy.GetProxy();
                 return remoteCommands.GenerateShaderKeys(inputFileName, inputFileContent);
             }
             catch (Exception ex)

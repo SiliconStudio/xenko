@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Collections;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// A collection of <see cref="GestureConfig"/>.

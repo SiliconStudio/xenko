@@ -3,19 +3,19 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
     internal static class PreviewerCompilerNames
     {
         // TODO: This will removed
         [Obsolete]
-        private const string PreviewAssemblyName = "SiliconStudio.Paradox.GameStudio.Plugin";
+        private const string PreviewAssemblyName = "SiliconStudio.Xenko.GameStudio.Plugin";
 
         [Obsolete]
         private const string PreviewAssemblyQualifiedName = ", " + PreviewAssemblyName;
 
         [Obsolete]
-        private const string ThumbnailCompilersNamespace = "SiliconStudio.Paradox.GameStudio.Plugin.ThumbnailCompilers.";
+        private const string ThumbnailCompilersNamespace = "SiliconStudio.Xenko.GameStudio.Plugin.ThumbnailCompilers.";
 
         [Obsolete]
         public const string AnimationThumbnailCompilerQualifiedName = ThumbnailCompilersNamespace + "AnimationThumbnailCompiler" + PreviewAssemblyQualifiedName;

@@ -3,9 +3,9 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// Manages <see cref="IShaderMixinBuilder"/> and generation of shader mixins.
@@ -15,40 +15,40 @@ namespace SiliconStudio.Paradox.Shaders
         private static readonly Dictionary<string, IShaderMixinBuilder> RegisteredBuilders = new Dictionary<string, IShaderMixinBuilder>();
 
         /// <summary>
-        /// Registers a <see cref="IShaderMixinBuilder"/> with the specified pdxfx effect name.
+        /// Registers a <see cref="IShaderMixinBuilder"/> with the specified xkfx effect name.
         /// </summary>
-        /// <param name="pdxfxEffectName">Name of the mixin.</param>
+        /// <param name="xkfxEffectName">Name of the mixin.</param>
         /// <param name="builder">The builder.</param>
         /// <exception cref="System.ArgumentNullException">
-        /// pdxfxEffectName
+        /// xkfxEffectName
         /// or
         /// builder
         /// </exception>
-        public static void Register(string pdxfxEffectName, IShaderMixinBuilder builder)
+        public static void Register(string xkfxEffectName, IShaderMixinBuilder builder)
         {
-            if (pdxfxEffectName == null)
-                throw new ArgumentNullException("pdxfxEffectName");
+            if (xkfxEffectName == null)
+                throw new ArgumentNullException("xkfxEffectName");
 
             if (builder == null)
                 throw new ArgumentNullException("builder");
 
             lock (RegisteredBuilders)
             {
-                RegisteredBuilders[pdxfxEffectName] = builder;
+                RegisteredBuilders[xkfxEffectName] = builder;
             }
         }
 
         /// <summary>
         /// Determines whether the specified PDXFX effect is registered.
         /// </summary>
-        /// <param name="pdxfxEffectName">Name of the PDXFX effect.</param>
+        /// <param name="xkfxEffectName">Name of the PDXFX effect.</param>
         /// <returns><c>true</c> if the specified PDXFX effect is registered; otherwise, <c>false</c>.</returns>
-        /// <exception cref="System.ArgumentNullException">pdxfxEffectName</exception>
-        public static bool Contains(string pdxfxEffectName)
+        /// <exception cref="System.ArgumentNullException">xkfxEffectName</exception>
+        public static bool Contains(string xkfxEffectName)
         {
-            if (pdxfxEffectName == null) throw new ArgumentNullException("pdxfxEffectName");
+            if (xkfxEffectName == null) throw new ArgumentNullException("xkfxEffectName");
 
-            var effectName = GetEffectName(pdxfxEffectName);
+            var effectName = GetEffectName(xkfxEffectName);
             var rootEffectName = effectName.Key;
 
             lock (RegisteredBuilders)
@@ -60,42 +60,42 @@ namespace SiliconStudio.Paradox.Shaders
         /// <summary>
         /// Tries to get a <see cref="IShaderMixinBuilder"/> by its name.
         /// </summary>
-        /// <param name="pdxfxEffectName">Name of the mixin.</param>
+        /// <param name="xkfxEffectName">Name of the mixin.</param>
         /// <param name="builder">The builder instance found or null if not found.</param>
         /// <returns><c>true</c> if the builder was found, <c>false</c> otherwise.</returns>
-        /// <exception cref="System.ArgumentNullException">pdxfxEffectName</exception>
-        public static bool TryGet(string pdxfxEffectName, out IShaderMixinBuilder builder)
+        /// <exception cref="System.ArgumentNullException">xkfxEffectName</exception>
+        public static bool TryGet(string xkfxEffectName, out IShaderMixinBuilder builder)
         {
-            if (pdxfxEffectName == null)
-                throw new ArgumentNullException("pdxfxEffectName");
+            if (xkfxEffectName == null)
+                throw new ArgumentNullException("xkfxEffectName");
 
             lock (RegisteredBuilders)
             {
-                return RegisteredBuilders.TryGetValue(pdxfxEffectName, out builder);
+                return RegisteredBuilders.TryGetValue(xkfxEffectName, out builder);
             }
         }
 
         /// <summary>
         /// Generates a <see cref="ShaderMixinSource" /> for the specified names and parameters.
         /// </summary>
-        /// <param name="pdxfxEffectName">The name.</param>
+        /// <param name="xkfxEffectName">The name.</param>
         /// <param name="properties">The properties.</param>
         /// <returns>The result of the mixin.</returns>
         /// <exception cref="System.ArgumentNullException">
-        /// pdxfxEffectName
+        /// xkfxEffectName
         /// or
         /// properties
         /// </exception>
-        /// <exception cref="System.ArgumentException">pdxfxEffectName</exception>
-        public static ShaderMixinSource Generate(string pdxfxEffectName, ParameterCollection properties)
+        /// <exception cref="System.ArgumentException">xkfxEffectName</exception>
+        public static ShaderMixinSource Generate(string xkfxEffectName, ParameterCollection properties)
         {
-            if (pdxfxEffectName == null) throw new ArgumentNullException("pdxfxEffectName");
+            if (xkfxEffectName == null) throw new ArgumentNullException("xkfxEffectName");
 
             if (properties == null)
                 throw new ArgumentNullException("properties");
 
             // Get the effect name and child effect name "RootEffectName.ChildEffectName"
-            var effectName = GetEffectName(pdxfxEffectName);
+            var effectName = GetEffectName(xkfxEffectName);
             var rootEffectName = effectName.Key;
             var childEffectName = effectName.Value;
 
@@ -104,13 +104,13 @@ namespace SiliconStudio.Paradox.Shaders
             lock (RegisteredBuilders)
             {
                 if (!TryGet(rootEffectName, out builder))
-                    throw new ArgumentException(string.Format("Pdxfx effect [{0}] not found", rootEffectName), "pdxfxEffectName");
+                    throw new ArgumentException(string.Format("Xkfx effect [{0}] not found", rootEffectName), "xkfxEffectName");
 
                 builders = new Dictionary<string, IShaderMixinBuilder>(RegisteredBuilders);
             }
 
             // TODO cache mixin context and avoid to recreate one (check if if thread concurrency could occur here)
-            var mixinTree = new ShaderMixinSource() { Name = pdxfxEffectName };
+            var mixinTree = new ShaderMixinSource() { Name = xkfxEffectName };
             var context = new ShaderMixinContext(mixinTree, properties, builders) { ChildEffectName = childEffectName };
             try
             {
@@ -123,11 +123,11 @@ namespace SiliconStudio.Paradox.Shaders
             return mixinTree;
         }
 
-        private static KeyValuePair<string, string> GetEffectName(string pdxfxEffectName)
+        private static KeyValuePair<string, string> GetEffectName(string xkfxEffectName)
         {
-            var mainEffectNameEnd = pdxfxEffectName.IndexOf('.');
-            var rootEffectName = mainEffectNameEnd != -1 ? pdxfxEffectName.Substring(0, mainEffectNameEnd) : pdxfxEffectName;
-            var childEffectName = mainEffectNameEnd != -1 ? pdxfxEffectName.Substring(mainEffectNameEnd + 1) : string.Empty;
+            var mainEffectNameEnd = xkfxEffectName.IndexOf('.');
+            var rootEffectName = mainEffectNameEnd != -1 ? xkfxEffectName.Substring(0, mainEffectNameEnd) : xkfxEffectName;
+            var childEffectName = mainEffectNameEnd != -1 ? xkfxEffectName.Substring(mainEffectNameEnd + 1) : string.Empty;
             return new KeyValuePair<string, string>(rootEffectName, childEffectName);
         }
 

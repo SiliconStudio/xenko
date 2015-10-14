@@ -7,10 +7,10 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.Effect
+namespace SiliconStudio.Xenko.Assets.Effect
 {
     /// <summary>
-    /// Describes a shader effect asset (pdxsl).
+    /// Describes a shader effect asset (xksl).
     /// </summary>
     [DataContract("EffectShader")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true)]
@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
         /// <summary>
         /// The default file extension used by the <see cref="EffectLibraryAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxsl";
+        public const string FileExtension = ".xksl";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="EffectLibraryAsset"/> class.

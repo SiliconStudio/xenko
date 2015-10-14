@@ -3,7 +3,7 @@
 using System;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     internal struct OpenGLShaderBytecodeData
     {

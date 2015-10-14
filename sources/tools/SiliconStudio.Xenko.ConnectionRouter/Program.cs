@@ -9,13 +9,13 @@ using System.Threading;
 using Mono.Options;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Windows;
-using SiliconStudio.Paradox.Engine.Network;
+using SiliconStudio.Xenko.Engine.Network;
 
-namespace SiliconStudio.Paradox.ConnectionRouter
+namespace SiliconStudio.Xenko.ConnectionRouter
 {
     partial class Program
     {
-        private static string IpOverUsbParadoxName = "ParadoxRouterServer";
+        private static string IpOverUsbXenkoName = "XenkoRouterServer";
 
         private static bool ConsoleVisible = false;
 
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             var p = new OptionSet
                 {
                     "Copyright (C) 2011-2015 Silicon Studio Corporation. All Rights Reserved",
-                    "Paradox Router Server - Version: "
+                    "Xenko Router Server - Version: "
                     +
                     String.Format(
                         "{0}.{1}.{2}",
@@ -74,12 +74,12 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     GlobalLogger.GlobalMessageLogged += fileLogListener;
                 }
 
-                // TODO: Lock will be only for this folder but it should be shared across OS (should we resolve SiliconStudioParadoxDir?)
+                // TODO: Lock will be only for this folder but it should be shared across OS (should we resolve SiliconStudioXenkoDir?)
                 using (var mutex = FileLock.TryLock("connectionrouter.lock"))
                 {
                     if (mutex == null)
                     {
-                        Console.WriteLine("Another instance of Paradox Router is already running");
+                        Console.WriteLine("Another instance of Xenko Router is already running");
                         return -1;
                     }
 
@@ -126,7 +126,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
             var components = new System.ComponentModel.Container();
 
             var notifyIcon = new System.Windows.Forms.NotifyIcon(components);
-            notifyIcon.Text = "Paradox Connection Router";
+            notifyIcon.Text = "Xenko Connection Router";
             notifyIcon.Icon = Properties.Resources.Logo;
             notifyIcon.Visible = true;
             notifyIcon.ContextMenu = new System.Windows.Forms.ContextMenu();
@@ -157,7 +157,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 var toolTipIcon = logMessage.Type < LogMessageType.Error ? System.Windows.Forms.ToolTipIcon.Warning : System.Windows.Forms.ToolTipIcon.Error;
 
                 // Display notification (for two second)
-                notifyIcon.ShowBalloonTip(2000, "Paradox Connection Router", logMessage.ToString(), toolTipIcon);
+                notifyIcon.ShowBalloonTip(2000, "Xenko Connection Router", logMessage.ToString(), toolTipIcon);
             };
 
             System.Windows.Forms.Application.ApplicationExit += (sender, e) =>

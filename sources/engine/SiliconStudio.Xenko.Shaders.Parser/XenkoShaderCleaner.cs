@@ -1,15 +1,15 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Visitor;
 
-namespace SiliconStudio.Paradox.Shaders.Parser
+namespace SiliconStudio.Xenko.Shaders.Parser
 {
-    internal class ParadoxShaderCleaner : ShaderVisitor
+    internal class XenkoShaderCleaner : ShaderVisitor
     {
-        public ParadoxShaderCleaner() : base(false, false)
+        public XenkoShaderCleaner() : base(false, false)
         {
         }
 
@@ -32,25 +32,25 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         [Visit]
         public void Visit(Variable variable)
         {
-            variable.Qualifiers.Values.Remove(ParadoxStorageQualifier.Stream);
-            variable.Qualifiers.Values.Remove(ParadoxStorageQualifier.Stage);
-            variable.Qualifiers.Values.Remove(ParadoxStorageQualifier.PatchStream);
+            variable.Qualifiers.Values.Remove(XenkoStorageQualifier.Stream);
+            variable.Qualifiers.Values.Remove(XenkoStorageQualifier.Stage);
+            variable.Qualifiers.Values.Remove(XenkoStorageQualifier.PatchStream);
             Visit((Node)variable);
         }
 
         [Visit]
         public void Visit(MethodDeclaration methodDeclaration)
         {
-            methodDeclaration.Qualifiers.Values.Remove(ParadoxStorageQualifier.Override);
-            methodDeclaration.Qualifiers.Values.Remove(ParadoxStorageQualifier.Clone);
-            methodDeclaration.Qualifiers.Values.Remove(ParadoxStorageQualifier.Stage);
+            methodDeclaration.Qualifiers.Values.Remove(XenkoStorageQualifier.Override);
+            methodDeclaration.Qualifiers.Values.Remove(XenkoStorageQualifier.Clone);
+            methodDeclaration.Qualifiers.Values.Remove(XenkoStorageQualifier.Stage);
             Visit((Node)methodDeclaration);
         }
 
         [Visit]
         public AttributeDeclaration Visit(AttributeDeclaration attribute)
         {
-            if (ParadoxAttributes.AvailableAttributes.Contains(attribute.Name))
+            if (XenkoAttributes.AvailableAttributes.Contains(attribute.Name))
                 return null;
 
             return attribute;
