@@ -53,9 +53,10 @@ namespace SiliconStudio.Assets
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
     [AssetFormatVersion(PackageFileVersion)]
     [AssetUpgrader(0, 1, typeof(RemoveRawImports))]
+    [AssetUpgrader(1, 2, typeof(RenameSystemPackage))]
     public sealed class Package : Asset, IFileSynchronizable
     {
-        private const int PackageFileVersion = 1;
+        private const int PackageFileVersion = 2;
 
         private readonly PackageAssetCollection assets;
 
@@ -1370,6 +1371,23 @@ namespace SiliconStudio.Assets
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        private class RenameSystemPackage : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var dependencies = asset.Meta?.Dependencies;
+
+                if (dependencies != null)
+                {
+                    foreach (var dependency in dependencies)
+                    {
+                        if (dependency.Name == "Paradox")
+                            dependency.Name = "Xenko";
                     }
                 }
             }
