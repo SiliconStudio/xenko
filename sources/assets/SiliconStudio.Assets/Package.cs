@@ -950,6 +950,9 @@ namespace SiliconStudio.Assets
                 {
                     filesToDelete.Add(assetFile.FilePath);
                 }
+
+                // Don't create temporary assets for files deleted during package upgrading
+                return;
             }
 
             // An exception can occur here, so we make sure that loading a single asset is not going to break 
