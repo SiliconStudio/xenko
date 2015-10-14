@@ -12,7 +12,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader("Xenko", "1.0.0-beta01", "1.3.0-beta")]
+    [PackageUpgrader("Xenko", "1.0.0-beta01", "1.4.0-beta")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -54,6 +54,25 @@ namespace SiliconStudio.Xenko.Assets
                     {
                         assetFile.Deleted = true;
                     }
+                }
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
+            {
+                // Update file extensions with Xenko prefix
+                var legacyAssets = from assetFile in assetFiles
+                                   where !assetFile.Deleted
+                                   let extension = assetFile.FilePath.GetFileExtension()
+                                   where extension.StartsWith(".pdx")
+                                   select new { AssetFile = assetFile, NewExtension = ".xk" + extension.Substring(4) };
+
+                foreach (var legacyAsset in legacyAssets.ToArray())
+                {
+                    // Load asset data, so the renamed file will have it's AssetContent set
+                    if (legacyAsset.AssetFile.AssetContent == null)
+                        legacyAsset.AssetFile.AssetContent = File.ReadAllBytes(legacyAsset.AssetFile.FilePath);
+
+                    ChangeFileExtension(assetFiles, legacyAsset.AssetFile, legacyAsset.NewExtension);
                 }
             }
 
