@@ -4,8 +4,6 @@
 using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.Runtime.InteropServices;
-using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -129,214 +127,203 @@ namespace SiliconStudio.Paradox.Physics
                     dispatchInfo.UseContinuous = true;
                 }
             }
-
-            BulletSharp.PersistentManifold.ContactProcessed += PersistentManifoldContactProcessed;
-            BulletSharp.PersistentManifold.ContactDestroyed += PersistentManifoldContactDestroyed;
         }
 
-        private readonly List<KeyValuePair<Collider, Collision>> firstPairsCache = new List<KeyValuePair<Collider, Collision>>();
-        private readonly List<KeyValuePair<Collider, Collision>> newPairsCache = new List<KeyValuePair<Collider, Collision>>();
-        private readonly List<KeyValuePair<Collider, Collision>> deletedPairsCache = new List<KeyValuePair<Collider, Collision>>();
-        private readonly List<KeyValuePair<Collider, Collision>> absLastPairsCache = new List<KeyValuePair<Collider, Collision>>();
+        private readonly Dictionary<BulletSharp.CollisionObject, Collider> aliveColliders = new Dictionary<BulletSharp.CollisionObject, Collider>();
 
-        private readonly List<KeyValuePair<Collision, ContactPoint>> newContactsCache = new List<KeyValuePair<Collision, ContactPoint>>();
-        private readonly List<KeyValuePair<Collision, ContactPoint>> updatedContactsCache = new List<KeyValuePair<Collision, ContactPoint>>();
-        private readonly List<KeyValuePair<Collision, ContactPoint>> endedContactsCache = new List<KeyValuePair<Collision, ContactPoint>>();
-
-        private readonly Dictionary<BulletSharp.CollisionObject, Collider> aliveColliders = new Dictionary<BulletSharp.CollisionObject, Collider>(); 
+        readonly List<ContactPoint> newContactsFastCache = new List<ContactPoint>();
+        readonly List<ContactPoint> updatedContactsFastCache = new List<ContactPoint>();
+        readonly List<ContactPoint> deletedContactsFastCache = new List<ContactPoint>();
 
         internal void ProcessContacts()
         {
-            foreach (var pair in firstPairsCache)
+            var numManifolds = collisionWorld.Dispatcher.NumManifolds;
+            for (var i = 0; i < numManifolds; i++)
             {
-                while (pair.Key.FirstCollisionChannel.Balance < 0)
+                var manifold = collisionWorld.Dispatcher.GetManifoldByIndexInternal(i);
+                var bodyA = manifold.Body0;
+                var bodyB = manifold.Body1;
+
+                Collider colA, colB;
+                if (!aliveColliders.TryGetValue(bodyA, out colA)) continue;
+                if (!aliveColliders.TryGetValue(bodyB, out colB)) continue;
+
+                if (colA == null || colB == null || !colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid) continue;
+
+                newContactsFastCache.Clear();
+                updatedContactsFastCache.Clear();
+                deletedContactsFastCache.Clear();
+
+                //Pairs management
+                Collision pair = null;
+                var newPair = true;
+                foreach (var pair1 in colA.Collisions)
                 {
-                    pair.Key.FirstCollisionChannel.Send(pair.Value);
-                }
-            }
-            firstPairsCache.Clear();
-
-            foreach (var pair in newPairsCache)
-            {
-                while (pair.Key.NewPairChannel.Balance < 0)
-                {
-                    pair.Key.NewPairChannel.Send(pair.Value);
-                }
-            }
-            newPairsCache.Clear();
-
-            foreach (var pair in deletedPairsCache)
-            {
-                while (pair.Key.PairEndedChannel.Balance < 0)
-                {
-                    pair.Key.PairEndedChannel.Send(pair.Value);
-                }
-            }
-            deletedPairsCache.Clear();
-
-            foreach (var pair in absLastPairsCache)
-            {
-                while (pair.Key.AllPairsEndedChannel.Balance < 0)
-                {
-                    pair.Key.AllPairsEndedChannel.Send(pair.Value);
-                }
-            }
-            absLastPairsCache.Clear();
-
-            foreach (var contact in newContactsCache)
-            {
-                while (contact.Key.NewContactChannel.Balance < 0)
-                {
-                    contact.Key.NewContactChannel.Send(contact.Value);
-                }
-            }
-            newContactsCache.Clear();
-
-            foreach (var contact in updatedContactsCache)
-            {
-                while (contact.Key.ContactUpdateChannel.Balance < 0)
-                {
-                    contact.Key.ContactUpdateChannel.Send(contact.Value);
-                }
-            }
-            updatedContactsCache.Clear();
-
-            foreach (var contact in endedContactsCache)
-            {
-                while (contact.Key.ContactEndedChannel.Balance < 0)
-                {
-                    contact.Key.ContactEndedChannel.Send(contact.Value);
-                }
-            }
-            endedContactsCache.Clear();
-        }
-
-        private void PersistentManifoldContactDestroyed(IntPtr userPersistantData)
-        {
-            var contact = (ContactPoint)GCHandle.FromIntPtr(userPersistantData).Target;
-            var pair = contact.Pair;
-            var colA = pair.ColliderA;
-            var colB = pair.ColliderB;
-
-            //pairs
-
-            //are we the last contact of the pair?
-            if (pair.Contacts.Count == 1)
-            {
-                //if so remove the pair
-                deletedPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
-                deletedPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
-
-                colA.Collisions.Remove(pair);
-                colB.Collisions.Remove(pair);
-
-                //did we remove all the pairs?
-                if (colA.Collisions.Count == 0)
-                {
-                    absLastPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
-                }
-                //did we remove all the pairs?
-                if (colB.Collisions.Count == 0)
-                {
-                    absLastPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
-                }
-            }
-
-            //contacts
-            pair.Contacts.Remove(contact);
-            endedContactsCache.Add(new KeyValuePair<Collision, ContactPoint>(pair, contact));
-            contact.Handle.Free();
-        }
-
-        private void PersistentManifoldContactProcessed(BulletSharp.ManifoldPoint cp, BulletSharp.CollisionObject body0, BulletSharp.CollisionObject body1)
-        {
-            if (body0 == null || body1 == null) return;
-
-            //this can fail and will fail in the case of multiple scenes and bodies not of the current simulation ( working as intended )
-            Collider colA, colB;
-            if (!aliveColliders.TryGetValue(body0, out colA)) return;
-            if (!aliveColliders.TryGetValue(body1, out colB)) return;
-
-            if (colA == null || colB == null || !colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid) return;
-
-            //Pairs management
-            Collision pair = null;
-            var newPair = true;
-            foreach (var pair1 in colA.Collisions)
-            {
-                if ((pair1.ColliderA != colA || pair1.ColliderB != colB) && (pair1.ColliderA != colB || pair1.ColliderB != colA)) continue;
-                pair = pair1;
-                newPair = false;
-                break;
-            }
-
-            if (pair == null)
-            {
-                pair = new Collision
-                {
-                    ColliderA = colA,
-                    ColliderB = colB,
-                    Contacts = new List<ContactPoint>()
-                };
-
-                colA.Collisions.Add(pair);
-                colB.Collisions.Add(pair);
-            }
-
-            //Contacts management
-            ContactPoint contact = null;
-            var newContact = true;
-            foreach (var contact1 in pair.Contacts)
-            {
-                if (contact1.Handle.IsAllocated && cp.UserPersistentPtr != IntPtr.Zero && contact1.Handle.Target != GCHandle.FromIntPtr(cp.UserPersistentPtr).Target) continue;
-                contact = contact1;
-                newContact = false;
-                break;
-            }
-
-            if (contact == null)
-            {
-                contact = new ContactPoint
-                {
-                    Distance = cp.Distance,
-                    PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z),
-                    PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z),
-                    Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z),
-                    Pair = pair
-                };
-
-                pair.Contacts.Add(contact);
-
-                contact.Handle = GCHandle.Alloc(contact);
-                cp.UserPersistentPtr = GCHandle.ToIntPtr(contact.Handle);
-                contact.Manifold = cp;
-            }
-
-            if (newPair)
-            {
-                //are we the first pair we detect?
-                if (colA.Collisions.Count == 1)
-                {
-                    firstPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
+                    if ((pair1.ColliderA != colA || pair1.ColliderB != colB) && (pair1.ColliderA != colB || pair1.ColliderB != colA)) continue;
+                    pair = pair1;
+                    newPair = false;
+                    break;
                 }
 
-                //are we the first pair we detect?
-                if (colB.Collisions.Count == 1)
+                var numContacts = manifold.NumContacts;
+                if (numContacts == 0 && pair == null)
                 {
-                    firstPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
+                    continue;
                 }
 
-                newPairsCache.Add(new KeyValuePair<Collider, Collision>(colA, pair));
-                newPairsCache.Add(new KeyValuePair<Collider, Collision>(colB, pair));
-            }
+                if (pair == null)
+                {
+                    pair = new Collision
+                    {
+                        ColliderA = colA,
+                        ColliderB = colB,
+                        Contacts = new List<ContactPoint>()
+                    };
 
-            if (newContact)
-            {
-                newContactsCache.Add(new KeyValuePair<Collision, ContactPoint>(pair, contact));
-            }
-            else
-            {
-                updatedContactsCache.Add(new KeyValuePair<Collision, ContactPoint>(pair, contact));
+                    colA.Collisions.Add(pair);
+                    colB.Collisions.Add(pair);
+                }
+                else
+                {
+                    foreach (var contact in pair.Contacts)
+                    {
+                        deletedContactsFastCache.Add(contact);
+                    }
+                }
+
+                for (var y = 0; y < numContacts; y++)
+                {
+                    var cp = manifold.GetContactPoint(y);
+
+                    ContactPoint contact = null;
+                    var newContact = true;
+                    foreach (var contact1 in pair.Contacts)
+                    {
+                        if (cp != contact1.Manifold) continue;
+                        contact = contact1;
+                        newContact = false;
+                        break;
+                    }
+
+                    if (contact == null)
+                    {
+                        contact = new ContactPoint
+                        {
+                            Distance = cp.Distance,
+                            PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z),
+                            PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z),
+                            Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z),
+                            Pair = pair,
+                            Manifold = cp
+                        };
+
+                        pair.Contacts.Add(contact);
+                    }
+                    else
+                    {
+                        deletedContactsFastCache.Remove(contact);
+                    }
+
+                    if (newContact)
+                    {
+                        newContactsFastCache.Add(contact);
+                    }
+                    else
+                    {
+                        updatedContactsFastCache.Add(contact);
+                    }
+                }
+
+                //deliver async events
+
+                if (newPair)
+                {
+                    //are we the first pair we detect?
+                    if (colA.Collisions.Count == 1)
+                    {
+                        while (colA.FirstCollisionChannel.Balance < 0)
+                        {
+                            colA.FirstCollisionChannel.Send(pair);
+                        }
+                    }
+
+                    //are we the first pair we detect?
+                    if (colB.Collisions.Count == 1)
+                    {
+                        while (colB.FirstCollisionChannel.Balance < 0)
+                        {
+                            colB.FirstCollisionChannel.Send(pair);
+                        }
+                    }
+
+                    while (colA.NewPairChannel.Balance < 0)
+                    {
+                        colA.NewPairChannel.Send(pair);
+                    }
+
+                    while (colB.NewPairChannel.Balance < 0)
+                    {
+                        colB.NewPairChannel.Send(pair);
+                    }
+                }
+
+                foreach (var contact in newContactsFastCache)
+                {
+                    while (contact.Pair.NewContactChannel.Balance < 0)
+                    {
+                        contact.Pair.NewContactChannel.Send(contact);
+                    }
+                }
+
+                foreach (var contact in updatedContactsFastCache)
+                {
+                    while (contact.Pair.ContactUpdateChannel.Balance < 0)
+                    {
+                        contact.Pair.ContactUpdateChannel.Send(contact);
+                    }
+                }
+
+                foreach (var contact in deletedContactsFastCache)
+                {
+                    while (contact.Pair.ContactEndedChannel.Balance < 0)
+                    {
+                        contact.Pair.ContactEndedChannel.Send(contact);
+                    }
+
+                    pair.Contacts.Remove(contact);                    
+                }
+
+                if (pair.Contacts.Count == 0)
+                {
+                    colA.Collisions.Remove(pair);
+                    colB.Collisions.Remove(pair);
+
+                    while (colA.PairEndedChannel.Balance < 0)
+                    {
+                        colA.PairEndedChannel.Send(pair);
+                    }
+
+                    while (colB.PairEndedChannel.Balance < 0)
+                    {
+                        colB.PairEndedChannel.Send(pair);
+                    }
+
+                    if (colA.Collisions.Count == 0)
+                    {
+                        while (colA.AllPairsEndedChannel.Balance < 0)
+                        {
+                            colA.AllPairsEndedChannel.Send(pair);
+                        }
+                    }
+
+                    if (colB.Collisions.Count == 0)
+                    {
+                        while (colB.AllPairsEndedChannel.Balance < 0)
+                        {
+                            colB.AllPairsEndedChannel.Send(pair);
+                        }
+                    }
+                }
             }
         }
 
@@ -358,9 +345,6 @@ namespace SiliconStudio.Paradox.Physics
             broadphase?.Dispose();
             dispatcher?.Dispose();
             collisionConfiguration?.Dispose();
-
-            BulletSharp.PersistentManifold.ContactProcessed -= PersistentManifoldContactProcessed;
-            BulletSharp.PersistentManifold.ContactDestroyed -= PersistentManifoldContactDestroyed;
         }
 
         /// <summary>
