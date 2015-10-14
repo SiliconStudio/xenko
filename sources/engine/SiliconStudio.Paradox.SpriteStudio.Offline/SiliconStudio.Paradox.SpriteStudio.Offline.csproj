@@ -24,13 +24,15 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Module.cs" />
-    <Compile Include="SpriteNodeData.cs" />
+    <Compile Include="NodeAnimationData.cs" />
     <Compile Include="SpriteStudioAnimationAsset.cs" />
     <Compile Include="SpriteStudioAnimationAssetCompiler.cs" />
-    <Compile Include="SpriteStudioSheetAsset.cs" />
-    <Compile Include="SpriteStudioSheetAssetCompiler.cs" />
-    <Compile Include="SpriteStudioSsaxImporter.cs" />
+    <Compile Include="SpriteStudioCell.cs" />
+    <Compile Include="SpriteStudioModelAsset.cs" />
+    <Compile Include="SpriteStudioModelAssetCompiler.cs" />
+    <Compile Include="SpriteStudioImporter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpriteStudioXmlImport.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">

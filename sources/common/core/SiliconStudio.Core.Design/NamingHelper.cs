@@ -101,8 +101,18 @@ namespace SiliconStudio.Core
             if (namePattern == null) namePattern = DefaultNamePattern;
             if (!namePattern.Contains("{0}") || !namePattern.Contains("{1}")) throw new ArgumentException(@"This parameter must be a formattable string containing '{0}' and '{1}' tokens", nameof(namePattern));
 
-            string result = baseName;
-            int counter = 1;
+            // Initialize counter
+            var counter = 1;
+            // Checks whether baseName already 'implements' the namePattern
+            var match = Regex.Match(baseName, Regex.Escape(namePattern).Replace(@"\{0}", @"(.*)").Replace(@"\{1}", @"(\d+)"));
+            if (match.Success && match.Groups.Count >= 3)
+            {
+                // if so, extract the base name and the current counter
+                baseName = match.Groups[1].Value;
+                counter = Int32.Parse(match.Groups[2].Value);
+            }
+            // Compute name
+            var result = baseName;
             while (containsDelegate(result))
             {
                 result = string.Format(namePattern, baseName, ++counter);

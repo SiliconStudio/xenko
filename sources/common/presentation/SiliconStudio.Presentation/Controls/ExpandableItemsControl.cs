@@ -57,17 +57,10 @@ namespace SiliconStudio.Presentation.Controls
         /// <inheritdoc/>
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
-            if (!e.Handled && IsEnabled)
+            if (!e.Handled && IsEnabled && e.ClickCount % 2 == 0)
             {
-                if (Focus())
-                {
-                    e.Handled = true;
-                }
-                if (e.ClickCount % 2 == 0)
-                {
-                    SetCurrentValue(IsExpandedProperty, !IsExpanded);
-                    e.Handled = true;
-                }
+                SetCurrentValue(IsExpandedProperty, !IsExpanded);
+                e.Handled = true;
             }
             base.OnMouseLeftButtonDown(e);
         }

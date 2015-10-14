@@ -26,7 +26,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void Init()
         {
             // Create and mount database file system
-            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var objDatabase = ObjectDatabase.CreateDefaultDatabase();
             var databaseFileProvider = new DatabaseFileProvider(objDatabase);
             AssetManager.GetFileProvider = () => databaseFileProvider;
 
@@ -107,8 +107,8 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public static void Main5()
         {
             // Create and mount database file system
-            var objDatabase = new ObjectDatabase("/data/db");
-            var assetIndexMap = AssetIndexMap.Load();
+            var objDatabase = ObjectDatabase.CreateDefaultDatabase();
+            var assetIndexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath);
             var databaseFileProvider = new DatabaseFileProvider(assetIndexMap, objDatabase);
             AssetManager.GetFileProvider = () => databaseFileProvider;
 

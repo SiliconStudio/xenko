@@ -14,35 +14,40 @@ namespace SiliconStudio.Core.Serialization.Assets
 {
     public sealed class AssetIndexMap : DictionaryStore<string, ObjectId>, IAssetIndexMap
     {
-        private static Regex RegexEntry = new Regex(@"^(.*?)\s+(\w+)$");
+        private static readonly Regex RegexEntry = new Regex(@"^(.*?)\s+(\w+)$");
 
         private AssetIndexMap()
             : base(null)
         {
         }
 
-        public static AssetIndexMap NewTool(string indexName = null)
+        public static AssetIndexMap NewTool(string indexName)
         {
-            if (string.IsNullOrWhiteSpace(indexName))
+            if (indexName == null) throw new ArgumentNullException(nameof(indexName));
+
+            var result = new AssetIndexMap
             {
-                indexName = "index";
-            }
-
-            var result = new AssetIndexMap();
-
-            // Try to open with read-write
-            result.stream = VirtualFileSystem.OpenStream(
-                "/data/db/" + indexName,
-                VirtualFileMode.OpenOrCreate,
-                VirtualFileAccess.ReadWrite,
-                VirtualFileShare.ReadWrite);
+                // Try to open with read-write
+                stream = VirtualFileSystem.OpenStream(
+                    VirtualFileSystem.ApplicationDatabasePath + '/' + indexName,
+                    VirtualFileMode.OpenOrCreate,
+                    VirtualFileAccess.ReadWrite,
+                    VirtualFileShare.ReadWrite)
+            };
 
             return result;
         }
 
-        public static AssetIndexMap Load(string indexFile = "/data/db/index", bool isReadOnly = false)
+        public static AssetIndexMap CreateInMemory()
         {
-            if (indexFile == null) throw new ArgumentNullException("indexFile");
+            var result = new AssetIndexMap { stream = new MemoryStream() };
+            result.LoadNewValues();
+            return result;
+        }
+
+        public static AssetIndexMap Load(string indexFile, bool isReadOnly = false)
+        {
+            if (indexFile == null) throw new ArgumentNullException(nameof(indexFile));
 
             var result = new AssetIndexMap();
 
@@ -97,7 +102,7 @@ namespace SiliconStudio.Core.Serialization.Assets
             }
         }
 
-        protected override List<KeyValuePair<string, ObjectId>> ReadEntries(System.IO.Stream localStream)
+        protected override List<KeyValuePair<string, ObjectId>> ReadEntries(Stream localStream)
         {
             var reader = new StreamReader(localStream, Encoding.UTF8);
             string line;
@@ -131,7 +136,7 @@ namespace SiliconStudio.Core.Serialization.Assets
 
         protected override void WriteEntry(Stream stream, KeyValuePair<string, ObjectId> value)
         {
-            var line = string.Format("{0} {1}\n", value.Key, value.Value);
+            var line = $"{value.Key} {value.Value}\n";
             var bytes = Encoding.UTF8.GetBytes(line);
             stream.Write(bytes, 0, bytes.Length);
         }

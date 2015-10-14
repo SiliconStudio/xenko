@@ -39,6 +39,10 @@ namespace SiliconStudio.Paradox.Animations
             {
                 *(float*)(location + channel.Offset) = MathUtil.Lerp(keyFramesItems[currentIndex].Value, keyFramesItems[currentIndex + 1].Value, t);
             }
+            else if (channel.InterpolationType == AnimationCurveInterpolationType.Constant)
+            {
+                *(float*)(location + channel.Offset) = keyFrames[currentIndex].Value;
+            }
             else
             {
                 throw new NotImplementedException();

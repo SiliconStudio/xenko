@@ -17,6 +17,7 @@ using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.IO;
 
 using System.Reflection;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.BuildEngine
 {
@@ -88,7 +89,7 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// Logger used by the builder and the commands
         /// </summary>
-        public ILogger Logger { get; private set; }
+        public ILogger Logger { get; }
 
         /// <summary>
         /// Builder name
@@ -98,7 +99,7 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// The <see cref="Guid"/> assigned to the builder.
         /// </summary>
-        public Guid BuilderId { get; private set; }
+        public Guid BuilderId { get; }
 
         /// <summary>
         /// The build path for spawned slave processes.
@@ -138,13 +139,11 @@ namespace SiliconStudio.BuildEngine
         /// </summary>
         public bool Cancelled { get; protected set; }
 
-        public List<string> MonitorPipeNames { get; private set; }
+        public List<string> MonitorPipeNames { get; }
         
         public const string MonitorPipeName = "net.pipe://localhost/Paradox.BuildEngine.Monitor";
 
-        public IDictionary<string, string> InitialVariables { get; private set; }
-
-        public string MetadataDatabaseDirectory { get; set; }
+        public IDictionary<string, string> InitialVariables { get; }
 
         public readonly ISet<ObjectId> DisableCompressionIds = new HashSet<ObjectId>();
 
@@ -154,12 +153,7 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// The name on the disk of the index file name.
         /// </summary>
-        private readonly string indexFilename;
-
-        /// <summary>
-        /// The name on the disk of the file caching the input file hashes
-        /// </summary>
-        private readonly string inputHashesFilename;
+        private readonly string indexName;
 
         /// <summary>
         /// The path on the disk where to perform the build
@@ -170,11 +164,6 @@ namespace SiliconStudio.BuildEngine
         /// The build profile
         /// </summary>
         private readonly string buildProfile;
-
-        /// <summary>
-        /// The path of the data base from the build path
-        /// </summary>
-        private const string DatabasePath = "/data/db/";
 
         /// <summary>
         /// Cancellation token source used for cancellation.
@@ -205,35 +194,21 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// The full path of the index file from the build directory.
         /// </summary>
-        private string IndexFileFullPath
-        {
-            get { return DatabasePath + indexFilename; }
-        }
+        private string IndexFileFullPath => indexName != null ? VirtualFileSystem.ApplicationDatabasePath + indexName : null;
 
-        /// <summary>
-        /// The full path of the input hashes file from the build directory.
-        /// </summary>
-        private string InputHashesFileFullPath
+        public Builder(ILogger logger, string buildPath, string buildProfile, string indexName)
         {
-            get { return DatabasePath + inputHashesFilename; }
-        }
-
-        public Builder(string buildPath, string buildProfile, string indexFilename, string inputHashesFilename, ILogger logger)
-        {
-            if (buildPath == null) throw new ArgumentNullException("buildPath");
-            if (indexFilename == null) throw new ArgumentNullException("indexFilename");
-            if (inputHashesFilename == null) throw new ArgumentNullException("inputHashesFilename");
+            if (buildPath == null) throw new ArgumentNullException(nameof(buildPath));
 
             MonitorPipeNames = new List<string>();
             startTime = DateTime.Now;
             this.buildProfile = buildProfile;
-            this.indexFilename = indexFilename;
+            this.indexName = indexName;
             var entryAssembly = Assembly.GetEntryAssembly();
             SlaveBuilderPath = Path.Combine(
                 AppDomain.CurrentDomain.BaseDirectory,
                 entryAssembly != null ? Path.GetFileName(entryAssembly.Location) : "SiliconStudio.Assets.CompilerApp.exe"); // TODO: Hardcoded value of CompilerApp
             Logger = logger;
-            this.inputHashesFilename = inputHashesFilename;
             this.buildPath = buildPath;
             Root = new ListBuildStep();
             ioMonitor = new CommandIOMonitor(Logger);
@@ -242,13 +217,13 @@ namespace SiliconStudio.BuildEngine
             BuilderId = Guid.NewGuid();
             InitialVariables = new Dictionary<string, string>();
 
-            SetupBuildPath(buildPath);
+            SetupBuildPath(buildPath, indexName);
 
             var objectDatabase = IndexFileCommand.ObjectDatabase;
 
             // Check current database version, and erase it if too old
             int currentVersion = 0;
-            var versionFile = Path.Combine(VirtualFileSystem.GetAbsolutePath(DatabasePath), "version");
+            var versionFile = Path.Combine(VirtualFileSystem.GetAbsolutePath(VirtualFileSystem.ApplicationDatabasePath), "version");
             if (File.Exists(versionFile))
             {
                 try
@@ -256,8 +231,9 @@ namespace SiliconStudio.BuildEngine
                     var versionText = File.ReadAllText(versionFile);
                     currentVersion = int.Parse(versionText);
                 }
-                catch (Exception)
+                catch (Exception e)
                 {
+                    e.Ignore();
                 }
             }
 
@@ -288,7 +264,7 @@ namespace SiliconStudio.BuildEngine
 
             // Prepare data base directories
             AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
-            var databasePathSplits = DatabasePath.Split('/');
+            var databasePathSplits = VirtualFileSystem.ApplicationDatabasePath.Split('/');
             var accumulatorPath = "/";
             foreach (var pathPart in databasePathSplits.Where(x=>x!=""))
             {
@@ -299,12 +275,12 @@ namespace SiliconStudio.BuildEngine
             }
         }
 
-        public static void SetupBuildPath(string buildPath)
+        public static void SetupBuildPath(string buildPath, string indexName)
         {
             // Mount build path
             ((FileSystemProvider)VirtualFileSystem.ApplicationData).ChangeBasePath(buildPath);
             if (IndexFileCommand.ObjectDatabase == null)
-                IndexFileCommand.ObjectDatabase = new ObjectDatabase(DatabasePath, loadDefaultBundle: false); // note: this has to be done after VFS.ChangeBasePath
+                IndexFileCommand.ObjectDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, indexName, null, false); // note: this has to be done after VFS.ChangeBasePath
         }
 
         public static void ReleaseBuildPath()
@@ -327,27 +303,24 @@ namespace SiliconStudio.BuildEngine
             private readonly BuilderContext builderContext;
             private readonly BuildStep buildStep;
             private readonly BuildTransaction buildTransaction;
-            private readonly Logger logger;
             private readonly Builder builder;
 
             public ExecuteContext(Builder builder, BuilderContext builderContext, BuildStep buildStep)
             {
-                logger = new BuildStepLogger(buildStep, builder.Logger, builder.startTime);
+                Logger = new BuildStepLogger(buildStep, builder.Logger, builder.startTime);
                 this.builderContext = builderContext;
                 this.builder = builder;
                 this.buildStep = buildStep;
                 buildTransaction = new BuildTransaction(null, buildStep.GetOutputObjectsGroups());
             }
 
-            public Logger Logger { get { return logger; } }
+            public Logger Logger { get; }
 
-            public ObjectDatabase ResultMap { get { return builder.resultMap; } }
+            public ObjectDatabase ResultMap => builder.resultMap;
 
-            public CancellationTokenSource CancellationTokenSource { get { return builder.cancellationTokenSource; } }
+            public CancellationTokenSource CancellationTokenSource => builder.cancellationTokenSource;
 
             public Dictionary<string, string> Variables { get; set; }
-
-            public IMetadataProvider MetadataProvider { get { return builderContext.MetadataProvider; } }
 
             public void ScheduleBuildStep(BuildStep step)
             {
@@ -620,7 +593,7 @@ namespace SiliconStudio.BuildEngine
                 }
             }
 
-            using (var indexFile = AssetIndexMap.NewTool(indexFilename))
+            using (var indexFile = AssetIndexMap.NewTool(indexName))
             {
                 // Filter database Location
                 indexFile.AddValues(
@@ -659,14 +632,6 @@ namespace SiliconStudio.BuildEngine
             var inputHashes = FileVersionTracker.GetDefault();
             {
                 var builderContext = new BuilderContext(buildPath, buildProfile, inputHashes, parameters, MaxParallelProcesses, SlaveBuilderPath);
-                if (!string.IsNullOrWhiteSpace(MetadataDatabaseDirectory))
-                {
-                    var metadataProvider = new QueryMetadataProvider();
-                    if (metadataProvider.Open(Path.Combine(MetadataDatabaseDirectory, QueryMetadataProvider.DefaultDatabaseFilename), false))
-                    {
-                        builderContext.MetadataProvider = metadataProvider;
-                    }
-                }
 
                 resultMap = IndexFileCommand.ObjectDatabase;
 
@@ -739,18 +704,6 @@ namespace SiliconStudio.BuildEngine
             }
             else
             {
-                // Clean input hashes file
-                if (VirtualFileSystem.FileExists(InputHashesFileFullPath))
-                {
-                    try
-                    {
-                        VirtualFileSystem.FileDelete(InputHashesFileFullPath);
-                    }
-                    catch (IOException)
-                    {
-                        return BuildResultCode.BuildError;
-                    }
-                }
                 string modeName;
                 switch (runMode)
                 {

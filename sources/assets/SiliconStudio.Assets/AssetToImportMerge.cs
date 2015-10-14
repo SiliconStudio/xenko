@@ -59,7 +59,7 @@ namespace SiliconStudio.Assets
         public MergeResult MergePreviewResult { get; private set; }
 
         /// <summary>
-        /// Gets the matching factor, between 0.0 and 1.0, a match of 1.0 indicates that the assets are identical.
+        /// Gets the matching factor, from negative to positive value. The higher the value is, the higher assets are matching
         /// </summary>
         /// <value>The matching factor.</value>
         public double MatchingFactor { get; internal set; }

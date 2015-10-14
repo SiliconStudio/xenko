@@ -28,6 +28,10 @@ namespace SiliconStudio.Paradox.Animations
                     factor,
                     out *(Quaternion*)(location + channel.Offset));
             }
+            else if (channel.InterpolationType == AnimationCurveInterpolationType.Constant)
+            {
+                *(Quaternion*)(location + channel.Offset) = channel.ValueStart.Value;
+            }
             else
             {
                 throw new NotImplementedException();

@@ -30,11 +30,6 @@
     
     <!-- Special topic X:ClassLibrary to include generated class library references. No filename to setup as it is generated -->
     <topic id="X:ClassLibraryReference" page-id="api" name="Class Library Reference" async-load="true" index="100" on-url="true"/>
-
-    <topic id="X:KnownIssues" page-id="known-issues" name="Known Issues" webdoc="confluence:PDXDOC/Known+Issues" />
-
-    <topic id="X:Licensing" page-id="licensing" name="Licensing"  webdoc="confluence:PDXDOC/Licensing" />
-
   </topic>
 
   <!-- List the assemblies to include for the class library-->

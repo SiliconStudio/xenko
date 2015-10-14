@@ -218,7 +218,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                             if (!urlToTexImage.ContainsKey(textureUrl))
                             {
                                 var image = assetManager.Load<Image>(textureUrl);
-                                var newTexImage = texTool.Load(image);
+                                var newTexImage = texTool.Load(image, false);// the sRGB mode does not impact on the alpha level
                                 texTool.Decompress(newTexImage, false);// the sRGB mode does not impact on the alpha level
                                 urlToTexImage[textureUrl] = Tuple.Create(newTexImage, image);
                             }

@@ -71,7 +71,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 //session.Save();
 
                 // Create and mount database file system
-                var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+                var objDatabase = ObjectDatabase.CreateDefaultDatabase();
                 var databaseFileProvider = new DatabaseFileProvider(objDatabase);
                 AssetManager.GetFileProvider = () => databaseFileProvider;
 

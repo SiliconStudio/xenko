@@ -26,6 +26,11 @@ namespace SiliconStudio.Paradox.Engine.Processors
             return new AssociatedData(entity.Get<ScriptComponent>());
         }
 
+        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        {
+            return entity.Get(ScriptComponent.Key) == associatedData.Component;
+        }
+
         protected internal override void OnSystemAdd()
         {
             scriptSystem = Services.GetServiceAs<ScriptSystem>();

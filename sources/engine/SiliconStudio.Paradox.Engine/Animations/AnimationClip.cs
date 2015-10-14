@@ -50,6 +50,8 @@ namespace SiliconStudio.Paradox.Animations
         public AnimationData<float> OptimizedCurvesFloat;
         public AnimationData<Vector3> OptimizedCurvesVector3;
         public AnimationData<Quaternion> OptimizedCurvesQuaternion;
+        public AnimationData<int> OptimizedCurvesInt;
+        public AnimationData<Vector4> OptimizedCurvesVector4;
 
         /// <summary>
         /// Adds a named curve.
@@ -83,6 +85,8 @@ namespace SiliconStudio.Paradox.Animations
             OptimizedCurvesFloat = CreateOptimizedData<float>();
             OptimizedCurvesVector3 = CreateOptimizedData<Vector3>();
             OptimizedCurvesQuaternion = CreateOptimizedData<Quaternion>();
+            OptimizedCurvesInt = CreateOptimizedData<int>();
+            OptimizedCurvesVector4 = CreateOptimizedData<Vector4>();
         }
 
         private AnimationData<T> CreateOptimizedData<T>()

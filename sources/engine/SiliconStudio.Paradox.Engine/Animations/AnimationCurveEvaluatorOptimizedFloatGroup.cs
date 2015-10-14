@@ -25,6 +25,10 @@ namespace SiliconStudio.Paradox.Animations
                     channel.ValueEnd.Value,
                     factor);
             }
+            else if (channel.InterpolationType == AnimationCurveInterpolationType.Constant)
+            {
+                *(float*)(location + channel.Offset) = channel.ValueStart.Value;
+            }
             else
             {
                 throw new NotImplementedException();

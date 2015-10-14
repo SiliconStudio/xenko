@@ -14,5 +14,8 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
         public List<SpriteStudioNode> NodesInfo { get; set; }
 
         public SpriteSheet SpriteSheet { get; set; }
+
+        [DataMemberIgnore]
+        public Dictionary<int, Sprite> Sprites { get; internal set; }
     }
 }

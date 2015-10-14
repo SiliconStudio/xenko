@@ -32,9 +32,11 @@ Don’t worry, most of it is done automatically for you! We do this by collectin
 
 <img src="http://doc.paradox3d.net/1.3/rn_images/AssetControlExample.png" align="center" width="500"/>
 
-In case you were loading anything in your script using `Asset.Load`, you can still tag those assets specifically with “Mark as Root” in the editor.
+In case you were loading anything in your script using `Asset.Load`, you can still tag those assets specifically by clicking on the inclusion indicator on the top-left corner of their thumbnails.
 
 However, we now recommend to instead create a field in your script and fill it directly in the editor. All the samples have been updated to this new practice, so please check them out.
+
+<img src="http://doc.paradox3d.net/1.3/rn_images/RootAssets.png" align="center" width="495"/>
 
 ### Raw assets
 
@@ -254,6 +256,33 @@ Lastly, node link information is now visible in the scene tree view for easier d
 - Physics: Collision events are removed. An async/await pattern is encouraged from now on.
 - Sprite Sheets: They are now automatically packed. If this affects you, you can simply disable this setting by editing your Sprite Sheet asset.
 
+# Version 1.3.4-beta
+
+Release date: 2015/10/07
+
+## Enhancements
+
+- Improved UX to include/exclude assets in/from the compilation
+- Physics: Added many properties for physics elements directly from Game Studio
+- Physics: Added HeightfieldColliderShape to implement terrain colliders (no support yet from Game Studio, Experimental)
+
+## Issues fixed
+
+- Assets: Fix color/alpha substitution in texture asset using alpha key color.  
+- Assets: Fix a merge issue disallowing to reimport a FBX model
+- Assets: Allow asset name with extension
+- Assets: Fix issue when compiling a solution with multiple game projects that could cause one project to fail compiling. 
+- Engine: Some of the camera view parameters were not valid when using custorm aspect ratio
+- Engine: Fix rendering problem when the scene contains model with null materials (ignore the models).
+- Studio: Fix the recent project list that was sometimes remaining empty
+- Studio: Closing the editor with modified assets is now properly asking to save the solution
+- Studio: Deleting images from the sprite editor could make the Game Studio crash.
+- Studio: Fix a potential crash when trying to load a large scene in the scene editor
+- Studio: Reopening a closed pane from the View menu that was not working
+- Rendering: Improved support for a gamma correct pipeline. Color with SpriteBatch and static SpriteFont are now taking into account the game settings colorspace.
+- Physics: Fixed continuous collision detection
+- Physics: Fixed PersistentManifoldContactProcessed in the case of multiple scenes or scenes reloading
+- Physics: Re-enabled Simulation ClearForces
 
 # Version 1.3.3-beta
 
@@ -425,7 +454,6 @@ Almost 1000 commits are included in this release since the previous version of J
 
 # Known Issues
 
-- Rendering: Color used in SpriteBatch is not gamma correct and is considered as Linear It means that if you used a Color to modify a sprite with SpriteBatch, the sprite will appear a bit brighter.
 - Rendering: DynamicFonts are not yet gamma correct.
 - Rendering: Shadow maps are not rendered correctly with orthographic projections
 - Input: Windows Phone touch inputs are sometimes not consistent with other platforms.

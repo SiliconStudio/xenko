@@ -67,6 +67,7 @@
     <Compile Include="Analysis\AssetCollision.cs" />
     <Compile Include="AssetImport.cs" />
     <Compile Include="AssetImporterParameters.cs" />
+    <Compile Include="AssetImportExtensions.cs" />
     <Compile Include="AssetImportSessionEvent.cs" />
     <Compile Include="AssetImportSessionStepType.cs" />
     <Compile Include="AssetImportSessionEventType.cs" />
@@ -101,9 +102,7 @@
     <Compile Include="Diff\DiffAttributeBase.cs" />
     <Compile Include="Diff\DiffCompareKeyAttribute.cs" />
     <Compile Include="Diff\DiffNodeBuilderAttribute.cs" />
-    <Compile Include="Diff\DiffUseAsset1Attribute.cs" />
-    <Compile Include="Diff\DiffUseAsset2Attribute.cs" />
-    <Compile Include="Diff\DiffUseSpecificAssetAttribute.cs" />
+    <Compile Include="Diff\DiffMemberAttribute.cs" />
     <Compile Include="Diff\IDiffKey.cs" />
     <Compile Include="Diff\IDiffProxy.cs" />
     <Compile Include="Diff\IDiffResolver.cs" />

@@ -11,6 +11,8 @@ namespace SiliconStudio.Paradox.Animations
     [DataSerializerGlobal(null, typeof(AnimationData<float>))]
     [DataSerializerGlobal(null, typeof(AnimationData<Quaternion>))]
     [DataSerializerGlobal(null, typeof(AnimationData<Vector3>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<int>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Vector4>))]
     public class AnimationKeyValuePairArraySerializer<T> : DataSerializer<AnimationKeyValuePair<T>[]>, IDataSerializerInitializer where T : struct
     {
         private DataSerializer<AnimationKeyValuePair<T>> itemDataSerializer;

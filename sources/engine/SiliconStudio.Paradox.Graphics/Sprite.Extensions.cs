@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// and <see cref="SpriteBatch.End()"/> calls of the provided <paramref name="spriteBatch"/></remarks>
         /// <exception cref="ArgumentException">The provided frame index is not valid.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The provided spriteBatch is null</exception>
-        public static void Draw3D(this Sprite sprite, Sprite3DBatch spriteBatch, ref Matrix worldMatrix, ref Color color)
+        public static void Draw3D(this Sprite sprite, Sprite3DBatch spriteBatch, ref Matrix worldMatrix, ref Color4 color)
         {
             spriteBatch.Draw(sprite.Texture, ref worldMatrix, ref sprite.RegionInternal, ref sprite.SizeInternal, ref color, sprite.Orientation);
         }

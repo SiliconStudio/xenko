@@ -68,7 +68,7 @@ namespace SiliconStudio.TextureConverter.Requests
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="loadAsSRgb">Indicate if the input file should be loaded as in sRGB file</param>
-        public LoadingRequest(TexImage image, bool loadAsSRgb = false)
+        public LoadingRequest(TexImage image, bool loadAsSRgb)
         {
             Image = image;
             Mode = LoadingMode.TexImage;
@@ -80,7 +80,7 @@ namespace SiliconStudio.TextureConverter.Requests
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="loadAsSRgb">Indicate if the input file should be loaded as in sRGB file</param>
-        public LoadingRequest(Paradox.Graphics.Image image, bool loadAsSRgb = false)
+        public LoadingRequest(Paradox.Graphics.Image image, bool loadAsSRgb)
         {
             PdxImage = image;
             Mode = LoadingMode.PdxImage;

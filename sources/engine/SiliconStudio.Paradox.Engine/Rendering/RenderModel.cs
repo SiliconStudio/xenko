@@ -69,7 +69,7 @@ namespace SiliconStudio.Paradox.Rendering
         {
             if (materials != null && index < materials.Count)
             {
-                return materials[index].Material;
+                return materials[index]?.Material;
             }
 
             return null;

@@ -9,6 +9,7 @@ namespace SiliconStudio.Assets.Diff
 {
     public class Diff3Node : IDataVisitNode<Diff3Node>
     {
+        private static readonly Func<Diff3Node, bool> StaticCheckVisitChildrenWithWeights = CheckVisitChildrenWithWeights;
         private static readonly Func<Diff3Node, bool> StaticCheckVisitChildren = CheckVisitChildren;
         private static readonly Func<Diff3Node, bool> StaticCheckVisitNode = CheckVisitNode;
         private static readonly Func<Diff3Node, bool> StaticCheckVisitLeaf = CheckVisitLeaf;
@@ -32,6 +33,8 @@ namespace SiliconStudio.Assets.Diff
 
         public Diff3ChangeType ChangeType { get; set; }
 
+        public float Weight { get; set; }
+
         public Diff3Node Parent { get; set; }
 
         public int Index { get; set; }
@@ -49,6 +52,11 @@ namespace SiliconStudio.Assets.Diff
             return this.Children(StaticCheckVisitNode, StaticCheckVisitChildren);
         }
 
+        public IEnumerable<Diff3Node> FindDifferencesWithWeights()
+        {
+            return this.Children(StaticCheckVisitNode, StaticCheckVisitChildrenWithWeights);
+        }
+
         public IEnumerable<Diff3Node> FindLeafDifferences()
         {
             return this.Children(StaticCheckVisitLeaf, StaticCheckVisitChildren);
@@ -57,6 +65,11 @@ namespace SiliconStudio.Assets.Diff
         private static bool CheckVisitChildren(Diff3Node diff3)
         {
             return diff3.ChangeType == Diff3ChangeType.Children || diff3.ChangeType != Diff3ChangeType.None;
+        }
+
+        private static bool CheckVisitChildrenWithWeights(Diff3Node diff3)
+        {
+            return CheckVisitChildren(diff3) || diff3.Weight != 0;
         }
 
         private static bool CheckVisitNode(Diff3Node diff3)

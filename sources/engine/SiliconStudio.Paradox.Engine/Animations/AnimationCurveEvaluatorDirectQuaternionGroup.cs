@@ -44,6 +44,10 @@ namespace SiliconStudio.Paradox.Animations
                     t,
                     out *(Quaternion*)(location + channel.Offset));
             }
+            else if (channel.InterpolationType == AnimationCurveInterpolationType.Constant)
+            {
+                *(Quaternion*)(location + channel.Offset) = keyFrames[currentIndex].Value;
+            }
             else
             {
                 throw new NotImplementedException();

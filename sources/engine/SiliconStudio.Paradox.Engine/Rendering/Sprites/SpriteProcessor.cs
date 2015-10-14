@@ -48,6 +48,13 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
             };
         }
 
+        protected override bool IsAssociatedDataValid(Entity entity, SpriteComponentState associatedData)
+        {
+            return
+                entity.Get(SpriteComponent.Key) == associatedData.SpriteComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+        }
+
         public class SpriteComponentState
         {
             public SpriteComponent SpriteComponent;

@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
 
             if (image != null && image.Texture != null)
             {
-                Batch.DrawImage(image.Texture, null, ref editText.WorldMatrixInternal, ref image.RegionInternal, ref editText.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
+                Batch.DrawImage(image.Texture, ref editText.WorldMatrixInternal, ref image.RegionInternal, ref editText.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
             }
             
             // calculate the size of the text region by removing padding

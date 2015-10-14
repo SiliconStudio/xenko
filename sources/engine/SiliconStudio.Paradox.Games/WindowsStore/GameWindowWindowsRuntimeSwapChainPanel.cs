@@ -31,6 +31,7 @@ using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
+using Windows.UI.Core;
 
 namespace SiliconStudio.Paradox.Games
 {
@@ -47,10 +48,17 @@ namespace SiliconStudio.Paradox.Games
         private WindowHandle windowHandle;
         private int currentWidth;
         private int currentHeight;
+        private readonly CoreWindow coreWindow;
 
         #endregion
 
 #region Public Properties
+
+        public GameWindowWindowsRuntimeSwapChainPanel()
+        {
+            coreWindow = CoreWindow.GetForCurrentThread();
+            cursor = coreWindow.PointerCursor;
+        }
 
         public override bool AllowUserResizing
         {
@@ -87,7 +95,39 @@ namespace SiliconStudio.Paradox.Games
             }
         }
 
-        public override bool IsMouseVisible { get; set; }
+        private bool isMouseVisible;
+        private CoreCursor cursor;
+
+        public override bool IsMouseVisible
+        {
+            get
+            {
+                return isMouseVisible;
+            }
+            set
+            {
+                if (value)
+                {
+                    if (cursor != null)
+                    {
+                        coreWindow.PointerCursor = cursor;
+                    }
+
+                    isMouseVisible = true;
+                }
+                else
+                {
+                    if (coreWindow.PointerCursor != null)
+                    {
+                        cursor = coreWindow.PointerCursor;
+                    }
+
+                    //yep thats how you hide the cursor under WinRT api...
+                    coreWindow.PointerCursor = null;
+                    isMouseVisible = false;
+                }
+            }
+        }
 
         public override WindowHandle NativeWindow
         {
