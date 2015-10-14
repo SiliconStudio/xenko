@@ -6,7 +6,7 @@ using SiliconStudio.Paradox.Physics;
 using System;
 using System.Linq;
 
-namespace VolumeTrigger13
+namespace Xenko.Scripts
 {
     public class CharacterController : SyncScript
     {
