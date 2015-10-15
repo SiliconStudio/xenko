@@ -5,7 +5,6 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using SiliconStudio.Assets;
 
 namespace SiliconStudio.Xenko.ConnectionRouter
@@ -42,7 +41,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
             {
                 var store = new NugetStore(xenkoSdkDir);
 
-                var xenkoPackages = store.GetPackagesInstalled(store.MainPackageId);
+                var xenkoPackages = store.GetPackagesInstalled(store.MainPackageIds);
                 var xenkoPackage = xenkoVersion != null
                     ? (xenkoPackages.FirstOrDefault(p => p.Version.ToString() == xenkoVersion)
                         ?? xenkoPackages.FirstOrDefault(p => VersionWithoutSpecialPart(p.Version.ToString()) == VersionWithoutSpecialPart(xenkoVersion))) // If no exact match, try a second time without the special version tag (beta, alpha, etc...)

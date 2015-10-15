@@ -357,11 +357,11 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
 
                 // Try to find the package with the expected version
                 if (packageInfo.ExpectedVersion != null && packageInfo.ExpectedVersion >= MinimumVersion)
-                    xenkoPackage = store.GetPackagesInstalled(store.MainPackageId).FirstOrDefault(package => GetVersion(package) == packageInfo.ExpectedVersion);
+                    xenkoPackage = store.GetPackagesInstalled(store.MainPackageIds).FirstOrDefault(package => GetVersion(package) == packageInfo.ExpectedVersion);
 
                 // If the expected version is not found, get the latest package
                 if (xenkoPackage == null)
-                    xenkoPackage = store.GetLatestPackageInstalled(store.MainPackageId);
+                    xenkoPackage = store.GetLatestPackageInstalled(store.MainPackageIds);
 
                 // If no package was found, return no sdk path
                 if (xenkoPackage == null)

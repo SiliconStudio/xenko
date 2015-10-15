@@ -19,7 +19,7 @@ namespace SiliconStudio.Assets
     {
         private const string RepositoryPathKey = "repositorypath";
 
-        private const string MainPackageKey = "mainPackage";
+        private const string MainPackagesKey = "mainPackages";
 
         private const string VsixPluginKey = "vsixPlugin";
 
@@ -32,20 +32,17 @@ namespace SiliconStudio.Assets
         public const string OverrideConfig = "store.local.config";
 
         private readonly PhysicalFileSystem rootFileSystem;
-        private readonly ISettings settings;
         private readonly IFileSystem packagesFileSystem;
         private readonly PackageSourceProvider packageSourceProvider;
         private readonly DefaultPackagePathResolver pathResolver;
         private readonly PackageRepositoryFactory repositoryFactory;
-        private readonly AggregateRepository aggregateRepository;
-        private readonly PackageManager manager;
         private ILogger logger;
 
         public NugetStore(string rootDirectory, string configFile = DefaultConfig, string overrideFile = OverrideConfig)
         {
-            if (rootDirectory == null) throw new ArgumentNullException("rootDirectory");
-            if (configFile == null) throw new ArgumentNullException("configFile");
-            if (overrideFile == null) throw new ArgumentNullException("overrideFile");
+            if (rootDirectory == null) throw new ArgumentNullException(nameof(rootDirectory));
+            if (configFile == null) throw new ArgumentNullException(nameof(configFile));
+            if (overrideFile == null) throw new ArgumentNullException(nameof(overrideFile));
 
             // First try the override file with custom settings
             var configFileName = overrideFile;
@@ -59,34 +56,35 @@ namespace SiliconStudio.Assets
 
                 if (!File.Exists(configFilePath))
                 {
-                    throw new ArgumentException(String.Format("Invalid installation. Configuration file [{0}] not found", configFile), "configFile");
+                    throw new ArgumentException($"Invalid installation. Configuration file [{configFile}] not found", nameof(configFile));
                 }
             }
 
             rootFileSystem = new PhysicalFileSystem(rootDirectory);
-            settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
+            Settings = NuGet.Settings.LoadDefaultSettings(rootFileSystem, configFileName, null);
 
-            string installPath = settings.GetRepositoryPath();
+            string installPath = Settings.GetRepositoryPath();
             packagesFileSystem = new PhysicalFileSystem(installPath);
-            packageSourceProvider = new PackageSourceProvider(settings);
+            packageSourceProvider = new PackageSourceProvider(Settings);
 
             repositoryFactory = new PackageRepositoryFactory();
-            aggregateRepository = packageSourceProvider.CreateAggregateRepository(repositoryFactory, true);
+            SourceRepository = packageSourceProvider.CreateAggregateRepository(repositoryFactory, true);
 
             pathResolver = new DefaultPackagePathResolver(packagesFileSystem);
 
-            manager = new PackageManager(aggregateRepository, pathResolver, packagesFileSystem);
+            Manager = new PackageManager(SourceRepository, pathResolver, packagesFileSystem);
 
-            MainPackageId = Settings.GetConfigValue(MainPackageKey);
-            if (string.IsNullOrWhiteSpace(MainPackageId))
+            var mainPackageList = Settings.GetConfigValue(MainPackagesKey);
+            if (string.IsNullOrWhiteSpace(mainPackageList))
             {
-                throw new InvalidOperationException(string.Format("Invalid configuration. Expecting [{0}] in config", MainPackageKey));
+                throw new InvalidOperationException($"Invalid configuration. Expecting [{MainPackagesKey}] in config");
             }
+            MainPackageIds = mainPackageList.Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
             VSIXPluginId = Settings.GetConfigValue(VsixPluginKey);
             if (string.IsNullOrWhiteSpace(VSIXPluginId))
             {
-                throw new InvalidOperationException(string.Format("Invalid configuration. Expecting [{0}] in config", VsixPluginKey));
+                throw new InvalidOperationException($"Invalid configuration. Expecting [{VsixPluginKey}] in config");
             }
 
             RepositoryPath = Settings.GetConfigValue(RepositoryPathKey);
@@ -99,19 +97,13 @@ namespace SiliconStudio.Assets
             Environment.SetEnvironmentVariable("NuGetCachePath", Path.Combine(rootDirectory, "Cache", RepositoryPath));
         }
 
-        public string RootDirectory
-        {
-            get
-            {
-                return rootFileSystem.Root;
-            }
-        }
+        public string RootDirectory => rootFileSystem.Root;
 
-        public string MainPackageId { get; private set; }
+        public IReadOnlyCollection<string> MainPackageIds { get; }
 
-        public string VSIXPluginId { get; private set; }
+        public string VSIXPluginId { get; }
 
-        public string RepositoryPath { get; private set; }
+        public string RepositoryPath { get; }
 
         public ILogger Logger
         {
@@ -128,45 +120,15 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public ISettings Settings
-        {
-            get
-            {
-                return settings;
-            }
-        }
+        public ISettings Settings { get; }
 
-        public IPackagePathResolver PathResolver
-        {
-            get
-            {
-                return pathResolver;
-            }
-        }
+        public IPackagePathResolver PathResolver => pathResolver;
 
-        public PackageManager Manager
-        {
-            get
-            {
-                return manager;
-            }
-        }
+        public PackageManager Manager { get; }
 
-        public IPackageRepository LocalRepository
-        {
-            get
-            {
-                return Manager.LocalRepository;
-            }
-        }
+        public IPackageRepository LocalRepository => Manager.LocalRepository;
 
-        public AggregateRepository SourceRepository
-        {
-            get
-            {
-                return aggregateRepository;
-            }
-        }
+        public AggregateRepository SourceRepository { get; }
 
         public bool CheckSource()
         {
@@ -231,6 +193,16 @@ namespace SiliconStudio.Assets
             return LocalRepository.GetPackages().Where(p => p.Id == packageId).OrderByDescending(p => p.Version).ToArray();
         }
 
+        public IPackage GetLatestPackageInstalled(IEnumerable<string> packageIds)
+        {
+            return LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version).FirstOrDefault();
+        }
+
+        public IList<IPackage> GetPackagesInstalled(IEnumerable<string> packageIds)
+        {
+            return LocalRepository.GetPackages().Where(p => packageIds.Any(x => x == p.Id)).OrderByDescending(p => p.Version).ToArray();
+        }
+
         public static bool CheckSource(IPackageRepository repository)
         {
             try
@@ -250,7 +222,7 @@ namespace SiliconStudio.Assets
 
         public static string GetPackageVersionVariable(string packageId)
         {
-            if (packageId == null) throw new ArgumentNullException("packageId");
+            if (packageId == null) throw new ArgumentNullException(nameof(packageId));
             var newPackageId = packageId.Replace(".", String.Empty);
             return "SiliconStudioPackage" + newPackageId + "Version";
         }
@@ -284,7 +256,7 @@ namespace SiliconStudio.Assets
                 // Add import
                 // <Import Project="..\Packages\Xenko$(SiliconStudioPackageXenkoVersion)\Targets\Xenko.targets" Condition="Exists('..\Packages\Xenko.$(SiliconStudioPackageXenkoVersion)\Targets\Xenko.targets')" />
                 var importElement = project.Xml.AddImport(packageTarget);
-                importElement.Condition = String.Format(@"Exists('{0}')", packageTarget);
+                importElement.Condition = $@"Exists('{packageTarget}')";
 
                 // Add common properties
                 var packageVarSaved = packageVar + "Saved";
@@ -335,7 +307,7 @@ namespace SiliconStudio.Assets
                 // TODO: Provide a better diagnostic message (in case the version is really not found or rerouted to a newer version)
                 var warningTask = target.AddTask("Message");
                 warningTask.Condition = invalidProperty.Condition;
-                warningTask.SetParameter("Text", String.Format("Package {0} with version [$({1})] not found. Use version $({2}) instead", package.Id, packageVarSaved, packageVar));
+                warningTask.SetParameter("Text", $"Package {package.Id} with version [$({packageVarSaved})] not found. Use version $({packageVar}) instead");
             }
 
             var targetFile = Path.Combine(RootDirectory, DefaultTargets);
@@ -400,7 +372,7 @@ namespace SiliconStudio.Assets
 
         public static bool IsStoreDirectory(string directory)
         {
-            if (directory == null) throw new ArgumentNullException("directory");
+            if (directory == null) throw new ArgumentNullException(nameof(directory));
             var storeConfig = Path.Combine(directory, DefaultConfig);
             return File.Exists(storeConfig);
         }
