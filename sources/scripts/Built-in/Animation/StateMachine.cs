@@ -1,21 +1,20 @@
-using System;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Input;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Paradox.Input;
 using SiliconStudio.Paradox.Physics;
 using SiliconStudio.Paradox.Rendering.Sprites;
 using SpriteStudioDemo18;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Xenko.Scripts
 {
     public class StateMachine : AsyncScript
     {
-        private readonly Dictionary<Type, StateMachineState> states = new Dictionary<Type, StateMachineState>();
+        private List<StateMachineState> states = new List<StateMachineState>();
 
         private StateMachineState currentState;
 
@@ -28,114 +27,122 @@ namespace Xenko.Scripts
                 var machineState = script as StateMachineState;
                 if (machineState != null)
                 {
-                    states.Add(machineState.GetType(), machineState);
+                    states.Add(machineState);
                     machineState.StateMachine = this;
                 }
             }
 
+            states = states.OrderBy(x => x.StatePriority).ToList();
+
             foreach (var stateMachineState in states)
             {
-                stateMachineState.Value.Initialize();
+                await stateMachineState.Initialize();
             }
 
-            currentState = states.First().Value;
-            currentState.Begin(null);
+            currentState = states.First();
+            StateMachineState previousState = null;
 
-            while (Game.IsRunning)
+            while (!CancellationToken.IsCancellationRequested)
             {
-                if (currentState.ShouldEnd() && currentState.Next() != null)
-                {
-                    var nextState = currentState.Next();
-                    var prevState = currentState;
-                    currentState.End(nextState);
-
-                    currentState = nextState;
-                    currentState.Begin(prevState);
-                }
-
-                currentState.Update();
-
-                await Script.NextFrame();
+                var nextState = await currentState.Run(previousState, CancellationToken);
+                previousState = currentState;
+                currentState = nextState;
             }
         }
 
-        public StateMachineState GetState(Type stateType)
+        public bool Checkpoint(out StateMachineState nextState)
         {
-            return states[stateType];
+            nextState = null;
+
+            foreach (var state in states)
+            {
+                if (currentState == state) continue;
+                if (!state.ShouldRun()) continue;
+                nextState = state;
+                return true;
+            }
+
+            return false;
         }
     }
 
     public abstract class StateMachineState : AsyncScript
     {
+        /// <summary>
+        /// The priority (lower value = higher priority) of this state machine over others
+        /// </summary>
+        public abstract int StatePriority { get; }
+
         internal StateMachine StateMachine { get; set; }
 
+        /// <summary>
+        /// not really used
+        /// </summary>
+        /// <returns></returns>
         public override Task Execute()
         {
             return Task.FromResult(0);
         }
 
-        public abstract void Initialize();
+        /// <summary>
+        /// Initialization tasks go here.
+        /// </summary>
+        /// <returns></returns>
+        public abstract Task Initialize();
 
-        public abstract bool ShouldBegin();
+        /// <summary>
+        /// Checks if this state is valid.
+        /// </summary>
+        /// <returns>If this state is valid and should begin.</returns>
+        public abstract bool ShouldRun();
 
-        public abstract bool ShouldEnd();
-
-        public abstract void Begin(StateMachineState previouState);
-
-        public abstract void End(StateMachineState nextState);
-
-        public abstract void Update();
-
-        public abstract StateMachineState Next();
+        /// <summary>
+        /// Run this state until the end.
+        /// </summary>
+        /// <returns>The next state.</returns>
+        public abstract Task<StateMachineState> Run(StateMachineState previouState, CancellationToken cancellation);
     }
 
     public class IdleState : StateMachineState
     {
         private AnimationComponent animationComponent;
 
-        private StateMachineState atkState, runState;
+        public override int StatePriority { get; } = 100;
 
-        public override void Initialize()
+        public override Task Initialize()
         {
             animationComponent = Entity.Get<AnimationComponent>();
-            atkState = StateMachine.GetState(typeof(AttackState));
-            runState = StateMachine.GetState(typeof(RunState));
+            return Task.FromResult(0);
         }
 
-        public override bool ShouldBegin()
+        public override bool ShouldRun()
         {
-            return !ShouldEnd();
+            return !Input.IsKeyDown(Keys.A) && !Input.IsKeyDown(Keys.Left) &&
+                   !Input.IsKeyDown(Keys.D) && !Input.IsKeyDown(Keys.Right) &&
+                   !Input.IsKeyDown(Keys.Space);
         }
 
-        public override bool ShouldEnd()
+        public override async Task<StateMachineState> Run(StateMachineState previouState, CancellationToken cancellation)
         {
-            return Input.IsKeyDown(Keys.A) || Input.IsKeyDown(Keys.Left) ||
-                   Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right) ||
-                   Input.IsKeyDown(Keys.Space);
-        }
-
-        public override void Begin(StateMachineState previouState)
-        {
+            var playing = false;
             for (var index = 0; index < animationComponent.PlayingAnimations.Count; index++)
             {
                 var animation = animationComponent.PlayingAnimations[index];
-                if (animation.Name == "Stance") return;
+                if (animation.Name == "Stance") playing = true;
             }
-            animationComponent.Play("Stance");
-        }
+            if (!playing) animationComponent.Play("Stance");
 
-        public override void End(StateMachineState nextState)
-        {           
-        }
+            while (!cancellation.IsCancellationRequested)
+            {
+                StateMachineState nextState;
+                if (StateMachine.Checkpoint(out nextState))
+                {
+                    return nextState;
+                }
 
-        public override void Update()
-        {            
-        }
+                await Script.NextFrame();
+            }
 
-        public override StateMachineState Next()
-        {
-            if(atkState.ShouldBegin()) return atkState;
-            if(runState.ShouldBegin()) return runState;
             return null;
         }
     }
@@ -144,67 +151,65 @@ namespace Xenko.Scripts
     {
         private AnimationComponent animationComponent;
 
-        private StateMachineState atkState, idlState;
-
         private const int AgentMoveDistance = 10; // virtual resolution unit/second
         private const float gameWidthX = 16f;       // from -8f to 8f
         private const float gameWidthHalfX = gameWidthX / 2f;
         private float baseScaleX;
 
-        public override void Initialize()
+        public override int StatePriority { get; } = 50;
+
+        public override Task Initialize()
         {
             animationComponent = Entity.Get<AnimationComponent>();
-            atkState = StateMachine.GetState(typeof(AttackState));
-            idlState = StateMachine.GetState(typeof(IdleState));
             baseScaleX = Entity.Transform.Scale.X;
+            return Task.FromResult(0);
         }
 
-        public override bool ShouldBegin()
+        public override bool ShouldRun()
         {
-            return !ShouldEnd();
+            return Input.IsKeyDown(Keys.A) || Input.IsKeyDown(Keys.Left) ||
+                   Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right);
         }
 
-        public override bool ShouldEnd()
+        public override async Task<StateMachineState> Run(StateMachineState previouState, CancellationToken cancellation)
         {
-            return !Input.IsKeyDown(Keys.A) && !Input.IsKeyDown(Keys.Left) &&
-                   !Input.IsKeyDown(Keys.D) && !Input.IsKeyDown(Keys.Right);
-        }
-
-        public override void Begin(StateMachineState previouState)
-        {
+            var playing = false;
             for (var index = 0; index < animationComponent.PlayingAnimations.Count; index++)
             {
                 var animation = animationComponent.PlayingAnimations[index];
-                if (animation.Name == "Run") return;
+                if (animation.Name == "Run") playing = true;
             }
-            animationComponent.Play("Run");
-        }
+            if (!playing) animationComponent.Play("Run");
 
-        public override void End(StateMachineState nextState)
-        {
-        }
+            while (!cancellation.IsCancellationRequested)
+            {
+                StateMachineState nextState;
+                if (StateMachine.Checkpoint(out nextState))
+                {
+                    return nextState;
+                }
 
-        public override void Update()
-        {
-            // Update Agent's position
-            var dt = (float)Game.UpdateTime.Elapsed.TotalSeconds;
+                // Update Agent's position
+                var dt = (float)Game.UpdateTime.Elapsed.TotalSeconds;
 
-            Entity.Transform.Position.X += ((Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right)) ? AgentMoveDistance : -AgentMoveDistance) * dt;
+                Entity.Transform.Position.X += ((Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right))
+                    ? AgentMoveDistance
+                    : -AgentMoveDistance) * dt;
 
-            if (Entity.Transform.Position.X < -gameWidthHalfX)
-                Entity.Transform.Position.X = -gameWidthHalfX;
+                if (Entity.Transform.Position.X < -gameWidthHalfX)
+                    Entity.Transform.Position.X = -gameWidthHalfX;
 
-            if (Entity.Transform.Position.X > gameWidthHalfX)
-                Entity.Transform.Position.X = gameWidthHalfX;
+                if (Entity.Transform.Position.X > gameWidthHalfX)
+                    Entity.Transform.Position.X = gameWidthHalfX;
 
-            // If agent face left, flip the sprite
-            Entity.Transform.Scale.X = (Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right)) ? baseScaleX : -baseScaleX;
-        }
+                // If agent face left, flip the sprite
+                Entity.Transform.Scale.X = (Input.IsKeyDown(Keys.D) || Input.IsKeyDown(Keys.Right))
+                    ? baseScaleX
+                    : -baseScaleX;
 
-        public override StateMachineState Next()
-        {
-            if (atkState.ShouldBegin()) return atkState;
-            return idlState;
+                await Script.NextFrame();
+            }
+            return null;
         }
     }
 
@@ -212,35 +217,26 @@ namespace Xenko.Scripts
     {
         private AnimationComponent animationComponent;
 
-        private StateMachineState runState, idlState;
-
-        private Task animationTask;
-
         public SpriteSheet BulletSheet { get; set; }
 
         public PhysicsColliderShape BulletColliderShape { get; set; }
 
         private readonly Vector3 bulletOffset = new Vector3(1.3f, 1.65f, 0f);
 
-        public override void Initialize()
+        public override int StatePriority { get; } = 0;
+
+        public override Task Initialize()
         {
             animationComponent = Entity.Get<AnimationComponent>();
-            runState = StateMachine.GetState(typeof(AttackState));
-            idlState = StateMachine.GetState(typeof(IdleState));
+            return Task.FromResult(0);
         }
 
-        public override bool ShouldBegin()
+        public override bool ShouldRun()
         {
             return Input.IsKeyDown(Keys.Space);
         }
 
-        public override bool ShouldEnd()
-        {
-            if (animationTask != null && !animationTask.IsCompleted) return false;
-            return !ShouldBegin();
-        }
-
-        private void Shoot()
+        private Task Shoot()
         {
             var rb = new RigidbodyElement { CanCollideWith = CollisionFilterGroupFlags.CustomFilter1, CollisionGroup = CollisionFilterGroups.DefaultFilter };
             rb.ColliderShapes.Add(new ColliderShapeAssetDesc { Shape = BulletColliderShape });
@@ -266,36 +262,28 @@ namespace Xenko.Scripts
             for (var index = 0; index < animationComponent.PlayingAnimations.Count; index++)
             {
                 var animation = animationComponent.PlayingAnimations[index];
-                if (animation.Name == "Attack") return;
+                if (animation.Name == "Attack") return animation.Ended();
             }
             var anim = animationComponent.Play("Attack");
-            animationTask = anim.Ended();
+            return anim.Ended();
         }
 
-        public override void Begin(StateMachineState previouState)
+        public override async Task<StateMachineState> Run(StateMachineState previouState, CancellationToken cancellation)
         {
-            Shoot();
-        }
-
-        public override void End(StateMachineState nextState)
-        {
-        }
-
-        public override void Update()
-        {
-            if (Input.IsKeyDown(Keys.Space))
+            while (!cancellation.IsCancellationRequested)
             {
-                if (animationTask != null && animationTask.IsCompleted)
+                if (!Input.IsKeyDown(Keys.Space))
                 {
-                    Shoot();
+                    StateMachineState nextState;
+                    if (StateMachine.Checkpoint(out nextState))
+                    {
+                        return nextState;
+                    }
                 }
-            }
-        }
 
-        public override StateMachineState Next()
-        {
-            if (runState.ShouldBegin()) return runState;
-            return idlState;
+                await Shoot();
+            }
+            return null;
         }
     }
 }
