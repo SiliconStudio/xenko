@@ -20,6 +20,8 @@ namespace SiliconStudio.Assets.Templates
         /// <summary>
         /// The template can be applied to an existing <see cref="Assets.Package"/>.
         /// </summary>
-        Package
+        Package,
+
+        Asset
     }
 }
