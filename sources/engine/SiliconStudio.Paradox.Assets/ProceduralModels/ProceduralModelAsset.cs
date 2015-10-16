@@ -28,11 +28,12 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(185, "Procedural Model", "A procedural model")]
-    [AssetFormatVersion(5)]
+    [AssetFormatVersion(6)]
     [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
     [AssetUpgrader(2, 3, typeof(RenameCapsuleHeight))]
     [AssetUpgrader(3, 4, typeof(RenameDiameters))]
     [AssetUpgrader(4, 5, typeof(Standardization))]
+    [AssetUpgrader(5, 6, typeof(CapsuleRadiusDefaultChange))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
         /// <summary>
@@ -171,6 +172,21 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
                     vecSize.Style = YamlStyle.Flow;
 
                     proceduralType.UvScale = vecSize;
+                }
+            }
+        }
+
+        class CapsuleRadiusDefaultChange : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var proceduralType = asset.Type;
+                if (proceduralType.Node.Tag == "!CapsuleProceduralModel")
+                {
+                    if (proceduralType.Radius == null)
+                    {
+                        proceduralType.Radius = 0.25f;
+                    }
                 }
             }
         }
