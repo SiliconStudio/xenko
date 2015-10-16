@@ -14,7 +14,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     public class PackageUserSettings
     {
-        private const string SettingsExtension = ".xkpkg.user";
+        private const string SettingsExtension = ".user";
         private readonly Package package;
         private readonly SettingsProfile profile;
 
@@ -30,7 +30,7 @@ namespace SiliconStudio.Assets
             }
             else
             {
-                var path = Path.Combine(package.FullPath.GetFullDirectory(), package.FullPath.GetFileName() + SettingsExtension);
+                var path = package.FullPath + SettingsExtension;
                 try
                 {
                     profile = SettingsContainer.LoadSettingsProfile(path, false);
@@ -49,7 +49,7 @@ namespace SiliconStudio.Assets
             if (package.FullPath == null)
                 return false;
 
-            var path = Path.Combine(package.FullPath.GetFullDirectory(), package.FullPath.GetFileName() + SettingsExtension);
+            var path = package.FullPath + SettingsExtension;
             return SettingsContainer.SaveSettingsProfile(profile, path);
         }
 
