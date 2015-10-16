@@ -156,8 +156,6 @@ namespace SiliconStudio.Paradox.Physics
                         element.Collider.Entity = entity; //required by the next call
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
-                        c.IsTrigger = false;
-
                         if (defaultGroups)
                         {
                             simulation.AddCollider(c, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
