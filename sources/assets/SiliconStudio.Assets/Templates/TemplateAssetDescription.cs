@@ -7,7 +7,7 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets.Templates
 {
-    [DataContract]
+    [DataContract("TemplateAsset")]
     public class TemplateAssetDescription : TemplateDescription
     {
 

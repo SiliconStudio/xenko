@@ -31,6 +31,7 @@ TemplateFolders:
       Group: Scripts
       Files:
         - sources/editor/SiliconStudio.Paradox.Assets.Presentation/Templates/Assets/Scripts/Camera/SideScrollingCamera.pdxtpl
+        - sources/editor/SiliconStudio.Paradox.Assets.Presentation/Templates/Assets/Scripts/Camera/FpsCamera.pdxtpl
     - Path: sources/data/images/NewGame
       Group: Core
       Exclude: "**/*.psd;**/*.md"
