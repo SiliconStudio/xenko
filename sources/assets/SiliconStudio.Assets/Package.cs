@@ -73,6 +73,7 @@ namespace SiliconStudio.Assets
         private PackageSession session;
 
         private UFile packagePath;
+        private UFile previousPackagePath;
         private bool isDirty;
         private Lazy<PackageUserSettings> settings;
 
@@ -507,6 +508,13 @@ namespace SiliconStudio.Assets
 
                         AssetSerializer.Save(FullPath, this);
 
+                        // Move the package if the path has changed
+                        if (previousPackagePath != null && previousPackagePath != packagePath)
+                        {
+                            filesToDelete.Add(previousPackagePath);
+                        }
+                        previousPackagePath = packagePath;
+
                         IsDirty = false;
                     }
                     catch (Exception ex)
@@ -725,6 +733,7 @@ namespace SiliconStudio.Assets
                     : AssetSerializer.Load<Package>(filePath, log, out aliasOccurred);
 
                 package.FullPath = filePath;
+                package.previousPackagePath = package.FullPath;
                 package.IsDirty = packageFile.AssetContent != null || aliasOccurred;
 
                 return package;
