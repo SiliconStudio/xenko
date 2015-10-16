@@ -18,7 +18,7 @@ This is the source code for Paradox Game Engine (http://paradox3d.net/).
 * [Build Instructions](doc/GettingStarted.md)
 * [API Reference](http://doc.paradox3d.net/html/index.htm?page=api)
 * [Confluence documentation](http://doc.paradox3d.net/)
-* [Release Notes](doc/ReleaseNotes/ReleaseNotes.md)
+* [Release Notes](doc/ReleaseNotes/ReleaseNotes.1.3.md)
 
 ## Assemblies
 
