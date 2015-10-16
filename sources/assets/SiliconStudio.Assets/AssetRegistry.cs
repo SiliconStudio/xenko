@@ -25,7 +25,6 @@ namespace SiliconStudio.Assets
         private static readonly Logger Log = GlobalLogger.GetLogger("Assets.Registry");
 
         private static readonly Dictionary<Type, string> RegisteredDefaultAssetExtension = new Dictionary<Type, string>();
-        private static readonly Dictionary<Type, bool> RegisteredDynamicThumbnails = new Dictionary<Type, bool>();
         private static readonly HashSet<Type> AssetTypes = new HashSet<Type>();
         private static readonly HashSet<Type> RegisteredPackageSessionAnalysisTypes = new HashSet<Type>();
         private static readonly List<IAssetImporter> RegisteredImportersInternal = new List<IAssetImporter>();
@@ -287,22 +286,6 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Gets a boolean indicating whether an asset type has a dynamic thumbnail.
-        /// </summary>
-        /// <param name="assetType">Type of the asset.</param>
-        /// <returns><c>true</c> if [has dynamic thumbnail] [the specified asset type]; otherwise, <c>false</c>.</returns>
-        public static bool HasDynamicThumbnail(Type assetType)
-        {
-            IsAssetType(assetType, true);
-            lock (RegistryLock)
-            {
-                bool hasThumbnail;
-                RegisteredDynamicThumbnails.TryGetValue(assetType, out hasThumbnail);
-                return hasThumbnail;
-            }
-        }
-
-        /// <summary>
         /// Returns an array of asset types that are non-abstract and public.
         /// </summary>
         /// <returns>An array of <see cref="Type"/> elements.</returns>
@@ -384,20 +367,6 @@ namespace SiliconStudio.Assets
             lock (RegistryLock)
             {
                 return RegisteredDataVisitNodeBuilders;
-            }
-        }
-        /// <summary>
-        /// Registers a whether the the specified asset type has dynamic thumbnails.
-        /// </summary>
-        /// <param name="assetType">Type of the asset.</param>
-        /// <param name="isDynamicThumbnail">if set to <c>true</c>, this asset type has dynamic thumbnails.</param>
-        /// <exception cref="System.ArgumentNullException">description</exception>
-        private static void RegisterDynamicThumbnail(Type assetType, bool isDynamicThumbnail)
-        {
-            IsAssetType(assetType, true);
-            lock (RegistryLock)
-            {
-                RegisteredDynamicThumbnails[assetType] = isDynamicThumbnail;
             }
         }
 
@@ -596,13 +565,6 @@ namespace SiliconStudio.Assets
                             ObjectFactory.RegisterFactory(assetType, null);
                         }
                     }
-
-                    // Asset description
-                    var thumbnailCompilerAttribute = assetType.GetCustomAttribute<ThumbnailCompilerAttribute>();
-                    if (thumbnailCompilerAttribute != null)
-                    {
-                        RegisterDynamicThumbnail(assetType, thumbnailCompilerAttribute.DynamicThumbnails);
-                    }
                 }
             }
         }
@@ -627,11 +589,6 @@ namespace SiliconStudio.Assets
                 foreach (var typeToRemove in RegisteredDefaultAssetExtension.Keys.ToList().Where(type => type.Assembly == assembly))
                 {
                     RegisteredDefaultAssetExtension.Remove(typeToRemove);
-                }
-
-                foreach (var typeToRemove in RegisteredDynamicThumbnails.Keys.ToList().Where(type => type.Assembly == assembly))
-                {
-                    RegisteredDynamicThumbnails.Remove(typeToRemove);
                 }
 
                 foreach (var typeToRemove in AssetTypes.ToList().Where(type => type.Assembly == assembly))

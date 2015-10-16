@@ -27,7 +27,6 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [DataContract("SceneAsset")]
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
-    [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
     [AssetFormatVersion(CurrentVersion)]
     [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
@@ -48,10 +47,11 @@ namespace SiliconStudio.Paradox.Assets.Entities
     [AssetUpgrader(16, 17, typeof(NewElementLayoutUpgrader4))]
     [AssetUpgrader(17, 18, typeof(RemoveSceneEditorCameraSettings))]
     [AssetUpgrader(18, 19, typeof(ChangeSpriteColorType))]
+    [AssetUpgrader(19, 20, typeof(TriggerElementRemoved))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
-        private const int CurrentVersion = 19;
+        private const int CurrentVersion = 20;
 
         public const string FileSceneExtension = ".pdxscene";
 
@@ -592,6 +592,30 @@ namespace SiliconStudio.Paradox.Assets.Entities
                     {
                         var color = spriteComponent.Color;
                         spriteComponent.Color = DynamicYamlExtensions.ConvertFrom((Color4)DynamicYamlExtensions.ConvertTo<Color>(color));
+                    }
+                }
+            }
+        }
+
+        class TriggerElementRemoved : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var hierarchy = asset.Hierarchy;
+                var entities = (DynamicYamlArray)hierarchy.Entities;
+                foreach (dynamic entity in entities)
+                {
+                    var components = entity.Entity.Components;
+                    var physComponent = components["PhysicsComponent.Key"];
+                    if (physComponent == null) continue;
+
+                    foreach (dynamic element in physComponent.Elements)
+                    {
+                        if (element.Node.Tag == "!TriggerElement")
+                        {
+                            element.Node.Tag = "!StaticColliderElement";
+                            element.IsTrigger = true;
+                        }
                     }
                 }
             }

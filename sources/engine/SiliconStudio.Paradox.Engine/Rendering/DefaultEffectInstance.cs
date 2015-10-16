@@ -72,5 +72,9 @@ namespace SiliconStudio.Paradox.Rendering
                 }
             }
         }
+
+        public override void Dispose()
+        {
+        }
     }
 }

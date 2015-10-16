@@ -12,7 +12,6 @@ namespace SiliconStudio.Paradox.SpriteStudio.Offline
     [AssetCompiler(typeof(SpriteStudioModelAssetCompiler))] // The compiler used to transform this asset to RangeValues
     [AssetDescription(".pdxss4s", false)] // A description used to display in the asset editor
     [ObjectFactory(typeof(SpriteStudioSheetAssetFactory))]
-    [ThumbnailCompiler("SiliconStudio.Paradox.GameStudio.Plugin.ThumbnailCompilers.SpriteStudioSheetThumbnailCompiler, SiliconStudio.Paradox.GameStudio.Plugin", true)] // TODO: Obsolete
     [Display("Sprite Studio Sheet")]
     public class SpriteStudioModelAsset : AssetImportTracked
     {

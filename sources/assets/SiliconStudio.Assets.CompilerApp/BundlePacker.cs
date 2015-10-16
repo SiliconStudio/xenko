@@ -164,7 +164,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     VirtualFileSystem.CreateDirectory("/data_output/db");
 
                     // Mount output database and delete previous bundles that shouldn't exist anymore (others should be overwritten)
-                    using (var outputDatabase = new ObjectDatabase("/data_output/db", indexName, loadDefaultBundle: false))
+                    using (var outputDatabase = new ObjectDatabase("/data_output/db", VirtualFileSystem.ApplicationDatabaseIndexName, loadDefaultBundle: false))
                     {
                         try
                         {
