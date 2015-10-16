@@ -74,6 +74,12 @@ namespace SiliconStudio.Xenko.Assets
 
                     ChangeFileExtension(assetFiles, legacyAsset.AssetFile, legacyAsset.NewExtension);
                 }
+
+                // Force loading of user settings with old extension
+                var userSettings = dependentPackage.UserSettings;
+
+                // Change package extension
+                dependentPackage.FullPath = new UFile(dependentPackage.FullPath.GetFullPathWithoutExtension(), Package.PackageFileExtension);
             }
 
             return true;
