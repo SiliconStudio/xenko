@@ -4,13 +4,10 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Threading;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Security.Cryptography.X509Certificates;
 using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
