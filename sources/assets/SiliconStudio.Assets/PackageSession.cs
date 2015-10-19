@@ -1075,7 +1075,9 @@ namespace SiliconStudio.Assets
                     }
                 }
 
-                // Load assemblies
+                // Load assemblies. Set the package filename to the path on disk, in case of renaming.
+                // TODO: Could referenced projects be associated to other packages than this one?
+                newLoadParameters.ExtraCompileProperties.Add("SiliconStudioCurrentPackagePath", package.FullPath);
                 package.LoadAssemblies(log, newLoadParameters);
 
                 // Load list of assets
