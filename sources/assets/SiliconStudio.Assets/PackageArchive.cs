@@ -20,19 +20,20 @@ namespace SiliconStudio.Assets
             builder.Populate(meta);
 
             // TODO this is not working 
+            // We are excluding everything that is in a folder that starts with a dot (ie. .shadow, .vs)
             var files = new List<NuGet.ManifestFile>()
                 {
-                    NewFile(@"Bin\**\*.exe", "Bin"),
-                    NewFile(@"Bin\**\*.vsix", "Bin"),
-                    NewFile(@"Bin\**\*.so", "Bin"),
-                    NewFile(@"Bin\**\*.a", "Bin"),
-                    NewFile(@"Bin\**\*.md", "Bin"),
-                    NewFile(@"Bin\**\*.html", "Bin"),
-                    NewFile(@"Bin\**\*.config", "Bin"),
-                    NewFile(@"Bin\**\*.dll", "Bin"),
-                    NewFile(@"Bin\**\*.xml", "Bin"),
-                    NewFile(@"Bin\**\*.usrdoc", "Bin"),
-                    NewFile(@"Bin\**\*.winmd", "Bin"),
+                    NewFile(@"Bin\**\*.exe", "Bin", @"Bin\**\.*\**\*.exe"),
+                    NewFile(@"Bin\**\*.vsix", "Bin", @"Bin\**\.*\**\*.vsix"),
+                    NewFile(@"Bin\**\*.so", "Bin", @"Bin\**\.*\**\*.so"),
+                    NewFile(@"Bin\**\*.a", "Bin", @"Bin\**\.*\**\*.a"),
+                    NewFile(@"Bin\**\*.md", "Bin", @"Bin\**\.*\**\*.md"),
+                    NewFile(@"Bin\**\*.html", "Bin", @"Bin\**\.*\**\*.html"),
+                    NewFile(@"Bin\**\*.config", "Bin", @"Bin\**\.*\**\*.config"),
+                    NewFile(@"Bin\**\*.dll", "Bin", @"Bin\**\.*\**\*.dll"),
+                    NewFile(@"Bin\**\*.xml", "Bin", @"Bin\**\.*\**\*.xml"),
+                    NewFile(@"Bin\**\*.usrdoc", "Bin", @"Bin\**\.*\**\*.usrdoc"),
+                    NewFile(@"Bin\**\*.winmd", "Bin", @"Bin\**\.*\**\*.winmd"),
                     NewFile(@"Targets\*.targets", "Targets"),
                 };
 
