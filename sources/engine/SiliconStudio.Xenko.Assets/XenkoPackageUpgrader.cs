@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -136,6 +136,28 @@ namespace SiliconStudio.Xenko.Assets
                 // rename the file
                 ChangeFileExtension(assetFiles, file, ".pdxsheet");
             }
+        }
+
+        public override bool UpgradeBeforeAssembliesLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
+        {
+            var tasks = from profile in dependentPackage.Profiles
+                        from projectReference in profile.ProjectReferences
+                        let projectFullPath = UPath.Combine(dependentPackage.RootDirectory, projectReference.Location)
+                        select Task.Run(() => UpgradeProject(projectFullPath));
+
+            Task.WaitAll(tasks.ToArray());
+
+            return true;
+        }
+
+        private void UpgradeProject(UFile projectPath)
+        {
+            var fileContents = File.ReadAllText(projectPath);
+            fileContents = fileContents.Replace(".pdxpkg", ".xkpkg");
+            fileContents = fileContents.Replace("$(SiliconStudioParadoxDir)", "$(SiliconStudioXenkoDir)");
+            fileContents = fileContents.Replace("$(EnsureSiliconStudioParadoxInstalled)", "$(EnsureSiliconStudioXenkoInstalled)");
+            fileContents = fileContents.Replace("Paradox", "Xenko");
+            File.WriteAllText(projectPath, fileContents);
         }
     }
 }
