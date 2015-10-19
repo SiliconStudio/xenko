@@ -1,7 +1,7 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <TargetFrameworkRootPath>$(SolutionDir)\..\CoreFX</TargetFrameworkRootPath>
+    <TargetFrameworkRootPath>$(SolutionDir)\..\externals\CoreFX</TargetFrameworkRootPath>
     <FrameworkPathOverride>$(TargetFrameworkRootPath)\CoreCLR\v5.0</FrameworkPathOverride>
   </PropertyGroup>
-  <Import Project="$(SolutionDir)\..\CoreFX\configs\CoreCLR.CSharp.targets"/>
+  <Import Project="$(TargetFrameworkRootPath)\configs\CoreCLR.CSharp.targets"/>
 </Project>
