@@ -30,7 +30,7 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 // Find Type.GetTypeFromHandle
                 var typeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Type).FullName);
-                return assembly.MainModule.Import(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));   
+                return assembly.MainModule.ImportReference(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));   
             });
 
             var effectKeysStaticConstructors = new List<MethodReference>();
@@ -119,7 +119,7 @@ namespace SiliconStudio.AssemblyProcessor
                         cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Ldtoken, type));
                         cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Call, getTypeFromHandleMethod.Value));
                         cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Ldstr, keyClassName + activeField.Name));
-                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Call, assembly.MainModule.Import(parameterKeysMergeMethod)));
+                        cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Call, assembly.MainModule.ImportReference(parameterKeysMergeMethod)));
                         cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Castclass, activeField.FieldType));
                         cctorIL.InsertBefore(nextInstruction, Instruction.Create(OpCodes.Stsfld, activeField));
                         i = cctorInstructions.IndexOf(nextInstruction);
@@ -136,10 +136,10 @@ namespace SiliconStudio.AssemblyProcessor
             if (effectKeysStaticConstructors.Count > 0)
             {
                 // Add [AssemblyEffectKeysAttribute] to the assembly
-                assembly.CustomAttributes.Add(new CustomAttribute(assembly.MainModule.Import(assemblyEffectKeysAttributeType.GetConstructors().First(x => !x.HasParameters))));
+                assembly.CustomAttributes.Add(new CustomAttribute(assembly.MainModule.ImportReference(assemblyEffectKeysAttributeType.GetConstructors().First(x => !x.HasParameters))));
 
                 // Get or create module static constructor
-                var voidType = assembly.MainModule.Import(mscorlibAssembly.MainModule.GetTypeResolved(typeof(void).FullName));
+                var voidType = assembly.MainModule.TypeSystem.Void;
                 var moduleClass = assembly.MainModule.Types.First(t => t.Name == "<Module>");
                 var staticConstructor = moduleClass.GetStaticConstructor();
                 if (staticConstructor == null)
@@ -163,10 +163,10 @@ namespace SiliconStudio.AssemblyProcessor
 
                 var typeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Type).FullName);
                 var typeHandleProperty = typeType.Properties.First(x => x.Name == "TypeHandle");
-                var getTypeHandleMethod = assembly.MainModule.Import(typeHandleProperty.GetMethod);
+                var getTypeHandleMethod = assembly.MainModule.ImportReference(typeHandleProperty.GetMethod);
 
                 var runtimeHelpersType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(RuntimeHelpers).FullName);
-                var runClassConstructorMethod = assembly.MainModule.Import(runtimeHelpersType.Methods.Single(x => x.IsPublic && x.Name == "RunClassConstructor" && x.Parameters.Count == 1 && x.Parameters[0].ParameterType.FullName == typeof(RuntimeTypeHandle).FullName));
+                var runClassConstructorMethod = assembly.MainModule.ImportReference(runtimeHelpersType.Methods.Single(x => x.IsPublic && x.Name == "RunClassConstructor" && x.Parameters.Count == 1 && x.Parameters[0].ParameterType.FullName == typeof(RuntimeTypeHandle).FullName));
 
                 // Call every key class static constructor from the module static constructor so that they are properly constructed (because accessing through reflection might cause problems)
                 staticConstructor.Body.SimplifyMacros();

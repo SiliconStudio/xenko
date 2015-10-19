@@ -77,7 +77,7 @@ namespace SiliconStudio.Paradox
                     var gameDebuggerHost = DuplexChannelFactory<IGameDebuggerHost>.CreateChannel(new InstanceContext(gameDebuggerTarget), namedPipeBinding, new EndpointAddress(hostPipe));
                     gameDebuggerTarget.MainLoop(gameDebuggerHost);
                 }
-                catch (Exception ex)
+                catch (Exception)
                 {
                     throw;
                 }

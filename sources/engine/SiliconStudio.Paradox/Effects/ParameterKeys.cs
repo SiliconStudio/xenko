@@ -12,7 +12,7 @@ namespace SiliconStudio.Paradox.Rendering
 {
     public static class ParameterKeys
     {
-        private static int keyCount;
+        private static long keysVersion = 0, keyByNamesVersion = 0;
         private static readonly List<ParameterKey> keys = new List<ParameterKey>();
         private readonly static Dictionary<string, ParameterKey> keyByNames = new Dictionary<string, ParameterKey>();
         private static readonly Dictionary<ParameterComposedKey, ParameterKey> composedKeys = new Dictionary<ParameterComposedKey, ParameterKey>();
@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Rendering
             lock (keys)
             lock (keyByNames)
             {
-                if (keyByNames.Count != keyCount)
+                if (keyByNamesVersion != keysVersion)
                 {
                     // If anything changed, repopulate the list (we can't do incrementally since dictionary aren't ordered)
                     keys.Clear();
@@ -39,6 +39,7 @@ namespace SiliconStudio.Paradox.Rendering
 
                         keys.Add(key.Value);
                     }
+                    keysVersion = keyByNamesVersion;
                 }
 
                 return keys.ToList();
@@ -162,6 +163,7 @@ namespace SiliconStudio.Paradox.Rendering
                 if (string.IsNullOrEmpty(key.Name))
                     key.SetName(name);
                 keyByNames[name] = key;
+                keyByNamesVersion += keyByNamesVersion;
                 
                 if (key.OwnerType == null && ownerType != null)
                     key.SetOwnerType(ownerType);
@@ -315,6 +317,7 @@ namespace SiliconStudio.Paradox.Rendering
 
                         // Register key. Also register real name in case it was remapped.
                         keyByNames[name] = key;
+                        keyByNamesVersion += keyByNamesVersion;
                     }
                 }
 

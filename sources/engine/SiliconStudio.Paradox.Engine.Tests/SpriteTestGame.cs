@@ -66,9 +66,9 @@ namespace SiliconStudio.Paradox.Engine.Tests
             foreground.Add(new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = groundSprites }, CurrentFrame = 1 });
             background.Add(new SpriteComponent { SpriteProvider = new SpriteFromSheet { Sheet = groundSprites }, CurrentFrame = 0 });
 
-            Scene.AddChild(ball);
-            Scene.AddChild(foreground);
-            Scene.AddChild(background);
+            Scene.Entities.Add(ball);
+            Scene.Entities.Add(foreground);
+            Scene.Entities.Add(background);
 
             spriteComponent = ball.Get(SpriteComponent.Key);
             transfoComponent = ball.Get(TransformComponent.Key);

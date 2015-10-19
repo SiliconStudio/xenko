@@ -92,7 +92,7 @@ namespace NShader
 
                 langService.OutputAnalysisAndGotoLocation(result, TextView);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // TODO handle errors
             }

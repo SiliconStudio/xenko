@@ -147,10 +147,5 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
 
         private Rectangle Rectangle0;
 
-        private Rectangle Rectangle1;
-
-        private Rectangle Rectangle2;
-
-        private Rectangle Rectangle3;
     }
 }

@@ -171,7 +171,9 @@ namespace SiliconStudio.Paradox.Assets.Entities
             public EntityDesign Base;
             public EntityDesign Asset1;
             public EntityDesign Asset2;
+# pragma warning disable 649
             public MergeResult MergeResult;
+ #pragma warning restore 649
         }
 
         public static EntityHierarchyData ImportScene(UFile sourceUrl, EntityAsset source, Guid sourceRootEntity, out EntityBase entityBase)

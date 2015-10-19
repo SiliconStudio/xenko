@@ -46,10 +46,6 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
         // rectangles to blur for each shadow map
         private HashSet<LightShadowMapTexture> shadowMapTexturesToBlur = new HashSet<LightShadowMapTexture>();
 
-        private readonly Entity cameraEntity;
-
-        private readonly ModelComponentRenderer modelRenderer;
-
         private readonly string effectName;
 
         private readonly ModelComponentRenderer shadowModelComponentRenderer;
@@ -63,8 +59,6 @@ namespace SiliconStudio.Paradox.Rendering.Shadows
         private readonly ParameterCollection shadowCasterParameters;
 
         public readonly Dictionary<LightComponent, LightShadowMapTexture> LightComponentsWithShadows;
-
-        private readonly Dictionary<ShaderGroupDataKey, ILightShadowMapShaderGroupData> shaderGroupDatas;
 
         private List<LightComponent> visibleLights;
 

@@ -110,7 +110,7 @@ namespace SiliconStudio.Paradox.Debugger.Target
             return new ReloadedScriptEntryLive(entity, index, parsingEvents, script);
         }
 
-        protected virtual Script DeserializeScript(ReloadedScriptEntry reloadedScript)
+        protected override Script DeserializeScript(ReloadedScriptEntry reloadedScript)
         {
             var eventReader = new EventReader(new MemoryParser(reloadedScript.YamlEvents));
             var scriptCollection = new ScriptCollection();

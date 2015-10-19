@@ -30,20 +30,20 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             var cube = new Entity { new ModelComponent { Model = Asset.Load<Model>("cube Model") } };
             cube.Transform.Scale = new Vector3(10000);
             cube.Transform.Position = new Vector3(0, 0, 10);
-            Scene.AddChild(cube);
+            Scene.Entities.Add(cube);
 
             var imageElement = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv")) };
             var imageEntity = new Entity { new UIComponent { RootElement = imageElement, IsFullScreen = false, VirtualResolution = new Vector3(150) } };
             imageEntity.Transform.Position = new Vector3(-500, 0, 0);
-            Scene.AddChild(imageEntity);
+            Scene.Entities.Add(imageEntity);
 
             var imageEntity2 = new Entity { new UIComponent { RootElement = imageElement, IsFullScreen = false, VirtualResolution = new Vector3(200) } };
             imageEntity2.Transform.Position = new Vector3(0, 250, 0);
-            Scene.AddChild(imageEntity2);
+            Scene.Entities.Add(imageEntity2);
 
             var imageEntity3 = new Entity { new UIComponent { RootElement = imageElement, IsFullScreen = false, VirtualResolution = new Vector3(250) } };
             imageEntity3.Transform.Position = new Vector3(0, 0, -500);
-            Scene.AddChild(imageEntity3);
+            Scene.Entities.Add(imageEntity3);
             
             // setup the camera
             var camera = new TestCamera { Yaw = MathUtil.Pi/4, Pitch = MathUtil.Pi/4, Position = new Vector3(500, 500, 500), MoveSpeed = 100 };

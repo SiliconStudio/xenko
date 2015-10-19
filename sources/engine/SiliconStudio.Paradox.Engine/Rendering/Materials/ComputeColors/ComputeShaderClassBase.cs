@@ -270,12 +270,12 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// <summary>
         /// Add a new member.
         /// </summary>
-        /// <typeparam name="T">The type of the member.</typeparam>
+        /// <typeparam name="TMember">The type of the member.</typeparam>
         /// <param name="linkName">The name of the parameter key.</param>
         /// <param name="members">The target parameter collection.</param>
-        public void AddMember<T>(string linkName, Dictionary<ParameterKey, object> members)
+        public void AddMember<TMember>(string linkName, Dictionary<ParameterKey, object> members)
         {
-            var pk = GetTypedParameterKey<T>(linkName);
+            var pk = GetTypedParameterKey<TMember>(linkName);
             if (pk != null)
             {
                 Type expectedType = null;
@@ -310,13 +310,13 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// <summary>
         /// Add a new generic parameter.
         /// </summary>
-        /// <typeparam name="T">The type of the generic.</typeparam>
+        /// <typeparam name="TValue">The type of the generic.</typeparam>
         /// <param name="keyName">The name of the generic.</param>
         /// <param name="generics">The target ComputeColorParameters.</param>
-        public void AddKey<T>(string keyName, ComputeColorParameters generics)
+        public void AddKey<TValue>(string keyName, ComputeColorParameters generics)
         {
             IComputeColorParameter computeColorParameter;
-            var typeT = typeof(T);
+            var typeT = typeof(TValue);
             if (typeT == typeof(Texture))
                 computeColorParameter = new ComputeColorParameterTexture();
             else if (typeT == typeof(float))
@@ -349,13 +349,13 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// <summary>
         /// Add the parameter to the collection.
         /// </summary>
-        /// <typeparam name="T">The type of the parameter.</typeparam>
+        /// <typeparam name="TValue">The type of the parameter.</typeparam>
         /// <param name="key">The key of the variable.</param>
         /// <param name="value"></param>
         /// <param name="collection"></param>
-        private void AddToCollection<T>(ParameterKey key, T value, ParameterCollection collection)
+        private void AddToCollection<TValue>(ParameterKey key, TValue value, ParameterCollection collection)
         {
-            var pk = key as ParameterKey<T>;
+            var pk = key as ParameterKey<TValue>;
             if (pk != null)
                 collection.Set(pk, value);
         }
@@ -367,16 +367,16 @@ namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
         /// <summary>
         /// Get the correct parameter key.
         /// </summary>
-        /// <typeparam name="T">The type of the parameter.</typeparam>
+        /// <typeparam name="TValue">The type of the parameter.</typeparam>
         /// <param name="linkName">The name of the parameter key.</param>
         /// <returns>The parameter key.</returns>
-        private static ParameterKey<T> GetTypedParameterKey<T>(string linkName)
+        private static ParameterKey<TValue> GetTypedParameterKey<TValue>(string linkName)
         {
             var pk = ParameterKeys.FindByName(linkName);
             if (pk != null)
             {
-                if (pk.PropertyType == typeof(T))
-                    return (ParameterKey<T>)pk;
+                if (pk.PropertyType == typeof(TValue))
+                    return (ParameterKey<TValue>)pk;
             }
             //TODO: log error
             return null;

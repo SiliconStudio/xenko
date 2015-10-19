@@ -44,23 +44,23 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             var cube = new Entity { new ModelComponent { Model = Asset.Load<Model>("cube Model") } };
             cube.Transform.Scale = new Vector3(10000);
             cube.Transform.Position = new Vector3(0, 0, 10);
-            Scene.AddChild(cube);
+            Scene.Entities.Add(cube);
             
             var font = Asset.Load<SpriteFont>("CourierNew12");
             var textBlockZ0 = new TextBlock { Font = font, TextColor = Color.Black, TextSize = 20, Text = "At depth 0", VerticalAlignment = VerticalAlignment.Center, SynchronousCharacterGeneration = true, BackgroundColor = Color.Red };
             var entity1 = new Entity { new UIComponent { RootElement = textBlockZ0, IsFullScreen = false, IsBillboard = false, VirtualResolution = new Vector3(150) } };
             entity1.Transform.Position = new Vector3(-500, 0, 0);
-            Scene.AddChild(entity1);
+            Scene.Entities.Add(entity1);
 
             var textBlockZ500 = new TextBlock { Font = font, TextColor = Color.Black, TextSize = 20, Text = "At depth 300", VerticalAlignment = VerticalAlignment.Center, SynchronousCharacterGeneration = true, BackgroundColor = Color.Red };
             var entity2 = new Entity { new UIComponent { RootElement = textBlockZ500, IsFullScreen = false, IsBillboard = false, VirtualResolution = new Vector3(150) } };
             entity2.Transform.Position = new Vector3(300, 0, 300);
-            Scene.AddChild(entity2);
+            Scene.Entities.Add(entity2);
 
             var textBlockZM500 = new TextBlock { Font = font, TextColor = Color.Black, TextSize = 20, Text = "At depth -300", VerticalAlignment = VerticalAlignment.Center, SynchronousCharacterGeneration = true, BackgroundColor = Color.Red };
             var entity3 = new Entity { new UIComponent { RootElement = textBlockZM500, IsFullScreen = false, IsBillboard = false, VirtualResolution = new Vector3(150) } };
             entity3.Transform.Position = new Vector3(0, 300, -300);
-            Scene.AddChild(entity3);
+            Scene.Entities.Add(entity3);
 
             elements.Add(entity1);
             elements.Add(entity2);

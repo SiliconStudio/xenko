@@ -383,8 +383,10 @@ namespace SiliconStudio.Paradox.Audio.Tests.Engine
             }
         }
 
+#pragma warning disable 619
         private bool soundController0WentToStopState;
         private bool soundController2WentToStopState;
+#pragma warning restore 619
 
         private void TestEmitterUpdateValuesAtfUpdate(Game game, int loopCount, int loopCountSum)
         {

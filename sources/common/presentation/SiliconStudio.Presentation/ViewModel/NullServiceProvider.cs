@@ -8,10 +8,10 @@ namespace SiliconStudio.Presentation.ViewModel
     internal class NullServiceProvider : IViewModelServiceProvider
     {
         /// <inheritdoc/>
-        public event EventHandler<ServiceRegistrationEventArgs> ServiceRegistered;
+        public event EventHandler<ServiceRegistrationEventArgs> ServiceRegistered { add { } remove { } }
 
         /// <inheritdoc/>
-        public event EventHandler<ServiceRegistrationEventArgs> ServiceUnregistered;
+        public event EventHandler<ServiceRegistrationEventArgs> ServiceUnregistered { add { } remove { } }
 
         /// <inheritdoc/>
         public void RegisterService(object service)

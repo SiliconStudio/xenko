@@ -77,8 +77,6 @@ namespace SiliconStudio.Paradox.Games
         private bool isBackgroundFirstDraw;
         private bool isSizeChangedWithoutResizeBegin;
 
-        private bool isActive;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
@@ -373,12 +371,10 @@ namespace SiliconStudio.Paradox.Games
                     if (wparam != 0)
                     {
                         OnAppActivated(EventArgs.Empty);
-                        isActive = true;
                     }
                     else
                     {
                         OnAppDeactivated(EventArgs.Empty);
-                        isActive = false;
                     }
                     break;
                 case Win32Native.WM_POWERBROADCAST:

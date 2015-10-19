@@ -220,7 +220,7 @@ namespace SiliconStudio.Shaders.Visitor
                 var value = Convert.ToDouble(literalExpression.Literal.Value, CultureInfo.InvariantCulture);
                 values.Push(value);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 result.Error("Unable to convert value [{0}] to double", literalExpression.Span, literalExpression.Literal.Value);
             }

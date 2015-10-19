@@ -116,7 +116,7 @@ namespace SiliconStudio.Paradox.Shaders
             {
                 builder.Generate(mixinTree, context);
             }
-            catch (ShaderMixinDiscardException discard)
+            catch (ShaderMixinDiscardException)
             {
                 // We don't rethrow as this exception is on purpose to early exit/escape from a shader mixin
             }

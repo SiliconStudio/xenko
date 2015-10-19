@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Debugger.Target
 
         private bool requestedExit;
 
-        public GameDebuggerTarget()
+        public GameDebuggerTarget(string exeName)
         {
             AppDomain.CurrentDomain.AssemblyResolve += CurrentDomain_AssemblyResolve;
 

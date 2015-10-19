@@ -15,8 +15,6 @@ namespace SiliconStudio.Paradox.ConnectionRouter
 {
     partial class Program
     {
-        private static string IpOverUsbParadoxName = "ParadoxRouterServer";
-
         private static bool ConsoleVisible = false;
 
         static int Main(string[] args)

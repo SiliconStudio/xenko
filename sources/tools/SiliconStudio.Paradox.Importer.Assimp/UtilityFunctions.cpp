@@ -15,7 +15,9 @@ String^ aiStringToString(aiString str)
 	Encoding^ srcEncoding = Encoding::UTF8;
 
 	const char* pAiData = str.C_Str(); // pointer to the underlying data of he aiString
-	array<unsigned char>^ buffer = gcnew array<unsigned char>(str.length);
+        // Check `str' cannot be more than the size of a int.
+    assert(str.length <= 0x7FFFFFFF);
+	array<unsigned char>^ buffer = gcnew array<unsigned char>((int) str.length);
 	for(unsigned int i=0; i<str.length; ++i)
 		buffer[i] = pAiData[i];
 

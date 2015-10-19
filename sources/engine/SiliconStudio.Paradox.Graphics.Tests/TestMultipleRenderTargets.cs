@@ -94,9 +94,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             var ambientLight = new Entity("Ambient Light") { new LightComponent { Type = new LightAmbient(), Intensity = 1f } };
 
-            scene.AddChild(teapot);
-            scene.AddChild(mainCamera);
-            scene.AddChild(ambientLight);
+            scene.Entities.Add(teapot);
+            scene.Entities.Add(mainCamera);
+            scene.Entities.Add(ambientLight);
 
             // Add a custom script
             if (rotateModel)

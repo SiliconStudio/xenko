@@ -1151,7 +1151,7 @@ namespace SiliconStudio.Paradox.Graphics
             return requestedLevel  == 0 ? maxMipMap : Math.Min(requestedLevel, maxMipMap);
         }
 
-        protected static DataBox GetDataBox<T>(PixelFormat format, int width, int height, int depth, T[] textureData, IntPtr fixedPointer) where T : struct
+        private static DataBox GetDataBox<T>(PixelFormat format, int width, int height, int depth, T[] textureData, IntPtr fixedPointer) where T : struct
         {
             // Check that the textureData size is correct
             if (textureData == null) throw new ArgumentNullException("textureData");

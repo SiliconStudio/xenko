@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
 
         public RenderContext DrawEffectContext { get; private set; }
 
-        public void Dispose()
+        public new void Dispose()
         {
             EffectSystem.Dispose();
             GraphicsDevice.Dispose();

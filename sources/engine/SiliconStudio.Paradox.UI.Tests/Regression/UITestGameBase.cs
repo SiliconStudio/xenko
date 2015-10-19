@@ -70,8 +70,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             };
             Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
 
-            Scene.AddChild(UIRoot);
-            Scene.AddChild(Camera);
+            Scene.Entities.Add(UIRoot);
+            Scene.Entities.Add(Camera);
 
             Camera.Transform.Position = new Vector3(0, 0, 1000);
 

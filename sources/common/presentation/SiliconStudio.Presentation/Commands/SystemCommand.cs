@@ -32,6 +32,6 @@ namespace SiliconStudio.Presentation.Commands
             execute(window);
         }
 
-        public event EventHandler CanExecuteChanged;
+        public event EventHandler CanExecuteChanged { add { } remove { } }
     }
 }

@@ -17,7 +17,6 @@ namespace SiliconStudio.BuildEngine
         /// The <see cref="AutoResetEvent"/> used to notify the dynamic build step that new work is requested.
         /// </summary>
         private readonly AutoResetEvent newWorkAvailable = new AutoResetEvent(false);
-        private readonly TaskCompletionSource<bool> newWorkAvailableTCS;
 
         public DynamicBuildStep(IBuildStepProvider buildStepProvider, int maxParallelSteps)
         {

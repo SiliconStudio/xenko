@@ -1482,14 +1482,14 @@ private:
 			auto materialName = std::string(lMaterial->GetName());
 			auto materialPart = std::string();
 
-			int materialNameSplitPosition = materialName.find('#');
+			size_t materialNameSplitPosition = materialName.find('#');
 			if (materialNameSplitPosition != std::string::npos)
 			{
 				materialPart = materialName.substr(materialNameSplitPosition + 1);
 				materialName = materialName.substr(0, materialNameSplitPosition);
 			}
 
-			materialNameSplitPosition = materialNameSplitPosition = materialName.find("__");
+			materialNameSplitPosition = materialName.find("__");
 			if (materialNameSplitPosition != std::string::npos)
 			{
 				materialPart = materialName.substr(materialNameSplitPosition + 2);

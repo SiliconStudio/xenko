@@ -60,12 +60,12 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             modelDescriptor.GenerateModel(Services, model);
 
             // Add the cube to the scene
-            scene.AddChild(cubeEntity);
+            scene.Entities.Add(cubeEntity);
 
             // Create a camera entity and add it to the scene
             var cameraEntity = new Entity { new CameraComponent() };
             cameraEntity.Transform.Position = new Vector3(0, 0, 5);
-            scene.AddChild(cameraEntity);
+            scene.Entities.Add(cameraEntity);
 
             // Create a light
             var lightEntity = new Entity()
@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
 
             lightEntity.Transform.Position = new Vector3(0, 0, 1);
             lightEntity.Transform.Rotation = Quaternion.RotationY(MathUtil.DegreesToRadians(45));
-            scene.AddChild(lightEntity);
+            scene.Entities.Add(lightEntity);
 
             // Create a graphics compositor
             var compositor = new SceneGraphicsCompositorLayers();

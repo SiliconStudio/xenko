@@ -74,7 +74,7 @@ namespace SiliconStudio.AssemblyProcessor
                 type = genericInstanceType.ElementType;
             }
 
-            var newType = assembly.MainModule.Import(new TypeReference(type.Namespace, type.Name, asyncBridgeAssembly.MainModule, asyncBridgeAssembly.Name, type.IsValueType));
+            var newType = assembly.MainModule.ImportReference(new TypeReference(type.Namespace, type.Name, asyncBridgeAssembly.MainModule, asyncBridgeAssembly.Name, type.IsValueType));
 
             for (int i = 0; i < type.GenericParameters.Count; ++i)
             {
@@ -122,7 +122,7 @@ namespace SiliconStudio.AssemblyProcessor
                 method = genericInstanceMethod.ElementMethod;
             }
             
-            var newMethod = new MethodReference(method.Name, assembly.MainModule.Import(typeof(void)), declaringType);
+            var newMethod = new MethodReference(method.Name, assembly.MainModule.TypeSystem.Void, declaringType);
             newMethod.HasThis = method.HasThis;
             newMethod.ExplicitThis = method.ExplicitThis;
             newMethod.CallingConvention = method.CallingConvention;
