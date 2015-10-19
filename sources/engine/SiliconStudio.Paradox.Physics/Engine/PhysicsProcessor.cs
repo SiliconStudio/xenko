@@ -4,12 +4,10 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Threading;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
@@ -508,8 +506,10 @@ namespace SiliconStudio.Paradox.Physics
         internal void UpdateCharacters()
         {
             //characters need manual updating
-            foreach (var element in characters.Where(x => x.Collider.Enabled))
+            foreach (var element in characters)
             {
+                if(!element.Collider.Enabled) continue;
+
                 var worldTransform = element.Collider.PhysicsWorldTransform;
                 element.UpdateTransformationComponent(ref worldTransform);
             }
@@ -517,11 +517,12 @@ namespace SiliconStudio.Paradox.Physics
 
         public override void Draw(RenderContext context)
         {
-            foreach (var element in boneElements.Where(x => x.Collider.Enabled))
+            foreach (var element in boneElements)
             {
-                var model = element.Data.ModelComponent;
+                if (!element.Collider.Enabled) continue;
 
                 //write to ModelViewHierarchy
+                var model = element.Data.ModelComponent;
                 if ((element.Collider as RigidBody) != null && element.RigidBody.Type == RigidBodyTypes.Dynamic)
                 {
                     model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix = element.BoneWorldMatrixOut;
@@ -531,11 +532,12 @@ namespace SiliconStudio.Paradox.Physics
 
         internal void UpdateBones()
         {
-            foreach (var element in boneElements.Where(x => x.Collider.Enabled))
+            foreach (var element in boneElements)
             {
-                var model = element.Data.ModelComponent;
+                if (!element.Collider.Enabled) continue;
 
                 //read from ModelViewHierarchy
+                var model = element.Data.ModelComponent;
                 element.BoneWorldMatrix = model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix;
             }
         }

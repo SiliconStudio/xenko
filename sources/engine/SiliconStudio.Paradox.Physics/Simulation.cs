@@ -4,7 +4,6 @@
 using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Paradox.Physics
@@ -131,14 +130,15 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        private readonly Dictionary<BulletSharp.CollisionObject, Collider> aliveColliders = new Dictionary<BulletSharp.CollisionObject, Collider>();
-
         readonly List<ContactPoint> newContactsFastCache = new List<ContactPoint>();
         readonly List<ContactPoint> updatedContactsFastCache = new List<ContactPoint>();
         readonly List<ContactPoint> deletedContactsFastCache = new List<ContactPoint>();
         readonly List<Collision> alivePairsFastCache = new List<Collision>();
         readonly List<Collision> processedPairsFastCache = new List<Collision>();
         readonly List<Collision> removedPairsFastCache = new List<Collision>();
+
+        readonly Queue<Collision> collisionsQueue = new Queue<Collision>();
+        readonly Queue<ContactPoint> contactsQueue = new Queue<ContactPoint>(); 
 
         internal void ProcessContacts()
         {
@@ -150,21 +150,11 @@ namespace SiliconStudio.Paradox.Physics
                 var bodyA = manifold.Body0;
                 var bodyB = manifold.Body1;
 
-                Collider colA, colB;
-                if (!aliveColliders.TryGetValue(bodyA, out colA))
-                {
-                    Debugger.Break();
-                    continue;
-                };
-                if (!aliveColliders.TryGetValue(bodyB, out colB))
-                {
-                    Debugger.Break();
-                    continue;
-                }
+                var colA = (Collider)bodyA?.UserObject;
+                var colB = (Collider)bodyB?.UserObject;
 
                 if (colA == null || colB == null)
                 {
-                    Debugger.Break();
                     continue;
                 }
 
@@ -196,12 +186,21 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (newPair)
                 {
-                    pair = new Collision
+                    if (collisionsQueue.Count > 0)
                     {
-                        ColliderA = colA,
-                        ColliderB = colB,
-                        Contacts = new List<ContactPoint>()
-                    };
+                        pair = collisionsQueue.Dequeue();
+                    }
+                    else
+                    {
+                        pair = new Collision
+                        {
+                            Contacts = new List<ContactPoint>()
+                        };
+                    }
+
+                    pair.ColliderA = colA;
+                    pair.ColliderB = colB;
+                    pair.Contacts.Clear();
 
                     colA.Collisions.Add(pair);
                     colB.Collisions.Add(pair);
@@ -233,16 +232,15 @@ namespace SiliconStudio.Paradox.Physics
 
                     if (newContact)
                     {
-                        contact = new ContactPoint
-                        {
-                            Distance = cp.Distance,
-                            PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z),
-                            PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z),
-                            Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z),
-                            Pair = pair
-                        };
+                        contact = contactsQueue.Count > 0 ? contactsQueue.Dequeue() : new ContactPoint();
 
+                        contact.Distance = cp.Distance;
+                        contact.PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z);
+                        contact.PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z);
+                        contact.Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z);
+                        contact.Pair = pair;
                         contact.Handle = GCHandle.Alloc(contact);
+
                         cp.UserPersistentPtr = GCHandle.ToIntPtr(contact.Handle);
 
                         pair.Contacts.Add(contact);
@@ -319,7 +317,9 @@ namespace SiliconStudio.Paradox.Physics
                     }
 
                     pair.Contacts.Remove(contact);
+
                     contact.Handle.Free();
+                    contactsQueue.Enqueue(contact);
                 }
 
                 if (pair.Contacts.Count == 0)
@@ -327,6 +327,7 @@ namespace SiliconStudio.Paradox.Physics
                     colA.Collisions.Remove(pair);
                     colB.Collisions.Remove(pair);
                     alivePairsFastCache.Remove(pair);
+                    collisionsQueue.Enqueue(pair);
 
                     while (colA.PairEndedChannel.Balance < 0)
                     {
@@ -371,6 +372,7 @@ namespace SiliconStudio.Paradox.Physics
                         }
 
                         contactPoint.Handle.Free();
+                        contactsQueue.Enqueue(contactPoint);
                     }
 
                     var colA = pair.ColliderA;
@@ -379,6 +381,7 @@ namespace SiliconStudio.Paradox.Physics
                     colA.Collisions.Remove(pair);
                     colB.Collisions.Remove(pair);
                     removedPairsFastCache.Add(pair);
+                    collisionsQueue.Enqueue(pair);
 
                     while (colA.PairEndedChannel.Balance < 0)
                     {
@@ -450,6 +453,8 @@ namespace SiliconStudio.Paradox.Physics
                 }
             };
 
+            collider.InternalCollider.UserObject = collider;
+
             collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
 
             if (shape.NeedsCustomCollisionCallback)
@@ -469,8 +474,10 @@ namespace SiliconStudio.Paradox.Physics
         {
             var rb = new RigidBody(collider);
 
-            rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero);
-            //rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!
+            rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero)
+            {
+                UserObject = rb
+            };
 
             rb.InternalCollider = rb.InternalRigidBody;
 
@@ -506,6 +513,8 @@ namespace SiliconStudio.Paradox.Physics
                 }
             };
 
+            ch.InternalCollider.UserObject = ch;
+
             ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CharacterObject;
 
             if (collider.NeedsCustomCollisionCallback)
@@ -530,8 +539,6 @@ namespace SiliconStudio.Paradox.Physics
         {
             collisionWorld.AddCollisionObject(collider.InternalCollider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
 
-            aliveColliders.Add(collider.InternalCollider, collider);
-
             collider.Simulation = this;
         }
 
@@ -542,8 +549,6 @@ namespace SiliconStudio.Paradox.Physics
         public void RemoveCollider(Collider collider)
         {
             collisionWorld.RemoveCollisionObject(collider.InternalCollider);
-
-            aliveColliders.Remove(collider.InternalCollider);
 
             collider.Simulation = null;
         }
@@ -561,8 +566,6 @@ namespace SiliconStudio.Paradox.Physics
 
             discreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody, (short)group, (short)mask);
 
-            aliveColliders.Add(rigidBody.InternalRigidBody, rigidBody);
-
             rigidBody.Simulation = this;
         }
 
@@ -576,8 +579,6 @@ namespace SiliconStudio.Paradox.Physics
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.RemoveRigidBody(rigidBody.InternalRigidBody);
-
-            aliveColliders.Remove(rigidBody.InternalRigidBody);
 
             rigidBody.Simulation = null;
         }
@@ -598,8 +599,6 @@ namespace SiliconStudio.Paradox.Physics
             discreteDynamicsWorld.AddCollisionObject(collider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
             discreteDynamicsWorld.AddCharacter(action);
 
-            aliveColliders.Add(character.InternalCollider, character);
-
             character.Simulation = this;
         }
 
@@ -616,8 +615,6 @@ namespace SiliconStudio.Paradox.Physics
             var action = character.KinematicCharacter;
             discreteDynamicsWorld.RemoveCollisionObject(collider);
             discreteDynamicsWorld.RemoveCharacter(action);
-
-            aliveColliders.Remove(character.InternalCollider);
 
             character.Simulation = null;
         }
@@ -949,7 +946,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (rcb.CollisionObject == null) return result;
                 result.Succeeded = true;
-                result.Collider = aliveColliders[rcb.CollisionObject];
+                result.Collider = (Collider)rcb.CollisionObject.UserObject;
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
             }
@@ -978,7 +975,7 @@ namespace SiliconStudio.Paradox.Physics
                     var singleResult = new HitResult
                     {
                         Succeeded = true,
-                        Collider = aliveColliders[rcb.CollisionObjects[i]],
+                        Collider = (Collider)rcb.CollisionObjects[i].UserObject,
                         Normal = rcb.HitNormalWorld[i],
                         Point = rcb.HitPointWorld[i]
                     };
@@ -1011,7 +1008,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (rcb.HitCollisionObject == null) return result;
                 result.Succeeded = true;
-                result.Collider = aliveColliders[rcb.HitCollisionObject];
+                result.Collider = (Collider)rcb.HitCollisionObject.UserObject;
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
             }
@@ -1044,7 +1041,7 @@ namespace SiliconStudio.Paradox.Physics
                     var singleResult = new HitResult
                     {
                         Succeeded = true,
-                        Collider = aliveColliders[rcb.CollisionObjects[i]],
+                        Collider = (Collider)rcb.CollisionObjects[i].UserObject,
                         Normal = rcb.HitNormalWorld[i],
                         Point = rcb.HitPointWorld[i]
                     };
@@ -1131,21 +1128,20 @@ namespace SiliconStudio.Paradox.Physics
             handler?.Invoke(this, e);
         }
 
+        readonly SimulationArgs simulationArgs = new SimulationArgs();
+
         internal void Simulate(float deltaTime)
         {
             if (collisionWorld == null) return;
 
-            var args = new SimulationArgs
-            {
-                DeltaTime = deltaTime
-            };
+            simulationArgs.DeltaTime = deltaTime;
 
-            OnSimulationBegin(args);
+            OnSimulationBegin(simulationArgs);
 
             if (discreteDynamicsWorld != null) discreteDynamicsWorld.StepSimulation(deltaTime, MaxSubSteps, FixedTimeStep);
             else collisionWorld.PerformDiscreteCollisionDetection();
 
-            OnSimulationEnd(args);
+            OnSimulationEnd(simulationArgs);
         }
 
         /// <summary>
