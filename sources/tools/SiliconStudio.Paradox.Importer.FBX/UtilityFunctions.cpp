@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #include "stdafx.h"
+#include <assert.h>
 
 // Conversion functions
 Color4 FbxDouble3ToColor4(FbxDouble3 vector, float alphaValue)
@@ -67,7 +68,9 @@ FbxDouble3 operator*(double factor, FbxDouble3 vector)
 System::String^ ConvertToUTF8(std::string str)
 {
 	auto byteCount = str.length();
-	array<Byte>^ bytes = gcnew array<Byte>(byteCount);
+        // Check `str' cannot be more than the size of a int.
+    assert(byteCount <= INT32_MAX);
+	array<Byte>^ bytes = gcnew array<Byte>((int) byteCount);
 	pin_ptr<Byte> p = &bytes[0];
 	memcpy(p, str.c_str(), byteCount);
 	return System::Text::Encoding::UTF8->GetString(bytes);

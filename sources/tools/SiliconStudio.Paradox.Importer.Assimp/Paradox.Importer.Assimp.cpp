@@ -683,7 +683,7 @@ private:
 		return animationClip;
 	}
 
-	ComputeTextureColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
+	ComputeTextureColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, size_t textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
 	{
 		// TODO: compare with FBX importer - see if there could be some conflict between texture names
 		auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputPath, sourceTextureFile, textureUVSetIndex, textureUVscaling, wrapTextureU, wrapTextureV, Logger);
