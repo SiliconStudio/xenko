@@ -179,7 +179,6 @@
     <Compile Include="Templates\TemplateSampleDescription.cs" />
     <Compile Include="Templates\TemplateScope.cs" />
     <Compile Include="Templates\TemplateGeneratorContext.cs" />
-    <Compile Include="Templates\TemplateScriptDescription.cs" />
     <Compile Include="Templates\TemplateStatus.cs" />
     <Compile Include="RawAssetCompiler.cs" />
     <Compile Include="RawAssetImporter.cs" />

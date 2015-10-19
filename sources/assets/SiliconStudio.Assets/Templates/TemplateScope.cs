@@ -22,6 +22,9 @@ namespace SiliconStudio.Assets.Templates
         /// </summary>
         Package,
 
+        /// <summary>
+        /// The template can be applied to certain types of Assets <see cref="Assets.Asset"/>.
+        /// </summary>
         Asset
     }
 }
