@@ -23,7 +23,7 @@ MinimumVisualStudioVersion = 10.0.40219.1";
 
         public static bool IsPackageFile(string filePath)
         {
-            return String.Compare(Path.GetExtension(filePath), Package.PackageFileExtension, StringComparison.InvariantCultureIgnoreCase) == 0;
+            return AssetRegistry.GetAssetTypeFromFileExtension(Path.GetExtension(filePath)) == typeof(Package);
         }
 
         public static void LoadSolution(PackageSession session, string filePath, List<string> packagePaths, ILogger sessionResult)

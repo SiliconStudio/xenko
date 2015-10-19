@@ -49,7 +49,7 @@ namespace SiliconStudio.Assets
     /// A package managing assets.
     /// </summary>
     [DataContract("Package")]
-    [AssetDescription(PackageFileExtension)]
+    [AssetDescription(PackageFileExtensions)]
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
     [AssetFormatVersion(PackageFileVersion)]
     [AssetUpgrader(0, 1, typeof(RemoveRawImports))]
@@ -81,6 +81,8 @@ namespace SiliconStudio.Assets
         /// The file extension used for <see cref="Package"/>.
         /// </summary>
         public const string PackageFileExtension = ".xkpkg";
+
+        public const string PackageFileExtensions = PackageFileExtension + ";.pdxpkg";
 
         /// <summary>
         /// Occurs when an asset dirty changed occured.
