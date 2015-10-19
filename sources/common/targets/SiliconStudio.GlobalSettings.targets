@@ -129,7 +129,7 @@
     Settings SiliconStudioRuntime specific
   -->
   <PropertyGroup Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
-    <SiliconStudioRuntimeDefines>;SILICONSTUDIO_RUNTIME_CORECLR</SiliconStudioRuntimeDefines>
+    <SiliconStudioRuntimeDefines>SILICONSTUDIO_RUNTIME_CORECLR</SiliconStudioRuntimeDefines>
   </PropertyGroup>
  
   <!-- 
@@ -140,16 +140,20 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug'">
-    <DefineConstants>DEBUG;TRACE;$(SiliconStudioPlatformDefines)$(SiliconStudioRuntimeDefines)</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;$(SiliconStudioPlatformDefines)</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(Configuration)' == 'Release'">
-    <DefineConstants>TRACE;$(SiliconStudioPlatformDefines)$(SiliconStudioRuntimeDefines)</DefineConstants>
+    <DefineConstants>TRACE;$(SiliconStudioPlatformDefines)</DefineConstants>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(SiliconStudioRuntimeDefines)' != ''">$(DefineConstants);$(SiliconStudioRuntimeDefines)</DefineConstants>
   </PropertyGroup>
   
   <!-- Signing -->
