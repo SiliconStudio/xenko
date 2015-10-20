@@ -30,7 +30,7 @@
     Settings SiliconStudioPlatform specific
   -->
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-    <TargetFrameworkVersionTool>v4.5.1</TargetFrameworkVersionTool>
+    <TargetFrameworkVersionTool>v4.5.2</TargetFrameworkVersionTool>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
     <XenkoSharpDXSdkBinDir>$(XenkoSharpDXSdkDir)\Bin\Desktop</XenkoSharpDXSdkBinDir>
     <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
