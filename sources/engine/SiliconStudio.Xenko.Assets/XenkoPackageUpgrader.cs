@@ -2,9 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Host.Mef;
+using Microsoft.CodeAnalysis.MSBuild;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -140,24 +147,73 @@ namespace SiliconStudio.Xenko.Assets
 
         public override bool UpgradeBeforeAssembliesLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
         {
-            var tasks = from profile in dependentPackage.Profiles
-                        from projectReference in profile.ProjectReferences
-                        let projectFullPath = UPath.Combine(dependentPackage.RootDirectory, projectReference.Location)
-                        select Task.Run(() => UpgradeProject(projectFullPath));
+            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
+            {
+                // Only load workspace for C# assemblies (default includes VB but not added as a NuGet package)
+                var csharpWorkspaceAssemblies = new[] { Assembly.Load("Microsoft.CodeAnalysis.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.CSharp.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.Workspaces.Desktop") };
+                var workspace = MSBuildWorkspace.Create(ImmutableDictionary<string, string>.Empty, MefHostServices.Create(csharpWorkspaceAssemblies));
 
-            Task.WaitAll(tasks.ToArray());
+                var tasks = from profile in dependentPackage.Profiles
+                    from projectReference in profile.ProjectReferences
+                    let projectFullPath = UPath.Combine(dependentPackage.RootDirectory, projectReference.Location)
+                    select Task.Run(() => UpgradeProject(workspace, projectFullPath));
+
+                Task.WaitAll(tasks.ToArray());
+            }
 
             return true;
         }
 
-        private void UpgradeProject(UFile projectPath)
+        private async Task UpgradeProject(MSBuildWorkspace workspace, UFile projectPath)
         {
+            // Upgrade .csproj file
             var fileContents = File.ReadAllText(projectPath);
             fileContents = fileContents.Replace(".pdxpkg", ".xkpkg");
-            fileContents = fileContents.Replace("$(SiliconStudioParadoxDir)", "$(SiliconStudioXenkoDir)");
-            fileContents = fileContents.Replace("$(EnsureSiliconStudioParadoxInstalled)", "$(EnsureSiliconStudioXenkoInstalled)");
             fileContents = fileContents.Replace("Paradox", "Xenko");
+            //fileContents = fileContents.Replace("$(SiliconStudioParadoxDir)", "$(SiliconStudioXenkoDir)");
+            //fileContents = fileContents.Replace("$(EnsureSiliconStudioParadoxInstalled)", "$(EnsureSiliconStudioXenkoInstalled)");
             File.WriteAllText(projectPath, fileContents);
+
+            // Upgrade source code
+            var project = await workspace.OpenProjectAsync(projectPath.ToWindowsPath());
+            var compilation = await project.GetCompilationAsync();
+            var tasks = compilation.SyntaxTrees.Select(syntaxTree => Task.Run(() => UpgradeSourceFile(syntaxTree))).ToList();
+
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task UpgradeSourceFile(SyntaxTree syntaxTree)
+        {
+            var root = await syntaxTree.GetRootAsync();
+            var rewriter = new RenamingRewriter();
+            var newRoot = rewriter.Visit(root);
+
+            if (newRoot != root)
+            {
+                var newSyntaxTree = syntaxTree.WithRootAndOptions(newRoot, syntaxTree.Options);
+                var sourceText = await newSyntaxTree.GetTextAsync();
+
+                using (var textWriter = new StreamWriter(syntaxTree.FilePath))
+                {
+                    sourceText.Write(textWriter);
+                }
+            }
+        }
+
+        private class RenamingRewriter : CSharpSyntaxRewriter
+        {
+            public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
+            {
+                var identifier = node.Identifier;
+
+                if (node.Identifier.ValueText.Contains("Paradox"))
+                {
+                    var newName = node.Identifier.ValueText.Replace("Paradox", "Xenko");
+                    return node.WithIdentifier(SyntaxFactory.Identifier(identifier.LeadingTrivia, newName, identifier.TrailingTrivia));
+                }
+
+                return base.VisitIdentifierName(node);
+            }
         }
     }
 }
