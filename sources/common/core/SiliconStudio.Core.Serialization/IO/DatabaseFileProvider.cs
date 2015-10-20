@@ -26,6 +26,11 @@ namespace SiliconStudio.Core.IO
             this.objectDatabase = objectDatabase;
         }
 
+        /// <summary>
+        /// URL prefix for ObjectId references.
+        /// </summary>
+        public static readonly string ObjectIdUrl = "id://";
+
         public IAssetIndexMap AssetIndexMap
         {
             get { return assetIndexMap; }
@@ -44,8 +49,8 @@ namespace SiliconStudio.Core.IO
             if (mode == VirtualFileMode.Open)
             {
                 ObjectId objectId;
-                if (url.StartsWith("obj/"))
-                    ObjectId.TryParse(url.Substring(4), out objectId);
+                if (url.StartsWith(ObjectIdUrl))
+                    ObjectId.TryParse(url.Substring(ObjectIdUrl.Length), out objectId);
                 else if (!assetIndexMap.TryGetValue(url, out objectId))
                     throw new FileNotFoundException(string.Format("Unable to find the file [{0}]", url));
 
@@ -64,7 +69,7 @@ namespace SiliconStudio.Core.IO
 
             if (mode == VirtualFileMode.Create)
             {
-                if (url.StartsWith("obj/"))
+                if (url.StartsWith(ObjectIdUrl))
                     throw new NotSupportedException();
 
                 var stream = objectDatabase.CreateStream();
