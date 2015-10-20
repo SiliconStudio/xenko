@@ -8,6 +8,7 @@ using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
@@ -29,9 +30,13 @@ namespace SiliconStudio.Paradox.Physics
         private Bullet2PhysicsSystem physicsSystem;
         private Simulation simulation;
 
+        public static ProfilingKey CharactersProfilingKey = new ProfilingKey(Simulation.SimulationProfilingKey, "Characters");
+        private ProfilingState charactersProfilingState;
+
         public PhysicsProcessor()
             : base(PhysicsComponent.Key, TransformComponent.Key)
         {
+            charactersProfilingState = Profiler.New(CharactersProfilingKey);
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -511,6 +516,7 @@ namespace SiliconStudio.Paradox.Physics
 
         internal void UpdateCharacters()
         {
+            charactersProfilingState.Begin();
             //characters need manual updating
             foreach (var element in characters)
             {
@@ -518,7 +524,9 @@ namespace SiliconStudio.Paradox.Physics
 
                 var worldTransform = element.Collider.PhysicsWorldTransform;
                 element.UpdateTransformationComponent(ref worldTransform);
+                charactersProfilingState.Mark();
             }
+            charactersProfilingState.End();
         }
 
         public override void Draw(RenderContext context)
