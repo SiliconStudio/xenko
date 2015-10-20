@@ -5,6 +5,7 @@ using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -23,6 +24,12 @@ namespace SiliconStudio.Paradox.Physics
         private readonly BulletSharp.DispatcherInfo dispatchInfo;
 
         private readonly bool canCcd;
+
+        public static ProfilingKey SimulationProfilingKey = new ProfilingKey("Physics.Simulation");
+        private ProfilingState simulationProfilingState;
+
+        public static ProfilingKey ContactsProfilingKey = new ProfilingKey("Physics.Contacts");
+        private ProfilingState contactsProfilingState;
 
         public bool ContinuousCollisionDetection
         {
@@ -72,6 +79,9 @@ namespace SiliconStudio.Paradox.Physics
                     flags = OnSimulationCreation();
                 }
             }
+
+            simulationProfilingState = Profiler.New(SimulationProfilingKey);
+            contactsProfilingState = Profiler.New(ContactsProfilingKey);
 
             MaxSubSteps = 1;
             FixedTimeStep = 1.0f / 60.0f;
@@ -134,7 +144,7 @@ namespace SiliconStudio.Paradox.Physics
         readonly List<ContactPoint> updatedContactsFastCache = new List<ContactPoint>();
         readonly List<ContactPoint> deletedContactsFastCache = new List<ContactPoint>();
         readonly List<Collision> alivePairsFastCache = new List<Collision>();
-        readonly List<Collision> processedPairsFastCache = new List<Collision>();
+        readonly HashSet<Collision> processedPairsFastCache = new HashSet<Collision>();
         readonly List<Collision> removedPairsFastCache = new List<Collision>();
 
         readonly Queue<Collision> collisionsQueue = new Queue<Collision>();
@@ -142,6 +152,8 @@ namespace SiliconStudio.Paradox.Physics
 
         internal void ProcessContacts()
         {
+            contactsProfilingState.Begin();
+
             processedPairsFastCache.Clear();
             var numManifolds = collisionWorld.Dispatcher.NumManifolds;
             for (var i = 0; i < numManifolds; i++)
@@ -229,6 +241,8 @@ namespace SiliconStudio.Paradox.Physics
                         newContact = false;
                         break;
                     }
+
+                    contactsProfilingState.Mark();
 
                     if (newContact)
                     {
@@ -415,6 +429,8 @@ namespace SiliconStudio.Paradox.Physics
             {
                 alivePairsFastCache.Remove(collision);
             }
+
+            contactsProfilingState.End();
         }
 
         /// <summary>
@@ -1129,7 +1145,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         readonly SimulationArgs simulationArgs = new SimulationArgs();
-
+       
         internal void Simulate(float deltaTime)
         {
             if (collisionWorld == null) return;
@@ -1138,8 +1154,12 @@ namespace SiliconStudio.Paradox.Physics
 
             OnSimulationBegin(simulationArgs);
 
+            simulationProfilingState.Begin();
+
             if (discreteDynamicsWorld != null) discreteDynamicsWorld.StepSimulation(deltaTime, MaxSubSteps, FixedTimeStep);
             else collisionWorld.PerformDiscreteCollisionDetection();
+
+            simulationProfilingState.End();
 
             OnSimulationEnd(simulationArgs);
         }
