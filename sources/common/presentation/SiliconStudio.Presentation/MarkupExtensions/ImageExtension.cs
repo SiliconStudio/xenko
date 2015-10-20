@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Markup;
 using System.Windows.Media;
 
@@ -30,8 +29,8 @@ namespace SiliconStudio.Presentation.MarkupExtensions
 
         public ImageExtension(ImageSource source, int width, int height, BitmapScalingMode scalingMode)
         {
-            if (width < 0) throw new ArgumentOutOfRangeException("width");
-            if (height < 0) throw new ArgumentOutOfRangeException("height");
+            if (width < 0) throw new ArgumentOutOfRangeException(nameof(width));
+            if (height < 0) throw new ArgumentOutOfRangeException(nameof(height));
             this.source = source;
             this.width = width;
             this.height = height;

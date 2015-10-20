@@ -143,6 +143,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                         textureUrl = SpriteSheetAsset.BuildTextureAtlasUrl(Url, spriteToPackedSprite[image].AtlasTextureIndex);
 
                         // update the center and border info, if the packer rotated the sprite 
+                        // note: X->Left, Y->Top, Z->Right, W->Bottom.
                         if (packedSprite.IsRotated)
                         {
                             // turned the sprite CCW
@@ -154,9 +155,9 @@ namespace SiliconStudio.Paradox.Assets.Sprite
 
                                 var oldBorderW = borders.W;
                                 borders.W = borders.X;
-                                borders.X = borders.Z;
-                                borders.Z = borders.Y;
-                                borders.Y = oldBorderW;
+                                borders.X = borders.Y;
+                                borders.Y = borders.Z;
+                                borders.Z = oldBorderW;
                             }
                             else // turned the sprite CW
                             {
@@ -165,9 +166,9 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                                 center.Y = oldCenterX;
 
                                 var oldBorderW = borders.W;
-                                borders.W = borders.Y;
-                                borders.Y = borders.Z;
-                                borders.Z = borders.X;
+                                borders.W = borders.Z;
+                                borders.Z = borders.Y;
+                                borders.Y = borders.X;
                                 borders.X = oldBorderW;
                             }
                         }
