@@ -58,6 +58,11 @@ namespace SiliconStudio.DataSerializers
 
 <#   foreach (var type in profile.Value.SerializableTypes.Where(x => x.Value.Local)) { #>
 				assemblySerializersProfile.Add(new AssemblySerializerEntry(<#=type.Key.ConvertTypeId()#>, typeof(<#= type.Key.ConvertCSharp() #>), <# if (type.Value.SerializerType != null) { #>typeof(<#= type.Value.SerializerType.ConvertCSharp() #>)<# } else { #>null<# } #>));
+<#       if (type.Value.SerializerType?.Resolve()?.Methods.Any(x => x.IsConstructor && x.IsStatic) == true) {
+			// Some data serializer have static constructor, force them to run
+			// TODO: It is currently used for update engine registration, but we could also make a specific method to not mix it with static ctor. #>
+				System.Runtime.CompilerServices.RuntimeHelpers.RunClassConstructor(typeof(<#=type.Value.SerializerType.ConvertCSharp()#>).TypeHandle);
+<#       } #>
 <#   } #>
 			}
 <# } #>

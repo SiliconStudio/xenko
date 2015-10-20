@@ -20,6 +20,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     {
         private DataSerializer<T> itemDataSerializer;
 
+        static ListSerializer()
+        {
+            // Register this type in UpdateEngine
+            Updater.UpdateEngine.RegisterMemberResolver(new Updater.ListUpdateResolver<T>());
+        }
+
         /// <inheritdoc/>
         public void Initialize(SerializerSelector serializerSelector)
         {
@@ -77,6 +83,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     {
         private bool isInterface = typeof(TList).GetTypeInfo().IsInterface;
         private DataSerializer<T> itemDataSerializer;
+
+        static ListAllSerializer()
+        {
+            // Register this type in UpdateEngine
+            Updater.UpdateEngine.RegisterMemberResolver(new Updater.ListUpdateResolver<T>());
+        }
 
         /// <inheritdoc/>
         public void Initialize(SerializerSelector serializerSelector)
@@ -204,6 +216,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     {
         private DataSerializer<T> itemDataSerializer;
 
+        static ListInterfaceSerializer()
+        {
+            // Register this type in UpdateEngine
+            Updater.UpdateEngine.RegisterMemberResolver(new Updater.ListUpdateResolver<T>());
+        }
+
         /// <inheritdoc/>
         public void Initialize(SerializerSelector serializerSelector)
         {
@@ -262,6 +280,12 @@ namespace SiliconStudio.Core.Serialization.Serializers
     public class ArraySerializer<T> : DataSerializer<T[]>, IDataSerializerInitializer, IDataSerializerGenericInstantiation
     {
         private DataSerializer<T> itemDataSerializer;
+
+        static ArraySerializer()
+        {
+            // Register this type in UpdateEngine
+            Updater.UpdateEngine.RegisterMemberResolver(new Updater.ArrayUpdateResolver<T>());
+        }
 
         /// <inheritdoc/>
         public virtual void Initialize(SerializerSelector serializerSelector)

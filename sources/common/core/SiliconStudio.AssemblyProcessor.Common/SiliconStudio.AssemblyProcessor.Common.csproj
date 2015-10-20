@@ -142,6 +142,8 @@
     <Compile Include="ResolveGenericsVisitor.cs" />
     <Compile Include="SerializationProcessor.cs" />
     <Compile Include="TypeReferenceEqualityComparer.cs" />
+    <Compile Include="UpdateEngineProcessor.IL.cs" />
+    <Compile Include="UpdateEngineProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ComplexSerializerCodeGenerator.tt">

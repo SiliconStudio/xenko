@@ -89,6 +89,8 @@ namespace SiliconStudio.AssemblyProcessor
             // Profile serializers
             processors.Add(new ProfileSerializerProcessor());
 
+            processors.Add(new UpdateEngineProcessor());
+
             // Apply each processor
             foreach (var processor in processors)
                 processor.ProcessSerializers(cecilSerializerContext);

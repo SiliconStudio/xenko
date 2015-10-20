@@ -79,6 +79,8 @@
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="Animations\Interpolator.cs" />
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
+    <Compile Include="Engine\Design\EntityComponentPropertyResolver.cs" />
+    <Compile Include="Engine\Design\EntityChildPropertyResolver.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />

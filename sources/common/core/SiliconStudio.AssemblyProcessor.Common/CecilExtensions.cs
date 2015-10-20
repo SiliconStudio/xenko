@@ -35,6 +35,9 @@ namespace SiliconStudio.AssemblyProcessor
             if (self.GenericParameters.Count != arguments.Length)
                 throw new ArgumentException();
 
+            if (arguments.Length == 0)
+                return self;
+
             var instance = new GenericInstanceType(self);
             foreach (var argument in arguments)
                 instance.GenericArguments.Add(argument);
@@ -44,11 +47,17 @@ namespace SiliconStudio.AssemblyProcessor
 
         public static FieldReference MakeGeneric(this FieldReference self, params TypeReference[] arguments)
         {
+            if (arguments.Length == 0)
+                return self;
+
             return new FieldReference(self.Name, self.FieldType, self.DeclaringType.MakeGenericType(arguments));
         }
 
         public static MethodReference MakeGeneric(this MethodReference self, params TypeReference[] arguments)
         {
+            if (arguments.Length == 0)
+                return self;
+
             var reference = new MethodReference(self.Name, self.ReturnType, self.DeclaringType.MakeGenericType(arguments))
             {
                 HasThis = self.HasThis,
@@ -59,14 +68,25 @@ namespace SiliconStudio.AssemblyProcessor
             foreach (var parameter in self.Parameters)
                 reference.Parameters.Add(new ParameterDefinition(parameter.ParameterType));
 
-            foreach (var generic_parameter in self.GenericParameters)
-                reference.GenericParameters.Add(new GenericParameter(generic_parameter.Name, reference));
+            foreach (var genericParameter in self.GenericParameters)
+            {
+                var genericParameterCopy = new GenericParameter(genericParameter.Name, reference)
+                {
+                    Attributes = genericParameter.Attributes,
+                };
+                reference.GenericParameters.Add(genericParameterCopy);
+                foreach (var constraint in genericParameter.Constraints)
+                    genericParameterCopy.Constraints.Add(constraint);
+            }
 
             return reference;
         }
 
         public static MethodReference MakeGenericMethod(this MethodReference self, params TypeReference[] arguments)
         {
+            if (self.GenericParameters.Count != arguments.Length)
+                throw new ArgumentException();
+
             var method = new GenericInstanceMethod(self);
             foreach(var argument in arguments)
                 method.GenericArguments.Add(argument);
@@ -203,6 +223,28 @@ namespace SiliconStudio.AssemblyProcessor
             SetGenericParameters(result, genericParameters);
 
             return result;
+        }
+
+        /// <summary>
+        /// Sometimes, TypeReference.IsValueType is not properly set (since it needs to load dependent assembly).
+        /// THis do so when necessary.
+        /// </summary>
+        /// <param name="typeReference"></param>
+        /// <returns></returns>
+        public static TypeReference FixupValueType(TypeReference typeReference)
+        {
+            // Make sure IsValueType are properly set from resolved type (not encoded in CustomAttributes, but we depend on a valid value for some of the serializer/update engine codegen)
+            switch (typeReference.MetadataType)
+            {
+                case MetadataType.Class:
+                case MetadataType.GenericInstance:
+                    var typeDefinition = typeReference.Resolve();
+                    if (typeDefinition.IsValueType && !typeReference.IsValueType)
+                        typeReference.IsValueType = typeDefinition.IsValueType;
+                    break;
+            }
+
+            return typeReference;
         }
 
         private static void SetGenericParameters(TypeReference result, IEnumerable<GenericParameter> genericParameters)

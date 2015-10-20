@@ -22,6 +22,7 @@
 // THE SOFTWARE.
 
 using System;
+using System.Runtime.CompilerServices;
 
 namespace SiliconStudio.Core
 {
@@ -77,11 +78,13 @@ namespace SiliconStudio.Core
             throw new NotImplementedException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void memcpy(void* pDest, void* pSrc, int count)
         {
             throw new NotImplementedException();
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static unsafe void memset(void* pDest, byte value, int count)
         {
             throw new NotImplementedException();
@@ -132,7 +135,7 @@ namespace SiliconStudio.Core
             throw new NotImplementedException();
         }
 
-        public static int SizeOf<T>()
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]public static int SizeOf<T>()
         {
             throw new NotImplementedException();
         }

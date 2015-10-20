@@ -105,9 +105,9 @@ namespace SiliconStudio.AssemblyProcessor
                 { "delete-output-on-error", "Delete output file if an error happened", v => app.DeleteOutputOnError = true },
             };
 
+            inputFiles = p.Parse(args);
             showHelp = localShowHelp;
             outputFilePath = localOutputFilePath;
-            inputFiles = p.Parse(args);
             return app;
         }
 
