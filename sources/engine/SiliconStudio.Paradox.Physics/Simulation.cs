@@ -6,6 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Diagnostics;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -145,7 +147,7 @@ namespace SiliconStudio.Paradox.Physics
         readonly List<ContactPoint> deletedContactsFastCache = new List<ContactPoint>();
         readonly List<Collision> alivePairsFastCache = new List<Collision>();
         readonly HashSet<Collision> processedPairsFastCache = new HashSet<Collision>();
-        readonly List<Collision> removedPairsFastCache = new List<Collision>();
+        readonly Queue<Collision> removedPairsFastCache = new Queue<Collision>();
 
         readonly Queue<Collision> collisionsQueue = new Queue<Collision>();
         readonly Queue<ContactPoint> contactsQueue = new Queue<ContactPoint>(); 
@@ -371,63 +373,65 @@ namespace SiliconStudio.Paradox.Physics
                 }
             }
 
-            removedPairsFastCache.Clear();
             //Sometimes narrowphase is skipped it seems and we might get some stuck pair!
             foreach (var pair in alivePairsFastCache)
             {
                 if (!processedPairsFastCache.Contains(pair))
                 {
-                    //this pair got removed!
-                    foreach (var contactPoint in pair.Contacts)
-                    {
-                        while (contactPoint.Pair.ContactEndedChannel.Balance < 0)
-                        {
-                            contactPoint.Pair.ContactEndedChannel.Send(contactPoint);
-                        }
-
-                        contactPoint.Handle.Free();
-                        contactsQueue.Enqueue(contactPoint);
-                    }
-
-                    var colA = pair.ColliderA;
-                    var colB = pair.ColliderB;
-
-                    colA.Collisions.Remove(pair);
-                    colB.Collisions.Remove(pair);
-                    removedPairsFastCache.Add(pair);
-                    collisionsQueue.Enqueue(pair);
-
-                    while (colA.PairEndedChannel.Balance < 0)
-                    {
-                        colA.PairEndedChannel.Send(pair);
-                    }
-
-                    while (colB.PairEndedChannel.Balance < 0)
-                    {
-                        colB.PairEndedChannel.Send(pair);
-                    }
-
-                    if (colA.Collisions.Count == 0)
-                    {
-                        while (colA.AllPairsEndedChannel.Balance < 0)
-                        {
-                            colA.AllPairsEndedChannel.Send(pair);
-                        }
-                    }
-
-                    if (colB.Collisions.Count == 0)
-                    {
-                        while (colB.AllPairsEndedChannel.Balance < 0)
-                        {
-                            colB.AllPairsEndedChannel.Send(pair);
-                        }
-                    }
+                    removedPairsFastCache.Enqueue(pair);
                 }
             }
 
-            foreach (var collision in removedPairsFastCache)
+            while (removedPairsFastCache.Count > 0)
             {
-                alivePairsFastCache.Remove(collision);
+                var pair = removedPairsFastCache.Dequeue();
+
+                alivePairsFastCache.Remove(pair);
+
+                //this pair got removed!
+                foreach (var contactPoint in pair.Contacts)
+                {
+                    while (contactPoint.Pair.ContactEndedChannel.Balance < 0)
+                    {
+                        contactPoint.Pair.ContactEndedChannel.Send(contactPoint);
+                    }
+
+                    contactPoint.Handle.Free();
+                    contactsQueue.Enqueue(contactPoint);
+                }
+
+                var colA = pair.ColliderA;
+                var colB = pair.ColliderB;
+
+                colA.Collisions.Remove(pair);
+                colB.Collisions.Remove(pair);
+                collisionsQueue.Enqueue(pair);
+
+                while (colA.PairEndedChannel.Balance < 0)
+                {
+                    colA.PairEndedChannel.Send(pair);
+                }
+
+                while (colB.PairEndedChannel.Balance < 0)
+                {
+                    colB.PairEndedChannel.Send(pair);
+                }
+
+                if (colA.Collisions.Count == 0)
+                {
+                    while (colA.AllPairsEndedChannel.Balance < 0)
+                    {
+                        colA.AllPairsEndedChannel.Send(pair);
+                    }
+                }
+
+                if (colB.Collisions.Count == 0)
+                {
+                    while (colB.AllPairsEndedChannel.Balance < 0)
+                    {
+                        colB.AllPairsEndedChannel.Send(pair);
+                    }
+                }
             }
 
             contactsProfilingState.End();
