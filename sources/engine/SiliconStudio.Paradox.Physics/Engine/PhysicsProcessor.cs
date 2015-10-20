@@ -332,10 +332,12 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
         {
+            //this is mostly required for the game studio gizmos
             if (Simulation.DisableSimulation)
             {
                 foreach (var element in data.PhysicsComponent.Elements)
                 {
+                    if(element == null) continue;
                     var e = (PhysicsElementBase)element;
                     e.Data = data;
                 }
@@ -347,16 +349,19 @@ namespace SiliconStudio.Paradox.Physics
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
+                if (element == null) continue;
                 NewElement((PhysicsElementBase)element, data, entity);
             }
         }
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
+            //this is mostly required for the game studio gizmos
             if (Simulation.DisableSimulation)
             {
                 foreach (var element in data.PhysicsComponent.Elements)
                 {
+                    if (element == null) continue;
                     var e = (PhysicsElementBase)element;
                     e.Data = null;
                 }
@@ -365,6 +370,7 @@ namespace SiliconStudio.Paradox.Physics
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
+                if (element == null) continue;
                 var e = (PhysicsElementBase)element;
                 DeleteElement(e, true);
             }
