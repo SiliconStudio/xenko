@@ -126,7 +126,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <summary>
         /// Gets or sets size of the unstretchable borders of source sprite in pixels.
         /// </summary>
-        /// <remarks>Borders size are ordered as follows X->Left, Y->Top, Z->Right, W -> Bottom.</remarks>
+        /// <remarks>Borders size are ordered as follows X->Left, Y->Top, Z->Right, W->Bottom.</remarks>
         public Vector4 Borders
         {
             get { return BordersInternal; }

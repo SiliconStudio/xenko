@@ -70,8 +70,8 @@ namespace SiliconStudio.Paradox.UI.Renderers
                 worldMatrix.M43 += worldTranslation * worldMatrix[(axis << 2) + 2];
 
                 var borders = image.BordersInternal;
-                var borderStartIndex = (imageAxis <<1 ) + (slider.IsDirectionReversed? 1 : 0);
-                var borderStopIndex = (imageAxis << 1) + (slider.IsDirectionReversed ? 0 : 1);
+                var borderStartIndex = (imageAxis) + (slider.IsDirectionReversed? 2 : 0);
+                var borderStopIndex = (imageAxis) + (slider.IsDirectionReversed ? 0 : 2);
                 borders[borderStartIndex] = Math.Min(borders[borderStartIndex], size[axis]);
                 borders[borderStopIndex] = Math.Max(0, size[axis] - fullGaugeSize + borders[borderStopIndex]);
                 
