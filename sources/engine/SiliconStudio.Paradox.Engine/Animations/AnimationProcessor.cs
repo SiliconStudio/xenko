@@ -142,7 +142,7 @@ namespace SiliconStudio.Paradox.Animations
                     {
                         var modelViewHierarchy = associatedData.ModelComponent.ModelViewHierarchy;
                         if (modelViewHierarchy != null)
-                            meshAnimation.Update(modelViewHierarchy, associatedData.AnimationClipResult);
+                            meshAnimation.Update(entity.Key, modelViewHierarchy, associatedData.AnimationClipResult);
                     }
                 }
 

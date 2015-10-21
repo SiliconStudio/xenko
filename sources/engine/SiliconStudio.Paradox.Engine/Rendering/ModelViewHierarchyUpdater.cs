@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
@@ -12,6 +13,7 @@ namespace SiliconStudio.Paradox.Rendering
     /// <summary>
     /// Performs hierarchical updates for a given <see cref="Model"/>.
     /// </summary>
+    [DataContract] // Here for update engine; TODO: better separation and different attribute?
     public class ModelViewHierarchyUpdater
     {
         private ModelNodeDefinition[] nodes;

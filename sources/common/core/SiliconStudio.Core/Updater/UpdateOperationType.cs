@@ -69,6 +69,26 @@ namespace SiliconStudio.Core.Updater
         ConditionalSetBlittableField,
 
         /// <summary>
+        /// Set a blittable struct field using AnimOperation.Data at the current offset. Optimized version for 4 bytes struct.
+        /// </summary>
+        ConditionalSetBlittableField4,
+
+        /// <summary>
+        /// Set a blittable struct field using AnimOperation.Data at the current offset. Optimized version for 8 bytes struct.
+        /// </summary>
+        ConditionalSetBlittableField8,
+
+        /// <summary>
+        /// Set a blittable struct field using AnimOperation.Data at the current offset. Optimized version for 12 bytes struct.
+        /// </summary>
+        ConditionalSetBlittableField12,
+
+        /// <summary>
+        /// Set a blittable struct field using AnimOperation.Data at the current offset. Optimized version for 16 bytes struct.
+        /// </summary>
+        ConditionalSetBlittableField16,
+
+        /// <summary>
         /// Set a struct field using AnimOperation.Object (boxed) at the current offset.
         /// </summary>
         ConditionalSetStructField,

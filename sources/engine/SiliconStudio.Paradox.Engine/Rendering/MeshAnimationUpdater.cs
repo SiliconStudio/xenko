@@ -4,7 +4,9 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Updater;
 using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Paradox.Engine;
 using Quaternion = SiliconStudio.Core.Mathematics.Quaternion;
 using Vector3 = SiliconStudio.Core.Mathematics.Vector3;
 
@@ -19,8 +21,9 @@ namespace SiliconStudio.Paradox.Rendering
         private List<AnimationBlender.Channel> currentSourceChannels;
         private int currentSourceChannelCount;
         private UpdateChannel[] updateChannels;
+        private CompiledUpdate compiledUpdate;
 
-        public unsafe void Update(ModelViewHierarchyUpdater hierarchy, AnimationClipResult result)
+        public unsafe void Update(Entity entity, ModelViewHierarchyUpdater hierarchy, AnimationClipResult result)
         {
             // Check if we need to regenerate "update channels" (i.e. how to copy data from result to hierarchy)
             if (updateChannels == null // First time?...
@@ -35,28 +38,7 @@ namespace SiliconStudio.Paradox.Rendering
             // Copy results to node hierarchy
             fixed (byte* structures = result.Data)
             {
-                foreach (var updateChannel in updateChannels)
-                {
-                    var structureData = (float*)(structures + updateChannel.Offset);
-                    var factor = *structureData++;
-                    if (factor == 0.0f)
-                        continue;
-
-                    switch (updateChannel.Type)
-                    {
-                        case ChannelType.Translation:
-                            Utilities.Read((IntPtr)structureData, ref hierarchy.NodeTransformations[updateChannel.Index].Transform.Translation);
-                            break;
-                        case ChannelType.Rotation:
-                            Utilities.Read((IntPtr)structureData, ref hierarchy.NodeTransformations[updateChannel.Index].Transform.Rotation);
-                            break;
-                        case ChannelType.Scaling:
-                            Utilities.Read((IntPtr)structureData, ref hierarchy.NodeTransformations[updateChannel.Index].Transform.Scaling);
-                            break;
-                        default:
-                            throw new ArgumentOutOfRangeException();
-                    }
-                }
+                UpdateEngine.Run(entity, compiledUpdate, (IntPtr)structures, null);
             }
         }
 
@@ -77,6 +59,8 @@ namespace SiliconStudio.Paradox.Rendering
         private void RegenerateUpdateChannels(ModelViewHierarchyUpdater hierarchy, List<AnimationBlender.Channel> channels)
         {
             var newUpdateChannels = new List<UpdateChannel>();
+
+            var updateMemberInfos = new List<UpdateMemberInfo>();
 
             // TODO: Temporary implementation due to lack of time before first release.
             foreach (var channel in channels)
@@ -110,7 +94,11 @@ namespace SiliconStudio.Paradox.Rendering
                 updateChannel.Type = channel.Type;
 
                 newUpdateChannels.Add(updateChannel);
+
+                updateMemberInfos.Add(new UpdateMemberInfo { Name = $"[SiliconStudio.Paradox.Engine.ModelComponent,SiliconStudio.Paradox.Engine.Key].ModelViewHierarchy.NodeTransformations[{updateChannel.Index}].Transform.{updateChannel.Type}", DataOffset = channel.Offset });
             }
+
+            compiledUpdate = UpdateEngine.Compile(typeof(Entity), updateMemberInfos);
 
             updateChannels = newUpdateChannels.ToArray();
         }

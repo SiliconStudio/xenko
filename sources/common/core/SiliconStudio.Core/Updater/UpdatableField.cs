@@ -50,7 +50,18 @@ namespace SiliconStudio.Core.Updater
             if (MemberType.GetTypeInfo().IsValueType)
             {
                 if (BlittableHelper.IsBlittable(MemberType))
+                {
+                    if (Size == 4)
+                        return UpdateOperationType.ConditionalSetBlittableField4;
+                    if (Size == 8)
+                        return UpdateOperationType.ConditionalSetBlittableField8;
+                    if (Size == 12)
+                        return UpdateOperationType.ConditionalSetBlittableField12;
+                    if (Size == 16)
+                        return UpdateOperationType.ConditionalSetBlittableField16;
+
                     return UpdateOperationType.ConditionalSetBlittableField;
+                }
 
                 return UpdateOperationType.ConditionalSetStructField;
             }

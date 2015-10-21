@@ -2,18 +2,18 @@ namespace SiliconStudio.Core.Updater
 {
     public struct UpdateObjectData
     {
-        public float Condition;
+        public int Condition;
         public object Value;
 
-        public UpdateObjectData(float condition, object value)
+        public UpdateObjectData(int condition, object value)
         {
             Condition = condition;
             Value = value;
         }
 
-        public UpdateObjectData(object value) : this()
+        public UpdateObjectData(int value) : this()
         {
-            Condition = 1.0f;
+            Condition = 1;
             Value = value;
         }
     }

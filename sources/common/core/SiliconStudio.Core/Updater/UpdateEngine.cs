@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Core.Updater
@@ -407,10 +408,10 @@ namespace SiliconStudio.Core.Updater
             // pinned test (this will need to be on a stack somehow)
             IntPtr currentPtr = UpdateEngineHelper.ObjectToPtr(currentObj);
 
-            for (int index = 0; index < operations.Length; index++)
+            var operationCount = operations.Length;
+            var operation = Interop.Pin(ref operations[0]);
+            for (int index = 0; index < operationCount; index++)
             {
-                var operation = operations[index];
-
                 // Adjust offset
                 currentPtr += operation.AdjustOffset;
 
@@ -499,7 +500,7 @@ namespace SiliconStudio.Core.Updater
                     case UpdateOperationType.ConditionalSetObjectProperty:
                     {
                         var updateObject = updateObjects[operation.DataOffset];
-                        if (updateObject.Condition != 0.0f)
+                        if (updateObject.Condition != 0) // 0 is 0.0f in float
                             ((UpdatableProperty)operation.Member).SetObject(currentPtr, updateObject.Value);
                         break;
                     }
@@ -507,8 +508,8 @@ namespace SiliconStudio.Core.Updater
                     {
                         // TODO: This case can happen quite often (i.e. a float property) and require an extra indirection
                         // We could probably avoid it by having common types as non virtual methods (i.e. object, int, float, maybe even Vector3/4?)
-                        var data = (float*)(updateData + operation.DataOffset);
-                        if (*data++ != 0.0f)
+                        var data = (int*)((byte*)updateData + operation.DataOffset);
+                        if (*data++ != 0) // 0 is 0.0f in float
                             ((UpdatablePropertyBase)operation.Member).SetBlittable(currentPtr, (IntPtr)data);
                         break;
                     }
@@ -517,43 +518,96 @@ namespace SiliconStudio.Core.Updater
                         // TODO: This case can happen quite often (i.e. a float property) and require an extra indirection
                         // We could probably avoid it by having common types as non virtual methods (i.e. object, int, float, maybe even Vector3/4?)
                         var updateObject = updateObjects[operation.DataOffset];
-                        if (updateObject.Condition != 0.0f)
+                        if (updateObject.Condition != 0) // 0 is 0.0f in float
                             ((UpdatablePropertyBase)operation.Member).SetStruct(currentPtr, updateObject.Value);
                         break;
                     }
                     case UpdateOperationType.ConditionalSetObjectField:
                     {
                         var updateObject = updateObjects[operation.DataOffset];
-                        if (updateObject.Condition != 0.0f)
+                        if (updateObject.Condition != 0) // 0 is 0.0f in float
                             ((UpdatableField)operation.Member).SetObject(currentPtr, updateObject.Value);
                         break;
                     }
                     case UpdateOperationType.ConditionalSetBlittableField:
                     {
-                        var data = (float*)(updateData + operation.DataOffset);
-                        if (*data++ != 0.0f)
+                        var data = (int*)((byte*)updateData + operation.DataOffset);
+                        if (*data++ != 0) // 0 is 0.0f in float
                             ((UpdatableField)operation.Member).SetBlittable(currentPtr, (IntPtr)data);
+                        break;
+                    }
+                    case UpdateOperationType.ConditionalSetBlittableField4:
+                    {
+                        var data = (int*)((byte*)updateData + operation.DataOffset);
+                        if (*data++ != 0) // 0 is 0.0f in float
+                        {
+                            *(int*)currentPtr = *data;
+                        }
+                        break;
+                    }
+                    case UpdateOperationType.ConditionalSetBlittableField8:
+                    {
+                        var data = (int*)((byte*)updateData + operation.DataOffset);
+                        if (*data++ != 0) // 0 is 0.0f in float
+                        {
+                            *(Blittable8*)currentPtr = *(Blittable8*)data;
+                        }
+                        break;
+                    }
+                    case UpdateOperationType.ConditionalSetBlittableField12:
+                    {
+                        var data = (int*)((byte*)updateData + operation.DataOffset);
+                        if (*data++ != 0) // 0 is 0.0f in float
+                        {
+                            *(Blittable12*)currentPtr = *(Blittable12*)data;
+                        }
+                        break;
+                    }
+                    case UpdateOperationType.ConditionalSetBlittableField16:
+                    {
+                        var data = (int*)((byte*)updateData + operation.DataOffset);
+                        if (*data++ != 0) // 0 is 0.0f in float
+                        {
+                            *(Blittable16*)currentPtr = *(Blittable16*)data;
+                        }
                         break;
                     }
                     case UpdateOperationType.ConditionalSetStructField:
                     {
                         // Use setter to set back struct
                         var updateObject = updateObjects[operation.DataOffset];
-                        if (updateObject.Condition != 0.0f)
+                        if (updateObject.Condition != 0) // 0 is 0.0f in float
                             ((UpdatableField)operation.Member).SetStruct(currentPtr, updateObject.Value);
                         break;
                     }
                     case UpdateOperationType.ConditionalSetObjectCustom:
                     {
                         var updateObject = updateObjects[operation.DataOffset];
-                        if (updateObject.Condition != 0.0f)
+                        if (updateObject.Condition != 0) // 0 is 0.0f in float
                             ((UpdatableCustomAccessor)operation.Member).SetObject(currentPtr, updateObject.Value);
                         break;
                     }
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
+
+                operation = Interop.IncrementPinned(operation);
             }
+        }
+
+        [StructLayout(LayoutKind.Sequential, Size = 8)]
+        struct Blittable8
+        {
+        }
+
+        [StructLayout(LayoutKind.Sequential, Size = 12)]
+        struct Blittable12
+        {
+        }
+
+        [StructLayout(LayoutKind.Sequential, Size = 16)]
+        struct Blittable16
+        {
         }
 
         struct UpdateKey
