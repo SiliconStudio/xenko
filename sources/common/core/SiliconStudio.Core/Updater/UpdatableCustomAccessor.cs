@@ -11,7 +11,7 @@ namespace SiliconStudio.Core.Updater
         public abstract object GetObject(IntPtr obj);
         public abstract void SetObject(IntPtr obj, object data);
 
-        internal override UpdateOperationType GetOperationType()
+        internal override UpdateOperationType GetSetOperationType()
         {
             if (MemberType.GetTypeInfo().IsValueType)
             {
@@ -23,6 +23,18 @@ namespace SiliconStudio.Core.Updater
             else
             {
                 return UpdateOperationType.ConditionalSetObjectCustom;
+            }
+        }
+
+        internal override UpdateOperationType GetEnterOperationType()
+        {
+            if (MemberType.GetTypeInfo().IsValueType)
+            {
+                return UpdateOperationType.EnterStructPropertyBase;
+            }
+            else
+            {
+                return UpdateOperationType.EnterObjectCustom;
             }
         }
     }

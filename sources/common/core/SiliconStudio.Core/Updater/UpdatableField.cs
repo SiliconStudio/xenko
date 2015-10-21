@@ -45,7 +45,7 @@ namespace SiliconStudio.Core.Updater
             Interop.memcpy((void*)obj, (void*)data, Size);
         }
 
-        public UpdateOperationType GetOperationType()
+        public UpdateOperationType GetSetOperationType()
         {
             if (MemberType.GetTypeInfo().IsValueType)
             {

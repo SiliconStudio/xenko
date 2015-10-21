@@ -31,14 +31,6 @@ namespace SiliconStudio.Core.Updater
         EnterObjectCustom,
 
         /// <summary>
-        /// Push current state on stack and enter in a value type property.
-        /// Object will be copied in a preallocated boxed object so that property setter can be called with updated value when done.
-        /// New offset will be beginning of unboxed struct.
-        /// Non blittable types are allowed.
-        /// </summary>
-        EnterStructCustom,
-
-        /// <summary>
         /// Pop current state.
         /// </summary>
         Leave,

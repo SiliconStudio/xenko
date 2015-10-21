@@ -300,7 +300,7 @@ namespace SiliconStudio.Core.Updater
                     // Leaf node, perform the set operation
                     state.UpdateOperations.Add(new UpdateOperation
                     {
-                        Type = updatableField.GetOperationType(),
+                        Type = updatableField.GetSetOperationType(),
                         Member = updatableField,
                         AdjustOffset = state.NewOffset - state.PreviousOffset,
                         DataOffset = animationPath.DataOffset,
@@ -331,7 +331,7 @@ namespace SiliconStudio.Core.Updater
                         // Leaf node, perform the set the value
                         state.UpdateOperations.Add(new UpdateOperation
                         {
-                            Type = updatableProperty.GetOperationType(),
+                            Type = updatableProperty.GetSetOperationType(),
                             Member = updatableProperty,
                             AdjustOffset = state.NewOffset - state.PreviousOffset,
                             DataOffset = animationPath.DataOffset,
@@ -358,7 +358,7 @@ namespace SiliconStudio.Core.Updater
 
                         state.UpdateOperations.Add(new UpdateOperation
                         {
-                            Type = isStruct ? UpdateOperationType.EnterStructPropertyBase : UpdateOperationType.EnterObjectProperty,
+                            Type = updatableProperty.GetEnterOperationType(),
                             Member = updatableProperty,
                             AdjustOffset = state.NewOffset - state.PreviousOffset,
                             DataOffset = temporaryObjectIndex,
@@ -455,6 +455,20 @@ namespace SiliconStudio.Core.Updater
 
                         // Get object
                         currentObj = ((UpdatableField)operation.Member).GetObject(currentPtr);
+                        currentPtr = UpdateEngineHelper.ObjectToPtr(currentObj);
+                        break;
+                    }
+                    case UpdateOperationType.EnterObjectCustom:
+                    {
+                        // Compute offset and push to stack
+                        stack.Push(new UpdateStackEntry
+                        {
+                            Object = currentObj,
+                            Offset = (int)((byte*)currentPtr - (byte*)UpdateEngineHelper.ObjectToPtr(currentObj))
+                        });
+
+                        // Get object
+                        currentObj = ((UpdatableCustomAccessor)operation.Member).GetObject(currentPtr);
                         currentPtr = UpdateEngineHelper.ObjectToPtr(currentObj);
                         break;
                     }

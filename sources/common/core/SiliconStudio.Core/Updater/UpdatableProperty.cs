@@ -14,7 +14,8 @@ namespace SiliconStudio.Core.Updater
         public abstract void SetStruct(IntPtr obj, object data);
         public abstract IntPtr GetStructAndUnbox(IntPtr obj, object data);
 
-        internal abstract UpdateOperationType GetOperationType();
+        internal abstract UpdateOperationType GetSetOperationType();
+        internal abstract UpdateOperationType GetEnterOperationType();
     }
 
     public abstract class UpdatableProperty : UpdatablePropertyBase
@@ -51,7 +52,7 @@ namespace SiliconStudio.Core.Updater
             throw new NotImplementedException();
         }
 
-        internal override UpdateOperationType GetOperationType()
+        internal override UpdateOperationType GetSetOperationType()
         {
             if (MemberType.GetTypeInfo().IsValueType)
             {
@@ -63,6 +64,18 @@ namespace SiliconStudio.Core.Updater
             else
             {
                 return UpdateOperationType.ConditionalSetObjectProperty;
+            }
+        }
+
+        internal override UpdateOperationType GetEnterOperationType()
+        {
+            if (MemberType.GetTypeInfo().IsValueType)
+            {
+                return UpdateOperationType.EnterStructPropertyBase;
+            }
+            else
+            {
+                return UpdateOperationType.EnterObjectProperty;
             }
         }
     }

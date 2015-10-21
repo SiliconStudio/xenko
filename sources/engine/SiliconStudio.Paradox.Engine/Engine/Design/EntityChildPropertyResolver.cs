@@ -3,6 +3,7 @@
 
 using System;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Updater;
 
 namespace SiliconStudio.Paradox.Engine.Design
@@ -12,7 +13,7 @@ namespace SiliconStudio.Paradox.Engine.Design
         [ModuleInitializer]
         internal static void __Initialize__()
         {
-            UpdateEngine.RegisterMemberResolver(new EntityComponentPropertyResolver());
+            UpdateEngine.RegisterMemberResolver(new EntityChildPropertyResolver());
         }
 
         public override Type SupportedType
@@ -23,6 +24,20 @@ namespace SiliconStudio.Paradox.Engine.Design
         public override UpdatableMember ResolveProperty(string propertyName)
         {
             return new EntityChildPropertyAccessor(propertyName);
+        }
+
+        public override UpdatableMember ResolveIndexer(string indexerName)
+        {
+            var dotIndex = indexerName.LastIndexOf('.');
+            if (dotIndex == -1)
+                return null;
+
+            // TODO: Temporary hack to get static field of the requested type/property name
+            // Need to have access to DataContract name<=>type mapping in the runtime (only accessible in SiliconStudio.Core.Design now)
+            var type = AssemblyRegistry.GetType(indexerName.Substring(0, dotIndex));
+            var field = type.GetField(indexerName.Substring(dotIndex + 1));
+
+            return new EntityComponentPropertyAccessor((PropertyKey)field.GetValue(null));
         }
 
         class EntityChildPropertyAccessor : UpdatableCustomAccessor
@@ -83,6 +98,57 @@ namespace SiliconStudio.Paradox.Engine.Design
             public override void SetObject(IntPtr obj, object data)
             {
                 throw new NotSupportedException();
+            }
+        }
+
+        private class EntityComponentPropertyAccessor : UpdatableCustomAccessor
+        {
+            private readonly PropertyKey propertyKey;
+
+            public EntityComponentPropertyAccessor(PropertyKey propertyKey)
+            {
+                this.propertyKey = propertyKey;
+            }
+
+            /// <inheritdoc/>
+            public override Type MemberType => propertyKey.PropertyType;
+
+            /// <inheritdoc/>
+            public override void GetBlittable(IntPtr obj, IntPtr data)
+            {
+                throw new NotSupportedException();
+            }
+
+            /// <inheritdoc/>
+            public override void SetBlittable(IntPtr obj, IntPtr data)
+            {
+                throw new NotSupportedException();
+            }
+
+            /// <inheritdoc/>
+            public override void SetStruct(IntPtr obj, object data)
+            {
+                throw new NotSupportedException();
+            }
+
+            /// <inheritdoc/>
+            public override IntPtr GetStructAndUnbox(IntPtr obj, object data)
+            {
+                throw new NotSupportedException();
+            }
+
+            /// <inheritdoc/>
+            public override object GetObject(IntPtr obj)
+            {
+                var entity = UpdateEngineHelper.PtrToObject<Entity>(obj);
+                return entity.Components[propertyKey];
+            }
+
+            /// <inheritdoc/>
+            public override void SetObject(IntPtr obj, object data)
+            {
+                var entity = UpdateEngineHelper.PtrToObject<Entity>(obj);
+                entity.Components[propertyKey] = data;
             }
         }
     }
