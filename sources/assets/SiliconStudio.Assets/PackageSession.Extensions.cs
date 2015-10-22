@@ -40,7 +40,7 @@ namespace SiliconStudio.Assets
         public static AssetItem FindAssetFromAttachedReference(this PackageSession session, object obj)
         {
             var reference = AttachedReferenceManager.GetAttachedReference(obj);
-            return reference != null ? FindAsset(session, reference.Id) : null;
+            return reference != null ? (FindAsset(session, reference.Id) ?? FindAsset(session, reference.Url)) : null;
         }
 
         /// <summary>
