@@ -5,10 +5,11 @@ using System;
 #if !SILICONSTUDIO_UI_SDL2
 using System.Drawing;
 using System.Drawing.Imaging;
+#else
+using SDL2;
 #endif
 using System.IO;
 using System.Runtime.InteropServices;
-using SDL2;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Graphics
