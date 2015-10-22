@@ -45,48 +45,22 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 */
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D && !SILICONSTUDIO_UI_SDL2
 using System.Runtime.InteropServices;
 using System;
 using System.ComponentModel;
-#if !SILICONSTUDIO_RUNTIME_CORECLR
 using System.Windows.Forms;
 using Form = System.Windows.Forms.Form;
 using Size = System.Drawing.Size;
 using Rectangle = System.Drawing.Rectangle;
-#else
-using Form = SharpDX.Windows.Control;
-using Size = WCL.Structs.Size;
-using Rectangle = WCL.Structs.Rect;
-using Message = SharpDX.RawInput.Message;
-using SharpDX.Direct3D11;
-using WCL.Enums;
-using WCL.Structs;
-using WCL.Windows;
-#endif
 
 
 namespace SiliconStudio.Paradox.Games
 {
-#if SILICONSTUDIO_RUNTIME_CORECLR
-    public enum FormWindowState
-    {
-        Normal = 0,
-        Minimized = 1,
-        Maximized = 2
-    }
-
-    public class PaintEventArgs { }
-#endif
-
     /// <summary>
     /// Default Rendering Form on windows desktop.
     /// </summary>
-#if !SILICONSTUDIO_RUNTIME_CORECLR
     public class GameForm : Form
-#else
-    public class GameForm : TitledWindow, Form
-#endif
     {
         private const int SIZE_RESTORED = 0;
         private const int SIZE_MINIMIZED = 1;
@@ -112,11 +86,7 @@ namespace SiliconStudio.Paradox.Games
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
         public GameForm()
-#if SILICONSTUDIO_RUNTIME_CORECLR
-            : this("Paradox Game on CoreCLR")
-#else
             : this("Paradox Game")
-#endif
         {
         }
 
@@ -125,11 +95,7 @@ namespace SiliconStudio.Paradox.Games
         /// </summary>
         /// <param name="text">The text.</param>
         public GameForm(String text)
-#if SILICONSTUDIO_RUNTIME_CORECLR
-            : base (text)
-#endif
         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             Text = text;
             BackColor = System.Drawing.Color.Black;
             ClientSize = new Size(800, 600);
@@ -138,27 +104,8 @@ namespace SiliconStudio.Paradox.Games
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
 
             Icon = Resources.GameResources.Logo;
-#endif
             previousWindowState = FormWindowState.Normal;
         }
-
-// Temporary code to be able to get Paradox running on CoreCLR.
-#if SILICONSTUDIO_RUNTIME_CORECLR
-        public bool IsDisposed
-            {
-                get { return _handle == IntPtr.Zero; }
-            }
-
-        public event EventHandler Disposed
-        {
-            add
-            {
-            }
-            remove
-            {
-            }
-        }
-#endif
 
         /// <summary>
         /// Occurs when [app activated].
@@ -213,7 +160,6 @@ namespace SiliconStudio.Paradox.Games
 
         internal bool IsFullScreen { get; set; }
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         /// <summary>
         /// Raises the <see cref="E:System.Windows.Forms.Form.ResizeBegin"/> event.
         /// </summary>
@@ -267,7 +213,6 @@ namespace SiliconStudio.Paradox.Games
                 isBackgroundFirstDraw = true;
             }
         }
-#endif
 
         /// <summary>
         /// Raises the Pause Rendering event.
@@ -355,7 +300,6 @@ namespace SiliconStudio.Paradox.Games
                 Screensaver(this, e);
         }
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         protected override void OnClientSizeChanged(EventArgs e)
         {
             base.OnClientSizeChanged(e);
@@ -367,38 +311,12 @@ namespace SiliconStudio.Paradox.Games
                 //UpdateScreen();
             }
         }
-#endif
-
-#if SILICONSTUDIO_RUNTIME_CORECLR
-        public override IntPtr WindowProcedure(IntPtr hwnd, WmConstants msg, IntPtr wparam, IntPtr lparam)
-        {
-            Message m = new Message();
-            m.HWnd = hwnd;
-            m.Msg = (int) msg;
-            m.LParam = lparam;
-            m.WParam = wparam;
-
-            WndProc(ref m);
-            if (m.Result == IntPtr.Zero)
-            {
-                return base.WindowProcedure(hwnd, msg, wparam, lparam);
-            }
-            else
-            {
-                return m.Result;
-            }
-        }
-#endif
 
         /// <summary>
         /// Override windows message loop handling.
         /// </summary>
         /// <param name="m">The Windows <see cref="T:System.Windows.Forms.Message"/> to process.</param>
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         protected override void WndProc(ref Message m)
-#else
-        virtual protected void WndProc(ref Message m)
-#endif
         {
             long wparam = m.WParam.ToInt64();
 
@@ -431,22 +349,14 @@ namespace SiliconStudio.Paradox.Games
 
                             OnUserResized(EventArgs.Empty);
                             //UpdateScreen();
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                             cachedSize = Size;
-#else
-                            cachedSize = ClientSize;
-#endif
                         }
                         else if (wparam == SIZE_RESTORED)
                         {
                             if (previousWindowState == FormWindowState.Minimized)
                                 OnResumeRendering(EventArgs.Empty);
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                             var newSize = Size;
-#else
-                            var newSize = ClientSize;
-#endif
 
                             if (!isUserResizing && (!newSize.Equals(cachedSize) || previousWindowState == FormWindowState.Maximized))
                             {
@@ -506,12 +416,9 @@ namespace SiliconStudio.Paradox.Games
                     }
                     break;
             }
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             base.WndProc(ref m);
-#endif
         }
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         protected override void OnKeyUp(KeyEventArgs e)
         {
             if (IsSystemKeyToFilter(e))
@@ -541,7 +448,6 @@ namespace SiliconStudio.Paradox.Games
             // Supress ALT and F10 keys from being processed
             return ((e.KeyValue == 0x12 || e.KeyValue == 0x79 || e.Alt) && !(e.Alt && e.KeyValue == 0x73));
         }
-#endif
 
         [DllImport("user32.dll", EntryPoint = "GetClientRect")]
         private static extern bool GetClientRect(IntPtr hWnd, out Rectangle lpRect);
