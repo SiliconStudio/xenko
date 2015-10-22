@@ -24,20 +24,20 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
 using System;
 using System.Diagnostics;
-#if !SILICONSTUDIO_RUNTIME_CORECLR
-using System.Drawing;
-using System.Windows.Forms;
-#else
-using SharpDX.Windows;
-#endif
-using System.Threading;
-
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+#if !SILICONSTUDIO_UI_SDL2
+using System.Drawing;
+using System.Windows.Forms;
+using System.Threading;
 using Point = System.Drawing.Point;
+using Form = System.Windows.Forms.Form;
+using Size = System.Drawing.Size;
 #else
-using Point = WCL.Structs.Point;
+using Point = SiliconStudio.Paradox.Graphics.SDL.Point;
+using SiliconStudio.Paradox.Graphics.SDL;
+using Form = SiliconStudio.Paradox.Graphics.SDL.Control;
+using Size = SiliconStudio.Paradox.Graphics.SDL.Size;
 #endif
 
 namespace SiliconStudio.Paradox.Games
@@ -55,16 +55,10 @@ namespace SiliconStudio.Paradox.Games
 
         private WindowHandle windowHandle;
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         private Form form;
-#else
-        private Control form;
-#endif
 
         private bool isFullScreenMaximized;
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         private FormBorderStyle savedFormBorderStyle;
-#endif
         private bool oldVisible;
         private bool deviceChangeChangedVisible;
         private bool? deviceChangeWillBeFullScreen;
@@ -86,12 +80,10 @@ namespace SiliconStudio.Paradox.Games
 
         public override void BeginScreenDeviceChange(bool willBeFullScreen)
         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             if (willBeFullScreen && !isFullScreenMaximized && form != null)
             {
                 savedFormBorderStyle = form.FormBorderStyle;
             }
-#endif
 
             if (willBeFullScreen != isFullScreenMaximized)
             {
@@ -99,23 +91,21 @@ namespace SiliconStudio.Paradox.Games
                 oldVisible = Visible;
                 Visible = false;
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 if (form != null)
+                {
                     form.SendToBack();
-#endif
+                }
             }
             else
             {
                 deviceChangeChangedVisible = false;
             }
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             if (!willBeFullScreen && isFullScreenMaximized && form != null)
             {
                 form.TopMost = false;
                 form.FormBorderStyle = savedFormBorderStyle;
             }
-#endif
 
             deviceChangeWillBeFullScreen = willBeFullScreen;
         }
@@ -131,12 +121,10 @@ namespace SiliconStudio.Paradox.Games
             }
             else if (isFullScreenMaximized)
             {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 if (form != null)
                 {
                     form.BringToFront();
                 }
-#endif
                 isFullScreenMaximized = false;
             }
 
@@ -145,7 +133,6 @@ namespace SiliconStudio.Paradox.Games
             if (deviceChangeChangedVisible)
                 Visible = oldVisible;
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             if (form != null)
             {
                 form.ClientSize = new Size(clientWidth, clientHeight);
@@ -157,7 +144,6 @@ namespace SiliconStudio.Paradox.Games
             {
                 gameForm.IsFullScreen = isFullScreenMaximized;
             }
-#endif
 
             deviceChangeWillBeFullScreen = null;
         }
@@ -178,7 +164,6 @@ namespace SiliconStudio.Paradox.Games
 
             Control = (Control)gameContext.Control;
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             // Setup the initial size of the window
             var width = gameContext.RequestedWidth;
             if (width == 0)
@@ -191,12 +176,10 @@ namespace SiliconStudio.Paradox.Games
             {
                 height = Control is Form ? GraphicsDeviceManager.DefaultBackBufferHeight : Control.ClientSize.Height;
             }
-#endif
 
             windowHandle = new WindowHandle(AppContextType.Desktop, Control);
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
-            Control.ClientSize = new System.Drawing.Size(width, height);
+            Control.ClientSize = new Size(width, height);
 
             Control.MouseEnter += GameWindowForm_MouseEnter;
             Control.MouseLeave += GameWindowForm_MouseLeave;
@@ -213,7 +196,6 @@ namespace SiliconStudio.Paradox.Games
             {
                 Control.Resize += OnClientSizeChanged;
             }
-#endif
         }
 
         internal override void Run()
@@ -260,9 +242,7 @@ namespace SiliconStudio.Paradox.Games
         {
             if (!isMouseVisible && !isMouseCurrentlyHidden)
             {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 Cursor.Hide();
-#endif
                 isMouseCurrentlyHidden = true;
             }
         }
@@ -271,9 +251,7 @@ namespace SiliconStudio.Paradox.Games
         {
             if (isMouseCurrentlyHidden)
             {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 Cursor.Show();
-#endif
                 isMouseCurrentlyHidden = false;
             }
         }
@@ -293,17 +271,13 @@ namespace SiliconStudio.Paradox.Games
                     {
                         if (isMouseCurrentlyHidden)
                         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                             Cursor.Show();
-#endif
                             isMouseCurrentlyHidden = false;
                         }
                     }
                     else if (!isMouseCurrentlyHidden)
                     {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                         Cursor.Hide();
-#endif
                         isMouseCurrentlyHidden = true;
                     }
                 }
@@ -318,17 +292,11 @@ namespace SiliconStudio.Paradox.Games
         {
             get
             {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 return Control.Visible;
-#else
-                return true;
-#endif
             }
             set
             {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 Control.Visible = value;
-#endif
             }
         }
 
@@ -339,18 +307,12 @@ namespace SiliconStudio.Paradox.Games
                 if (Control == null)
                     return base.Position;
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 return new Int2(Control.Location.X, Control.Location.Y);
-#else
-                return new Int2(10, 10);
-#endif
             }
             set
             {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 if (Control != null)
                     Control.Location = new Point(value.X, value.Y);
-#endif
 
                 base.Position = value;
             }
@@ -358,19 +320,15 @@ namespace SiliconStudio.Paradox.Games
 
         protected override void SetTitle(string title)
         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             if (form != null)
             {
                 form.Text = title;
             }
-#endif
         }
 
         internal override void Resize(int width, int height)
         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             Control.ClientSize = new Size(width, height);
-#endif
         }
 
         public override bool AllowUserResizing
@@ -407,7 +365,6 @@ namespace SiliconStudio.Paradox.Games
 
         private void UpdateFormBorder()
         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             if (form != null)
             {
                 form.MaximizeBox = allowUserResizing;
@@ -419,7 +376,6 @@ namespace SiliconStudio.Paradox.Games
                     form.BringToFront();
                 }
             }
-#endif
         }
 
         public override SiliconStudio.Core.Mathematics.Rectangle ClientBounds
@@ -427,11 +383,7 @@ namespace SiliconStudio.Paradox.Games
             get
             {
                 // Ensure width and height are at least 1 to avoid divisions by 0
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 return new SiliconStudio.Core.Mathematics.Rectangle(0, 0, Math.Max(Control.ClientSize.Width, 1), Math.Max(Control.ClientSize.Height, 1));
-#else
-                return new SiliconStudio.Core.Mathematics.Rectangle(0, 0, 500, 500);
-#endif
             }
         }
 
@@ -447,12 +399,10 @@ namespace SiliconStudio.Paradox.Games
         {
             get
             {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 if (form != null)
                 {
                     return form.WindowState == FormWindowState.Minimized;
                 }
-#endif
                 // Check for non-form control
                 return false;
             }
@@ -462,9 +412,7 @@ namespace SiliconStudio.Paradox.Games
         {
             if (Control != null)
             {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 Control.Dispose();
-#endif
                 Control = null;
             }
 
