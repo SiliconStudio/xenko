@@ -152,6 +152,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         [Test]
         public void RunTestPass2()
         {
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
+
             RunGameTest(new TestLambertPrefilteringSH());
         }
 

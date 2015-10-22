@@ -194,6 +194,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         [Test]
         public void RunTest()
         {
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
+
             RunGameTest(new TestRadiancePrefilteringGGX());
         }
 

@@ -1,6 +1,5 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
@@ -21,12 +20,17 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
+
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
+using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Paradox.Graphics.Regression;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
@@ -34,14 +38,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     /// Tests for <see cref="Texture"/>
     /// </summary>
     [TestFixture]
-    [Description("Tests SharpDX.Toolkit.Graphics.Image")]
-    public class TestImage
+    [Description("Tests for Graphics.Image")]
+    public class TestImage : GraphicsTestBase
     {
-        [TestFixtureSetUp]
-        public void Initialize()
-        {
-        }
-
         /// <summary>
         /// Tests Image 1D.
         /// </summary>
@@ -49,19 +48,19 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         public void TestImage1D()
         {
             const int Size = 256; // must be > 256 to work
-            int BufferCount = (int)Math.Log(Size, 2) + 1;
+            int bufferCount = (int)Math.Log(Size, 2) + 1;
             int ExpectedSizePerArraySlice = Size * 2 - 1;
 
             var source = Image.New1D(Size, true, PixelFormat.R8_UNorm);
 
             // 9 buffers: 256 + 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1
             Assert.AreEqual(source.TotalSizeInBytes, ExpectedSizePerArraySlice);
-            Assert.AreEqual(source.PixelBuffer.Count, BufferCount);
+            Assert.AreEqual(source.PixelBuffer.Count, bufferCount);
 
             // Check with array size
             var dest = Image.New1D(Size, true, PixelFormat.R8_UNorm, 6);
             Assert.AreEqual(dest.TotalSizeInBytes, ExpectedSizePerArraySlice * 6);
-            Assert.AreEqual(dest.PixelBuffer.Count, BufferCount * 6);
+            Assert.AreEqual(dest.PixelBuffer.Count, bufferCount * 6);
 
             ManipulateImage(source, dest, 5, 0, 0);
 
@@ -77,19 +76,19 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         public void TestImage2D()
         {
             const int Size = 256; // must be > 256 to work
-            int BufferCount = (int)Math.Log(Size, 2) + 1;
-            int ExpectedSizePerArraySlice = ((int)Math.Pow(4, BufferCount) - 1) / 3;
+            int bufferCount = (int)Math.Log(Size, 2) + 1;
+            int expectedSizePerArraySlice = ((int)Math.Pow(4, bufferCount) - 1) / 3;
 
             var source = Image.New2D(Size, Size, true, PixelFormat.R8_UNorm);
 
             // 9 buffers: 256 + 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1
-            Assert.AreEqual(source.TotalSizeInBytes, ExpectedSizePerArraySlice);
-            Assert.AreEqual(source.PixelBuffer.Count, BufferCount);
+            Assert.AreEqual(source.TotalSizeInBytes, expectedSizePerArraySlice);
+            Assert.AreEqual(source.PixelBuffer.Count, bufferCount);
 
             // Check with array size
             var dest = Image.New2D(Size, Size, true, PixelFormat.R8_UNorm, 6);
-            Assert.AreEqual(dest.TotalSizeInBytes, ExpectedSizePerArraySlice * 6);
-            Assert.AreEqual(dest.PixelBuffer.Count, BufferCount * 6);
+            Assert.AreEqual(dest.TotalSizeInBytes, expectedSizePerArraySlice * 6);
+            Assert.AreEqual(dest.PixelBuffer.Count, bufferCount * 6);
 
             ManipulateImage(source, dest, 5, 0, 0);
 
@@ -105,16 +104,16 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         public void TestImage3D()
         {
             const int Size = 64; // must be > 256 to work
-            int BufferCount = (int)Math.Log(Size, 2) + 1;
+            int bufferCount = (int)Math.Log(Size, 2) + 1;
             // BufferSize(x) = 1/7 (8^(x+1)-1)
-            int ExpectedTotalBufferCount = (int)Math.Pow(2, BufferCount) - 1;
-            int ExpectedSizePerArraySlice = ((int)Math.Pow(8, BufferCount) - 1) / 7;
+            int expectedTotalBufferCount = (int)Math.Pow(2, bufferCount) - 1;
+            int expectedSizePerArraySlice = ((int)Math.Pow(8, bufferCount) - 1) / 7;
 
             var source = Image.New3D(Size, Size, Size, true, PixelFormat.R8_UNorm);
 
             // 9 buffers: 256 + 128 + 64 + 32 + 16 + 8 + 4 + 2 + 1
-            Assert.AreEqual(source.TotalSizeInBytes, ExpectedSizePerArraySlice);
-            Assert.AreEqual(source.PixelBuffer.Count, ExpectedTotalBufferCount);
+            Assert.AreEqual(source.TotalSizeInBytes, expectedSizePerArraySlice);
+            Assert.AreEqual(source.PixelBuffer.Count, expectedTotalBufferCount);
 
             var dest = Image.New3D(Size, Size, Size, true, PixelFormat.R8_UNorm);
 
@@ -155,115 +154,167 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             Assert.AreEqual(fromPixelBuffer.GetPixel<byte>(16, 0), 2);
         }
 
-        //[Test]
-        //public void TestPerfLoadSave()
-        //{
-        //    var image = Image.Load("map.bmp");
+        [Test]
+        [Ignore]
+        public void TestPerfLoadSave()
+        {
+            Image image;
+            using (var stream = File.Open("map.bmp", FileMode.Open))
+                image = Image.Load(stream);
 
-        //    const int Count = 100; // Change this to perform memory benchmarks
-        //    var types = new ImageFileType[] {
-        //        ImageFileType.Dds,
-        //    };
-        //    var clock = Stopwatch.StartNew();
-        //    foreach (var imageFileType in types)
-        //    {
-        //        clock.Restart();
-        //        for (int i = 0; i < Count; i++)
-        //        {
-        //            image.Save("map2.bin", imageFileType);
-        //        }
-        //        Console.WriteLine("Save [{0}] {1} in {2}ms", Count, imageFileType, clock.ElapsedMilliseconds);
-        //    }
+            const int Count = 100; // Change this to perform memory benchmarks
+            var types = new[]
+            {
+                ImageFileType.Dds,
+            };
+            var clock = Stopwatch.StartNew();
+            foreach (var imageFileType in types)
+            {
+                clock.Restart();
+                for (int i = 0; i < Count; i++)
+                {
+                    using (var stream = File.Open("map2.bin", FileMode.Create))
+                        image.Save(stream, imageFileType);
+                }
+                Log.Info("Save [{0}] {1} in {2}ms", Count, imageFileType, clock.ElapsedMilliseconds);
+            }
 
-        //    image.Dispose();
-        //}
+            image.Dispose();
+        }
 
         private long testMemoryBefore;
 
         [Test]
         public void TestLoadAndSave()
         {
-            var dxsdkDir = Environment.GetEnvironmentVariable("DXSDK_DIR");
-
-            if (string.IsNullOrEmpty(dxsdkDir))
-                throw new NotSupportedException("Install DirectX SDK June 2010 to run this test (DXSDK_DIR env variable is missing).");
-
-            GC.Collect();
-            GC.WaitForFullGCComplete();
-            testMemoryBefore = GC.GetTotalMemory(true);
-
-            var files = new List<string>();
-            files.AddRange(Directory.EnumerateFiles(Path.Combine(dxsdkDir, @"Samples\Media"), "*.dds", SearchOption.AllDirectories));
-            files.AddRange(Directory.EnumerateFiles(Path.Combine(dxsdkDir, @"Samples\Media"), "*.jpg", SearchOption.AllDirectories));
-            files.AddRange(Directory.EnumerateFiles(Path.Combine(dxsdkDir, @"Samples\Media"), "*.bmp", SearchOption.AllDirectories));
-
-            const int Count = 1; // Change this to perform memory benchmarks
-            var types = new ImageFileType[] {
-                ImageFileType.Dds,
-            };
-
-            for (int i = 0; i < Count; i++)
+            foreach (ImageFileType sourceFormat in Enum.GetValues(typeof(ImageFileType)))
             {
-                for (int j = 0; j < types.Length; j++)
+                foreach (ImageFileType intermediateFormat in Enum.GetValues(typeof(ImageFileType)))
                 {
-                    Console.Write("[{0}] ", i);
-                    ProcessFiles(files, types[j]);
+                    if (sourceFormat == ImageFileType.Wmp) // no input image of this format.
+                        continue;
+
+                    if (Platform.Type == PlatformType.Android && (
+                        intermediateFormat == ImageFileType.Bmp || // TODO remove this when Save method is implemented for the bmp format
+                        intermediateFormat == ImageFileType.Gif || // TODO remove this when Save method is implemented for the gif format
+                        intermediateFormat == ImageFileType.Tiff || // TODO remove this when Save method is implemented for the tiff format
+                        sourceFormat == ImageFileType.Bmp || // TODO remove this when Load method is fixed for the bmp format
+                        sourceFormat == ImageFileType.Tiff)) // TODO remove this when Load method is fixed for the tiff format
+                        continue; 
+
+                    if (intermediateFormat == ImageFileType.Wmp || sourceFormat == ImageFileType.Wmp ||
+                        intermediateFormat == ImageFileType.Tga || sourceFormat == ImageFileType.Tga) // TODO remove this when Load/Save methods are implemented for those types.
+                        continue;
+
+                    RunDrawTest(
+                        game =>
+                        {
+                            ProcessFiles(game, sourceFormat, intermediateFormat);
+                        });
                 }
             }
         }
 
-        private void ProcessFiles(IEnumerable<string> files, ImageFileType intermediateFormat)
+        [Test]
+        public void TestLoadPremultiplied()
         {
+            var sourceFormat = ImageFileType.Png;
+            var intermediateFormat = ImageFileType.Png;
 
-            Console.WriteLine("Testing {0}", intermediateFormat);
-            Console.Out.Flush();
-            int imageCount = 0;
-            var clock = Stopwatch.StartNew();
-            foreach (var file in files)
-            {
-                // Load an image from a file and dispose it.
-                Image image;
-                using (var inStream = File.OpenRead(file))
-                    image = Image.Load(inStream);
-                image.Dispose();
-
-                // Load an image from a buffer
-                var buffer = File.ReadAllBytes(file);
-
-                using (image = Image.Load(buffer))
+            RunDrawTest(
+                game =>
                 {
+                    // Load an image from a file and dispose it.
+                    var fileName = "debug" + "Image";
+                    var filePath = "ImageTypes/" + fileName;
+                    Image image;
 
-                    // Write this image to a memory stream using DDS format.
-                    var tempStream = new MemoryStream();
-                    image.Save(tempStream, intermediateFormat);
-                    tempStream.Position = 0;
-
-                    // Save to a file on disk
-                    var name = Enum.GetName(typeof(ImageFileType), intermediateFormat).ToLower();
-                    using (var outStream = File.OpenWrite(Path.ChangeExtension(Path.GetFileName(file), name)))
-                        image.Save(outStream, intermediateFormat);
-
-                    if (intermediateFormat == ImageFileType.Dds)
+                    // Load an image from a buffer
+                    byte[] buffer;
+                    using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
                     {
+                        var bufferSize = inStream.Length;
+                        buffer = new byte[bufferSize];
+                        inStream.Read(buffer, 0, (int)bufferSize);
+                    }
+
+                    using (image = Image.Load(buffer))
+                    {
+                        // Write this image to a memory stream using DDS format.
+                        var tempStream = new MemoryStream();
+                        image.Save(tempStream, intermediateFormat);
+                        tempStream.Position = 0;
+                        
                         // Reload the image from the memory stream.
                         var image2 = Image.Load(tempStream);
-                        CompareImage(image, image2, file);
+                        CompareImage(image, image2, false, false, fileName);
                         image2.Dispose();
                     }
-                }
+                });
+        }
 
-                imageCount++;
+        private void ProcessFiles(Game game, ImageFileType sourceFormat, ImageFileType intermediateFormat)
+        {
+            Log.Info("Testing {0}", intermediateFormat);
+            Console.Out.Flush();
+            var imageCount = 0;
+            var clock = Stopwatch.StartNew();
+
+            // Load an image from a file and dispose it.
+            var fileName = sourceFormat.ToFileExtension().Substring(1) + "Image";
+            var filePath = "ImageTypes/" + fileName;
+            Image image;
+            using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+                image = Image.Load(inStream);
+            image.Dispose();
+
+            // Load an image from a buffer
+            byte[] buffer;
+            using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+            {
+                var bufferSize = inStream.Length;
+                buffer = new byte[bufferSize];
+                inStream.Read(buffer, 0, (int)bufferSize);
             }
+
+            using (image = Image.Load(buffer))
+            {
+                // Write this image to a memory stream using DDS format.
+                var tempStream = new MemoryStream();
+                image.Save(tempStream, intermediateFormat);
+                tempStream.Position = 0;
+
+                // Save to a file on disk
+                var extension = intermediateFormat.ToFileExtension();
+                using (var outStream = VirtualFileSystem.ApplicationCache.OpenStream(fileName + extension, VirtualFileMode.Create, VirtualFileAccess.Write))
+                    image.Save(outStream, intermediateFormat);
+
+                if (intermediateFormat == ImageFileType.Paradox || intermediateFormat == ImageFileType.Dds || (sourceFormat == intermediateFormat 
+                    && intermediateFormat != ImageFileType.Gif)) // TODO: remove this when Giff compression/decompression is fixed
+                {
+                    var allowSmallDifferences = intermediateFormat == ImageFileType.Png      // TODO: remove this when png  encryption implementation is stable
+                                                || intermediateFormat == ImageFileType.Jpg   // TODO: remove this when jepg encryption implementation is stable
+                                                || intermediateFormat == ImageFileType.Tiff; // TODO: remove this when tiff encryption implementation is stable
+
+                    // Reload the image from the memory stream.
+                    var image2 = Image.Load(tempStream);
+                    CompareImage(image, image2, false, allowSmallDifferences, fileName);
+                    image2.Dispose();
+                }
+            }
+
+            imageCount++;
+
             var time = clock.ElapsedMilliseconds;
             clock.Stop();
 
             GC.Collect();
             GC.WaitForPendingFinalizers();
             var testMemoryAfter = GC.GetTotalMemory(true);
-            Console.WriteLine("Loaded {0} and convert to (Dds, Jpg, Png, Gif, Bmp, Tiff) image from DirectXSDK test Memory: {1} bytes, in {2}ms", imageCount, testMemoryAfter - testMemoryBefore, time);
+            Log.Info("Loaded {0} and convert to (Dds, Jpg, Png, Gif, Bmp, Tiff) image from DirectXSDK test Memory: {1} bytes, in {2}ms", imageCount, testMemoryAfter - testMemoryBefore, time);
         }
 
-        internal static void CompareImage(Image from, Image to, string file = null)
+        internal static void CompareImage(Image from, Image to, bool ignoreAlpha, bool allowSmallDifferences, string file = null)
         {
             // Check that description is identical to original image loaded from the disk.
             Assert.AreEqual(from.Description, to.Description, "Image description is different for image [{0}]", file);
@@ -281,7 +332,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 Assert.AreEqual(srcPixelBuffer.RowStride, dstPixelBuffer.RowStride, "RowPitch are different for index [{0}], image [{1}]", j, file);
                 Assert.AreEqual(srcPixelBuffer.BufferStride, dstPixelBuffer.BufferStride, "SlicePitch are different for index [{0}], image [{1}]", j, file);
 
-                var isSameBuffer = Utilities.CompareMemory(srcPixelBuffer.DataPointer, dstPixelBuffer.DataPointer, srcPixelBuffer.BufferStride);
+                var isSameBuffer = CompareImageData(srcPixelBuffer.DataPointer, dstPixelBuffer.DataPointer, srcPixelBuffer.BufferStride, ignoreAlpha, allowSmallDifferences);
                 //if (!isSameBuffer)
                 //{
                 //    var stream = new FileStream("test_from.dds", FileMode.Create, FileAccess.Write, FileShare.Write);
@@ -295,7 +346,38 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 Assert.True(isSameBuffer, "Content of PixelBuffer is different for index [{0}], image [{1}]", j, file);
             }
         }
+        public unsafe static bool CompareImageData(IntPtr from, IntPtr against, int sizeToCompare, bool ignoreAlpha, bool allowSmallDifferences)
+        {
+            var pSrc = (byte*)from;
+            var pDst = (byte*)against;
+
+            var allowedDifference = allowSmallDifferences ? 8 : 0;
+            
+            // Compare remaining bytes.
+            var pixelCount = sizeToCompare >> 2;
+            while (pixelCount > 0)
+            {
+                for (int i = 0; i < 4; i++)
+                {
+                    var originalValue = *pSrc;
+                    var newValue = *pDst;
+                    var originalValue1 = pSrc[1];
+                    var newValue1 = pDst[1];
+                    var originalValue2 = pSrc[2];
+                    var newValue2 = pDst[2];
+                    var originalValue3 = pSrc[3];
+                    var newValue3 = pDst[3];
+                    if ((i != 3 || !ignoreAlpha) && Math.Abs(originalValue - newValue) > allowedDifference)
+                        return false;
+
+                    pSrc++;
+                    pDst++;
+                }
+
+                pixelCount -=4;
+            }
+
+            return true;
+        }
     }
 }
-
-#endif

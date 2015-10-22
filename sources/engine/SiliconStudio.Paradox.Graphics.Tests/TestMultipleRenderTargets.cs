@@ -36,7 +36,6 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             CurrentVersion = 4;
             this.rotateModel = rotateModel;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
         protected override void RegisterTests()

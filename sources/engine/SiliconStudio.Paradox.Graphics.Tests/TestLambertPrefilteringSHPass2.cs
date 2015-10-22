@@ -123,7 +123,9 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         [Test]
         public void RunTestPass2()
         {
-             RunGameTest(new TestLambertPrefilteringSHPass2());
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
+
+            RunGameTest(new TestLambertPrefilteringSHPass2());
         }
 
         public static void Main()

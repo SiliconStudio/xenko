@@ -89,6 +89,8 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         [Test]
         public void RunImageLoad()
         {
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
+
             RunGameTest(new TestHammersley());
         }
     }

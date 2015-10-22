@@ -1,393 +1,443 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-
 using NUnit.Framework;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Paradox.Graphics.Regression;
 
 namespace SiliconStudio.Paradox.Graphics.Tests
 {
     [TestFixture]
     [Description("Check Texture")]
-    public class TestTexture
+    public class TestTexture : GraphicsTestBase
     {
+        public TestTexture()
+        {
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
+        }
+
         [Test]
         public void TestTexture1D()
         {
-            var device = GraphicsDevice.New();
+            RunDrawTest(
+                game =>
+                {
+                    // Check texture creation with an array of data, with usage default to later allow SetData
+                    var data = new byte[256];
+                    data[0] = 255;
+                    data[31] = 1;
+                    var texture = Texture.New1D(game.GraphicsDevice, 256, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
 
-            // Check texture creation with an array of data, with usage default to later allow SetData
-            var data = new byte[256];
-            data[0] = 255;
-            data[31] = 1;
-            var texture = Texture.New1D(device, 256, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
+                    // Perform texture op
+                    CheckTexture(texture, data);
 
-            // Perform texture op
-            CheckTexture(texture, data);
-
-            // Release the texture
-            texture.Dispose();
-
-            device.Dispose();
+                    // Release the texture
+                    texture.Dispose();
+                });
         }
 
         [Test]
         public void TestTexture1DMipMap()
         {
-            var device = GraphicsDevice.New();
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            // Check texture creation with an array of data, with usage default to later allow SetData
-            var data = new byte[256];
-            data[0] = 255;
-            data[31] = 1;
-            var texture = Texture.New1D(device, 256, true, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            RunDrawTest(
+                game =>
+                {
+                    var device = game.GraphicsDevice;
 
-            // Verify the number of mipmap levels
-            Assert.That(texture.MipLevels, Is.EqualTo(Math.Log(data.Length, 2) + 1));
-            
-            // Get a render target on the mipmap 1 (128) with value 1 and get back the data
-            var renderTarget1 = texture.ToTextureView(ViewType.Single, 0, 1);
-            device.Clear(renderTarget1, new Color4(0xFF000001));
-            var data1 = texture.GetData<byte>(0, 1);
-            Assert.That(data1.Length, Is.EqualTo(128));
-            Assert.That(data1[0], Is.EqualTo(1));
-            renderTarget1.Dispose();
+                    // Check texture creation with an array of data, with usage default to later allow SetData
+                    var data = new byte[256];
+                    data[0] = 255;
+                    data[31] = 1;
+                    var texture = Texture.New1D(device, 256, true, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
 
-            // Get a render target on the mipmap 2 (128) with value 2 and get back the data
-            var renderTarget2 = texture.ToTextureView(ViewType.Single, 0, 2);
-            device.Clear(renderTarget2, new Color4(0xFF000002));
-            var data2 = texture.GetData<byte>(0, 2);
-            Assert.That(data2.Length, Is.EqualTo(64));
-            Assert.That(data2[0], Is.EqualTo(2));
-            renderTarget2.Dispose();
+                    // Verify the number of mipmap levels
+                    Assert.That(texture.MipLevels, Is.EqualTo(Math.Log(data.Length, 2) + 1));
 
-            // Get a render target on the mipmap 3 (128) with value 3 and get back the data
-            var renderTarget3 = texture.ToTextureView(ViewType.Single, 0, 3);
-            device.Clear(renderTarget3, new Color4(0xFF000003));
-            var data3 = texture.GetData<byte>(0, 3);
-            Assert.That(data3.Length, Is.EqualTo(32));
-            Assert.That(data3[0], Is.EqualTo(3));
-            renderTarget3.Dispose();
+                    // Get a render target on the mipmap 1 (128) with value 1 and get back the data
+                    var renderTarget1 = texture.ToTextureView(ViewType.Single, 0, 1);
+                    device.Clear(renderTarget1, new Color4(0xFF000001));
+                    var data1 = texture.GetData<byte>(0, 1);
+                    Assert.That(data1.Length, Is.EqualTo(128));
+                    Assert.That(data1[0], Is.EqualTo(1));
+                    renderTarget1.Dispose();
 
-            // Release the texture
-            texture.Dispose();
+                    // Get a render target on the mipmap 2 (128) with value 2 and get back the data
+                    var renderTarget2 = texture.ToTextureView(ViewType.Single, 0, 2);
+                    device.Clear(renderTarget2, new Color4(0xFF000002));
+                    var data2 = texture.GetData<byte>(0, 2);
+                    Assert.That(data2.Length, Is.EqualTo(64));
+                    Assert.That(data2[0], Is.EqualTo(2));
+                    renderTarget2.Dispose();
 
-            device.Dispose();
+                    // Get a render target on the mipmap 3 (128) with value 3 and get back the data
+                    var renderTarget3 = texture.ToTextureView(ViewType.Single, 0, 3);
+                    device.Clear(renderTarget3, new Color4(0xFF000003));
+                    var data3 = texture.GetData<byte>(0, 3);
+                    Assert.That(data3.Length, Is.EqualTo(32));
+                    Assert.That(data3[0], Is.EqualTo(3));
+                    renderTarget3.Dispose();
+
+                    // Release the texture
+                    texture.Dispose();
+                });
         }
 
         [Test]
         public void TestTexture2D()
         {
-            var device = GraphicsDevice.New();
+            RunDrawTest(
+                game =>
+                {
+                    var device = game.GraphicsDevice;
 
-            // Check texture creation with an array of data, with usage default to later allow SetData
-            var data = new byte[256 * 256];
-            data[0] = 255;
-            data[31] = 1;
-            var texture = Texture.New2D(device, 256, 256, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
+                    // Check texture creation with an array of data, with usage default to later allow SetData
+                    var data = new byte[256 * 256];
+                    data[0] = 255;
+                    data[31] = 1;
+                    var texture = Texture.New2D(device, 256, 256, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
 
-            // Perform texture op
-            CheckTexture(texture, data);
+                    // Perform texture op
+                    CheckTexture(texture, data);
 
-            // Release the texture
-            texture.Dispose();
-
-            device.Dispose();
+                    // Release the texture
+                    texture.Dispose();
+                },
+                GraphicsProfile.Level_9_1);
         }
 
         [Test]
         public void TestTexture2DArray()
         {
-            var device = GraphicsDevice.New();
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            // Check texture creation with an array of data, with usage default to later allow SetData
-            var data = new byte[256 * 256];
-            data[0] = 255;
-            data[31] = 1;
-            var texture = Texture.New2D(device, 256, 256, 1, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 4);
+            RunDrawTest(
+                game =>
+                {
+                    var device = game.GraphicsDevice;
 
-            // Verify the number of mipmap levels
-            Assert.That(texture.MipLevels, Is.EqualTo(1));
+                    // Check texture creation with an array of data, with usage default to later allow SetData
+                    var data = new byte[256 * 256];
+                    data[0] = 255;
+                    data[31] = 1;
+                    var texture = Texture.New2D(device, 256, 256, 1, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 4);
 
-            // Get a render target on the array 1 (128) with value 1 and get back the data
-            var renderTarget1 = texture.ToTextureView(ViewType.Single, 1, 0);
-            Assert.That(renderTarget1.ViewWidth, Is.EqualTo(256));
-            Assert.That(renderTarget1.ViewHeight, Is.EqualTo(256));
+                    // Verify the number of mipmap levels
+                    Assert.That(texture.MipLevels, Is.EqualTo(1));
 
-            device.Clear(renderTarget1, new Color4(0xFF000001));
-            var data1 = texture.GetData<byte>(1, 0);
-            Assert.That(data1.Length, Is.EqualTo(data.Length));
-            Assert.That(data1[0], Is.EqualTo(1));
-            renderTarget1.Dispose();
+                    // Get a render target on the array 1 (128) with value 1 and get back the data
+                    var renderTarget1 = texture.ToTextureView(ViewType.Single, 1, 0);
+                    Assert.That(renderTarget1.ViewWidth, Is.EqualTo(256));
+                    Assert.That(renderTarget1.ViewHeight, Is.EqualTo(256));
 
-            // Get a render target on the array 2 (128) with value 2 and get back the data
-            var renderTarget2 = texture.ToTextureView(ViewType.Single, 2, 0);
-            device.Clear(renderTarget2, new Color4(0xFF000002));
-            var data2 = texture.GetData<byte>(2, 0);
-            Assert.That(data2.Length, Is.EqualTo(data.Length));
-            Assert.That(data2[0], Is.EqualTo(2));
-            renderTarget2.Dispose();
+                    device.Clear(renderTarget1, new Color4(0xFF000001));
+                    var data1 = texture.GetData<byte>(1);
+                    Assert.That(data1.Length, Is.EqualTo(data.Length));
+                    Assert.That(data1[0], Is.EqualTo(1));
+                    renderTarget1.Dispose();
 
-            // Get a render target on the array 3 (128) with value 3 and get back the data
-            var renderTarget3 = texture.ToTextureView(ViewType.Single, 3, 0);
-            device.Clear(renderTarget3, new Color4(0xFF000003));
-            var data3 = texture.GetData<byte>(3, 0);
-            Assert.That(data3.Length, Is.EqualTo(data.Length));
-            Assert.That(data3[0], Is.EqualTo(3));
-            renderTarget3.Dispose();
+                    // Get a render target on the array 2 (128) with value 2 and get back the data
+                    var renderTarget2 = texture.ToTextureView(ViewType.Single, 2, 0);
+                    device.Clear(renderTarget2, new Color4(0xFF000002));
+                    var data2 = texture.GetData<byte>(2);
+                    Assert.That(data2.Length, Is.EqualTo(data.Length));
+                    Assert.That(data2[0], Is.EqualTo(2));
+                    renderTarget2.Dispose();
 
-            // Release the texture
-            texture.Dispose();
+                    // Get a render target on the array 3 (128) with value 3 and get back the data
+                    var renderTarget3 = texture.ToTextureView(ViewType.Single, 3, 0);
+                    device.Clear(renderTarget3, new Color4(0xFF000003));
+                    var data3 = texture.GetData<byte>(3);
+                    Assert.That(data3.Length, Is.EqualTo(data.Length));
+                    Assert.That(data3[0], Is.EqualTo(3));
+                    renderTarget3.Dispose();
 
-            device.Dispose();
+                    // Release the texture
+                    texture.Dispose();
+                });
         }
 
         [Test]
         public void TestTexture2DUnorderedAccess()
         {
-            // Force to use Level11 in order to use UnorderedAccessViews
-            var device = GraphicsDevice.New(DeviceCreationFlags.None, GraphicsProfile.Level_11_0);
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            // Check texture creation with an array of data, with usage default to later allow SetData
-            var data = new byte[256 * 256];
-            data[0] = 255;
-            data[31] = 1;
-            var texture = Texture.New2D(device, 256, 256, 1, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 4);
+            RunDrawTest(
+                game =>
+                {
+                    var device = game.GraphicsDevice;
 
-            // Clear slice array[1] with value 1, read back data from texture and check validity
-            var texture1 = texture.ToTextureView(ViewType.Single, 1, 0);
-            Assert.That(texture1.ViewWidth, Is.EqualTo(256));
-            Assert.That(texture1.ViewHeight, Is.EqualTo(256));
-            Assert.That(texture1.ViewDepth, Is.EqualTo(1));
+                    // Check texture creation with an array of data, with usage default to later allow SetData
+                    var data = new byte[256 * 256];
+                    data[0] = 255;
+                    data[31] = 1;
+                    var texture = Texture.New2D(device, 256, 256, 1, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 4);
 
-            device.ClearReadWrite(texture1, new Int4(1));
-            var data1 = texture.GetData<byte>(1);
-            Assert.That(data1.Length, Is.EqualTo(data.Length));
-            Assert.That(data1[0], Is.EqualTo(1));
-            texture1.Dispose();
+                    // Clear slice array[1] with value 1, read back data from texture and check validity
+                    var texture1 = texture.ToTextureView(ViewType.Single, 1, 0);
+                    Assert.That(texture1.ViewWidth, Is.EqualTo(256));
+                    Assert.That(texture1.ViewHeight, Is.EqualTo(256));
+                    Assert.That(texture1.ViewDepth, Is.EqualTo(1));
 
-            // Clear slice array[2] with value 2, read back data from texture and check validity
-            var texture2 = texture.ToTextureView(ViewType.Single, 2, 0);
-            device.ClearReadWrite(texture2, new Int4(2));
-            var data2 = texture.GetData<byte>(2);
-            Assert.That(data2.Length, Is.EqualTo(data.Length));
-            Assert.That(data2[0], Is.EqualTo(2));
-            texture2.Dispose();
+                    device.ClearReadWrite(texture1, new Int4(1));
+                    var data1 = texture.GetData<byte>(1);
+                    Assert.That(data1.Length, Is.EqualTo(data.Length));
+                    Assert.That(data1[0], Is.EqualTo(1));
+                    texture1.Dispose();
 
-            texture.Dispose();
+                    // Clear slice array[2] with value 2, read back data from texture and check validity
+                    var texture2 = texture.ToTextureView(ViewType.Single, 2, 0);
+                    device.ClearReadWrite(texture2, new Int4(2));
+                    var data2 = texture.GetData<byte>(2);
+                    Assert.That(data2.Length, Is.EqualTo(data.Length));
+                    Assert.That(data2[0], Is.EqualTo(2));
+                    texture2.Dispose();
 
-            device.Dispose();
+                    texture.Dispose();
+                },
+                GraphicsProfile.Level_11_0); // Force to use Level11 in order to use UnorderedAccessViews
         }
 
         [Test]
         public void TestTexture3D()
         {
-            var device = GraphicsDevice.New();
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            // Check texture creation with an array of data, with usage default to later allow SetData
-            var data = new byte[32 * 32 * 32];
-            data[0] = 255;
-            data[31] = 1;
-            var texture = Texture.New3D(device, 32, 32, 32, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
+            RunDrawTest(
+                game =>
+                {
+                    var device = game.GraphicsDevice;
+                    
+                    // Check texture creation with an array of data, with usage default to later allow SetData
+                    var data = new byte[32 * 32 * 32];
+                    data[0] = 255;
+                    data[31] = 1;
+                    var texture = Texture.New3D(device, 32, 32, 32, PixelFormat.R8_UNorm, data, usage: GraphicsResourceUsage.Default);
 
-            // Perform generate texture checking
-            CheckTexture(texture, data);
+                    // Perform generate texture checking
+                    CheckTexture(texture, data);
 
-            // Release the texture
-            texture.Dispose();
-
-            device.Dispose();
+                    // Release the texture
+                    texture.Dispose();
+                });
         }
 
         [Test]
         public void TestTexture3DRenderTarget()
         {
-            var device = GraphicsDevice.New(DeviceCreationFlags.Debug);
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            // Check texture creation with an array of data, with usage default to later allow SetData
-            var texture = Texture.New3D(device, 32, 32, 32, true, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
+            RunDrawTest(
+                game =>
+                {
+                    var device = game.GraphicsDevice;
 
-            // Get a render target on the 1st mipmap of this texture 3D
-            var renderTarget0 = texture.ToTextureView(ViewType.Single, 0, 0);
-            device.Clear(renderTarget0, new Color4(0xFF000001));
-            var data1 = texture.GetData<byte>(0, 0);
-            Assert.That(data1.Length, Is.EqualTo(32*32*32));
-            Assert.That(data1[0], Is.EqualTo(1));
-            renderTarget0.Dispose();
+                    // Check texture creation with an array of data, with usage default to later allow SetData
+                    var texture = Texture.New3D(device, 32, 32, 32, true, PixelFormat.R8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget);
 
-            // Get a render target on the 2nd mipmap of this texture 3D
-            var renderTarget1 = texture.ToTextureView(ViewType.Single, 0, 1);
+                    // Get a render target on the 1st mipmap of this texture 3D
+                    var renderTarget0 = texture.ToTextureView(ViewType.Single, 0, 0);
+                    device.Clear(renderTarget0, new Color4(0xFF000001));
+                    var data1 = texture.GetData<byte>();
+                    Assert.That(data1.Length, Is.EqualTo(32 * 32 * 32));
+                    Assert.That(data1[0], Is.EqualTo(1));
+                    renderTarget0.Dispose();
 
-            // Check that width/height is correctly calculated 
-            Assert.That(renderTarget1.ViewWidth, Is.EqualTo(32 >> 1));
-            Assert.That(renderTarget1.ViewHeight, Is.EqualTo(32 >> 1));
+                    // Get a render target on the 2nd mipmap of this texture 3D
+                    var renderTarget1 = texture.ToTextureView(ViewType.Single, 0, 1);
 
-            device.Clear(renderTarget1, new Color4(0xFF000001));
-            var data2 = texture.GetData<byte>(0, 1);
-            Assert.That(data2.Length, Is.EqualTo(16*16*16));
-            Assert.That(data2[0], Is.EqualTo(1));
-            renderTarget1.Dispose();
+                    // Check that width/height is correctly calculated 
+                    Assert.That(renderTarget1.ViewWidth, Is.EqualTo(32 >> 1));
+                    Assert.That(renderTarget1.ViewHeight, Is.EqualTo(32 >> 1));
 
-            // Release the texture
-            texture.Dispose();
+                    device.Clear(renderTarget1, new Color4(0xFF000001));
+                    var data2 = texture.GetData<byte>(0, 1);
+                    Assert.That(data2.Length, Is.EqualTo(16 * 16 * 16));
+                    Assert.That(data2[0], Is.EqualTo(1));
+                    renderTarget1.Dispose();
 
-            device.Dispose();
+                    // Release the texture
+                    texture.Dispose();
+                });
         }
 
         [Test]
         public void TestDepthStencilBuffer()
         {
-            // Force to create a device
-            var device = GraphicsDevice.New(DeviceCreationFlags.Debug, GraphicsProfile.Level_10_0);
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            // Check that reaonly is not supported for depth stencil buffer
-            Assert.That(Texture.IsDepthStencilReadOnlySupported(device), Is.False);
+            RunDrawTest(
+                game =>
+                {
+                    var device = game.GraphicsDevice;
 
-            // Check texture creation with an array of data, with usage default to later allow SetData
-            var texture = Texture.New2D(device, 256, 256, PixelFormat.D32_Float, TextureFlags.DepthStencil);
+                    // Check that read-only is not supported for depth stencil buffer
+                    var supported = GraphicsDevice.Platform != GraphicsPlatform.Direct3D11;
+                    Assert.AreEqual(supported, Texture.IsDepthStencilReadOnlySupported(device));
 
-            // Clear the depth stencil buffer with a value of 0.5f
-            device.Clear(texture, DepthStencilClearOptions.DepthBuffer, 0.5f);
+                    // Check texture creation with an array of data, with usage default to later allow SetData
+                    var texture = Texture.New2D(device, 256, 256, PixelFormat.D32_Float, TextureFlags.DepthStencil);
 
-            var values = texture.GetData<float>();
-            Assert.That(values.Length, Is.EqualTo(256*256));
-            Assert.That(values[0], Is.EqualTo(0.5f));
+                    // Clear the depth stencil buffer with a value of 0.5f
+                    device.Clear(texture, DepthStencilClearOptions.DepthBuffer, 0.5f);
 
-            // Create a new copy of the depth stencil buffer
-            var textureCopy = texture.CreateDepthTextureCompatible();
+                    var values = texture.GetData<float>();
+                    Assert.That(values.Length, Is.EqualTo(256*256));
+                    Assert.That(values[0], Is.EqualTo(0.5f));
 
-            device.Copy(texture, textureCopy);
+                    // Create a new copy of the depth stencil buffer
+                    var textureCopy = texture.CreateDepthTextureCompatible();
 
-            values = textureCopy.GetData<float>();
-            Assert.That(values.Length, Is.EqualTo(256 * 256));
-            Assert.That(values[0], Is.EqualTo(0.5f));
+                    device.Copy(texture, textureCopy);
 
-            // Dispose the depth stencil buffer
-            textureCopy.Dispose();
+                    values = textureCopy.GetData<float>();
+                    Assert.That(values.Length, Is.EqualTo(256 * 256));
+                    Assert.That(values[0], Is.EqualTo(0.5f));
 
-            device.Dispose();
+                    // Dispose the depth stencil buffer
+                    textureCopy.Dispose();
+                }, 
+                GraphicsProfile.Level_10_0);
         }
 
         [Test]
         public void TestDepthStencilBufferWithNativeReadonly()
         {
-            //// Without shaders, it is difficult to check this method without accessing internals
-            //// Force to create a device
-            var device = GraphicsDevice.New(DeviceCreationFlags.None, GraphicsProfile.Level_11_0);
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            // Check that reaonly is not supported for depth stencil buffer
-            Assert.That(Texture.IsDepthStencilReadOnlySupported(device), Is.True);
+            RunDrawTest(
+                game =>
+                {
+                    var device = game.GraphicsDevice;
 
-            // Check texture creation with an array of data, with usage default to later allow SetData
-            var texture = Texture.New2D(device, 256, 256, PixelFormat.D32_Float, TextureFlags.ShaderResource | TextureFlags.DepthStencilReadOnly);
+                    //// Without shaders, it is difficult to check this method without accessing internals
 
-            // Clear the depth stencil buffer with a value of 0.5f, but the depth buffer is readonly
-            device.Clear(texture, DepthStencilClearOptions.DepthBuffer, 0.5f);
+                    // Check that read-only is not supported for depth stencil buffer
+                    Assert.That(Texture.IsDepthStencilReadOnlySupported(device), Is.True);
 
-            var values = texture.GetData<float>();
-            Assert.That(values.Length, Is.EqualTo(256 * 256));
-            Assert.That(values[0], Is.EqualTo(0.0f));
+                    // Check texture creation with an array of data, with usage default to later allow SetData
+                    var texture = Texture.New2D(device, 256, 256, PixelFormat.D32_Float, TextureFlags.ShaderResource | TextureFlags.DepthStencilReadOnly);
 
-            // Dispose the depth stencil buffer
-            texture.Dispose();
+                    // Clear the depth stencil buffer with a value of 0.5f, but the depth buffer is readonly
+                    device.Clear(texture, DepthStencilClearOptions.DepthBuffer, 0.5f);
 
-            device.Dispose();
+                    var values = texture.GetData<float>();
+                    Assert.That(values.Length, Is.EqualTo(256 * 256));
+                    Assert.That(values[0], Is.EqualTo(0.0f));
+
+                    // Dispose the depth stencil buffer
+                    texture.Dispose();
+                },
+                GraphicsProfile.Level_11_0);
         }
 
         /// <summary>
         /// Tests the load save.
         /// </summary>
         /// <remarks>
-        /// This test loads several images using <see cref="Texture.Load"/> (on the GPU) and save them to the disk using <see cref="Texture.Save"/>.
+        /// This test loads several images using <see cref="Texture.Load"/> (on the GPU) and save them to the disk using <see cref="Texture.Save(Stream,ImageFileType)"/>.
         /// The saved image is then compared with the original image to check that the whole chain (CPU -> GPU, GPU -> CPU) is passing correctly
         /// the textures.
         /// </remarks>
         [Test]
         public void TestLoadSave()
         {
-            // Change this to stress-test GPU textures
-            const int countTest = 1;
-
-            var files = new List<string>();
-            var device = GraphicsDevice.New();
-            
-            var dxsdkDir = Environment.GetEnvironmentVariable("DXSDK_DIR");
-            if (string.IsNullOrEmpty(dxsdkDir))
-                throw new NotSupportedException("Install DirectX SDK June 2010 to run this test (DXSDK_DIR env variable is missing).");
-
-            files.AddRange(Directory.EnumerateFiles(Path.Combine(dxsdkDir, @"Samples\Media"), "*.dds", SearchOption.AllDirectories));
-            files.AddRange(Directory.EnumerateFiles(Path.Combine(dxsdkDir, @"Samples\Media"), "*.jpg", SearchOption.AllDirectories));
-            files.AddRange(Directory.EnumerateFiles(Path.Combine(dxsdkDir, @"Samples\Media"), "*.bmp", SearchOption.AllDirectories));
-
-            var excludeList = new List<string>()
-                                  {
-                                      "RifleStock1Bump.dds"  // This file is in BC1 format but size is not a multiple of 4, so It can't be loaded as a texture, so we skip it.
-                                  };
-
-            var testMemoryBefore = GC.GetTotalMemory(true);
-            for (int i = 0; i < countTest; i++)
+            foreach (ImageFileType sourceFormat in Enum.GetValues(typeof(ImageFileType)))
             {
-                var clock = Stopwatch.StartNew();
-                foreach (var file in files)
-                {
-                    if (excludeList.Contains(Path.GetFileName(file), StringComparer.InvariantCultureIgnoreCase))
-                        continue;
-
-                    // Load an image from a file and dispose it.
-
-                    Texture texture;
-
-                    using (var fileStream = File.OpenRead(file))
-                        texture = Texture.Load(device, fileStream);
-
-                    // Copy GPU to GPU
-                    var texture2 = texture.Clone();
-                    device.Copy(texture, texture2);
-
-                    // dispose original
-                    texture.Dispose();
-                    texture = texture2;
-
-                    var localPath = Path.GetFileName(file);
-                    using (var outStream = File.OpenWrite(localPath))
-                        texture.Save(outStream, ImageFileType.Dds);
-                    texture.Dispose();
-
-                    using (var fileStream = File.OpenRead(file))
+                RunDrawTest(
+                    game =>
                     {
-                        using (var originalImage = Image.Load(fileStream))
+                        var intermediateFormat = ImageFileType.Paradox;
+
+                        if (sourceFormat == ImageFileType.Wmp) // no input image of this format.
+                            return;
+
+                        if (sourceFormat == ImageFileType.Wmp || sourceFormat == ImageFileType.Tga) // TODO remove this when Load/Save methods are implemented for those types.
+                            return;
+
+                        var device = game.GraphicsDevice;
+                        var fileName = sourceFormat.ToFileExtension().Substring(1) + "Image";
+                        var filePath = "ImageTypes/" + fileName;
+
+                        var testMemoryBefore = GC.GetTotalMemory(true);
+                        var clock = Stopwatch.StartNew();
+
+                        // Load an image from a file and dispose it.
+                        Texture texture;
+                        using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+                            texture = Texture.Load(device, inStream);
+
+                        // Copy GPU to GPU
+                        var texture2 = texture.Clone();
+                        device.Copy(texture, texture2);
+
+                        // dispose original
+                        texture.Dispose();
+                        texture = texture2;
+                            
+                        var tempStream = new MemoryStream();
+                        texture.Save(tempStream, intermediateFormat);
+                        tempStream.Position = 0;
+                        texture.Dispose();
+
+                        using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+                        using (var originalImage = Image.Load(inStream))
                         {
-                            using (var fileStream1 = File.OpenRead(localPath))
+                            using (var textureImage = Image.Load(tempStream))
                             {
-                                using (var textureImage = Image.Load(fileStream1))
-                                {
-                                    TestImage.CompareImage(originalImage, textureImage, file);
-                                }
+                                TestImage.CompareImage(originalImage, textureImage, false, false, fileName);
                             }
                         }
-                    }
-                }
-                var time = clock.ElapsedMilliseconds;
-                clock.Stop();
-                System.GC.Collect();
-                System.GC.WaitForPendingFinalizers();
-                var testMemoryAfter = GC.GetTotalMemory(true);
-                Console.WriteLine("[{0}] Test loading {1} GPU texture / saving to dds and compare with original Memory {2} delta bytes, in {3}ms", i, files.Count, testMemoryAfter - testMemoryBefore, time);
+                        tempStream.Dispose();
+                        var time = clock.ElapsedMilliseconds;
+                        clock.Stop();
+                        GC.Collect();
+                        GC.WaitForPendingFinalizers();
+                        var testMemoryAfter = GC.GetTotalMemory(true);
+                        Log.Info(@"Test loading {0} GPU texture / saving to {1} and compare with original Memory {2} delta bytes, in {3}ms", fileName, intermediateFormat, testMemoryAfter - testMemoryBefore, time);
+                    }, 
+                    GraphicsProfile.Level_9_1);
+            }
+        }
 
-                ////if ((i % 10) == 0 )
-                //{
-                //    Console.WriteLine("------------------------------------------------------");
-                //    Console.WriteLine("Lived Ojbects");
-                //    Console.WriteLine("------------------------------------------------------");
-                //    deviceDebug.ReportLiveDeviceObjects(ReportingLevel.Detail);
-                //}
+        [Test]
+        public void TestLoadDraw()
+        {
+            foreach (ImageFileType sourceFormat in Enum.GetValues(typeof(ImageFileType)))
+            {
+                if (sourceFormat == ImageFileType.Wmp) // no input image of this format.
+                    return;
+
+                if (sourceFormat == ImageFileType.Wmp || sourceFormat == ImageFileType.Tga) // TODO remove this when Load/Save methods are implemented for those types.
+                    return;
+
+                if (Platform.Type == PlatformType.Android && sourceFormat == ImageFileType.Tiff)// TODO remove this when Load/Save methods are implemented for this type.
+                    return;
+
+                RunDrawTest(
+                    (game, context, frame) =>
+                    {
+                        var device = game.GraphicsDevice;
+                        var fileName = sourceFormat.ToFileExtension().Substring(1) + "Image";
+                        var filePath = "ImageTypes/" + fileName;
+                        
+                        // Load an image from a file and dispose it.
+                        Texture texture;
+                        using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
+                            texture = Texture.Load(device, inStream, loadAsSRGB: true);
+                        
+                        game.GraphicsDevice.SetBlendState(game.GraphicsDevice.BlendStates.AlphaBlend);
+                        game.GraphicsDevice.DrawTexture(texture);
+                    },
+                    GraphicsProfile.Level_9_1,
+                    sourceFormat.ToString());
             }
         }
 
@@ -412,5 +462,3 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         }
     }
 }
-
-#endif
