@@ -9,6 +9,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
@@ -24,9 +25,10 @@ namespace SiliconStudio.Paradox.Assets.Sprite
     [CategoryOrder(10, "Parameters")]
     [CategoryOrder(50, "Atlas Packing")]
     [CategoryOrder(150, "Sprites")]
-    [AssetFormatVersion(2)]
+    [AssetFormatVersion(3)]
     [AssetUpgrader(0, 1, typeof(RenameImageGroupsUpgrader))]
     [AssetUpgrader(1, 2, typeof(RemoveMaxSizeUpgrader))]
+    [AssetUpgrader(2, 3, typeof(BorderSizeOrderUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
     [ObjectFactory(typeof(SpriteSheetFactory))]
@@ -43,6 +45,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         /// </summary>
         public SpriteSheetAsset()
         {
+            // FIXME: shouldn't this constructor be made private and move the call to the virtual method in the factory?
             SetDefaults();
         }
 
@@ -225,6 +228,26 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                 if (packing != null)
                 {
                     packing.AtlasMaximumSize = DynamicYamlEmpty.Default;
+                }
+            }
+        }
+        class BorderSizeOrderUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var sprites = asset.Sprites;
+                if (sprites == null)
+                    return;
+
+                foreach (var sprite in asset.Sprites)
+                {
+                    if (sprite.Borders == null)
+                    {
+                        continue;
+                    }
+                    var y = sprite.Borders.Y ?? 0.0f;
+                    sprite.Borders.Y = sprite.Borders.Z ?? 0.0f;
+                    sprite.Borders.Z = y;
                 }
             }
         }

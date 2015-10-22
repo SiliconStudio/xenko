@@ -4,6 +4,10 @@
 using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using SiliconStudio.Core.Diagnostics;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -22,6 +26,12 @@ namespace SiliconStudio.Paradox.Physics
         private readonly BulletSharp.DispatcherInfo dispatchInfo;
 
         private readonly bool canCcd;
+
+        public static ProfilingKey SimulationProfilingKey = new ProfilingKey("Physics.Simulation");
+        private ProfilingState simulationProfilingState;
+
+        public static ProfilingKey ContactsProfilingKey = new ProfilingKey("Physics.Contacts");
+        private ProfilingState contactsProfilingState;
 
         public bool ContinuousCollisionDetection
         {
@@ -71,6 +81,9 @@ namespace SiliconStudio.Paradox.Physics
                     flags = OnSimulationCreation();
                 }
             }
+
+            simulationProfilingState = Profiler.New(SimulationProfilingKey);
+            contactsProfilingState = Profiler.New(ContactsProfilingKey);
 
             MaxSubSteps = 1;
             FixedTimeStep = 1.0f / 60.0f;
@@ -129,14 +142,21 @@ namespace SiliconStudio.Paradox.Physics
             }
         }
 
-        private readonly Dictionary<BulletSharp.CollisionObject, Collider> aliveColliders = new Dictionary<BulletSharp.CollisionObject, Collider>();
-
         readonly List<ContactPoint> newContactsFastCache = new List<ContactPoint>();
         readonly List<ContactPoint> updatedContactsFastCache = new List<ContactPoint>();
         readonly List<ContactPoint> deletedContactsFastCache = new List<ContactPoint>();
+        readonly List<Collision> alivePairsFastCache = new List<Collision>();
+        readonly HashSet<Collision> processedPairsFastCache = new HashSet<Collision>();
+        readonly Queue<Collision> removedPairsFastCache = new Queue<Collision>();
+
+        readonly Queue<Collision> collisionsQueue = new Queue<Collision>();
+        readonly Queue<ContactPoint> contactsQueue = new Queue<ContactPoint>(); 
 
         internal void ProcessContacts()
         {
+            contactsProfilingState.Begin();
+
+            processedPairsFastCache.Clear();
             var numManifolds = collisionWorld.Dispatcher.NumManifolds;
             for (var i = 0; i < numManifolds; i++)
             {
@@ -144,15 +164,18 @@ namespace SiliconStudio.Paradox.Physics
                 var bodyA = manifold.Body0;
                 var bodyB = manifold.Body1;
 
-                Collider colA, colB;
-                if (!aliveColliders.TryGetValue(bodyA, out colA)) continue;
-                if (!aliveColliders.TryGetValue(bodyB, out colB)) continue;
+                var colA = (Collider)bodyA?.UserObject;
+                var colB = (Collider)bodyB?.UserObject;
 
-                if (colA == null || colB == null || !colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid) continue;
+                if (colA == null || colB == null)
+                {
+                    continue;
+                }
 
-                newContactsFastCache.Clear();
-                updatedContactsFastCache.Clear();
-                deletedContactsFastCache.Clear();
+                if (!colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid)
+                {
+                    continue;
+                }
 
                 //Pairs management
                 Collision pair = null;
@@ -166,22 +189,36 @@ namespace SiliconStudio.Paradox.Physics
                 }
 
                 var numContacts = manifold.NumContacts;
-                if (numContacts == 0 && pair == null)
+                if (numContacts == 0 && newPair)
                 {
                     continue;
                 }
 
-                if (pair == null)
+                newContactsFastCache.Clear();
+                updatedContactsFastCache.Clear();
+                deletedContactsFastCache.Clear();
+
+                if (newPair)
                 {
-                    pair = new Collision
+                    if (collisionsQueue.Count > 0)
                     {
-                        ColliderA = colA,
-                        ColliderB = colB,
-                        Contacts = new List<ContactPoint>()
-                    };
+                        pair = collisionsQueue.Dequeue();
+                    }
+                    else
+                    {
+                        pair = new Collision
+                        {
+                            Contacts = new List<ContactPoint>()
+                        };
+                    }
+
+                    pair.ColliderA = colA;
+                    pair.ColliderB = colB;
+                    pair.Contacts.Clear();
 
                     colA.Collisions.Add(pair);
                     colB.Collisions.Add(pair);
+                    alivePairsFastCache.Add(pair);
                 }
                 else
                 {
@@ -191,6 +228,8 @@ namespace SiliconStudio.Paradox.Physics
                     }
                 }
 
+                processedPairsFastCache.Add(pair);
+
                 for (var y = 0; y < numContacts; y++)
                 {
                     var cp = manifold.GetContactPoint(y);
@@ -199,23 +238,26 @@ namespace SiliconStudio.Paradox.Physics
                     var newContact = true;
                     foreach (var contact1 in pair.Contacts)
                     {
-                        if (cp != contact1.Manifold) continue;
+                        if (contact1.Handle.IsAllocated && cp.UserPersistentPtr != IntPtr.Zero && contact1.Handle.Target != GCHandle.FromIntPtr(cp.UserPersistentPtr).Target) continue;
                         contact = contact1;
                         newContact = false;
                         break;
                     }
 
-                    if (contact == null)
+                    contactsProfilingState.Mark();
+
+                    if (newContact)
                     {
-                        contact = new ContactPoint
-                        {
-                            Distance = cp.Distance,
-                            PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z),
-                            PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z),
-                            Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z),
-                            Pair = pair,
-                            Manifold = cp
-                        };
+                        contact = contactsQueue.Count > 0 ? contactsQueue.Dequeue() : new ContactPoint();
+
+                        contact.Distance = cp.Distance;
+                        contact.PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z);
+                        contact.PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z);
+                        contact.Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z);
+                        contact.Pair = pair;
+                        contact.Handle = GCHandle.Alloc(contact);
+
+                        cp.UserPersistentPtr = GCHandle.ToIntPtr(contact.Handle);
 
                         pair.Contacts.Add(contact);
                     }
@@ -290,13 +332,18 @@ namespace SiliconStudio.Paradox.Physics
                         contact.Pair.ContactEndedChannel.Send(contact);
                     }
 
-                    pair.Contacts.Remove(contact);                    
+                    pair.Contacts.Remove(contact);
+
+                    contact.Handle.Free();
+                    contactsQueue.Enqueue(contact);
                 }
 
                 if (pair.Contacts.Count == 0)
                 {
                     colA.Collisions.Remove(pair);
                     colB.Collisions.Remove(pair);
+                    alivePairsFastCache.Remove(pair);
+                    collisionsQueue.Enqueue(pair);
 
                     while (colA.PairEndedChannel.Balance < 0)
                     {
@@ -325,6 +372,69 @@ namespace SiliconStudio.Paradox.Physics
                     }
                 }
             }
+
+            //Sometimes narrowphase is skipped it seems and we might get some stuck pair!
+            foreach (var pair in alivePairsFastCache)
+            {
+                if (!processedPairsFastCache.Contains(pair))
+                {
+                    removedPairsFastCache.Enqueue(pair);
+                }
+            }
+
+            while (removedPairsFastCache.Count > 0)
+            {
+                var pair = removedPairsFastCache.Dequeue();
+
+                alivePairsFastCache.Remove(pair);
+
+                //this pair got removed!
+                foreach (var contactPoint in pair.Contacts)
+                {
+                    while (contactPoint.Pair.ContactEndedChannel.Balance < 0)
+                    {
+                        contactPoint.Pair.ContactEndedChannel.Send(contactPoint);
+                    }
+
+                    contactPoint.Handle.Free();
+                    contactsQueue.Enqueue(contactPoint);
+                }
+
+                var colA = pair.ColliderA;
+                var colB = pair.ColliderB;
+
+                colA.Collisions.Remove(pair);
+                colB.Collisions.Remove(pair);
+                collisionsQueue.Enqueue(pair);
+
+                while (colA.PairEndedChannel.Balance < 0)
+                {
+                    colA.PairEndedChannel.Send(pair);
+                }
+
+                while (colB.PairEndedChannel.Balance < 0)
+                {
+                    colB.PairEndedChannel.Send(pair);
+                }
+
+                if (colA.Collisions.Count == 0)
+                {
+                    while (colA.AllPairsEndedChannel.Balance < 0)
+                    {
+                        colA.AllPairsEndedChannel.Send(pair);
+                    }
+                }
+
+                if (colB.Collisions.Count == 0)
+                {
+                    while (colB.AllPairsEndedChannel.Balance < 0)
+                    {
+                        colB.AllPairsEndedChannel.Send(pair);
+                    }
+                }
+            }
+
+            contactsProfilingState.End();
         }
 
         /// <summary>
@@ -363,6 +473,8 @@ namespace SiliconStudio.Paradox.Physics
                 }
             };
 
+            collider.InternalCollider.UserObject = collider;
+
             collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
 
             if (shape.NeedsCustomCollisionCallback)
@@ -382,8 +494,10 @@ namespace SiliconStudio.Paradox.Physics
         {
             var rb = new RigidBody(collider);
 
-            rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero);
-            //rb.InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject; //already set if mass is 0 actually!
+            rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero)
+            {
+                UserObject = rb
+            };
 
             rb.InternalCollider = rb.InternalRigidBody;
 
@@ -419,6 +533,8 @@ namespace SiliconStudio.Paradox.Physics
                 }
             };
 
+            ch.InternalCollider.UserObject = ch;
+
             ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CharacterObject;
 
             if (collider.NeedsCustomCollisionCallback)
@@ -443,8 +559,6 @@ namespace SiliconStudio.Paradox.Physics
         {
             collisionWorld.AddCollisionObject(collider.InternalCollider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
 
-            aliveColliders.Add(collider.InternalCollider, collider);
-
             collider.Simulation = this;
         }
 
@@ -455,8 +569,6 @@ namespace SiliconStudio.Paradox.Physics
         public void RemoveCollider(Collider collider)
         {
             collisionWorld.RemoveCollisionObject(collider.InternalCollider);
-
-            aliveColliders.Remove(collider.InternalCollider);
 
             collider.Simulation = null;
         }
@@ -474,8 +586,6 @@ namespace SiliconStudio.Paradox.Physics
 
             discreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody, (short)group, (short)mask);
 
-            aliveColliders.Add(rigidBody.InternalRigidBody, rigidBody);
-
             rigidBody.Simulation = this;
         }
 
@@ -489,8 +599,6 @@ namespace SiliconStudio.Paradox.Physics
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.RemoveRigidBody(rigidBody.InternalRigidBody);
-
-            aliveColliders.Remove(rigidBody.InternalRigidBody);
 
             rigidBody.Simulation = null;
         }
@@ -511,8 +619,6 @@ namespace SiliconStudio.Paradox.Physics
             discreteDynamicsWorld.AddCollisionObject(collider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
             discreteDynamicsWorld.AddCharacter(action);
 
-            aliveColliders.Add(character.InternalCollider, character);
-
             character.Simulation = this;
         }
 
@@ -529,8 +635,6 @@ namespace SiliconStudio.Paradox.Physics
             var action = character.KinematicCharacter;
             discreteDynamicsWorld.RemoveCollisionObject(collider);
             discreteDynamicsWorld.RemoveCharacter(action);
-
-            aliveColliders.Remove(character.InternalCollider);
 
             character.Simulation = null;
         }
@@ -862,7 +966,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (rcb.CollisionObject == null) return result;
                 result.Succeeded = true;
-                result.Collider = aliveColliders[rcb.CollisionObject];
+                result.Collider = (Collider)rcb.CollisionObject.UserObject;
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
             }
@@ -891,7 +995,7 @@ namespace SiliconStudio.Paradox.Physics
                     var singleResult = new HitResult
                     {
                         Succeeded = true,
-                        Collider = aliveColliders[rcb.CollisionObjects[i]],
+                        Collider = (Collider)rcb.CollisionObjects[i].UserObject,
                         Normal = rcb.HitNormalWorld[i],
                         Point = rcb.HitPointWorld[i]
                     };
@@ -924,7 +1028,7 @@ namespace SiliconStudio.Paradox.Physics
 
                 if (rcb.HitCollisionObject == null) return result;
                 result.Succeeded = true;
-                result.Collider = aliveColliders[rcb.HitCollisionObject];
+                result.Collider = (Collider)rcb.HitCollisionObject.UserObject;
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
             }
@@ -957,7 +1061,7 @@ namespace SiliconStudio.Paradox.Physics
                     var singleResult = new HitResult
                     {
                         Succeeded = true,
-                        Collider = aliveColliders[rcb.CollisionObjects[i]],
+                        Collider = (Collider)rcb.CollisionObjects[i].UserObject,
                         Normal = rcb.HitNormalWorld[i],
                         Point = rcb.HitPointWorld[i]
                     };
@@ -1044,21 +1148,24 @@ namespace SiliconStudio.Paradox.Physics
             handler?.Invoke(this, e);
         }
 
+        readonly SimulationArgs simulationArgs = new SimulationArgs();
+       
         internal void Simulate(float deltaTime)
         {
             if (collisionWorld == null) return;
 
-            var args = new SimulationArgs
-            {
-                DeltaTime = deltaTime
-            };
+            simulationArgs.DeltaTime = deltaTime;
 
-            OnSimulationBegin(args);
+            OnSimulationBegin(simulationArgs);
+
+            simulationProfilingState.Begin();
 
             if (discreteDynamicsWorld != null) discreteDynamicsWorld.StepSimulation(deltaTime, MaxSubSteps, FixedTimeStep);
             else collisionWorld.PerformDiscreteCollisionDetection();
 
-            OnSimulationEnd(args);
+            simulationProfilingState.End();
+
+            OnSimulationEnd(simulationArgs);
         }
 
         /// <summary>
