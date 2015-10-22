@@ -23,11 +23,11 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
 using System;
 using System.Globalization;
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+#if !SILICONSTUDIO_UI_SDL2
 using System.Windows.Forms;
 #else
-using SharpDX.RawInput;
-using SharpDX.Windows;
+using SiliconStudio.Paradox.Graphics.SDL;
+using SDL2;
 #endif
 using System.Runtime.InteropServices;
 
@@ -140,19 +140,16 @@ namespace SiliconStudio.Paradox.Games
 
             if(isControlAlive)
             {
+#if !SILICONSTUDIO_UI_SDL2
                 if(UseApplicationDoEvents)
                 {
                     // Revert back to Application.DoEvents in order to support Application.AddMessageFilter
                     // Seems that DoEvents is compatible with Mono unlike Application.Run that was not running
                     // correctly.
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                     Application.DoEvents();
-#endif
                 }
                 else
                 {
-//                    var gameForm = Control as GameForm;
-
                     var localHandle = controlHandle;
                     if (localHandle != IntPtr.Zero)
                     {
@@ -180,9 +177,7 @@ namespace SiliconStudio.Paradox.Games
                             //{
                             //    continue;
                             //}
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                             if (!Application.FilterMessage(ref message))
-#endif
                             {
                                 Win32Native.TranslateMessage(ref msg);
                                 Win32Native.DispatchMessage(ref msg);
@@ -190,6 +185,13 @@ namespace SiliconStudio.Paradox.Games
                         }
                     }
                 }
+#else
+                SDL.SDL_Event e;
+                while (SDL.SDL_PollEvent(out e) != 0)
+                {
+                    Control.ProcessEvents(e);
+                }
+#endif
             }
 
             return isControlAlive || switchControl;
@@ -213,7 +215,7 @@ namespace SiliconStudio.Paradox.Games
         /// </summary>
         public delegate void RenderCallback();
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+#if !SILICONSTUDIO_UI_SDL2
         /// <summary>
         /// Runs the specified main loop in the specified context.
         /// </summary>
