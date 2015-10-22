@@ -68,6 +68,13 @@ namespace SiliconStudio.Paradox.Graphics
         internal object asyncCreationLockObject = new object();
         internal OpenTK.Graphics.IGraphicsContext deviceCreationContext;
 
+        private const GraphicsPlatform GraphicPlatform =
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+                                                            GraphicsPlatform.OpenGLES;
+#else
+                                                            GraphicsPlatform.OpenGL;
+#endif
+
 #if SILICONSTUDIO_PLATFORM_ANDROID
         // If context was set before Begin(), try to keep it after End()
         // (otherwise devices with no backbuffer flicker)
