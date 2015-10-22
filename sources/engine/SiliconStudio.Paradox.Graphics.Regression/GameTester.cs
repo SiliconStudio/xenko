@@ -84,6 +84,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 lock (AndroidGameTestActivity.GamesToStart)
                 {
                     AndroidGameTestActivity.GamesToStart.Enqueue(game);
+                    Logger.Info("Enqueued game '{0}'", game.Name);
                 }
                 AndroidGameTestActivity.Destroyed += gameFinishedCallback;
                 PlatformAndroid.Context.StartActivity(typeof (AndroidGameTestActivity));

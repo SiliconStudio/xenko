@@ -4,6 +4,7 @@
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Android.App;
 using Android.OS;
 using SiliconStudio.Paradox.Games;
@@ -23,12 +24,17 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         {
             base.OnCreate(bundle);
 
-            lock (GamesToStart)
+            if (Game == null) // application can be restarted
             {
-                Game = (Game)GamesToStart.Dequeue();
+                lock (GamesToStart)
+                {
+                    Game = (Game)GamesToStart.Dequeue();
+                    GameTester.Logger.Info("Dequeued game '{0}'", Game.Name);
+                }
+
+                Game.Exiting += Game_Exiting;
             }
 
-            Game.Exiting += Game_Exiting;
             Game.Run(GameContext);
         }
 
@@ -45,14 +51,12 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
         protected override void OnDestroy()
         {
-            if (Game != null)
-                Game.Dispose();
+            Game?.Dispose();
 
             base.OnDestroy();
 
             var handler = Destroyed;
-            if (handler != null)
-                handler(this, EventArgs.Empty);
+            handler?.Invoke(this, EventArgs.Empty);
         }
     }
 }
