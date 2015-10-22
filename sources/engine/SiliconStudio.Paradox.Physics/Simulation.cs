@@ -5,6 +5,9 @@ using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Diagnostics;
+using System.Collections.Concurrent;
+using System.Linq;
 
 namespace SiliconStudio.Paradox.Physics
 {
@@ -23,6 +26,12 @@ namespace SiliconStudio.Paradox.Physics
         private readonly BulletSharp.DispatcherInfo dispatchInfo;
 
         private readonly bool canCcd;
+
+        public static ProfilingKey SimulationProfilingKey = new ProfilingKey("Physics.Simulation");
+        private ProfilingState simulationProfilingState;
+
+        public static ProfilingKey ContactsProfilingKey = new ProfilingKey("Physics.Contacts");
+        private ProfilingState contactsProfilingState;
 
         public bool ContinuousCollisionDetection
         {
@@ -72,6 +81,9 @@ namespace SiliconStudio.Paradox.Physics
                     flags = OnSimulationCreation();
                 }
             }
+
+            simulationProfilingState = Profiler.New(SimulationProfilingKey);
+            contactsProfilingState = Profiler.New(ContactsProfilingKey);
 
             MaxSubSteps = 1;
             FixedTimeStep = 1.0f / 60.0f;
@@ -134,14 +146,16 @@ namespace SiliconStudio.Paradox.Physics
         readonly List<ContactPoint> updatedContactsFastCache = new List<ContactPoint>();
         readonly List<ContactPoint> deletedContactsFastCache = new List<ContactPoint>();
         readonly List<Collision> alivePairsFastCache = new List<Collision>();
-        readonly List<Collision> processedPairsFastCache = new List<Collision>();
-        readonly List<Collision> removedPairsFastCache = new List<Collision>();
+        readonly HashSet<Collision> processedPairsFastCache = new HashSet<Collision>();
+        readonly Queue<Collision> removedPairsFastCache = new Queue<Collision>();
 
         readonly Queue<Collision> collisionsQueue = new Queue<Collision>();
         readonly Queue<ContactPoint> contactsQueue = new Queue<ContactPoint>(); 
 
         internal void ProcessContacts()
         {
+            contactsProfilingState.Begin();
+
             processedPairsFastCache.Clear();
             var numManifolds = collisionWorld.Dispatcher.NumManifolds;
             for (var i = 0; i < numManifolds; i++)
@@ -229,6 +243,8 @@ namespace SiliconStudio.Paradox.Physics
                         newContact = false;
                         break;
                     }
+
+                    contactsProfilingState.Mark();
 
                     if (newContact)
                     {
@@ -357,64 +373,68 @@ namespace SiliconStudio.Paradox.Physics
                 }
             }
 
-            removedPairsFastCache.Clear();
             //Sometimes narrowphase is skipped it seems and we might get some stuck pair!
             foreach (var pair in alivePairsFastCache)
             {
                 if (!processedPairsFastCache.Contains(pair))
                 {
-                    //this pair got removed!
-                    foreach (var contactPoint in pair.Contacts)
-                    {
-                        while (contactPoint.Pair.ContactEndedChannel.Balance < 0)
-                        {
-                            contactPoint.Pair.ContactEndedChannel.Send(contactPoint);
-                        }
+                    removedPairsFastCache.Enqueue(pair);
+                }
+            }
 
-                        contactPoint.Handle.Free();
-                        contactsQueue.Enqueue(contactPoint);
+            while (removedPairsFastCache.Count > 0)
+            {
+                var pair = removedPairsFastCache.Dequeue();
+
+                alivePairsFastCache.Remove(pair);
+
+                //this pair got removed!
+                foreach (var contactPoint in pair.Contacts)
+                {
+                    while (contactPoint.Pair.ContactEndedChannel.Balance < 0)
+                    {
+                        contactPoint.Pair.ContactEndedChannel.Send(contactPoint);
                     }
 
-                    var colA = pair.ColliderA;
-                    var colB = pair.ColliderB;
+                    contactPoint.Handle.Free();
+                    contactsQueue.Enqueue(contactPoint);
+                }
 
-                    colA.Collisions.Remove(pair);
-                    colB.Collisions.Remove(pair);
-                    removedPairsFastCache.Add(pair);
-                    collisionsQueue.Enqueue(pair);
+                var colA = pair.ColliderA;
+                var colB = pair.ColliderB;
 
-                    while (colA.PairEndedChannel.Balance < 0)
+                colA.Collisions.Remove(pair);
+                colB.Collisions.Remove(pair);
+                collisionsQueue.Enqueue(pair);
+
+                while (colA.PairEndedChannel.Balance < 0)
+                {
+                    colA.PairEndedChannel.Send(pair);
+                }
+
+                while (colB.PairEndedChannel.Balance < 0)
+                {
+                    colB.PairEndedChannel.Send(pair);
+                }
+
+                if (colA.Collisions.Count == 0)
+                {
+                    while (colA.AllPairsEndedChannel.Balance < 0)
                     {
-                        colA.PairEndedChannel.Send(pair);
+                        colA.AllPairsEndedChannel.Send(pair);
                     }
+                }
 
-                    while (colB.PairEndedChannel.Balance < 0)
+                if (colB.Collisions.Count == 0)
+                {
+                    while (colB.AllPairsEndedChannel.Balance < 0)
                     {
-                        colB.PairEndedChannel.Send(pair);
-                    }
-
-                    if (colA.Collisions.Count == 0)
-                    {
-                        while (colA.AllPairsEndedChannel.Balance < 0)
-                        {
-                            colA.AllPairsEndedChannel.Send(pair);
-                        }
-                    }
-
-                    if (colB.Collisions.Count == 0)
-                    {
-                        while (colB.AllPairsEndedChannel.Balance < 0)
-                        {
-                            colB.AllPairsEndedChannel.Send(pair);
-                        }
+                        colB.AllPairsEndedChannel.Send(pair);
                     }
                 }
             }
 
-            foreach (var collision in removedPairsFastCache)
-            {
-                alivePairsFastCache.Remove(collision);
-            }
+            contactsProfilingState.End();
         }
 
         /// <summary>
@@ -1129,7 +1149,7 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         readonly SimulationArgs simulationArgs = new SimulationArgs();
-
+       
         internal void Simulate(float deltaTime)
         {
             if (collisionWorld == null) return;
@@ -1138,8 +1158,12 @@ namespace SiliconStudio.Paradox.Physics
 
             OnSimulationBegin(simulationArgs);
 
+            simulationProfilingState.Begin();
+
             if (discreteDynamicsWorld != null) discreteDynamicsWorld.StepSimulation(deltaTime, MaxSubSteps, FixedTimeStep);
             else collisionWorld.PerformDiscreteCollisionDetection();
+
+            simulationProfilingState.End();
 
             OnSimulationEnd(simulationArgs);
         }

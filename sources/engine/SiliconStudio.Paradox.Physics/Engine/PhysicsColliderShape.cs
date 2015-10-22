@@ -214,6 +214,10 @@ namespace SiliconStudio.Paradox.Physics
         public void Dispose()
         {
             if (Shape == null) return;
+
+            var compound = Shape.Parent;
+            compound?.RemoveChildShape(Shape);
+
             Shape.Dispose();
             Shape = null;
         }

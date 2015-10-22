@@ -8,6 +8,7 @@ using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Paradox.Rendering;
 
 namespace SiliconStudio.Paradox.Physics
@@ -29,9 +30,13 @@ namespace SiliconStudio.Paradox.Physics
         private Bullet2PhysicsSystem physicsSystem;
         private Simulation simulation;
 
+        public static ProfilingKey CharactersProfilingKey = new ProfilingKey(Simulation.SimulationProfilingKey, "Characters");
+        private ProfilingState charactersProfilingState;
+
         public PhysicsProcessor()
             : base(PhysicsComponent.Key, TransformComponent.Key)
         {
+            charactersProfilingState = Profiler.New(CharactersProfilingKey);
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -332,10 +337,12 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
         {
+            //this is mostly required for the game studio gizmos
             if (Simulation.DisableSimulation)
             {
                 foreach (var element in data.PhysicsComponent.Elements)
                 {
+                    if(element == null) continue;
                     var e = (PhysicsElementBase)element;
                     e.Data = data;
                 }
@@ -347,16 +354,19 @@ namespace SiliconStudio.Paradox.Physics
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
+                if (element == null) continue;
                 NewElement((PhysicsElementBase)element, data, entity);
             }
         }
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
+            //this is mostly required for the game studio gizmos
             if (Simulation.DisableSimulation)
             {
                 foreach (var element in data.PhysicsComponent.Elements)
                 {
+                    if (element == null) continue;
                     var e = (PhysicsElementBase)element;
                     e.Data = null;
                 }
@@ -365,6 +375,7 @@ namespace SiliconStudio.Paradox.Physics
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
+                if (element == null) continue;
                 var e = (PhysicsElementBase)element;
                 DeleteElement(e, true);
             }
@@ -505,6 +516,7 @@ namespace SiliconStudio.Paradox.Physics
 
         internal void UpdateCharacters()
         {
+            charactersProfilingState.Begin();
             //characters need manual updating
             foreach (var element in characters)
             {
@@ -512,7 +524,9 @@ namespace SiliconStudio.Paradox.Physics
 
                 var worldTransform = element.Collider.PhysicsWorldTransform;
                 element.UpdateTransformationComponent(ref worldTransform);
+                charactersProfilingState.Mark();
             }
+            charactersProfilingState.End();
         }
 
         public override void Draw(RenderContext context)
