@@ -4,9 +4,14 @@ using System;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
+
+using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
+using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Paradox.Rendering.Composers;
 
 namespace SiliconStudio.Paradox.Graphics.Regression
 {
@@ -70,13 +75,14 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         /// Save the image locally or on the server.
         /// </summary>
         /// <param name="textureToSave">The texture to save.</param>
-        public void SaveImage(Texture textureToSave)
+        /// <param name="testName">The name of the test corresponding to the image to save</param>
+        public void SaveImage(Texture textureToSave, string testName = null)
         {
             if (textureToSave == null)
                 return;
 
             TestGameLogger.Info(@"Saving non null image");
-            var testName = CurrentTestContext != null ? CurrentTestContext.Test.FullName : null;
+            testName = testName ?? CurrentTestContext?.Test.FullName;
             TestGameLogger.Info(@"saving remotely.");
             using (var image = textureToSave.GetDataAsImage())
             {
@@ -95,10 +101,10 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         /// <summary>
         /// Save the image locally or on the server.
         /// </summary>
-        public void SaveBackBuffer()
+        public void SaveBackBuffer(string testName = null)
         {
             TestGameLogger.Info(@"Saving the backbuffer");
-            SaveImage(GraphicsDevice.BackBuffer);
+            SaveImage(GraphicsDevice.BackBuffer, testName);
         }
 
         /// <summary>
@@ -158,19 +164,53 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             if (FrameGameSystem.AllTestsCompleted)
                 Exit();
             else if (FrameGameSystem.TakeSnapshot)
-                SaveBackBuffer();
+                SaveBackBuffer(FrameGameSystem.TestName);
         }
-        protected void RunDrawTest(Action<Game> action, bool takeSnapshot = false)
+
+        protected void RunDrawTest(Action<Game> action, GraphicsProfile? profileOverride = null, bool takeSnapshot = false)
         {
             // create the game instance
             var typeGame = GetType();
             var game = (GraphicsTestBase)Activator.CreateInstance(typeGame);
+            if (profileOverride.HasValue)
+                game.GraphicsDeviceManager.PreferredGraphicsProfile = new[] { profileOverride.Value };
 
             // register the tests.
             game.FrameGameSystem.IsUnityTestFeeding = true;
             game.FrameGameSystem.Draw(() => action(game));
             if (takeSnapshot)
                 game.FrameGameSystem.TakeScreenshot();
+
+            RunGameTest(game);
+        }
+        protected void RunDrawTest(Action<Game, RenderContext, RenderFrame> action, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
+        {
+            // create the game instance
+            var typeGame = GetType();
+            var game = (GraphicsTestBase)Activator.CreateInstance(typeGame);
+            if (profileOverride.HasValue)
+                game.GraphicsDeviceManager.PreferredGraphicsProfile = new[] { profileOverride.Value };
+
+            // register the tests.
+            game.FrameGameSystem.IsUnityTestFeeding = true;
+            game.FrameGameSystem.TestName = TestContext.CurrentContext.Test.FullName+testName;
+            if (takeSnapshot)
+                game.FrameGameSystem.TakeScreenshot();
+
+            // add the render callback
+            var graphicsCompositor = new SceneGraphicsCompositorLayers
+            {
+                Master =
+                {
+                    Renderers =
+                    {
+                        new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
+                        new SceneDelegateRenderer((context, frame) => action(game, context, frame)),
+                    }
+                }
+            };
+            var scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+            game.SceneSystem.SceneInstance = new SceneInstance(Services, scene);
 
             RunGameTest(game);
         }

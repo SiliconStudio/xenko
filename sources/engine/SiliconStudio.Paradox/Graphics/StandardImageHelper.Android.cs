@@ -6,7 +6,6 @@ using System.IO;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using Android.Graphics;
-using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Paradox.Graphics
 {

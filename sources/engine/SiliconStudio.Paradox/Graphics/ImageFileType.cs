@@ -21,12 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
 namespace SiliconStudio.Paradox.Graphics
 {
     /// <summary>
-    /// Image file format used by <see cref="Image.Save(string,SiliconStudio.Paradox.Graphics.ImageFileType)"/>
+    /// Image file format used by <see cref="Image.Save"/>
     /// </summary>
     public enum ImageFileType
     {

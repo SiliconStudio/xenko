@@ -48,6 +48,8 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         /// </summary>
         public bool AllTestsCompleted => frameCount > lastFrame;
 
+        public string TestName;
+
         /// <summary>
         /// Flag stating that a screenshot should be taken.
         /// </summary>
