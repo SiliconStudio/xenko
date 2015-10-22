@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-
+#if SILICONSTUDIO_UI_SDL2
 using System;
 
 namespace SiliconStudio.Paradox.Graphics.SDL
@@ -402,6 +402,7 @@ namespace SiliconStudio.Paradox.Graphics.SDL
                 // Performance improvement to avoid being called a second time by the GC.
             GC.SuppressFinalize(this);
         }
-        #endregion
+#endregion
     }
 }
+#endif
