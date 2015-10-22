@@ -131,6 +131,13 @@
   <PropertyGroup Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
     <SiliconStudioRuntimeDefines>SILICONSTUDIO_RUNTIME_CORECLR</SiliconStudioRuntimeDefines>
   </PropertyGroup>
+
+  <!-- 
+    Settings SiliconStudioUI specific
+  -->
+  <PropertyGroup Condition=" '$(SiliconStudioUI)' == 'SDL2' ">
+    <SiliconStudioUIDefines>SILICONSTUDIO_UI_SDL2</SiliconStudioUIDefines>
+  </PropertyGroup>
  
   <!-- 
     Global Defines
@@ -154,6 +161,7 @@
 
   <PropertyGroup>
     <DefineConstants Condition="'$(SiliconStudioRuntimeDefines)' != ''">$(DefineConstants);$(SiliconStudioRuntimeDefines)</DefineConstants>
+    <DefineConstants Condition="'$(SiliconStudioUIDefines)' != ''">$(DefineConstants);$(SiliconStudioUIDefines)</DefineConstants>
   </PropertyGroup>
   
   <!-- Signing -->
