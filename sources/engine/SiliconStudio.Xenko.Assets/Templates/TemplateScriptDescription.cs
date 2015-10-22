@@ -1,7 +1,7 @@
 ﻿using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.Templates
+namespace SiliconStudio.Xenko.Assets.Templates
 {
     /// <summary>
     /// A template for using an existing Script code file as a template, expecting a .cs file to be accessible 
