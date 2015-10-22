@@ -24,13 +24,13 @@
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>    
 	<SiliconStudioPlatform><#= Properties.CurrentPlatform #></SiliconStudioPlatform>
     <SiliconStudioBuildProfile><#= Properties.CurrentPlatformName #></SiliconStudioBuildProfile>
-	<SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)<#= Properties.ParadoxSdkRelativeDir #></SiliconStudioParadoxDir>
+	<SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)<#= Properties.XenkoSdkRelativeDir #></SiliconStudioXenkoDir>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 <#@ include file="..\Common.PropertyGroups.targets.t4" #>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <SDKReference Label="Paradox.DoNotSync" Include="Microsoft.VCLibs, Version=12.0">
+    <SDKReference Label="Xenko.DoNotSync" Include="Microsoft.VCLibs, Version=12.0">
       <Name>Microsoft Visual C++ 2013 Runtime Package for Windows</Name>
     </SDKReference>
   </ItemGroup>
@@ -38,31 +38,31 @@
 	<Compile Include="TestClass1.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile  Label="Paradox.DoNotSync" Include="App.xaml.cs">
+    <Compile  Label="Xenko.DoNotSync" Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
     </Compile>
-    <Compile Label="Paradox.DoNotSync" Include="<#= ProjectName #>MainPage.xaml.cs">
+    <Compile Label="Xenko.DoNotSync" Include="<#= ProjectName #>MainPage.xaml.cs">
       <DependentUpon><#= ProjectName #>MainPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <AppxManifest Label="Paradox.DoNotSync" Include="PackageWindowsStore.appxmanifest">
+    <AppxManifest Label="Xenko.DoNotSync" Include="PackageWindowsStore.appxmanifest">
       <SubType>Designer</SubType>
     </AppxManifest>
-    <Content Label="Paradox.DoNotSync" Include="AssetsWindowsStore\Logo.scale-100.png" />
-    <Content Label="Paradox.DoNotSync" Include="AssetsWindowsStore\SmallLogo.scale-180.png" />
-    <Content Label="Paradox.DoNotSync" Include="AssetsWindowsStore\SplashScreen.scale-100.png" />
+    <Content Label="Xenko.DoNotSync" Include="AssetsWindowsStore\Logo.scale-100.png" />
+    <Content Label="Xenko.DoNotSync" Include="AssetsWindowsStore\SmallLogo.scale-180.png" />
+    <Content Label="Xenko.DoNotSync" Include="AssetsWindowsStore\SplashScreen.scale-100.png" />
 
-    <None Label="Paradox.DoNotSync" Include="<#= ProjectName #>.WindowsStore_TemporaryKey.pfx" />
+    <None Label="Xenko.DoNotSync" Include="<#= ProjectName #>.WindowsStore_TemporaryKey.pfx" />
 
   </ItemGroup>
   <ItemGroup>
-    <ApplicationDefinition Label="Paradox.DoNotSync" Include="App.xaml">
+    <ApplicationDefinition Label="Xenko.DoNotSync" Include="App.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Page Label="Paradox.DoNotSync" Include="<#= ProjectName #>MainPage.xaml">
+    <Page Label="Xenko.DoNotSync" Include="<#= ProjectName #>MainPage.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

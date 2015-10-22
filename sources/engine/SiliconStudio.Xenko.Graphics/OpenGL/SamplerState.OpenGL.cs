@@ -1,15 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
 using System;
 using SiliconStudio.Core.Mathematics;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public partial class SamplerState
     {
@@ -19,7 +19,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private TextureMinFilter minFilter;
         private TextureMagFilter magFilter;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private TextureMinFilter minFilterNoMipmap;
 #endif
 
@@ -63,7 +63,7 @@ namespace SiliconStudio.Paradox.Graphics
                     throw new NotImplementedException();
             }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             // On OpenGL ES, we need to choose the appropriate min filter ourself if the texture doesn't contain mipmaps (done at PreDraw)
             minFilterNoMipmap = minFilter;
             if (minFilterNoMipmap == TextureMinFilter.LinearMipmapLinear)
@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal void Apply(bool hasMipmap, SamplerState oldSamplerState, TextureTarget target)
         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             // TODO: support texture array, 3d and cube
             if (!GraphicsDevice.IsOpenGLES2)
 #endif
@@ -97,7 +97,7 @@ namespace SiliconStudio.Paradox.Graphics
                     GL.TexParameter(target, TextureParameterName.TextureCompareFunc, (int)compareFunc);
             }
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (borderColor != oldSamplerState.borderColor)
                 GL.TexParameter(target, TextureParameterName.TextureBorderColor, borderColor);
             if (Description.MipMapLevelOfDetailBias != oldSamplerState.Description.MipMapLevelOfDetailBias)

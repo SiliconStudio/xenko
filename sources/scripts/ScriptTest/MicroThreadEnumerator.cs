@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Games.MicroThreading;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Games.MicroThreading;
 
-using SiliconStudio.Paradox.Games.ViewModel;
+using SiliconStudio.Xenko.Games.ViewModel;
 
 namespace ScriptTest
 {

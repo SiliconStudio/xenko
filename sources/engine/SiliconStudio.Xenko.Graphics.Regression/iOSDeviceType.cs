@@ -5,7 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using ObjCRuntime;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public class iOSDeviceType
     {

@@ -4,9 +4,9 @@
 using System;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A dynamic effect instance updated by <see cref="DynamicEffectCompiler"/>.

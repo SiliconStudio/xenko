@@ -3,7 +3,7 @@
 using System.Diagnostics;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// Description of a constant buffer.

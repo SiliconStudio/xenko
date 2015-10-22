@@ -77,7 +77,7 @@ using System;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     internal class DDS
     {

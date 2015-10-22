@@ -5,7 +5,7 @@ using System.Linq;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Rendering.Data
+namespace SiliconStudio.Xenko.Rendering.Data
 {
     public partial class ParameterCollectionSerializer
     {

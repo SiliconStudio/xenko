@@ -19,7 +19,7 @@
 //
 using System.Windows.Media;
 
-namespace SiliconStudio.Paradox.VisualStudio.Classifiers
+namespace SiliconStudio.Xenko.VisualStudio.Classifiers
 {
     public struct ClassificationColor
     {

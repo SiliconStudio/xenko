@@ -18,11 +18,11 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.VisualStudio;
-using SiliconStudio.Paradox.Assets;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Assets;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.ProjectTemplating;
 
-namespace SiliconStudio.Paradox.ProjectGenerator
+namespace SiliconStudio.Xenko.ProjectGenerator
 {
     class Program
     {
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             var p = new OptionSet
                 {
                     "Copyright (C) 2011-2013 Silicon Studio Corporation. All Rights Reserved",
-                    "Paradox Project Generator Tool - Version: "
+                    "Xenko Project Generator Tool - Version: "
                     +
                     String.Format(
                         "{0}.{1}.{2}",
@@ -77,7 +77,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
                     return 0;
                 }
 
-                var templateFolder = @"..\..\sources\tools\SiliconStudio.Paradox.ProjectGenerator\Templates";
+                var templateFolder = @"..\..\sources\tools\SiliconStudio.Xenko.ProjectGenerator\Templates";
 
                 switch (commandArgs[0])
                 {
@@ -95,7 +95,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
 
                         GenerateUnitTestProject(
                             outputDirectory,
-                            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine(templateFolder, @"Paradox.UnitTests\Paradox.UnitTests.ttproj")),
+                            Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), Path.Combine(templateFolder, @"Xenko.UnitTests\Xenko.UnitTests.ttproj")),
                             projectName);
                         break;
                 }
@@ -115,9 +115,9 @@ namespace SiliconStudio.Paradox.ProjectGenerator
         {
             var projectTemplate = ProjectTemplate.Load(templateFile);
 
-            // Force reference to Paradox.Assets (to have acess to SolutionPlatform)
+            // Force reference to Xenko.Assets (to have acess to SolutionPlatform)
             projectTemplate.Assemblies.Add(typeof(GraphicsProfile).Assembly.FullName);
-            projectTemplate.Assemblies.Add(typeof(ParadoxConfig).Assembly.FullName);
+            projectTemplate.Assemblies.Add(typeof(XenkoConfig).Assembly.FullName);
 
             var options = new Dictionary<string, object>();
 
@@ -143,19 +143,19 @@ namespace SiliconStudio.Paradox.ProjectGenerator
             var previousCurrent = session.CurrentPackage;
             session.CurrentPackage = package;
 
-            // Compute Paradox Sdk relative path
-            // We are supposed to be in standard output binary folder, so Paradox root should be at ..\..
-            var paradoxPath = UDirectory.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new UDirectory(@"..\.."));
-            var paradoxRelativePath = new UDirectory(paradoxPath)
+            // Compute Xenko Sdk relative path
+            // We are supposed to be in standard output binary folder, so Xenko root should be at ..\..
+            var xenkoPath = UDirectory.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), new UDirectory(@"..\.."));
+            var xenkoRelativePath = new UDirectory(xenkoPath)
                 .MakeRelative(outputDirectory)
                 .ToString()
                 .Replace('/', '\\');
-            paradoxRelativePath = paradoxRelativePath.TrimEnd('\\');
+            xenkoRelativePath = xenkoRelativePath.TrimEnd('\\');
 
             options["Namespace"] = name;
             options["Package"] = package;
             options["Platforms"] = new List<SolutionPlatform>(AssetRegistry.SupportedPlatforms);
-            options["ParadoxSdkRelativeDir"] = paradoxRelativePath;
+            options["XenkoSdkRelativeDir"] = xenkoRelativePath;
 
             // Generate project template
             var projectGuid = Guid.NewGuid();
@@ -332,13 +332,13 @@ namespace SiliconStudio.Paradox.ProjectGenerator
 
                 bool shouldKeep = false;
 
-                // Check ParadoxSupportedPlatforms
-                var paradoxBuildTagsNode = doc.XPathSelectElement("/x:Project/x:PropertyGroup/x:ParadoxBuildTags", mgr);
-                if (paradoxBuildTagsNode != null)
+                // Check XenkoSupportedPlatforms
+                var xenkoBuildTagsNode = doc.XPathSelectElement("/x:Project/x:PropertyGroup/x:XenkoBuildTags", mgr);
+                if (xenkoBuildTagsNode != null)
                 {
-                    var paradoxBuildTags = paradoxBuildTagsNode.Value;
-                    if (paradoxBuildTags == "*" ||
-                        paradoxBuildTags.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Contains(platform))
+                    var xenkoBuildTags = xenkoBuildTagsNode.Value;
+                    if (xenkoBuildTags == "*" ||
+                        xenkoBuildTags.Split(new[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Contains(platform))
                         shouldKeep = true;
                 }
 

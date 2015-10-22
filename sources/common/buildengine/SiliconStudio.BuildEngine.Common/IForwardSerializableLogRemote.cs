@@ -10,7 +10,7 @@ namespace SiliconStudio.BuildEngine
     public interface IForwardSerializableLogRemote
     {
         [OperationContract(IsOneWay = true)]
-        [UseParadoxDataContractSerializer]
+        [UseXenkoDataContractSerializer]
         void ForwardSerializableLog(SerializableLogMessage message);
     }
 }

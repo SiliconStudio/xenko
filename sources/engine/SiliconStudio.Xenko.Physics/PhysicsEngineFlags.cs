@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     [Flags]
     public enum PhysicsEngineFlags

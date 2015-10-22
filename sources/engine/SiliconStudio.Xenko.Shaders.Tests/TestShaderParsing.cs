@@ -6,12 +6,12 @@ using NUnit.Framework;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Parser;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Shaders.Parser;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 
-namespace SiliconStudio.Paradox.Engine.Tests
+namespace SiliconStudio.Xenko.Engine.Tests
 {
     [TestFixture]
     class TestShaderParsing
@@ -41,12 +41,12 @@ namespace SiliconStudio.Paradox.Engine.Tests
             var moduleMixin = GetAnalyzedMixin("BasicMixin");
             var mixin = moduleMixin.Mixin;
             
-            Assert.AreEqual(1, mixin.ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(ParadoxStorageQualifier.Stage)));
-            Assert.AreEqual(1, mixin.ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(ParadoxStorageQualifier.Stream)));
+            Assert.AreEqual(1, mixin.ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(XenkoStorageQualifier.Stage)));
+            Assert.AreEqual(1, mixin.ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(XenkoStorageQualifier.Stream)));
             Assert.AreEqual(3, mixin.ParsingInfo.ClassReferences.VariablesReferences.Count);
-            Assert.AreEqual(0, mixin.ParsingInfo.ClassReferences.MethodsReferences.Count(x => x.Key.Qualifiers.Contains(ParadoxStorageQualifier.Clone)));
+            Assert.AreEqual(0, mixin.ParsingInfo.ClassReferences.MethodsReferences.Count(x => x.Key.Qualifiers.Contains(XenkoStorageQualifier.Clone)));
             Assert.AreEqual(0, mixin.BaseMixins.Count);
-            Assert.AreEqual(1, mixin.ParsingInfo.ClassReferences.MethodsReferences.Count(x => x.Key.Qualifiers.Contains(ParadoxStorageQualifier.Stage)));
+            Assert.AreEqual(1, mixin.ParsingInfo.ClassReferences.MethodsReferences.Count(x => x.Key.Qualifiers.Contains(XenkoStorageQualifier.Stage)));
             Assert.AreEqual(3, mixin.ParsingInfo.ClassReferences.MethodsReferences.Count);
         }
         
@@ -132,7 +132,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             Assert.IsNotNull(moduleMixin.Mixin);
             Assert.IsNotNull(moduleMixinTest.Mixin);
 
-            Assert.AreEqual(1, moduleMixinTest.Mixin.ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(ParadoxStorageQualifier.Extern)));
+            Assert.AreEqual(1, moduleMixinTest.Mixin.ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(XenkoStorageQualifier.Extern)));
             var externVar = moduleMixinTest.Mixin.ParsingInfo.ClassReferences.VariablesReferences.Select(x => x.Key).FirstOrDefault();
 
             var externDef = moduleMixin.Mixin.Shader;
@@ -164,10 +164,10 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
             Assert.IsFalse(mcm.ErrorWarningLog.HasErrors);
 
-            Assert.AreEqual(2, mcm.Mixins["DeepExternTest"].ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(ParadoxStorageQualifier.Extern)));
+            Assert.AreEqual(2, mcm.Mixins["DeepExternTest"].ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(XenkoStorageQualifier.Extern)));
             var externVar = mcm.Mixins["DeepExternTest"].ParsingInfo.ClassReferences.VariablesReferences.Select(x => x.Key).FirstOrDefault();
 
-            Assert.AreEqual(1, mcm.Mixins["DeepExtern"].ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(ParadoxStorageQualifier.Extern)));
+            Assert.AreEqual(1, mcm.Mixins["DeepExtern"].ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(XenkoStorageQualifier.Extern)));
             var externVar2 = mcm.Mixins["DeepExtern"].ParsingInfo.ClassReferences.VariablesReferences.Select(x => x.Key).FirstOrDefault();
 
             var externDef = mcm.Mixins["ExternMixin"].Shader;
@@ -317,7 +317,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
         public void TestTessellation() // test tessellation shader, patchstream
         {
             var moduleMixin = GetAnalyzedMixin("TessellationTest");
-            Assert.AreEqual(2, moduleMixin.Mixin.ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream)));
+            Assert.AreEqual(2, moduleMixin.Mixin.ParsingInfo.ClassReferences.VariablesReferences.Count(x => x.Key.Qualifiers.Contains(XenkoStorageQualifier.PatchStream)));
         }
         
         [Test]
@@ -348,7 +348,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             mcmCyclic.Run();
 
             Assert.AreEqual(1, mcmCyclic.ErrorWarningLog.Messages.Count);
-            Assert.That(mcmCyclic.ErrorWarningLog.Messages[0].Code, Is.EqualTo(ParadoxMessageCode.ErrorCyclicDependency.Code));
+            Assert.That(mcmCyclic.ErrorWarningLog.Messages[0].Code, Is.EqualTo(XenkoMessageCode.ErrorCyclicDependency.Code));
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -361,7 +361,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             mcmMissing.Run();
 
             Assert.AreEqual(1, mcmMissing.ErrorWarningLog.Messages.Count);
-            Assert.That(mcmMissing.ErrorWarningLog.Messages[0].Code, Is.EqualTo(ParadoxMessageCode.ErrorDependencyNotInModule.Code));
+            Assert.That(mcmMissing.ErrorWarningLog.Messages[0].Code, Is.EqualTo(XenkoMessageCode.ErrorDependencyNotInModule.Code));
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -375,7 +375,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             mcmOverride.Run();
 
             Assert.AreEqual(1, mcmOverride.ErrorWarningLog.Messages.Count);
-            Assert.That(mcmOverride.ErrorWarningLog.Messages[0].Code, Is.EqualTo(ParadoxMessageCode.ErrorMissingOverride.Code));
+            Assert.That(mcmOverride.ErrorWarningLog.Messages[0].Code, Is.EqualTo(XenkoMessageCode.ErrorMissingOverride.Code));
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -390,7 +390,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             mcmAmbiguous.Run();
 
             Assert.AreEqual(1, mcmAmbiguous.ErrorWarningLog.Messages.Count);
-            Assert.That(mcmAmbiguous.ErrorWarningLog.Messages[0].Code, Is.EqualTo(ParadoxMessageCode.ErrorVariableNameAmbiguity.Code));
+            Assert.That(mcmAmbiguous.ErrorWarningLog.Messages[0].Code, Is.EqualTo(XenkoMessageCode.ErrorVariableNameAmbiguity.Code));
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -454,7 +454,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
             mcmStream.Run();
 
             Assert.AreEqual(1, mcmStream.ErrorWarningLog.Messages.Count);
-            Assert.That(mcmStream.ErrorWarningLog.Messages[0].Code, Is.EqualTo(ParadoxMessageCode.ErrorInOutStream.Code));
+            Assert.That(mcmStream.ErrorWarningLog.Messages[0].Code, Is.EqualTo(XenkoMessageCode.ErrorInOutStream.Code));
         }
 
         [Test]
@@ -469,7 +469,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
                     "MacroTestChild"
                 };
 
-            var lib = new ParadoxShaderLibrary(shaderClassSourceList);
+            var lib = new XenkoShaderLibrary(shaderClassSourceList);
             lib.LoadClass = shaderLoader.LoadClassSource;
 
             Assert.AreEqual(4, lib.AvailableShaders.Count);
@@ -558,7 +558,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
         {
             //VirtualFileSystem.MountFileSystem("/assets/shaders", "../../../../../shaders");
             VirtualFileSystem.MountFileSystem("/assets/shaders", "C:\\Users\\aurelien.serandour\\Desktop\\Shaders");
-            foreach (var file in VirtualFileSystem.ListFiles("/assets/shaders", "*.pdxsl", VirtualSearchOption.TopDirectoryOnly).Result)
+            foreach (var file in VirtualFileSystem.ListFiles("/assets/shaders", "*.xksl", VirtualSearchOption.TopDirectoryOnly).Result)
             {
                 var fileParts = file.Split('.', '/');
                 var className = fileParts[fileParts.Length - 2];
@@ -580,7 +580,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
         {
             VirtualFileSystem.MountFileSystem("/assets/shaders", "../../../../../shaders");
             //VirtualFileSystem.MountFileSystem("/assets/shaders", "C:\\Users\\aurelien.serandour\\Desktop\\Shaders\\Maya");
-            foreach (var file in VirtualFileSystem.ListFiles("/assets/shaders", "*.pdxsl", VirtualSearchOption.TopDirectoryOnly).Result)
+            foreach (var file in VirtualFileSystem.ListFiles("/assets/shaders", "*.xksl", VirtualSearchOption.TopDirectoryOnly).Result)
             {
                 var fileParts = file.Split('.', '/');
                 var className = fileParts[fileParts.Length - 2];
@@ -597,7 +597,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
         {
             var source = new ShaderMixinSource();
             source.Mixins.Add(new ShaderClassSource(mixinName));
-            shaderMixinParser.Parse(source, new Paradox.Shaders.ShaderMacro[0]);
+            shaderMixinParser.Parse(source, new Xenko.Shaders.ShaderMacro[0]);
 
             var moduleMixin = shaderMixinParser.GetMixin(mixinName);
             Assert.IsNotNull(moduleMixin);

@@ -24,7 +24,7 @@ using System;
 using System.IO;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// An unmanaged buffer of pixels.

@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Rendering.Sprites
+namespace SiliconStudio.Xenko.Rendering.Sprites
 {
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.

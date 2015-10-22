@@ -5,7 +5,7 @@ using System;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     internal class ImageSerializer : ContentSerializerBase<Image>
     {
@@ -18,7 +18,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
             else
             {
-                textureData.Save(stream.NativeStream, ImageFileType.Paradox);
+                textureData.Save(stream.NativeStream, ImageFileType.Xenko);
             }
         }
 

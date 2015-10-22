@@ -22,7 +22,7 @@
 
   <!--The Commands section is where we the commands, menus and menu groups are defined.
       This section uses a Guid to identify the package that provides the command defined inside it. -->
-  <Commands package="guidParadox_VisualStudio_PackagePkg">
+  <Commands package="guidXenko_VisualStudio_PackagePkg">
     <!-- Inside this section we have different sub-sections: one for the menus, another  
     for the menu groups, one for the buttons (the actual commands), one for the combos 
     and the last one for the bitmaps used. Each element is identified by a command id that  
@@ -31,40 +31,40 @@
     group; your package should define its own command set in order to avoid collisions  
     with command ids defined by other packages. -->
     <Menus>
-      <!--<Menu guid="guidParadox_VisualStudio_PackageCmdSet" id="ParadoxTool" type="Toolbar" >
+      <!--<Menu guid="guidXenko_VisualStudio_PackageCmdSet" id="XenkoTool" type="Toolbar" >
         <CommandFlag>DefaultDocked</CommandFlag>
         <Strings>
-          <ButtonText>Paradox Toolbar</ButtonText>
-          <CommandName>Paradox Toolbar</CommandName>
+          <ButtonText>Xenko Toolbar</ButtonText>
+          <CommandName>Xenko Toolbar</CommandName>
         </Strings>
       </Menu>-->
-      <Menu guid="guidParadox_VisualStudio_PackageCmdSet" id="ParadoxTopMenu" priority="0x0800" type="Menu" >
+      <Menu guid="guidXenko_VisualStudio_PackageCmdSet" id="XenkoTopMenu" priority="0x0800" type="Menu" >
         <Parent guid="guidSHLMainMenu" id="IDG_VS_MM_TOOLSADDINS" />
         <Strings>
-          <ButtonText>Paradox</ButtonText>
-          <CommandName>Paradox</CommandName>
+          <ButtonText>Xenko</ButtonText>
+          <CommandName>Xenko</CommandName>
         </Strings>
       </Menu>
     </Menus>
 
     <Buttons>
-      <Button guid="guidParadox_VisualStudio_PackageCmdSet" id="cmdParadoxCleanIntermediateAssetsSolutionCommand" priority="0x0100" type="Button">
-        <Parent guid="guidParadox_VisualStudio_PackageCmdSet" id="ParadoxTopMenuGroup" />
+      <Button guid="guidXenko_VisualStudio_PackageCmdSet" id="cmdXenkoCleanIntermediateAssetsSolutionCommand" priority="0x0100" type="Button">
+        <Parent guid="guidXenko_VisualStudio_PackageCmdSet" id="XenkoTopMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <ButtonText>Clean intermediate assets for Solution</ButtonText>
-          <CommandName>cmdParadoxCleanIntermediateAssetsSolutionCommand</CommandName>
+          <CommandName>cmdXenkoCleanIntermediateAssetsSolutionCommand</CommandName>
         </Strings>
       </Button>
 
-      <Button guid="guidParadox_VisualStudio_PackageCmdSet" id="cmdParadoxCleanIntermediateAssetsProjectCommand" priority="0x0110" type="Button">
-        <Parent guid="guidParadox_VisualStudio_PackageCmdSet" id="ParadoxTopMenuGroup" />
+      <Button guid="guidXenko_VisualStudio_PackageCmdSet" id="cmdXenkoCleanIntermediateAssetsProjectCommand" priority="0x0110" type="Button">
+        <Parent guid="guidXenko_VisualStudio_PackageCmdSet" id="XenkoTopMenuGroup" />
         <CommandFlag>DynamicVisibility</CommandFlag>
         <CommandFlag>TextChanges</CommandFlag>
         <Strings>
           <ButtonText>Clean intermediate assets for ...</ButtonText>
-          <CommandName>cmdParadoxCleanIntermediateAssetsProjectCommand</CommandName>
+          <CommandName>cmdXenkoCleanIntermediateAssetsProjectCommand</CommandName>
         </Strings>
       </Button>
     </Buttons>
@@ -75,8 +75,8 @@
          must be a menu. -->
     <Groups>
 
-      <Group guid="guidParadox_VisualStudio_PackageCmdSet" id="ParadoxTopMenuGroup" priority="0x0800">
-        <Parent guid="guidParadox_VisualStudio_PackageCmdSet" id="ParadoxTopMenu" />
+      <Group guid="guidXenko_VisualStudio_PackageCmdSet" id="XenkoTopMenuGroup" priority="0x0800">
+        <Parent guid="guidXenko_VisualStudio_PackageCmdSet" id="XenkoTopMenu" />
       </Group>
 
     </Groups>
@@ -98,15 +98,15 @@
 
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidParadox_VisualStudio_PackagePkg" value="{c26b1ce9-bbab-497b-98ad-67e93a2037d1}" />
+    <GuidSymbol name="guidXenko_VisualStudio_PackagePkg" value="{c26b1ce9-bbab-497b-98ad-67e93a2037d1}" />
     
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidParadox_VisualStudio_PackageCmdSet" value="{12225fdc-b608-43d7-9c75-e8b845984494}">
-      <IDSymbol name="ParadoxTool" value="0x1000" />
-      <IDSymbol name="ParadoxTopMenuGroup" value="0x1021" />
-      <IDSymbol name="ParadoxTopMenu" value="0x1040" />
-      <IDSymbol name="cmdParadoxCleanIntermediateAssetsSolutionCommand" value="0x103" />
-      <IDSymbol name="cmdParadoxCleanIntermediateAssetsProjectCommand" value="0x104" />
+    <GuidSymbol name="guidXenko_VisualStudio_PackageCmdSet" value="{12225fdc-b608-43d7-9c75-e8b845984494}">
+      <IDSymbol name="XenkoTool" value="0x1000" />
+      <IDSymbol name="XenkoTopMenuGroup" value="0x1021" />
+      <IDSymbol name="XenkoTopMenu" value="0x1040" />
+      <IDSymbol name="cmdXenkoCleanIntermediateAssetsSolutionCommand" value="0x103" />
+      <IDSymbol name="cmdXenkoCleanIntermediateAssetsProjectCommand" value="0x104" />
     </GuidSymbol>
     
     

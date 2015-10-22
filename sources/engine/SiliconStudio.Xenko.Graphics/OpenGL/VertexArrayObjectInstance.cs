@@ -1,15 +1,15 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using System.Collections.Generic;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     internal class VertexArrayObjectInstance : IDisposable
     {
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (vaoId != 0)
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (graphicsDevice.IsOpenGLES2)
                 {
                     if (graphicsDevice.HasVAO)
@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Graphics
                 vertexAttribs[index] = attrib;
                 vertexAttribs[index].Index = attribIndex;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 hasDynamicStagingVB |= attrib.VertexBufferId == 0;
 #endif
 
@@ -97,7 +97,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             if (graphicsDevice.HasVAO)
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (hasDynamicStagingVB)
                 {
                     if (graphicsDevice.IsOpenGLES2)
@@ -110,7 +110,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
                     if (vaoId == 0)
                     {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                         if (graphicsDevice.IsOpenGLES2)
                         {
                             OpenTK.Graphics.ES20.GL.Oes.GenVertexArrays(1, out vaoId);
@@ -129,7 +129,7 @@ namespace SiliconStudio.Paradox.Graphics
                     }
                     else
                     {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                         if (graphicsDevice.IsOpenGLES2)
                             OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(vaoId);
                         else
@@ -205,7 +205,7 @@ namespace SiliconStudio.Paradox.Graphics
                     GL.EnableVertexAttribArray(vertexAttrib.Index);
                 }
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (vertexAttrib.IsInteger && !vertexAttrib.Normalized)
                     GL.VertexAttribIPointer(vertexAttrib.Index, vertexAttrib.Size, (VertexAttribIPointerType)vertexAttrib.Type, vertexAttrib.Stride, vertexAttrib.Offset);
                 else

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Games.ViewModel;
-using Paradox.Framework.Shaders;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Games.ViewModel;
+using Xenko.Framework.Shaders;
 
 namespace ScriptTest
 {

@@ -5,9 +5,9 @@ using System;
 namespace SiliconStudio.Core.MicroThreading
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class)]
-    public class ParadoxScriptAttribute : Attribute
+    public class XenkoScriptAttribute : Attribute
     {
-        public ParadoxScriptAttribute(ScriptFlags flags = ScriptFlags.None)
+        public XenkoScriptAttribute(ScriptFlags flags = ScriptFlags.None)
         {
             this.Flags = flags;
         }

@@ -5,12 +5,12 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Audio.Wave;
+using SiliconStudio.Xenko.Audio.Wave;
 
 using SharpDX.XAudio2;
 using SharpDX.X3DAudio;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     public partial class SoundEffectInstance
     {

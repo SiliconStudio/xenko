@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// A <see cref="GraphicsResource"/> allocator tracking usage reference and allowing to recycle unused resources based on a recycle policy. 

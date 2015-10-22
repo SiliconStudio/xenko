@@ -5,10 +5,10 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Input;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     public class BasicTest : AudioTestGame
     {

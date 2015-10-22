@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class RigidBody : Collider
     {
@@ -16,13 +16,13 @@ namespace SiliconStudio.Paradox.Physics
 
         internal SetWorldTransformDelegate SetWorldTransformCallback;
 
-        internal ParadoxMotionState MotionState;
+        internal XenkoMotionState MotionState;
 
         internal RigidBody(ColliderShape collider)
             : base(collider)
         {
             LinkedConstraints = new List<Constraint>();
-            MotionState = new ParadoxMotionState(this);
+            MotionState = new XenkoMotionState(this);
         }
 
         /// <summary>

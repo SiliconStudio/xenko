@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 
-namespace SiliconStudio.Paradox.Input.Tests
+namespace SiliconStudio.Xenko.Input.Tests
 {
     class AdvancedInputTest : GraphicsTestBase
     {

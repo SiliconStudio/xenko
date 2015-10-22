@@ -4,9 +4,9 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.UI.Renderers
+namespace SiliconStudio.Xenko.UI.Renderers
 {
     /// <summary>
     /// Base class for UI element renderers

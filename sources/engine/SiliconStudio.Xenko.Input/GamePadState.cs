@@ -5,7 +5,7 @@ using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// Describes the state of a gamepad.

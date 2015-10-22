@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// The core interface of a renderer.

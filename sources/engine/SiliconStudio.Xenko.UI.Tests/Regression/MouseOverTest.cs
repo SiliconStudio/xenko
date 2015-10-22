@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.UI.Controls;
-using SiliconStudio.Paradox.UI.Panels;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Panels;
 
-namespace SiliconStudio.Paradox.UI.Tests.Regression
+namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
     /// <summary>
     /// Test the mouse over event/property/designs
@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            var background = new Entity { new BackgroundComponent { Texture = Asset.Load<Texture>("ParadoxBackground") } };
+            var background = new Entity { new BackgroundComponent { Texture = Asset.Load<Texture>("XenkoBackground") } };
             Scene.AddChild(background);
 
             button1 = new Button { Content = new TextBlock { Text = "text block button 1", Font = Asset.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true } };

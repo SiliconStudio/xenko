@@ -35,12 +35,12 @@ using Java.IO;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Graphics.Regression;
 
 using Console = System.Console;
 using File = System.IO.File;
 using StringWriter = System.IO.StringWriter;
-using TextUI = SiliconStudio.Paradox.Graphics.Regression.TextUI;
+using TextUI = SiliconStudio.Xenko.Graphics.Regression.TextUI;
 
 namespace NUnitLite.Tests
 {
@@ -97,11 +97,11 @@ namespace NUnitLite.Tests
             if (PlatformAndroid.Context == null)
                 PlatformAndroid.Context = this;
 
-            var serverAddresses = Intent.GetStringExtra(TestRunner.ParadoxServerIp);
+            var serverAddresses = Intent.GetStringExtra(TestRunner.XenkoServerIp);
             if (serverAddresses == null)
             {
                 // No explicit intent, switch to UI activity
-                StartActivity(typeof(ParadoxTestSuiteActivity));
+                StartActivity(typeof(XenkoTestSuiteActivity));
                 return;
             }
 
@@ -110,16 +110,16 @@ namespace NUnitLite.Tests
 
         private void RunTests()
         {
-            var serverAddresses = Intent.GetStringExtra(TestRunner.ParadoxServerIp);
-            var serverPort = Int32.Parse(Intent.GetStringExtra(TestRunner.ParadoxServerPort) ?? "8080");
-            var buildNumber = Int32.Parse(Intent.GetStringExtra(TestRunner.ParadoxBuildNumber) ?? "-1");
-            var branchName = Intent.GetStringExtra(TestRunner.ParadoxBranchName) ?? "";
+            var serverAddresses = Intent.GetStringExtra(TestRunner.XenkoServerIp);
+            var serverPort = Int32.Parse(Intent.GetStringExtra(TestRunner.XenkoServerPort) ?? "8080");
+            var buildNumber = Int32.Parse(Intent.GetStringExtra(TestRunner.XenkoBuildNumber) ?? "-1");
+            var branchName = Intent.GetStringExtra(TestRunner.XenkoBranchName) ?? "";
 
             // Remove extra (if activity is recreated)
-            Intent.RemoveExtra(TestRunner.ParadoxServerIp);
-            Intent.RemoveExtra(TestRunner.ParadoxServerPort);
-            Intent.RemoveExtra(TestRunner.ParadoxBuildNumber);
-            Intent.RemoveExtra(TestRunner.ParadoxBranchName);
+            Intent.RemoveExtra(TestRunner.XenkoServerIp);
+            Intent.RemoveExtra(TestRunner.XenkoServerPort);
+            Intent.RemoveExtra(TestRunner.XenkoBuildNumber);
+            Intent.RemoveExtra(TestRunner.XenkoBranchName);
 
 
             Logger.Info(@"*******************************************************************************************************************************");
@@ -195,7 +195,7 @@ namespace NUnitLite.Tests
     }
 
     [Activity]
-    public class ParadoxTestSuiteActivity : RunnerActivity
+    public class XenkoTestSuiteActivity : RunnerActivity
     {
         protected override void OnCreate(Bundle bundle)
         {

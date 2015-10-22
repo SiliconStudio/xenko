@@ -4,13 +4,13 @@
 using BulletSharp;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using System;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class CapsuleColliderShape : ColliderShape
     {

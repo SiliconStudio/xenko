@@ -4,10 +4,10 @@ using System;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Input;
 
-namespace SiliconStudio.Paradox.Engine.Tests
+namespace SiliconStudio.Xenko.Engine.Tests
 {
     /// <summary>
     /// The default script for the scene editor camera.

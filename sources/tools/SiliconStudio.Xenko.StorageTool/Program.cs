@@ -7,7 +7,7 @@ using System.Security.Principal;
 using Microsoft.Win32;
 using Mono.Options;
 
-namespace SiliconStudio.Paradox.StorageTool
+namespace SiliconStudio.Xenko.StorageTool
 {
     /// <summary>
     /// Tool to manage storage/bundles.
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.StorageTool
                         //[HKEY_CURRENT_USER\Software\Classes\.bundle]
                         //@="bundlefile"
                         //[HKEY_CURRENT_USER\Software\Classes\bundlefile]
-                        //@="Paradox Bundle file Extension"
+                        //@="Xenko Bundle file Extension"
                         //[HKEY_CURRENT_USER\Software\Classes\bundlefile\shell\View\command]
                         //@="StorageTool.exe %1"
 
@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.StorageTool
                         bundleKey.SetValue(null, "bundlefile");
 
                         var bundlefileKey = classesKey.CreateSubKey("bundlefile");
-                        bundlefileKey.SetValue(null, "Paradox Bundle file Extension");
+                        bundlefileKey.SetValue(null, "Xenko Bundle file Extension");
 
                         var commandKey = bundlefileKey.CreateSubKey("shell").CreateSubKey("View").CreateSubKey("command");
                         commandKey.SetValue(null, Assembly.GetExecutingAssembly().Location + " view %1");

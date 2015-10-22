@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Paradox.Assets.Textures
+namespace SiliconStudio.Xenko.Assets.Textures
 {
     public class TextureImporter : AssetImporterBase
     {

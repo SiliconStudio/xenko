@@ -3,7 +3,7 @@
 
 using System.Runtime.CompilerServices;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Extensions for <see cref="EntityGroupMask"/>

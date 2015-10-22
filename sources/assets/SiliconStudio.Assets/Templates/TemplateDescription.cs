@@ -19,7 +19,7 @@ namespace SiliconStudio.Assets.Templates
         /// <summary>
         /// The file extension used when loading/saving this template description.
         /// </summary>
-        public const string FileExtension = ".pdxtpl";
+        public const string FileExtension = ".xktpl";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TemplateDescription"/> class.

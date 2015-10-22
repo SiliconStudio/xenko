@@ -6,9 +6,9 @@ using System.Linq;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Visitor;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class ParadoxReplaceAppend : ShaderVisitor
+    internal class XenkoReplaceAppend : ShaderVisitor
     {
         #region Private members
 
@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         #region Constructor
 
-        public ParadoxReplaceAppend(HashSet<MethodInvocationExpression> appendList, List<Statement> output, VariableReferenceExpression vre)
+        public XenkoReplaceAppend(HashSet<MethodInvocationExpression> appendList, List<Statement> output, VariableReferenceExpression vre)
             : base(false, false)
         {
             appendMethodsList = appendList;

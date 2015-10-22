@@ -6,9 +6,9 @@ using Foundation;
 using UIKit;
 using ObjCRuntime;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
-    public class ParadoxGameController : UIViewController
+    public class XenkoGameController : UIViewController
     {
         public delegate void OnTouchesBegan(NSSet touchesSet, UIEvent evt);
         public delegate void OnTouchesMoved(NSSet touchesSet, UIEvent evt);

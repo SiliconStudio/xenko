@@ -4,13 +4,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.Rendering.Data;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics.Data;
 
-namespace SiliconStudio.Paradox.Extensions
+namespace SiliconStudio.Xenko.Extensions
 {
     public static class MergeExtensions
     {

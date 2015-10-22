@@ -1,15 +1,15 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL && SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
 using System;
 using OpenTK.Input;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 using GameWindow = OpenTK.GameWindow;
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManager
     {

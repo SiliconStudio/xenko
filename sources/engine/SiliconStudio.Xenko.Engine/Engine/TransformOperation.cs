@@ -1,4 +1,4 @@
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Performs some work after world matrix has been updated.

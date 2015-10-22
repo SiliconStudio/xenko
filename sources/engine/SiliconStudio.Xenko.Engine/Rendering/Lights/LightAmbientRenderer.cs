@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering.Shadows;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering.Shadows;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
     /// Light renderer for <see cref="LightAmbient"/>.

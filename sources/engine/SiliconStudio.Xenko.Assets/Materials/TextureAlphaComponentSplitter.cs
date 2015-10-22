@@ -6,15 +6,15 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets.Effect;
-using SiliconStudio.Paradox.Assets.Materials.Nodes;
-using SiliconStudio.Paradox.Assets.Materials.Processor.Visitors;
-using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Assets.Effect;
+using SiliconStudio.Xenko.Assets.Materials.Nodes;
+using SiliconStudio.Xenko.Assets.Materials.Processor.Visitors;
+using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.TextureConverter;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Xenko.Assets.Materials
 {
     /// <summary>
     /// Utility class to split this material texture containing alpha into two texture materials: one containing the rgb component and one containing only the alpha component.
@@ -140,14 +140,14 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
                 // save the alpha component
                 texTool.Compress(alphaImage, outputFormat);
-                using (var outputImage = texTool.ConvertToParadoxImage(alphaImage))
+                using (var outputImage = texTool.ConvertToXenkoImage(alphaImage))
                     assetManager.Save(alphaTextureURL, outputImage.ToSerializableVersion());
             }
 
             // save the color component
             texTool.Decompress(texImage, texImage.Format.IsSRgb());
             texTool.Compress(texImage, outputFormat);
-            using (var outputImage = texTool.ConvertToParadoxImage(texImage))
+            using (var outputImage = texTool.ConvertToXenkoImage(texImage))
                 assetManager.Save(colorTextureURL, outputImage.ToSerializableVersion());
         }
     }

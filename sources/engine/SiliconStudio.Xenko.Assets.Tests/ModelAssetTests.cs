@@ -14,11 +14,11 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Assets.Entities;
-using SiliconStudio.Paradox.Assets.Model;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.Assets.Model;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Assets.Tests
+namespace SiliconStudio.Xenko.Assets.Tests
 {
     [TestFixture]
     public class ModelAssetTests
@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 AssetManager.GetFileProvider = () => databaseFileProvider;
 
                 ((EntityAsset)assetItem.Asset).Hierarchy.Entities[0].Entity.Components.RemoveWhere(x => x.Key != TransformComponent.Key);
-                //((EntityAsset)assetItem.Asset).Data.Entities[1].Components.RemoveWhere(x => x.Key != SiliconStudio.Paradox.Engine.TransformComponent.Key);
+                //((EntityAsset)assetItem.Asset).Data.Entities[1].Components.RemoveWhere(x => x.Key != SiliconStudio.Xenko.Engine.TransformComponent.Key);
 
                 var assetManager = new AssetManager();
                 assetManager.Save("Entity1", ((EntityAsset)assetItem.Asset).Hierarchy);

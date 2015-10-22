@@ -35,7 +35,7 @@ using MonoTouch.Dialog;
 
 using Mono.Options;
 
-namespace SiliconStudio.Paradox.UnitTesting.UI {
+namespace SiliconStudio.Xenko.UnitTesting.UI {
 	
 	public class TouchOptions {
 

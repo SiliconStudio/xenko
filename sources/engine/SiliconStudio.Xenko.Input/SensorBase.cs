@@ -5,7 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// The base class for a device sensor.

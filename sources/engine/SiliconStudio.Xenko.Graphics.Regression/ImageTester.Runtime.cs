@@ -11,7 +11,7 @@ using Windows.Networking.Sockets;
 using Windows.Networking;
 using Windows.Storage.Streams;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public static partial class ImageTester
     {
@@ -55,7 +55,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             try
             {
                 imageComparisonServer = new StreamSocket();
-                await imageComparisonServer.ConnectAsync(new HostName(ParadoxImageServerHost), ParadoxImageServerPort.ToString());
+                await imageComparisonServer.ConnectAsync(new HostName(XenkoImageServerHost), XenkoImageServerPort.ToString());
 			
                 // Send initial parameters
                 using (var memoryStream = new MemoryStream())

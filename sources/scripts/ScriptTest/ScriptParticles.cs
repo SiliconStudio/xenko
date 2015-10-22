@@ -5,17 +5,17 @@ using System;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Games.Mathematics;
-using Paradox.Framework.Shaders;
-using Vector2 = SiliconStudio.Paradox.Games.Mathematics.Vector2;
-using Vector3 = SiliconStudio.Paradox.Games.Mathematics.Vector3;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Games.Mathematics;
+using Xenko.Framework.Shaders;
+using Vector2 = SiliconStudio.Xenko.Games.Mathematics.Vector2;
+using Vector3 = SiliconStudio.Xenko.Games.Mathematics.Vector3;
 
 namespace ScriptTest
 {

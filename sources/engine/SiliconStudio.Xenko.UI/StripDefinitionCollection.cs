@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Collections;
 
-namespace SiliconStudio.Paradox.UI
+namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
     /// A collection of strip definitions

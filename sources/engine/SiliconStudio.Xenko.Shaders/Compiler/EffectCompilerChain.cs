@@ -7,7 +7,7 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler
+namespace SiliconStudio.Xenko.Shaders.Compiler
 {
     /// <summary>
     /// Helper class that delegates actual compilation to another <see cref="IEffectCompiler"/>.

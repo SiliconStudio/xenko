@@ -1,6 +1,6 @@
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Gives the ability to control how parent matrix is computed in a <see cref="TransformComponent"/>.

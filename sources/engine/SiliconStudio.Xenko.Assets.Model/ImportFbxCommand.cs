@@ -6,9 +6,9 @@ using System.IO;
 using System.Linq;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Xenko.Animations;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     [CommandDependsOn(typeof(Importer.FBX.MeshConverter))]
     [Description("Import FBX")]

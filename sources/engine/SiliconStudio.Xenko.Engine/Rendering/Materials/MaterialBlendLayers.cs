@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// A composition material to blend different materials in a stack based manner.

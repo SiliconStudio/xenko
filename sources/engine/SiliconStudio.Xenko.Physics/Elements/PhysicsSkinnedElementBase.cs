@@ -1,7 +1,7 @@
 using System;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("PhysicsSkinnedElementBase")]
     [Display(40, "PhysicsSkinnedElementBase")]

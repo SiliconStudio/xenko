@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     /// <summary>
     /// Tests for <see cref="AudioListener"/>.

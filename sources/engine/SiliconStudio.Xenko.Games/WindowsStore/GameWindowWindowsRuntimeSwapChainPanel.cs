@@ -24,7 +24,7 @@
 
 using System;
 using Windows.Graphics.Display;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
 using Windows.Foundation;
 using Windows.UI.ViewManagement;
@@ -33,7 +33,7 @@ using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Core;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// An abstract window.

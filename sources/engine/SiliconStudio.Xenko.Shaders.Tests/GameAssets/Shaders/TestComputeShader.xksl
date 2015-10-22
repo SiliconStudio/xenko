@@ -22,7 +22,7 @@ class TestComputeShader
     stage stream uint  ThreadGroupIndex;
 
     cbuffer PerDispatch {
-        //[Link("Paradox.Effects.ComputeShaderPluginKeys.ThreadGroupCount")]
+        //[Link("Xenko.Effects.ComputeShaderPluginKeys.ThreadGroupCount")]
         stage uint3 ThreadGroupCountGlobal;
     };
 

@@ -5,7 +5,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// Utility class to calculate 1D Gaussian filter used for separable 2D Gaussian filters.

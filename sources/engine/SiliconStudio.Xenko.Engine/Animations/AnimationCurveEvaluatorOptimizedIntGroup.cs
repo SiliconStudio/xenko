@@ -1,6 +1,6 @@
 using System;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     public class AnimationCurveEvaluatorOptimizedIntGroup : AnimationCurveEvaluatorOptimizedGroup<int>
     {

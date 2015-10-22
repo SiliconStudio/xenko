@@ -1,9 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using System.Collections.Generic;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #else
 using OpenTK.Graphics.OpenGL;
@@ -11,7 +11,7 @@ using OpenTK.Graphics.OpenGL;
 using SiliconStudio.Core;
 using SiliconStudio.Core.ReferenceCounting;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public partial class VertexArrayObject
     {
@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.Graphics
                     var attributeName = "a_" + vertexElement.SemanticName + vertexElement.SemanticIndex;
 
                     var vertexElementFormat = ConvertVertexElementFormat(vertexElement.Format);
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     IntPtr bufferStart = vertexBuffer.ResourceId == 0
                         ? vertexBuffer.StagingData
                         : (IntPtr)vertexBufferBindings[i].Offset;
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 indexBufferId = indexBufferBinding.Buffer.resourceId;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (GraphicsDevice.IsOpenGLES2 && indexBufferBinding.Is32Bit)
                     throw new PlatformNotSupportedException("32 bits index buffer are not supported on OpenGL ES 2.0");
                 indexBufferOffset = (indexBufferId == 0 ? indexBufferBinding.Buffer.StagingData : IntPtr.Zero) +
@@ -261,7 +261,7 @@ namespace SiliconStudio.Paradox.Graphics
                     return new ElementFormat(VertexAttribPointerType.Short, 2, true);
                 case PixelFormat.R16G16B16A16_SNorm:
                     return new ElementFormat(VertexAttribPointerType.Short, 4, true);
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // HALF_FLOAT for OpenGL ES 2.x (OES extension)
                 case PixelFormat.R16G16B16A16_Float:
                     return new ElementFormat((VertexAttribPointerType)0x8D61, 4); // HALF_FLOAT_OES

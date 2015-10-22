@@ -3,7 +3,7 @@
 
 using System;
 
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.TextureConverter
 {

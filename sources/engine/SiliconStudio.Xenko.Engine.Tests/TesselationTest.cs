@@ -8,15 +8,15 @@ using NUnit.Framework;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering.Lights;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.ProceduralModels;
-using SiliconStudio.Paradox.Rendering.Tessellation;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Rendering.Lights;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.ProceduralModels;
+using SiliconStudio.Xenko.Rendering.Tessellation;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Input;
 
-namespace SiliconStudio.Paradox.Engine.Tests
+namespace SiliconStudio.Xenko.Engine.Tests
 {
     [ReferenceToEffects]
     public class TesselationTest : EngineTestBase

@@ -79,7 +79,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Provides method to instantiate an image 1D/2D/3D supporting TextureArray and mipmaps on the CPU or to load/save an image from the disk.
@@ -700,7 +700,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         static Image()
         {
-            Register(ImageFileType.Paradox, ImageHelper.LoadFromMemory, ImageHelper.SaveFromMemory);
+            Register(ImageFileType.Xenko, ImageHelper.LoadFromMemory, ImageHelper.SaveFromMemory);
             Register(ImageFileType.Dds, DDSHelper.LoadFromDDSMemory, DDSHelper.SaveToDDSStream);
             Register(ImageFileType.Gif, StandardImageHelper.LoadFromMemory, StandardImageHelper.SaveGifFromMemory);
             Register(ImageFileType.Tiff,StandardImageHelper.LoadFromMemory, StandardImageHelper.SaveTiffFromMemory);

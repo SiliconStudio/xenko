@@ -6,9 +6,9 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public class TestSpriteFontAlignment : TestGameBase
     {

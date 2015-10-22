@@ -4,10 +4,10 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Input;
-using TextAlignment = SiliconStudio.Paradox.Graphics.TextAlignment;
+using SiliconStudio.Xenko.Input;
+using TextAlignment = SiliconStudio.Xenko.Graphics.TextAlignment;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     public partial class EditText
     {

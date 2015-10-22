@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Assets.Textures.Packing
+namespace SiliconStudio.Xenko.Assets.Textures.Packing
 {
     /// <summary>
     /// TexturePacker class for packing several textures, using MaxRects <see cref="MaxRectanglesBinPack"/>, into one or more texture atlases

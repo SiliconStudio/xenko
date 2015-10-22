@@ -10,7 +10,7 @@
     <RootNamespace>SiliconStudio.ActionStack</RootNamespace>
     <AssemblyName>SiliconStudio.ActionStack</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
   </PropertyGroup>
   <ItemGroup>

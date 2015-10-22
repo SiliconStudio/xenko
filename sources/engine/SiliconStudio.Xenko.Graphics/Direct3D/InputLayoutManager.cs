@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
 using System.Collections.Generic;
 using SharpDX;
 using SharpDX.Direct3D11;
 using ComponentBase = SiliconStudio.Core.ComponentBase;
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     internal class InputLayoutManager : ComponentBase
     {

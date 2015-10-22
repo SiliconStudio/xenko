@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering.ComputeEffect
+namespace SiliconStudio.Xenko.Rendering.ComputeEffect
 {
     public class ComputeEffectShaderKeys
     {

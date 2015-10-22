@@ -1,11 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Paradox.Effects.Renderers;
-using SiliconStudio.Paradox.Effects.Shadows;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Effects.Renderers;
+using SiliconStudio.Xenko.Effects.Shadows;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Processors
+namespace SiliconStudio.Xenko.Effects.Processors
 {
     public class LightingProcessorHelpers
     {

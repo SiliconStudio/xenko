@@ -26,9 +26,9 @@ using System.Collections.Generic;
 using System.IO;
 
 using SharpDX.Direct2D1;
-using SiliconStudio.Paradox.Graphics.Font;
+using SiliconStudio.Xenko.Graphics.Font;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     using System.Drawing;
     using System.Drawing.Imaging;
@@ -103,13 +103,13 @@ namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
                 FontSimulations fontSimulations;
                 switch (options.Style)
                 {
-                    case Paradox.Graphics.Font.FontStyle.Regular:
+                    case Xenko.Graphics.Font.FontStyle.Regular:
                         fontSimulations = FontSimulations.None;
                         break;
-                    case Paradox.Graphics.Font.FontStyle.Bold:
+                    case Xenko.Graphics.Font.FontStyle.Bold:
                         fontSimulations = FontSimulations.Bold;
                         break;
-                    case Paradox.Graphics.Font.FontStyle.Italic:
+                    case Xenko.Graphics.Font.FontStyle.Italic:
                         fontSimulations = FontSimulations.Oblique;
                         break;
                     default:

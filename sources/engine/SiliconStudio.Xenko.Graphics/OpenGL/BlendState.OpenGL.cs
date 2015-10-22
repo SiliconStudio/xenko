@@ -1,14 +1,14 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
 using System;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public partial class BlendState
     {
@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.Graphics
                     return BlendEquationMode.FuncSubtract;
                 case BlendFunction.Add:
                     return BlendEquationMode.FuncAdd;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 case BlendFunction.Max:
                     return BlendEquationMode.Max;
                 case BlendFunction.Min:

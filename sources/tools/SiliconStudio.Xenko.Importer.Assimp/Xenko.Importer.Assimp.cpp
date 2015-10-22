@@ -1,8 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #include "stdafx.h"
-#include "../SiliconStudio.Paradox.Assimp.Translation/Extension.h"
-#include "../SiliconStudio.Paradox.Importer.Common/ImporterUtils.h"
+#include "../SiliconStudio.Xenko.Assimp.Translation/Extension.h"
+#include "../SiliconStudio.Xenko.Importer.Common/ImporterUtils.h"
 
 #include <string>
 #include <map>
@@ -21,22 +21,22 @@ using namespace SiliconStudio::Core::Mathematics;
 using namespace SiliconStudio::Core::Serialization;
 using namespace SiliconStudio::Core::Serialization::Assets;
 using namespace SiliconStudio::Core::Serialization::Contents;
-using namespace SiliconStudio::Paradox::Assets::Materials;
-using namespace SiliconStudio::Paradox::Rendering;
-using namespace SiliconStudio::Paradox::Rendering::Materials;
-using namespace SiliconStudio::Paradox::Rendering::Materials::ComputeColors;
-using namespace SiliconStudio::Paradox::AssimpNet;
-using namespace SiliconStudio::Paradox::Animations;
-using namespace SiliconStudio::Paradox::Engine;
-using namespace SiliconStudio::Paradox::Extensions;
-using namespace SiliconStudio::Paradox::Graphics;
-using namespace SiliconStudio::Paradox::Graphics::Data;
-using namespace SiliconStudio::Paradox::Shaders;
+using namespace SiliconStudio::Xenko::Assets::Materials;
+using namespace SiliconStudio::Xenko::Rendering;
+using namespace SiliconStudio::Xenko::Rendering::Materials;
+using namespace SiliconStudio::Xenko::Rendering::Materials::ComputeColors;
+using namespace SiliconStudio::Xenko::AssimpNet;
+using namespace SiliconStudio::Xenko::Animations;
+using namespace SiliconStudio::Xenko::Engine;
+using namespace SiliconStudio::Xenko::Extensions;
+using namespace SiliconStudio::Xenko::Graphics;
+using namespace SiliconStudio::Xenko::Graphics::Data;
+using namespace SiliconStudio::Xenko::Shaders;
 
 using namespace Assimp;
-using namespace SiliconStudio::Paradox::Importer::Common;
+using namespace SiliconStudio::Xenko::Importer::Common;
 
-namespace SiliconStudio { namespace Paradox { namespace Importer { namespace AssimpNET {
+namespace SiliconStudio { namespace Xenko { namespace Importer { namespace AssimpNET {
 
 public ref class MaterialInstantiation
 {
@@ -563,7 +563,7 @@ private:
 			auto aiKey = keys[keyId];
 			KeyFrameData<Vector3> key;
 
-			auto time = aiTimeToPdxTimeSpan(aiKey.mTime, ticksPerSec);
+			auto time = aiTimeToXkTimeSpan(aiKey.mTime, ticksPerSec);
 			auto value = aiVector3ToVector3(aiKey.mValue);
 
 			key.Time = time;
@@ -600,7 +600,7 @@ private:
 			auto aiKey = keys[keyId];
 			KeyFrameData<Quaternion> key;
 			
-			auto time = aiTimeToPdxTimeSpan(aiKey.mTime, ticksPerSec);
+			auto time = aiTimeToXkTimeSpan(aiKey.mTime, ticksPerSec);
 			auto value = aiQuaternionToQuaternion(aiKey.mValue);
 			
 			key.Time = time;
@@ -704,7 +704,7 @@ private:
 		return textureValue;
 	}
 
-	IComputeColor^ GenerateOneTextureTypeLayers(aiMaterial* pMat, aiTextureType textureType, int& textureCount, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
+	IComputeColor^ GenerateOneTextureTypeLayers(aiMaterial* pMat, aiTextureType textureType, int& textureCount, SiliconStudio::Xenko::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		AssimpNet::Material::Stack^ stack = NetTranslation::Materials::convertAssimpStackCppToCs(pMat, textureType);
 		int set;
@@ -827,7 +827,7 @@ private:
 		return rootMaterial;
 	}
 
-	void BuildLayeredSurface(aiMaterial* pMat, bool hasBaseColor, bool hasBaseValue, Color4 baseColor, float baseValue, aiTextureType textureType, SiliconStudio::Paradox::Assets::Materials::MaterialAsset^ finalMaterial)
+	void BuildLayeredSurface(aiMaterial* pMat, bool hasBaseColor, bool hasBaseValue, Color4 baseColor, float baseValue, aiTextureType textureType, SiliconStudio::Xenko::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		auto nbTextures = pMat->GetTextureCount(textureType);
 		
@@ -943,8 +943,8 @@ private:
 		}
 
 		//// ---------------------------------------------------------------------------------
-  //      // Iterate on all custom Paradox Properties and add them to the mesh.
-  //      // Key must be in the format: Paradox_KeyName
+  //      // Iterate on all custom Xenko Properties and add them to the mesh.
+  //      // Key must be in the format: Xenko_KeyName
   //      // ---------------------------------------------------------------------------------
 		//for(unsigned int i = 0; i<pMaterial->mNumProperties; ++i)
 		//{
@@ -955,8 +955,8 @@ private:
   //              int index = propertyName->IndexOf('_');
   //              propertyName = propertyName->Substring(index);
   //              propertyName = propertyName->Replace('_','.');
-  //              // TODO Paradox Change name 
-  //              propertyName = gcnew String("SiliconStudio.Paradox.Rendering") + propertyName;
+  //              // TODO Xenko Change name 
+  //              propertyName = gcnew String("SiliconStudio.Xenko.Rendering") + propertyName;
 
 		//		switch (pProp->mDataLength)
 		//		{

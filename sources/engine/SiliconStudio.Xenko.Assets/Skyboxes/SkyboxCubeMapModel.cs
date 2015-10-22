@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Rendering.Skyboxes;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Assets.Skyboxes
+namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     /// <summary>
     /// A cubemap based skybox.

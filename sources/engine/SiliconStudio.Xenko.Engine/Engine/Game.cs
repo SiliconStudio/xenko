@@ -10,19 +10,19 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Audio;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Font;
-using SiliconStudio.Paradox.Input;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Fonts;
-using SiliconStudio.Paradox.Rendering.Sprites;
-using SiliconStudio.Paradox.UI;
+using SiliconStudio.Xenko.Audio;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
+using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Fonts;
+using SiliconStudio.Xenko.Rendering.Sprites;
+using SiliconStudio.Xenko.UI;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Main Game class system.

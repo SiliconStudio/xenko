@@ -8,7 +8,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Graphics.Data
+namespace SiliconStudio.Xenko.Graphics.Data
 {
     /// <summary>
     /// Serializer for <see cref="Texture"/>.
@@ -56,7 +56,7 @@ namespace SiliconStudio.Paradox.Graphics.Data
                 if (textureData == null)
                     throw new InvalidOperationException("Trying to serialize a Texture without CPU info.");
 
-                textureData.Save(stream.NativeStream, ImageFileType.Paradox);
+                textureData.Save(stream.NativeStream, ImageFileType.Xenko);
             }
         }
     }

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public interface IColliderShapeDesc : IComparable
     {

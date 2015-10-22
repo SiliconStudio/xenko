@@ -4,15 +4,15 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Audio;
-using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Input;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Sprites;
+using SiliconStudio.Xenko.Audio;
+using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Sprites;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     public interface IScriptContext
     {

@@ -1,7 +1,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("RigidbodyElement")]
     [Display(40, "Rigidbody")]

@@ -1,7 +1,7 @@
 using System.Linq;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Games.ViewModel;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Games.ViewModel;
 
 namespace ScriptTest
 {

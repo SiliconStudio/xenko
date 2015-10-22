@@ -8,7 +8,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     [DataContract]
     public class EntityDesignData

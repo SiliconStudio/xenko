@@ -9,7 +9,7 @@ using SiliconStudio.Core.Diagnostics;
 using System.Collections.Concurrent;
 using System.Linq;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class Simulation : IDisposable
     {

@@ -6,9 +6,9 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class RenderModel : IDisposable
     {

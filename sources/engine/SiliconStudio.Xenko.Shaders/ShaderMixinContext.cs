@@ -6,9 +6,9 @@ using System.Reflection;
 using System.Text;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// A context used when mixin <see cref="ShaderSource"/>.

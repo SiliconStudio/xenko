@@ -4,10 +4,10 @@ using NUnit.Framework;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.UI.Controls;
-using SiliconStudio.Paradox.UI.Panels;
+using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Panels;
 
-namespace SiliconStudio.Paradox.UI.Tests.Layering
+namespace SiliconStudio.Xenko.UI.Tests.Layering
 {
     /// <summary>
     /// Class that performs tests on the <see cref="Panel"/> implementation

@@ -5,15 +5,15 @@
 /// </summary>
 /// <remarks>
 /// SkinningMaxBones: Macro - number of threads on the X axis.
-/// SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES: Macro - flag to activate on for opengl es 2.0 platforms (int4 attributes like blend indices are not supported).
+/// SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES: Macro - flag to activate on for opengl es 2.0 platforms (int4 attributes like blend indices are not supported).
 /// </remarks>
 #ifndef SkinningMaxBones
 # define SkinningMaxBones 4
 #endif
 
-// TODO: use SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES20 because opengl es 3.0 supports int4 atributes.
-#ifndef SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-# define SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES false
+// TODO: use SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES20 because opengl es 3.0 supports int4 atributes.
+#ifndef SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+# define SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES false
 #endif
 
 class TransformationSkinning : TransformationBase, PositionStream4, Transformation
@@ -21,7 +21,7 @@ class TransformationSkinning : TransformationBase, PositionStream4, Transformati
     stage float4x4 BlendMatrixArray[SkinningMaxBones];
 
     stage stream float4 BlendWeights : BLENDWEIGHT;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
     stage stream float4 BlendIndices : BLENDINDICES;
     //stage stream int4 BlendIndices : BLENDINDICES;
 #else

@@ -5,16 +5,16 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Xenko.Assets.Materials
 {
     public static class ComputeShaderClassBaseExtensions
     {
@@ -105,8 +105,8 @@ namespace SiliconStudio.Paradox.Assets.Materials
                 {
                     var isColor = false;
                     string linkName = null;
-                    var isStage = member.Qualifiers.Contains(ParadoxStorageQualifier.Stage);
-                    var isStream = member.Qualifiers.Contains(ParadoxStorageQualifier.Stream);
+                    var isStage = member.Qualifiers.Contains(XenkoStorageQualifier.Stage);
+                    var isStream = member.Qualifiers.Contains(XenkoStorageQualifier.Stream);
                     foreach (var annotation in member.Attributes.OfType<SiliconStudio.Shaders.Ast.Hlsl.AttributeDeclaration>())
                     {
                         if (annotation.Name == "Color")

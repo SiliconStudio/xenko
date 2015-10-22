@@ -3,10 +3,10 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyProduct("SiliconStudio.Paradox.Physics")]
-[assembly: AssemblyTitle("SiliconStudio.Paradox.Physics")]
-[assembly: AssemblyDescription("Paradox physics core assembly")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Physics")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Physics")]
+[assembly: AssemblyDescription("Xenko physics core assembly")]
 
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine" + SiliconStudio.PublicKeys.Default)]

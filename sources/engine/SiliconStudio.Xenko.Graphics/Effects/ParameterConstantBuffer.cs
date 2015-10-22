@@ -1,21 +1,21 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Graphics.Internals
+namespace SiliconStudio.Xenko.Graphics.Internals
 {
     internal class ParameterConstantBuffer : ComponentBase
     {
         ConstantBufferData[] constantBufferDatas;
-        public SiliconStudio.Paradox.Graphics.Buffer Buffer { get; private set; }
+        public SiliconStudio.Xenko.Graphics.Buffer Buffer { get; private set; }
         DataPointer[] dataStreams;
         internal ShaderConstantBufferDescription ConstantBufferDesc;
         private bool forceDataChanged = false;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         private static readonly bool UsingMap = false;
 #else
         private static readonly bool UsingMap = true;
@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Graphics.Internals
                 dataStreams[i] = new DataPointer(constantBufferDatas[i].Data, constantBufferDesc.Size);
             }
 
-            Buffer = SiliconStudio.Paradox.Graphics.Buffer.New(device, constantBufferDatas[0].Desc.Size, BufferFlags.ConstantBuffer, UsingMap ? GraphicsResourceUsage.Dynamic : GraphicsResourceUsage.Default);
+            Buffer = SiliconStudio.Xenko.Graphics.Buffer.New(device, constantBufferDatas[0].Desc.Size, BufferFlags.ConstantBuffer, UsingMap ? GraphicsResourceUsage.Dynamic : GraphicsResourceUsage.Default);
             
             // We want to clear flags
             // TODO: Should be later replaced with either an internal field on GraphicsResourceBase, or a reset counter somewhere?

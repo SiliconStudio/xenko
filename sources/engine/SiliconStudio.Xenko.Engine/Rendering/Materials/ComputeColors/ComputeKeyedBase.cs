@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
+namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 {
     /// <summary>
     /// Base interface for all computer color nodes.

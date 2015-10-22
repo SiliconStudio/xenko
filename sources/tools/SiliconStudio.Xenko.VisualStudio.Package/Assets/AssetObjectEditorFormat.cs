@@ -27,12 +27,12 @@ using Microsoft.VisualStudio.Language.StandardClassification;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-namespace SiliconStudio.Paradox.VisualStudio.Assets
+namespace SiliconStudio.Xenko.VisualStudio.Assets
 {
 	#region Format definition
 	[Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = AssetObjectDefinitions.AnchorClassificationName)]
-	[Name("Paradox.YamlAnchorFormat")]
+	[Name("Xenko.YamlAnchorFormat")]
 	[UserVisible(true)] //this should be visible to the end user
 	[Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     [BaseDefinition(PredefinedClassificationTypeNames.SymbolReference)]
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Assets
         [ImportingConstructor]
         public YamlAnchorFormat(AssetObjectClassificationColorManager colorManager)
 		{
-			DisplayName = "Paradox YAML Anchor"; //human readable version of the name
+			DisplayName = "Xenko YAML Anchor"; //human readable version of the name
             var classificationColor = colorManager.GetClassificationColor(AssetObjectDefinitions.AnchorClassificationName);
             ForegroundColor = classificationColor.ForegroundColor;
             BackgroundColor = classificationColor.BackgroundColor;
@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Assets
 
 	[Export(typeof(EditorFormatDefinition))]
 	[ClassificationType(ClassificationTypeNames = AssetObjectDefinitions.AliasClassificationName)]
-    [Name("Paradox.YamlAliasFormat")]
+    [Name("Xenko.YamlAliasFormat")]
     [UserVisible(true)] //this should be visible to the end user
 	[Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     [BaseDefinition(PredefinedClassificationTypeNames.Literal)]
@@ -59,7 +59,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Assets
         [ImportingConstructor]
         public YamlAliasFormat(AssetObjectClassificationColorManager colorManager)
 		{
-            DisplayName = "Paradox YAML Alias"; //human readable version of the name
+            DisplayName = "Xenko YAML Alias"; //human readable version of the name
             var classificationColor = colorManager.GetClassificationColor(AssetObjectDefinitions.AliasClassificationName);
             ForegroundColor = classificationColor.ForegroundColor;
             BackgroundColor = classificationColor.BackgroundColor;
@@ -68,7 +68,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Assets
 
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = AssetObjectDefinitions.KeyClassificationName)]
-    [Name("Paradox.YamlKeyFormat")]
+    [Name("Xenko.YamlKeyFormat")]
     [UserVisible(true)] //this should be visible to the end user
     [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     [BaseDefinition(PredefinedClassificationTypeNames.Keyword)]
@@ -77,7 +77,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Assets
         [ImportingConstructor]
         public YamlKeyFormat(AssetObjectClassificationColorManager colorManager)
         {
-            DisplayName = "Paradox YAML Key"; //human readable version of the name
+            DisplayName = "Xenko YAML Key"; //human readable version of the name
             var classificationColor = colorManager.GetClassificationColor(AssetObjectDefinitions.KeyClassificationName);
             ForegroundColor = classificationColor.ForegroundColor;
             BackgroundColor = classificationColor.BackgroundColor;
@@ -86,7 +86,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Assets
 
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = AssetObjectDefinitions.NumberClassificationName)]
-    [Name("Paradox.YamlNumberFormat")]
+    [Name("Xenko.YamlNumberFormat")]
     [UserVisible(true)] //this should be visible to the end user
     [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     [BaseDefinition(PredefinedClassificationTypeNames.Number)]
@@ -95,7 +95,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Assets
         [ImportingConstructor]
         public YamlNumberFormat(AssetObjectClassificationColorManager colorManager)
         {
-            DisplayName = "Paradox YAML Number"; //human readable version of the name
+            DisplayName = "Xenko YAML Number"; //human readable version of the name
             var classificationColor = colorManager.GetClassificationColor(AssetObjectDefinitions.NumberClassificationName);
             ForegroundColor = classificationColor.ForegroundColor;
             BackgroundColor = classificationColor.BackgroundColor;
@@ -104,7 +104,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Assets
 
     [Export(typeof(EditorFormatDefinition))]
     [ClassificationType(ClassificationTypeNames = AssetObjectDefinitions.ErrorClassificationName)]
-    [Name("Paradox.YamlErrorFormat")]
+    [Name("Xenko.YamlErrorFormat")]
     [UserVisible(true)] //this should be visible to the end user
     [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
     [BaseDefinition(PredefinedClassificationTypeNames.Other)]
@@ -113,7 +113,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Assets
         [ImportingConstructor]
         public YamlErrorFormat(AssetObjectClassificationColorManager colorManager)
         {
-            DisplayName = "Paradox YAML Error"; //human readable version of the name
+            DisplayName = "Xenko YAML Error"; //human readable version of the name
             var classificationColor = colorManager.GetClassificationColor(AssetObjectDefinitions.ErrorClassificationName);
             ForegroundColor = classificationColor.ForegroundColor;
             BackgroundColor = classificationColor.BackgroundColor;

@@ -14,21 +14,21 @@ using Microsoft.VisualStudio.TextTemplating.VSHost;
 using NShader;
 
 using SiliconStudio.Assets;
-using SiliconStudio.Paradox.Shaders.Parser;
-using SiliconStudio.Paradox.VisualStudio.BuildEngine;
-using SiliconStudio.Paradox.VisualStudio.Commands.Shaders;
+using SiliconStudio.Xenko.Shaders.Parser;
+using SiliconStudio.Xenko.VisualStudio.BuildEngine;
+using SiliconStudio.Xenko.VisualStudio.Commands.Shaders;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.VisualStudio.Commands
+namespace SiliconStudio.Xenko.VisualStudio.Commands
 {
-    public class ParadoxCommands : IParadoxCommands
+    public class XenkoCommands : IXenkoCommands
     {
-        public void Initialize(string paradoxSdkDir)
+        public void Initialize(string xenkoSdkDir)
         {
-            DirectoryHelper.packageDirectoryOverride = paradoxSdkDir;
+            DirectoryHelper.packageDirectoryOverride = xenkoSdkDir;
             // Don't necessarely initialize the shaders
-            //ParadoxShaderParser.Initialize();
+            //XenkoShaderParser.Initialize();
         }
 
         public bool ShouldReload()

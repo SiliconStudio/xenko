@@ -8,11 +8,11 @@ using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
 using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 
-namespace SiliconStudio.Paradox.Assets.Serializers
+namespace SiliconStudio.Xenko.Assets.Serializers
 {
     [YamlSerializerFactory]
     internal class ParameterKeyDictionarySerializer : DictionarySerializer, IDataCustomVisitor

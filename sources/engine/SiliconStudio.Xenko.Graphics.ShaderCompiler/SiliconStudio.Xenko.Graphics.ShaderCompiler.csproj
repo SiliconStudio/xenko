@@ -3,25 +3,25 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7B9FD7E4-AD38-4D40-87E0-CD807267F47D}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Paradox.Graphics.ShaderCompiler</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Graphics.ShaderCompiler</AssemblyName>
-    <ParadoxBuildTags>EffectCompiler</ParadoxBuildTags>
-    <SiliconStudioCompilerTargetsEnable Condition=" '$(ParadoxEffectCompiler)' != 'true' ">false</SiliconStudioCompilerTargetsEnable>
+    <RootNamespace>SiliconStudio.Xenko.Graphics.ShaderCompiler</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Graphics.ShaderCompiler</AssemblyName>
+    <XenkoBuildTags>EffectCompiler</XenkoBuildTags>
+    <SiliconStudioCompilerTargetsEnable Condition=" '$(XenkoEffectCompiler)' != 'true' ">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.D3DCompiler">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -43,9 +43,9 @@
       <Name>SiliconStudio.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
@@ -53,9 +53,9 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
-      <Name>SiliconStudio.Paradox.Shaders</Name>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

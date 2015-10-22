@@ -3,25 +3,25 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
-#if PARADOX_YEBIS
-using Paradox.Effects.Yebis;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Effects;
+#if XENKO_YEBIS
+using Xenko.Effects.Yebis;
 #endif
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Configuration;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Configuration;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Games.MicroThreading;
-using SiliconStudio.Paradox.Input;
-using SiliconStudio.Paradox.Prefabs;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Games.MicroThreading;
+using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Prefabs;
 
 using ScriptTest2;
 #if NET45
@@ -30,7 +30,7 @@ using TaskEx = System.Threading.Tasks.Task;
 
 namespace ScriptTest
 {
-    [ParadoxScript]
+    [XenkoScript]
     public class ScriptCave
     {
         private const float CaveSceneTotalTime = 79.0f;
@@ -43,7 +43,7 @@ namespace ScriptTest
         private const float CaveSceneEndBlack = LogoTimeEnd + 1.5f;
         private const float CaveSceneRestart = CaveSceneEndBlack + 0.1f;
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task Run(EngineContext engineContext)
         {
             var renderingSetup = RenderingSetup.Singleton;
@@ -207,11 +207,11 @@ namespace ScriptTest
                 return;
             }
 
-            var paradoxLogo = (Texture2D)await engineContext.AssetManager.LoadAsync<Texture>("/global_data/gdc_demo/bg/LogoParadox.dds");
-            var paradoxLogoURL = (Texture2D)await engineContext.AssetManager.LoadAsync<Texture>("/global_data/gdc_demo/bg/LogoParadoxURL.dds");
+            var xenkoLogo = (Texture2D)await engineContext.AssetManager.LoadAsync<Texture>("/global_data/gdc_demo/bg/LogoXenko.dds");
+            var xenkoLogoURL = (Texture2D)await engineContext.AssetManager.LoadAsync<Texture>("/global_data/gdc_demo/bg/LogoXenkoURL.dds");
 
-            slideShowPlugin.TextureFrom = paradoxLogo;
-            slideShowPlugin.TextureTo = paradoxLogoURL;
+            slideShowPlugin.TextureFrom = xenkoLogo;
+            slideShowPlugin.TextureTo = xenkoLogoURL;
             slideShowPlugin.RenderPass.Enabled = false;
 
             double lastTime = 0;
@@ -368,7 +368,7 @@ namespace ScriptTest
             lightComponent.Intensity = startIntensity;
         }
 
-        //[ParadoxScript]
+        //[XenkoScript]
         public static async Task<Entity> LoadDragon(EngineContext engineContext)
         {
             var renderingSetup = RenderingSetup.Singleton;
@@ -426,7 +426,7 @@ namespace ScriptTest
             return characterEntity;
         }
 
-        // [ParadoxScript]
+        // [XenkoScript]
         public static async Task LoadCave(EngineContext engineContext, Entity animationEntity)
         {
             // Setup "fake" directional light for outdoor so that normal maps stand out.

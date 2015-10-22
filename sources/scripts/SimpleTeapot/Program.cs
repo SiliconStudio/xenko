@@ -4,16 +4,16 @@ using System.IO;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
-using Paradox;
-using Paradox.Effects;
-using Paradox.Effects.Modules;
-using Paradox.Framework;
-using Paradox.Framework.Graphics;
-using Paradox.Framework.Mathematics;
-using Paradox.Framework.Serialization;
-using Paradox.Framework.VirtualFileSystem;
-using Paradox.Framework.Serialization.Contents;
-using Paradox.Framework.Graphics.Data;
+using Xenko;
+using Xenko.Effects;
+using Xenko.Effects.Modules;
+using Xenko.Framework;
+using Xenko.Framework.Graphics;
+using Xenko.Framework.Mathematics;
+using Xenko.Framework.Serialization;
+using Xenko.Framework.VirtualFileSystem;
+using Xenko.Framework.Serialization.Contents;
+using Xenko.Framework.Graphics.Data;
 
 namespace SimpleTeapot
 {

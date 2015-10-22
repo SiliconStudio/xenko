@@ -79,7 +79,7 @@ using System;
 using System.ComponentModel;
 using System.Globalization;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     internal class CharacterRegionTypeConverter : TypeConverter
     {

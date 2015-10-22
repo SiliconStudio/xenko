@@ -14,9 +14,9 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Textures;
+using SiliconStudio.Xenko.Assets.Textures;
 
-namespace SiliconStudio.Paradox.Assets.Sprite
+namespace SiliconStudio.Xenko.Assets.Sprite
 {
     /// <summary>
     /// This asset represents a sheet (group) of sprites.
@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         /// <summary>
         /// The default file extension used by the <see cref="SpriteSheetAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxsheet;.pdxsprite;.pdxuiimage";
+        public const string FileExtension = ".xksheet;.pdxsheet;.pdxsprite;.pdxuiimage";
         
         /// <summary>
         /// Create an empty sprite sheet asset.

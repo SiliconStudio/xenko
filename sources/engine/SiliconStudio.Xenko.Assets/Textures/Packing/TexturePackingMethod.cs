@@ -1,4 +1,4 @@
-﻿namespace SiliconStudio.Paradox.Assets.Textures.Packing
+﻿namespace SiliconStudio.Xenko.Assets.Textures.Packing
 {
     /// <summary>
     /// The Heuristic methods used to place sprites in atlas.

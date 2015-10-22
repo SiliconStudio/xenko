@@ -2,10 +2,10 @@
 
 using System.Linq;
 
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Shader effect used with <see cref="GBufferPlugin"/>

@@ -2,7 +2,7 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("CharacterElement")]
     [Display(40, "Character")]

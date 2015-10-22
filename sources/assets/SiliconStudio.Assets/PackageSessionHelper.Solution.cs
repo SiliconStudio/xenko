@@ -27,7 +27,7 @@ namespace SiliconStudio.Assets
             {
                 foreach (var packageFullPath in EnumeratePackageFullPaths(fullPath))
                 {
-                    // Load the package as a Yaml dynamic node, so that we can check Paradox version from dependencies
+                    // Load the package as a Yaml dynamic node, so that we can check Xenko version from dependencies
                     var input = new StringReader(File.ReadAllText(packageFullPath));
                     var yamlStream = new YamlStream();
                     yamlStream.Load(input);
@@ -37,7 +37,8 @@ namespace SiliconStudio.Assets
 
                     foreach (var dependency in yamlRootNode.Meta.Dependencies)
                     {
-                        if ((string)dependency.Name == "Paradox")
+                        // Support paradox legacy projects
+                        if ((string)dependency.Name == "Xenko" || (string)dependency.Name == "Paradox")
                         {
                             dependencyVersion = new SemanticVersion((string)dependency.Version);
 

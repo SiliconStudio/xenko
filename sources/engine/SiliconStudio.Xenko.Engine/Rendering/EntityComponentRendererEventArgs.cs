@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// An event published by <see cref="CameraRendererMode"/> when a new renderer is created.

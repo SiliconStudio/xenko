@@ -5,11 +5,11 @@ using System;
 using System.Globalization;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Materials.Processor.Visitors
+namespace SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors
 {
     /// <summary>
     /// Class MaterialUtility.

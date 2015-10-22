@@ -4,7 +4,7 @@ using System;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     [DataSerializer(typeof(IndexBufferBinding.Serializer))]
     public class IndexBufferBinding

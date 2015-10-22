@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// Base interface for all <see cref="IComputeNode"/>

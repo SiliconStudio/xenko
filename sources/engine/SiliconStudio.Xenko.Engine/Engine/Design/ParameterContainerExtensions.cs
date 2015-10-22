@@ -4,7 +4,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     public class ParameterContainerExtensions
     {

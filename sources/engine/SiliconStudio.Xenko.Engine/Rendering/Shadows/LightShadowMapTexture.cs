@@ -5,11 +5,11 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering.Lights;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering.Lights;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Shadows
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     public interface ILightShadowMapShaderData
     {

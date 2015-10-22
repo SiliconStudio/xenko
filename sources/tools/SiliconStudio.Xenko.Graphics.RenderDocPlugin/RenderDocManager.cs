@@ -8,7 +8,7 @@ using System.Runtime.InteropServices;
 
 using Microsoft.Win32;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public class RenderDocManager
     {

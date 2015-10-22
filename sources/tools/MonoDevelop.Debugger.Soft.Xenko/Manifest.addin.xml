@@ -1,9 +1,9 @@
-<Addin  id             = "MonoDevelop.Debugger.Soft.Paradox"
-        name           = "Mono Soft Debugger Support for Paradox"
+<Addin  id             = "MonoDevelop.Debugger.Soft.Xenko"
+        name           = "Mono Soft Debugger Support for Xenko"
         author         = "Silicon Studio"
         url            = "http://www.siliconstudio.co.jp"
         copyright      = "MIT X11"
-        description    = "Mono Soft Debugger Support for Paradox"
+        description    = "Mono Soft Debugger Support for Xenko"
         category       = "Debugging"
         version        = "1.0">
   
@@ -16,38 +16,38 @@
 	
 	<Extension path="/MonoDevelop/Debugging/DebuggerEngines">
 		<DebuggerEngine
-			id="MonoDevelop.Debugger.Soft.Paradox"
-			name="Paradox Debugger"
+			id="MonoDevelop.Debugger.Soft.Xenko"
+			name="Xenko Debugger"
 			features="Breakpoints, Pause, Stepping, DebugFile, ConditionalBreakpoints, Tracepoints, Catchpoints"
-			type="MonoDevelop.Debugger.Soft.Paradox.ParadoxDebuggerEngine" />
+			type="MonoDevelop.Debugger.Soft.Xenko.XenkoDebuggerEngine" />
 	</Extension>
 
   <Extension path = "/MonoDevelop/Ide/Commands">
     <Category _name = "Debug" id = "Debug">
-      <Command id = "MonoDevelop.Debugger.Soft.Paradox.Commands.StartDebugClient"
-          defaultHandler = "MonoDevelop.Debugger.Soft.Paradox.StartDebugClient"
-          _label = "Debug Paradox Client"
-          _description = "Debug Paradox Client"
+      <Command id = "MonoDevelop.Debugger.Soft.Xenko.Commands.StartDebugClient"
+          defaultHandler = "MonoDevelop.Debugger.Soft.Xenko.StartDebugClient"
+          _label = "Debug Xenko Client"
+          _description = "Debug Xenko Client"
           shortcut = "F3"
           icon="md-step-over-debug"/>
-      <Command id = "MonoDevelop.Debugger.Soft.Paradox.Commands.StartDebugServer"
-          defaultHandler = "MonoDevelop.Debugger.Soft.Paradox.StartDebugServer"
-          _label = "Debug Paradox Server"
-          _description = "Debug Paradox Server"
+      <Command id = "MonoDevelop.Debugger.Soft.Xenko.Commands.StartDebugServer"
+          defaultHandler = "MonoDevelop.Debugger.Soft.Xenko.StartDebugServer"
+          _label = "Debug Xenko Server"
+          _description = "Debug Xenko Server"
           shortcut = "F4"
           icon="md-step-over-debug"/>
     </Category>
   </Extension>
 
   <Extension path = "/MonoDevelop/Ide/MainMenu/Run">
-    <CommandItem id = "MonoDevelop.Debugger.Soft.Paradox.Commands.StartDebugClient" />
-    <CommandItem id = "MonoDevelop.Debugger.Soft.Paradox.Commands.StartDebugServer" />
+    <CommandItem id = "MonoDevelop.Debugger.Soft.Xenko.Commands.StartDebugClient" />
+    <CommandItem id = "MonoDevelop.Debugger.Soft.Xenko.Commands.StartDebugServer" />
   </Extension>
   
   <Extension path = "/MonoDevelop/Ide/Toolbar">
-    <ItemSet id = "Paradox" _label = "Paradox">
-      <CommandItem id = "MonoDevelop.Debugger.Soft.Paradox.Commands.StartDebugClient" />
-      <CommandItem id = "MonoDevelop.Debugger.Soft.Paradox.Commands.StartDebugServer" />
+    <ItemSet id = "Xenko" _label = "Xenko">
+      <CommandItem id = "MonoDevelop.Debugger.Soft.Xenko.Commands.StartDebugClient" />
+      <CommandItem id = "MonoDevelop.Debugger.Soft.Xenko.Commands.StartDebugServer" />
     </ItemSet>
   </Extension>
 </Addin>

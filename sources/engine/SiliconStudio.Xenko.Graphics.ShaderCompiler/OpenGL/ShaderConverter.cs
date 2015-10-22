@@ -9,9 +9,9 @@ using SiliconStudio.Shaders.Convertor;
 using SiliconStudio.Shaders.Parser;
 using SiliconStudio.Shaders.Parser.Hlsl;
 
-using ShaderMacro = SiliconStudio.Paradox.Shaders.ShaderMacro;
+using ShaderMacro = SiliconStudio.Xenko.Shaders.ShaderMacro;
 
-namespace SiliconStudio.Paradox.Graphics.ShaderCompiler.OpenGL
+namespace SiliconStudio.Xenko.Graphics.ShaderCompiler.OpenGL
 {
     /// <summary>
     /// Converts from HLSL shader sourcecode to a GLSL sourcecode.

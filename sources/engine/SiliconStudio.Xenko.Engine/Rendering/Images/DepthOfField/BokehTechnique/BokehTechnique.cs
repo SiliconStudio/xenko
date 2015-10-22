@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
 
     /// <summary>

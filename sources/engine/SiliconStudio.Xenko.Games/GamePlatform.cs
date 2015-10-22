@@ -24,10 +24,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     internal abstract class GamePlatform : ReferenceBase, IGraphicsDeviceFactory, IGamePlatform
     {
@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Games
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return new GamePlatformWindowsRuntime(game);
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#elif SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             return new GamePlatformOpenTK(game);
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             return new GamePlatformAndroid(game);

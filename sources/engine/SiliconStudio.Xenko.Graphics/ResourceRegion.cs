@@ -23,7 +23,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>	
     /// <p>Defines a 3D box.</p>	

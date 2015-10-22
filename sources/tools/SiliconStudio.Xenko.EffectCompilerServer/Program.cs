@@ -6,9 +6,9 @@ using System.IO;
 using System.Reflection;
 using System.Threading;
 using Mono.Options;
-using SiliconStudio.Paradox.Engine.Network;
+using SiliconStudio.Xenko.Engine.Network;
 
-namespace SiliconStudio.Paradox.EffectCompilerServer
+namespace SiliconStudio.Xenko.EffectCompilerServer
 {
     class Program
     {
@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.EffectCompilerServer
             var p = new OptionSet
                 {
                     "Copyright (C) 2011-2015 Silicon Studio Corporation. All Rights Reserved",
-                    "Paradox Effect Compiler Server - Version: "
+                    "Xenko Effect Compiler Server - Version: "
                     +
                     String.Format(
                         "{0}.{1}.{2}",

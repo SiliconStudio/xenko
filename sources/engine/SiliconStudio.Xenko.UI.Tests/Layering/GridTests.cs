@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.UI.Panels;
+using SiliconStudio.Xenko.UI.Panels;
 
-namespace SiliconStudio.Paradox.UI.Tests.Layering
+namespace SiliconStudio.Xenko.UI.Tests.Layering
 {
     /// <summary>
     /// Series of tests for <see cref="Grid"/>

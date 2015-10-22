@@ -12,16 +12,16 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders.Parser;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders.Parser;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
 using Encoding = System.Text.Encoding;
 using LoggerResult = SiliconStudio.Core.Diagnostics.LoggerResult;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler
+namespace SiliconStudio.Xenko.Shaders.Compiler
 {
     /// <summary>
     /// An <see cref="IEffectCompiler"/> which will compile effect into multiple shader code, and compile them with a <see cref="IShaderCompiler"/>.
@@ -105,16 +105,16 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             switch (platform)
             {
                 case GraphicsPlatform.Direct3D11:
-                    shaderMixinSource.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D", 1);
-                    shaderMixinSource.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D11", 1);
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D", 1);
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11", 1);
                     break;
                 case GraphicsPlatform.OpenGL:
-                    shaderMixinSource.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL", 1);
-                    shaderMixinSource.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLCORE", 1);
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL", 1);
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE", 1);
                     break;
                 case GraphicsPlatform.OpenGLES:
-                    shaderMixinSource.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL", 1);
-                    shaderMixinSource.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES", 1);
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL", 1);
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES", 1);
                     break;
                 default:
                     throw new NotSupportedException();
@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
             // Generate profile-specific macros
             var profile = usedParameters.Get(CompilerParameters.GraphicsProfileKey);
-            shaderMixinSource.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_PROFILE", (int)profile);
+            shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_PROFILE", (int)profile);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_9_1", (int)GraphicsProfile.Level_9_1);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_9_2", (int)GraphicsProfile.Level_9_2);
             shaderMixinSource.AddMacro("GRAPHICS_PROFILE_LEVEL_9_3", (int)GraphicsProfile.Level_9_3);
@@ -146,7 +146,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
             // Convert the AST to HLSL
             var writer = new SiliconStudio.Shaders.Writer.Hlsl.HlslWriter
             {
-                EnablePreprocessorLine = true // Allow to output links to original pdxsl via #line pragmas
+                EnablePreprocessorLine = true // Allow to output links to original xksl via #line pragmas
             };
             writer.Visit(parsingResult.Shader);
             var shaderSourceText = writer.Text;

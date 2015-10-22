@@ -1,22 +1,22 @@
-<!-- Build file pre-included by all Paradox projects -->
+<!-- Build file pre-included by all Xenko projects -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 
   <PropertyGroup>
-    <ParadoxUserBuild>true</ParadoxUserBuild>
+    <XenkoUserBuild>true</XenkoUserBuild>
   </PropertyGroup>
 
-  <Import Project="$(MSBuildThisFileDirectory)Paradox.PreSettings.targets"/>
+  <Import Project="$(MSBuildThisFileDirectory)Xenko.PreSettings.targets"/>
 
   <PropertyGroup>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     
-    <!--Paradox Directory to link against - based on platform-->
-    <ParadoxSdkBinDir Condition="'$(ParadoxSdkBinDir)' == ''">$(ParadoxSdkDir)\Bin\$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</ParadoxSdkBinDir>
+    <!--Xenko Directory to link against - based on platform-->
+    <XenkoSdkBinDir Condition="'$(XenkoSdkBinDir)' == ''">$(XenkoSdkDir)\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</XenkoSdkBinDir>
 
-    <!--Paradox Directory used for compiling - Default to Windows-Direct3D11 -->
-    <ParadoxSdkToolsDir Condition="'$(ParadoxSdkToolsDir)' == ''">$(ParadoxSdkDir)\Bin\Windows-Direct3D11</ParadoxSdkToolsDir>
+    <!--Xenko Directory used for compiling - Default to Windows-Direct3D11 -->
+    <XenkoSdkToolsDir Condition="'$(XenkoSdkToolsDir)' == ''">$(XenkoSdkDir)\Bin\Windows-Direct3D11</XenkoSdkToolsDir>
     
-    <SiliconStudioAssemblyProcessorPath>$(ParadoxSdkToolsDir)\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
+    <SiliconStudioAssemblyProcessorPath>$(XenkoSdkToolsDir)\SiliconStudio.AssemblyProcessor.exe</SiliconStudioAssemblyProcessorPath>
   </PropertyGroup>
   
 </Project>

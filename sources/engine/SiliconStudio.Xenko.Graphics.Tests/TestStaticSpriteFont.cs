@@ -3,7 +3,7 @@
 
 using NUnit.Framework;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     public class TestStaticSpriteFont : TestSpriteFont

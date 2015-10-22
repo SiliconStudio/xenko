@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// Base interface for a shading light dependent model material feature.

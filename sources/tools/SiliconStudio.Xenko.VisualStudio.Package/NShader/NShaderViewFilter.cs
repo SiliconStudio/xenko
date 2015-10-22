@@ -9,7 +9,7 @@ using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.TextManager.Interop;
 
-using SiliconStudio.Paradox.VisualStudio.Commands;
+using SiliconStudio.Xenko.VisualStudio.Commands;
 
 using Constants = Microsoft.VisualStudio.OLE.Interop.Constants;
 
@@ -81,7 +81,7 @@ namespace NShader
 
             try
             {
-                var remoteCommands = ParadoxCommandsProxy.GetProxy();
+                var remoteCommands = XenkoCommandsProxy.GetProxy();
                 var location = new RawSourceSpan()
                 {
                     File = this.Source.GetFilePath(),

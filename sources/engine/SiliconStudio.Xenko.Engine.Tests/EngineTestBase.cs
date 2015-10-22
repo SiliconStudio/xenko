@@ -4,13 +4,13 @@
 using System.Threading.Tasks;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Composers;
-using SiliconStudio.Paradox.Graphics.Regression;
-using SiliconStudio.Paradox.Rendering.Colors;
-using SiliconStudio.Paradox.Rendering.Lights;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Graphics.Regression;
+using SiliconStudio.Xenko.Rendering.Colors;
+using SiliconStudio.Xenko.Rendering.Lights;
 
-namespace SiliconStudio.Paradox.Engine.Tests
+namespace SiliconStudio.Xenko.Engine.Tests
 {
     /// <summary>
     /// Base class for engine tests.
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
 
         private SceneGraphicsCompositorLayers graphicsCompositor;
 
-        public EngineTestBase(string effectName = "ParadoxForwardShadingEffect")
+        public EngineTestBase(string effectName = "XenkoForwardShadingEffect")
         {
             SceneCameraRenderer = new CameraRendererModeForward { Name = "Camera renderer", ModelEffect = effectName };
         }

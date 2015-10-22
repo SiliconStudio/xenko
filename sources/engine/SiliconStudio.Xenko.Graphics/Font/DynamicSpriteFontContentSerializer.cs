@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Graphics.Font
+namespace SiliconStudio.Xenko.Graphics.Font
 {
     internal class DynamicSpriteFontContentSerializer : DataContentSerializer<DynamicSpriteFont>
     {

@@ -7,19 +7,19 @@ using System.Drawing;
 using Android.Content;
 using Android.Views.InputMethods;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Games.Android;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Games.Android;
+using SiliconStudio.Xenko.Graphics;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
 using OpenTK.Platform.Android;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// An abstract window.
     /// </summary>
     internal class GameWindowAndroid : GameWindow
     {
-        private AndroidParadoxGameView paradoxGameForm;
+        private AndroidXenkoGameView xenkoGameForm;
         private WindowHandle nativeWindow;
         
         public override WindowHandle NativeWindow
@@ -54,34 +54,34 @@ namespace SiliconStudio.Paradox.Games
         {
             GameContext = gameContext;
 
-            paradoxGameForm = (AndroidParadoxGameView)gameContext.Control;
-            nativeWindow = new WindowHandle(AppContextType.Android, paradoxGameForm);
+            xenkoGameForm = (AndroidXenkoGameView)gameContext.Control;
+            nativeWindow = new WindowHandle(AppContextType.Android, xenkoGameForm);
 
-            paradoxGameForm.Load += gameForm_Resume;
-            paradoxGameForm.OnPause += gameForm_OnPause;
-            paradoxGameForm.Unload += gameForm_Unload;
-            paradoxGameForm.RenderFrame += gameForm_RenderFrame;
+            xenkoGameForm.Load += gameForm_Resume;
+            xenkoGameForm.OnPause += gameForm_OnPause;
+            xenkoGameForm.Unload += gameForm_Unload;
+            xenkoGameForm.RenderFrame += gameForm_RenderFrame;
 
             // Setup the initial size of the window
             var width = gameContext.RequestedWidth;
             if (width == 0)
             {
-                width = paradoxGameForm.Width;
+                width = xenkoGameForm.Width;
             }
 
             var height = gameContext.RequestedHeight;
             if (height == 0)
             {
-                height = paradoxGameForm.Height;
+                height = xenkoGameForm.Height;
             }
 
             // Transmit requested back buffer and depth stencil formats to OpenTK
-            paradoxGameForm.RequestedBackBufferFormat = gameContext.RequestedBackBufferFormat;
-            paradoxGameForm.RequestedGraphicsProfile = gameContext.RequestedGraphicsProfile;
+            xenkoGameForm.RequestedBackBufferFormat = gameContext.RequestedBackBufferFormat;
+            xenkoGameForm.RequestedGraphicsProfile = gameContext.RequestedGraphicsProfile;
 
-            paradoxGameForm.Size = new Size(width, height);
+            xenkoGameForm.Size = new Size(width, height);
 
-            //paradoxGameForm.Resize += OnClientSizeChanged;
+            //xenkoGameForm.Resize += OnClientSizeChanged;
         }
 
         void gameForm_Resume(object sender, EventArgs e)
@@ -92,7 +92,7 @@ namespace SiliconStudio.Paradox.Games
                 InitCallback();
                 InitCallback = null;
             }
-            paradoxGameForm.Run();
+            xenkoGameForm.Run();
 
             OnResume();
         }
@@ -119,7 +119,7 @@ namespace SiliconStudio.Paradox.Games
             Debug.Assert(InitCallback != null);
             Debug.Assert(RunCallback != null);
 
-            if (paradoxGameForm.GraphicsContext != null)
+            if (xenkoGameForm.GraphicsContext != null)
             {
                 throw new NotImplementedException("Only supports not yet initialized AndroidGameView.");
             }
@@ -133,22 +133,22 @@ namespace SiliconStudio.Paradox.Games
         {
             get
             {
-                return paradoxGameForm.Visible;
+                return xenkoGameForm.Visible;
             }
             set
             {
-                paradoxGameForm.Visible = value;
+                xenkoGameForm.Visible = value;
             }
         }
 
         protected override void SetTitle(string title)
         {
-            paradoxGameForm.Title = title;
+            xenkoGameForm.Title = title;
         }
 
         internal override void Resize(int width, int height)
         {
-            paradoxGameForm.Size = new Size(width, height);
+            xenkoGameForm.Size = new Size(width, height);
         }
 
         public override bool IsBorderLess
@@ -177,7 +177,7 @@ namespace SiliconStudio.Paradox.Games
         {
             get
             {
-                return new Rectangle(0, 0, paradoxGameForm.Size.Width, paradoxGameForm.Size.Height);
+                return new Rectangle(0, 0, xenkoGameForm.Size.Width, xenkoGameForm.Size.Height);
             }
         }
 
@@ -193,7 +193,7 @@ namespace SiliconStudio.Paradox.Games
         {
             get
             {
-                return paradoxGameForm.WindowState == OpenTK.WindowState.Minimized;
+                return xenkoGameForm.WindowState == OpenTK.WindowState.Minimized;
             }
         }
 
@@ -205,23 +205,23 @@ namespace SiliconStudio.Paradox.Games
 
         protected override void Destroy()
         {
-            if (paradoxGameForm != null)
+            if (xenkoGameForm != null)
             {
-                paradoxGameForm.Load -= gameForm_Resume;
-                paradoxGameForm.OnPause -= gameForm_OnPause;
-                paradoxGameForm.Unload -= gameForm_Unload;
-                paradoxGameForm.RenderFrame -= gameForm_RenderFrame;
+                xenkoGameForm.Load -= gameForm_Resume;
+                xenkoGameForm.OnPause -= gameForm_OnPause;
+                xenkoGameForm.Unload -= gameForm_Unload;
+                xenkoGameForm.RenderFrame -= gameForm_RenderFrame;
 
-                if (paradoxGameForm.GraphicsContext != null)
+                if (xenkoGameForm.GraphicsContext != null)
                 {
-                    paradoxGameForm.GraphicsContext.MakeCurrent(null);
-                    paradoxGameForm.GraphicsContext.Dispose();
+                    xenkoGameForm.GraphicsContext.MakeCurrent(null);
+                    xenkoGameForm.GraphicsContext.Dispose();
                 }
-                ((AndroidWindow)paradoxGameForm.WindowInfo).TerminateDisplay();
-                //paradoxGameForm.Close(); // bug in xamarin
-                paradoxGameForm.Holder.RemoveCallback(paradoxGameForm);
-                paradoxGameForm.Dispose();
-                paradoxGameForm = null;
+                ((AndroidWindow)xenkoGameForm.WindowInfo).TerminateDisplay();
+                //xenkoGameForm.Close(); // bug in xamarin
+                xenkoGameForm.Holder.RemoveCallback(xenkoGameForm);
+                xenkoGameForm.Dispose();
+                xenkoGameForm = null;
             }
 
             base.Destroy();

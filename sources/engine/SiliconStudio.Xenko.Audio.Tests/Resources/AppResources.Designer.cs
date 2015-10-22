@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SiliconStudio.Paradox.Audio.Tests.Resources {
+namespace SiliconStudio.Xenko.Audio.Tests.Resources {
     using System;
     
     
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Audio.Tests.Resources {
         public static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SiliconStudio.Paradox.Audio.Tests.Resources.AppResources", typeof(AppResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SiliconStudio.Xenko.Audio.Tests.Resources.AppResources", typeof(AppResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

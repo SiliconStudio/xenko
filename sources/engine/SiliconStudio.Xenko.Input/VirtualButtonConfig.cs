@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core.Collections;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// Describes the configuration composed by a collection of <see cref="VirtualButtonBinding"/>.

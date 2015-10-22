@@ -11,7 +11,7 @@ using Android.Text.Method;
 using SiliconStudio.Core;
 using Exception = System.Exception;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     public partial class EditText
     {

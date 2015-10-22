@@ -5,7 +5,7 @@
 #include "UtilityFunctions.h"
 
 using namespace System::Text;
-using namespace SiliconStudio::Paradox::Engine;
+using namespace SiliconStudio::Xenko::Engine;
 
 
 String^ aiStringToString(aiString str)
@@ -67,10 +67,10 @@ Quaternion aiQuaternionToQuaternion(aiQuaterniont<float> quat)
 	return ret;
 }
 
-CompressedTimeSpan aiTimeToPdxTimeSpan(double time, double aiTickPerSecond)
+CompressedTimeSpan aiTimeToXkTimeSpan(double time, double aiTickPerSecond)
 {
-	double pdxTime = CompressedTimeSpan::TicksPerSecond / aiTickPerSecond * time;
-	return CompressedTimeSpan((long)pdxTime);
+	double xkTime = CompressedTimeSpan::TicksPerSecond / aiTickPerSecond * time;
+	return CompressedTimeSpan((long)xkTime);
 }
 
 
