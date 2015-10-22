@@ -220,11 +220,12 @@ namespace SiliconStudio.Paradox.Engine
             {
                 InitializeAssetDatabase();
 
-                // Load several default settings
-                if (AutoLoadDefaultSettings && Asset.Exists(GameSettings.AssetUrl))
-                {
+                if(Asset.Exists(GameSettings.AssetUrl))
                     gameSettings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
 
+                // Load several default settings
+                if (AutoLoadDefaultSettings)
+                {
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
                     if (gameSettings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
                     if (gameSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = gameSettings.DefaultBackBufferWidth;
