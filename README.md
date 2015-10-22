@@ -18,7 +18,7 @@ This is the source code for Xenko Game Engine (http://xenko.com/).
 * [Build Instructions](doc/GettingStarted.md)
 * [API Reference](http://doc.xenko.com/html/index.htm?page=api)
 * [Confluence documentation](http://doc.xenko.com/)
-* [Release Notes](doc/ReleaseNotes/ReleaseNotes.md)
+* [Release Notes](doc/ReleaseNotes/ReleaseNotes.1.3.md)
 
 ## Assemblies
 

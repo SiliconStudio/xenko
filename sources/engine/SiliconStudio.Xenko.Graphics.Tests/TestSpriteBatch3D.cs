@@ -70,12 +70,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             DrawScene();
         }
 
-        private void Draw(Sprite sprite, Vector3 position, Vector3? rotationParam = null, Vector2? sizeParam = null, Color? colorParam = null)
+        private void Draw(Sprite sprite, Vector3 position, Vector3? rotationParam = null, Vector2? sizeParam = null, Color4? colorParam = null)
         {
-            var rotation = rotationParam.HasValue ? rotationParam.Value : Vector3.Zero;
+            var rotation = rotationParam ?? Vector3.Zero;
             var worldMatrix = Matrix.RotationYawPitchRoll(rotation.X, rotation.Y, rotation.Z) * Matrix.Translation(position);
-            var color = colorParam.HasValue ? colorParam.Value : Color.White;
-            var size = sizeParam.HasValue ? sizeParam.Value : sprite.Size;
+            var color = colorParam ?? Color4.White;
+            var size = sizeParam ?? sprite.Size;
 
             batch.Draw(sprite.Texture, ref worldMatrix, ref sprite.RegionInternal, ref size, ref color, sprite.Orientation);
         }
@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var sourceRectangle = GetSphereAnimation(time);
             var world = Matrix.RotationYawPitchRoll(0, 0, rotation) * Matrix.Translation(pos);
             var size = new Vector2(SphereWidth, SphereHeight);
-            var color = Color.White;
+            var color = Color4.White;
             batch.Draw(sphere, ref world, ref sourceRectangle, ref size, ref color);
             
             batch.End();

@@ -53,6 +53,13 @@ namespace SiliconStudio.Xenko.Audio
             };
         }
 
+        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        {
+            return
+                entity.Get(AudioListenerComponent.Key) == associatedData.ListenerComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+        }
+
         protected internal override void OnSystemAdd()
         {
             base.OnSystemAdd();

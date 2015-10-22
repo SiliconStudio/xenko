@@ -4,12 +4,11 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
@@ -31,9 +30,13 @@ namespace SiliconStudio.Xenko.Physics
         private Bullet2PhysicsSystem physicsSystem;
         private Simulation simulation;
 
+        public static ProfilingKey CharactersProfilingKey = new ProfilingKey(Simulation.SimulationProfilingKey, "Characters");
+        private ProfilingState charactersProfilingState;
+
         public PhysicsProcessor()
             : base(PhysicsComponent.Key, TransformComponent.Key)
         {
+            charactersProfilingState = Profiler.New(CharactersProfilingKey);
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -42,6 +45,7 @@ namespace SiliconStudio.Xenko.Physics
             {
                 PhysicsComponent = entity.Get(PhysicsComponent.Key),
                 TransformComponent = entity.Get(TransformComponent.Key),
+                ModelComponent = entity.Get(ModelComponent.Key),
             };
 
             data.PhysicsComponent.Simulation = simulation;
@@ -49,9 +53,12 @@ namespace SiliconStudio.Xenko.Physics
             return data;
         }
 
-        protected override void UpdateAssociatedData(Entity entity, ref AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
         {
-            associatedData.ModelComponent = entity.Get(ModelComponent.Key);
+            return
+                entity.Get(PhysicsComponent.Key) == associatedData.PhysicsComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent &&
+                entity.Get(ModelComponent.Key) == associatedData.ModelComponent;
         }
 
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
@@ -151,8 +158,6 @@ namespace SiliconStudio.Xenko.Physics
                         element.Collider = c; //required by the next call
                         element.Collider.Entity = entity; //required by the next call
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
-
-                        c.IsTrigger = false;
 
                         if (defaultGroups)
                         {
@@ -332,10 +337,12 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
         {
+            //this is mostly required for the game studio gizmos
             if (Simulation.DisableSimulation)
             {
                 foreach (var element in data.PhysicsComponent.Elements)
                 {
+                    if(element == null) continue;
                     var e = (PhysicsElementBase)element;
                     e.Data = data;
                 }
@@ -347,16 +354,19 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
+                if (element == null) continue;
                 NewElement((PhysicsElementBase)element, data, entity);
             }
         }
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
+            //this is mostly required for the game studio gizmos
             if (Simulation.DisableSimulation)
             {
                 foreach (var element in data.PhysicsComponent.Elements)
                 {
+                    if (element == null) continue;
                     var e = (PhysicsElementBase)element;
                     e.Data = null;
                 }
@@ -365,6 +375,7 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
+                if (element == null) continue;
                 var e = (PhysicsElementBase)element;
                 DeleteElement(e, true);
             }
@@ -505,21 +516,27 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void UpdateCharacters()
         {
+            charactersProfilingState.Begin();
             //characters need manual updating
-            foreach (var element in characters.Where(x => x.Collider.Enabled))
+            foreach (var element in characters)
             {
+                if(!element.Collider.Enabled) continue;
+
                 var worldTransform = element.Collider.PhysicsWorldTransform;
                 element.UpdateTransformationComponent(ref worldTransform);
+                charactersProfilingState.Mark();
             }
+            charactersProfilingState.End();
         }
 
         public override void Draw(RenderContext context)
         {
-            foreach (var element in boneElements.Where(x => x.Collider.Enabled))
+            foreach (var element in boneElements)
             {
-                var model = element.Data.ModelComponent;
+                if (!element.Collider.Enabled) continue;
 
                 //write to ModelViewHierarchy
+                var model = element.Data.ModelComponent;
                 if ((element.Collider as RigidBody) != null && element.RigidBody.Type == RigidBodyTypes.Dynamic)
                 {
                     model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix = element.BoneWorldMatrixOut;
@@ -529,11 +546,12 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void UpdateBones()
         {
-            foreach (var element in boneElements.Where(x => x.Collider.Enabled))
+            foreach (var element in boneElements)
             {
-                var model = element.Data.ModelComponent;
+                if (!element.Collider.Enabled) continue;
 
                 //read from ModelViewHierarchy
+                var model = element.Data.ModelComponent;
                 element.BoneWorldMatrix = model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix;
             }
         }

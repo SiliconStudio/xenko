@@ -40,7 +40,7 @@ namespace SiliconStudio.Assets.CompilerApp
             if (disableCompressionIds == null) throw new ArgumentNullException("disableCompressionIds");
 
             // Load index maps and mount databases
-            using (var objDatabase = new ObjectDatabase("/data/db", indexName, loadDefaultBundle: false))
+            using (var objDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, indexName, null, false))
             {
 
                 logger.Info("Generate bundles: Scan assets and their dependencies...");
@@ -164,7 +164,7 @@ namespace SiliconStudio.Assets.CompilerApp
                     VirtualFileSystem.CreateDirectory("/data_output/db");
 
                     // Mount output database and delete previous bundles that shouldn't exist anymore (others should be overwritten)
-                    using (var outputDatabase = new ObjectDatabase("/data_output/db", loadDefaultBundle: false))
+                    using (var outputDatabase = new ObjectDatabase("/data_output/db", VirtualFileSystem.ApplicationDatabaseIndexName, loadDefaultBundle: false))
                     {
                         try
                         {

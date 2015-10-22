@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 var imageOrientation = (ImageOrientation)(axis ^ imageAxis);
                 var worldMatrix = GetAdjustedWorldMatrix(ref slider.WorldMatrixInternal, (axis & imageAxis) == 1);
 
-                Batch.DrawImage(image.Texture, null, ref worldMatrix, ref image.RegionInternal, ref slider.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation);
+                Batch.DrawImage(image.Texture, ref worldMatrix, ref image.RegionInternal, ref slider.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation);
                 context.DepthBias += 1;
             }
             
@@ -70,8 +70,8 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 worldMatrix.M43 += worldTranslation * worldMatrix[(axis << 2) + 2];
 
                 var borders = image.BordersInternal;
-                var borderStartIndex = (imageAxis <<1 ) + (slider.IsDirectionReversed? 1 : 0);
-                var borderStopIndex = (imageAxis << 1) + (slider.IsDirectionReversed ? 0 : 1);
+                var borderStartIndex = (imageAxis) + (slider.IsDirectionReversed? 2 : 0);
+                var borderStopIndex = (imageAxis) + (slider.IsDirectionReversed ? 0 : 2);
                 borders[borderStartIndex] = Math.Min(borders[borderStartIndex], size[axis]);
                 borders[borderStopIndex] = Math.Max(0, size[axis] - fullGaugeSize + borders[borderStopIndex]);
                 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 }
                 var region = new RectangleF(position.X, position.Y, newRegionSize.X, newRegionSize.Y);
 
-                Batch.DrawImage(image.Texture, null, ref worldMatrix, ref region, ref size, ref borders, ref color, context.DepthBias, imageOrientation);
+                Batch.DrawImage(image.Texture, ref worldMatrix, ref region, ref size, ref borders, ref color, context.DepthBias, imageOrientation);
                 context.DepthBias += 1;
             }
 
@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 
                 for (int i = 0; i < slider.TickFrequency + 1; i++)
                 {
-                    Batch.DrawImage(image.Texture, null, ref worldMatrix, ref image.RegionInternal, ref size, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation, SwizzleMode.None, true);
+                    Batch.DrawImage(image.Texture, ref worldMatrix, ref image.RegionInternal, ref size, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation, SwizzleMode.None, true);
 
                     worldMatrix.M41 += stepOffset * worldMatrix[(axis << 2) + 0];
                     worldMatrix.M42 += stepOffset * worldMatrix[(axis << 2) + 1];
@@ -149,7 +149,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
                 worldMatrix.M42 += offset * worldMatrix[(axis << 2) + 1];
                 worldMatrix.M43 += offset * worldMatrix[(axis << 2) + 2];
 
-                Batch.DrawImage(image.Texture, null, ref worldMatrix, ref image.RegionInternal, ref size, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation);
+                Batch.DrawImage(image.Texture, ref worldMatrix, ref image.RegionInternal, ref size, ref image.BordersInternal, ref color, context.DepthBias, imageOrientation);
 
                 context.DepthBias += 1;
             }

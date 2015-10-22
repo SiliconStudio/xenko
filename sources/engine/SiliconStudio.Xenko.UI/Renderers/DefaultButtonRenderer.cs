@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.UI.Renderers
             if(image == null || image.Texture == null)
                 return;
 
-            Batch.DrawImage(image.Texture, null, ref button.WorldMatrixInternal, ref image.RegionInternal, ref button.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
+            Batch.DrawImage(image.Texture, ref button.WorldMatrixInternal, ref image.RegionInternal, ref button.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
         }
     }
 }

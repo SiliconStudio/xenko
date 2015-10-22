@@ -61,12 +61,12 @@
     <Compile Include="Data\ColliderShapeAssetDesc.cs" />
     <Compile Include="Elements\PhysicsElementBase.cs" />
     <Compile Include="Elements\PhysicsSkinnedElementBase.cs" />
+    <Compile Include="Elements\PhysicsTriggerElementBase.cs" />
     <Compile Include="Elements\RigidbodyElement.cs" />
     <Compile Include="Elements\StaticColliderElement.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
     <Compile Include="Engine\PhysicsComponent.cs" />
     <Compile Include="Engine\PhysicsProcessor.cs" />
-    <Compile Include="Elements\TriggerElement.cs" />
     <Compile Include="IPhysicsSystem.cs" />
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>

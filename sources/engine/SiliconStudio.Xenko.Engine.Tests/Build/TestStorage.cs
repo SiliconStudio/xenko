@@ -168,7 +168,7 @@ namespace SiliconStudio.Core.Tests.Build
             public TemporaryObjectDatabase()
             {
                 VirtualFileSystem.MountFileSystem("/storage_test", temporaryDirectory.DirectoryPath);
-                ObjectDatabase = new ObjectDatabase("/storage_test");
+                ObjectDatabase = new ObjectDatabase("/storage_test", VirtualFileSystem.ApplicationDatabaseIndexName);
             }
 
             public void Dispose()

@@ -1,12 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 
+using System.Threading;
 using NUnit.Framework;
 using SiliconStudio.BuildEngine.Tests.Commands;
 using SiliconStudio.Core.Diagnostics;
@@ -48,7 +43,7 @@ namespace SiliconStudio.BuildEngine.Tests
         public void TestMultipleDependencies()
         {
             Utils.CleanContext();
-            var builder = Utils.CreateBuilder();
+            var builder = Utils.CreateBuilder(false);
 
             var firstStep = builder.Root.Add(new DummyBlockingCommand { Delay = 100 });
             var parentStep = builder.Root.Add(new DummyBlockingCommand { Delay = 100 });
@@ -73,7 +68,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
         private static void CommandDependenciesCommon(Logger logger, Command command1, Command command2, ResultStatus expectedStatus1, ResultStatus expectedStatus2, bool cancelled = false)
         {
-            var builder = Utils.CreateBuilder();
+            var builder = Utils.CreateBuilder(false);
 
             var step2 = builder.Root.Add(command2);
             var step1 = builder.Root.Add(command1);

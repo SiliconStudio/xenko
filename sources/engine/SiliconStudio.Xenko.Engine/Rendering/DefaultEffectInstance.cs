@@ -72,5 +72,9 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
         }
+
+        public override void Dispose()
+        {
+        }
     }
 }

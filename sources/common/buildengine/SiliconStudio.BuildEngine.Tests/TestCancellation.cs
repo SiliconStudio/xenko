@@ -1,12 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using NUnit.Framework;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using SiliconStudio.BuildEngine.Tests.Commands;
 using SiliconStudio.Core.Diagnostics;
 
@@ -19,7 +15,7 @@ namespace SiliconStudio.BuildEngine.Tests
         public void TestCancellationToken()
         {
             Logger logger = Utils.CleanContext();
-            var builder = Utils.CreateBuilder();
+            var builder = Utils.CreateBuilder(false);
             var commands = new List<Command>();
 
             for (var i = 0; i < 8; ++i)
@@ -45,7 +41,7 @@ namespace SiliconStudio.BuildEngine.Tests
         public void TestCancelCallback()
         {
             Logger logger = Utils.CleanContext();
-            var builder = Utils.CreateBuilder();
+            var builder = Utils.CreateBuilder(false);
             var commands = new List<Command>();
 
             for (var i = 0; i < 10; ++i)
@@ -69,7 +65,7 @@ namespace SiliconStudio.BuildEngine.Tests
         public void TestCancelPrerequisites()
         {
             Logger logger = Utils.CleanContext();
-            var builder = Utils.CreateBuilder();
+            var builder = Utils.CreateBuilder(false);
             var steps1 = new List<BuildStep>();
             var steps2 = new List<BuildStep>();
             var steps3 = new List<BuildStep>();

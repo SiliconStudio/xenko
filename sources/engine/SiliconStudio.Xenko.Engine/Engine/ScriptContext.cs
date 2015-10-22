@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Audio;
 using SiliconStudio.Xenko.Engine.Processors;
@@ -104,6 +105,24 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void Destroy()
         {
+        }
+
+        static private Logger logger;
+
+        [DataMemberIgnore]
+        protected Logger Log
+        {
+            get
+            {
+                if (logger != null)
+                {
+                    return logger;
+                }
+
+                var className = GetType().FullName;
+                logger = GlobalLogger.GetLogger(className);
+                return logger;
+            }
         }
     }
 }

@@ -22,8 +22,6 @@ namespace SiliconStudio.Xenko.Physics
 
         public Collision Pair;
 
-        internal BulletSharp.ManifoldPoint Manifold;
-
         internal GCHandle Handle;
     }
 }

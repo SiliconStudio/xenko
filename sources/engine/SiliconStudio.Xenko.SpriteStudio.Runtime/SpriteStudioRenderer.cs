@@ -229,8 +229,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     worldMatrix.M42 -= centerOffset.X*worldMatrix.M12 + centerOffset.Y*worldMatrix.M22;
 
                     // draw the sprite
-                    var color = (Color)color4;
-                    sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref size, ref color, node.Sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+                    sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref size, ref color4, node.Sprite.Orientation, SwizzleMode.None, renderItem.Depth);
                 }
             }
 

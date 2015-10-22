@@ -186,7 +186,7 @@ namespace SiliconStudio.TextureConverter.Tests
 
             var xk = texTool.ConvertToXenkoImage(image);
 
-            TexImage xkImage = texTool.Load(xk);
+            TexImage xkImage = texTool.Load(xk, false);
 
             Assert.IsTrue(image.Equals(xkImage));
 

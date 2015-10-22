@@ -15,7 +15,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
     [AssetCompiler(typeof(SpriteStudioAnimationAssetCompiler))] // The compiler used to transform this asset to RangeValues
     [AssetDescription(".xkss4a;.pdxss4a", false)] // A description used to display in the asset editor
     [ObjectFactory(typeof(SpriteStudioAnimationAssetFactory))]
-    [ThumbnailCompiler("SiliconStudio.Xenko.GameStudio.Plugin.ThumbnailCompilers.SpriteStudioAnimationThumbnailCompiler, SiliconStudio.Xenko.GameStudio.Plugin")] // TODO: Obsolete
     [Display("Sprite Studio Animation")]
     public class SpriteStudioAnimationAsset : AssetImportTracked
     {

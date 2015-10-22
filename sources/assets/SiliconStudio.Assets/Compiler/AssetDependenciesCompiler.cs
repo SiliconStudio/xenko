@@ -18,9 +18,15 @@ namespace SiliconStudio.Assets.Compiler
             if (context == null) throw new ArgumentNullException("context");
             if (assetItem == null) throw new ArgumentNullException("assetItem");
 
-            assetItem = assetItem.Package.Session.DependencyManager.FindDependencySet(assetItem.Id).Item;
-
             var compilerResult = new AssetCompilerResult();
+
+            var dependencySet = assetItem.Package.Session.DependencyManager.FindDependencySet(assetItem.Id);
+            if (dependencySet == null)
+            {
+                compilerResult.Warning("Could not find dependency for asset [{0}]", assetItem);
+                return compilerResult;
+            }
+            assetItem = dependencySet.Item;
 
             if (assetItem.Package == null)
             {

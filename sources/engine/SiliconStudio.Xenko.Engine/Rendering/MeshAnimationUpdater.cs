@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Updater;
 using SiliconStudio.Xenko.Animations;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 using Quaternion = SiliconStudio.Core.Mathematics.Quaternion;
 using Vector3 = SiliconStudio.Core.Mathematics.Vector3;
 

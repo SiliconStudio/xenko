@@ -26,7 +26,6 @@ namespace SiliconStudio.Xenko.Assets
     [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.GameSettingsThumbnailCompilerQualifiedName)]
     [Display(80, "Game Settings", "A game settings asset")]
     public class GameSettingsAsset : Asset
     {
