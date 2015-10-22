@@ -44,6 +44,7 @@
     <Compile Include="FileEnumerationBuildStep.cs" />
     <Compile Include="IBuildMonitorRemote.cs" />
     <Compile Include="MicroThreadFileProvider.cs" />
+    <Compile Include="StepCounter.cs" />
     <Compile Include="TimeInterval.cs" />
     <Compile Include="TransactionAssetIndexMap.cs" />
     <Compile Include="CommandIOMonitor.cs" />
