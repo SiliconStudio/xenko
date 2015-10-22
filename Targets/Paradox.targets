@@ -25,12 +25,15 @@
     <!--By default, turn on assembly processor-->
     <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioAssemblyProcessor)' == ''">true</SiliconStudioAssemblyProcessor>
 
-    <!-- To preserve existing build layout, if no runtime is specified, we drop it from the name of the build directory -->
-    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == '' and '$(SiliconStudioRuntime)' == ''">$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
-    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == '' and '$(SiliconStudioRuntime)' != ''">$(SiliconStudioPlatform)-$(SiliconStudioRuntime)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
-
     <SiliconStudioUserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\NativeLibs</SiliconStudioUserLibrariesPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(SiliconStudioPlatformFullName)' == ''">
+    <!-- Define the location where to build assemblies. -->
+    <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
+    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioUI)</SiliconStudioPlatformFullName>
+    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioRuntime)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioRuntime)</SiliconStudioPlatformFullName>
+  </PropertyGroup>
+
 
   <!-- 
   *****************************************************************************************************************************
@@ -197,8 +200,9 @@
     <Message Importance="Normal" Text="Detected Graphics Platform $(SiliconStudioParadoxGraphicsApi)"/>
     <PropertyGroup>
       <SiliconStudioPlatformFullNameOriginal>$(SiliconStudioPlatformFullName)</SiliconStudioPlatformFullNameOriginal>
-      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == '' and '$(SiliconStudioRuntime)' == ''">$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
-      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == '' and '$(SiliconStudioRuntime)' != ''">$(SiliconStudioPlatform)-$(SiliconStudioRuntime)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
+      <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
+      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioUI)</SiliconStudioPlatformFullName>
+      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioRuntime)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioRuntime)</SiliconStudioPlatformFullName>
     </PropertyGroup>
     
     <!-- Rewrite dependencies -->

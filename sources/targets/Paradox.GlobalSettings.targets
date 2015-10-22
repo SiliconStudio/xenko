@@ -10,10 +10,14 @@
   <!-- 
     Global Settings per project
   -->
+  <PropertyGroup Condition="'$(SiliconStudioBuildDirectory)' == ''">
+    <!-- Define the location where to build assemblies. -->
+    <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUI)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioRuntime)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioRuntime)</SiliconStudioBuildDirectory>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <!-- To preserve existing build layout, if no runtime is specified, we drop it from the name of the build directory -->
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == '' and '$(SiliconStudioRuntime)' == ''">$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == '' and '$(SiliconStudioRuntime)' != ''">$(SiliconStudioPlatform)-$(SiliconStudioRuntime)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
     <ParadoxDependenciesDir Condition="'$(ParadoxDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\..\deps\</ParadoxDependenciesDir>
     <ParadoxDependenciesDir Condition="'$(ParadoxDependenciesDir)' != '' and !HasTrailingSlash('$(ParadoxDependenciesDir)')">$(ParadoxDependenciesDir)\</ParadoxDependenciesDir>
   </PropertyGroup>
