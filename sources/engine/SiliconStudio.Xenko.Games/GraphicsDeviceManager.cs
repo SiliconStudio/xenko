@@ -24,10 +24,10 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Manages the <see cref="GraphicsDevice"/> lifecycle.

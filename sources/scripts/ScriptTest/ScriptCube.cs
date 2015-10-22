@@ -3,27 +3,27 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-#if PARADOX_YEBIS
-using Paradox.Effects.Yebis;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Effects;
+#if XENKO_YEBIS
+using Xenko.Effects.Yebis;
 #endif
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Effects;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Games.IO;
-using SiliconStudio.Paradox.Games.MicroThreading;
-using SiliconStudio.Paradox.Games.Mathematics;
-using Paradox.Framework.Shaders;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Games.IO;
+using SiliconStudio.Xenko.Games.MicroThreading;
+using SiliconStudio.Xenko.Games.Mathematics;
+using Xenko.Framework.Shaders;
 
 namespace ScriptTest
 {
-    [ParadoxScript]
+    [XenkoScript]
     public class ScriptCube
     {
         public void Dispose()
@@ -45,13 +45,13 @@ namespace ScriptTest
             public float Z;
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task GenerateSimpleCubeEffect(EngineContext engineContext)
         {
             var renderingSetup = RenderingSetup.Singleton;
             renderingSetup.RegisterLighting(engineContext);
 
-#if PARADOX_YEBIS
+#if XENKO_YEBIS
             YebisPlugin yebisPlugin;
             if (engineContext.DataContext.RenderPassPlugins.TryGetValueCast("YebisPlugin", out yebisPlugin))
             {
@@ -106,7 +106,7 @@ namespace ScriptTest
                 ;
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task GenerateTestPrefabs(EngineContext engineContext)
         {
             var entityCube = new Entity("Cube");
@@ -126,14 +126,14 @@ namespace ScriptTest
             engineContext.AssetManager.Save(entitySphere);
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task Run(EngineContext engineContext)
         {
             var renderingSetup = RenderingSetup.Singleton;
             renderingSetup.Initialize(engineContext);
             renderingSetup.RegisterLighting(engineContext);
 
-#if PARADOX_YEBIS
+#if XENKO_YEBIS
             YebisPlugin yebisPlugin;
             if (engineContext.DataContext.RenderPassPlugins.TryGetValueCast("YebisPlugin", out yebisPlugin))
             {

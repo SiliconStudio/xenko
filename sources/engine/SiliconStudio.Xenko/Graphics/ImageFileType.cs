@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Image file format used by <see cref="Image.Save"/>
@@ -29,9 +29,9 @@ namespace SiliconStudio.Paradox.Graphics
     public enum ImageFileType
     {
         /// <summary>
-        /// Paradox image file.
+        /// Xenko image file.
         /// </summary>
-        Paradox,
+        Xenko,
 
         /// <summary>
         /// A DDS file.
@@ -85,8 +85,8 @@ namespace SiliconStudio.Paradox.Graphics
         {
             switch (fileType)
             {
-                case ImageFileType.Paradox:
-                    return ".pdximage";
+                case ImageFileType.Xenko:
+                    return ".xkimage";
                 default:
                     return "." + fileType.ToString().ToLowerInvariant();
             }

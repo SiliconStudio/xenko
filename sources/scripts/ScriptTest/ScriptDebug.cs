@@ -7,18 +7,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Engine.Network;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Configuration;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Engine.Network;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Configuration;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Games.IO;
-using SiliconStudio.Paradox.Games.MicroThreading;
-using SiliconStudio.Paradox.Games.ViewModel;
-using SiliconStudio.Paradox.Games.Serialization;
-using SiliconStudio.Paradox.Prefabs;
+using SiliconStudio.Xenko.Games.IO;
+using SiliconStudio.Xenko.Games.MicroThreading;
+using SiliconStudio.Xenko.Games.ViewModel;
+using SiliconStudio.Xenko.Games.Serialization;
+using SiliconStudio.Xenko.Prefabs;
 
 using ScriptTest2;
 #if NET45
@@ -52,7 +52,7 @@ namespace ScriptTest
         public NetworkChange[] Changes { get; set; }
     }
     
-    [ParadoxScript]
+    [XenkoScript]
     public class ScriptDebug
     {
         private static ViewModelContext selectedEntitiesContext;

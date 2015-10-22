@@ -10,7 +10,7 @@ using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
 using SharpDX.DirectInput;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManager
     {

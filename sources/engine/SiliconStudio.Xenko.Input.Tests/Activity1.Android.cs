@@ -1,11 +1,11 @@
 ﻿using Android.App;
 using Android.OS;
-using SiliconStudio.Paradox.Starter;
+using SiliconStudio.Xenko.Starter;
 
-namespace SiliconStudio.Paradox.Input.Tests
+namespace SiliconStudio.Xenko.Input.Tests
 {
-    [Activity(Label = "Paradox Input", MainLauncher = true, Icon = "@drawable/icon")]
-    public class Activity1 : AndroidParadoxActivity
+    [Activity(Label = "Xenko Input", MainLauncher = true, Icon = "@drawable/icon")]
+    public class Activity1 : AndroidXenkoActivity
     {
         protected override void OnCreate(Bundle bundle)
         {

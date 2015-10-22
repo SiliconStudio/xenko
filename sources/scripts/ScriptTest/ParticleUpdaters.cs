@@ -1,7 +1,7 @@
 ﻿using System;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Particles;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Particles;
 
 namespace ScriptTest
 {

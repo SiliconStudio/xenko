@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Xenko.Effects;
 using SiliconStudio.Shaders.Utilities;
 
 namespace SiliconStudio.Shaders.Tests
@@ -31,10 +31,10 @@ namespace SiliconStudio.Shaders.Tests
             string source = sr.ReadToEnd();
             fileStream.Close();
 
-            var compilerES = new SiliconStudio.Paradox.Graphics.ShaderCompiler.OpenGL.ShaderCompiler(true);
+            var compilerES = new SiliconStudio.Xenko.Graphics.ShaderCompiler.OpenGL.ShaderCompiler(true);
             compilerES.Compile(source, "VSMain", "vs");
 
-            var compiler = new SiliconStudio.Paradox.Graphics.ShaderCompiler.OpenGL.ShaderCompiler();
+            var compiler = new SiliconStudio.Xenko.Graphics.ShaderCompiler.OpenGL.ShaderCompiler();
             compiler.Compile(source, "VSMain", "vs");
         }
 
@@ -48,7 +48,7 @@ namespace SiliconStudio.Shaders.Tests
             string source = sr.ReadToEnd();
             fileStream.Close();
 
-            var compiler = new SiliconStudio.Paradox.Graphics.ShaderCompiler.OpenGL.ShaderCompiler(true);
+            var compiler = new SiliconStudio.Xenko.Graphics.ShaderCompiler.OpenGL.ShaderCompiler(true);
             compiler.Compile(source, "VSMain", "vs");
         }
     }

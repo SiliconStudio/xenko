@@ -7,13 +7,13 @@ using NUnit.Framework;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.ComputeEffect.LambertianPrefiltering;
-using SiliconStudio.Paradox.Rendering.Images.SphericalHarmonics;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering;
+using SiliconStudio.Xenko.Rendering.Images.SphericalHarmonics;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Input;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public class TestLambertPrefilteringSH : TestGameBase
     {

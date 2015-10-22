@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Interface for a scene graphics renderer

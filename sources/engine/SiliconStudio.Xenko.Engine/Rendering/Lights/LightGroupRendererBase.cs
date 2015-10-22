@@ -7,10 +7,10 @@ using System.Runtime.InteropServices;
 using System.Threading;
 
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Rendering.Shadows;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Rendering.Shadows;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Xenko.Rendering.Lights
 {
     public abstract class LightGroupRendererBase
     {

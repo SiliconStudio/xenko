@@ -11,22 +11,22 @@ using NUnit.Framework;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Textures.Packing;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Assets.Textures.Packing;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.TextureConverter;
 
-namespace SiliconStudio.Paradox.Assets.Tests
+namespace SiliconStudio.Xenko.Assets.Tests
 {
     [TestFixture]
     public class TexturePackerTests
     {
-        private const string TexturePackerFolder = "SiliconStudio.Paradox.Assets.Tests/" + "TexturePacking/";
+        private const string TexturePackerFolder = "SiliconStudio.Xenko.Assets.Tests/" + "TexturePacking/";
         private const string ImageOutputPath = TexturePackerFolder+"OutputImages/";
         private const string ImageInputPath = TexturePackerFolder + "IntputImages/";
         private const string GoldImagePath = TexturePackerFolder + "GoldImages/";
 
-        public static void LoadParadoxAssemblies()
+        public static void LoadXenkoAssemblies()
         {
             RuntimeHelpers.RunModuleConstructor(typeof(Asset).Module.ModuleHandle);
         }
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [TestFixtureSetUp]
         public void InitializeTest()
         {
-            LoadParadoxAssemblies();
+            LoadXenkoAssemblies();
             Game.InitializeAssetDatabase();
         }
 
@@ -916,7 +916,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 if (texImage.Format == PixelFormat.B8G8R8A8_UNorm)
                     texTool.SwitchChannel(texImage);
 
-                return texTool.ConvertToParadoxImage(texImage);
+                return texTool.ConvertToXenkoImage(texImage);
             }
         }
     }

@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// A pointer event.

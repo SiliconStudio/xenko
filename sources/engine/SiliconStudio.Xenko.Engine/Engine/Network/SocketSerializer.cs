@@ -8,7 +8,7 @@ using System.Text;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.IO;
 
-namespace SiliconStudio.Paradox.Engine.Network
+namespace SiliconStudio.Xenko.Engine.Network
 {
     // TODO: Switch to internal serialization engine
     public class SocketSerializer

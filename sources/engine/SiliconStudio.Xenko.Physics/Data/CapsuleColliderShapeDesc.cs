@@ -7,7 +7,7 @@ using SiliconStudio.Core.Serialization.Contents;
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.ComponentModel;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<CapsuleColliderShapeDesc>))]
     [DataContract("CapsuleColliderShapeDesc")]

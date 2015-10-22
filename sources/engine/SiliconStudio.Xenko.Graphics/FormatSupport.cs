@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>	
     /// <p>Which resources are supported for a given format and given device (see <strong><see cref="SharpDX.Direct3D11.Device.CheckFormatSupport"/></strong> and <strong><see cref="SharpDX.Direct3D11.Device.CheckFeatureSupport"/></strong>).</p>	

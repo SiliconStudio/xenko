@@ -8,8 +8,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>SiliconStudio.Presentation.Dialogs</RootNamespace>
     <AssemblyName>SiliconStudio.Presentation.Dialogs</AssemblyName>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
-    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionToolLow)</TargetFrameworkVersion>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>

@@ -4,7 +4,7 @@ using System.Xml;
 using System.Xml.Linq;
 using SiliconStudio.Core.VisualStudio;
 
-namespace SiliconStudio.Paradox.ProjectGenerator
+namespace SiliconStudio.Xenko.ProjectGenerator
 {
     public class ProjectProcessorContext
     {

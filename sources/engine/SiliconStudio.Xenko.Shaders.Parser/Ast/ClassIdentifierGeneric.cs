@@ -5,7 +5,7 @@ using System.Text;
 
 using SiliconStudio.Shaders.Ast;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Ast
+namespace SiliconStudio.Xenko.Shaders.Parser.Ast
 {
     public class ClassIdentifierGeneric : Identifier
     {

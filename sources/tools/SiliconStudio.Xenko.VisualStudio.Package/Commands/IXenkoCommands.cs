@@ -5,21 +5,21 @@ using EnvDTE80;
 
 using NShader;
 
-namespace SiliconStudio.Paradox.VisualStudio.Commands
+namespace SiliconStudio.Xenko.VisualStudio.Commands
 {
     /// <summary>
-    /// Describes paradox commands accessed by VS Package to current paradox package (so that VSPackage doesn't depend on Paradox assemblies).
+    /// Describes xenko commands accessed by VS Package to current xenko package (so that VSPackage doesn't depend on Xenko assemblies).
     /// </summary>
     /// <remarks>
     /// WARNING: Modifying this contract or any of it's dependencies will break backwards compatibility!
-    /// Introduce a new contract instead (e.g. IParadoxCommands2).
+    /// Introduce a new contract instead (e.g. IXenkoCommands2).
     /// </remarks>
-    public interface IParadoxCommands
+    public interface IXenkoCommands
     {
         /// <summary>
         /// Initialize parsing (this method can be called from a separate thread).
         /// </summary>
-        void Initialize(string paradoxSdkDir);
+        void Initialize(string xenkoSdkDir);
 
         /// <summary>
         /// Test whether we should reload these commands (assemblies changed)

@@ -9,12 +9,12 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets.Sprite;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Assets.Sprite;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.TextureConverter;
 
-namespace SiliconStudio.Paradox.Assets.Textures
+namespace SiliconStudio.Xenko.Assets.Textures
 {
     /// <summary>
     /// An helper for the compile commands that needs to process textures.
@@ -474,7 +474,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
                 return ResultStatus.Cancelled;
 
             // Save the texture
-            using (var outputImage = textureTool.ConvertToParadoxImage(texImage))
+            using (var outputImage = textureTool.ConvertToXenkoImage(texImage))
             {
                 if (cancellationToken.IsCancellationRequested) // abort the process if cancellation is demanded
                     return ResultStatus.Cancelled;

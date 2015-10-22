@@ -5,11 +5,11 @@ using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering.Composers;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Materials;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// A default bundle of <see cref="ImageEffect"/>.

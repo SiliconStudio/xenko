@@ -3,9 +3,9 @@
 
 using System;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     /// <summary>
     /// An attribute used to associate a default <see cref="IEntityComponentRenderer"/> to an entity component.

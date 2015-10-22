@@ -4,9 +4,9 @@ using System.IO;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Audio.Wave;
+using SiliconStudio.Xenko.Audio.Wave;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     /// <summary>
     /// Tests for <see cref="SoundEffect"/> and <see cref="SoundEffectInstance"/>.

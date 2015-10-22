@@ -3,14 +3,14 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
 using SiliconStudio.Shaders.Visitor;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     class ShaderDependencyVisitor : ShaderVisitor
     {
@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             else if (typeBase is ShaderTypeName)
             {
                 // Special case for ShaderTypeName as we must generate an error if it is not found
-                log.Error(ParadoxMessageCode.ErrorClassNotFound, typeBase.Span, typeBase.Name.Text);
+                log.Error(XenkoMessageCode.ErrorClassNotFound, typeBase.Span, typeBase.Name.Text);
             }
         }
     }

@@ -5,7 +5,7 @@ using System;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     [DataSerializer(typeof(CompressedTimeSpanSerializer))]
     [StructLayout(LayoutKind.Sequential)]

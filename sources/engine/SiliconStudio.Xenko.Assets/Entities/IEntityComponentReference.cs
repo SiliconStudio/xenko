@@ -4,9 +4,9 @@
 using System;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     public interface IEntityComponentReference
     {

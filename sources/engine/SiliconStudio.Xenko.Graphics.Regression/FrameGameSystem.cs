@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public class FrameGameSystem : GameSystemBase
     {

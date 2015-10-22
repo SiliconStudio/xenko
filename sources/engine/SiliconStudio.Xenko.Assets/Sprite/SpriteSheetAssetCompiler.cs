@@ -14,12 +14,12 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Assets.Textures.Packing;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Assets.Textures.Packing;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.TextureConverter;
 
-namespace SiliconStudio.Paradox.Assets.Sprite
+namespace SiliconStudio.Xenko.Assets.Sprite
 {
     /// <summary>
     /// The <see cref="SpriteSheetAsset"/> compiler.
@@ -374,7 +374,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
                     if (texImage.Format == PixelFormat.B8G8R8A8_UNorm || texImage.Format == PixelFormat.B8G8R8A8_UNorm_SRgb)
                         texTool.SwitchChannel(texImage);
 
-                    return texTool.ConvertToParadoxImage(texImage);
+                    return texTool.ConvertToXenkoImage(texImage);
                 }
             }
 

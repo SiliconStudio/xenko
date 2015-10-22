@@ -5,11 +5,11 @@ using System.Diagnostics;
 using System.Linq;
 
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     [DebuggerDisplay("Mixin: {mixinName}")]
     internal class ModuleMixinInfo

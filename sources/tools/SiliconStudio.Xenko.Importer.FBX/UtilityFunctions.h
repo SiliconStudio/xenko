@@ -5,7 +5,7 @@
 
 using namespace System;
 using namespace SiliconStudio::Core::Mathematics;
-using namespace SiliconStudio::Paradox::Animations;
+using namespace SiliconStudio::Xenko::Animations;
 
 // conversion functions
 Color4 FbxDouble3ToColor4(FbxDouble3 vector, float alphaValue = 1.0f);

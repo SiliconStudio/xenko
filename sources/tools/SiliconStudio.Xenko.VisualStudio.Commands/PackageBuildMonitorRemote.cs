@@ -8,9 +8,9 @@ using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.VisualStudio.Commands;
+using SiliconStudio.Xenko.VisualStudio.Commands;
 
-namespace SiliconStudio.Paradox.VisualStudio.BuildEngine
+namespace SiliconStudio.Xenko.VisualStudio.BuildEngine
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single)]
     public class PackageBuildMonitorRemote : IForwardSerializableLogRemote

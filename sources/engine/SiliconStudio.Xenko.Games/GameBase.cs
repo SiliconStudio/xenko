@@ -25,12 +25,12 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Games.Time;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Games.Time;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Assets;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// The game.

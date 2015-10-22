@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.DxtWrapper;
 using SiliconStudio.TextureConverter.Requests;
@@ -711,11 +711,11 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
 
         /// <summary>
-        /// Retrieves the native format from <see cref="SiliconStudio.Paradox.Graphics.PixelFormat"/>.
+        /// Retrieves the native format from <see cref="SiliconStudio.Xenko.Graphics.PixelFormat"/>.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>The corresponding <see cref="DXGI_FORMAT"/></returns>
-        private DXGI_FORMAT RetrieveNativeFormat(SiliconStudio.Paradox.Graphics.PixelFormat format)
+        private DXGI_FORMAT RetrieveNativeFormat(SiliconStudio.Xenko.Graphics.PixelFormat format)
         {
             return (DXGI_FORMAT)format;
         }

@@ -3,12 +3,12 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     internal class ShaderVirtualTable
     {
@@ -48,26 +48,26 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="errorLogger"></param>
         public void ReplaceVirtualMethod(MethodDeclaration methodDeclaration, LoggerResult errorLogger)
         {
-            var baseDeclarationMixin = (string)methodDeclaration.GetTag(ParadoxTags.BaseDeclarationMixin);
+            var baseDeclarationMixin = (string)methodDeclaration.GetTag(XenkoTags.BaseDeclarationMixin);
             foreach (var dict in VirtualTableGroup.Select(x => x.Value))
             {
                 for (int i = 0; i < dict.Length; ++i)
                 {
                     var method = dict[i];
-                    var originalDecl = (string)method.GetTag(ParadoxTags.BaseDeclarationMixin);
+                    var originalDecl = (string)method.GetTag(XenkoTags.BaseDeclarationMixin);
 
                     // TODO: take typedefs into account...
                     if (originalDecl == baseDeclarationMixin && method.IsSameSignature(methodDeclaration))
                     {
-                        if (method.Qualifiers.Contains(ParadoxStorageQualifier.Stage) && !methodDeclaration.Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                        if (method.Qualifiers.Contains(XenkoStorageQualifier.Stage) && !methodDeclaration.Qualifiers.Contains(XenkoStorageQualifier.Stage))
                         {
-                            errorLogger.Warning(ParadoxMessageCode.WarningMissingStageKeyword, methodDeclaration.Span, methodDeclaration, (methodDeclaration.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName);
-                            methodDeclaration.Qualifiers |= ParadoxStorageQualifier.Stage;
+                            errorLogger.Warning(XenkoMessageCode.WarningMissingStageKeyword, methodDeclaration.Span, methodDeclaration, (methodDeclaration.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName);
+                            methodDeclaration.Qualifiers |= XenkoStorageQualifier.Stage;
                         }
-                        else if (!method.Qualifiers.Contains(ParadoxStorageQualifier.Stage) && methodDeclaration.Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                        else if (!method.Qualifiers.Contains(XenkoStorageQualifier.Stage) && methodDeclaration.Qualifiers.Contains(XenkoStorageQualifier.Stage))
                         {
-                            errorLogger.Error(ParadoxMessageCode.ErrorExtraStageKeyword, methodDeclaration.Span, methodDeclaration, method, (methodDeclaration.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName);
-                            methodDeclaration.Qualifiers.Values.Remove(ParadoxStorageQualifier.Stage);
+                            errorLogger.Error(XenkoMessageCode.ErrorExtraStageKeyword, methodDeclaration.Span, methodDeclaration, method, (methodDeclaration.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName);
+                            methodDeclaration.Qualifiers.Values.Remove(XenkoStorageQualifier.Stage);
                         }
 
                         dict[i] = methodDeclaration;
@@ -87,11 +87,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             var finalDict = new MethodDeclaration[methodDeclarations.Count];
             foreach (var methodDecl in methodDeclarations)
             {
-                var vtableReference = (VTableReference)methodDecl.GetTag(ParadoxTags.VirtualTableReference);
+                var vtableReference = (VTableReference)methodDecl.GetTag(XenkoTags.VirtualTableReference);
                 finalDict[vtableReference.Slot] = methodDecl;
 
                 // TODO: override/abstract behavior
-                //if (methodDecl.Qualifiers.Contains(ParadoxStorageQualifier.Override))
+                //if (methodDecl.Qualifiers.Contains(XenkoStorageQualifier.Override))
                     LookForBaseDeclarationMixin(methodDecl, errorLogger);
             }
 
@@ -105,7 +105,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns></returns>
         public VTableReference GetBaseDeclaration(MethodDeclaration methodDeclaration)
         {
-            var baseMethodDeclMixin = methodDeclaration.GetTag(ParadoxTags.BaseDeclarationMixin) as string;
+            var baseMethodDeclMixin = methodDeclaration.GetTag(XenkoTags.BaseDeclarationMixin) as string;
             var slot = -1;
             var vt = VirtualTableGroup[baseMethodDeclMixin];
             for (int i = 0; i < vt.Length; ++i)
@@ -152,32 +152,32 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 for (int i = 0; i < dict.Length; ++i)
                 {
                     var method = dict[i];
-                    var baseDeclarationMixin = (string)method.GetTag(ParadoxTags.BaseDeclarationMixin);
+                    var baseDeclarationMixin = (string)method.GetTag(XenkoTags.BaseDeclarationMixin);
 
                     // TODO: take typedefs into account...
                     if (method.IsSameSignature(methodDeclaration))
                     {
-                        var sourceShader = ((ModuleMixin)methodDeclaration.GetTag(ParadoxTags.ShaderScope)).MixinName;
+                        var sourceShader = ((ModuleMixin)methodDeclaration.GetTag(XenkoTags.ShaderScope)).MixinName;
 
                         // test override
-                        if (methodDeclaration is MethodDefinition && method is MethodDefinition && !methodDeclaration.Qualifiers.Contains(ParadoxStorageQualifier.Override))
-                            errorLogger.Error(ParadoxMessageCode.ErrorMissingOverride, method.Span, methodDeclaration, sourceShader);
+                        if (methodDeclaration is MethodDefinition && method is MethodDefinition && !methodDeclaration.Qualifiers.Contains(XenkoStorageQualifier.Override))
+                            errorLogger.Error(XenkoMessageCode.ErrorMissingOverride, method.Span, methodDeclaration, sourceShader);
                         if (!(methodDeclaration is MethodDefinition))
-                            errorLogger.Error(ParadoxMessageCode.ErrorOverrindingDeclaration, method.Span, methodDeclaration, sourceShader);
+                            errorLogger.Error(XenkoMessageCode.ErrorOverrindingDeclaration, method.Span, methodDeclaration, sourceShader);
 
-                        if (method.Qualifiers.Contains(ParadoxStorageQualifier.Stage) && !methodDeclaration.Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                        if (method.Qualifiers.Contains(XenkoStorageQualifier.Stage) && !methodDeclaration.Qualifiers.Contains(XenkoStorageQualifier.Stage))
                         {
-                            errorLogger.Warning(ParadoxMessageCode.WarningMissingStageKeyword, methodDeclaration.Span, methodDeclaration, (methodDeclaration.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName);
-                            methodDeclaration.Qualifiers |= ParadoxStorageQualifier.Stage;
+                            errorLogger.Warning(XenkoMessageCode.WarningMissingStageKeyword, methodDeclaration.Span, methodDeclaration, (methodDeclaration.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName);
+                            methodDeclaration.Qualifiers |= XenkoStorageQualifier.Stage;
                         }
-                        else if (!method.Qualifiers.Contains(ParadoxStorageQualifier.Stage) && methodDeclaration.Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                        else if (!method.Qualifiers.Contains(XenkoStorageQualifier.Stage) && methodDeclaration.Qualifiers.Contains(XenkoStorageQualifier.Stage))
                         {
-                            errorLogger.Error(ParadoxMessageCode.ErrorExtraStageKeyword, methodDeclaration.Span, methodDeclaration, method, (methodDeclaration.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName);
-                            methodDeclaration.Qualifiers.Values.Remove(ParadoxStorageQualifier.Stage);
+                            errorLogger.Error(XenkoMessageCode.ErrorExtraStageKeyword, methodDeclaration.Span, methodDeclaration, method, (methodDeclaration.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName);
+                            methodDeclaration.Qualifiers.Values.Remove(XenkoStorageQualifier.Stage);
                         }
 
                         dict[i] = methodDeclaration;
-                        methodDeclaration.SetTag(ParadoxTags.BaseDeclarationMixin, baseDeclarationMixin);
+                        methodDeclaration.SetTag(XenkoTags.BaseDeclarationMixin, baseDeclarationMixin);
                     }
                 }
             }

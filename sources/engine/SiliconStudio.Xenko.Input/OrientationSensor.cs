@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// This class represents a sensor of type Orientation. It measures the orientation of device in the real world.

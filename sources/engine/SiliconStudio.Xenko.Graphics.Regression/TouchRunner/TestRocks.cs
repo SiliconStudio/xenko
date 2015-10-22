@@ -25,7 +25,7 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Api;
 
-namespace SiliconStudio.Paradox.UnitTesting {
+namespace SiliconStudio.Xenko.UnitTesting {
 	
 	static class TestRock {
 		

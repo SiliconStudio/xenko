@@ -7,9 +7,9 @@ using System.Diagnostics;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
     /// A list of <see cref="LightComponentCollection"/> for a particular type of light (direct light, direct light + shadows, environment lights).

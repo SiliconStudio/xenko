@@ -2,16 +2,16 @@
 setlocal
 rmdir /S /Q "%LOCALAPPDATA%\temp\SiliconStudio"
 REM Temporary due to shader changes
-rmdir /S /Q sources\engine\SiliconStudio.Paradox.Graphics.Tests\obj\app_data
+rmdir /S /Q sources\engine\SiliconStudio.Xenko.Graphics.Tests\obj\app_data
 REM -------------------------------------------------------------------
 REM Global config
 REM -------------------------------------------------------------------
-set PARADOX_SOLUTION=Paradox.sln
-set PARADOX_PLATFORM=Configuration=Release;Platform=Mixed Platforms
-set PARADOX_BUILD_LOG=%~n0.log
-set PARADOX_OUTPUT_DIR=%~dp0\Bin\Windows-AnyCPU-Direct3D
+set XENKO_SOLUTION=Xenko.sln
+set XENKO_PLATFORM=Configuration=Release;Platform=Mixed Platforms
+set XENKO_BUILD_LOG=%~n0.log
+set XENKO_OUTPUT_DIR=%~dp0\Bin\Windows-AnyCPU-Direct3D
 REM -------------------------------------------------------------------
-REM Build Paradox
+REM Build Xenko
 REM -------------------------------------------------------------------
 SET ProgFiles86Root=%ProgramFiles(x86)%
 IF NOT "%ProgFiles86Root%"=="" GOTO win64
@@ -23,21 +23,21 @@ echo Error, unable to find path Visual Studio 2012 Path: [%VS_VCVARSALL%]
 exit /b
 :vcvarok
 call "%VS_VCVARSALL%" x86
-echo Building Paradox, Please wait...
+echo Building Xenko, Please wait...
 REM Explicitly remove the Bin directory to make a full cleanup
-IF EXIST "%PARADOX_OUTPUT_DIR%" rmdir /S /Q %PARADOX_OUTPUT_DIR%
+IF EXIST "%XENKO_OUTPUT_DIR%" rmdir /S /Q %XENKO_OUTPUT_DIR%
 REM msbuild Clean
-IF EXIST "%PARADOX_BUILD_LOG%" del /F "%PARADOX_BUILD_LOG%"
+IF EXIST "%XENKO_BUILD_LOG%" del /F "%XENKO_BUILD_LOG%"
 REM /p:GenerateDoc=true
-msbuild /nologo /tv:4.0 /t:Clean /verbosity:minimal /fl "/flp:Summary;Verbosity=minimal;logfile=%PARADOX_BUILD_LOG%" "/p:%PARADOX_PLATFORM%" %PARADOX_SOLUTION%
+msbuild /nologo /tv:4.0 /t:Clean /verbosity:minimal /fl "/flp:Summary;Verbosity=minimal;logfile=%XENKO_BUILD_LOG%" "/p:%XENKO_PLATFORM%" %XENKO_SOLUTION%
 if %ERRORLEVEL% neq 0 GOTO :error_pause
 REM msbuild Build
-IF EXIST "%PARADOX_BUILD_LOG%" del /F "%PARADOX_BUILD_LOG%"
-msbuild /nologo /tv:4.0 /t:Build /verbosity:minimal /fl "/flp:Summary;Verbosity=minimal;logfile=%PARADOX_BUILD_LOG%" "/p:%PARADOX_PLATFORM%" %PARADOX_SOLUTION%
+IF EXIST "%XENKO_BUILD_LOG%" del /F "%XENKO_BUILD_LOG%"
+msbuild /nologo /tv:4.0 /t:Build /verbosity:minimal /fl "/flp:Summary;Verbosity=minimal;logfile=%XENKO_BUILD_LOG%" "/p:%XENKO_PLATFORM%" %XENKO_SOLUTION%
 if %ERRORLEVEL% neq 0 GOTO :error_pause
 GOTO :end
 :error_pause
-echo Check full error log in %PARADOX_BUILD_LOG%
+echo Check full error log in %XENKO_BUILD_LOG%
 pause
 :end
 

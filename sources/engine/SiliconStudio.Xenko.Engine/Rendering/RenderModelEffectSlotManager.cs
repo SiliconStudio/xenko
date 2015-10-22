@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Handles <see cref="RenderModel"/> used by <see cref="ModelComponentRenderer"/>.

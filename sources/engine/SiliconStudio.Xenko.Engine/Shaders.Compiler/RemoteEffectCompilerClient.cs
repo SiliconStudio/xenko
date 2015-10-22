@@ -2,10 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Threading.Tasks;
-using SiliconStudio.Paradox.Engine.Network;
-using SiliconStudio.Paradox.Shaders.Compiler.Internals;
+using SiliconStudio.Xenko.Engine.Network;
+using SiliconStudio.Xenko.Shaders.Compiler.Internals;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler
+namespace SiliconStudio.Xenko.Shaders.Compiler
 {
     /// <summary>
     /// Used internally by <see cref="RemoteEffectCompiler"/> to compile shaders remotely,
@@ -34,7 +34,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
         public async Task<SocketMessageLayer> Connect(Guid? packageId)
         {
-            var url = string.Format("/service/{0}/SiliconStudio.Paradox.EffectCompilerServer.exe", ParadoxVersion.CurrentAsText);
+            var url = string.Format("/service/{0}/SiliconStudio.Xenko.EffectCompilerServer.exe", XenkoVersion.CurrentAsText);
             if (packageId.HasValue)
                 url += string.Format("?packageid={0}", packageId.Value);
 

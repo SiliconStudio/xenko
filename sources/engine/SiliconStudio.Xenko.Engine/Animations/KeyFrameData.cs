@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     /// <summary>
     /// A single key frame value.

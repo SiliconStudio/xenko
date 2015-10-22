@@ -5,9 +5,9 @@ using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Graphics.Regression;
 
-namespace SiliconStudio.Paradox.Input.Tests
+namespace SiliconStudio.Xenko.Input.Tests
 {
     class BasicInputTest : GraphicsTestBase
     {

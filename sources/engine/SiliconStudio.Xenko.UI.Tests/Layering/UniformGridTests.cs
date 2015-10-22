@@ -3,9 +3,9 @@
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.UI.Panels;
+using SiliconStudio.Xenko.UI.Panels;
 
-namespace SiliconStudio.Paradox.UI.Tests.Layering
+namespace SiliconStudio.Xenko.UI.Tests.Layering
 {
     /// <summary>
     /// A class that contains test functions for layering of the <see cref="UniformGrid"/> class.

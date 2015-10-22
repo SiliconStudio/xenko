@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class Character : Collider
     {

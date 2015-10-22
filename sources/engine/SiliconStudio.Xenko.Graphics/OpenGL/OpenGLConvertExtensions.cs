@@ -1,8 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
 using System;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using ES30 = OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
@@ -20,13 +20,13 @@ using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
 using PrimitiveTypeGl = OpenTK.Graphics.OpenGL.PrimitiveType;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     internal static class OpenGLConvertExtensions
     {
         // Define missing constants
         // values taken form https://www.khronos.org/registry/gles/api/GLES3/gl3.h
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private const PixelInternalFormat DepthComponent16 = (PixelInternalFormat)0x81A5;
         private const PixelInternalFormat Depth24Stencil8 = (PixelInternalFormat)0x88F0;
         private const PixelInternalFormat DepthComponent32f = (PixelInternalFormat)0x8CAC;
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Graphics
         private const PixelInternalFormat Srgb8Alpha8 = PixelInternalFormat.Srgb8Alpha8;
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         private const TextureWrapMode TextureWrapModeMirroredRepeat = (TextureWrapMode)0x8370;
 #else
         private const TextureWrapMode TextureWrapModeMirroredRepeat = TextureWrapMode.MirroredRepeat;
@@ -73,7 +73,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
         }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
         public static ES30.PrimitiveType ToOpenGL(this PrimitiveType primitiveType)
         {
@@ -139,7 +139,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
         }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         public static ES30.PrimitiveType ToOpenGLES(this PrimitiveType primitiveType)
         {
             switch (primitiveType)
@@ -182,7 +182,7 @@ namespace SiliconStudio.Paradox.Graphics
             switch (addressMode)
             {
                 case TextureAddressMode.Border:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     return TextureWrapMode.ClampToBorder;
 #endif
                 case TextureAddressMode.Clamp:
@@ -275,7 +275,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             compressed = false;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             // check formats is the device is initialized with OpenGL ES 2
             if (graphicsDevice.IsOpenGLES2)
             {
@@ -338,7 +338,7 @@ namespace SiliconStudio.Paradox.Graphics
                     pixelSize = 1;
                     break;
                 case PixelFormat.R8_UNorm:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (!graphicsDevice.HasTextureRG && graphicsDevice.IsOpenGLES2)
                     {
                         internalFormat = PixelInternalFormat.Luminance;
@@ -360,7 +360,7 @@ namespace SiliconStudio.Paradox.Graphics
                     pixelSize = 4;
                     break;
                 case PixelFormat.B8G8R8A8_UNorm:
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (!graphicsDevice.HasExtTextureFormatBGRA8888)
                         throw new NotSupportedException();
 
@@ -508,7 +508,7 @@ namespace SiliconStudio.Paradox.Graphics
                     pixelSize = 2;
                     type = PixelType.UnsignedByte;
                     break;  
-#elif SILICONSTUDIO_PLATFORM_ANDROID || !SILICONSTUDIO_PLATFORM_MONO_MOBILE && SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#elif SILICONSTUDIO_PLATFORM_ANDROID || !SILICONSTUDIO_PLATFORM_MONO_MOBILE && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Desktop OpenGLES
                 case PixelFormat.ETC1:
                     // TODO: Runtime check for extension?

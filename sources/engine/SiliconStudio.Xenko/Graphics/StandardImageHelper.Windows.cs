@@ -8,7 +8,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// This class is responsible to provide image loader for png, gif, bmp.
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 try
                 {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                     // Directly load image as RGBA instead of BGRA, because OpenGL ES devices don't support it out of the box (extension).
                     image.Description.Format = PixelFormat.R8G8B8A8_UNorm;
                     CopyMemoryBGRA(image.PixelBuffer[0].DataPointer, bitmapData.Scan0, image.PixelBuffer[0].BufferStride);

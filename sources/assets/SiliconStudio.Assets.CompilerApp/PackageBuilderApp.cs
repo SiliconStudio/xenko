@@ -17,12 +17,12 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Model;
-using SiliconStudio.Paradox.Assets.SpriteFont;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Rendering.ProceduralModels;
-using SiliconStudio.Paradox.SpriteStudio.Offline;
+using SiliconStudio.Xenko.Assets.Model;
+using SiliconStudio.Xenko.Assets.SpriteFont;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.ProceduralModels;
+using SiliconStudio.Xenko.SpriteStudio.Offline;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
@@ -52,14 +52,14 @@ namespace SiliconStudio.Assets.CompilerApp
             RuntimeHelpers.RunModuleConstructor(typeof(ModelAsset).Module.ModuleHandle);
             RuntimeHelpers.RunModuleConstructor(typeof(SpriteStudioAnimationAsset).Module.ModuleHandle);
             //var project = new Package();
-            //project.Save("test.pdxpkg");
+            //project.Save("test.xkpkg");
 
             //Thread.Sleep(10000);
             //var spriteFontAsset = StaticFontAsset.New();
-            //Asset.Save("test.pdxfnt", spriteFontAsset);
+            //Asset.Save("test.xkfnt", spriteFontAsset);
             //project.Refresh();
 
-            //args = new string[] { "test.pdxpkg", "-o:app_data", "-b:tmp", "-t:1" };
+            //args = new string[] { "test.xkpkg", "-o:app_data", "-b:tmp", "-t:1" };
 
             var exeName = Path.GetFileName(Assembly.GetExecutingAssembly().Location);
             var showHelp = false;
@@ -69,7 +69,7 @@ namespace SiliconStudio.Assets.CompilerApp
             var p = new OptionSet
             {
                 "Copyright (C) 2011-2014 Silicon Studio Corporation. All Rights Reserved",
-                "Paradox Build Tool - Version: "
+                "Xenko Build Tool - Version: "
                 +
                 String.Format(
                     "{0}.{1}.{2}",
@@ -89,7 +89,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 { "project-configuration=", "Project configuration", v => options.ProjectConfiguration = v },
                 { "platform=", "Platform name", v => options.Platform = (PlatformType)Enum.Parse(typeof(PlatformType), v) },
                 { "graphics-platform=", "Graphics Platform name", v => options.GraphicsPlatform = (GraphicsPlatform)Enum.Parse(typeof(GraphicsPlatform), v) },
-                { "get-graphics-platform", "Get Graphics Platform name (needs a pdxpkg and a profile)", v => options.GetGraphicsPlatform = v != null },
+                { "get-graphics-platform", "Get Graphics Platform name (needs a xkpkg and a profile)", v => options.GetGraphicsPlatform = v != null },
                 { "solution-file=", "Solution File Name", v => options.SolutionFile = v },
                 { "package-id=", "Package Id from the solution file", v => options.PackageId = Guid.Parse(v) },
                 { "package-file=", "Input Package File Name", v => options.PackageFile = v },
@@ -284,7 +284,7 @@ namespace SiliconStudio.Assets.CompilerApp
         private static string FormatLog(ILogMessage message)
         {
             //$filename($row,$column): $error_type $error_code: $error_message
-            //C:\Code\Paradox\sources\assets\SiliconStudio.Assets.CompilerApp\PackageBuilder.cs(89,13,89,70): warning CS1717: Assignment made to same variable; did you mean to assign something else?
+            //C:\Code\Xenko\sources\assets\SiliconStudio.Assets.CompilerApp\PackageBuilder.cs(89,13,89,70): warning CS1717: Assignment made to same variable; did you mean to assign something else?
             var builder = new StringBuilder();
             builder.Append(message.Module ?? "AssetCompiler");
             builder.Append(": ");

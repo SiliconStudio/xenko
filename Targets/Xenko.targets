@@ -1,6 +1,6 @@
-<Project InitialTargets="SiliconStudioParadoxCheckRequirements" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project InitialTargets="SiliconStudioXenkoCheckRequirements" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <!--Check requirements when running this build file -->
-  <Target Name="SiliconStudioParadoxCheckRequirements">
+  <Target Name="SiliconStudioXenkoCheckRequirements">
     <Error Condition="'$(SiliconStudioPlatform)' == ''" Text="The property %24(SiliconStudioPlatform) must be defined by the project"/>
 
     <!-- If we compile without Visual Studio, still properly resolve platform if SolutionPath is given -->
@@ -15,17 +15,17 @@
 
   <PropertyGroup>
     <!-- Defaults for CPU and GraphicsApi based on platform-->
-    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows'">Direct3D11</SiliconStudioParadoxGraphicsApi>
-    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'WindowsStore'">Direct3D11</SiliconStudioParadoxGraphicsApi>
-    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'WindowsPhone'">Direct3D11</SiliconStudioParadoxGraphicsApi>
-    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows10'">Direct3D11</SiliconStudioParadoxGraphicsApi>
-    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioParadoxGraphicsApi>
-    <SiliconStudioParadoxGraphicsApi Condition="'$(SiliconStudioParadoxGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioParadoxGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows'">Direct3D11</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'WindowsStore'">Direct3D11</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'WindowsPhone'">Direct3D11</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows10'">Direct3D11</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioXenkoGraphicsApi>
 
     <!--By default, turn on assembly processor-->
     <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioAssemblyProcessor)' == ''">true</SiliconStudioAssemblyProcessor>
 
-    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == ''">$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
+    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioPlatformFullName)' == ''">$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
 
     <SiliconStudioUserLibrariesPath Condition="'$(SiliconStudioCurrentPackagePath)' != ''">$([System.IO.Path]::GetDirectoryName($(SiliconStudioCurrentPackagePath)))\NativeLibs</SiliconStudioUserLibrariesPath>
   </PropertyGroup>
@@ -38,12 +38,12 @@
 
   <!-- Setup global properties for this package -->
   <PropertyGroup>
-    <SiliconStudioPackageParadox Condition="'$(SiliconStudioPackageParadox)' == ''">$(MSBuildThisFileDirectory)..</SiliconStudioPackageParadox>
+    <SiliconStudioPackageXenko Condition="'$(SiliconStudioPackageXenko)' == ''">$(MSBuildThisFileDirectory)..</SiliconStudioPackageXenko>
     <!-- Resolve path (remove ".." elements), for better support on Xamarin iOS -->
-    <SiliconStudioPackageParadox>$([System.IO.Path]::GetFullPath('$(SiliconStudioPackageParadox)'))</SiliconStudioPackageParadox>
-    <SiliconStudioPackageParadoxBin Condition="'$(SiliconStudioPackageParadoxBin)' == ''">$(SiliconStudioPackageParadox)\Bin</SiliconStudioPackageParadoxBin>
-    <SiliconStudioPackageParadoxSdkBin Condition="'$(SiliconStudioPackageParadoxSdkBin)' == ''">$(SiliconStudioPackageParadoxBin)\Windows-Direct3D11</SiliconStudioPackageParadoxSdkBin>
-    <SiliconStudioPackageParadoxPlatformBin Condition="'$(SiliconStudioPackageParadoxPlatformBin)' == ''">$(SiliconStudioPackageParadoxBin)\$(SiliconStudioPlatformFullName)</SiliconStudioPackageParadoxPlatformBin>
+    <SiliconStudioPackageXenko>$([System.IO.Path]::GetFullPath('$(SiliconStudioPackageXenko)'))</SiliconStudioPackageXenko>
+    <SiliconStudioPackageXenkoBin Condition="'$(SiliconStudioPackageXenkoBin)' == ''">$(SiliconStudioPackageXenko)\Bin</SiliconStudioPackageXenkoBin>
+    <SiliconStudioPackageXenkoSdkBin Condition="'$(SiliconStudioPackageXenkoSdkBin)' == ''">$(SiliconStudioPackageXenkoBin)\Windows-Direct3D11</SiliconStudioPackageXenkoSdkBin>
+    <SiliconStudioPackageXenkoPlatformBin Condition="'$(SiliconStudioPackageXenkoPlatformBin)' == ''">$(SiliconStudioPackageXenkoBin)\$(SiliconStudioPlatformFullName)</SiliconStudioPackageXenkoPlatformBin>
   </PropertyGroup>
 
   <!---
@@ -55,49 +55,49 @@
     <When Condition="'$(SiliconStudioUnitTest)' != 'true'">
       <ItemGroup>
         <Reference Include="SiliconStudio.Core">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Core.dll</HintPath>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Core.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Core.IO">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Core.IO.dll</HintPath>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Core.IO.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Core.Mathematics">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Core.Mathematics.dll</HintPath>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Core.Mathematics.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Core.MicroThreading">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Core.MicroThreading.dll</HintPath>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Core.MicroThreading.dll</HintPath>
         </Reference>
         <Reference Include="SiliconStudio.Core.Serialization">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Core.Serialization.dll</HintPath>
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Core.Serialization.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.Audio">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Audio.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko.Audio">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Audio.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.Engine">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Engine.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko.Engine">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Engine.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.Games">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Games.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko.Games">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.Graphics">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Graphics.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko.Graphics">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Graphics.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.Input">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Input.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko.Input">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Input.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.Shaders">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Shaders.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko.Shaders">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Shaders.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.UI">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.UI.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko.UI">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.UI.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.Physics">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Physics.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko.Physics">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Physics.dll</HintPath>
         </Reference>
-        <Reference Include="SiliconStudio.Paradox.SpriteStudio.Runtime">
-          <HintPath>$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.SpriteStudio.Runtime.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko.SpriteStudio.Runtime">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -124,15 +124,15 @@
   *****************************************************************************************************************************
   -->
   <Target Name="SiliconStudioRunAssemblyProcessor" AfterTargets="CoreCompile" DependsOnTargets="ResolveProjectReferences" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true'">
-    <WriteLinesToFile File="$(IntermediateOutputPath)ParadoxReferences.cache" Lines="@(ReferencePath)" Overwrite="true" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)XenkoReferences.cache" Lines="@(ReferencePath)" Overwrite="true" />
     <PropertyGroup>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">--auto-notify-property --parameter-key --auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
       <!-- If building user solutions (not unit tests), provide assembly processor with ProjectReferences paths so that they can be readded to assembly references for serialization module initializer (otherwise .exe don't have real reference on Game assemblies with auto load scene game) -->
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioUnitTest)' != 'true'">$(SiliconStudioAssemblyProcessorOptions) @(_ResolvedProjectReferencePaths->'--add-reference=%22%(Identity)%22',' ')</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(DocumentationFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --docfile="$(DocumentationFile)"</SiliconStudioAssemblyProcessorOptions>
       <!-- Physics and SpriteStudio assembly is actually hard coded/referenced here, remove once a better system is in place! -->
-      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.Physics.dll" --add-reference="$(SiliconStudioPackageParadoxPlatformBin)\SiliconStudio.Paradox.SpriteStudio.Runtime.dll" --references-file="$(IntermediateOutputPath)ParadoxReferences.cache"</SiliconStudioAssemblyProcessorOptions>
-      <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)"</SiliconStudioAssemblyProcessorCommand>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Physics.dll" --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll" --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)"</SiliconStudioAssemblyProcessorCommand>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorCommand) --signkeyfile="$(AssemblyOriginatorKeyFile)" --delete-on-error</SiliconStudioAssemblyProcessorCommand>
     </PropertyGroup>
     
@@ -167,39 +167,39 @@
     <!--asset OutputPath for other platforms -->
     <SiliconStudioCompileAssetOutputPath Condition="'$(SiliconStudioCompileAssetOutputPath)' == ''">$(TargetDir)data</SiliconStudioCompileAssetOutputPath>
 
-    <SiliconStudioParadoxCompileAssetCommand Condition="'$(SiliconStudioParadoxCompileAssetCommand)' == ''">$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.Assets.CompilerApp.exe</SiliconStudioParadoxCompileAssetCommand>
+    <SiliconStudioXenkoCompileAssetCommand Condition="'$(SiliconStudioXenkoCompileAssetCommand)' == ''">$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.Assets.CompilerApp.exe</SiliconStudioXenkoCompileAssetCommand>
 
-    <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(DisableAssetCompilerExecServerProxy)' == 'true' Or '$(SiliconStudioParadoxDisableAssetCompilerExecServerProxy)' == 'true'">&quot;$(SiliconStudioParadoxCompileAssetCommand)&quot;</SiliconStudioParadoxCompileAssetCommandProxy>
-    <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(SiliconStudioParadoxCompileAssetCommandProxy)' == ''">&quot;$(SiliconStudioPackageParadoxSdkBin)\SiliconStudio.Assets.CompilerClient.exe&quot;</SiliconStudioParadoxCompileAssetCommandProxy>
+    <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(DisableAssetCompilerExecServerProxy)' == 'true' Or '$(SiliconStudioXenkoDisableAssetCompilerExecServerProxy)' == 'true'">&quot;$(SiliconStudioXenkoCompileAssetCommand)&quot;</SiliconStudioXenkoCompileAssetCommandProxy>
+    <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(SiliconStudioXenkoCompileAssetCommandProxy)' == ''">&quot;$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.Assets.CompilerClient.exe&quot;</SiliconStudioXenkoCompileAssetCommandProxy>
   </PropertyGroup>
   
-  <Target Name="SiliconStudioGetGraphicsPlatform" Inputs="$(SiliconStudioCurrentPackagePath)" Outputs="$(IntermediateOutputPath)ParadoxGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
+  <Target Name="SiliconStudioGetGraphicsPlatform" Inputs="$(SiliconStudioCurrentPackagePath)" Outputs="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
     <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
     <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
     
-    <!-- Get the real graphics platform from .pdxpkg -->
+    <!-- Get the real graphics platform from .xkpkg -->
     <Exec WorkingDirectory="$(TargetDir)" ConsoleToMSBuild="true"
-          Command="&quot;$(SiliconStudioParadoxCompileAssetCommand)&quot; --platform=$(SiliconStudioPlatform) --profile=$(SiliconStudioBuildProfile) --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --get-graphics-platform">
-      <Output TaskParameter="ConsoleOutput" PropertyName="SiliconStudioParadoxGraphicsApiComputed" />
+          Command="&quot;$(SiliconStudioXenkoCompileAssetCommand)&quot; --platform=$(SiliconStudioPlatform) --profile=$(SiliconStudioBuildProfile) --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --get-graphics-platform">
+      <Output TaskParameter="ConsoleOutput" PropertyName="SiliconStudioXenkoGraphicsApiComputed" />
     </Exec>
     
     <!-- Write result back to disk -->
-    <WriteLinesToFile File="$(IntermediateOutputPath)ParadoxGraphicsPlatform.cache" Lines="$(SiliconStudioParadoxGraphicsApiComputed)" Overwrite="true" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" Lines="$(SiliconStudioXenkoGraphicsApiComputed)" Overwrite="true" />
   </Target>
   
   <Target Name="SiliconStudioUpdateGraphicsPlatform" DependsOnTargets="SiliconStudioGetGraphicsPlatform" Condition="'$(SiliconStudioCurrentPackagePath)' != ''">
-    <ReadLinesFromFile File="$(IntermediateOutputPath)ParadoxGraphicsPlatform.cache">
-      <Output TaskParameter="Lines" PropertyName="SiliconStudioParadoxGraphicsApi"/>
+    <ReadLinesFromFile File="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache">
+      <Output TaskParameter="Lines" PropertyName="SiliconStudioXenkoGraphicsApi"/>
     </ReadLinesFromFile>
-    <Message Importance="Normal" Text="Detected Graphics Platform $(SiliconStudioParadoxGraphicsApi)"/>
+    <Message Importance="Normal" Text="Detected Graphics Platform $(SiliconStudioXenkoGraphicsApi)"/>
     <PropertyGroup>
       <SiliconStudioPlatformFullNameOriginal>$(SiliconStudioPlatformFullName)</SiliconStudioPlatformFullNameOriginal>
-      <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioParadoxGraphicsApi)</SiliconStudioPlatformFullName>
+      <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
     </PropertyGroup>
     
     <!-- Rewrite dependencies -->
     <ItemGroup>
-      <CustomAdditionalCompileInputs Include="$(IntermediateOutputPath)ParadoxGraphicsPlatform.cache" />
+      <CustomAdditionalCompileInputs Include="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" />
       <Reference Condition="$([System.String]::new('%(Reference.HintPath)').Contains('$(SiliconStudioPlatformFullNameOriginal)'))">
         <HintPath>$([System.String]::new('%(Reference.HintPath)').Replace('$(SiliconStudioPlatformFullNameOriginal)','$(SiliconStudioPlatformFullName)'))</HintPath>
       </Reference>
@@ -212,11 +212,11 @@
     <Error Condition="'$(SiliconStudioBuildProfile)' == ''" Text="The asset compiler is requiring the property (SiliconStudioBuildProfile) to be defined"/>
     <Error Condition="!Exists('$(SiliconStudioCurrentPackagePath)')" Text="Unable to find package decription from path [$(SiliconStudioCurrentPackagePath)]"/>
     <PropertyGroup>
-      <SiliconStudioParadoxCompileAssetCommandProxy>$(SiliconStudioParadoxCompileAssetCommandProxy) $(SiliconStudioParadoxCompileAssetOptions) --disable-auto-compile --project-configuration &quot;$(Configuration)&quot; --platform=$(SiliconStudioPlatform) --graphics-platform=$(SiliconStudioParadoxGraphicsApi) --profile=$(SiliconStudioBuildProfile) --project-configuration=$(Configuration) --output-path=&quot;$(SiliconStudioCompileAssetOutputPath)&quot; --build-path=&quot;$(SiliconStudioCompileAssetBuildPath)&quot; --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --log-pipe=&quot;$(SiliconStudioBuildEngineLogPipeUrl)&quot;</SiliconStudioParadoxCompileAssetCommandProxy>
-      <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(SiliconStudioBuildEngineLogVerbose)' != ''">$(SiliconStudioParadoxCompileAssetCommandProxy) --verbose</SiliconStudioParadoxCompileAssetCommandProxy>
-      <SiliconStudioParadoxCompileAssetCommandProxy Condition="'$(SiliconStudioBuildEngineLogDebug)' != ''">$(SiliconStudioParadoxCompileAssetCommandProxy) --debug</SiliconStudioParadoxCompileAssetCommandProxy>
+      <SiliconStudioXenkoCompileAssetCommandProxy>$(SiliconStudioXenkoCompileAssetCommandProxy) $(SiliconStudioXenkoCompileAssetOptions) --disable-auto-compile --project-configuration &quot;$(Configuration)&quot; --platform=$(SiliconStudioPlatform) --graphics-platform=$(SiliconStudioXenkoGraphicsApi) --profile=$(SiliconStudioBuildProfile) --project-configuration=$(Configuration) --output-path=&quot;$(SiliconStudioCompileAssetOutputPath)&quot; --build-path=&quot;$(SiliconStudioCompileAssetBuildPath)&quot; --package-file=&quot;$(SiliconStudioCurrentPackagePath)&quot; --log-pipe=&quot;$(SiliconStudioBuildEngineLogPipeUrl)&quot;</SiliconStudioXenkoCompileAssetCommandProxy>
+      <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(SiliconStudioBuildEngineLogVerbose)' != ''">$(SiliconStudioXenkoCompileAssetCommandProxy) --verbose</SiliconStudioXenkoCompileAssetCommandProxy>
+      <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(SiliconStudioBuildEngineLogDebug)' != ''">$(SiliconStudioXenkoCompileAssetCommandProxy) --debug</SiliconStudioXenkoCompileAssetCommandProxy>
     </PropertyGroup>
-    <Exec WorkingDirectory="$(TargetDir)" Command="$(SiliconStudioParadoxCompileAssetCommandProxy)" />
+    <Exec WorkingDirectory="$(TargetDir)" Command="$(SiliconStudioXenkoCompileAssetCommandProxy)" />
     <!-- Android specific: include build output in _AndroidAssetsDest so that APK is regenerated -->
     <ItemGroup Condition="'$(SiliconStudioPlatform)' == 'Android'">
       <_AndroidAssetsDest Include="$(SiliconStudioCompileAssetOutputPath)\**\*.*" />

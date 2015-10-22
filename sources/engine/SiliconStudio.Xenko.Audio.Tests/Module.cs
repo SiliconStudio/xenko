@@ -4,7 +4,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     // Somehow it helps Resharper NUnit to run module initializer first (to determine unit test configuration).
     public class Module

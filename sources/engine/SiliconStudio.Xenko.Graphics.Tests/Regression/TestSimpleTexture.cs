@@ -4,10 +4,10 @@ using System;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics.Regression;
 
-namespace SiliconStudio.Paradox.Graphics.Tests.Regression
+namespace SiliconStudio.Xenko.Graphics.Tests.Regression
 {
     [TestFixture]
     public class TestSimpleTexture : GraphicsTestBase

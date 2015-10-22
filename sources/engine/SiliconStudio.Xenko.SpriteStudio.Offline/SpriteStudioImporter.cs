@@ -6,10 +6,10 @@ using System.Xml.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.SpriteStudio.Runtime;
+using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.SpriteStudio.Runtime;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Offline
+namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioImporter : AssetImporterBase
     {

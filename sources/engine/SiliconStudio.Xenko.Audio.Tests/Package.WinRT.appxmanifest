@@ -14,7 +14,7 @@
     <Resource Language="x-generate" />
   </Resources>
   <Applications>
-    <Application Id="App.WinRT" Executable="$targetnametoken$.exe" EntryPoint="SiliconStudio.Paradox.Audio.Tests.Manual.App.WinRT">
+    <Application Id="App.WinRT" Executable="$targetnametoken$.exe" EntryPoint="SiliconStudio.Xenko.Audio.Tests.Manual.App.WinRT">
       <VisualElements DisplayName="Audio.Tests.Manual" Logo="Assets\Logo.png" SmallLogo="Assets\SmallLogo.png" Description="Audio.Tests.WinRT.Manual" ForegroundText="light" BackgroundColor="#464646">
         <DefaultTile ShowName="allLogos" />
         <SplashScreen Image="Assets\SplashScreen.png" />

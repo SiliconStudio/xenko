@@ -7,7 +7,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     [DataContract]
     public class Mesh

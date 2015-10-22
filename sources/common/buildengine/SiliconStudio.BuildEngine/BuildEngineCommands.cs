@@ -242,7 +242,7 @@ namespace SiliconStudio.BuildEngine
             if (!objectIds.Add(objectId))
                 return;
 
-            using (var stream = AssetManager.FileProvider.OpenStream("obj/" + objectId, VirtualFileMode.Open, VirtualFileAccess.Read))
+            using (var stream = AssetManager.FileProvider.OpenStream(DatabaseFileProvider.ObjectIdUrl + objectId, VirtualFileMode.Open, VirtualFileAccess.Read))
             {
                 // Read chunk header
                 var streamReader = new BinarySerializationReader(stream);

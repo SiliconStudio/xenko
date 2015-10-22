@@ -13,7 +13,7 @@ using SharpDX.Mathematics.Interop;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
 
     // We use MediaFoundation.MediaSession on windows desktop to play SoundMusics.

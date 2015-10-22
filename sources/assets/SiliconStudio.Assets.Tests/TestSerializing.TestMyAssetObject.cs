@@ -9,7 +9,7 @@ namespace SiliconStudio.Assets.Tests
     public partial class TestSerializing
     {
         [DataContract("MyAsset")]
-        [AssetDescription(".pdxobj")]
+        [AssetDescription(".xkobj")]
         public class MyAsset : Asset
         {
             public MyAsset()

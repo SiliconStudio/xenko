@@ -42,11 +42,11 @@ namespace SiliconStudio.BuildEngine
         void StartBuild(Guid buildId, DateTime time);
 
         [OperationContract(IsOneWay = true)]
-        [UseParadoxDataContractSerializer]
+        [UseXenkoDataContractSerializer]
         void SendBuildStepInfo(Guid buildId, long executionId, string description, DateTime startTime);
 
         [OperationContract(IsOneWay = true)]
-        [UseParadoxDataContractSerializer]
+        [UseXenkoDataContractSerializer]
         void SendCommandLog(Guid buildId, DateTime startTime, long microthreadId, List<SerializableTimestampLogMessage> messages);
 
         [OperationContract(IsOneWay = true)]

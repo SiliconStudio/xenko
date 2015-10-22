@@ -4,10 +4,10 @@ using System;
 using System.Linq;
 using System.Text;
 
-using SiliconStudio.Paradox.Shaders.Parser;
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Shaders.Parser;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 
-namespace SiliconStudio.Paradox.VisualStudio.Commands.Shaders
+namespace SiliconStudio.Xenko.VisualStudio.Commands.Shaders
 {
     class ShaderKeyFileHelper
     {
@@ -17,7 +17,7 @@ namespace SiliconStudio.Paradox.VisualStudio.Commands.Shaders
             string result;
             try
             {
-                var parsingResult = ParadoxShaderParser.TryPreProcessAndParse(inputFileContent, inputFileName);
+                var parsingResult = XenkoShaderParser.TryPreProcessAndParse(inputFileContent, inputFileName);
 
                 if (parsingResult.HasErrors)
                 {

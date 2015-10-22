@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Analysis;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Analysis;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     [DebuggerDisplay("ModuleMixin {MixinName}")]
     internal class ModuleMixin
@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <summary>
         /// The result of the parsing
         /// </summary>
-        public ParadoxParsingInfo ParsingInfo { get; set; }
+        public XenkoParsingInfo ParsingInfo { get; set; }
 
         /// <summary>
         /// Occurence ID in the inheritance tree
@@ -224,7 +224,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>the overloaded MethodDeclaration</returns>
         public MethodDeclaration GetMethodFromDeclaration(MethodDeclaration methodDeclaration)
         {
-            var info = (VTableReference)methodDeclaration.GetTag(ParadoxTags.VirtualTableReference);
+            var info = (VTableReference)methodDeclaration.GetTag(XenkoTags.VirtualTableReference);
             return VirtualTable.GetMethod(info.Shader, info.Slot);
         }
 
@@ -235,7 +235,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>the overloaded MethodDeclaration</returns>
         public MethodDeclaration GetMethodFromExpression(Expression expression)
         {
-            var info = (VTableReference)expression.GetTag(ParadoxTags.VirtualTableReference);
+            var info = (VTableReference)expression.GetTag(XenkoTags.VirtualTableReference);
             return VirtualTable.GetMethod(info.Shader, info.Slot);
         }
 
@@ -247,7 +247,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>the base MethodDeclaration</returns>
         public MethodDeclaration GetBaseMethodFromExpression(Expression expression, ModuleMixin mixin)
         {
-            var info = (VTableReference)expression.GetTag(ParadoxTags.VirtualTableReference);
+            var info = (VTableReference)expression.GetTag(XenkoTags.VirtualTableReference);
             var thisMethod = VirtualTable.GetMethod(info.Shader, info.Slot);
 
             if (thisMethod == null)

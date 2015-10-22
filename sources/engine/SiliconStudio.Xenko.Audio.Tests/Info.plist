@@ -5,7 +5,7 @@
 	<key>CFBundleDisplayName</key>
 	<string>PDX Audio</string>
 	<key>CFBundleIdentifier</key>
-	<string>jp.co.siliconstudio.paradox.audio.tests</string>
+	<string>jp.co.siliconstudio.xenko.audio.tests</string>
 	<key>CFBundleShortVersionString</key>
 	<string>1.0</string>
 	<key>CFBundleVersion</key>

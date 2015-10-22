@@ -6,27 +6,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.TextureConverter.Requests
 {
     /// <summary>
-    /// Request to export a texture to a Paradox <see cref="Image"/> instance.
+    /// Request to export a texture to a Xenko <see cref="Image"/> instance.
     /// </summary>
-    internal class ExportToParadoxRequest : IRequest
+    internal class ExportToXenkoRequest : IRequest
     {
 
-        public override RequestType Type { get { return RequestType.ExportToParadox; } }
+        public override RequestType Type { get { return RequestType.ExportToXenko; } }
 
         /// <summary>
-        /// The paradox <see cref="Image"/> which will contains the exported texture.
+        /// The xenko <see cref="Image"/> which will contains the exported texture.
         /// </summary>
-        public Image PdxImage { get; set; }
+        public Image XkImage { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ExportToParadoxRequest"/> class.
+        /// Initializes a new instance of the <see cref="ExportToXenkoRequest"/> class.
         /// </summary>
-        public ExportToParadoxRequest()
+        public ExportToXenkoRequest()
         {
         }
     }

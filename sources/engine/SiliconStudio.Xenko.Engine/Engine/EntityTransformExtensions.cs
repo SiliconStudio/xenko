@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Extensions for <see cref="Entity"/> and the <see cref="TransformComponent"/>.

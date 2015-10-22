@@ -4,20 +4,20 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Analysis;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Analysis;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
 
 using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class ParadoxShaderMixer
+    internal class XenkoShaderMixer
     {
-        private readonly static string FlipRendertargetVariableName = "ParadoxFlipRendertarget";
+        private readonly static string FlipRendertargetVariableName = "XenkoFlipRendertarget";
         
         #region Public members
 
@@ -84,7 +84,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// or
         /// context
         /// </exception>
-        public ParadoxShaderMixer(ModuleMixin moduleMixin, LoggerResult log, Dictionary<string, ModuleMixin> context, CompositionDictionary compositionsPerVariable, CloneContext cloneContext = null)
+        public XenkoShaderMixer(ModuleMixin moduleMixin, LoggerResult log, Dictionary<string, ModuleMixin> context, CompositionDictionary compositionsPerVariable, CloneContext cloneContext = null)
         {
             if (moduleMixin == null)
                 throw new ArgumentNullException("moduleMixin");
@@ -211,7 +211,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var arrayType = composition.Key.Type as ArrayType;
                 if (arrayType.Dimensions.Count > 1)
                 {
-                    log.Error(ParadoxMessageCode.ErrorMultidimensionalCompositionArray, arrayType.Span, arrayType, composition.Value.First().MixinName);
+                    log.Error(XenkoMessageCode.ErrorMultidimensionalCompositionArray, arrayType.Span, arrayType, composition.Value.First().MixinName);
                     return;
                 }
                 arrayType.Dimensions[0] = new LiteralExpression(composition.Value.Count);
@@ -220,17 +220,17 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             // then rerun the semantic analysis
             foreach (var composition in CompositionsPerVariable.Where(x => x.Key.Type is ArrayType))
             {
-                var moduleMixin = GetTopMixin(composition.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin);
+                var moduleMixin = GetTopMixin(composition.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin);
                 var compilationContext = moduleMixin.MinimalContext.Where(x => !(moduleMixin.InheritanceList.Contains(x) || x == moduleMixin)).ToList();
 
                 // rerun the semantic analysis in all the shader that inherits from the one where the composition was declared.
                 foreach (var inheritedMixin in moduleMixin.InheritanceList)
-                    inheritedMixin.ParsingInfo = ParadoxSemanticAnalysis.RunAnalysis(inheritedMixin, compilationContext, true);
-                moduleMixin.ParsingInfo = ParadoxSemanticAnalysis.RunAnalysis(moduleMixin, compilationContext, true);
+                    inheritedMixin.ParsingInfo = XenkoSemanticAnalysis.RunAnalysis(inheritedMixin, compilationContext, true);
+                moduleMixin.ParsingInfo = XenkoSemanticAnalysis.RunAnalysis(moduleMixin, compilationContext, true);
 
                 if (moduleMixin.ParsingInfo.ErrorsWarnings.HasErrors)
                     return;
-                    //throw new Exception("Semantic analysis failed in ParadoxShaderMixer");
+                    //throw new Exception("Semantic analysis failed in XenkoShaderMixer");
             }
         }
 
@@ -304,7 +304,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             foreach (var variable in mixin.LocalVirtualTable.Variables.Select(x => x.Variable))
             {
-                if (variable.Qualifiers.Contains(ParadoxStorageQualifier.Extern))
+                if (variable.Qualifiers.Contains(XenkoStorageQualifier.Extern))
                 {
                     List<ModuleMixin> mixins;
                     if (CompositionsPerVariable.TryGetValue(variable, out mixins))
@@ -325,9 +325,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     }
                 }
 
-                if (!(variable.Qualifiers.Values.Contains(ParadoxStorageQualifier.Stream)
-                      || variable.Qualifiers.Values.Contains(ParadoxStorageQualifier.PatchStream)
-                      || variable.Qualifiers.Values.Contains(ParadoxStorageQualifier.Extern)))
+                if (!(variable.Qualifiers.Values.Contains(XenkoStorageQualifier.Stream)
+                      || variable.Qualifiers.Values.Contains(XenkoStorageQualifier.PatchStream)
+                      || variable.Qualifiers.Values.Contains(XenkoStorageQualifier.Extern)))
                 {
                     var attribute = variable.Attributes.OfType<AttributeDeclaration>().FirstOrDefault(x => x.Name == "Link");
                     if (attribute == null)
@@ -358,7 +358,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     }
 
                     // Append location to key in case it is a local variable
-                    if (!variable.Qualifiers.Values.Contains(ParadoxStorageQualifier.Stage))
+                    if (!variable.Qualifiers.Values.Contains(XenkoStorageQualifier.Stage))
                     {
                         attribute.Parameters[0].SubLiterals = null; // set to null to avoid conflict with the member Value
                         attribute.Parameters[0].Value = (string)attribute.Parameters[0].Value + context;
@@ -371,7 +371,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 var attribute = variable.Attributes.OfType<AttributeDeclaration>().FirstOrDefault(x => x.Name == "Link");
                 if (attribute == null)
                 {
-                    var baseClassName = (variable.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinGenericName;
+                    var baseClassName = (variable.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinGenericName;
 
                     attribute = new AttributeDeclaration { Name = new Identifier("Link"), Parameters = new List<Literal> { new Literal(baseClassName + "." + variable.Name.Text) } };
                     variable.Attributes.Add(attribute);
@@ -406,10 +406,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             
             foreach (var variable in mixin.LocalVirtualTable.Variables)
             {
-                if (variable.Variable.Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                if (variable.Variable.Qualifiers.Contains(XenkoStorageQualifier.Stage))
                 {
                     var shaderName = variable.Shader.Name.Text;
-                    var sameVar = mainModuleMixin.ClassReferences.VariablesReferences.FirstOrDefault(x => x.Key.Name.Text == variable.Variable.Name.Text && (x.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName == shaderName).Key;
+                    var sameVar = mainModuleMixin.ClassReferences.VariablesReferences.FirstOrDefault(x => x.Key.Name.Text == variable.Variable.Name.Text && (x.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName == shaderName).Key;
                     if (sameVar != null)
                         continue;
                 }
@@ -483,7 +483,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 index = (int)(indexerExpression.Index as LiteralExpression).Value;
             }
 
-            if (result is Variable && (result as Variable).Qualifiers.Contains(ParadoxStorageQualifier.Extern) && !((result as Variable).Type is ArrayType))
+            if (result is Variable && (result as Variable).Qualifiers.Contains(XenkoStorageQualifier.Extern) && !((result as Variable).Type is ArrayType))
                 mixin = CompositionsPerVariable[result as Variable][index];
 
             return result;
@@ -498,7 +498,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             if (foundVar != null)
                 return foundVar.Variable;
 
-            log.Error(ParadoxMessageCode.ErrorVariableNotFound, new SourceSpan(), varName, mixin.MixinName);
+            log.Error(XenkoMessageCode.ErrorVariableNotFound, new SourceSpan(), varName, mixin.MixinName);
             return null;
         }
 
@@ -518,18 +518,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             var topMixin = GetTopMixin(mixin);
             if (topMixin == null)
             {
-                log.Error(ParadoxMessageCode.ErrorTopMixinNotFound, expression.Span, expression);
+                log.Error(XenkoMessageCode.ErrorTopMixinNotFound, expression.Span, expression);
                 return null;
             }
             var foundMethod = topMixin.GetMethodFromExpression(expression);
             if (foundMethod == null)
             {
-                log.Error(ParadoxMessageCode.ErrorCallNotFound, expression.Span, expression);
+                log.Error(XenkoMessageCode.ErrorCallNotFound, expression.Span, expression);
                 return null;
             }
-            if (foundMethod.Qualifiers.Contains(ParadoxStorageQualifier.Abstract))
+            if (foundMethod.Qualifiers.Contains(XenkoStorageQualifier.Abstract))
             {
-                log.Error(ParadoxMessageCode.ErrorCallToAbstractMethod, expression.Span, expression, foundMethod);
+                log.Error(XenkoMessageCode.ErrorCallToAbstractMethod, expression.Span, expression, foundMethod);
                 return null;
             }
             return foundMethod;
@@ -559,7 +559,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     result = FindVariable(target, ref mixin);
 
                 var index = (int)(indexerExpression.Index as LiteralExpression).Value;
-                if (result is Variable && (result as Variable).Qualifiers.Contains(ParadoxStorageQualifier.Extern))
+                if (result is Variable && (result as Variable).Qualifiers.Contains(XenkoStorageQualifier.Extern))
                     mixin = CompositionsPerVariable[result as Variable][index];
             }
         }
@@ -570,7 +570,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         private void BuildStageInheritance()
         {
             foreach (var mixin in MixinInheritance)
-                InsertStageMethods(mixin.LocalVirtualTable.Methods.Select(x => x.Method).Where(x => x.Qualifiers.Values.Contains(ParadoxStorageQualifier.Stage)).ToList(), GetTopMixin(mixin));
+                InsertStageMethods(mixin.LocalVirtualTable.Methods.Select(x => x.Method).Where(x => x.Qualifiers.Values.Contains(XenkoStorageQualifier.Stage)).ToList(), GetTopMixin(mixin));
         }
 
         /// <summary>
@@ -584,7 +584,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 if (extMethod is MethodDefinition)
                 {
-                    var isClone = extMethod.Qualifiers.Values.Contains(ParadoxStorageQualifier.Clone);
+                    var isClone = extMethod.Qualifiers.Values.Contains(XenkoStorageQualifier.Clone);
                     var newEntry = true;
 
                     // find a corresponding method
@@ -598,14 +598,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                             continue;
 
                         var firstOccurence = stageMethodList.First();
-                        var occurenceMixin = firstOccurence.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+                        var occurenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
                         var listVTReference = occurenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
 
                         if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
                             continue;
 
                         newEntry = false;
-                        var extMixin = extMethod.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+                        var extMixin = extMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
                         if (isClone || extMixin.OccurenceId == 1)
                             stageMethodList.Add(extMethod);
                     }
@@ -688,7 +688,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>the correct called method</returns>
         private MethodDeclaration FindStaticMethod(MethodInvocationExpression expression)
         {
-            var defMixin = (expression.Target.TypeInference.Declaration as MethodDeclaration).GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+            var defMixin = (expression.Target.TypeInference.Declaration as MethodDeclaration).GetTag(XenkoTags.ShaderScope) as ModuleMixin;
             defMixin = mixContext[defMixin.MixinName];
             return defMixin.GetMethodFromExpression(expression.Target);
         }
@@ -700,7 +700,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>the base declaration</returns>
         private MethodDeclaration GetBaseStageMethod(MethodInvocationExpression methodCall)
         {
-            var mixin = methodCall.GetTag(ParadoxTags.CurrentShader) as ModuleMixin;
+            var mixin = methodCall.GetTag(XenkoTags.CurrentShader) as ModuleMixin;
             var vtReference = mixin.VirtualTable.GetBaseDeclaration(methodCall.Target.TypeInference.Declaration as MethodDeclaration);
             foreach (var stageMethodList in StageMethodInheritance)
             {
@@ -708,7 +708,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     continue;
 
                 var firstOccurence = stageMethodList.First();
-                var occurenceMixin = firstOccurence.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+                var occurenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
                 var listVTReference = occurenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
 
                 if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
@@ -718,13 +718,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 for (int j = stageMethodList.Count - 1; j > 0; --j)
                 {
                     var decl = stageMethodList[j];
-                    if (decl.GetTag(ParadoxTags.ShaderScope) as ModuleMixin == mixin)
+                    if (decl.GetTag(XenkoTags.ShaderScope) as ModuleMixin == mixin)
                         return stageMethodList[j - 1];
                 }
                 //for (int j = stageMethodList.Count - 1; j >= 0; --j)
                 //{
                 //    var decl = stageMethodList[j];
-                //    if (decl.GetTag(ParadoxTags.ShaderScope) as ModuleMixin == mixin)
+                //    if (decl.GetTag(XenkoTags.ShaderScope) as ModuleMixin == mixin)
                 //    {
                 //        if (j == 0)
                 //            return stageMethodList[0];
@@ -742,7 +742,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>the declaration</returns>
         private MethodDeclaration GetThisStageMethod(MethodInvocationExpression methodCall)
         {
-            var mixin = methodCall.GetTag(ParadoxTags.CurrentShader) as ModuleMixin;
+            var mixin = methodCall.GetTag(XenkoTags.CurrentShader) as ModuleMixin;
             var vtReference = mixin.VirtualTable.GetBaseDeclaration(methodCall.Target.TypeInference.Declaration as MethodDeclaration);
             foreach (var stageMethodList in StageMethodInheritance)
             {
@@ -750,7 +750,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     continue;
 
                 var firstOccurence = stageMethodList.First();
-                var occurenceMixin = firstOccurence.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+                var occurenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
                 var listVTReference = occurenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
 
                 if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
@@ -775,7 +775,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             foreach (var baseCall in mixin.ParsingInfo.BaseMethodCalls)
             {
                 MethodDeclaration decl = null;
-                if ((baseCall.Target.TypeInference.Declaration as MethodDeclaration).Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                if ((baseCall.Target.TypeInference.Declaration as MethodDeclaration).Qualifiers.Contains(XenkoStorageQualifier.Stage))
                     decl = GetBaseStageMethod(baseCall);
                 else
                     decl = topMixin.GetBaseMethodFromExpression(baseCall.Target, mixin);
@@ -790,16 +790,16 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     AddToMethodsReferences(baseCall);
                 }
                 else
-                    log.Error(ParadoxMessageCode.ErrorImpossibleBaseCall, baseCall.Span, baseCall, mixin.MixinName);
+                    log.Error(XenkoMessageCode.ErrorImpossibleBaseCall, baseCall.Span, baseCall, mixin.MixinName);
             }
 
             // resolve this calls
             foreach (var thisCall in mixin.ParsingInfo.ThisMethodCalls)
             {
                 MethodDeclaration decl = null;
-                if ((thisCall.Target.TypeInference.Declaration as MethodDeclaration).Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                if ((thisCall.Target.TypeInference.Declaration as MethodDeclaration).Qualifiers.Contains(XenkoStorageQualifier.Stage))
                     decl = GetThisStageMethod(thisCall);
-                else if (thisCall.ContainsTag(ParadoxTags.StaticRef))
+                else if (thisCall.ContainsTag(XenkoTags.StaticRef))
                     decl = FindStaticMethod(thisCall);
                 else
                     decl = topMixin.GetMethodFromExpression(thisCall.Target);
@@ -811,11 +811,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     thisCall.TypeInference.TargetType = decl.ReturnType;
                     thisCall.Target.TypeInference.Declaration = decl;
 
-                    if (!thisCall.ContainsTag(ParadoxTags.StaticRef))
+                    if (!thisCall.ContainsTag(XenkoTags.StaticRef))
                         AddToMethodsReferences(thisCall);
                 }
                 else
-                    log.Error(ParadoxMessageCode.ErrorImpossibleVirtualCall, thisCall.Span, thisCall, mixin.MixinName, mainModuleMixin.MixinName);
+                    log.Error(XenkoMessageCode.ErrorImpossibleVirtualCall, thisCall.Span, thisCall, mixin.MixinName, mainModuleMixin.MixinName);
             }
         }
 
@@ -825,11 +825,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="externMix"></param>
         private void InferStageVariables(ModuleMixin externMix)
         {
-            var stageDict = externMix.ClassReferences.VariablesReferences.Where(x => x.Key.Qualifiers.Contains(ParadoxStorageQualifier.Stage)).ToDictionary(x => x.Key, x => x.Value);
+            var stageDict = externMix.ClassReferences.VariablesReferences.Where(x => x.Key.Qualifiers.Contains(XenkoStorageQualifier.Stage)).ToDictionary(x => x.Key, x => x.Value);
             foreach (var variable in stageDict)
             {
-                var shaderName = (variable.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName;
-                var foundDeclaration = mainModuleMixin.ClassReferences.VariablesReferences.FirstOrDefault(x => x.Key.Name.Text == variable.Key.Name.Text && (x.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName == shaderName).Key;
+                var shaderName = (variable.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName;
+                var foundDeclaration = mainModuleMixin.ClassReferences.VariablesReferences.FirstOrDefault(x => x.Key.Name.Text == variable.Key.Name.Text && (x.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName == shaderName).Key;
                 if (foundDeclaration == null)// get by semantics if necessary
                 {
                     var semantic = variable.Key.Qualifiers.Values.OfType<Semantic>().FirstOrDefault();
@@ -857,7 +857,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 }
                 else
                 {
-                    log.Error(ParadoxMessageCode.ErrorMissingStageVariable, variable.Key.Span, variable, externMix.MixinName);
+                    log.Error(XenkoMessageCode.ErrorMissingStageVariable, variable.Key.Span, variable, externMix.MixinName);
                     return;
                 }
             }
@@ -883,12 +883,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     var foundDefinition = FindVariable(expression.Expression, ref searchMixin);
                     if (foundDefinition != null) // should be always true
                     {
-                        if (foundDefinition.Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                        if (foundDefinition.Qualifiers.Contains(XenkoStorageQualifier.Stage))
                         {
 
                             var sameVar =
                                 mixin.ClassReferences.VariablesReferences.FirstOrDefault(
-                                    x => x.Key.Name.Text == foundDefinition.Name.Text && (x.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName == (foundDefinition.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName).Key;
+                                    x => x.Key.Name.Text == foundDefinition.Name.Text && (x.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName == (foundDefinition.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName).Key;
                             if (sameVar == null)
                             {
                                 mixin.ClassReferences.VariablesReferences.Add(foundDefinition, new HashSet<ExpressionNodeCouple>());
@@ -908,7 +908,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         }
                     }
                     else
-                        log.Error(ParadoxMessageCode.ErrorExternReferenceNotFound, expression.Expression.Span, expression, mixin.MixinName);
+                        log.Error(XenkoMessageCode.ErrorExternReferenceNotFound, expression.Expression.Span, expression, mixin.MixinName);
                 }
             }
             mixin.ExternReferences.VariablesReferences.Clear();
@@ -927,7 +927,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                         methodInvoc.Target.TypeInference.Declaration = foundDefinition;
                     }
                     else
-                        log.Error(ParadoxMessageCode.ErrorExternReferenceNotFound, methodInvoc.Span, methodInvoc, mixin.MixinName);
+                        log.Error(XenkoMessageCode.ErrorExternReferenceNotFound, methodInvoc.Span, methodInvoc, mixin.MixinName);
                 }
             }
             mixin.ExternReferences.MethodsReferences.Clear();
@@ -941,19 +941,19 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         {
             foreach (var variable in moduleMixin.StageInitReferences.VariablesReferences)
             {
-                var varMixinName = ((ModuleMixin)variable.Key.GetTag(ParadoxTags.ShaderScope)).MixinName;
+                var varMixinName = ((ModuleMixin)variable.Key.GetTag(XenkoTags.ShaderScope)).MixinName;
                 var mixin = MixinInheritance.FirstOrDefault(x => x.MixinName == varMixinName);
                 if (mixin == null)
                 {
-                    log.Error(ParadoxMessageCode.ErrorStageMixinNotFound, new SourceSpan(), varMixinName, moduleMixin.MixinName);
+                    log.Error(XenkoMessageCode.ErrorStageMixinNotFound, new SourceSpan(), varMixinName, moduleMixin.MixinName);
                     return;
                 } 
                 
                 var trueVar = mixin.ClassReferences.VariablesReferences.FirstOrDefault(x => x.Key.Name.Text == variable.Key.Name.Text).Key;
                 if (trueVar == null)
                 {
-                    var sourceShader = ((ModuleMixin)variable.Key.GetTag(ParadoxTags.ShaderScope)).MixinName;
-                    log.Error(ParadoxMessageCode.ErrorStageMixinVariableNotFound, new SourceSpan(), varMixinName, sourceShader, moduleMixin.MixinName);
+                    var sourceShader = ((ModuleMixin)variable.Key.GetTag(XenkoTags.ShaderScope)).MixinName;
+                    log.Error(XenkoMessageCode.ErrorStageMixinVariableNotFound, new SourceSpan(), varMixinName, sourceShader, moduleMixin.MixinName);
                     return;
                 }
 
@@ -967,25 +967,25 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             }
             foreach (var method in moduleMixin.StageInitReferences.MethodsReferences)
             {
-                var varMixinName = ((ModuleMixin)method.Key.GetTag(ParadoxTags.ShaderScope)).MixinName;
+                var varMixinName = ((ModuleMixin)method.Key.GetTag(XenkoTags.ShaderScope)).MixinName;
                 var mixin = MixinInheritance.FirstOrDefault(x => x.MixinName == varMixinName);
                 if (mixin == null)
                 {
-                    log.Error(ParadoxMessageCode.ErrorStageMixinNotFound, new SourceSpan(), varMixinName, moduleMixin.MixinName);
+                    log.Error(XenkoMessageCode.ErrorStageMixinNotFound, new SourceSpan(), varMixinName, moduleMixin.MixinName);
                     return;
                 }
 
                 var trueVar = GetTopMixin(mixin).GetMethodFromDeclaration(method.Key);
                 if (trueVar == null)
                 {
-                    log.Error(ParadoxMessageCode.ErrorStageMixinMethodNotFound, new SourceSpan(), varMixinName, method, moduleMixin.MixinName);
+                    log.Error(XenkoMessageCode.ErrorStageMixinMethodNotFound, new SourceSpan(), varMixinName, method, moduleMixin.MixinName);
                     return;
                 }
 
                 foreach (var varRef in method.Value)
                 {
                     varRef.Target.TypeInference.Declaration = trueVar;
-                    varRef.Target.SetTag(ParadoxTags.VirtualTableReference, trueVar.GetTag(ParadoxTags.VirtualTableReference));
+                    varRef.Target.SetTag(XenkoTags.VirtualTableReference, trueVar.GetTag(XenkoTags.VirtualTableReference));
                 }
 
                 mainModuleMixin.ClassReferences.MethodsReferences[trueVar].UnionWith(method.Value);
@@ -1010,8 +1010,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 foreach (var variable in externMix.StaticReferences.VariablesReferences)
                 {
-                    var varMixinName = (variable.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName;
-                    var staticVars = mainModuleMixin.StaticReferences.VariablesReferences.Where(x => (x.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName == varMixinName && x.Key.Name.Text == variable.Key.Name.Text).ToDictionary(x => x.Key, x => x.Value);
+                    var varMixinName = (variable.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName;
+                    var staticVars = mainModuleMixin.StaticReferences.VariablesReferences.Where(x => (x.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName == varMixinName && x.Key.Name.Text == variable.Key.Name.Text).ToDictionary(x => x.Key, x => x.Value);
 
                     // if the entry already exists, append to it
                     if (staticVars.Count > 0)
@@ -1029,8 +1029,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 }
                 foreach (var method in externMix.StaticReferences.MethodsReferences)
                 {
-                    var methodMixinName = (method.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName;
-                    var staticMethods = mainModuleMixin.StaticReferences.MethodsReferences.Where(x => (x.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName == methodMixinName && x.Key.IsSameSignature(method.Key)).ToDictionary(x => x.Key, x => x.Value);
+                    var methodMixinName = (method.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName;
+                    var staticMethods = mainModuleMixin.StaticReferences.MethodsReferences.Where(x => (x.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName == methodMixinName && x.Key.IsSameSignature(method.Key)).ToDictionary(x => x.Key, x => x.Value);
 
                     // if the entry already exists, append to it
                     if (staticMethods.Count > 0)
@@ -1072,7 +1072,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 {
                     if (varRef.Expression is MemberReferenceExpression)
                     {
-                        if (variable.Key.Qualifiers.Contains(ParadoxStorageQualifier.Stream)) // TODO: change test
+                        if (variable.Key.Qualifiers.Contains(XenkoStorageQualifier.Stream)) // TODO: change test
                         {
                             (varRef.Expression as MemberReferenceExpression).Member = variable.Key.Name;
 
@@ -1080,7 +1080,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                             if (type == null || !type.IsInputOutput)
                                 (varRef.Expression as MemberReferenceExpression).Target = new VariableReferenceExpression(StreamsType.ThisStreams);
                         }
-                        else if (variable.Key.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream))
+                        else if (variable.Key.Qualifiers.Contains(XenkoStorageQualifier.PatchStream))
                         {
                             (varRef.Expression as MemberReferenceExpression).Member = variable.Key.Name;
                         }
@@ -1192,7 +1192,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 }
                 
                 var method = mixin.LocalVirtualTable.Methods.FirstOrDefault(x => x.Method.Name.Text == name && x.Method is MethodDefinition);
-                if (method != null && (count == 0 || method.Method.Qualifiers.Contains(ParadoxStorageQualifier.Clone)))
+                if (method != null && (count == 0 || method.Method.Qualifiers.Contains(XenkoStorageQualifier.Clone)))
                     return method.Method as MethodDefinition;
             }
             return null;
@@ -1229,7 +1229,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             MixedShader.Members = MixedShader.Members.Distinct().ToList();
 
             // Create streams
-            ParadoxStreamCreator.Run(MixedShader, mainModuleMixin, MixinInheritance, log);
+            XenkoStreamCreator.Run(MixedShader, mainModuleMixin, MixinInheritance, log);
             
             if (log.HasErrors)
                 return;
@@ -1252,7 +1252,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             foreach (var node in nodes)
             {
                 var weight = -1;
-                var classSource = node.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+                var classSource = node.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
                 if (classSource == null)
                     throw new Exception("Node has no class source");
 
@@ -1287,9 +1287,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     variablesUsages.Add(variable, false);
             }
 
-            MixedShader.Members.RemoveAll(x => x is Variable && (x as Variable).Qualifiers.Contains(ParadoxStorageQualifier.Extern));
+            MixedShader.Members.RemoveAll(x => x is Variable && (x as Variable).Qualifiers.Contains(XenkoStorageQualifier.Extern));
             
-            var variableUsageVisitor = new ParadoxVariableUsageVisitor(variablesUsages);
+            var variableUsageVisitor = new XenkoVariableUsageVisitor(variablesUsages);
             variableUsageVisitor.Run(MixedShader);
 
             foreach (var variable in MixedShader.Members.OfType<Variable>().ToList())
@@ -1333,7 +1333,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <returns>true/false</returns>
         private bool KeepVariableInCBuffer(Variable variable)
         {
-            return !(variable.Qualifiers.Contains(ParadoxStorageQualifier.Extern) || variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream) || variable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream) || IsOutOfCBufferVariable(variable) || variable.Qualifiers.Contains(StorageQualifier.Const));
+            return !(variable.Qualifiers.Contains(XenkoStorageQualifier.Extern) || variable.Qualifiers.Contains(XenkoStorageQualifier.Stream) || variable.Qualifiers.Contains(XenkoStorageQualifier.PatchStream) || IsOutOfCBufferVariable(variable) || variable.Qualifiers.Contains(StorageQualifier.Const));
         }
 
         // Group everything by constant buffers
@@ -1342,19 +1342,19 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             MergeSameSemanticVariables(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).ToList());
             MergeReferenceVariables(mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).ToList());
             var usefulVars = mainModuleMixin.ClassReferences.VariablesReferences.Select(x => x.Key).Where(KeepVariableInCBuffer);
-            var varList = usefulVars.Where(x => x.ContainsTag(ParadoxTags.ConstantBuffer)).ToList();
-            var groupedVarList = varList.GroupBy(x => x.GetTag(ParadoxTags.ConstantBuffer) as string).Select(x => x.ToList()).ToList();
+            var varList = usefulVars.Where(x => x.ContainsTag(XenkoTags.ConstantBuffer)).ToList();
+            var groupedVarList = varList.GroupBy(x => x.GetTag(XenkoTags.ConstantBuffer) as string).Select(x => x.ToList()).ToList();
 
             foreach (var group in groupedVarList)
             {
-                var cbufferName = group.FirstOrDefault().GetTag(ParadoxTags.ConstantBuffer) as string;
+                var cbufferName = group.FirstOrDefault().GetTag(XenkoTags.ConstantBuffer) as string;
                 var cbuffer = new ConstantBuffer { Type = SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType.Constant, Name = cbufferName };
                 cbuffer.Members.AddRange(group);
 
                 MixedShader.Members.Add(cbuffer);
             }
 
-            var remainingVars = usefulVars.Where(x => !x.ContainsTag(ParadoxTags.ConstantBuffer)).ToList();
+            var remainingVars = usefulVars.Where(x => !x.ContainsTag(XenkoTags.ConstantBuffer)).ToList();
             var globalBuffer = new ConstantBuffer { Type = SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType.Constant, Name = "Globals" };
             if (remainingVars.Count > 0)
             {
@@ -1378,7 +1378,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
             {
                 if (!duplicateVariables.Contains(variable))
                 {
-                    var sourceMixinName = (variable.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName;
+                    var sourceMixinName = (variable.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName;
 
                     var semantic = variable.Qualifiers.OfType<Semantic>().First();
 
@@ -1386,24 +1386,24 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
                     foreach (var sameSemVar in sameSemanticVariables)
                     {
-                        var newMixinName = (sameSemVar.GetTag(ParadoxTags.ShaderScope) as ModuleMixin).MixinName;
+                        var newMixinName = (sameSemVar.GetTag(XenkoTags.ShaderScope) as ModuleMixin).MixinName;
 
                         // Check if declared in the same constant buffer
-                        var cbufferName = variable.ContainsTag(ParadoxTags.ConstantBuffer) ? variable.GetTag(ParadoxTags.ConstantBuffer) as string : null;
-                        var newcbufferName = sameSemVar.ContainsTag(ParadoxTags.ConstantBuffer) ? sameSemVar.GetTag(ParadoxTags.ConstantBuffer) as string : null;
+                        var cbufferName = variable.ContainsTag(XenkoTags.ConstantBuffer) ? variable.GetTag(XenkoTags.ConstantBuffer) as string : null;
+                        var newcbufferName = sameSemVar.ContainsTag(XenkoTags.ConstantBuffer) ? sameSemVar.GetTag(XenkoTags.ConstantBuffer) as string : null;
                         if (cbufferName != null ^ newcbufferName != null)
                         {
-                            variable.SetTag(ParadoxTags.ConstantBuffer, cbufferName ?? newcbufferName);
+                            variable.SetTag(XenkoTags.ConstantBuffer, cbufferName ?? newcbufferName);
                         }
                         else if (cbufferName != null && cbufferName != newcbufferName)
                         {
-                            log.Error(ParadoxMessageCode.ErrorSemanticCbufferConflict, variable.Span, variable, sourceMixinName, sameSemVar, newMixinName, semantic, cbufferName, newcbufferName);
+                            log.Error(XenkoMessageCode.ErrorSemanticCbufferConflict, variable.Span, variable, sourceMixinName, sameSemVar, newMixinName, semantic, cbufferName, newcbufferName);
                         }
 
                         // Check if declared as the same type
                         if (variable.Type != sameSemVar.Type)
                         {
-                            log.Error(ParadoxMessageCode.ErrorSemanticTypeConflict, variable.Span, variable, sourceMixinName, sameSemVar, newMixinName, semantic, variable.Type, sameSemVar.Type);
+                            log.Error(XenkoMessageCode.ErrorSemanticTypeConflict, variable.Span, variable, sourceMixinName, sameSemVar, newMixinName, semantic, variable.Type, sameSemVar.Type);
                         }
 
                         // Rewrite references
@@ -1470,12 +1470,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="mixin">the mixin</param>
         private static void ExpandForEachStatements(ModuleMixin mixin)
         {
-            foreach (var statementNodeCouple in mixin.ParsingInfo.ForEachStatements.Where(x => !(x.Statement as ForEachStatement).Variable.Qualifiers.Contains(ParadoxStorageQualifier.Extern)))
+            foreach (var statementNodeCouple in mixin.ParsingInfo.ForEachStatements.Where(x => !(x.Statement as ForEachStatement).Variable.Qualifiers.Contains(XenkoStorageQualifier.Extern)))
             {
                 var newStatement = ExpandForEachStatement(statementNodeCouple.Statement as ForEachStatement);
                 if (newStatement != null)
                 {
-                    var replace = new ParadoxReplaceVisitor(statementNodeCouple.Statement, newStatement);
+                    var replace = new XenkoReplaceVisitor(statementNodeCouple.Statement, newStatement);
                     replace.Run(statementNodeCouple.Node);
                 }
             }
@@ -1540,7 +1540,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
         /// <param name="parentNode">the parent node.</param>
         private static void ReplaceMemberReferenceExpressionByVariableReferenceExpression(MemberReferenceExpression memberReferenceExpression, VariableReferenceExpression variableReferenceExpression, Node parentNode)
         {
-            var replacor = new ParadoxReplaceVisitor(memberReferenceExpression, variableReferenceExpression);
+            var replacor = new XenkoReplaceVisitor(memberReferenceExpression, variableReferenceExpression);
             replacor.Run(parentNode);
         }
 

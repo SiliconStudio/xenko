@@ -6,7 +6,7 @@ using Windows.UI.Xaml.Controls;
 
 // The Blank Application template is documented at http://go.microsoft.com/fwlink/?LinkId=234227
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.

@@ -6,39 +6,39 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games.IO;
-using SiliconStudio.Paradox.Games.MicroThreading;
-using SiliconStudio.Paradox.Games.Serialization.Assets;
-using SiliconStudio.Paradox.Games.Serialization.Contents;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Games.IO;
+using SiliconStudio.Xenko.Games.MicroThreading;
+using SiliconStudio.Xenko.Games.Serialization.Assets;
+using SiliconStudio.Xenko.Games.Serialization.Contents;
 
 using ScriptTest2;
 
 namespace ScriptTest
 {
-    [ParadoxScript]
+    [XenkoScript]
     public class ScriptSceneSerialization
     {
         public static string gitFolder;
 
-        [ParadoxScript]
+        [XenkoScript]
         public static void SetupFolder1(EngineContext engineContext)
         {
             gitFolder = "..\\..\\hotei_data1\\";
             VirtualFileSystem.MountFileSystem("/sync", gitFolder);
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static void SetupFolder2(EngineContext engineContext)
         {
             gitFolder = "..\\..\\hotei_data2\\";
             VirtualFileSystem.MountFileSystem("/sync", gitFolder);
         }
         
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task SyncSceneRebase(EngineContext engineContext)
         {
             // Save
@@ -54,7 +54,7 @@ namespace ScriptTest
             LoadScene(engineContext);
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task SyncSceneMerge(EngineContext engineContext)
         {
             // Save
@@ -70,7 +70,7 @@ namespace ScriptTest
             LoadScene(engineContext);
         }
         
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task SyncSceneLoad(EngineContext engineContext)
         {
             Process.Start(new ProcessStartInfo("git", "fetch --all") { WorkingDirectory = gitFolder, CreateNoWindow = true, UseShellExecute = false }).WaitForExit();
@@ -80,7 +80,7 @@ namespace ScriptTest
             LoadScene(engineContext);
         }
 
-        //[ParadoxScript(ScriptFlags.AssemblyStartup)]
+        //[XenkoScript(ScriptFlags.AssemblyStartup)]
         public static async Task SaveScene2(EngineContext engineContext)
         {
             var assetManager = new AssetManager(new AssetSerializerContextGenerator(engineContext.PackageManager));
@@ -102,7 +102,7 @@ namespace ScriptTest
             //var convertedEntities2 = assetManager.Load<EntityGroup>("/data/package_scene_copy.hotei#");
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task SaveScene(EngineContext engineContext)
         {
             var oldState = engineContext.EntityManager.State;
@@ -121,13 +121,13 @@ namespace ScriptTest
             engineContext.EntityManager.State = GameState.Running;
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static void ClearScene(EngineContext engineContext)
         {
             engineContext.EntityManager.GetSystem<HierarchicalProcessor>().RootEntities.Clear();
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async void LoadScene(EngineContext engineContext)
         {
             //var contentManager = new ContentManager(new ContentSerializerContextGenerator(VirtualFileStorage, engineContext.PackageManager, ParameterContainerExtensions.DefaultSceneSerializer));
@@ -148,7 +148,7 @@ namespace ScriptTest
             }
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task MergeSceneTest(EngineContext engineContext)
         {
             VirtualFileSystem.MountFileSystem("/global_data", "..\\..\\deps\\data\\");

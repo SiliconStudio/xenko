@@ -4,7 +4,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     [DataContract("FilmGrain")]
     public sealed class FilmGrain : ColorTransform

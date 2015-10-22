@@ -22,17 +22,16 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics.Regression;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     /// <summary>
     /// Tests for <see cref="Texture"/>
@@ -289,7 +288,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 using (var outStream = VirtualFileSystem.ApplicationCache.OpenStream(fileName + extension, VirtualFileMode.Create, VirtualFileAccess.Write))
                     image.Save(outStream, intermediateFormat);
 
-                if (intermediateFormat == ImageFileType.Paradox || intermediateFormat == ImageFileType.Dds || (sourceFormat == intermediateFormat 
+                if (intermediateFormat == ImageFileType.Xenko || intermediateFormat == ImageFileType.Dds || (sourceFormat == intermediateFormat 
                     && intermediateFormat != ImageFileType.Gif)) // TODO: remove this when Giff compression/decompression is fixed
                 {
                     var allowSmallDifferences = intermediateFormat == ImageFileType.Png      // TODO: remove this when png  encryption implementation is stable

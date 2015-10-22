@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics.Font
+namespace SiliconStudio.Xenko.Graphics.Font
 {
     /// <summary>
     /// The system managing the fonts.

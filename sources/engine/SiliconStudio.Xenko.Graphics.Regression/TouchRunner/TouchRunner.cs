@@ -29,7 +29,7 @@ using System.Net.Sockets;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Graphics.Regression;
 #if XAMCORE_2_0
 using Foundation;
 using ObjCRuntime;
@@ -49,7 +49,7 @@ using NUnit.Framework.Internal;
 using NUnit.Framework.Internal.Commands;
 using NUnit.Framework.Internal.WorkItems;
 
-namespace SiliconStudio.Paradox.UnitTesting.UI {
+namespace SiliconStudio.Xenko.UnitTesting.UI {
 	
 	public class TouchRunner : ITestListener {
 		

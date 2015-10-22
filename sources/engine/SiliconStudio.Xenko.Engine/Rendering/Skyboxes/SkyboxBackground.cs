@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Skyboxes
+namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
     /// <summary>
     /// Defines how the background parameters used for this skybox.

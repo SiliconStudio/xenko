@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     /// <summary>
     /// Evaluates <see cref="AnimationClip"/> to a <see cref="AnimationClipResult"/> at a given time.

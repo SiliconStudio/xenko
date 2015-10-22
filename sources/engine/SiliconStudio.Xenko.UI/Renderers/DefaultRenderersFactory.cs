@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Xenko.UI.Controls;
 
-namespace SiliconStudio.Paradox.UI.Renderers
+namespace SiliconStudio.Xenko.UI.Renderers
 {
     /// <summary>
     /// A factory that create the default renderer for each <see cref="UIElement"/> type.

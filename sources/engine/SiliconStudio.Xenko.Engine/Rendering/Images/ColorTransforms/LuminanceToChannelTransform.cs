@@ -2,9 +2,9 @@
 using System.Globalization;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Materials;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// A color transform to output the luminance to a specific channel.

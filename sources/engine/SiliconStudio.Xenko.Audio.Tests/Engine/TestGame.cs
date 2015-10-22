@@ -3,9 +3,9 @@
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Audio.Tests.Engine
+namespace SiliconStudio.Xenko.Audio.Tests.Engine
 {
     /// <summary>
     /// Test the class <see cref="Game"/> augmented with the audio system.

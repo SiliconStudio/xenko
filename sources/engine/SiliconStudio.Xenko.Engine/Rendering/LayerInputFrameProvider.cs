@@ -4,10 +4,10 @@
 using System;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Composers;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     [DataContract("ImageEffectRendererInput.LayerInput")]
     [Display("Layer Input")]

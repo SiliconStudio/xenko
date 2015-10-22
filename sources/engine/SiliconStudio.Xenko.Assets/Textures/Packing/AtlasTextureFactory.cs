@@ -1,9 +1,9 @@
 ﻿using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Assets.Textures.Packing
+namespace SiliconStudio.Xenko.Assets.Textures.Packing
 {
     /// <summary>
     /// A Atlas Texture Factory that contains APIs related to atlas texture creation

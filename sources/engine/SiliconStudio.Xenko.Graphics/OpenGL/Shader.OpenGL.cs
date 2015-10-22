@@ -1,18 +1,18 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using System.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Shaders;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+using SiliconStudio.Xenko.Shaders;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using BinaryFormat = OpenTK.Graphics.ES30.ShaderBinaryFormat;
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public partial class Shader
     {
@@ -76,7 +76,7 @@ namespace SiliconStudio.Paradox.Graphics
                     return ShaderType.FragmentShader;
                 case ShaderStage.Vertex:
                     return ShaderType.VertexShader;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 case ShaderStage.Geometry:
                     return ShaderType.GeometryShader;
 #endif

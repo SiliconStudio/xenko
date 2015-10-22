@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using System.Reflection;
 
-namespace SiliconStudio.Paradox.UI.Renderers
+namespace SiliconStudio.Xenko.UI.Renderers
 {
     /// <summary>
     /// The class in charge to manage the renderer of the different <see cref="UIElement"/>s.

@@ -9,9 +9,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Graphics.Regression;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     [Description("Check Texture")]
@@ -354,7 +354,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
                 RunDrawTest(
                     game =>
                     {
-                        var intermediateFormat = ImageFileType.Paradox;
+                        var intermediateFormat = ImageFileType.Xenko;
 
                         if (sourceFormat == ImageFileType.Wmp) // no input image of this format.
                             return;

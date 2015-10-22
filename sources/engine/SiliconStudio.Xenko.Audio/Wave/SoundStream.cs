@@ -24,7 +24,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 
-namespace SiliconStudio.Paradox.Audio.Wave
+namespace SiliconStudio.Xenko.Audio.Wave
 {
     /// <summary>
     /// Generic sound input stream supporting WAV (Pcm,Float), ADPCM sound file formats.

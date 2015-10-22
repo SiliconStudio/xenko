@@ -8,7 +8,7 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// An helper class for manipulating vertex buffers on CPU (Generate new vertex attributes...etc.)

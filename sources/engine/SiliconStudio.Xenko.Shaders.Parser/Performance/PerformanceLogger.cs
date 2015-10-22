@@ -6,7 +6,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Performance
+namespace SiliconStudio.Xenko.Shaders.Parser.Performance
 {
     public static class PerformanceLogger
     {

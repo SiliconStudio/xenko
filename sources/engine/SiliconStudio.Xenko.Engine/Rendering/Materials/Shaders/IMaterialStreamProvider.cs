@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// An interface to query streams used by materials. 

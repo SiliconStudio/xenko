@@ -17,14 +17,14 @@ using Microsoft.VisualStudio.Package;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using NShader;
-using SiliconStudio.Paradox.VisualStudio.BuildEngine;
-using SiliconStudio.Paradox.VisualStudio.Commands;
-using SiliconStudio.Paradox.VisualStudio.Shaders;
+using SiliconStudio.Xenko.VisualStudio.BuildEngine;
+using SiliconStudio.Xenko.VisualStudio.Commands;
+using SiliconStudio.Xenko.VisualStudio.Shaders;
 
-namespace SiliconStudio.Paradox.VisualStudio
+namespace SiliconStudio.Xenko.VisualStudio
 {
     /// <summary>
-    ///  Quick and temporary VS package to allow platform switch for Paradox.
+    ///  Quick and temporary VS package to allow platform switch for Xenko.
     ///  This code needs to be largely refactored and correctly designed.
     ///  - alex
     /// 
@@ -46,11 +46,11 @@ namespace SiliconStudio.Paradox.VisualStudio
     //[ProvideMenuResource("Menus.ctmenu", 1)]
     // This attribute registers a tool window exposed by this package.
     //[ProvideToolWindow(typeof (MyToolWindow))]
-    [Guid(GuidList.guidParadox_VisualStudio_PackagePkgString)]
-    // Paradox Shader LanguageService
-    [ProvideService(typeof(NShaderLanguageService), ServiceName = "Paradox Shader Language Service")]
+    [Guid(GuidList.guidXenko_VisualStudio_PackagePkgString)]
+    // Xenko Shader LanguageService
+    [ProvideService(typeof(NShaderLanguageService), ServiceName = "Xenko Shader Language Service")]
     [ProvideLanguageServiceAttribute(typeof(NShaderLanguageService),
-                             "Paradox Shader Language",
+                             "Xenko Shader Language",
                              0,
                              EnableCommenting = true,
                              EnableFormatSelection = true,
@@ -60,16 +60,20 @@ namespace SiliconStudio.Paradox.VisualStudio
                              )]
     [ProvideLanguageExtensionAttribute(typeof(NShaderLanguageService), NShaderSupportedExtensions.Paradox_Shader)]
     [ProvideLanguageExtensionAttribute(typeof(NShaderLanguageService), NShaderSupportedExtensions.Paradox_Effect)]
-    // Paradox C# Shader Key Generator
+    [ProvideLanguageExtensionAttribute(typeof(NShaderLanguageService), NShaderSupportedExtensions.Xenko_Shader)]
+    [ProvideLanguageExtensionAttribute(typeof(NShaderLanguageService), NShaderSupportedExtensions.Xenko_Effect)]
+    // Xenko C# Shader Key Generator
     [CodeGeneratorRegistration(typeof(ShaderKeyFileGenerator), ShaderKeyFileGenerator.InternalName, GuidList.vsContextGuidVCSProject, GeneratorRegKeyName = ".pdxsl")]
     [CodeGeneratorRegistration(typeof(ShaderKeyFileGenerator), ShaderKeyFileGenerator.InternalName, GuidList.vsContextGuidVCSProject, GeneratorRegKeyName = ".pdxfx")]
+    [CodeGeneratorRegistration(typeof(ShaderKeyFileGenerator), ShaderKeyFileGenerator.InternalName, GuidList.vsContextGuidVCSProject, GeneratorRegKeyName = ".xksl")]
+    [CodeGeneratorRegistration(typeof(ShaderKeyFileGenerator), ShaderKeyFileGenerator.InternalName, GuidList.vsContextGuidVCSProject, GeneratorRegKeyName = ".xkfx")]
     [CodeGeneratorRegistration(typeof(ShaderKeyFileGenerator), ShaderKeyFileGenerator.DisplayName, GuidList.vsContextGuidVCSProject, GeneratorRegKeyName = ShaderKeyFileGenerator.InternalName, GeneratesDesignTimeSource = true, GeneratesSharedDesignTimeSource = true)]
     // Temporarily force load for easier debugging
     [ProvideMenuResource("Menus.ctmenu", 1)]
     [ProvideAutoLoad(VSConstants.UICONTEXT.SolutionExists_string)]
-    public sealed class ParadoxPackage : Package, IOleComponent
+    public sealed class XenkoPackage : Package, IOleComponent
     {
-        public const string Version = "1.3";
+        public const string Version = "1.4";
 
         private readonly Dictionary<EnvDTE.Project, string> previousProjectPlatforms = new Dictionary<EnvDTE.Project, string>();
         private EnvDTE.Project currentStartupProject;
@@ -89,7 +93,7 @@ namespace SiliconStudio.Paradox.VisualStudio
         ///     not sited yet inside Visual Studio environment. The place to do all the other
         ///     initialization is the Initialize method.
         /// </summary>
-        public ParadoxPackage()
+        public XenkoPackage()
         {
             Debug.WriteLine(string.Format(CultureInfo.CurrentCulture, "Entering constructor for: {0}", ToString()));
         }
@@ -143,7 +147,7 @@ namespace SiliconStudio.Paradox.VisualStudio
             errorListProvider = new ErrorListProvider(this)
             {
                 ProviderGuid = new Guid("ad1083c5-32ad-403d-af3d-32fee7abbdf1"),
-                ProviderName = "Paradox Shading Language"
+                ProviderName = "Xenko Shading Language"
             };
             var langService = new NShaderLanguageService(errorListProvider);
             langService.SetSite(this);
@@ -154,8 +158,8 @@ namespace SiliconStudio.Paradox.VisualStudio
             var mcs = GetService(typeof(IMenuCommandService)) as OleMenuCommandService;
             if (null != mcs)
             {
-                ParadoxCommands.ServiceProvider = this;
-                ParadoxCommands.RegisterCommands(mcs);
+                XenkoCommands.ServiceProvider = this;
+                XenkoCommands.RegisterCommands(mcs);
             }
 
             // Register a timer to call our language service during
@@ -330,14 +334,14 @@ namespace SiliconStudio.Paradox.VisualStudio
                 var buildProjects = ProjectCollection.GlobalProjectCollection.GetLoadedProjects(dteProject.FileName);
                 foreach (var buildProject in buildProjects)
                 {
-                    var packageVersion = buildProject.GetPropertyValue("SiliconStudioPackageParadoxVersion");
-                    var currentPackageVersion = buildProject.GetPropertyValue("SiliconStudioPackageParadoxVersionLast");
+                    var packageVersion = buildProject.GetPropertyValue("SiliconStudioPackageXenkoVersion");
+                    var currentPackageVersion = buildProject.GetPropertyValue("SiliconStudioPackageXenkoVersionLast");
                     if (!string.IsNullOrEmpty(packageVersion) && packageVersion != currentPackageVersion)
                     {
                         var buildPropertyStorage = VsHelper.ToHierarchy(dteProject) as IVsBuildPropertyStorage;
                         if (buildPropertyStorage != null)
                         {
-                            buildPropertyStorage.SetPropertyValue("SiliconStudioPackageParadoxVersionLast", string.Empty, (uint)_PersistStorageType.PST_USER_FILE, packageVersion);
+                            buildPropertyStorage.SetPropertyValue("SiliconStudioPackageXenkoVersionLast", string.Empty, (uint)_PersistStorageType.PST_USER_FILE, packageVersion);
 
                             // Only "touch" file if there was a version before (we don't want to trigger this on newly created projects)
                             if (!string.IsNullOrEmpty(currentPackageVersion))
@@ -350,8 +354,8 @@ namespace SiliconStudio.Paradox.VisualStudio
             if (updatedProjects.Count > 0)
             {
                 var messageBoxResult = VsShellUtilities.ShowMessageBox(this,
-                    "Paradox needs to update IntelliSense cache for some projects.\nThis will resave the .csproj and Visual Studio will offer to reload them.\n\nProceed?",
-                    "Paradox IntelliSense cache",
+                    "Xenko needs to update IntelliSense cache for some projects.\nThis will resave the .csproj and Visual Studio will offer to reload them.\n\nProceed?",
+                    "Xenko IntelliSense cache",
                     OLEMSGICON.OLEMSGICON_QUERY,
                     OLEMSGBUTTON.OLEMSGBUTTON_YESNO,
                     OLEMSGDEFBUTTON.OLEMSGDEFBUTTON_FIRST);
@@ -372,31 +376,31 @@ namespace SiliconStudio.Paradox.VisualStudio
             // Initialize the command proxy from the current solution's package
             var dte = (DTE)GetService(typeof(DTE));
             var solutionPath = dte.Solution.FullName;
-            ParadoxCommandsProxy.InitialzeFromSolution(solutionPath);
+            XenkoCommandsProxy.InitialzeFromSolution(solutionPath);
 
             // Get General Output pane (for error logging)
             var generalOutputPane = GetGeneralOutputPane();
 
             // If a package is associated with the solution, check if the correct version was found
-            var paradoxPackageInfo = ParadoxCommandsProxy.ParadoxPackageInfo;
-            if (paradoxPackageInfo.ExpectedVersion != null && paradoxPackageInfo.ExpectedVersion != paradoxPackageInfo.LoadedVersion)
+            var xenkoPackageInfo = XenkoCommandsProxy.CurrentPackageInfo;
+            if (xenkoPackageInfo.ExpectedVersion != null && xenkoPackageInfo.ExpectedVersion != xenkoPackageInfo.LoadedVersion)
             {
-                if (paradoxPackageInfo.ExpectedVersion < ParadoxCommandsProxy.MinimumVersion)
+                if (xenkoPackageInfo.ExpectedVersion < XenkoCommandsProxy.MinimumVersion)
                 {
                     // The package version is deprecated
-                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not initialize Paradox extension for package with version {0}. Versions earlier than {1} are not supported. Loading latest version {2} instead.\r\n",  paradoxPackageInfo.ExpectedVersion, ParadoxCommandsProxy.MinimumVersion, paradoxPackageInfo.LoadedVersion));
+                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not initialize Xenko extension for package with version {0}. Versions earlier than {1} are not supported. Loading latest version {2} instead.\r\n",  xenkoPackageInfo.ExpectedVersion, XenkoCommandsProxy.MinimumVersion, xenkoPackageInfo.LoadedVersion));
                     generalOutputPane.Activate();
                 }
-                else if (paradoxPackageInfo.LoadedVersion == null)
+                else if (xenkoPackageInfo.LoadedVersion == null)
                 {
                     // No version found
-                    generalOutputPane.OutputStringThreadSafe("Could not find Paradox SDK directory.");
+                    generalOutputPane.OutputStringThreadSafe("Could not find Xenko SDK directory.");
                     generalOutputPane.Activate();
                 }
                 else
                 {
                     // The package version was not found
-                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not find SDK directory for Paradox version {0}. Loading latest version {1} instead.\r\n", paradoxPackageInfo.ExpectedVersion, paradoxPackageInfo.LoadedVersion));
+                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not find SDK directory for Xenko version {0}. Loading latest version {1} instead.\r\n", xenkoPackageInfo.ExpectedVersion, xenkoPackageInfo.LoadedVersion));
                     generalOutputPane.Activate();
                 }
             }
@@ -418,14 +422,14 @@ namespace SiliconStudio.Paradox.VisualStudio
                     if (buildMonitorDomain != null)
                         AppDomain.Unload(buildMonitorDomain);
 
-                    buildMonitorDomain = ParadoxCommandsProxy.CreateParadoxDomain();
-                    ParadoxCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
-                    var remoteCommands = ParadoxCommandsProxy.CreateProxy(buildMonitorDomain);
+                    buildMonitorDomain = XenkoCommandsProxy.CreateXenkoDomain();
+                    XenkoCommandsProxy.InitialzeFromSolution(solutionPath, buildMonitorDomain);
+                    var remoteCommands = XenkoCommandsProxy.CreateProxy(buildMonitorDomain);
                     remoteCommands.StartRemoteBuildLogServer(new BuildMonitorCallback(), buildLogPipeGenerator.LogPipeUrl);
                 }
                 catch (Exception e)
                 {
-                    generalOutputPane.OutputStringThreadSafe(string.Format("Error loading Paradox SDK: {0}\r\n", e));
+                    generalOutputPane.OutputStringThreadSafe(string.Format("Error loading Xenko SDK: {0}\r\n", e));
                     generalOutputPane.Activate();
 
                     // Unload domain right away
@@ -440,11 +444,11 @@ namespace SiliconStudio.Paradox.VisualStudio
                 {
                     try
                     {
-                        ParadoxCommandsProxy.GetProxy();
+                        XenkoCommandsProxy.GetProxy();
                     }
                     catch (Exception ex)
                     {
-                        generalOutputPane.OutputStringThreadSafe(string.Format("Error Initializing Paradox Language Service: {0}\r\n", ex.InnerException ?? ex));
+                        generalOutputPane.OutputStringThreadSafe(string.Format("Error Initializing Xenko Language Service: {0}\r\n", ex.InnerException ?? ex));
                         generalOutputPane.Activate();
                         errorListProvider.Tasks.Add(new ErrorTask(ex.InnerException ?? ex));
                     }

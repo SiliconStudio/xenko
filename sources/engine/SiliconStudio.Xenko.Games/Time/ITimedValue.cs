@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace SiliconStudio.Paradox.Games.Time
+namespace SiliconStudio.Xenko.Games.Time
 {
     public interface ITimedValue<out T>
     {

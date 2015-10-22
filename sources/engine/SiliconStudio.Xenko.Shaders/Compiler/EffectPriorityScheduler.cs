@@ -8,7 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Collections;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler
+namespace SiliconStudio.Xenko.Shaders.Compiler
 {
     /// <summary>
     /// A <see cref="TaskScheduler"/> with control over concurrency and priority, useful with <see cref="EffectCompilerCache"/>.

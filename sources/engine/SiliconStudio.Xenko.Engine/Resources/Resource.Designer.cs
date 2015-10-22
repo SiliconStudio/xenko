@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("SiliconStudio.Paradox.Resource", IsApplication=false)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("SiliconStudio.Xenko.Resource", IsApplication=false)]
 
-namespace SiliconStudio.Paradox
+namespace SiliconStudio.Xenko
 {
 	
 	

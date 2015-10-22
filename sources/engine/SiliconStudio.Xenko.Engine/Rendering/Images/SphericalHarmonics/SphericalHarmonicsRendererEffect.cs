@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering.Images.SphericalHarmonics
+namespace SiliconStudio.Xenko.Rendering.Images.SphericalHarmonics
 {
     public class SphericalHarmonicsRendererEffect :ImageEffectShader
     {

@@ -11,7 +11,7 @@ REM %7 csproj location
 REM kill previous instance (does not work on android prior to 3.0 - Honeycomb)
 adb -s %4 am shell force-stop %6
 
-C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe %ParadoxSdkDir%\%7 /p:SolutionName=Paradox.Android /p:SolutionDir=%ParadoxSdkDir%\ /p:Configuration=Release /t:Install /p:AdbTarget="-s %4"
+C:\Windows\Microsoft.NET\Framework64\v4.0.30319\MSBuild.exe %XenkoSdkDir%\%7 /p:SolutionName=Xenko.Android /p:SolutionDir=%XenkoSdkDir%\ /p:Configuration=Release /t:Install /p:AdbTarget="-s %4"
 
 REM run it
-adb -s %4 shell am start -a android.intent.action.MAIN -n %6/siliconstudio.paradox.graphicstests.GraphicsTestRunner -e PARADOX_SERVER_IP %1 -e PARADOX_SERVER_PORT %2 -e PARADOX_BUILD_NUMBER %3 -e PARADOX_DEVICE_SERIAL %4 -e PARADOX_TEST_NAME %5
+adb -s %4 shell am start -a android.intent.action.MAIN -n %6/siliconstudio.xenko.graphicstests.GraphicsTestRunner -e XENKO_SERVER_IP %1 -e XENKO_SERVER_PORT %2 -e XENKO_BUILD_NUMBER %3 -e XENKO_DEVICE_SERIAL %4 -e XENKO_TEST_NAME %5

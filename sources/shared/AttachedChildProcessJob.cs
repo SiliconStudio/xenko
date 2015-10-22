@@ -5,7 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox
+namespace SiliconStudio.Xenko
 {
     /// <summary>
     /// Track child process, and destroy them either on <see cref="Dispose"/>, or when parent process is destroyed.

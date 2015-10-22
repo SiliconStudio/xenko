@@ -10,7 +10,7 @@ using Foundation;
 using UIKit;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// This class is responsible to provide image loader for png, gif, bmp.

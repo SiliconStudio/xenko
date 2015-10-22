@@ -17,7 +17,7 @@ using System.Runtime.InteropServices;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace SiliconStudio.Paradox.VisualStudio.CodeGenerator
+namespace SiliconStudio.Xenko.VisualStudio.CodeGenerator
 {
     /// <summary>
     /// A managed wrapper for VS's concept of an IVsSingleFileGenerator which is

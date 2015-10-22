@@ -6,9 +6,9 @@ using System.Windows.Markup;
 using System.Windows.Navigation;
 using Microsoft.Phone.Controls;
 using Microsoft.Phone.Shell;
-using SiliconStudio.Paradox.Audio.Tests.Resources;
+using SiliconStudio.Xenko.Audio.Tests.Resources;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     public partial class App : Application
     {

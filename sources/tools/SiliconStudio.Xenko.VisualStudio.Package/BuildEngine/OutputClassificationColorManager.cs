@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.ComponentModel.Composition;
 using System.Windows.Media;
 using Microsoft.VisualStudio.Shell;
-using SiliconStudio.Paradox.VisualStudio.Classifiers;
+using SiliconStudio.Xenko.VisualStudio.Classifiers;
 
-namespace SiliconStudio.Paradox.VisualStudio.BuildEngine
+namespace SiliconStudio.Xenko.VisualStudio.BuildEngine
 {
     [Export]
     public class OutputClassificationColorManager : ClassificationColorManager

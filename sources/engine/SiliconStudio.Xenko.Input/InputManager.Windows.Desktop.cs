@@ -9,12 +9,12 @@ using System.Windows;
 using System.Windows.Forms;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
 using WinFormsKeys = System.Windows.Forms.Keys;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManager
     {
@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Input
                 case AppContextType.DesktopWpf:
                     InitializeFromWindowsWpf(Game.Context);
                     break;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
                 case AppContextType.DesktopOpenTK:
                     InitializeFromOpenTK(Game.Context);
                     break;

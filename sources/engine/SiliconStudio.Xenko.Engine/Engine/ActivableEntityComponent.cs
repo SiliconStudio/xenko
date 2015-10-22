@@ -1,7 +1,7 @@
 using System.ComponentModel;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// An <see cref="EntityComponent"/> that can be enabled and disabled.

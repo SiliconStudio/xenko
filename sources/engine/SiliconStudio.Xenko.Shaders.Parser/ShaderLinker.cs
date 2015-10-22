@@ -5,17 +5,17 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Visitor;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
 using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
-namespace SiliconStudio.Paradox.Shaders.Parser
+namespace SiliconStudio.Xenko.Shaders.Parser
 {
     /// <summary>
     /// This AST Visitor will look for any "Link" annotation in order to bind EffectVariable to their associated HLSL variables.
@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             {
                 foreach (var variable in variableGroup.Instances())
                 {
-                    var constantBufferName = (string)variable.GetTag(ParadoxTags.ConstantBuffer);
+                    var constantBufferName = (string)variable.GetTag(XenkoTags.ConstantBuffer);
 
                     var type = variable.Type;
                     if (type is ArrayType)
@@ -181,7 +181,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                                     samplerState.Filter = TextureFilter.Point;
                                     break;
                                 default:
-                                    parsingResult.Error(ParadoxMessageCode.SamplerFilterNotSupported, variable.Span, value);
+                                    parsingResult.Error(XenkoMessageCode.SamplerFilterNotSupported, variable.Span, value);
                                     break;
                             }
                         }
@@ -207,7 +207,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                                     samplerState.AddressW = textureAddressMode;
                                     break;
                                 default:
-                                    parsingResult.Error(ParadoxMessageCode.SamplerAddressModeNotSupported, variable.Span, key);
+                                    parsingResult.Error(XenkoMessageCode.SamplerAddressModeNotSupported, variable.Span, key);
                                     break;
                             }
                         }
@@ -229,7 +229,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                                         }
                                         else
                                         {
-                                            parsingResult.Error(ParadoxMessageCode.SamplerBorderColorNotSupported, variable.Span, borderColor.Arguments[i]);
+                                            parsingResult.Error(XenkoMessageCode.SamplerBorderColorNotSupported, variable.Span, borderColor.Arguments[i]);
                                         }
                                     }
 
@@ -237,12 +237,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                                 }
                                 else
                                 {
-                                    parsingResult.Error(ParadoxMessageCode.SamplerBorderColorNotSupported, variable.Span, variable);
+                                    parsingResult.Error(XenkoMessageCode.SamplerBorderColorNotSupported, variable.Span, variable);
                                 }
                             }
                             else
                             {
-                                parsingResult.Error(ParadoxMessageCode.SamplerBorderColorNotSupported, variable.Span, variable);
+                                parsingResult.Error(XenkoMessageCode.SamplerBorderColorNotSupported, variable.Span, variable);
                             }
                         }
                         else if (key == "MinLOD")
@@ -259,7 +259,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                         }
                         else
                         {
-                            parsingResult.Error(ParadoxMessageCode.SamplerFieldNotSupported, variable.Span, variable);
+                            parsingResult.Error(XenkoMessageCode.SamplerFieldNotSupported, variable.Span, variable);
                         }
                     }
                 }
@@ -541,9 +541,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 )
                 return;
 
-            if (variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream))
+            if (variable.Qualifiers.Contains(XenkoStorageQualifier.Stream))
             {
-                parsingResult.Error(ParadoxMessageCode.StreamVariableWithoutPrefix, variable.Span, variable);
+                parsingResult.Error(XenkoMessageCode.StreamVariableWithoutPrefix, variable.Span, variable);
                 return;
             }
 
@@ -553,7 +553,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 {
                     if (attribute.Parameters.Count != 1)
                     {
-                        parsingResult.Error(ParadoxMessageCode.LinkArgumentsError, variable.Span);
+                        parsingResult.Error(XenkoMessageCode.LinkArgumentsError, variable.Span);
                     }
                 }
             }
@@ -567,7 +567,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             }
             else
             {
-                parsingResult.Error(ParadoxMessageCode.LinkError, variable.Span, variable);
+                parsingResult.Error(XenkoMessageCode.LinkError, variable.Span, variable);
             }
         }
 

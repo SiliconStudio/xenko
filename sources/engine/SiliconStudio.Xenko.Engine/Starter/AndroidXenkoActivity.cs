@@ -12,17 +12,17 @@ using Android.Content;
 using Android.Media;
 using OpenTK.Platform.Android;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Games.Android;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.Android;
 
-namespace SiliconStudio.Paradox.Starter
+namespace SiliconStudio.Xenko.Starter
 {
     // NOTE: the class should implement View.IOnSystemUiVisibilityChangeListener but doing so will prevent the engine to work on Android below 3.0 (API Level 11 is mandatory).
     // So the methods are implemented but the class does not implement View.IOnSystemUiVisibilityChangeListener.
     // Maybe this will change when support for API Level 10 is dropped
     // TODO: make this class implement View.IOnSystemUiVisibilityChangeListener when support of Android < 3.0 is dropped.
-    public class AndroidParadoxActivity : Activity, View.IOnTouchListener
+    public class AndroidXenkoActivity : Activity, View.IOnTouchListener
     {
         private AndroidGameView gameView;
 
@@ -60,9 +60,9 @@ namespace SiliconStudio.Paradox.Starter
             //await VirtualFileSystem.UnpackAPK();
             
             // Create the Android OpenGl view
-            gameView = new AndroidParadoxGameView(this);
+            gameView = new AndroidXenkoGameView(this);
 
-            // setup the application view and paradox game context
+            // setup the application view and xenko game context
             SetupGameViewAndGameContext();
 
             // set up a listener to the android ringer mode (Normal/Silent/Vibrate)
@@ -75,7 +75,7 @@ namespace SiliconStudio.Paradox.Starter
 
         public void OnSystemUiVisibilityChange(StatusBarVisibility visibility)
         {
-            //Log.Debug("Paradox", "OnSystemUiVisibilityChange: visibility=0x{0:X8}", (int)visibility);
+            //Log.Debug("Xenko", "OnSystemUiVisibilityChange: visibility=0x{0:X8}", (int)visibility);
             var diffVisibility = lastVisibility ^ visibility;
             lastVisibility = visibility;
             if ((((int)diffVisibility & (int)SystemUiFlags.LowProfile) != 0) && (((int)visibility & (int)SystemUiFlags.LowProfile) == 0))
@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Starter
 
         public override void OnWindowFocusChanged(bool hasFocus)
         {
-            //Log.Debug("Paradox", "OnWindowFocusChanged: hasFocus={0}", hasFocus);
+            //Log.Debug("Xenko", "OnWindowFocusChanged: hasFocus={0}", hasFocus);
             base.OnWindowFocusChanged(hasFocus);
             if (Build.VERSION.SdkInt >= BuildVersionCodes.Kitkat)
             {
@@ -165,7 +165,7 @@ namespace SiliconStudio.Paradox.Starter
 
         private void InitializeFullscreenViewCallback()
         {
-            //Log.Debug("Paradox", "InitializeFullscreenViewCallback");
+            //Log.Debug("Xenko", "InitializeFullscreenViewCallback");
             if ((Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich) && (Build.VERSION.SdkInt < BuildVersionCodes.Kitkat))
             {
                 setFullscreenViewCallback = SetFullscreenView;
@@ -176,7 +176,7 @@ namespace SiliconStudio.Paradox.Starter
 
         private void PostFullscreenViewCallback()
         {
-            //Log.Debug("Paradox", "PostFullscreenViewCallback");
+            //Log.Debug("Xenko", "PostFullscreenViewCallback");
             var handler = Window.DecorView.Handler;
             if (handler != null)
             {
@@ -187,7 +187,7 @@ namespace SiliconStudio.Paradox.Starter
 
         private void RemoveFullscreenViewCallback()
         {
-            //Log.Debug("Paradox", "RemoveFullscreenViewCallback");
+            //Log.Debug("Xenko", "RemoveFullscreenViewCallback");
             var handler = Window.DecorView.Handler;
             if (handler != null)
             {
@@ -198,7 +198,7 @@ namespace SiliconStudio.Paradox.Starter
 
         private void SetFullscreenView()
         {
-            //Log.Debug("Paradox", "SetFullscreenView");
+            //Log.Debug("Xenko", "SetFullscreenView");
             if (Build.VERSION.SdkInt >= BuildVersionCodes.IceCreamSandwich) // http://redth.codes/such-android-api-levels-much-confuse-wow/
             {
                 var view = Window.DecorView;

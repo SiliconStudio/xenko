@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
 
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Shaders.Tests
+namespace SiliconStudio.Xenko.Shaders.Tests
 {
     /// <summary>
     /// Helper methods for TestMixinGenerator

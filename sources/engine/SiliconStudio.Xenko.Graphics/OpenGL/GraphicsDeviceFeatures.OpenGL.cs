@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 // Copyright (c) 2010-2012 SharpDX - Alexandre Mutel
 // 
 // Permission is hereby granted, free of charge, to any person obtaining a copy
@@ -21,14 +21,14 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 using System.Collections.Generic;
-using SiliconStudio.Paradox.Graphics.OpenGL;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+using SiliconStudio.Xenko.Graphics.OpenGL;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #else
 using OpenTK.Graphics.OpenGL;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Features supported by a <see cref="GraphicsDevice"/>.
@@ -53,7 +53,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 Vendor = GL.GetString(StringName.Vendor);
                 Renderer = GL.GetString(StringName.Renderer);
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 SupportedExtensions = GL.GetString(StringName.Extensions).Split(' ');
 #else
                 int numExtensions;
@@ -66,7 +66,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             var isOpenGLES3 = deviceRoot.versionMajor >= 3;
 
             deviceRoot.HasDepth24 = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_depth24");

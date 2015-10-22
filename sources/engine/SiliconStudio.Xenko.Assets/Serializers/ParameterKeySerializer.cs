@@ -6,9 +6,9 @@ using SharpYaml.Events;
 using SharpYaml.Serialization;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Assets.Serializers
+namespace SiliconStudio.Xenko.Assets.Serializers
 {
     /// <summary>
     /// A Yaml serializer for <see cref="ParameterKey"/>

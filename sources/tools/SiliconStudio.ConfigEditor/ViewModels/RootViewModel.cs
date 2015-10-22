@@ -14,7 +14,7 @@ using System.Windows;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.ViewModel;
 
-namespace SiliconStudio.Paradox.ConfigEditor.ViewModels
+namespace SiliconStudio.Xenko.ConfigEditor.ViewModels
 {
     public class RootViewModel : ViewModelBase
     {
@@ -73,20 +73,20 @@ namespace SiliconStudio.Paradox.ConfigEditor.ViewModels
             }
         }
 
-        private string GetParadoxConfigurationFilename()
+        private string GetXenkoConfigurationFilename()
         {
-            if (string.IsNullOrWhiteSpace(Options.ParadoxConfigFilename))
-                return Path.Combine(Options.ParadoxPath, @"Debug\Paradox.Starter.exe.config");
+            if (string.IsNullOrWhiteSpace(Options.XenkoConfigFilename))
+                return Path.Combine(Options.XenkoPath, @"Debug\Xenko.Starter.exe.config");
 
-            if (Path.IsPathRooted(Options.ParadoxConfigFilename) == false)
-                return Path.Combine(Options.ParadoxPath, Options.ParadoxConfigFilename);
+            if (Path.IsPathRooted(Options.XenkoConfigFilename) == false)
+                return Path.Combine(Options.XenkoPath, Options.XenkoConfigFilename);
 
-            return Options.ParadoxConfigFilename;
+            return Options.XenkoConfigFilename;
         }
 
         public async void LoadAssemblies()
         {
-            if (Options == null || Options.ParadoxPath == null)
+            if (Options == null || Options.XenkoPath == null)
             {
                 if (ShowOptionsWindow() == false)
                     return;
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.ConfigEditor.ViewModels
                 UntrackPropertyChanged(svm);
             workingSections.Clear();
 
-            string tempConfigFilename = GetParadoxConfigurationFilename();
+            string tempConfigFilename = GetXenkoConfigurationFilename();
             try
             {
                 xmlDocument.Load(tempConfigFilename);
@@ -109,8 +109,8 @@ namespace SiliconStudio.Paradox.ConfigEditor.ViewModels
 
             var binPaths = new[]
             {
-                string.Format(@"{0}\Debug", Options.ParadoxPath),
-                string.Format(@"{0}\scripts", Options.ParadoxPath),
+                string.Format(@"{0}\Debug", Options.XenkoPath),
+                string.Format(@"{0}\scripts", Options.XenkoPath),
             };
 
             foreach (var path in binPaths)
@@ -357,7 +357,7 @@ namespace SiliconStudio.Paradox.ConfigEditor.ViewModels
 
         private void Save()
         {
-            xmlDocument.Save(GetParadoxConfigurationFilename());
+            xmlDocument.Save(GetXenkoConfigurationFilename());
         }
 
         private byte[] xmlData;

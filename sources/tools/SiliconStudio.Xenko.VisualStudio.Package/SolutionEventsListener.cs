@@ -4,7 +4,7 @@ using System;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell.Interop;
 
-namespace SiliconStudio.Paradox.VisualStudio
+namespace SiliconStudio.Xenko.VisualStudio
 {
     public class SolutionEventsListener : IVsSolutionEvents, IVsSolutionLoadEvents, IVsUpdateSolutionEvents3, IVsSelectionEvents, IDisposable
     {

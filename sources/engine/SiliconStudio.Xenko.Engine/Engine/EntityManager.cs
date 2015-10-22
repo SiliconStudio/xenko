@@ -12,11 +12,11 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Manage a collection of entities.

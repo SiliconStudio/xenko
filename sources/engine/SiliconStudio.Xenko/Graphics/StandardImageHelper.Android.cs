@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using Android.Graphics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// This class is responsible to provide image loader for png, gif, bmp.
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Graphics
                 var bitmapData = bitmap.LockPixels();
                 
                 var image = Image.New2D(bitmap.Width, bitmap.Height, 1, PixelFormat.B8G8R8A8_UNorm, 1, bitmap.RowBytes);
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Directly load image as RGBA instead of BGRA, because OpenGL ES devices don't support it out of the box (extension).
                 image.Description.Format = PixelFormat.R8G8B8A8_UNorm;
                 CopyMemoryBGRA(image.PixelBuffer[0].DataPointer, bitmapData, image.PixelBuffer[0].BufferStride);

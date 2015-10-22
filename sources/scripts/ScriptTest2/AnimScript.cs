@@ -4,22 +4,22 @@ using System.Linq;
 using System.Runtime.Remoting.Contexts;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Games.MicroThreading;
-using SiliconStudio.Paradox.Games.Serialization;
-using SiliconStudio.Paradox.Games.Serialization.Contents;
-using SiliconStudio.Paradox.Games.IO;
-using SiliconStudio.Paradox.Prefabs;
-using SiliconStudio.Paradox.Games.Serialization.Serializers;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Games.MicroThreading;
+using SiliconStudio.Xenko.Games.Serialization;
+using SiliconStudio.Xenko.Games.Serialization.Contents;
+using SiliconStudio.Xenko.Games.IO;
+using SiliconStudio.Xenko.Prefabs;
+using SiliconStudio.Xenko.Games.Serialization.Serializers;
 
 namespace ScriptTest2
 {
@@ -49,7 +49,7 @@ namespace ScriptTest2
         }
     }
 
-    [ParadoxScript]
+    [XenkoScript]
     public class AnimScript
     {
         private static EffectOld effect;

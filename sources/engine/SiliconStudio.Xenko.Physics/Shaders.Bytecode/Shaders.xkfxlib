@@ -5,7 +5,7 @@ Permutations:
       CompilerParameters.GraphicsPlatformKey: [Direct3D11, OpenGL, OpenGLES]
       CompilerParameters.GraphicsProfileKey: Level_9_3
       EffectSourceCode.Enable: true
-      EffectSourceCode.Namespace: SiliconStudio.Paradox.Physics
+      EffectSourceCode.Namespace: SiliconStudio.Xenko.Physics
   Children:
       - Keys: 
           Effect.Name: PhysicsDebugEffect

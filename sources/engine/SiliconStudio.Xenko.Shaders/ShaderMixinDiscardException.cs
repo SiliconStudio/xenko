@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// An exception used to early exit a shader mixin with discard.

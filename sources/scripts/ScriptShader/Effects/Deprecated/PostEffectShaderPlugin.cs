@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2011 Silicon Studio
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class PostEffectShaderPlugin : PostEffectSeparateShaderPlugin
     {

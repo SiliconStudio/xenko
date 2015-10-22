@@ -8,9 +8,9 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Xenko.Animations;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("Animation")]
     [AssetDescription(FileExtension)]
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Model
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxanim";
+        public const string FileExtension = ".xkanim;.pdxanim";
 
         /// <summary>
         /// Gets or sets the scale import.

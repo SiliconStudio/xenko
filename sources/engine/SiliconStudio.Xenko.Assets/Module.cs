@@ -6,13 +6,13 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Skyboxes;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
     internal class Module
     {
@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Assets
         public static void Initialize()
         {
             // Register solution platforms
-            ParadoxConfig.RegisterSolutionPlatforms();
+            XenkoConfig.RegisterSolutionPlatforms();
 
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
             AssemblyRegistry.Register(typeof(ParameterKeys).Assembly, AssemblyCommonCategories.Assets);

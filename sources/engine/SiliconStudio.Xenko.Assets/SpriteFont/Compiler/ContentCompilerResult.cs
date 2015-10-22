@@ -23,7 +23,7 @@
 
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     /// <summary>
     /// Result of a compilation.

@@ -21,7 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System.Windows.Forms;
@@ -30,7 +30,7 @@ using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Graphics presenter for SwapChain.

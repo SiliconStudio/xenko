@@ -9,12 +9,12 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Rendering.Materials.Processor.Visitors;
-using SiliconStudio.Paradox.Assets.Model;
-using SiliconStudio.Paradox.Assets.Textures;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Materials.Processor.Visitors;
+using SiliconStudio.Xenko.Assets.Model;
+using SiliconStudio.Xenko.Assets.Textures;
 
-namespace SiliconStudio.Paradox.Assets.Tests
+namespace SiliconStudio.Xenko.Assets.Tests
 {
     /*
         TODO: TO REWRITE WITH new AssetImportSession
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
         [TestFixture]
         public class AssetImportTest
         {
-            public const string DirectoryTestBase = @"data\SiliconStudio.Paradox.Assets.Tests\";
+            public const string DirectoryTestBase = @"data\SiliconStudio.Xenko.Assets.Tests\";
 
             [TestFixtureSetUp]
             public void Initialize()
@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 var projectDir = Path.Combine(DirectoryTestBase, "TestImportTexture");
                 DeleteDirectory(projectDir);
 
-                var project = new Project { ProjectPath = projectDir + "/test.pdxpkg" };
+                var project = new Project { ProjectPath = projectDir + "/test.xkpkg" };
                 var session = new ProjectSession(project);
                 Import(project, "texture", Path.Combine(DirectoryTestBase, "Logo.png"));
 
@@ -43,9 +43,9 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 var result = session.Save();
                 Assert.IsFalse(result.HasErrors);
 
-                Assert.True(File.Exists(projectDir + "/texture/logo.pdxtex"));
+                Assert.True(File.Exists(projectDir + "/texture/logo.xktex"));
 
-                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/texture/logo.pdxtex");
+                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/texture/logo.xktex");
 
                 Assert.AreEqual("../../Logo.png", textureAsset.Source.FullPath);
 
@@ -59,20 +59,20 @@ namespace SiliconStudio.Paradox.Assets.Tests
                 var projectDir = Path.Combine(DirectoryTestBase, "TestImportModelWithTextures");
                 DeleteDirectory(projectDir);
 
-                var project = new Project { ProjectPath = projectDir + "/test.pdxpkg" };
+                var project = new Project { ProjectPath = projectDir + "/test.xkpkg" };
                 var session = new ProjectSession(project);
                 Import(project, "model", Path.Combine(DirectoryTestBase, "factory.fbx"));
 
                 var result = session.Save();
                 Assert.IsFalse(result.HasErrors);
 
-                Assert.True(File.Exists(projectDir + "/model/factory_entity.pdxentity"));
+                Assert.True(File.Exists(projectDir + "/model/factory_entity.xkentity"));
 
-                var modelAsset = AssetSerializer.Load<EntityAsset>(projectDir + "/model/factory_entity.pdxentity");
+                var modelAsset = AssetSerializer.Load<EntityAsset>(projectDir + "/model/factory_entity.xkentity");
 
                 Assert.AreEqual("factory_model", modelAsset.Data.Name);
 
-                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.pdxtex");
+                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.xktex");
 
                 Assert.AreEqual("../../TX-Factory_Ground.dds", textureAsset.Source.FullPath);
 
@@ -88,36 +88,36 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
                 var project = new Project();
                 var session = new ProjectSession(project);
-                project.ProjectPath = projectDir + "/test.pdxpkg";
+                project.ProjectPath = projectDir + "/test.xkpkg";
                 Import(project, "model", Path.Combine(DirectoryTestBase, "factory.fbx"));
                 session.Save();
 
                 // 2 materials, 1 model, 1 entity, 1 texture
                 Assert.AreEqual(5, project.Assets.Count);
 
-                Assert.True(File.Exists(projectDir + "/model/factory_material_blinn1.pdxmat"));
-                Assert.True(File.Exists(projectDir + "/model/factory_material_blinn2.pdxmat"));
-                Assert.True(File.Exists(projectDir + "/model/factory.pdxm3d"));
+                Assert.True(File.Exists(projectDir + "/model/factory_material_blinn1.xkmat"));
+                Assert.True(File.Exists(projectDir + "/model/factory_material_blinn2.xkmat"));
+                Assert.True(File.Exists(projectDir + "/model/factory.xkm3d"));
 
-                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.pdxtex");
+                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.xktex");
 
                 Assert.AreEqual("../../TX-Factory_Ground.dds", textureAsset.Source.FullPath);
 
-                var materialBlinn1 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn1.pdxmat");
+                var materialBlinn1 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn1.xkmat");
                 var textureVisitor = new MaterialTextureVisitor(materialBlinn1.Material);
                 var allTexturesBlinn1 = textureVisitor.GetAllTextureValues();
                 Assert.AreEqual(1, allTexturesBlinn1.Count);
                 foreach (var texture in allTexturesBlinn1)
                     Assert.AreNotEqual(texture.Texture.Id, textureAsset.Id);
 
-                var materialBlinn2 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn2.pdxmat");
+                var materialBlinn2 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn2.xkmat");
                 textureVisitor = new MaterialTextureVisitor(materialBlinn2.Material);
                 var allTexturesBlinn2 = textureVisitor.GetAllTextureValues();
                 Assert.AreEqual(1, allTexturesBlinn2.Count);
                 foreach (var texture in allTexturesBlinn2)
                     Assert.AreEqual(texture.Texture.Id, textureAsset.Id);
 
-                var model = AssetSerializer.Load<ModelAsset>(projectDir + "/model/factory.pdxm3d");
+                var model = AssetSerializer.Load<ModelAsset>(projectDir + "/model/factory.xkm3d");
 
 
                 // Cleanup before exit
@@ -132,42 +132,42 @@ namespace SiliconStudio.Paradox.Assets.Tests
 
                 var project = new Project();
                 var session = new ProjectSession(project);
-                project.ProjectPath = projectDir + "/test.pdxpkg";
+                project.ProjectPath = projectDir + "/test.xkpkg";
                 Import(project, "model", Path.Combine(DirectoryTestBase, "knight.fbx"));
                 session.Save();
 
-                Assert.True(File.Exists(projectDir + "/model/knight_material_c100_chr_ch00_Knight_KINGHT.pdxmat"));
-                Assert.True(File.Exists(projectDir + "/model/knight_material_c100_chr_ch00_Knight_KINGHT_iron.pdxmat"));
-                Assert.True(File.Exists(projectDir + "/model/knight_material_c100_chr_ch00_Knight_SWORD1.pdxmat"));
+                Assert.True(File.Exists(projectDir + "/model/knight_material_c100_chr_ch00_Knight_KINGHT.xkmat"));
+                Assert.True(File.Exists(projectDir + "/model/knight_material_c100_chr_ch00_Knight_KINGHT_iron.xkmat"));
+                Assert.True(File.Exists(projectDir + "/model/knight_material_c100_chr_ch00_Knight_SWORD1.xkmat"));
 
                 // Cleanup before exit
                 DeleteDirectory(projectDir);
 
                 project = new Project();
                 session = new ProjectSession(project);
-                project.ProjectPath = projectDir + "/test.pdxpkg";
+                project.ProjectPath = projectDir + "/test.xkpkg";
                 Import(project, "model", Path.Combine(DirectoryTestBase, "factory.fbx"));
                 session.Save();
 
-                Assert.True(File.Exists(projectDir + "/model/factory_material_blinn1.pdxmat"));
-                Assert.True(File.Exists(projectDir + "/model/factory_material_blinn2.pdxmat"));
-                Assert.True(File.Exists(projectDir + "/model/factory.pdxm3d"));
+                Assert.True(File.Exists(projectDir + "/model/factory_material_blinn1.xkmat"));
+                Assert.True(File.Exists(projectDir + "/model/factory_material_blinn2.xkmat"));
+                Assert.True(File.Exists(projectDir + "/model/factory.xkm3d"));
 
-                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.pdxtex");
+                var textureAsset = AssetSerializer.Load<TextureAsset>(projectDir + "/model/factory_TX-Factory_Ground.xktex");
 
                 Assert.AreEqual("../../TX-Factory_Ground.dds", textureAsset.Source.FullPath);
 
-                var materialBlinn1 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn1.pdxmat");
+                var materialBlinn1 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn1.xkmat");
                 var textureVisitor = new MaterialTextureVisitor(materialBlinn1.Material);
                 foreach (var texture in textureVisitor.GetAllTextureValues())
                     Assert.AreNotEqual(texture.Texture.Id, textureAsset.Id);
 
-                var materialBlinn2 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn2.pdxmat");
+                var materialBlinn2 = AssetSerializer.Load<MaterialAsset>(projectDir + "/model/factory_material_blinn2.xkmat");
                 textureVisitor = new MaterialTextureVisitor(materialBlinn2.Material);
                 foreach (var texture in textureVisitor.GetAllTextureValues())
                     Assert.AreEqual(texture.Texture.Id, textureAsset.Id);
 
-                var model = AssetSerializer.Load<ModelAsset>(projectDir + "/model/factory.pdxm3d");
+                var model = AssetSerializer.Load<ModelAsset>(projectDir + "/model/factory.xkm3d");
 
 
                 // Cleanup before exit

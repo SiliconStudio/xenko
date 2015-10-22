@@ -80,9 +80,9 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics.Font;
+using SiliconStudio.Xenko.Graphics.Font;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     // Writes the output sprite font binary file.
     internal static class StaticSpriteFontWriter

@@ -76,7 +76,7 @@
 using System;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
+namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
 {
 
 

@@ -13,8 +13,8 @@ using System.Runtime.InteropServices;
 using System.ServiceProcess;
 using System.Threading;
 using Mono.Options;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.ImageComparerService
 {
@@ -228,7 +228,7 @@ namespace SiliconStudio.ImageComparerService
             var p = new OptionSet
                 {
                     "Copyright (C) 2011-2013 Silicon Studio Corporation. All Rights Reserved",
-                    "Paradox Test Suite Tool - Version: "
+                    "Xenko Test Suite Tool - Version: "
                     +
                     String.Format(
                         "{0}.{1}.{2}",

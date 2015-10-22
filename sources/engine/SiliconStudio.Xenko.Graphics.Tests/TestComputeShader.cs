@@ -6,12 +6,12 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.ComputeEffect;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.ComputeEffect;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Input;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public class TestComputeShader : TestGameBase
     {
