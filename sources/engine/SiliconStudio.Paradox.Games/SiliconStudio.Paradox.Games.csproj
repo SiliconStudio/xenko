@@ -20,9 +20,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="WCL">
-      <HintPath>..\..\..\..\..\Projects\WCL\CGens\Release\bin\WCL.exe</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(ParadoxGraphicsApi)' == 'Direct3D11' ">
     <Reference Include="SharpDX">
@@ -53,7 +50,9 @@
     <Compile Include="Android\GameWindowAndroid.cs" />
     <Compile Include="AssemblyDoc.cs" />
     <Compile Include="Desktop\GamePlatformDesktopCoreCLR.cs" />
-    <Compile Include="Desktop\GameForm.cs" />
+    <Compile Include="Desktop\GameForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Desktop\WindowsMessageLoop.cs" />
     <Compile Include="Desktop\Win32Native.cs" />
     <Compile Include="GameContext.Android.cs" />
@@ -61,6 +60,7 @@
     <Compile Include="GameContext.iOS.cs" />
     <Compile Include="Desktop\GamePlatformDesktop.cs" />
     <Compile Include="Desktop\GameWindowDesktop.cs" />
+    <Compile Include="SDL\GameForm.SDL.cs" />
     <Compile Include="GameProfilingKeys.cs" />
     <Compile Include="GameSystemState.cs" />
     <Compile Include="GameUnhandledExceptionEventArgs.cs" />
@@ -111,6 +111,10 @@
     <Compile Include="WindowsStore\GameWindowWindowsRuntimeSwapChainPanel.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\externals\SDL2\SDL2-CS.csproj">
+      <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
+      <Name>SDL2-CS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>

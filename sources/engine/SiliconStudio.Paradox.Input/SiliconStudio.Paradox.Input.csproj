@@ -70,7 +70,7 @@
     <Compile Include="InputManager.cs" />
     <Compile Include="InputManager.iOS.cs" />
     <Compile Include="InputManager.OpenTK.cs" />
-    <Compile Include="InputManager.Windows.DesktopCoreCLR.cs" />
+    <Compile Include="InputManager.Windows.Desktop.SDL.cs" />
     <Compile Include="InputManager.Windows.Desktop.cs" />
     <Compile Include="InputManager.Windows.DirectInput.cs" />
     <Compile Include="InputManager.Windows.RawInput.Keyboard.cs" />

@@ -21,8 +21,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
+    <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Drawing" />
+    <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Windows.Forms" />
   </ItemGroup>
   <Choose>
     <!-- SharpDX is needed for WIC -->
@@ -105,6 +105,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\externals\SDL2\SDL2-CS.csproj">
+      <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
+      <Name>SDL2-CS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
