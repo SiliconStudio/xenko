@@ -105,6 +105,7 @@ namespace SiliconStudio.Paradox.Graphics
         internal bool HasExtTextureFormatBGRA8888;
         internal bool HasRenderTargetFloat;
         internal bool HasRenderTargetHalf;
+        internal bool HasTextureRG;
 #endif
 
         private int windowProvidedFrameBuffer;
@@ -156,7 +157,7 @@ namespace SiliconStudio.Paradox.Graphics
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         private OpenTK.GameWindow gameWindow;
-#elif  SILICONSTUDIO_PLATFORM_ANDROID
+#elif SILICONSTUDIO_PLATFORM_ANDROID
         private AndroidGameView gameWindow;
 #elif SILICONSTUDIO_PLATFORM_IOS
         private iPhoneOSGameView gameWindow;
@@ -286,7 +287,7 @@ namespace SiliconStudio.Paradox.Graphics
         {
             ++contextBeginCounter;
 
-#if  SILICONSTUDIO_PLATFORM_ANDROID
+#if SILICONSTUDIO_PLATFORM_ANDROID
             if (contextBeginCounter == 1)
             {
                 if (Workaround_Context_Tegra2_Tegra3)
@@ -2147,7 +2148,7 @@ namespace SiliconStudio.Paradox.Graphics
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             gameWindow = (OpenTK.GameWindow)windowHandle.NativeHandle;
             graphicsContext = gameWindow.Context;
-#elif  SILICONSTUDIO_PLATFORM_ANDROID
+#elif SILICONSTUDIO_PLATFORM_ANDROID
             // Force a reference to AndroidGameView from OpenTK 0.9, otherwise linking will fail in release mode for MonoDroid.
             typeof (opentkold::OpenTK.Platform.Android.AndroidGameView).ToString();
             gameWindow = (AndroidGameView)windowHandle.NativeHandle;

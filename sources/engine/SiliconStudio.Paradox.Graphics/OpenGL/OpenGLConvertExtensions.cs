@@ -339,7 +339,7 @@ namespace SiliconStudio.Paradox.Graphics
                     break;
                 case PixelFormat.R8_UNorm:
 #if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
-                    if (graphicsDevice.IsOpenGLES2)
+                    if (!graphicsDevice.HasTextureRG && graphicsDevice.IsOpenGLES2)
                     {
                         internalFormat = PixelInternalFormat.Luminance;
                         format = PixelFormatGl.Luminance;
