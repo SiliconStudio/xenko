@@ -15,7 +15,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Paradox.Engine;
 using SiliconStudio.Paradox.Games;
 using SiliconStudio.Paradox.Games.Android;
-using SiliconStudio.Paradox.UI;
 
 namespace SiliconStudio.Paradox.Starter
 {

@@ -38,7 +38,7 @@ namespace SiliconStudio.Paradox.Engine
         /// Gets the graphics device manager.
         /// </summary>
         /// <value>The graphics device manager.</value>
-        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
+        public GraphicsDeviceManager GraphicsDeviceManager { get; internal set; }
 
         /// <summary>
         /// Gets the script system.

@@ -220,7 +220,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 {
                     if (method.Action != null)
                     {
-                        TestGameBase.TestGameLogger.Debug(@"Executing method in Draw/Update for frame " + frameCount + @": " + method.Action.GetMethodInfo().Name);
+                        GraphicsTestBase.TestGameLogger.Debug(@"Executing method in Draw/Update for frame " + frameCount + @": " + method.Action.GetMethodInfo().Name);
                         method.Action.Invoke();
                     }
                     methodsToRemove.Push(i);

@@ -15,20 +15,17 @@ using SiliconStudio.Paradox.Rendering.Composers;
 
 namespace SiliconStudio.Paradox.Graphics.Regression
 {
-    [TestFixture]
-    public abstract class GraphicsTestBase : TestGameBase
+    public abstract class GraphicsTestBase : Game
     {
-        #region Public properties
-
         public static bool ForceInteractiveMode;
 
-        public FrameGameSystem FrameGameSystem { get; private set; }
+        public static readonly Logger TestGameLogger = GlobalLogger.GetLogger("TestGameLogger");
+
+        public FrameGameSystem FrameGameSystem { get; }
 
         protected TestContext CurrentTestContext { get; set; }
-        
-        #endregion
 
-        #region Public members
+        public int StopOnFrameCount { get; set; }
 
         /// <summary>
         /// The current version of the test
@@ -44,13 +41,25 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 
         private bool screenshotAutomationEnabled;
 
-        #endregion
-
-        #region Constructors
-
         protected GraphicsTestBase()
         {
+            // Override the default graphic device manager
+            GraphicsDeviceManager.Dispose();
+            GraphicsDeviceManager = new TestGraphicsDeviceManager(this)
+            {
+                PreferredBackBufferWidth = 800,
+                PreferredBackBufferHeight = 480,
+                PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt,
+                DeviceCreationFlags = DeviceCreationFlags.Debug,
+                PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 }
+            };
+
+            // Enable profiling
+            //Profiler.EnableAll();
+            
             CurrentVersion = 0;
+            StopOnFrameCount = -1;
+            AutoLoadDefaultSettings = false;
 
             FrameGameSystem = new FrameGameSystem(Services);
             GameSystems.Add(FrameGameSystem);
@@ -58,18 +67,14 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // get build number
             int buildNumber;
-            if (ImageTester.ImageTestResultConnection.BuildNumber <= 0 && Int32.TryParse(Environment.GetEnvironmentVariable("PARADOX_BUILD_NUMBER"), out buildNumber))
+            if (ImageTester.ImageTestResultConnection.BuildNumber <= 0 && int.TryParse(Environment.GetEnvironmentVariable("PARADOX_BUILD_NUMBER"), out buildNumber))
                 ImageTester.ImageTestResultConnection.BuildNumber = buildNumber;
 
             // get branch name
-            if (String.IsNullOrEmpty(ImageTester.ImageTestResultConnection.BranchName))
+            if (string.IsNullOrEmpty(ImageTester.ImageTestResultConnection.BranchName))
                 ImageTester.ImageTestResultConnection.BranchName = Environment.GetEnvironmentVariable("PARADOX_BRANCH_NAME") ?? "";
 #endif
         }
-
-        #endregion
-
-        #region public methods
 
         /// <summary>
         /// Save the image locally or on the server.
@@ -124,10 +129,6 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             }
         }
 
-        #endregion
-
-        #region Protected methods
-        
         protected override async Task LoadContent()
         {
             await base.LoadContent();
@@ -148,6 +149,16 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 RegisterTests();
 
             return Task.FromResult(true);
+        }
+
+        protected override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (gameTime.FrameCount == StopOnFrameCount)
+            {
+                Exit();
+            }
         }
 
         /// <summary>
@@ -233,10 +244,6 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             if (game.ScreenShotAutomationEnabled)
                 Assert.IsTrue(ImageTester.RequestImageComparisonStatus(game.CurrentTestContext.Test.FullName), "The image comparison returned false.");
         }
-
-        #endregion
-
-        #region Private methods
         
         /// <summary>
         /// Send the data of the test to the server.
@@ -255,10 +262,6 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             ImageTester.SendImage(new TestResultImage { CurrentVersion = currentVersion, Frame = frameIndex.ToString(), Image = image, TestName = testName });
         }
 
-        #endregion
-
-        #region Helper structures and classes
-
         /// <summary>
         /// A structure to store information about the connected test devices.
         /// </summary>
@@ -274,6 +277,40 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Ignore the test on the given platform
+        /// </summary>
+        public static void IgnorePlatform(PlatformType platform)
+        {
+            if(Platform.Type == platform)
+                Assert.Ignore("This test is not valid for the '{0}' platform. It has been ignored", platform);
+        }
+
+        /// <summary>
+        /// Ignore the test on any other platform than the provided one.
+        /// </summary>
+        public static void RequirePlatform(PlatformType platform)
+        {
+            if(Platform.Type != platform)
+                Assert.Ignore("This test requires the '{0}' platform. It has been ignored", platform);
+        }
+
+        /// <summary>
+        /// Ignore the test on the given graphic platform
+        /// </summary>
+        public static void IgnoreGraphicPlatform(GraphicsPlatform platform)
+        {
+            if (GraphicsDevice.Platform == platform)
+                Assert.Ignore("This test is not valid for the '{0}' graphic platform. It has been ignored", platform);
+        }
+
+        /// <summary>
+        /// Ignore the test on any other graphic platform than the provided one.
+        /// </summary>
+        public static void RequireGraphicPlatform(GraphicsPlatform platform)
+        {
+            if (GraphicsDevice.Platform != platform)
+                Assert.Ignore("This test requires the '{0}' platform. It has been ignored", platform);
+        }
     }
 }
