@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Games.Resources {
             }
         }
         
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+#if !SILICONSTUDIO_UI_SDL2
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
@@ -71,6 +71,8 @@ namespace SiliconStudio.Paradox.Games.Resources {
                 return ((System.Drawing.Icon)(obj));
             }
         }
+#else
+        // FIXME: We should load a SDL Surface and call SDL_SetWindowIcon.
 #endif
     }
 }
