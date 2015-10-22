@@ -1,13 +1,13 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Serialization.Converters;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     public class LightReceiverComponent : EntityComponent
     {

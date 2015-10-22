@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Games.MicroThreading;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Games.MicroThreading;
+using SiliconStudio.Xenko.Input;
 using SiliconStudio.Shaders;
 
 #if NET45
@@ -19,10 +19,10 @@ using TaskEx = System.Threading.Tasks.Task;
 
 namespace ScriptTest
 {
-    [ParadoxScript]
+    [XenkoScript]
     public class ScriptPermutation
     {
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task Run(EngineContext engineContext)
         {
             var renderingSetup = RenderingSetup.Singleton;

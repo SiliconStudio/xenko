@@ -1,0 +1,89 @@
+﻿<#@ template debug="false" hostspecific="false" language="C#" #>
+<#@ assembly name="System.Core" #>
+<#@ import namespace="System.Linq" #>
+<#@ import namespace="System.Text" #>
+<#@ import namespace="System.Collections.Generic" #>
+<#@ output extension=".cs" #>
+<#
+var classifiers = new[]
+    {
+        new Classifier("Debug", "DarkGray", false),
+        new Classifier("Verbose", "Gray", false),
+        new Classifier("Info", "Green", false),
+        new Classifier("Warning", "DarkOrange", false),
+        new Classifier("Error", "Red", true),
+        new Classifier("Fatal", "Red", true),
+    }; 
+#>
+using System.Collections.Generic;
+using System.ComponentModel.Composition;
+using System.Windows.Media;
+
+using Microsoft.VisualStudio.Text.Classification;
+using Microsoft.VisualStudio.Utilities;
+
+using SiliconStudio.Xenko.VisualStudio.BuildEngine;
+
+namespace SiliconStudio.Xenko.VisualStudio
+{
+    public partial class OutputClassifier
+    {
+        private Dictionary<char, string> classificationTypes = new Dictionary<char, string>();
+
+        private void InitializeClassifiers()
+        {
+<#foreach (var classifier in classifiers)
+{#>
+            classificationTypes.Add('<#=classifier.Name[0]#>', BuildEngine<#=classifier.Name#>);
+<#}#>
+        }
+
+<#foreach (var classifier in classifiers)
+{#>
+        public const string BuildEngine<#=classifier.Name#> = "xk.buildengine.<#=classifier.Name.ToLowerInvariant()#>";
+<#}#>
+
+<#foreach (var classifier in classifiers)
+{#>
+        [Export]
+        [Name(BuildEngine<#=classifier.Name#>)]
+        internal static ClassificationTypeDefinition buildEngine<#=classifier.Name#> = null;
+
+<# } #>
+<# foreach (var classifier in classifiers)
+{#>
+        [Export(typeof(EditorFormatDefinition))]
+        [ClassificationType(ClassificationTypeNames = BuildEngine<#=classifier.Name#>)]
+        [Name(BuildEngine<#=classifier.Name#>)]
+        [UserVisible(true)] //this should be visible to the end user
+        [Order(Before = Priority.Default)] //set the priority to be after the default classifiers
+        internal sealed class BuildEngine<#=classifier.Name#>Format : ClassificationFormatDefinition
+        {
+            [ImportingConstructor]
+            public BuildEngine<#=classifier.Name#>Format(OutputClassificationColorManager colorManager)
+            {
+                DisplayName = "Xenko BuildEngine <#=classifier.Name#>";
+                this.IsBold = <#=classifier.IsBold.ToString().ToLower()#>;
+                var classificationColor = colorManager.GetClassificationColor(BuildEngine<#=classifier.Name#>);
+                ForegroundColor = classificationColor.ForegroundColor;
+                BackgroundColor = classificationColor.BackgroundColor;
+            }
+        }
+
+<#}#>
+    }
+}
+<#+
+class Classifier
+{
+    public Classifier(string name, string color, bool isBold)
+    {
+        Name = name;
+        Color = color;
+		IsBold = isBold;
+    }
+    
+    public string Name;
+    public string Color;
+    public bool IsBold;
+} #>

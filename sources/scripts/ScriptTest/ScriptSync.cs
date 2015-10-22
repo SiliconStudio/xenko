@@ -5,18 +5,18 @@ using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-using Paradox;
-using Paradox.Diffs;
-using Paradox.Effects;
-using Paradox.Engine;
-using Paradox.EntityModel;
-using Paradox.Framework;
-using Paradox.Framework.Graphics;
-using Paradox.Framework.Mathematics;
-using Paradox.Framework.MicroThreading;
-using Paradox.Framework.PropertyModel;
-using Paradox.Framework.Serialization;
-using Paradox.Framework.Serialization.Contents;
+using Xenko;
+using Xenko.Diffs;
+using Xenko.Effects;
+using Xenko.Engine;
+using Xenko.EntityModel;
+using Xenko.Framework;
+using Xenko.Framework.Graphics;
+using Xenko.Framework.Mathematics;
+using Xenko.Framework.MicroThreading;
+using Xenko.Framework.PropertyModel;
+using Xenko.Framework.Serialization;
+using Xenko.Framework.Serialization.Contents;
 
 using NGit;
 using NGit.Api;
@@ -35,7 +35,7 @@ using FileMode = System.IO.FileMode;
 namespace ScriptTest
 {
     // Various scrips to test scene saving/loading and git merging.
-    [ParadoxScript]
+    [XenkoScript]
     public static class ScriptSync
     {
         private static MemoryStream memoryStream = new MemoryStream();
@@ -55,7 +55,7 @@ namespace ScriptTest
             return entities;
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static void SaveAssets(EngineContext engineContext)
         {
             var entities = new List<EntityDefinition>();
@@ -104,7 +104,7 @@ namespace ScriptTest
             public string Url { get; set; }
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static void MergeTest(EngineContext engineContext)
         {
             // TODO: Currently hardcoded
@@ -212,7 +212,7 @@ namespace ScriptTest
                     throw new NotImplementedException();
             }
         }
-        [ParadoxScript]
+        [XenkoScript]
         public static void LoadAssets(EngineContext engineContext)
         {
             var fileStream = new FileStream(@"C:\DEV\hotei_scene\scene.hotei", FileMode.Open, FileAccess.Read);

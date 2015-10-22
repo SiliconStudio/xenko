@@ -60,15 +60,15 @@ namespace SiliconStudio.BuildEngine
         private readonly List<string> parsingWarnings = new List<string>();
         private readonly BuildParameterCollection parameters = new BuildParameterCollection();
 
-        private BuildScript(string paradoxSdkDir)
+        private BuildScript(string xenkoSdkDir)
         {
             SourceFolders = new Dictionary<string, string>();
-            ((Dictionary<string, string>)SourceFolders).Add("ParadoxSdkDir", paradoxSdkDir);
+            ((Dictionary<string, string>)SourceFolders).Add("XenkoSdkDir", xenkoSdkDir);
         }
 
-        public static BuildScript LoadFromFile(string paradoxSdkDir, string filePath)
+        public static BuildScript LoadFromFile(string xenkoSdkDir, string filePath)
         {
-            var script = new BuildScript(paradoxSdkDir) { ScriptPath = filePath, source = File.ReadAllText(filePath) };
+            var script = new BuildScript(xenkoSdkDir) { ScriptPath = filePath, source = File.ReadAllText(filePath) };
             return script;
         }
 

@@ -1,6 +1,6 @@
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class ShadowMapFilterDefault : ShadowMapFilter
     {

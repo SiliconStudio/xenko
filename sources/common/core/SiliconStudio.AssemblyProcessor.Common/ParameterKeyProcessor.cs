@@ -44,7 +44,7 @@ namespace SiliconStudio.AssemblyProcessor
                     var fieldBaseType = field.FieldType;
                     while (fieldBaseType != null)
                     {
-                        if (fieldBaseType.FullName == "SiliconStudio.Paradox.Rendering.ParameterKey")
+                        if (fieldBaseType.FullName == "SiliconStudio.Xenko.Rendering.ParameterKey")
                             break;
 
                         var resolvedFieldBaseType = fieldBaseType.Resolve();
@@ -71,26 +71,26 @@ namespace SiliconStudio.AssemblyProcessor
                 if (cctor == null)
                     continue;
 
-                // Load necessary SiliconStudio.Paradox methods/attributes
+                // Load necessary SiliconStudio.Xenko methods/attributes
                 if (parameterKeysMergeMethod == null)
                 {
-                    AssemblyDefinition paradoxEngineAssembly;
+                    AssemblyDefinition xenkoEngineAssembly;
                     try
                     {
-                        paradoxEngineAssembly = assembly.Name.Name == "SiliconStudio.Paradox"
+                        xenkoEngineAssembly = assembly.Name.Name == "SiliconStudio.Xenko"
                             ? assembly
-                            : context.AssemblyResolver.Resolve("SiliconStudio.Paradox");
+                            : context.AssemblyResolver.Resolve("SiliconStudio.Xenko");
                     }
                     catch (Exception)
                     {
-                        Console.WriteLine("Error, cannot find [SiliconStudio.Paradox] assembly for processing ParameterKeyProcessor");
-                        // We can't generate an exception, so we are just returning. It means that SiliconStudio.Paradox has not been generated so far.
+                        Console.WriteLine("Error, cannot find [SiliconStudio.Xenko] assembly for processing ParameterKeyProcessor");
+                        // We can't generate an exception, so we are just returning. It means that SiliconStudio.Xenko has not been generated so far.
                         return true;
                     }
 
-                    var parameterKeysType = paradoxEngineAssembly.MainModule.GetTypes().First(x => x.Name == "ParameterKeys");
+                    var parameterKeysType = xenkoEngineAssembly.MainModule.GetTypes().First(x => x.Name == "ParameterKeys");
                     parameterKeysMergeMethod = parameterKeysType.Methods.First(x => x.Name == "Merge");
-                    assemblyEffectKeysAttributeType = paradoxEngineAssembly.MainModule.GetTypes().First(x => x.Name == "AssemblyEffectKeysAttribute");
+                    assemblyEffectKeysAttributeType = xenkoEngineAssembly.MainModule.GetTypes().First(x => x.Name == "AssemblyEffectKeysAttribute");
                 }
 
                 var cctorIL = cctor.Body.GetILProcessor();

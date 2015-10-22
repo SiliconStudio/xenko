@@ -213,6 +213,16 @@ namespace SiliconStudio.Core.Settings
                 {
                     YamlSerializer.Serialize(stream, settingsFile);
                 }
+
+                if (filePath != profile.FilePath)
+                {
+                    if (File.Exists(profile.FilePath))
+                    {
+                        File.Delete(profile.FilePath);
+                    }
+
+                    profile.FilePath = filePath;
+                }               
             }
             catch (Exception e)
             {

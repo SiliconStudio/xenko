@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Intermediate ShadowMap calculation structure.

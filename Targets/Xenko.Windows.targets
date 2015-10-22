@@ -1,0 +1,36 @@
+<!-- Build file post-included by all Xenko projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <SiliconStudioNETFrameworkVersion>v4.5</SiliconStudioNETFrameworkVersion>
+  </PropertyGroup>
+  
+  <!-- Embed native libraries -->
+  <ItemGroup>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\freetype.dll" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libcore.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libbulletc.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\d3dcompiler_47.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\glsl_optimizer.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\SDL2.dll"/>
+    <!-- Users custom native libraries -->
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.dll" />
+  </ItemGroup>
+
+  <!-- On Windows platform automatically add the following references -->
+  <Choose>
+    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
+      <ItemGroup>
+        <Reference Include="SiliconStudio.Xenko.Shaders.Compiler">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Shaders.Compiler.dll</HintPath>
+        </Reference>
+
+        <Content Include="@(SiliconStudioEmbeddedNativeLibrary)">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <Visible>False</Visible>
+        </Content>
+      </ItemGroup>
+	  </When>
+  </Choose>
+</Project>

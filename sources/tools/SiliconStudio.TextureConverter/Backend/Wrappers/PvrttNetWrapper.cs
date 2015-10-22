@@ -538,50 +538,50 @@ namespace SiliconStudio.TextureConverter.PvrttWrapper
             return pvrttGetColourSpace(header);
         }
 
-        public SiliconStudio.Paradox.Graphics.PixelFormat GetFormat()
+        public SiliconStudio.Xenko.Graphics.PixelFormat GetFormat()
         {
             UInt64 format = pvrttGetPixelType(header);
 
             switch (format)
             {
                 case 0:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGB;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_2bpp_RGB;
                 case 1:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGBA;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_2bpp_RGBA;
                 case 2:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGB;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_4bpp_RGB;
                 case 3:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGBA;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_4bpp_RGBA;
                 case 4:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_II_2bpp;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_II_2bpp;
                 case 5:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_II_4bpp;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_II_4bpp;
                 case 6:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.ETC1;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.ETC1;
                 case 22:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGB;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGB;
                 case 23:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGBA;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGBA;
                 case 24:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGB_A1;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGB_A1;
                 case 25:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.EAC_R11_Unsigned;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.EAC_R11_Unsigned;
                 case 26:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.EAC_R11_Signed;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.EAC_R11_Signed;
                 case 27:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.EAC_RG11_Unsigned;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.EAC_RG11_Unsigned;
                 case 28:
-                    return SiliconStudio.Paradox.Graphics.PixelFormat.EAC_RG11_Signed;
+                    return SiliconStudio.Xenko.Graphics.PixelFormat.EAC_RG11_Signed;
                 /*default:
                     throw new TexLibraryException("Unknown format by PowerVC Texture Tool.");*/
             }
 
             if (format == Utilities.ConvertPixelType(PixelType.Standard8PixelType))
-                return SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm;
+                return SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm;
             else if (format == Utilities.ConvertPixelType(PixelType.Standard16PixelType))
-                return SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_UNorm;
+                return SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_UNorm;
             else if (format == Utilities.ConvertPixelType(PixelType.Standard32PixelType))
-                return SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_Float;
+                return SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_Float;
             else
                 throw new TextureToolsException("Unknown format by PowerVC Texture Tool.");
         }

@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProjectGuid>{3E7B5D96-CF71-41EE-8CF0-70D090873390}</ProjectGuid>
     <OutputType>Exe</OutputType>
@@ -109,32 +109,32 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\SubPackage\SubPackage.pdxpkg">
+    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\SubPackage\SubPackage.xkpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestPackage\SubFolder\TestAsset.pdxtest">
+    <Content Include="data\SiliconStudio.Assets.Tests\TestPackage\SubFolder\TestAsset.xktest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestPackage\TestAsset.pdxtest">
+    <Content Include="data\SiliconStudio.Assets.Tests\TestPackage\TestAsset.xktest">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestPackageLoadingWithAssets.pdxpkg">
+    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestPackageLoadingWithAssets.xkpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <Content Include="data\SiliconStudio.Assets.Tests\TestSerializing\TestSerializing_TestMyAssetObject_Reference.pdxobj">
+    <Content Include="data\SiliconStudio.Assets.Tests\TestSerializing\TestSerializing_TestMyAssetObject_Reference.xkobj">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="data\SiliconStudio.Assets.Tests\TestFileVersionManager\test.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="data\box.fbx" />
-    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestRaw.pdxraw">
+    <None Include="data\SiliconStudio.Assets.Tests\TestPackage\TestRaw.xkraw">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="data\uv.dds" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="data\SiliconStudio.Assets.Tests\TestBasicPackageCreateSaveLoad\TestPackage_TestBasicPackageCreateSaveLoad_Reference.pdxpkg">
+    <None Include="data\SiliconStudio.Assets.Tests\TestBasicPackageCreateSaveLoad\TestPackage_TestBasicPackageCreateSaveLoad_Reference.xkpkg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

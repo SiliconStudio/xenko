@@ -1,0 +1,121 @@
+<!-- Build file post-included by all Xenko projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- Automatically adds references to Xenko assemblies -->
+  <ItemGroup>
+    <Reference Include="SiliconStudio.Core">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Core.Mathematics">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Core.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Core.Serialization">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Core.Serialization.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Core.IO">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Core.IO.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Core.MicroThreading">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Core.MicroThreading.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Shaders" Condition="$(SiliconStudioPlatform) == 'Windows'">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Shaders.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Xenko.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.Engine">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Xenko.Engine.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.Games">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Xenko.Games.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.Graphics">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Xenko.Graphics.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.Audio">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Xenko.Audio.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.Input">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Xenko.Input.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.Shaders">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Xenko.Shaders.dll</HintPath>
+    </Reference>
+    <Reference Include="SiliconStudio.Xenko.UI">
+      <HintPath>$(XenkoSdkBinDir)\SiliconStudio.Xenko.UI.dll</HintPath>
+    </Reference>
+
+    <!--<Reference Include="AsyncBridge">
+      <HintPath>$(XenkoSdkBinDir)\AsyncBridge.dll</HintPath>
+    </Reference>-->
+  </ItemGroup>
+
+  <!-- On Windows platform automatically add the following references -->
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <!--<Reference Include="AsyncBridge">
+      <HintPath>$(XenkoSdkDir)deps\AsyncBridge\AsyncBridge.Android.dll</HintPath>
+    </Reference>-->
+  </ItemGroup>
+
+  <!-- Override PostSettings target CopySiliconStudioNativeLibraries. 
+       Copy the libcore.a library to the project root directory for future native link. -->
+  <Target Name="CopySiliconStudioNativeLibraries" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
+    <Copy SourceFiles="$(XenkoSdkBinDir)\libcore.a" DestinationFolder="$(ProjectDir)"/>
+  </Target>
+  
+  <!-- Override PostSettings target CopyXenkoNativeLibraries. 
+       Copy the libfreetype.a library to the project root directory for future native link. -->
+  <Target Name="CopyXenkoNativeLibraries" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
+    <Copy SourceFiles="$(XenkoSdkBinDir)\libfreetype.a" DestinationFolder="$(ProjectDir)"/>
+  </Target>
+  
+  <!-- On Windows platform automatically add the following references -->
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <!--<Reference Include="AsyncBridge">
+      <HintPath>$(XenkoSdkDir)deps\AsyncBridge\AsyncBridge.Android.dll</HintPath>
+    </Reference>-->
+  </ItemGroup>
+
+  <!-- On Windows platform automatically add the following references -->
+  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsPhone' ">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <!--<Reference Include="AsyncBridge">
+      <HintPath>$(XenkoSdkDir)deps\AsyncBridge\AsyncBridge.Android.dll</HintPath>
+    </Reference>-->
+  </ItemGroup>
+  
+  <!-- On Windows platform automatically add the following references -->
+  <ItemGroup Condition="$(SiliconStudioPlatform) == 'Windows'">
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+
+    <!--UI frameworks-->
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="System.Xaml" />
+    
+    <Content Include="$(XenkoSdkBinDir)\**\freetype.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+
+    <Content Include="$(XenkoSdkBinDir)\**\libbulletc.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    
+    <Content Include="$(XenkoSdkBinDir)\**\libcore.dll">
+      <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  
+  </ItemGroup>
+</Project>

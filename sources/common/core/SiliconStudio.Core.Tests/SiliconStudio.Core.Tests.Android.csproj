@@ -16,12 +16,12 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
-    <ParadoxBuildTags>Windows;Android;iOS</ParadoxBuildTags>
+    <XenkoBuildTags>Windows;Android;iOS</XenkoBuildTags>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Mono.Android" Label="Paradox.DoNotSync" />
-    <Reference Include="Xamarin.Android.NUnitLite" Label="Paradox.DoNotSync" />
+    <Reference Include="Mono.Android" Label="Xenko.DoNotSync" />
+    <Reference Include="Xamarin.Android.NUnitLite" Label="Xenko.DoNotSync" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Compile Include="TestObjectIdBuilder.cs" />

@@ -9,7 +9,7 @@
     <RootNamespace>SiliconStudio.Presentation.Tests</RootNamespace>
     <AssemblyName>SiliconStudio.Presentation.Tests</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <SiliconStudioCompilerTargetsEnable Condition="'$(SiliconStudioPackageBuild)' == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
   <ItemGroup>

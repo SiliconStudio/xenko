@@ -60,17 +60,17 @@
   <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
   
   <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != ''">
-    <PropertyGroup Condition="'$(ParadoxUserBuild)' != 'true'">
+    <PropertyGroup Condition="'$(XenkoUserBuild)' != 'true'">
       <!-- Add SiliconStudio.Core path to assembly search directory -->
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioCoreAssemblyPath)' != ''">$(SiliconStudioAssemblyProcessorOptions) --assembly="$(SiliconStudioCoreAssemblyPath)"</SiliconStudioAssemblyProcessorOptions>
     </PropertyGroup>
 
-    <WriteLinesToFile File="$(IntermediateOutputPath)ParadoxReferences.cache" Lines="@(ReferencePath)" Overwrite="true" />
+    <WriteLinesToFile File="$(IntermediateOutputPath)XenkoReferences.cache" Lines="@(ReferencePath)" Overwrite="true" />
 
     <!--Add platform and target framework to assembly processor options-->
     <PropertyGroup>
       <SiliconStudioAssemblyProcessorOptions>--platform=$(SiliconStudioPlatform) --targetFramework=$(TargetFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions)</SiliconStudioAssemblyProcessorOptions>
-      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)ParadoxReferences.cache"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(DocumentationFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --docfile="$(DocumentationFile)"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --Werror</SiliconStudioAssemblyProcessorOptions>

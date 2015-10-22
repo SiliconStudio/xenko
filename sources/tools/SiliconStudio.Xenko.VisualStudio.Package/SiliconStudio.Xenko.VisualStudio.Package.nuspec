@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>SiliconStudio.Xenko.VisualStudio.Package</id>
+    <version>1.4.0</version>
+    <authors>Silicon Studio Corp.</authors>
+    <owners>Silicon Studio Corp.</owners>
+    <licenseUrl>http://xenko.com/license.txt</licenseUrl>
+    <projectUrl>http://xenko.com/</projectUrl>
+    <copyright>&#169; SiliconStudio Corp. All rights reserved.</copyright>
+    <description>Visual Studio Integration Plugin for Xenko</description>
+    <tags>internal</tags>
+  </metadata>
+  <files>
+    <file src="SiliconStudio.Xenko.vsix" target="tools" />
+  </files>
+</package>

@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets
     public static class DirectoryHelper
     {
         private const string CommonTargets = @"Targets\SiliconStudio.Common.targets";
-        private const string ParadoxSolution = @"build\Paradox.sln";
+        private const string XenkoSolution = @"build\Xenko.sln";
 
         public static string packageDirectoryOverride;
 
@@ -104,8 +104,8 @@ namespace SiliconStudio.Assets
         public static bool IsRootDevDirectory(string directory)
         {
             if (directory == null) throw new ArgumentNullException("directory");
-            var paradoxSolution = Path.Combine(directory, ParadoxSolution);
-            return File.Exists(paradoxSolution);
+            var xenkoSolution = Path.Combine(directory, XenkoSolution);
+            return File.Exists(xenkoSolution);
         }
 
         private static string GetCommonTargets(string directory)

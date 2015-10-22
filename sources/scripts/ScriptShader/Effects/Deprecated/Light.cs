@@ -1,8 +1,8 @@
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class Light
     {

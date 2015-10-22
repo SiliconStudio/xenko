@@ -82,7 +82,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             libraryData.Textures = new Texture[image.SubImageArray.Length];
 
-            var bpp = Paradox.Graphics.PixelFormatExtensions.SizeInBits(image.Format);
+            var bpp = Xenko.Graphics.PixelFormatExtensions.SizeInBits(image.Format);
 
             for (int i = 0; i < image.SubImageArray.Length; ++i)
             {
@@ -255,15 +255,15 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <returns>
         ///     <c>true</c> if the formats is supported; otherwise, <c>false</c>.
         /// </returns>
-        public bool SupportFormat(SiliconStudio.Paradox.Graphics.PixelFormat format)
+        public bool SupportFormat(SiliconStudio.Xenko.Graphics.PixelFormat format)
         {
             switch (format)
             {
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGB:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGBA_Interpolated:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.B8G8R8A8_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ATC_RGB:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ATC_RGBA_Explicit:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ATC_RGBA_Interpolated:
                     return true;
                 default:
                     return false;
@@ -271,22 +271,22 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         }
 
         /// <summary>
-        /// Retrieves the native format from <see cref="SiliconStudio.Paradox.Graphics.PixelFormat"/>.
+        /// Retrieves the native format from <see cref="SiliconStudio.Xenko.Graphics.PixelFormat"/>.
         /// </summary>
         /// <param name="format">The format.</param>
         /// <returns>the corresponding <see cref="Format"/> format</returns>
-        private Format RetrieveNativeFormat(SiliconStudio.Paradox.Graphics.PixelFormat format)
+        private Format RetrieveNativeFormat(SiliconStudio.Xenko.Graphics.PixelFormat format)
         {
             switch (format)
             {
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.B8G8R8A8_UNorm:
                     return Format.ATI_TC_FORMAT_ARGB_8888;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGB:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ATC_RGB:
                     return Format.ATI_TC_FORMAT_ATC_RGB;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGBA_Explicit:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ATC_RGBA_Explicit:
                     return Format.ATI_TC_FORMAT_ATC_RGBA_Explicit;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ATC_RGBA_Interpolated:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ATC_RGBA_Interpolated:
                     return Format.ATI_TC_FORMAT_ATC_RGBA_Interpolated;
                 default:
                     throw new TextureToolsException("UnHandled compression format by ATI texture.");

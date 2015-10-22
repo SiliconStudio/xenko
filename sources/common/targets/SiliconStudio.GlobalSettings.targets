@@ -17,7 +17,7 @@
     <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\deps\</SiliconStudioDependenciesDir>
     <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' != '' and !HasTrailingSlash('$(SiliconStudioDependenciesDir)')">$(SiliconStudioDependenciesDir)\</SiliconStudioDependenciesDir>
     <!-- Define the location where to build assemblies. -->
-    <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(ParadoxGraphicsApi)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
     <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUI)</SiliconStudioBuildDirectory>
     <SiliconStudioBuildDirectory Condition="'$(SiliconStudioRuntime)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioRuntime)</SiliconStudioBuildDirectory>
     <BaseIntermediateOutputPath Condition=" $(BaseIntermediateOutputPath) == '' ">obj\</BaseIntermediateOutputPath>
@@ -26,19 +26,19 @@
     <OutputPath Condition="'$(OutputPath)' == ''">$(DefaultOutputPath)</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <FileAlignment>512</FileAlignment>
-    <ParadoxSharpDXSdkDir Condition="'$(ParadoxSharpDXSdkDir)' == ''">$(SiliconStudioDependenciesDir)SharpDX</ParadoxSharpDXSdkDir>
+    <XenkoSharpDXSdkDir Condition="'$(XenkoSharpDXSdkDir)' == ''">$(SiliconStudioDependenciesDir)SharpDX</XenkoSharpDXSdkDir>
   </PropertyGroup>
 
   <!-- 
     Settings SiliconStudioPlatform specific
   -->
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-    <TargetFrameworkVersionTool>v4.5.1</TargetFrameworkVersionTool>
+    <TargetFrameworkVersionTool>v4.5.2</TargetFrameworkVersionTool>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
-    <ParadoxSharpDXSdkBinDir Condition=" '$(SiliconStudioRuntime)' == '' ">$(ParadoxSharpDXSdkDir)\Bin\Desktop</ParadoxSharpDXSdkBinDir>
-    <ParadoxSharpDXSdkBinDir Condition=" '$(SiliconStudioRuntime)' != '' ">$(ParadoxSharpDXSdkDir)\Bin\Desktop-$(SiliconStudioRuntime)</ParadoxSharpDXSdkBinDir>
-    <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
-    <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
+    <XenkoSharpDXSdkBinDir Condition=" '$(SiliconStudioRuntime)' == '' ">$(XenkoSharpDXSdkDir)\Bin\Desktop</XenkoSharpDXSdkBinDir>
+    <XenkoSharpDXSdkBinDir Condition=" '$(SiliconStudioRuntime)' != '' ">$(XenkoSharpDXSdkDir)\Bin\Desktop-$(SiliconStudioRuntime)</XenkoSharpDXSdkBinDir>
+    <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
+    <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;NET45</SiliconStudioPlatformDefines>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
   </PropertyGroup>
@@ -47,9 +47,9 @@
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_STORE;NET45;NETFX_CORE</SiliconStudioPlatformDefines>
-    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\StoreApp</ParadoxSharpDXSdkBinDir>
-    <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
-    <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
+    <XenkoSharpDXSdkBinDir>$(XenkoSharpDXSdkDir)\Bin\StoreApp</XenkoSharpDXSdkBinDir>
+    <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
+    <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-winrt\</NUnitLiteBinDir>
   </PropertyGroup>
 
@@ -58,9 +58,9 @@
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_PHONE;NET45;NETFX_CORE;SILVERLIGHT;WINDOWS_PHONE</SiliconStudioPlatformDefines>
-    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\StoreApp</ParadoxSharpDXSdkBinDir>
-    <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
-    <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
+    <XenkoSharpDXSdkBinDir>$(XenkoSharpDXSdkDir)\Bin\StoreApp</XenkoSharpDXSdkBinDir>
+    <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
+    <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-winphone\</NUnitLiteBinDir>
   </PropertyGroup>
 
@@ -72,9 +72,9 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <ProjectTypeGuids>{A5A43C5B-DE2A-4C0C-9213-0A381AF9435A};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_10;NET45;NETFX_CORE;WINDOWS_UAP</SiliconStudioPlatformDefines>
-    <ParadoxSharpDXSdkBinDir>$(ParadoxSharpDXSdkDir)\Bin\StoreApp</ParadoxSharpDXSdkBinDir>
-    <ParadoxSharpDXAudioSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXAudioSdkBinDir>
-    <ParadoxSharpDXInputSdkBinDir>$(ParadoxSharpDXSdkBinDir)</ParadoxSharpDXInputSdkBinDir>
+    <XenkoSharpDXSdkBinDir>$(XenkoSharpDXSdkDir)\Bin\StoreApp</XenkoSharpDXSdkBinDir>
+    <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
+    <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-win10\</NUnitLiteBinDir>
   </PropertyGroup>
   
@@ -173,8 +173,8 @@
     <DefineConstants>$(DefineConstants);SILICONSTUDIO_SIGNED</DefineConstants>
     <SignAssembly>true</SignAssembly>
     <DelaySign Condition="'$(SiliconStudioOpenSourceSign)' == 'true'">true</DelaySign>
-    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioOpenSourceSign)' != 'true'">$(SolutionDir)paradox.snk</AssemblyOriginatorKeyFile>
-    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioOpenSourceSign)' == 'true'">$(SolutionDir)paradox.public.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioOpenSourceSign)' != 'true'">$(SolutionDir)xenko.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile Condition="'$(SiliconStudioOpenSourceSign)' == 'true'">$(SolutionDir)xenko.public.snk</AssemblyOriginatorKeyFile>
   </PropertyGroup>
 
 </Project>

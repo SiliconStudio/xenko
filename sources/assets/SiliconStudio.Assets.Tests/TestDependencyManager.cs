@@ -861,7 +861,7 @@ namespace SiliconStudio.Assets.Tests
             var dirPath = Path.Combine(Environment.CurrentDirectory, DirectoryTestBase + @"TestTracking");
             TryDeleteDirectory(dirPath);
 
-            string testGenerated1 = Path.Combine(dirPath, "TestTracking.pdxpkg");
+            string testGenerated1 = Path.Combine(dirPath, "TestTracking.xkpkg");
 
             var project = new Package { FullPath = testGenerated1 };
             project.Profiles.Add(new PackageProfile("Shared", new AssetFolder(".")));
@@ -908,7 +908,7 @@ namespace SiliconStudio.Assets.Tests
                 {
                     var dirPath2 = Path.Combine(Environment.CurrentDirectory, DirectoryTestBase + @"TestTracking2");
                     TryDeleteDirectory(dirPath2);
-                    string testGenerated2 = Path.Combine(dirPath2, "TestTracking.pdxpkg");
+                    string testGenerated2 = Path.Combine(dirPath2, "TestTracking.xkpkg");
 
                     project.FullPath = testGenerated2;
                     var result = session.Save();

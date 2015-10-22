@@ -19,7 +19,7 @@ namespace SiliconStudio.Assets.Tests
     public class TestAssetUpgrade : TestBase
     {
         [DataContract("MyUpgradedAsset")]
-        [AssetDescription(".pdxobj")]
+        [AssetDescription(".xkobj")]
         [AssetFormatVersion(5, 1)]
         [AssetUpgrader(1, 2, typeof(AssetUpgrader1))]
         [AssetUpgrader(2, 3, 4, typeof(AssetUpgrader2))]
@@ -131,7 +131,7 @@ namespace SiliconStudio.Assets.Tests
 
         public void TestUpgrade(MyUpgradedAsset asset, bool needMigration)
         {
-            var loadingFilePath = new PackageLoadingAssetFile(Path.Combine(DirectoryTestBase, "TestUpgrade\\Asset1.pdxobj"), "");
+            var loadingFilePath = new PackageLoadingAssetFile(Path.Combine(DirectoryTestBase, "TestUpgrade\\Asset1.xkobj"), "");
             var outputFilePath = loadingFilePath.FilePath.FullPath;
             AssetSerializer.Save(outputFilePath, asset);
 

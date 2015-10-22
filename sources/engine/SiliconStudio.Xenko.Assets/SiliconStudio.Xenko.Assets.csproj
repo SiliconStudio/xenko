@@ -1,0 +1,303 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
+  <PropertyGroup>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{39AE9C77-E94B-404F-8768-B6261B3C1E0E}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SiliconStudio.Xenko.Assets</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Assets</AssemblyName>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
+    <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Build" />
+    <Reference Include="Microsoft.CodeAnalysis, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.Common.1.0.0\lib\net45\Microsoft.CodeAnalysis.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.CSharp.1.0.0\lib\net45\Microsoft.CodeAnalysis.CSharp.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.CSharp.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.CSharp.Workspaces.1.0.0\lib\net45\Microsoft.CodeAnalysis.CSharp.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0\lib\net45\Microsoft.CodeAnalysis.Workspaces.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CodeAnalysis.Workspaces.Desktop, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.CodeAnalysis.Workspaces.Common.1.0.0\lib\net45\Microsoft.CodeAnalysis.Workspaces.Desktop.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="SharpYaml, Version=1.0.2.26673, Culture=neutral, PublicKeyToken=1ced8108e942bc02, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Collections.Immutable, Version=1.1.36.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Collections.Immutable.1.1.36\lib\portable-net45+win8+wp8+wpa81\System.Collections.Immutable.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.AttributedModel, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.AttributedModel.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Convention, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Convention.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Hosting, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Hosting.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.Runtime, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.Runtime.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Composition.TypedParts, Version=1.0.27.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\Microsoft.Composition.1.0.27\lib\portable-net45+win8+wp8+wpa81\System.Composition.TypedParts.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="SharpDX">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Reflection.Metadata, Version=1.0.21.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\build\packages\System.Reflection.Metadata.1.0.21\lib\portable-net45+win8\System.Reflection.Metadata.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="VHACDSharp">
+      <HintPath>..\..\..\deps\VHACD\VHACDSharp.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
+      <Project>{1e54a9a2-4439-4444-ae57-6d2ed3c0dc47}</Project>
+      <Name>SiliconStudio.Assets</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\buildengine\SiliconStudio.BuildEngine.Common\SiliconStudio.BuildEngine.Common.csproj">
+      <Project>{7732CB84-A39A-4ADF-B740-FD32A352FA8A}</Project>
+      <Name>SiliconStudio.BuildEngine.Common</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
+      <Project>{66581dad-70ad-4475-ae47-c6c0df1ec5e2}</Project>
+      <Name>SiliconStudio.Core.Design</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\tools\SiliconStudio.TextureConverter\SiliconStudio.TextureConverter.csproj">
+      <Project>{7F7BFF79-C400-435F-B359-56A2EF8956E0}</Project>
+      <Name>SiliconStudio.TextureConverter</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
+      <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
+      <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
+      <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
+      <Name>SiliconStudio.Xenko.Games</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
+      <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
+      <Name>SiliconStudio.Xenko.Physics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders.Parser\SiliconStudio.Xenko.Shaders.Parser.csproj">
+      <Project>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</Project>
+      <Name>SiliconStudio.Xenko.Shaders.Parser</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj">
+      <Project>{f2d52edb-bc17-4243-b06d-33cd20f87a7f}</Project>
+      <Name>SiliconStudio.Shaders</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
+      <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
+      <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
+      <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
+      <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
+      <Name>SiliconStudio.Core.Mathematics</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
+      <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
+      <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
+      <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
+      <Project>{bb9deeef-f18c-40d8-b016-6434cc71b8c3}</Project>
+      <Name>SiliconStudio.Xenko.UI</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
+      <Link>Properties\SharedAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="AssetCompilerContextExtensions.cs" />
+    <Compile Include="Audio\SoundEffectAsset.cs" />
+    <Compile Include="Audio\RawSoundAssetImporter.cs" />
+    <Compile Include="Audio\SoundAsset.cs" />
+    <Compile Include="Audio\RawMusicAssetImporter.cs" />
+    <Compile Include="Debugging\AssemblyReloader.cs" />
+    <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
+    <Compile Include="Effect\EffectCompileCommand.cs" />
+    <Compile Include="Effect\EffectCompositorAsset.cs" />
+    <Compile Include="Effect\EffectLogAsset.cs" />
+    <Compile Include="Effect\EffectLogAssetCompiler.cs" />
+    <Compile Include="Effect\EffectLogStore.cs" />
+    <Compile Include="Effect\EffectShaderAssetCompiler.cs" />
+    <Compile Include="Effect\EffectShaderAsset.cs" />
+    <Compile Include="Entities\ConvertedDescriptor.cs" />
+    <Compile Include="Entities\EntityAnalysis.cs" />
+    <Compile Include="Entities\EntityAsset.cs" />
+    <Compile Include="Entities\SceneAssetCompiler.cs" />
+    <Compile Include="Entities\EntityAssetOperations.cs" />
+    <Compile Include="Entities\EntityComponentReference.cs" />
+    <Compile Include="Entities\EntityDiffNode.cs" />
+    <Compile Include="Entities\EntityHierarchyDiffNodeBuilder.cs" />
+    <Compile Include="Entities\EntityReference.cs" />
+    <Compile Include="Entities\EntityScriptReference.cs" />
+    <Compile Include="Entities\EntitySerializer.cs" />
+    <Compile Include="Entities\EntityTreeAsset.cs" />
+    <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
+    <Compile Include="Entities\IEntityComponentReference.cs" />
+    <Compile Include="Entities\IEntityScriptReference.cs" />
+    <Compile Include="GameSettingsAsset.cs" />
+    <Compile Include="Entities\SceneAsset.cs" />
+    <Compile Include="GameSettingsAssetCompiler.cs" />
+    <Compile Include="GameSettingsAssetExtensions.cs" />
+    <Compile Include="GameSettingsProfileBase.cs" />
+    <Compile Include="GameUserSettings.cs" />
+    <Compile Include="IGameSettingsProfile.cs" />
+    <Compile Include="Materials\ComputeShaderClassBaseExtensions.cs" />
+    <Compile Include="Materials\MaterialNodeClassLoader.cs" />
+    <Compile Include="Materials\MaterialStreamFactory.cs" />
+    <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
+    <Compile Include="IModelAsset.cs" />
+    <Compile Include="XenkoPackageUpgrader.cs" />
+    <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
+    <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
+    <Compile Include="RenderingMode.cs" />
+    <Compile Include="Scripts\ScriptSourceFileAsset.cs" />
+    <Compile Include="Sprite\SpriteSheetAsset.cs" />
+    <Compile Include="Sprite\SpriteSheetAssetCompiler.cs" />
+    <Compile Include="Sprite\SpriteInfo.cs" />
+    <Compile Include="Materials\MaterialAsset.cs" />
+    <Compile Include="Materials\MaterialAssetCompiler.cs" />
+    <Compile Include="Audio\SoundMusicAsset.cs" />
+    <Compile Include="Audio\SoundAssetCompiler.cs" />
+    <Compile Include="Module.cs" />
+    <Compile Include="XenkoConfig.cs" />
+    <Compile Include="Physics\ColliderShapeAsset.cs" />
+    <Compile Include="Physics\ColliderShapeAssetCompiler.cs" />
+    <Compile Include="RenderFrames\RenderFrameAsset.cs" />
+    <Compile Include="RenderFrames\RenderFrameAssetCompiler.cs" />
+    <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
+    <Compile Include="Serializers\ScriptCollectionSerializer.cs" />
+    <Compile Include="Serializers\UnloadableScript.cs" />
+    <Compile Include="Skyboxes\ISkyboxModel.cs" />
+    <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
+    <Compile Include="Skyboxes\SkyboxAsset.cs" />
+    <Compile Include="Skyboxes\SkyboxCubeMapModel.cs" />
+    <Compile Include="Skyboxes\SkyboxGenerator.cs" />
+    <Compile Include="Skyboxes\SkyboxPreFilteringDiffuseOrder.cs" />
+    <Compile Include="Sprite\SpriteSheetType.cs" />
+    <Compile Include="Templates\TemplateScriptDescription.cs" />
+    <Compile Include="Textures\TextureColorSpace.cs" />
+    <Compile Include="Sprite\PackingAttributes.cs" />
+    <Compile Include="Textures\Packing\AtlasTextureElement.cs" />
+    <Compile Include="Textures\Packing\AtlasTextureLayout.cs" />
+    <Compile Include="Textures\Packing\MaxRectanglesBinPack.cs" />
+    <Compile Include="Textures\Packing\RotableRectangle.cs" />
+    <Compile Include="Textures\TextureHelper.cs" />
+    <Compile Include="Textures\TextureHint.cs" />
+    <Compile Include="Textures\Packing\TexturePacker.cs" />
+    <Compile Include="Textures\Packing\AtlasTextureFactory.cs" />
+    <Compile Include="Textures\Packing\TexturePackingMethod.cs" />
+    <Compile Include="Textures\TextureQuality.cs" />
+    <Compile Include="Serializers\GenericDictionarySerializer.cs" />
+    <Compile Include="Serializers\ParameterKeySerializer.cs" />
+    <Compile Include="SpriteFont\CharacterRegion.cs" />
+    <Compile Include="SpriteFont\Compiler\BitmapImporter.cs" />
+    <Compile Include="SpriteFont\Compiler\BitmapUtils.cs" />
+    <Compile Include="SpriteFont\Compiler\CharacterRegionTypeConverter.cs" />
+    <Compile Include="SpriteFont\Compiler\ContentCompilerResult.cs" />
+    <Compile Include="SpriteFont\Compiler\StaticFontCompiler.cs" />
+    <Compile Include="SpriteFont\Compiler\FontNotFoundException.cs" />
+    <Compile Include="SpriteFont\Compiler\Glyph.cs" />
+    <Compile Include="SpriteFont\Compiler\GlyphCropper.cs" />
+    <Compile Include="SpriteFont\Compiler\GlyphPacker.cs" />
+    <Compile Include="SpriteFont\Compiler\IFontImporter.cs" />
+    <Compile Include="SpriteFont\Compiler\StaticSpriteFontWriter.cs" />
+    <Compile Include="SpriteFont\Compiler\TrueTypeImporter.cs" />
+    <Compile Include="SpriteFont\SpriteFontAsset.cs" />
+    <Compile Include="SpriteFont\SpriteFontAssetCompiler.cs" />
+    <Compile Include="SpriteFont\FontTextureFormat.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Textures\AlphaFormat.cs" />
+    <Compile Include="Textures\TextureAsset.cs" />
+    <Compile Include="Textures\TextureAssetCompiler.cs" />
+    <Compile Include="Textures\TextureFormat.cs" />
+    <Compile Include="Textures\TextureImporter.cs" />
+    <Compile Include="WindowsGameSettingsProfile.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.Analyzers.dll" />
+    <Analyzer Include="..\..\..\build\packages\Microsoft.CodeAnalysis.Analyzers.1.0.0\analyzers\dotnet\cs\Microsoft.CodeAnalysis.CSharp.Analyzers.dll" />
+  </ItemGroup>
+  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

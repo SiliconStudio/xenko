@@ -30,7 +30,7 @@ using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox
+namespace SiliconStudio.Xenko
 {
     /// <summary>
     /// Reusable, reflection based helper for parsing commandline options.

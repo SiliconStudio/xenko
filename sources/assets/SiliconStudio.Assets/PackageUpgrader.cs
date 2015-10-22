@@ -15,6 +15,20 @@ namespace SiliconStudio.Assets
         public PackageUpgraderAttribute Attribute { get; internal set; }
 
         /// <summary>
+        /// Performs a preprocessing step of package migration, before assembly references are loaded.
+        /// </summary>
+        /// <param name="session">The session.</param>
+        /// <param name="log">The log.</param>
+        /// <param name="dependentPackage">The source package.</param>
+        /// <param name="dependency">The dependency.</param>
+        /// <param name="dependencyPackage">The dependency package.</param>
+        /// <returns></returns>
+        public virtual bool UpgradeBeforeAssembliesLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
+        {
+            return true;
+        }
+
+        /// <summary>
         /// Performs the package migration, before assets are loaded
         /// </summary>
         /// <param name="session">The session.</param>

@@ -1,12 +1,12 @@
 using System;
 
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Games.Serialization.Contents;
-using Paradox.Framework.Shaders;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Games.Serialization.Contents;
+using Xenko.Framework.Shaders;
 
 namespace ScriptTest
 {

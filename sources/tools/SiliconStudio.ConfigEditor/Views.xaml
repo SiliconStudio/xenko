@@ -1,9 +1,9 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-                    xmlns:local="clr-namespace:SiliconStudio.Paradox.ConfigEditor"
-                    xmlns:vm="clr-namespace:SiliconStudio.Paradox.ConfigEditor.ViewModels"
+                    xmlns:local="clr-namespace:SiliconStudio.Xenko.ConfigEditor"
+                    xmlns:vm="clr-namespace:SiliconStudio.Xenko.ConfigEditor.ViewModels"
                     xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-                    xmlns:bhv="clr-namespace:Paradox.Presentation.Behaviors;assembly=Paradox.Presentation">
+                    xmlns:bhv="clr-namespace:Xenko.Presentation.Behaviors;assembly=Xenko.Presentation">
 
     <DataTemplate x:Key="PropertyView" DataType="vm:PropertyViewModel">
         <!--
@@ -112,19 +112,19 @@
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
             
-                    <TextBlock Grid.Row="0" Text="Paradox Path: " Grid.Column="0" VerticalAlignment="Center"/>
+                    <TextBlock Grid.Row="0" Text="Xenko Path: " Grid.Column="0" VerticalAlignment="Center"/>
                     <DockPanel Grid.Row="0" Grid.Column="1" Margin="2">
-                        <Button DockPanel.Dock="Right" Content="..." Width="24" Height="24" ToolTipService.ToolTip="Browse Paradox Path" Command="{Binding BrowsePathCommand}" Margin="2"/>
-                        <Border x:Name="paradoxPathBorder" BorderBrush="Transparent" BorderThickness="1" CornerRadius="1" Margin="1">
-                            <TextBox Text="{Binding ParadoxPath, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="1,0,1,0"/>
+                        <Button DockPanel.Dock="Right" Content="..." Width="24" Height="24" ToolTipService.ToolTip="Browse Xenko Path" Command="{Binding BrowsePathCommand}" Margin="2"/>
+                        <Border x:Name="xenkoPathBorder" BorderBrush="Transparent" BorderThickness="1" CornerRadius="1" Margin="1">
+                            <TextBox Text="{Binding XenkoPath, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="1,0,1,0"/>
                         </Border>
                     </DockPanel>
 
                     <TextBlock Grid.Row="1" Text="Configuration Filename: " Grid.Column="0" VerticalAlignment="Center"/>
                     <DockPanel Grid.Row="1" Grid.Column="1" Margin="2">
-                        <Button DockPanel.Dock="Right" Content="..." Width="24" Height="24" ToolTipService.ToolTip="Browse Paradox Configuration File" Command="{Binding BrowseConfigFileCommand}" Margin="2"/>
-                        <Border x:Name="paradoxConfigFilenameBorder" BorderBrush="Transparent" BorderThickness="1" CornerRadius="1" Margin="1">
-                            <TextBox Text="{Binding ParadoxConfigFilename, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="1,0,1,0"/>
+                        <Button DockPanel.Dock="Right" Content="..." Width="24" Height="24" ToolTipService.ToolTip="Browse Xenko Configuration File" Command="{Binding BrowseConfigFileCommand}" Margin="2"/>
+                        <Border x:Name="xenkoConfigFilenameBorder" BorderBrush="Transparent" BorderThickness="1" CornerRadius="1" Margin="1">
+                            <TextBox Text="{Binding XenkoConfigFilename, UpdateSourceTrigger=PropertyChanged}" VerticalAlignment="Center" Margin="1,0,1,0"/>
                         </Border>
                     </DockPanel>
 
@@ -138,14 +138,14 @@
         </DockPanel>
 
         <DataTemplate.Triggers>
-            <DataTrigger Binding="{Binding IsParadoxPathValid, Mode=OneWay}" Value="False">
-                <Setter TargetName="paradoxPathBorder" Property="BorderBrush" Value="Red"/>
+            <DataTrigger Binding="{Binding IsXenkoPathValid, Mode=OneWay}" Value="False">
+                <Setter TargetName="xenkoPathBorder" Property="BorderBrush" Value="Red"/>
             </DataTrigger>
-            <DataTrigger Binding="{Binding IsParadoxConfigFilenameValid, Mode=OneWay}" Value="False">
-                <Setter TargetName="paradoxConfigFilenameBorder" Property="BorderBrush" Value="Orange"/>
+            <DataTrigger Binding="{Binding IsXenkoConfigFilenameValid, Mode=OneWay}" Value="False">
+                <Setter TargetName="xenkoConfigFilenameBorder" Property="BorderBrush" Value="Orange"/>
             </DataTrigger>
         </DataTemplate.Triggers>
-        <!-- datatrigger isParadoxConfigFilenameUsed -> txtConfigFilename.Enabled  -->
+        <!-- datatrigger isXenkoConfigFilenameUsed -> txtConfigFilename.Enabled  -->
         
     </DataTemplate>
     
