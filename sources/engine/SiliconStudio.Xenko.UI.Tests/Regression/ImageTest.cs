@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.UI.Controls;
 
