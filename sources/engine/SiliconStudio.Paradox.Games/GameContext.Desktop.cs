@@ -22,10 +22,10 @@
 // THE SOFTWARE.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
 using System;
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+#if !SILICONSTUDIO_UI_SDL2
 using System.Windows.Forms;
 #else
-using SharpDX.Windows;
+using SiliconStudio.Paradox.Graphics.SDL;
 #endif
 using SiliconStudio.Paradox.Games.Resources;
 
@@ -91,7 +91,6 @@ namespace SiliconStudio.Paradox.Games
         /// <value>The run loop.</value>
         public Action ExitCallback { get; internal set; }
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         /// <summary>
         /// Performs an implicit conversion from <see cref="Control"/> to <see cref="GameContext"/>.
         /// </summary>
@@ -101,7 +100,7 @@ namespace SiliconStudio.Paradox.Games
         {
             return new GameContext(control);
         }
-#endif
+
         private static Control CreateForm()
         {
             return new GameForm();
