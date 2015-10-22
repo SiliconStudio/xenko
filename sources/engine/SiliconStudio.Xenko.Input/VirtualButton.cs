@@ -7,7 +7,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// Describes a virtual button (a key from a keyboard, a mouse button, an axis of a joystick...etc.).

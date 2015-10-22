@@ -1,14 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     /// <summary>
     /// Class used to clone an expression without the references it may contain
     /// </summary>
-    internal static class ParadoxAssignmentCloner
+    internal static class XenkoAssignmentCloner
     {
         public static Expression Run(Expression expression)
         {

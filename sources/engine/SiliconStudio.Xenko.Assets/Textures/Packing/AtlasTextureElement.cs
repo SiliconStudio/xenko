@@ -1,8 +1,8 @@
 using System.Globalization;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Assets.Textures.Packing
+namespace SiliconStudio.Xenko.Assets.Textures.Packing
 {
     /// <summary>
     /// This represent an element of the atlas texture.

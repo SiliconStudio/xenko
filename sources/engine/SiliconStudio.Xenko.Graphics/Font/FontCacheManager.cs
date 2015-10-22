@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics.Font
+namespace SiliconStudio.Xenko.Graphics.Font
 {
     /// <summary>
     /// Represent a GPU cache of font characters

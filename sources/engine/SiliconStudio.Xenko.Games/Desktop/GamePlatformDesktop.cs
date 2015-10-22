@@ -25,7 +25,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     internal class GamePlatformDesktop : GamePlatform
     {
@@ -47,9 +47,9 @@ namespace SiliconStudio.Paradox.Games
         {
             return new GameWindow[]
                 {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
                     new GameWindowDesktop(),
-#elif SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
                     new GameWindowOpenTK(),
 #endif
                 };

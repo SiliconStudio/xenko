@@ -3,7 +3,7 @@
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>	
     /// Describes a blend state.	

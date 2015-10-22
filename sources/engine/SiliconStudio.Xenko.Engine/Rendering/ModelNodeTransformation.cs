@@ -4,7 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     [DataContract]
     public struct ModelNodeTransformation

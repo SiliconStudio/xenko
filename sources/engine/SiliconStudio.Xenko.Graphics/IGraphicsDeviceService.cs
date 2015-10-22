@@ -23,7 +23,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Service providing method to access GraphicsDevice life-cycle.

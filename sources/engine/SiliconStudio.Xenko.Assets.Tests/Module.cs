@@ -5,7 +5,7 @@
 using NUnit.Core.Extensibility;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.Tests
+namespace SiliconStudio.Xenko.Assets.Tests
 {
     // Somehow it helps Resharper NUnit to run module initializer first (to determine unit test configuration).
     [NUnitAddin]

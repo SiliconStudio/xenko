@@ -25,7 +25,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.ReferenceCounting;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// This class is a frontend to <see cref="SwapChain" /> and <see cref="SwapChain1" />.

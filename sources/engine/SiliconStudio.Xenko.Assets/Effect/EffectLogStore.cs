@@ -5,10 +5,10 @@ using System.IO;
 using System.Text;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Assets.Effect
+namespace SiliconStudio.Xenko.Assets.Effect
 {
     public class EffectLogStore : DictionaryStore<EffectCompileRequest, bool>
     {

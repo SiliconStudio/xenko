@@ -4,15 +4,15 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects.Lights;
-using SiliconStudio.Paradox.Effects.Shadows;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Effects.Lights;
+using SiliconStudio.Xenko.Effects.Shadows;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Effects.Processors
+namespace SiliconStudio.Xenko.Effects.Processors
 {
     /// <summary>
     /// A class handling the allocation of shadow maps with a fixed budget of shadow map textures. This class is meant to be inherited with the desired budget since it has no texture at all.

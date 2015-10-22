@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Updater;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     class EntityChildPropertyResolver : UpdateMemberResolver
     {

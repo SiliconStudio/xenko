@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler
+namespace SiliconStudio.Xenko.Shaders.Compiler
 {
     /// <summary>
     /// Base class for implementations of <see cref="IEffectCompiler"/>, providing some helper functions.
@@ -57,7 +57,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
 
                 if (mixinToCompile == null)
                 {
-                    throw new ArgumentException("Unsupported ShaderSource type [{0}]. Supporting only ShaderMixinSource/pdxfx, ShaderClassSource", "shaderSource");
+                    throw new ArgumentException("Unsupported ShaderSource type [{0}]. Supporting only ShaderMixinSource/xkfx, ShaderClassSource", "shaderSource");
                 }
                 if (string.IsNullOrEmpty(mixinToCompile.Name))
                 {
@@ -101,7 +101,7 @@ namespace SiliconStudio.Paradox.Shaders.Compiler
         {
             if (type == null) throw new ArgumentNullException("type");
             // TODO: harcoded values, bad bad bad
-            return DefaultSourceShaderFolder + "/" + type + ".pdxsl";
+            return DefaultSourceShaderFolder + "/" + type + ".xksl";
         }
     }
 }

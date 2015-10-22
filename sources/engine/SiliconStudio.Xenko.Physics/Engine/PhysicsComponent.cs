@@ -5,10 +5,10 @@
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Physics;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Physics;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("PhysicsComponent")]
     [Display(30, "Physics", Expand = ExpandRule.Once)]

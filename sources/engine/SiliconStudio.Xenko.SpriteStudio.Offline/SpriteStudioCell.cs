@@ -2,7 +2,7 @@
 using System.Security.Policy;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Offline
+namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     public class SpriteStudioAnim
     {

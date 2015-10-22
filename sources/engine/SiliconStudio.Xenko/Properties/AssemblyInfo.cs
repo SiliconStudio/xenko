@@ -3,20 +3,20 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyProduct("SiliconStudio.Paradox")]
-[assembly: AssemblyTitle("SiliconStudio.Paradox")]
-[assembly: AssemblyDescription("Paradox assembly.")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko")]
+[assembly: AssemblyDescription("Xenko assembly.")]
 
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
-// Make internals Paradox visible to Paradox assemblies
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Serializers" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.ShaderCompiler" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Audio" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Games" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Graphics.Regression" + SiliconStudio.PublicKeys.Default)]
+// Make internals Xenko visible to Xenko assemblies
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Serializers" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Graphics.ShaderCompiler" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Graphics" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Audio" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Games" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Graphics.Regression" + SiliconStudio.PublicKeys.Default)]
 
 #if !SILICONSTUDIO_SIGNED
 [assembly: InternalsVisibleTo("SiliconStudio.ImageComparerService")]

@@ -7,14 +7,14 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Cubemap;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Effects.Cubemap;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Input;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public class TestCubemapRendering : TestGameBase
     {

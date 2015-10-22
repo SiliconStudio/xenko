@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.CompilerServices;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Games.Collections;
-using SiliconStudio.Paradox.Games.ViewModel;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.Collections;
+using SiliconStudio.Xenko.Games.ViewModel;
 
 namespace ScriptTest
 {

@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI.Tests.Layering
+namespace SiliconStudio.Xenko.UI.Tests.Layering
 {
     /// <summary>
     /// Element that returns the size provided during the measure.

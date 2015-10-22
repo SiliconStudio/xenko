@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     [ContentSerializer(typeof(DataContentSerializer<StaticPlaneColliderShapeDesc>))]
     [DataContract("StaticPlaneColliderShapeDesc")]

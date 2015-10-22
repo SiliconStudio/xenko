@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics.Internals;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics.Internals;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     ///     Performs primitive-based rendering, creates resources, handles system-level variables, adjusts gamma ramp levels, and creates shaders. See <see cref="The+GraphicsDevice+class"/> to learn more about the class.

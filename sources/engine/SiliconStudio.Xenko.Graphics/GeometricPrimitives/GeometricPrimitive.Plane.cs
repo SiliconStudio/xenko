@@ -23,7 +23,7 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
+namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
 {
     /// <summary>
     /// Enumerates the different possible direction of a plane normal.

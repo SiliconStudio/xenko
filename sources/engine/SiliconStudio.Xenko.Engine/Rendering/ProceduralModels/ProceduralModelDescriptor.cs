@@ -6,9 +6,9 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Rendering.ProceduralModels;
+using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
-namespace SiliconStudio.Paradox.Rendering.ProceduralModels
+namespace SiliconStudio.Xenko.Rendering.ProceduralModels
 {
     /// <summary>
     /// A descriptor for a procedural geometry.

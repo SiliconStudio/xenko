@@ -4,7 +4,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Input.Tests
+namespace SiliconStudio.Xenko.Input.Tests
 {
     public class Module
     {

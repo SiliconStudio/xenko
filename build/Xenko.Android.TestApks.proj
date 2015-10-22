@@ -1,7 +1,7 @@
 <Project DefaultTargets="SignAndroidPackage" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SolutionDir>$(MSBuildThisFileDirectory)</SolutionDir>
-    <SolutionName>Paradox.Android</SolutionName>
+    <SolutionName>Xenko.Android</SolutionName>
     <Platform>Android</Platform>
     <Configuration Condition="'$(Configuration)' == ''">Release</Configuration>
   </PropertyGroup>

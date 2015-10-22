@@ -77,7 +77,7 @@
 
 using System.Drawing;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     // Represents a single character within a font.
     internal class Glyph

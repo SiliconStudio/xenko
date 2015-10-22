@@ -1,10 +1,10 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Runtime
+namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     //TODO this whole renderer is not optimized at all! batching is wrong and depth calculation should be done differently
     public class SpriteStudioRenderer : EntityComponentRendererBase

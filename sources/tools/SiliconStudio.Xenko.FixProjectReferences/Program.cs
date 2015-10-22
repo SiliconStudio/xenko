@@ -9,7 +9,7 @@ using System.Xml.Linq;
 using Mono.Options;
 using SiliconStudio.Core.VisualStudio;
 
-namespace SiliconStudio.Paradox.FixProjectReferences
+namespace SiliconStudio.Xenko.FixProjectReferences
 {
     class Program
     {
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.FixProjectReferences
             var p = new OptionSet
                 {
                     "Copyright (C) 2011-2013 Silicon Studio Corporation. All Rights Reserved",
-                    "Paradox Fix Project References - Version: "
+                    "Xenko Fix Project References - Version: "
                     +
                     String.Format(
                         "{0}.{1}.{2}",

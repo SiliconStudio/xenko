@@ -1,9 +1,9 @@
 using System;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Represents a ShadowMap.

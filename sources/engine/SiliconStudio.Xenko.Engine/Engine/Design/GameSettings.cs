@@ -4,9 +4,9 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     /// <summary>
     /// Stores some default parameters for the game.

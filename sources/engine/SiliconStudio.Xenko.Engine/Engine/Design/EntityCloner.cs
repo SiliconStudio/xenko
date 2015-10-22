@@ -6,11 +6,11 @@ using System.IO;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Animations;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     /// <summary>
     /// Provides method for deep cloning of en <see cref="Entity"/>.

@@ -16,19 +16,19 @@ using Windows.System.Profile;
 using Windows.Security.ExchangeActiveSyncProvisioning;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public partial class TestRunner
     {
-        public const string ParadoxServerIp = "PARADOX_SERVER_IP";
+        public const string XenkoServerIp = "XENKO_SERVER_IP";
 
-        public const string ParadoxServerPort = "PARADOX_SERVER_PORT";
+        public const string XenkoServerPort = "XENKO_SERVER_PORT";
 
-        public const string ParadoxBuildNumber = "PARADOX_BUILD_NUMBER";
+        public const string XenkoBuildNumber = "XENKO_BUILD_NUMBER";
 
-        public const string ParadoxTestName = "PARADOX_TEST_NAME";
+        public const string XenkoTestName = "XENKO_TEST_NAME";
 
-        public const string ParadoxBranchName = "PARADOX_BRANCH_NAME";
+        public const string XenkoBranchName = "XENKO_BRANCH_NAME";
     }
 
     enum ImageServerMessageType
@@ -50,11 +50,11 @@ namespace SiliconStudio.Paradox.Graphics.Regression
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             result.Platform = "Windows";
             result.Serial = Environment.MachineName;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
             result.DeviceName = "Direct3D";
-#elif SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             result.DeviceName = "OpenGLES";
-#elif SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             result.DeviceName = "OpenGL";
 #endif
 #elif SILICONSTUDIO_PLATFORM_ANDROID
@@ -130,11 +130,11 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             return TestPlatform.WindowsPhone;
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_STORE
             return TestPlatform.WindowsStore;
-#elif SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
             return TestPlatform.WindowsDx;
-#elif SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             return TestPlatform.WindowsOgles;
-#elif SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             return TestPlatform.WindowsOgl;
 #endif
 

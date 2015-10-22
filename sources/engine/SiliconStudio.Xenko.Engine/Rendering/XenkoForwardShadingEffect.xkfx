@@ -1,21 +1,21 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Paradox.Rendering.Data;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Forward shading effect
     /// </summary>
-    shader ParadoxForwardShadingEffect
+    shader XenkoForwardShadingEffect
     {
         using params LightingKeys;
         using params MaterialKeys;
 
-        // Derive from ParadoxEffectBase
-        mixin ParadoxEffectBase;
+        // Derive from XenkoEffectBase
+        mixin XenkoEffectBase;
 
         // -----------------------------------------------
         // Mix material and lighting shading for Pixel Shader

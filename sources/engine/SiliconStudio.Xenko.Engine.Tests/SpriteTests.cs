@@ -3,10 +3,10 @@
 
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 
-namespace SiliconStudio.Paradox.Engine.Tests
+namespace SiliconStudio.Xenko.Engine.Tests
 {
     /// <summary>
     /// Test class for <see cref="Sprite"/>

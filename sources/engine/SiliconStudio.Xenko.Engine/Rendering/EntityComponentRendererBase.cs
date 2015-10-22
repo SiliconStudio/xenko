@@ -3,9 +3,9 @@
 
 using System;
 
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A default implementation for a <see cref="IEntityComponentRenderer"/>.

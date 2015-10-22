@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2011 Silicon Studio
 
-namespace Paradox.Effects.Modules
+namespace Xenko.Effects.Modules
 {
     public class PostEffectKeys
     {

@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class Constraint : IDisposable, IRelative
     {

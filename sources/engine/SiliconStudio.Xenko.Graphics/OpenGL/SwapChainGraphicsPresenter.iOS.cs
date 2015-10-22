@@ -6,7 +6,7 @@ using OpenTK;
 using OpenTK.Platform.iPhoneOS;
 
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public class SwapChainGraphicsPresenter : GraphicsPresenter
     {

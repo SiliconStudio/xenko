@@ -15,11 +15,11 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.ProceduralModels;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
-namespace SiliconStudio.Paradox.Assets.ProceduralModels
+namespace SiliconStudio.Xenko.Assets.ProceduralModels
 {
     /// <summary>
     /// The geometric primitive asset.
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
         /// <summary>
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxpromodel";
+        public const string FileExtension = ".xkpromodel;.pdxpromodel";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProceduralModelAsset"/> class.

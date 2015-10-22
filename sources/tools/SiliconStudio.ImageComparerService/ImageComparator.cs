@@ -8,7 +8,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using SiliconStudio.ImageComparerService;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     class ImageComparator
     {

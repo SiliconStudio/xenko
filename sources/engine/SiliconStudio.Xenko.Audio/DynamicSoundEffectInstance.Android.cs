@@ -7,11 +7,11 @@ using System.Collections.Generic;
 using System.Threading;
 using Android.Media;
 
-using SiliconStudio.Paradox.Audio.Wave;
+using SiliconStudio.Xenko.Audio.Wave;
 
 using SiliconStudio.Core.Extensions;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     partial class DynamicSoundEffectInstance
     {

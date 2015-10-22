@@ -6,9 +6,9 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics.Internals;
+using SiliconStudio.Xenko.Graphics.Internals;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// A utility class to batch and draw UI images.

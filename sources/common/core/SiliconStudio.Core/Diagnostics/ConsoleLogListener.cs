@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.Diagnostics
             }
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
-            const string appliName = "Paradox";
+            const string appliName = "Xenko";
             var exceptionMsg = GetExceptionText(logMessage);
             var messageText = GetDefaultText(logMessage);
             if (!string.IsNullOrEmpty(exceptionMsg))

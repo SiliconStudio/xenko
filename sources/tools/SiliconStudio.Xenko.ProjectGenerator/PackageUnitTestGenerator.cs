@@ -4,9 +4,9 @@ using System;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Assets;
+using SiliconStudio.Xenko.Assets;
 
-namespace SiliconStudio.Paradox.ProjectGenerator
+namespace SiliconStudio.Xenko.ProjectGenerator
 {
     /// <summary>
     /// Create a package.
@@ -60,7 +60,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
         }
 
         /// <summary>
-        /// Creates a new Paradox package with the specified name
+        /// Creates a new Xenko package with the specified name
         /// </summary>
         /// <param name="name">Name of the package</param>
         /// <returns>A new package instance</returns>
@@ -75,8 +75,8 @@ namespace SiliconStudio.Paradox.ProjectGenerator
                 },
             };
 
-            // Add dependency to latest Paradox package
-            package.Meta.Dependencies.Add(ParadoxConfig.GetLatestPackageDependency());
+            // Add dependency to latest Xenko package
+            package.Meta.Dependencies.Add(XenkoConfig.GetLatestPackageDependency());
 
             // Setup the assets folder by default
             package.Profiles.Add(PackageProfile.NewShared());

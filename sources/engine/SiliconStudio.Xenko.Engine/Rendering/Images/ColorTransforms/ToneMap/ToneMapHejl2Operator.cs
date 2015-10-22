@@ -5,7 +5,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// The tonemap operator by Jim Hejl version 2 that does not include the gamma correction and has a whitepoint parameter.

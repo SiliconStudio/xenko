@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     /// <summary>
     /// List of float key frame data applying to a specific property in a node.

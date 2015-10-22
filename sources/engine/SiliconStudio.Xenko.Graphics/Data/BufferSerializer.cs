@@ -7,7 +7,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Graphics.Data
+namespace SiliconStudio.Xenko.Graphics.Data
 {
     /// <summary>
     /// Serializer for <see cref="Buffer"/>.

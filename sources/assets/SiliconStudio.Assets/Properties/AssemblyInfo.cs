@@ -3,9 +3,9 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyProduct("SiliconStudio.Paradox.Assets")]
-[assembly: AssemblyTitle("SiliconStudio.Paradox.Assets")]
-[assembly: AssemblyDescription("Paradox assets assembly")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Assets")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Assets")]
+[assembly: AssemblyDescription("Xenko assets assembly")]
 
 [assembly: InternalsVisibleTo("SiliconStudio.Assets.Serializers")]
 [assembly: InternalsVisibleTo("SiliconStudio.Assets.Tests")]

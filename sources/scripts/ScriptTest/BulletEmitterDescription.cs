@@ -1,8 +1,8 @@
 using System;
 using System.Runtime.InteropServices;
 
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Games.Serialization;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Games.Serialization;
 
 namespace ScriptTest
 {

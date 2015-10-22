@@ -6,13 +6,13 @@ using System.IO;
 using System.Linq;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Animations;
-using SiliconStudio.Paradox.Importer.Common;
-using SiliconStudio.Paradox.Rendering.Data;
+using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Importer.Common;
+using SiliconStudio.Xenko.Rendering.Data;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
-    [CommandDependsOn(typeof(Paradox.Importer.AssimpNET.MeshConverter))]
+    [CommandDependsOn(typeof(Xenko.Importer.AssimpNET.MeshConverter))]
     [Description("Import Assimp")]
     public class ImportAssimpCommand : ImportModelCommand
     {
@@ -28,9 +28,9 @@ namespace SiliconStudio.Paradox.Assets.Model
             return !String.IsNullOrEmpty(ext) && supportedExtensions.Any(supExt => supExt.Equals(extToLower));
         }
 
-        private Paradox.Importer.AssimpNET.MeshConverter CreateMeshConverter(ICommandContext commandContext)
+        private Xenko.Importer.AssimpNET.MeshConverter CreateMeshConverter(ICommandContext commandContext)
         {
-            return new Paradox.Importer.AssimpNET.MeshConverter(commandContext.Logger)
+            return new Xenko.Importer.AssimpNET.MeshConverter(commandContext.Logger)
             {
                 AllowUnsignedBlendIndices = this.AllowUnsignedBlendIndices,
                 ScaleImport = ScaleImport

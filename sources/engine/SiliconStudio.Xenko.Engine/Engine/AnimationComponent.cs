@@ -6,10 +6,10 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Animations;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Engine.Design;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Add animation capabilities to an <see cref="Entity"/>. It will usually apply to <see cref="ModelComponent.ModelViewHierarchy"/>

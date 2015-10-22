@@ -6,17 +6,17 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets;
-using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.SpriteStudio.Runtime;
+using SiliconStudio.Xenko.Assets;
+using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.SpriteStudio.Runtime;
 using System.Xml.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Offline
+namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     internal class SpriteStudioModelAssetCompiler : AssetCompilerBase<SpriteStudioModelAsset>
     {

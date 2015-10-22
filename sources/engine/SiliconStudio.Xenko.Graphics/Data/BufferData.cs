@@ -3,7 +3,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Graphics.Data
+namespace SiliconStudio.Xenko.Graphics.Data
 {
     /// <summary>
     /// Content of a GPU buffer (vertex buffer, index buffer, etc...).

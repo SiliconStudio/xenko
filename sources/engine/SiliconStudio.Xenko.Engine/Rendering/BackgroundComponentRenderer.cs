@@ -4,11 +4,11 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// This renderer draws a full-screen image as background. 

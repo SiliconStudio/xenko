@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     /// <summary>
     /// Serializer for helping cloning of <see cref="Entity"/>.

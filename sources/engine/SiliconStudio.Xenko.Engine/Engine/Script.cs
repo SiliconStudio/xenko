@@ -6,7 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.MicroThreading;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("Script", Inherited = true)]
     public abstract class Script : ScriptContext

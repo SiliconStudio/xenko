@@ -1,12 +1,12 @@
 ﻿using Android.App;
 using Android.OS;
-using SiliconStudio.Paradox.Starter;
-using SiliconStudio.Paradox.UI.Tests.Rendering;
+using SiliconStudio.Xenko.Starter;
+using SiliconStudio.Xenko.UI.Tests.Rendering;
 
-namespace SiliconStudio.Paradox.UI.Tests
+namespace SiliconStudio.Xenko.UI.Tests
 {
-    [Activity(Label = "Paradox UI", MainLauncher = true, Icon = "@drawable/icon")]
-    public class AndroidActivity : AndroidParadoxActivity
+    [Activity(Label = "Xenko UI", MainLauncher = true, Icon = "@drawable/icon")]
+    public class AndroidActivity : AndroidXenkoActivity
     {
         protected override void OnCreate(Bundle bundle)
         {

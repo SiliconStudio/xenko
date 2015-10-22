@@ -4,7 +4,7 @@ using System.Diagnostics;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// Represents a scroll bar. 

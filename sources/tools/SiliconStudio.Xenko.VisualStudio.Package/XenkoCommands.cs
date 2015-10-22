@@ -13,14 +13,14 @@ using Microsoft.Build.Framework;
 using Microsoft.VisualStudio;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using SiliconStudio.Paradox.VisualStudio.BuildEngine;
+using SiliconStudio.Xenko.VisualStudio.BuildEngine;
 using Project = EnvDTE.Project;
 using ProjectItem = EnvDTE.ProjectItem;
 using Task = System.Threading.Tasks.Task;
 
-namespace SiliconStudio.Paradox.VisualStudio
+namespace SiliconStudio.Xenko.VisualStudio
 {
-    public static class ParadoxCommands
+    public static class XenkoCommands
     {
         static class ProjectItemKind
         {
@@ -226,13 +226,13 @@ namespace SiliconStudio.Paradox.VisualStudio
         
         internal static void RegisterCommands(OleMenuCommandService mcs)
         {
-            // Create command for Paradox -> Clean intermediate assets for Solution
-            var cleanIntermediateAssetsSolutionCommandID = new CommandID(GuidList.guidParadox_VisualStudio_PackageCmdSet, (int)ParadoxPackageCmdIdList.cmdParadoxCleanIntermediateAssetsSolutionCommand);
+            // Create command for Xenko -> Clean intermediate assets for Solution
+            var cleanIntermediateAssetsSolutionCommandID = new CommandID(GuidList.guidXenko_VisualStudio_PackageCmdSet, (int)XenkoPackageCmdIdList.cmdXenkoCleanIntermediateAssetsSolutionCommand);
             var cleanIntermediateAssetsSolutionMenuCommand = new OleMenuCommand(CleanIntermediateAssetsSolutionMenuCommand_Callback, cleanIntermediateAssetsSolutionCommandID);
             mcs.AddCommand(cleanIntermediateAssetsSolutionMenuCommand);
 
-            // Create command for Paradox -> Clean intermediate assets for {selected project}
-            var cleanIntermediateAssetsProjectCommandID = new CommandID(GuidList.guidParadox_VisualStudio_PackageCmdSet, (int)ParadoxPackageCmdIdList.cmdParadoxCleanIntermediateAssetsProjectCommand);
+            // Create command for Xenko -> Clean intermediate assets for {selected project}
+            var cleanIntermediateAssetsProjectCommandID = new CommandID(GuidList.guidXenko_VisualStudio_PackageCmdSet, (int)XenkoPackageCmdIdList.cmdXenkoCleanIntermediateAssetsProjectCommand);
             var cleanIntermediateAssetsProjectMenuCommand = new OleMenuCommand(CleanIntermediateAssetsProjectMenuCommand_Callback, cleanIntermediateAssetsProjectCommandID);
             cleanIntermediateAssetsProjectMenuCommand.BeforeQueryStatus += CleanIntermediateAssetsProjectMenuCommand_BeforeQueryStatus;
             cleanIntermediateAssetsProjectMenuCommand.Enabled = false;

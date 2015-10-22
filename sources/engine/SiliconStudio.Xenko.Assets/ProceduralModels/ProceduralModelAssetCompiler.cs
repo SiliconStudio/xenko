@@ -9,9 +9,9 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Rendering.ProceduralModels;
+using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
-namespace SiliconStudio.Paradox.Assets.ProceduralModels
+namespace SiliconStudio.Xenko.Assets.ProceduralModels
 {
     internal class ProceduralModelAssetCompiler : AssetCompilerBase<ProceduralModelAsset>
     {

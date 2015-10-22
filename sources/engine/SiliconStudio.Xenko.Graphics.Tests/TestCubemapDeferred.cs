@@ -7,14 +7,14 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects.Cubemap;
-using SiliconStudio.Paradox.Effects.Renderers;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Extensions;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Effects.Cubemap;
+using SiliconStudio.Xenko.Effects.Renderers;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Extensions;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public class TestCubemapDeferred : TestGameBase
     {
@@ -111,7 +111,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
             // Create G-buffer pass
             var gbufferPipeline = new RenderPipeline("GBuffer");
             // Renders the G-buffer for opaque geometry.
-            gbufferPipeline.Renderers.Add(new ModelRenderer(Services, "CubemapIBLEffect.ParadoxGBufferShaderPass"));
+            gbufferPipeline.Renderers.Add(new ModelRenderer(Services, "CubemapIBLEffect.XenkoGBufferShaderPass"));
             var gbufferProcessor = new GBufferRenderProcessor(Services, gbufferPipeline, GraphicsDevice.DepthStencilBuffer, false);
 
             // Add sthe G-buffer pass to the pipeline.

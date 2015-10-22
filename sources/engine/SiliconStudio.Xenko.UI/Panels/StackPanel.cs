@@ -6,7 +6,7 @@ using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI.Panels
+namespace SiliconStudio.Xenko.UI.Panels
 {
     /// <summary>
     /// Arranges child elements into a single line that can be oriented horizontally or vertically.

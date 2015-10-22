@@ -13,7 +13,7 @@ using SiliconStudio.Core.Yaml;
 namespace SiliconStudio.Assets.Tests
 {
     /// <summary>
-    /// We are copying the PropertyKey serializer from Paradox.Assets assembly to here in order 
+    /// We are copying the PropertyKey serializer from Xenko.Assets assembly to here in order 
     /// to validate our tests.
     /// </summary>
     [YamlSerializerFactory]

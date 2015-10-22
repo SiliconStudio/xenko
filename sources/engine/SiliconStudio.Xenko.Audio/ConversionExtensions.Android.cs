@@ -5,7 +5,7 @@
 using System;
 using Android.Media;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     internal static class ConversionExtensions
     {

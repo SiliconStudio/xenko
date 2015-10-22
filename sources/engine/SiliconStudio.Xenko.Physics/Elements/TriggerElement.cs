@@ -5,7 +5,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("TriggerElement")]
     [Display(40, "Trigger")]

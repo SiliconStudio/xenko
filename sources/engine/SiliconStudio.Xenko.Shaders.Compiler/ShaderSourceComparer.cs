@@ -4,9 +4,9 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler
+namespace SiliconStudio.Xenko.Shaders.Compiler
 {
     public class ShaderSourceComparer : EqualityComparer<ShaderSource>
     {

@@ -8,7 +8,7 @@ using System.Text;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public static class ParameterKeys
     {

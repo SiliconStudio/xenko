@@ -5,7 +5,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI
+namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
     /// A context containing information for UI layouting.

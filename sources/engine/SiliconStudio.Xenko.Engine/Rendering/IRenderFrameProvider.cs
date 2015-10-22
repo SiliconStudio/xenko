@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Common interface for the provider of a <see cref="RenderFrame"/>.

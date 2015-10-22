@@ -4,7 +4,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.IO;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.TextureConverter.PvrttWrapper;
 using SiliconStudio.TextureConverter.Requests;
 
@@ -436,18 +436,18 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
             switch (image.Format)
             {
-                case SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm:
-                    image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm; break;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_Typeless:
-                    image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_Typeless; break;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm_SRgb:
-                    image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb; break;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_Typeless:
-                    image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_Typeless; break;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm:
-                    image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm; break;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb:
-                    image.Format = SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm_SRgb; break;
+                case SiliconStudio.Xenko.Graphics.PixelFormat.B8G8R8A8_UNorm:
+                    image.Format = SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm; break;
+                case SiliconStudio.Xenko.Graphics.PixelFormat.B8G8R8A8_Typeless:
+                    image.Format = SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_Typeless; break;
+                case SiliconStudio.Xenko.Graphics.PixelFormat.B8G8R8A8_UNorm_SRgb:
+                    image.Format = SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb; break;
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_Typeless:
+                    image.Format = SiliconStudio.Xenko.Graphics.PixelFormat.B8G8R8A8_Typeless; break;
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm:
+                    image.Format = SiliconStudio.Xenko.Graphics.PixelFormat.B8G8R8A8_UNorm; break;
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb:
+                    image.Format = SiliconStudio.Xenko.Graphics.PixelFormat.B8G8R8A8_UNorm_SRgb; break;
                 default:
                     Log.Error("Unsuported format for channel switching.");
                     throw new TextureToolsException("Unsuported format for channel switching.");
@@ -501,7 +501,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         }
 
         /// <summary>
-        /// Transposes face data since Pvrtt keeps the format of data [mipMap][face], but Paradox uses [face][mipMap]
+        /// Transposes face data since Pvrtt keeps the format of data [mipMap][face], but Xenko uses [face][mipMap]
         /// </summary>
         /// <param name="image"></param>
         /// <param name="libraryData"></param>
@@ -675,7 +675,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
             request.NormalMap.LibraryData[this] = normalMapLibraryData;
 
             normalMapLibraryData.Texture = new PVRTexture(libraryData.Header, libraryData.Texture.GetDataPtr());
-            request.NormalMap.Format = SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm;
+            request.NormalMap.Format = SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm;
             request.NormalMap.CurrentLibrary = this;
             request.NormalMap.DisposingLibrary = this;
 
@@ -732,48 +732,48 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <returns>
         ///     <c>true</c> if the formats is supported by this library; otherwise, <c>false</c>.
         /// </returns>
-        private bool SupportFormat(SiliconStudio.Paradox.Graphics.PixelFormat format)
+        private bool SupportFormat(SiliconStudio.Xenko.Graphics.PixelFormat format)
         {
             switch (format)
             {
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_Float:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32_Float:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_UInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32_UInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_SInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32_SInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_UNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_UInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_SNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_SInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_SNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_SInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm_SRgb:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.B8G8R8A8_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_Float:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32_Float:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_SNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_SNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.B8G8R8A8_UNorm_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.B8G8R8A8_UNorm:
 
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGB:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGBA:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGB:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGBA:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_II_2bpp:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_II_4bpp:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGB_SRgb:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGBA_SRgb:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGB_SRgb:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGBA_SRgb:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC1:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGB:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGB_SRgb:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGBA:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGBA_SRgb:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGB_A1:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.EAC_R11_Unsigned:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.EAC_R11_Signed:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.EAC_RG11_Unsigned:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.EAC_RG11_Signed:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_2bpp_RGB:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_2bpp_RGBA:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_4bpp_RGB:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_4bpp_RGBA:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_II_2bpp:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_II_4bpp:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_2bpp_RGB_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_2bpp_RGBA_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_4bpp_RGB_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_4bpp_RGBA_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC1:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGB:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGB_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGBA:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGBA_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGB_A1:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.EAC_R11_Unsigned:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.EAC_R11_Signed:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.EAC_RG11_Unsigned:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.EAC_RG11_Signed:
                     return true;
                 default:
                     return false;
@@ -786,61 +786,61 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="format">The format.</param>
         /// <returns></returns>
         /// <exception cref="TexLibraryException">UnHandled compression format by PowerVC Texture Tool.</exception>
-        private UInt64 RetrieveNativeFormat(SiliconStudio.Paradox.Graphics.PixelFormat format)
+        private UInt64 RetrieveNativeFormat(SiliconStudio.Xenko.Graphics.PixelFormat format)
         {
             switch (format)
             {
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGB:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGB_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_2bpp_RGB:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_2bpp_RGB_SRgb:
                     return 0;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGBA:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_2bpp_RGBA_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_2bpp_RGBA:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_2bpp_RGBA_SRgb:
                     return 1;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGB:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGB_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_4bpp_RGB:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_4bpp_RGB_SRgb:
                     return 2;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGBA:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_4bpp_RGBA_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_4bpp_RGBA:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_4bpp_RGBA_SRgb:
                     return 3;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_II_2bpp:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_II_2bpp:
                     return 4;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.PVRTC_II_4bpp:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.PVRTC_II_4bpp:
                     return 5;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC1:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC1:
                     return 6;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGB:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGB_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGB:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGB_SRgb:
                     return 22;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGBA:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGBA_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGBA:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGBA_SRgb:
                     return 23;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.ETC2_RGB_A1:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.ETC2_RGB_A1:
                     return 24;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.EAC_R11_Unsigned:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.EAC_R11_Unsigned:
                     return 25;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.EAC_R11_Signed:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.EAC_R11_Signed:
                     return 26;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.EAC_RG11_Unsigned:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.EAC_RG11_Unsigned:
                     return 27;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.EAC_RG11_Signed:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.EAC_RG11_Signed:
                     return 28;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_Float:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32_Float:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_UInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32_UInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_SInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_Float:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32_Float:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32_SInt:
                     return Utilities.ConvertPixelType(PixelType.Standard32PixelType);
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_UNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_UInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_SNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_SNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_SInt:
                     return Utilities.ConvertPixelType(PixelType.Standard16PixelType);
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_SNorm:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_SNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_SInt:
                     return Utilities.ConvertPixelType(PixelType.Standard8PixelType);
                 default:
                     Log.Error("UnHandled compression format by PowerVC Texture Tool.");
@@ -849,40 +849,40 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         }
 
 
-        private EPVRTVariableType RetrieveNativePixelType(SiliconStudio.Paradox.Graphics.PixelFormat format)
+        private EPVRTVariableType RetrieveNativePixelType(SiliconStudio.Xenko.Graphics.PixelFormat format)
         {
             switch (format)
             {
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_Float:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32_Float:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_Float:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32_Float:
                     return EPVRTVariableType.ePVRTVarTypeFloat;
-                //case Paradox.Framework.Graphics.PixelFormat.R16G16B16A16_Float:
+                //case Xenko.Framework.Graphics.PixelFormat.R16G16B16A16_Float:
 
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_UInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32_UInt:
                     return EPVRTVariableType.ePVRTVarTypeUnsignedInteger;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_SInt:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32_SInt:
                     return EPVRTVariableType.ePVRTVarTypeSignedInteger;
 
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_UNorm:
                     return EPVRTVariableType.ePVRTVarTypeUnsignedShortNorm;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_UInt:
                     return EPVRTVariableType.ePVRTVarTypeUnsignedShort;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_SNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_SNorm:
                     return EPVRTVariableType.ePVRTVarTypeSignedShortNorm;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_SInt:
                     return EPVRTVariableType.ePVRTVarTypeSignedShort;
 
 
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb:
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm:
                     return EPVRTVariableType.ePVRTVarTypeUnsignedByteNorm;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UInt:
                     return EPVRTVariableType.ePVRTVarTypeUnsignedByte;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_SNorm:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_SNorm:
                     return EPVRTVariableType.ePVRTVarTypeSignedByteNorm;
-                case SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_SInt:
+                case SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_SInt:
                     return EPVRTVariableType.ePVRTVarTypeSignedByte;
 
                 default:
@@ -891,59 +891,59 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         }
 
 
-        private SiliconStudio.Paradox.Graphics.PixelFormat RetrieveFormatFromNativeData(PVRTextureHeader header)
+        private SiliconStudio.Xenko.Graphics.PixelFormat RetrieveFormatFromNativeData(PVRTextureHeader header)
         {
-            SiliconStudio.Paradox.Graphics.PixelFormat format = header.GetFormat();
-            if (format == SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_Float)
+            SiliconStudio.Xenko.Graphics.PixelFormat format = header.GetFormat();
+            if (format == SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_Float)
             {
                 switch (header.GetChannelType())
                 {
                     case EPVRTVariableType.ePVRTVarTypeFloat:
-                        return SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_Float;
+                        return SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_Float;
                     case EPVRTVariableType.ePVRTVarTypeUnsignedInteger:
-                        return SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_UInt;
+                        return SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_UInt;
                     case EPVRTVariableType.ePVRTVarTypeSignedInteger:
-                        return SiliconStudio.Paradox.Graphics.PixelFormat.R32G32B32A32_SInt;
+                        return SiliconStudio.Xenko.Graphics.PixelFormat.R32G32B32A32_SInt;
                 }
             }
-            else if(format == SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_UNorm)
+            else if(format == SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_UNorm)
             {
                 switch (header.GetChannelType())
                 {
                     case EPVRTVariableType.ePVRTVarTypeUnsignedShortNorm:
-                        return SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_UNorm;
+                        return SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_UNorm;
                     case EPVRTVariableType.ePVRTVarTypeUnsignedShort:
-                        return SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_UInt;
+                        return SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_UInt;
                     case EPVRTVariableType.ePVRTVarTypeSignedShortNorm:
-                        return SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_SNorm;
+                        return SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_SNorm;
                     case EPVRTVariableType.ePVRTVarTypeSignedShort:
-                        return SiliconStudio.Paradox.Graphics.PixelFormat.R16G16B16A16_SInt;
+                        return SiliconStudio.Xenko.Graphics.PixelFormat.R16G16B16A16_SInt;
                 }
             }
-            else if(format == SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm)
+            else if(format == SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm)
             {
                 switch (header.GetChannelType())
                 {
                     case EPVRTVariableType.ePVRTVarTypeUnsignedByteNorm:
                         {
                             if (header.GetColourSpace() == EPVRTColourSpace.ePVRTCSpacelRGB)
-                                return SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm;
+                                return SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm;
                             else
-                                return SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb;
+                                return SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UNorm_SRgb;
                         }
                     case EPVRTVariableType.ePVRTVarTypeUnsignedByte:
-                        return SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_UInt;
+                        return SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_UInt;
                     case EPVRTVariableType.ePVRTVarTypeSignedByteNorm:
-                        return SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_SNorm;
+                        return SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_SNorm;
                     case EPVRTVariableType.ePVRTVarTypeSignedByte:
-                        return SiliconStudio.Paradox.Graphics.PixelFormat.R8G8B8A8_SInt;
+                        return SiliconStudio.Xenko.Graphics.PixelFormat.R8G8B8A8_SInt;
                 }
             }
 
             return format;
         }
 
-        private EPVRTColourSpace RetrieveNativeColorSpace(SiliconStudio.Paradox.Graphics.PixelFormat format)
+        private EPVRTColourSpace RetrieveNativeColorSpace(SiliconStudio.Xenko.Graphics.PixelFormat format)
         {
             return format.IsSRgb() ? EPVRTColourSpace.ePVRTCSpaceSRgb : EPVRTColourSpace.ePVRTCSpacelRGB;
         }

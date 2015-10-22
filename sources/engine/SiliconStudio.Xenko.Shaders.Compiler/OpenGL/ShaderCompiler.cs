@@ -8,7 +8,7 @@ using System.Text;
 
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Glsl;
 using SiliconStudio.Shaders.Convertor;
@@ -17,7 +17,7 @@ using ConstantBuffer = SiliconStudio.Shaders.Ast.Hlsl.ConstantBuffer;
 using LayoutQualifier = SiliconStudio.Shaders.Ast.LayoutQualifier;
 using ParameterQualifier = SiliconStudio.Shaders.Ast.Hlsl.ParameterQualifier;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler.OpenGL
+namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 {
     internal partial class ShaderCompiler : IShaderCompiler
     {

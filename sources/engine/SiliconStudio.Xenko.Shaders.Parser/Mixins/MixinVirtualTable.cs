@@ -3,13 +3,13 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     internal class MixinVirtualTable : ShaderVirtualTable
     {
@@ -70,15 +70,15 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                     {
                         if (methodDecl.Method is MethodDefinition)
                         {
-                            if (!method.Method.Qualifiers.Contains(ParadoxStorageQualifier.Override))
+                            if (!method.Method.Qualifiers.Contains(XenkoStorageQualifier.Override))
                             {
-                                log.Error(ParadoxMessageCode.ErrorMissingOverride, method.Method.Span, method.Method, mixinName);
+                                log.Error(XenkoMessageCode.ErrorMissingOverride, method.Method.Span, method.Method, mixinName);
                                 continue;
                             }
                         }
-                        else if (method.Method.Qualifiers.Contains(ParadoxStorageQualifier.Override))
+                        else if (method.Method.Qualifiers.Contains(XenkoStorageQualifier.Override))
                         {
-                            log.Error(ParadoxMessageCode.ErrorOverrideDeclaration, method.Method.Span, method.Method, mixinName);
+                            log.Error(XenkoMessageCode.ErrorOverrideDeclaration, method.Method.Span, method.Method, mixinName);
                             continue;
                         }
                     }
@@ -87,9 +87,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 }
                 else
                 {
-                    if (method.Method.Qualifiers.Contains(ParadoxStorageQualifier.Override))
+                    if (method.Method.Qualifiers.Contains(XenkoStorageQualifier.Override))
                     {
-                        log.Error(ParadoxMessageCode.ErrorNoMethodToOverride, method.Method.Span, method.Method, mixinName);
+                        log.Error(XenkoMessageCode.ErrorNoMethodToOverride, method.Method.Span, method.Method, mixinName);
                         continue;
                     }
                 }
@@ -113,7 +113,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
             foreach (var variable in virtualTable.Variables.Where(variable => Variables.Any(x => x.Variable.Name.Text == variable.Variable.Name.Text)))
             {
-                log.Error(ParadoxMessageCode.ErrorVariableNameConflict, variable.Variable.Span, variable.Variable, "");
+                log.Error(XenkoMessageCode.ErrorVariableNameConflict, variable.Variable.Span, variable.Variable, "");
                 conflict = true;
             }
 

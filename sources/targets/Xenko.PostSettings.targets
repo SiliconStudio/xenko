@@ -3,22 +3,22 @@
 
   <!-- Include platform dependent assembly when specified -->
   <Choose>
-    <When Condition="'$(ParadoxProjectPlatformDependentWindows)' == 'true'">
+    <When Condition="'$(XenkoProjectPlatformDependentWindows)' == 'true'">
       <Choose>
         <When  Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <Choose>
-            <When Condition="'$(ParadoxGraphicsApi)' == 'OpenGL' Or '$(ParadoxGraphicsApi)' == 'OpenGLES'">
+            <When Condition="'$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES'">
               <ItemGroup>
                 <Reference Include="OpenTK">
-                  <HintPath>$(ParadoxDependenciesDir)OpenTK\OpenTK.dll</HintPath>
+                  <HintPath>$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
                 </Reference>
               </ItemGroup>
             </When>
-            <When Condition="'$(ParadoxGraphicsApi)' == 'Direct3D11'">
+            <When Condition="'$(XenkoGraphicsApi)' == 'Direct3D11'">
               <ItemGroup>
                 <Reference Include="SharpDX">
                   <SpecificVersion>False</SpecificVersion>
-                  <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+                  <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
                 </Reference>
               </ItemGroup>
             </When>
@@ -45,15 +45,15 @@
   <!-- Setup compiler targets per platform / language -->
   <PropertyGroup>
     <!-- Process by default scripts with AssemblyProcessor -->
-    <SiliconStudioAssemblyProcessor Condition="'$(ParadoxScript)' == 'true'">true</SiliconStudioAssemblyProcessor>
+    <SiliconStudioAssemblyProcessor Condition="'$(XenkoScript)' == 'true'">true</SiliconStudioAssemblyProcessor>
     
     <!--By default, use AssemblyProcessor from solution, unless this is a user build-->
-    <ParadoxSdkToolsDir Condition="'$(ParadoxSdkToolsDir)' == ''">$(SolutionDir)Bin\Windows-Direct3D11\</ParadoxSdkToolsDir>
-    <ParadoxSdkToolsDir Condition="'$(ParadoxUserBuild)' == 'true'">$(ParadoxSdkDir)\Bin\Windows-Direct3D11\</ParadoxSdkToolsDir>
-    <ParadoxAssetCompilerCommand>$(ParadoxSdkToolsDir)SiliconStudio.Assets.CompilerApp.exe</ParadoxAssetCompilerCommand>
+    <XenkoSdkToolsDir Condition="'$(XenkoSdkToolsDir)' == ''">$(SolutionDir)Bin\Windows-Direct3D11\</XenkoSdkToolsDir>
+    <XenkoSdkToolsDir Condition="'$(XenkoUserBuild)' == 'true'">$(XenkoSdkDir)\Bin\Windows-Direct3D11\</XenkoSdkToolsDir>
+    <XenkoAssetCompilerCommand>$(XenkoSdkToolsDir)SiliconStudio.Assets.CompilerApp.exe</XenkoAssetCompilerCommand>
   </PropertyGroup>
 
-  <!--Import Paradox settings-->
+  <!--Import Xenko settings-->
   <Import Project="$(MSBuildThisFileDirectory)..\common\targets\SiliconStudio.PostSettings.targets"/>
   
   <!--Temporary build targets for Build Engine-->
@@ -61,36 +61,36 @@
   <!--Temporary define the Build Engine output path-->
   <PropertyGroup>
     <BuildEngineBuildDir Condition="'$(BuildEngineBuildDir)' == ''">$(ProjectDir)$(BaseIntermediateOutputPath)\data</BuildEngineBuildDir>
-    <ParadoxProjectBuildProfile Condition="'$(ParadoxProjectBuildProfile)' == ''">$(SiliconStudioPlatform)</ParadoxProjectBuildProfile>
+    <XenkoProjectBuildProfile Condition="'$(XenkoProjectBuildProfile)' == ''">$(SiliconStudioPlatform)</XenkoProjectBuildProfile>
   </PropertyGroup>
   
-  <!-- Add ParadoxProject build action -->
+  <!-- Add XenkoProject build action -->
   <ItemGroup>
-    <AvailableItemName Include="ParadoxProject"/>
+    <AvailableItemName Include="XenkoProject"/>
   </ItemGroup>
 
   <PropertyGroup>
     <CleanDependsOn>
-      ParadoxProjectCleanTarget;
+      XenkoProjectCleanTarget;
       $(CleanDependsOn);
     </CleanDependsOn>
   </PropertyGroup>
 
   <!-- Target used to compile content (Font/Fx files...) -->
-  <Target Name="ParadoxProjectBuildTarget">
-    <Exec Condition="'@(ParadoxProject)' != '' and Exists('$(ParadoxAssetCompilerCommand)') and '$(ParadoxDisableAssetCompiler)' == ''" WorkingDirectory="$(TargetDir)" Command="$(ParadoxAssetCompilerCommand) --monitor-pipe=&quot;$(ParadoxBuildToolMonitorPipeUrl)&quot; --profile=$(ParadoxProjectBuildProfile) &quot;@(ParadoxProject->'%(rootdir)%(directory)%(filename)%(extension)')&quot;" />
+  <Target Name="XenkoProjectBuildTarget">
+    <Exec Condition="'@(XenkoProject)' != '' and Exists('$(XenkoAssetCompilerCommand)') and '$(XenkoDisableAssetCompiler)' == ''" WorkingDirectory="$(TargetDir)" Command="$(XenkoAssetCompilerCommand) --monitor-pipe=&quot;$(XenkoBuildToolMonitorPipeUrl)&quot; --profile=$(XenkoProjectBuildProfile) &quot;@(XenkoProject->'%(rootdir)%(directory)%(filename)%(extension)')&quot;" />
   </Target>
 
   <!-- Target used to clean content (Font/Fx files...) -->
-  <Target Name="ParadoxProjectCleanTarget" DependsOnTargets="FindBuildEngineOutputDir">
-    <RemoveDir Condition="'@(ParadoxProject)' != '' and Exists('$(BuildEngineOutputDirectory)')" ContinueOnError="true"  Directories="$(BuildEngineOutputDirectory)"/>
+  <Target Name="XenkoProjectCleanTarget" DependsOnTargets="FindBuildEngineOutputDir">
+    <RemoveDir Condition="'@(XenkoProject)' != '' and Exists('$(BuildEngineOutputDirectory)')" ContinueOnError="true"  Directories="$(BuildEngineOutputDirectory)"/>
     
-    <!-- Should be done separately from VS menu, but it will still be executed if ParadoxProjectIntermediateCleanTargetEnabled is true -->
-    <RemoveDir Condition="'@(ParadoxProject)' != '' and Exists('$(BuildEngineBuildDir)') and '$(ParadoxProjectIntermediateCleanTargetEnabled)' == 'true'" ContinueOnError="true"  Directories="$(BuildEngineBuildDir)"/>
+    <!-- Should be done separately from VS menu, but it will still be executed if XenkoProjectIntermediateCleanTargetEnabled is true -->
+    <RemoveDir Condition="'@(XenkoProject)' != '' and Exists('$(BuildEngineBuildDir)') and '$(XenkoProjectIntermediateCleanTargetEnabled)' == 'true'" ContinueOnError="true"  Directories="$(BuildEngineBuildDir)"/>
   </Target>
 
-  <Target Name="ParadoxProjectIntermediateCleanTarget" DependsOnTargets="FindBuildEngineOutputDir">
-    <RemoveDir Condition="'@(ParadoxProject)' != '' and Exists('$(BuildEngineBuildDir)')" ContinueOnError="true"  Directories="$(BuildEngineBuildDir)"/>
+  <Target Name="XenkoProjectIntermediateCleanTarget" DependsOnTargets="FindBuildEngineOutputDir">
+    <RemoveDir Condition="'@(XenkoProject)' != '' and Exists('$(BuildEngineBuildDir)')" ContinueOnError="true"  Directories="$(BuildEngineBuildDir)"/>
   </Target>
   
   <!-- Deploy the Assets -->
@@ -112,20 +112,20 @@
   <PropertyGroup>
     <PrepareForRunDependsOn>
       $(PrepareForRunDependsOn);
-      ParadoxProjectBuildTarget;
+      XenkoProjectBuildTarget;
     </PrepareForRunDependsOn>
   </PropertyGroup>
 
-  <UsingTask AssemblyFile="$(ParadoxSdkToolsDir)BuildTasks\SiliconStudio.Paradox.VisualStudio.BuildTasks.exe" TaskName="SiliconStudio.Paradox.VisualStudio.BuildTasks.FindBuildEngineOutputDirTask" />
+  <UsingTask AssemblyFile="$(XenkoSdkToolsDir)BuildTasks\SiliconStudio.Xenko.VisualStudio.BuildTasks.exe" TaskName="SiliconStudio.Xenko.VisualStudio.BuildTasks.FindBuildEngineOutputDirTask" />
 
   <Target Name="FindBuildEngineOutputDir">
     <!-- Get the build engine output directory -->
-    <FindBuildEngineOutputDirTask Condition="'@(ParadoxProject)' != '' and Exists('$(ParadoxSdkToolsDir)BuildTasks\SiliconStudio.Paradox.VisualStudio.BuildTasks.exe')" ParadoxProjectPaths="@(ParadoxProject)" ProfileName="$(ParadoxProjectBuildProfile)">
+    <FindBuildEngineOutputDirTask Condition="'@(XenkoProject)' != '' and Exists('$(XenkoSdkToolsDir)BuildTasks\SiliconStudio.Xenko.VisualStudio.BuildTasks.exe')" XenkoProjectPaths="@(XenkoProject)" ProfileName="$(XenkoProjectBuildProfile)">
       <Output TaskParameter="BuildOutputDirectory" PropertyName="BuildEngineOutputDirectory" />
     </FindBuildEngineOutputDirTask>
   </Target>
   
-  <Target Name="CreateAssetToDeployList" DependsOnTargets="ParadoxProjectBuildTarget;FindBuildEngineOutputDir" Condition="'@(ParadoxProject)' != ''">
+  <Target Name="CreateAssetToDeployList" DependsOnTargets="XenkoProjectBuildTarget;FindBuildEngineOutputDir" Condition="'@(XenkoProject)' != ''">
     
     <!-- Define the Assets to deploy -->
     <ItemGroup Condition="'$(BuildEngineOutputDirectory)' != ''">
@@ -136,7 +136,7 @@
   
   
   <!-- iOS: Ensure assets have been deployed before calling _CollectBundleResources -->
-  <Target Name="DeployAssetsiOS" BeforeTargets="_GenerateBundleContentDir" Condition="'$(SiliconStudioPlatform)' == 'iOS' and '@(ParadoxProject)' != ''" DependsOnTargets="CreateAssetToDeployList">
+  <Target Name="DeployAssetsiOS" BeforeTargets="_GenerateBundleContentDir" Condition="'$(SiliconStudioPlatform)' == 'iOS' and '@(XenkoProject)' != ''" DependsOnTargets="CreateAssetToDeployList">
     <!-- Add all game data as content on iphone. Note that "Link" doesn't work but Xamarin seems to use a similar "LogicalName" property. -->
     <ItemGroup>
       <_BundleResourceWithLogicalName Include="@(AssetsToDeploy)">
@@ -146,7 +146,7 @@
     </ItemGroup>
   </Target>
   
-  <Target Name="DeployAssetsAndroid" DependsOnTargets="CreateAssetToDeployList" Condition="'@(ParadoxProject)' != ''">
+  <Target Name="DeployAssetsAndroid" DependsOnTargets="CreateAssetToDeployList" Condition="'@(XenkoProject)' != ''">
     <!-- Add .bundle to list of uncompressed extensions -->
     <PropertyGroup>
       <AndroidStoreUncompressedFileExtensions>$(AndroidStoreUncompressedFileExtensions);.bundle</AndroidStoreUncompressedFileExtensions>
@@ -155,11 +155,11 @@
     <!-- Android - mode 2 : directly copy assets to external storage -->
 
     <!--<GetAndroidPackageName  Condition="'$(AndroidDeploymentMode)' == 'AndroidFastDeployment'" ManifestFile="$(_AndroidManifestAbs)" AssemblyName="$(AssemblyName)">
-      <Output TaskParameter="PackageName" PropertyName="ParadoxAndroidPackage" />
+      <Output TaskParameter="PackageName" PropertyName="XenkoAndroidPackage" />
     </GetAndroidPackageName>
 
     <AndroidFastDeploymentTask  Condition="'$(AndroidDeploymentMode)' == 'AndroidFastDeployment'"
-      AndroidPackageName="$(ParadoxAndroidPackage)"
+      AndroidPackageName="$(XenkoAndroidPackage)"
       BuildEngineOutputDir="$(BuildEngineOutputDirectory)"
       CurrentDeviceName ="$(AdbTarget)"
     />-->
@@ -173,18 +173,18 @@
     </PropertyGroup>
   </Target>
   
-  <!-- For MonoTouch executable projects, we add a target that copies the paradox native libraries to link in the project root directory -->
+  <!-- For MonoTouch executable projects, we add a target that copies the xenko native libraries to link in the project root directory -->
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
     <BuildDependsOn>
-      CopyParadoxNativeLibraries;
+      CopyXenkoNativeLibraries;
       $(BuildDependsOn);
     </BuildDependsOn>
   </PropertyGroup>
 
   <!-- Copy the libfreetype.a libraries to the project root directory for future native link.
        Note: this target is redefined in References.targets for user projects -->
-  <Target Name="CopyParadoxNativeLibraries" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
-    <Copy SourceFiles="$(ParadoxDependenciesDir)freetype-2.5.3\$(SiliconStudioPlatform)\libfreetype.a" DestinationFolder="$(ProjectDir)"/>
+  <Target Name="CopyXenkoNativeLibraries" Condition=" '$(SiliconStudioPlatform)' == 'iOS' and '$(OutputType)' == 'Exe'">
+    <Copy SourceFiles="$(XenkoDependenciesDir)freetype-2.5.3\$(SiliconStudioPlatform)\libfreetype.a" DestinationFolder="$(ProjectDir)"/>
   </Target>
 
 </Project>

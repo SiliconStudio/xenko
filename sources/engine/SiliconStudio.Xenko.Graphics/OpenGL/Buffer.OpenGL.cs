@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
 using System;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BufferUsageHint = OpenTK.Graphics.ES30.BufferUsage;
@@ -14,14 +14,14 @@ using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public partial class Buffer
     {
         internal BufferTarget bufferTarget;
         internal BufferUsageHint bufferUsageHint;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // Special case: ConstantBuffer are faked with a byte array on OpenGL ES 2.0.
         internal IntPtr StagingData { get; set; }
 #else
@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Graphics
             bufferDescription = description;
             ViewFlags = viewFlags;
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             int pixelSize;
             bool isCompressed;
             OpenGLConvertExtensions.ConvertPixelFormat(GraphicsDevice, ref viewFormat, out internalFormat, out glPixelFormat, out type, out pixelSize, out isCompressed);
@@ -78,7 +78,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
             else if ((ViewFlags & BufferFlags.UnorderedAccess) == BufferFlags.UnorderedAccess)
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 throw new NotSupportedException("GLES not support UnorderedAccess buffer");
 #else
                 bufferTarget = BufferTarget.ShaderStorageBuffer;
@@ -87,7 +87,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             if ((ViewFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer)
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Special case: ConstantBuffer are faked with a byte array on OpenGL ES 2.0.
                 if (GraphicsDevice.IsOpenGLES2)
                     StagingData = Marshal.AllocHGlobal(Description.SizeInBytes);
@@ -99,7 +99,7 @@ namespace SiliconStudio.Paradox.Graphics
             }
             else if (Description.Usage == GraphicsResourceUsage.Dynamic)
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (GraphicsDevice.IsOpenGLES2)
                 {
                     // OpenGL ES might not always support MapBuffer (TODO: Use MapBufferOES if available)
@@ -128,7 +128,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <inheritdoc/>
         protected override void Destroy()
         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (StagingData != IntPtr.Zero)
             {
                 Marshal.FreeHGlobal(StagingData);
@@ -148,7 +148,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         protected void Init(IntPtr dataPointer)
         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (GraphicsDevice.IsOpenGLES2 
                 && ((Description.BufferFlags & BufferFlags.ConstantBuffer) == BufferFlags.ConstantBuffer
                     || Description.Usage == GraphicsResourceUsage.Dynamic))

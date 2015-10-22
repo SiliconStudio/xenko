@@ -77,7 +77,7 @@
 
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     // Importer interface allows the conversion tool to support multiple source font formats.
     internal interface IFontImporter

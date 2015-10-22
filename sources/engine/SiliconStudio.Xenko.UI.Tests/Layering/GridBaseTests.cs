@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.UI.Panels;
+using SiliconStudio.Xenko.UI.Panels;
 
-namespace SiliconStudio.Paradox.UI.Tests.Layering
+namespace SiliconStudio.Xenko.UI.Tests.Layering
 {
     /// <summary>
     /// A class that contains test functions for layering of the <see cref="GridBase"/> class.

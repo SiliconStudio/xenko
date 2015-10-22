@@ -75,7 +75,7 @@ namespace SiliconStudio.AssemblyProcessor
             p = new OptionSet()
             {
                 "Copyright (C) 2011-2012 Silicon Studio Corporation. All Rights Reserved",
-                "Paradox Assembly Processor tool - Version: "
+                "Xenko Assembly Processor tool - Version: "
                 +
                 String.Format(
                     "{0}.{1}.{2}",

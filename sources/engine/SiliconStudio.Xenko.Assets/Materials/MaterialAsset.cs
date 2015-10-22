@@ -13,11 +13,11 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Xenko.Assets.Materials
 {
     /// <summary>
     /// The material asset.
@@ -35,7 +35,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
         /// <summary>
         /// The default file extension used by the <see cref="MaterialAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxmat";
+        public const string FileExtension = ".xkmat;.pdxmat";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialAsset"/> class.

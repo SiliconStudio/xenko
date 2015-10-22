@@ -8,7 +8,7 @@ using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// A tonemap effect.

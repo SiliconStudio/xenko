@@ -11,13 +11,13 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Settings;
-using SiliconStudio.Paradox.Assets.Entities;
-using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Assets.Entities;
+using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
     /// <summary>
     /// Settings for a game with the default scene, resolution, graphics profile...
@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Assets
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxgamesettings";
+        public const string FileExtension = ".xkgamesettings;.pdxgamesettings";
 
         public const string GameSettingsLocation = GameSettings.AssetUrl;
         public const string DefaultSceneLocation = "MainScene";
@@ -132,11 +132,11 @@ namespace SiliconStudio.Paradox.Assets
 
         internal class UpgraderVersion130
         {
-            public static SettingsKey<DisplayOrientation> DisplayOrientation = new SettingsKey<DisplayOrientation>("Paradox.DisplayOrientation", PackageProfile.SettingsContainer);
+            public static SettingsKey<DisplayOrientation> DisplayOrientation = new SettingsKey<DisplayOrientation>("Xenko.DisplayOrientation", PackageProfile.SettingsContainer);
 
-            public static SettingsKey<GraphicsPlatform> GraphicsPlatform = new SettingsKey<GraphicsPlatform>("Paradox.GraphicsPlatform", PackageProfile.SettingsContainer);
+            public static SettingsKey<GraphicsPlatform> GraphicsPlatform = new SettingsKey<GraphicsPlatform>("Xenko.GraphicsPlatform", PackageProfile.SettingsContainer);
 
-            public static SettingsKey<TextureQuality> TextureQuality = new SettingsKey<TextureQuality>("Paradox.TextureQuality", PackageProfile.SettingsContainer);
+            public static SettingsKey<TextureQuality> TextureQuality = new SettingsKey<TextureQuality>("Xenko.TextureQuality", PackageProfile.SettingsContainer);
 
             public static readonly SettingsKey<AssetReference<SceneAsset>> DefaultScene = new SettingsKey<AssetReference<SceneAsset>>("GameSettingsAsset.DefaultScene", PackageProfile.SettingsContainer);
 

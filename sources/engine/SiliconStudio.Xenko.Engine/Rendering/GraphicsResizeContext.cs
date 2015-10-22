@@ -4,10 +4,10 @@ using System;
 using System.Linq;
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Keep track of actions to execute when GraphicsDevice is resized.

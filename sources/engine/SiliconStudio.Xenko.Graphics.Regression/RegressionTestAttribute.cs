@@ -1,4 +1,4 @@
-﻿namespace SiliconStudio.Paradox.Graphics.Regression
+﻿namespace SiliconStudio.Xenko.Graphics.Regression
 {
     [System.AttributeUsage(System.AttributeTargets.Method)]
     public class RegressionTestAttribute : System.Attribute

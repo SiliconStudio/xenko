@@ -17,7 +17,7 @@ namespace SiliconStudio.Assets.Tests
         [Test]
         public void TestUpdateAssetUrl()
         {
-            var projectDir = new UFile(Path.Combine(Environment.CurrentDirectory, "testpdx"));
+            var projectDir = new UFile(Path.Combine(Environment.CurrentDirectory, "testxk"));
             
             // Create a project with an asset reference a raw file
             var project = new Package { FullPath = projectDir };
@@ -50,7 +50,7 @@ namespace SiliconStudio.Assets.Tests
         [Test]
         public void TestMoveAssetWithUFile()
         {
-            var projectDir = new UFile(Path.Combine(Environment.CurrentDirectory, "testpdx"));
+            var projectDir = new UFile(Path.Combine(Environment.CurrentDirectory, "testxk"));
             var rawAssetPath = new UFile("../image.png");
             var assetPath = new UFile("sub1/sub2/test");
 

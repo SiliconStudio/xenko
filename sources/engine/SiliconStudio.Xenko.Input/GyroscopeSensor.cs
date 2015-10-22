@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// This class represents a sensor of type Gyroscope. It measures the rotation speed of device along the x/y/z axis.

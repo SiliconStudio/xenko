@@ -11,18 +11,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "50-Engine", "50-Engine", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", "{97978864-95DD-43A6-9159-AA1C881BE99F}"
 	ProjectSection(SolutionItems) = preProject
-		Paradox.Android.PreSettings.Local.targets = Paradox.Android.PreSettings.Local.targets
-		Paradox.build = Paradox.build
-		..\sources\targets\Paradox.GlobalSettings.targets = ..\sources\targets\Paradox.GlobalSettings.targets
-		Paradox.iOS.PreSettings.Local.targets = Paradox.iOS.PreSettings.Local.targets
-		Paradox.OpenGL.PreSettings.Local.targets = Paradox.OpenGL.PreSettings.Local.targets
-		Paradox.OpenGLES.PreSettings.Local.targets = Paradox.OpenGLES.PreSettings.Local.targets
-		..\Paradox.pdxpkg = ..\Paradox.pdxpkg
-		..\sources\targets\Paradox.PostSettings.References.targets = ..\sources\targets\Paradox.PostSettings.References.targets
-		..\sources\targets\Paradox.PostSettings.targets = ..\sources\targets\Paradox.PostSettings.targets
-		..\sources\targets\Paradox.PostSettings.User.targets = ..\sources\targets\Paradox.PostSettings.User.targets
-		..\sources\targets\Paradox.PreSettings.targets = ..\sources\targets\Paradox.PreSettings.targets
-		..\sources\targets\Paradox.PreSettings.User.targets = ..\sources\targets\Paradox.PreSettings.User.targets
+		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
+		Xenko.build = Xenko.build
+		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
+		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
+		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
+		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
+		..\Xenko.xkpkg = ..\Xenko.xkpkg
+		..\sources\targets\Xenko.PostSettings.References.targets = ..\sources\targets\Xenko.PostSettings.References.targets
+		..\sources\targets\Xenko.PostSettings.targets = ..\sources\targets\Xenko.PostSettings.targets
+		..\sources\targets\Xenko.PostSettings.User.targets = ..\sources\targets\Xenko.PostSettings.User.targets
+		..\sources\targets\Xenko.PreSettings.targets = ..\sources\targets\Xenko.PreSettings.targets
+		..\sources\targets\Xenko.PreSettings.User.targets = ..\sources\targets\Xenko.PreSettings.User.targets
 		..\doc\ReleaseNotes\ReleaseNotes.md = ..\doc\ReleaseNotes\ReleaseNotes.md
 		..\sources\common\targets\SiliconStudio.Android.CSharp.targets = ..\sources\common\targets\SiliconStudio.Android.CSharp.targets
 		SiliconStudio.GlobalSettings.Local.targets = SiliconStudio.GlobalSettings.Local.targets
@@ -51,28 +51,28 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{D2A80D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTargets", "{BB2D1F96-E184-4EE2-8677-3EA5E059E1A6}"
 	ProjectSection(SolutionItems) = preProject
-		..\Targets\Paradox.Android.targets = ..\Targets\Paradox.Android.targets
-		..\Targets\Paradox.iOS.targets = ..\Targets\Paradox.iOS.targets
-		..\Targets\Paradox.targets = ..\Targets\Paradox.targets
-		..\Targets\Paradox.Windows.targets = ..\Targets\Paradox.Windows.targets
-		..\Targets\Paradox.Windows10.targets = ..\Targets\Paradox.Windows10.targets
-		..\Targets\Paradox.WindowsPhone.targets = ..\Targets\Paradox.WindowsPhone.targets
-		..\Targets\Paradox.WindowsStore.targets = ..\Targets\Paradox.WindowsStore.targets
+		..\Targets\Xenko.Android.targets = ..\Targets\Xenko.Android.targets
+		..\Targets\Xenko.iOS.targets = ..\Targets\Xenko.iOS.targets
+		..\Targets\Xenko.targets = ..\Targets\Xenko.targets
+		..\Targets\Xenko.Windows.targets = ..\Targets\Xenko.Windows.targets
+		..\Targets\Xenko.Windows10.targets = ..\Targets\Xenko.Windows10.targets
+		..\Targets\Xenko.WindowsPhone.targets = ..\Targets\Xenko.WindowsPhone.targets
+		..\Targets\Xenko.WindowsStore.targets = ..\Targets\Xenko.WindowsStore.targets
 		..\Targets\SiliconStudio.Common.targets = ..\Targets\SiliconStudio.Common.targets
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Engine", "..\sources\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj", "{C121A566-555E-42B9-9B0A-1696529A9088}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine", "..\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj", "{C121A566-555E-42B9-9B0A-1696529A9088}"
 	ProjectSection(ProjectDependencies) = postProject
 		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F} = {F2D52EDB-BC17-4243-B06D-33CD20F87A7F}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptShader", "..\sources\scripts\ScriptShader\ScriptShader.csproj", "{457D4B45-85B9-4098-8389-6CBC012D140F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Graphics", "..\sources\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj", "{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics", "..\sources\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj", "{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Engine.Tests.Windows", "..\sources\engine\SiliconStudio.Paradox.Engine.Tests\SiliconStudio.Paradox.Engine.Tests.Windows.csproj", "{A8F8D125-7A22-489F-99BC-9A02F545A17F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Engine.Tests\SiliconStudio.Xenko.Engine.Tests.Windows.csproj", "{A8F8D125-7A22-489F-99BC-9A02F545A17F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Input.Tests.Windows", "..\sources\engine\SiliconStudio.Paradox.Input.Tests\SiliconStudio.Paradox.Input.Tests.Windows.csproj", "{01700344-CF44-482C-BEBC-60213B0F844C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Input.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Input.Tests\SiliconStudio.Xenko.Input.Tests.Windows.csproj", "{01700344-CF44-482C-BEBC-60213B0F844C}"
 	ProjectSection(ProjectDependencies) = postProject
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E} = {84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}
 		{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A} = {1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}
@@ -92,9 +92,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Shaders", "..
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Irony", "..\sources\common\shaders\Irony\Irony.csproj", "{D81F5C91-D7DB-46E5-BC99-49488FB6814C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Games", "..\sources\engine\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj", "{42780CBD-3FE7-48E3-BD5B-59945EA20137}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Games", "..\sources\engine\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj", "{42780CBD-3FE7-48E3-BD5B-59945EA20137}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Audio.Tests.Windows", "..\sources\engine\SiliconStudio.Paradox.Audio.Tests\SiliconStudio.Paradox.Audio.Tests.Windows.csproj", "{7AF4B563-AAD3-42FF-B91E-84B9D34D904A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Audio.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Audio.Tests\SiliconStudio.Xenko.Audio.Tests.Windows.csproj", "{7AF4B563-AAD3-42FF-B91E-84B9D34D904A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core", "..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj", "{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}"
 EndProject
@@ -109,32 +109,32 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.MicroThr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.IO", "..\sources\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj", "{1DE01410-22C9-489B-9796-1ADDAB1F64E5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Shaders.Parser", "..\sources\engine\SiliconStudio.Paradox.Shaders.Parser\SiliconStudio.Paradox.Shaders.Parser.csproj", "{14A47447-2A24-4ECD-B24D-6571499DCD4C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Shaders.Parser", "..\sources\engine\SiliconStudio.Xenko.Shaders.Parser\SiliconStudio.Xenko.Shaders.Parser.csproj", "{14A47447-2A24-4ECD-B24D-6571499DCD4C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Shaders", "..\sources\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj", "{273BDD15-7392-4078-91F0-AF23594A3D7B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Shaders", "..\sources\engine\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj", "{273BDD15-7392-4078-91F0-AF23594A3D7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Audio", "..\sources\engine\SiliconStudio.Paradox.Audio\SiliconStudio.Paradox.Audio.csproj", "{DE042125-C270-4D1D-9270-0759C167567A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Audio", "..\sources\engine\SiliconStudio.Xenko.Audio\SiliconStudio.Xenko.Audio.csproj", "{DE042125-C270-4D1D-9270-0759C167567A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox", "..\sources\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj", "{72390339-B2A1-4F61-A800-31ED0975B515}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko", "..\sources\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj", "{72390339-B2A1-4F61-A800-31ED0975B515}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Shaders.Compiler", "..\sources\engine\SiliconStudio.Paradox.Shaders.Compiler\SiliconStudio.Paradox.Shaders.Compiler.csproj", "{E8B3553F-A79F-4E50-B75B-ACEE771C320C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Shaders.Compiler", "..\sources\engine\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj", "{E8B3553F-A79F-4E50-B75B-ACEE771C320C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Input", "..\sources\engine\SiliconStudio.Paradox.Input\SiliconStudio.Paradox.Input.csproj", "{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Input", "..\sources\engine\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj", "{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Graphics.Tests.Windows", "..\sources\engine\SiliconStudio.Paradox.Graphics.Tests\SiliconStudio.Paradox.Graphics.Tests.Windows.csproj", "{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests.Windows.csproj", "{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.UI", "..\sources\engine\SiliconStudio.Paradox.UI\SiliconStudio.Paradox.UI.csproj", "{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.UI", "..\sources\engine\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj", "{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.UI.Tests.Windows", "..\sources\engine\SiliconStudio.Paradox.UI.Tests\SiliconStudio.Paradox.UI.Tests.Windows.csproj", "{E7B1B17F-D04B-4978-B504-A6BB3EE846C9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.UI.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.UI.Tests\SiliconStudio.Xenko.UI.Tests.Windows.csproj", "{E7B1B17F-D04B-4978-B504-A6BB3EE846C9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Graphics.Regression", "..\sources\engine\SiliconStudio.Paradox.Graphics.Regression\SiliconStudio.Paradox.Graphics.Regression.csproj", "{D002FEB1-00A6-4AB1-A83F-1F253465E64D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Regression", "..\sources\engine\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.csproj", "{D002FEB1-00A6-4AB1-A83F-1F253465E64D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.Physics", "..\sources\engine\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj", "{DD592516-B341-40FE-9100-1B0FA784A060}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics", "..\sources\engine\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj", "{DD592516-B341-40FE-9100-1B0FA784A060}"
 	ProjectSection(ProjectDependencies) = postProject
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137} = {42780CBD-3FE7-48E3-BD5B-59945EA20137}
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Paradox.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Paradox.SpriteStudio.Runtime\SiliconStudio.Paradox.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution

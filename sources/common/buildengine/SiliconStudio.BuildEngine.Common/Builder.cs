@@ -140,7 +140,7 @@ namespace SiliconStudio.BuildEngine
 
         public List<string> MonitorPipeNames { get; private set; }
         
-        public const string MonitorPipeName = "net.pipe://localhost/Paradox.BuildEngine.Monitor";
+        public const string MonitorPipeName = "net.pipe://localhost/Xenko.BuildEngine.Monitor";
 
         public IDictionary<string, string> InitialVariables { get; private set; }
 

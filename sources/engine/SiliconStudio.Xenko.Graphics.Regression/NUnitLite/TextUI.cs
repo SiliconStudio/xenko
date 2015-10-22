@@ -34,7 +34,7 @@ using NUnit.Framework.Internal;
 using NUnit.Framework.Internal.Filters;
 using NUnitLite.Runner;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     /// <summary>
     /// TextUI is a general purpose class that runs tests and

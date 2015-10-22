@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Engine.Processors
+namespace SiliconStudio.Xenko.Engine.Processors
 {
     /// <summary>
     /// A collection of <see cref="RenderModel"/> for a specific <see cref="EntityGroup"/>.

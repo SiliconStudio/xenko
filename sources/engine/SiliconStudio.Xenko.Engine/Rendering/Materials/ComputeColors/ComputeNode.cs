@@ -4,9 +4,9 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
+namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 {
     /// <summary>
     /// Base interface for all computer color nodes.

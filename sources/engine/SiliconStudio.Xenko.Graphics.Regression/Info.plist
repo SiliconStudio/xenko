@@ -23,8 +23,8 @@
     <key>MinimumOSVersion</key>
     <string>3.2</string>
     <key>CFBundleDisplayName</key>
-    <string>SiliconStudioParadoxGraphicsRegressionTests</string>
+    <string>SiliconStudioXenkoGraphicsRegressionTests</string>
     <key>CFBundleIdentifier</key>
-    <string>jp.co.siliconstudio.paradox.graphics.regressiontests</string>
+    <string>jp.co.siliconstudio.xenko.graphics.regressiontests</string>
   </dict>
 </plist>

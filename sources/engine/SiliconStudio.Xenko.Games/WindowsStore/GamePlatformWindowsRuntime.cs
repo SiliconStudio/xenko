@@ -23,10 +23,10 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using Windows.ApplicationModel;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     internal class GamePlatformWindowsRuntime : GamePlatform
     {

@@ -11,7 +11,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 
-namespace SiliconStudio.Paradox.ConfigEditor
+namespace SiliconStudio.Xenko.ConfigEditor
 {
     /// <summary>
     /// Interaction logic for OptionsWindow.xaml

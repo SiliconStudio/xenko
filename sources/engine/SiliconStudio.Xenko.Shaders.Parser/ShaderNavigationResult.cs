@@ -3,7 +3,7 @@
 
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.Shaders.Parser
+namespace SiliconStudio.Xenko.Shaders.Parser
 {
     /// <summary>
     /// Results of a <see cref="ShaderNavigation"/>

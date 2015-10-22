@@ -6,7 +6,7 @@ using System.Linq;
 
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     // TODO: Move it to Assets? Or Core/Core.Design?
     public class ConvertedDescriptor : MemberDescriptorBase

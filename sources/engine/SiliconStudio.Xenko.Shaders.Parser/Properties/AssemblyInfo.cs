@@ -3,11 +3,11 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyProduct("SiliconStudio.Paradox.Shaders.Parser")]
-[assembly: AssemblyTitle("SiliconStudio.Paradox.Shaders.Parser")]
-[assembly: AssemblyDescription("Paradox shader parser assembly")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Shaders.Parser")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Shaders.Parser")]
+[assembly: AssemblyDescription("Xenko shader parser assembly")]
 
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Shaders.Parser.Serializers" + SiliconStudio.PublicKeys.Default)]
-//[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Shaders.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Shaders.Parser.Serializers" + SiliconStudio.PublicKeys.Default)]
+//[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Shaders.Tests" + SiliconStudio.PublicKeys.Default)]

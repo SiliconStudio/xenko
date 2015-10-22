@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
-    <ParadoxGraphicsApi>Direct3D11</ParadoxGraphicsApi>
+    <XenkoGraphicsApi>Direct3D11</XenkoGraphicsApi>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <UseVSHostingProcess>false</UseVSHostingProcess>
@@ -15,7 +15,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SiliconStudio.AssemblyProcessor</RootNamespace>
     <AssemblyName>SiliconStudio.AssemblyProcessor</AssemblyName>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
   </PropertyGroup>
   <ItemGroup>

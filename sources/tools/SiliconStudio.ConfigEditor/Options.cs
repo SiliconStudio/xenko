@@ -7,26 +7,26 @@ using System.IO;
 using System.Xml.Serialization;
 using System.ComponentModel;
 
-namespace SiliconStudio.Paradox.ConfigEditor
+namespace SiliconStudio.Xenko.ConfigEditor
 {
     [XmlRoot(Namespace = "", IsNullable = false)]
     public class Options
     {
-        private string paradoxPath;
+        private string xenkoPath;
         [XmlElement]
-        public string ParadoxPath
+        public string XenkoPath
         {
-            get { return paradoxPath; }
+            get { return xenkoPath; }
             set
             {
                 if (string.IsNullOrWhiteSpace(value))
-                    throw new ArgumentException("Invalid 'ParadoxPath' property value");
-                paradoxPath = value;
+                    throw new ArgumentException("Invalid 'XenkoPath' property value");
+                xenkoPath = value;
             }
         }
 
         [XmlElement]
-        public string ParadoxConfigFilename { get; set; }
+        public string XenkoConfigFilename { get; set; }
 
         private static readonly XmlSerializer serializer = new XmlSerializer(typeof(Options));
 

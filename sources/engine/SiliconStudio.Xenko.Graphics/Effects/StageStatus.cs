@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Graphics.Internals
+namespace SiliconStudio.Xenko.Graphics.Internals
 {
     internal class ShaderStageSetup
     {

@@ -1,18 +1,18 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7E32BEC2-2502-4B01-A3CD-424323E33C67}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>MonoDevelop.Debugger.Soft.Paradox</RootNamespace>
-    <AssemblyName>MonoDevelop.Debugger.Soft.Paradox</AssemblyName>
+    <RootNamespace>MonoDevelop.Debugger.Soft.Xenko</RootNamespace>
+    <AssemblyName>MonoDevelop.Debugger.Soft.Xenko</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile />
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Mono.Debugger.Soft">
@@ -44,9 +44,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ParadoxCommands.cs" />
-    <Compile Include="ParadoxDebuggerEngine.cs" />
-    <Compile Include="ParadoxRemoteSoftDebuggerSession.cs" />
+    <Compile Include="XenkoCommands.cs" />
+    <Compile Include="XenkoDebuggerEngine.cs" />
+    <Compile Include="XenkoRemoteSoftDebuggerSession.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

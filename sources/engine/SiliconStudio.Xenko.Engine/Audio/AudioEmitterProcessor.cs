@@ -7,10 +7,10 @@ using System.Collections.Specialized;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
     /// Processor in charge of updating the <see cref="AudioEmitterComponent"/>s.
@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Audio
         public class AssociatedData
         {
             /// <summary>
-            /// The <see cref="Paradox.Audio.AudioEmitter"/> associated to the <see cref="AudioEmitterComponent"/>.
+            /// The <see cref="Xenko.Audio.AudioEmitter"/> associated to the <see cref="AudioEmitterComponent"/>.
             /// </summary>
             public AudioEmitter AudioEmitter;
 

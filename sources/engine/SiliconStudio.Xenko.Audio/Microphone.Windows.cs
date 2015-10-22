@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     internal partial class Microphone
     {

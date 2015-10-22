@@ -5,12 +5,12 @@ using System.Collections.Generic;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.UI.Controls;
-using SiliconStudio.Paradox.UI.Events;
-using SiliconStudio.Paradox.UI.Panels;
-using SiliconStudio.Paradox.UI.Tests.Layering;
+using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Events;
+using SiliconStudio.Xenko.UI.Panels;
+using SiliconStudio.Xenko.UI.Tests.Layering;
 
-namespace SiliconStudio.Paradox.UI.Tests.Events
+namespace SiliconStudio.Xenko.UI.Tests.Events
 {
     /// <summary>
     /// A class that contains test functions for layering of the UIElement class.

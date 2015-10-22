@@ -3,9 +3,9 @@
 using System;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Engine.Network;
+using SiliconStudio.Xenko.Engine.Network;
 
-namespace SiliconStudio.Paradox.ConnectionRouter
+namespace SiliconStudio.Xenko.ConnectionRouter
 {
     public abstract class RouterServiceServer
     {

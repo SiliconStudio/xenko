@@ -1,10 +1,10 @@
 ﻿using System.Runtime.CompilerServices;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Starter;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Starter;
 
-namespace SiliconStudio.Paradox.Input.Tests
+namespace SiliconStudio.Xenko.Input.Tests
 {
     public class Application
     {
@@ -15,7 +15,7 @@ namespace SiliconStudio.Paradox.Input.Tests
     }
 
     [Register("AppDelegate")]
-    public class AppDelegate : ParadoxApplicationDelegate
+    public class AppDelegate : XenkoApplicationDelegate
     {
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {

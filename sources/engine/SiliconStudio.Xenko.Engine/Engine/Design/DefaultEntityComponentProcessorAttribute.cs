@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     /// <summary>
     /// An attribute used to associate a default <see cref="EntityProcessor"/> to an entity component.

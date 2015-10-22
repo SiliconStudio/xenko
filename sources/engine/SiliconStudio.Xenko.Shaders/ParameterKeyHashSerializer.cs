@@ -3,9 +3,9 @@
 using System;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     class ParameterKeyHashSerializer : DataSerializer<ParameterKey>
     {

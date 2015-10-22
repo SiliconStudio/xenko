@@ -29,10 +29,10 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Graphics.Data;
 using Utilities = SiliconStudio.Core.Utilities;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Class used for all Textures (1D, 2D, 3D, DepthStencil, RenderTargets...etc.)
@@ -913,7 +913,7 @@ namespace SiliconStudio.Paradox.Graphics
             int subResourceIndex = this.GetSubResourceIndex(arraySlice, mipSlice);
 
             // If this texture is declared as default usage, we use UpdateSubresource that supports sub resource region.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (this.Usage == GraphicsResourceUsage.Default || (this.Usage == GraphicsResourceUsage.Dynamic && GraphicsDevice.IsOpenGLES2))
 #else
             if (this.Usage == GraphicsResourceUsage.Default)

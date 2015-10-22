@@ -4,9 +4,9 @@
 using System;
 using System.Reflection;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     /// <summary>
     /// Defines the default <see cref="IEntityComponentRenderer"/> attached to an <see cref="EntityComponent"/>. 

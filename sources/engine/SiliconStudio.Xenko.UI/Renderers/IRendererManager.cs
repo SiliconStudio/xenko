@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
-namespace SiliconStudio.Paradox.UI.Renderers
+namespace SiliconStudio.Xenko.UI.Renderers
 {
     /// <summary>
     /// The interface for managing UI element renderers.

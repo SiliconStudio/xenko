@@ -3,15 +3,15 @@
 
 using System;
 
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Describe the different tessellation methods used in Paradox.
+    /// Describe the different tessellation methods used in Xenko.
     /// </summary>
     [Flags]
-    public enum ParadoxTessellationMethod
+    public enum XenkoTessellationMethod
     {
         /// <summary>
         /// No tessellation
@@ -34,16 +34,16 @@ namespace SiliconStudio.Paradox.Rendering
         AdjacentEdgeAverage = 2,
     }
 
-    public static class ParadoxTessellationMethodExtensions
+    public static class XenkoTessellationMethodExtensions
     {
-        public static bool PerformsAdjacentEdgeAverage(this ParadoxTessellationMethod method)
+        public static bool PerformsAdjacentEdgeAverage(this XenkoTessellationMethod method)
         {
-            return (method & ParadoxTessellationMethod.AdjacentEdgeAverage) != 0;
+            return (method & XenkoTessellationMethod.AdjacentEdgeAverage) != 0;
         }
 
-        public static PrimitiveType GetPrimitiveType(this ParadoxTessellationMethod method)
+        public static PrimitiveType GetPrimitiveType(this XenkoTessellationMethod method)
         {
-            if((method & ParadoxTessellationMethod.PointNormal) == 0)
+            if((method & XenkoTessellationMethod.PointNormal) == 0)
                 return PrimitiveType.TriangleList;
 
             var controlsCount = method.PerformsAdjacentEdgeAverage() ? 12 : 3;

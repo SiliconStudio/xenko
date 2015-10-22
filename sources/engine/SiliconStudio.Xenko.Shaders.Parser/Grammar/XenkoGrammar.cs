@@ -5,15 +5,15 @@ using System;
 
 using Irony.Parsing;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Grammar;
 using SiliconStudio.Shaders.Grammar.Hlsl;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
+namespace SiliconStudio.Xenko.Shaders.Parser.Grammar
 {
-    [Language("hotei2", "5.0", "Paradox2 hlsl grammar")]
-    public partial class ParadoxGrammar : HlslGrammar
+    [Language("hotei2", "5.0", "Xenko2 hlsl grammar")]
+    public partial class XenkoGrammar : HlslGrammar
     {
         protected readonly NonTerminal semantic_type = T("semantic_type", CreateSemanticTypeAst);
         protected readonly NonTerminal link_type = T("link_type", CreateLinkTypeAst);
@@ -48,9 +48,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParadoxGrammar"/> class.
+        /// Initializes a new instance of the <see cref="XenkoGrammar"/> class.
         /// </summary>
-        public ParadoxGrammar()
+        public XenkoGrammar()
         {
             SnippetRoots.Add(expression);
 

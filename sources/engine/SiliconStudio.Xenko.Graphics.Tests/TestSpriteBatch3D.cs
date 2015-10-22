@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     public class TestSpriteBatch3D : TestGameBase

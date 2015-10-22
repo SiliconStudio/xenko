@@ -7,11 +7,11 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Data;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// A helper class to compute a unique object id for a <see cref="ShaderMixinSource"/>.

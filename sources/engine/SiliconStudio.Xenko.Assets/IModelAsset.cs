@@ -3,9 +3,9 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
     /// <summary>
     /// This interface represents an asset containing a model.

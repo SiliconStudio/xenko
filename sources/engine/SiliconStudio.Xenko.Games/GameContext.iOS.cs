@@ -4,7 +4,7 @@
 using UIKit;
 using OpenTK.Platform.iPhoneOS;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="GameView"/>.
@@ -24,10 +24,10 @@ namespace SiliconStudio.Paradox.Games
         /// </summary>
         /// <param name="mainWindows">The main windows of the game</param>
         /// <param name="gameView">The view in which the game is rendered</param>
-        /// <param name="gameViewController">The paradox game main controller</param>
+        /// <param name="gameViewController">The xenko game main controller</param>
         /// <param name="requestedWidth">Width of the requested.</param>
         /// <param name="requestedHeight">Height of the requested.</param>
-        public GameContext(UIWindow mainWindows, iPhoneOSGameView gameView, ParadoxGameController gameViewController, int requestedWidth = 0, int requestedHeight = 0)
+        public GameContext(UIWindow mainWindows, iPhoneOSGameView gameView, XenkoGameController gameViewController, int requestedWidth = 0, int requestedHeight = 0)
         {
             MainWindow = mainWindows;
             GameView = gameView;
@@ -50,7 +50,7 @@ namespace SiliconStudio.Paradox.Games
         /// <summary>
         /// The controller of the game.
         /// </summary>
-        public readonly ParadoxGameController GameViewController;
+        public readonly XenkoGameController GameViewController;
     }
 }
 #endif

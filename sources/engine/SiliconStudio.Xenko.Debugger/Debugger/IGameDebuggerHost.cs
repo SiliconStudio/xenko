@@ -4,7 +4,7 @@
 using System.ServiceModel;
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Paradox.Debugger.Target
+namespace SiliconStudio.Xenko.Debugger.Target
 {
     /// <summary>
     /// Represents the debugger host commands that the target can access

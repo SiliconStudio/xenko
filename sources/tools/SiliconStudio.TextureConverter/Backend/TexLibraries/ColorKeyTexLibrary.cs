@@ -5,7 +5,7 @@ using System.Drawing;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.TextureConverter.Requests;
 
 namespace SiliconStudio.TextureConverter.TexLibraries

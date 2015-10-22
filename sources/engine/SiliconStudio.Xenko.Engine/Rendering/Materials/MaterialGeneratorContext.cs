@@ -7,14 +7,14 @@ using System.Linq;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Assets;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Assets;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     // TODO REWRITE AND COMMENT THIS CLASS
     public class MaterialGeneratorContext : ShaderGeneratorContextBase

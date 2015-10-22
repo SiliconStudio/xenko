@@ -1,8 +1,8 @@
 // Copyright (c) 2011 Silicon Studio
 
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Shader used with <see cref="LightingPrepassPlugin"/>.

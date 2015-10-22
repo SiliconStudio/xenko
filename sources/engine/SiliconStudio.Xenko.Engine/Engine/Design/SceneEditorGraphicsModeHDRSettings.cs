@@ -6,9 +6,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Rendering.Images;
+using SiliconStudio.Xenko.Rendering.Images;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     /// <summary>
     /// Settings for a HDR rendering

@@ -3,7 +3,7 @@
 namespace SiliconStudio.Core
 {
     /// <summary>
-    /// The <see cref="SiliconStudio.Core"/> namespace contains fundamental classes and interfaces that are commonly used in Paradox.
+    /// The <see cref="SiliconStudio.Core"/> namespace contains fundamental classes and interfaces that are commonly used in Xenko.
     /// </summary>
     [System.Runtime.CompilerServices.CompilerGeneratedAttribute]
     class NamespaceDoc

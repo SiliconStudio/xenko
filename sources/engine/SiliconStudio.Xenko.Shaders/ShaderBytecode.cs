@@ -4,7 +4,7 @@ using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// The bytecode of an effect.

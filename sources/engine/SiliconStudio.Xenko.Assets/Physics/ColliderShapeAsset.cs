@@ -8,14 +8,14 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Physics;
+using SiliconStudio.Xenko.Physics;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Assets.Physics
+namespace SiliconStudio.Xenko.Assets.Physics
 {
     [DataContract("ColliderShapeAsset")]
     [AssetDescription(FileExtension)]
@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Assets.Physics
     [Display("Collider Shape", "A physics collider shape")]
     public class ColliderShapeAsset : Asset, IAssetCompileTimeDependencies
     {
-        public const string FileExtension = ".pdxphy";
+        public const string FileExtension = ".xkphy;pdxphy";
 
         public ColliderShapeAsset()
         {

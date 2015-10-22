@@ -5,11 +5,11 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
 
-namespace SiliconStudio.Paradox.Extensions
+namespace SiliconStudio.Xenko.Extensions
 {
     public static class PolySortExtensions
     {

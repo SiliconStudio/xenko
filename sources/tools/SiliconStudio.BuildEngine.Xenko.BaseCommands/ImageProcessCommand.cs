@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.IO;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.TextureConverter;
@@ -74,7 +74,7 @@ namespace SiliconStudio.BuildEngine
                 texTool.Compress(texImage, outputFormat);
 
                 // Save
-                using (var outputImage = texTool.ConvertToParadoxImage(texImage))
+                using (var outputImage = texTool.ConvertToXenkoImage(texImage))
                 {
                     assetManager.Save(OutputUrl, outputImage);
 

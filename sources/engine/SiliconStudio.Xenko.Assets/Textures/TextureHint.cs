@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.Textures
+namespace SiliconStudio.Xenko.Assets.Textures
 {
     /// <summary>
     /// Gives a hint to the texture compressor on the kind of textures to select the appropriate compression format depending

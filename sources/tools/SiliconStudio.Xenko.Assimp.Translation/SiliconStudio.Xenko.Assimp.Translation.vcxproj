@@ -1,10 +1,10 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <SiliconStudioProjectType>Cpp</SiliconStudioProjectType>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <SiliconStudioAssemblyProcessorOptions />
   </PropertyGroup>
   <ItemGroup Label="ProjectConfigurations">
@@ -27,8 +27,8 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{FCDF1B87-1C76-46EB-AD6A-D55EF5F195B8}</ProjectGuid>
-    <RootNamespace>SiliconStudio.Paradox.AssimpNet.NetTranslation</RootNamespace>
-    <ProjectName>SiliconStudio.Paradox.Assimp.Translation</ProjectName>
+    <RootNamespace>SiliconStudio.Xenko.AssimpNet.NetTranslation</RootNamespace>
+    <ProjectName>SiliconStudio.Xenko.Assimp.Translation</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
@@ -148,7 +148,7 @@
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Assimp\SiliconStudio.Paradox.Assimp.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Assimp\SiliconStudio.Xenko.Assimp.csproj">
       <Project>{f61d86b5-7c3d-4441-957d-a0a6d2fa69ca}</Project>
     </ProjectReference>
   </ItemGroup>

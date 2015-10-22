@@ -4,7 +4,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     public partial class EditText
     {

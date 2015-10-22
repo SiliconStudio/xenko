@@ -5,7 +5,7 @@ using System;
 using SharpDX.MediaFoundation;
 using SharpDX.Multimedia;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     partial class AudioEngine
     {

@@ -20,13 +20,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using OpenTK;
 using OpenTK.Graphics;
-using SiliconStudio.Paradox.Graphics.OpenGL;
+using SiliconStudio.Xenko.Graphics.OpenGL;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
@@ -49,7 +49,7 @@ namespace SiliconStudio.Paradox.Games
         public GameContext(OpenTK.GameWindow control, int requestedWidth = 0, int requestedHeight = 0)
         {
             var creationFlags = GraphicsContextFlags.Default;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
 
@@ -70,7 +70,7 @@ namespace SiliconStudio.Paradox.Games
                 int versionMajor, versionMinor;
                 if (RequestedGraphicsProfile == null || RequestedGraphicsProfile.Length == 0)
                 {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     versionMajor = 3;
                     versionMinor = 0;
 #else
@@ -135,13 +135,13 @@ namespace SiliconStudio.Paradox.Games
         {
             try
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Preload proper SDL native library (depending on CPU type)
                 // This is for OpenGL ES on desktop
                 Core.NativeLibrary.PreloadLibrary("SDL2.dll");
 #endif
 
-                var gameWindow = new OpenTK.GameWindow(requestedWidth, requestedHeight, graphicMode, "Paradox Game", GameWindowFlags.Default, DisplayDevice.Default, versionMajor, versionMinor,
+                var gameWindow = new OpenTK.GameWindow(requestedWidth, requestedHeight, graphicMode, "Xenko Game", GameWindowFlags.Default, DisplayDevice.Default, versionMajor, versionMinor,
                     creationFlags);
                 return gameWindow;
             }

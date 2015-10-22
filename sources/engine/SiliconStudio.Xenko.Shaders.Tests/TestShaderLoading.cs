@@ -8,12 +8,12 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 
 using LoggerResult = SiliconStudio.Shaders.Utility.LoggerResult;
 
-namespace SiliconStudio.Paradox.Shaders.Tests
+namespace SiliconStudio.Xenko.Shaders.Tests
 {
     [TestFixture]
     public class TestShaderLoading

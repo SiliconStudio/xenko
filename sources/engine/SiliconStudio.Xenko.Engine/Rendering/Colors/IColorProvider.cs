@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering.Colors
+namespace SiliconStudio.Xenko.Rendering.Colors
 {
     /// <summary>
     /// Defines the interface for describing the color of a light.

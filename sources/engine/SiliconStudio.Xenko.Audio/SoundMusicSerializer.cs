@@ -5,7 +5,7 @@ using System;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     internal class SoundMusicSerializer : ContentSerializerBase<SoundMusic>
     {

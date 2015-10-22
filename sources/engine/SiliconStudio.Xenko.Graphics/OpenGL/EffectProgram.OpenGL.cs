@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,8 +11,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Shaders;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+using SiliconStudio.Xenko.Shaders;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using ProgramParameter = OpenTK.Graphics.ES30.GetProgramParameterName;
@@ -22,15 +22,15 @@ using OpenTK.Graphics.OpenGL;
 #endif
 
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     internal partial class EffectProgram
     {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // The ProgramParameter.ActiveUniformBlocks enum is not defined in OpenTK for OpenGL ES
-        public const ProgramParameter PdxActiveUniformBlocks = (ProgramParameter)0x8A36;
+        public const ProgramParameter XkActiveUniformBlocks = (ProgramParameter)0x8A36;
 #else
-        public const ProgramParameter PdxActiveUniformBlocks = ProgramParameter.ActiveUniformBlocks;
+        public const ProgramParameter XkActiveUniformBlocks = ProgramParameter.ActiveUniformBlocks;
 #endif
 
         private LoggerResult reflectionResult = new LoggerResult();
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private EffectInputSignature inputSignature;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // Fake cbuffer emulation binding
         internal struct Uniform
         {
@@ -115,7 +115,7 @@ namespace SiliconStudio.Paradox.Graphics
                             break;
                     }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     var shaderSources = BinarySerialization.Read<ShaderLevelBytecode>(shader.Data);
                     var shaderSource = GraphicsDevice.IsOpenGLES2 ? shaderSources.DataES2 : shaderSources.DataES3;
 #else
@@ -136,7 +136,7 @@ namespace SiliconStudio.Paradox.Graphics
                     GL.AttachShader(resourceId, shaderId);
                 }
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Mark program as retrievable (necessary for later GL.GetProgramBinary).
                 GL.ProgramParameter(resourceId, AssemblyProgramParameterArb.ProgramBinaryRetrievableHint, 1);
 #endif
@@ -175,7 +175,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 CreateReflection(Reflection, effectBytecode.Stages[0].Stage); // need to regenerate the Uniforms on OpenGL ES
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Allocate a buffer that can cache all the bound parameters
                 BoundUniforms = new byte[Reflection.ConstantBuffers[0].Size];
 #endif
@@ -236,12 +236,12 @@ namespace SiliconStudio.Paradox.Graphics
             GL.UseProgram(resourceId);
 
             int uniformBlockCount;
-            GL.GetProgram(resourceId, PdxActiveUniformBlocks, out uniformBlockCount);
+            GL.GetProgram(resourceId, XkActiveUniformBlocks, out uniformBlockCount);
 
             for (int uniformBlockIndex = 0; uniformBlockIndex < uniformBlockCount; ++uniformBlockIndex)
             {
                 // TODO: get previous name to find te actual constant buffer in the reflexion
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 const int sbCapacity = 128;
                 int length;
                 var sb = new StringBuilder(sbCapacity);
@@ -286,7 +286,7 @@ namespace SiliconStudio.Paradox.Graphics
                 
                 for (int uniformIndex = 0; uniformIndex < uniformIndices.Length; ++uniformIndex)
                 {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     int size;
                     ActiveUniformType aut;
                     GL.GetActiveUniform(resourceId, uniformIndices[uniformIndex], sbCapacity, out length, out size, out aut, sb);
@@ -381,12 +381,12 @@ namespace SiliconStudio.Paradox.Graphics
 
                 int activeUniformCount;
                 GL.GetProgram(resourceId, ProgramParameter.ActiveUniforms, out activeUniformCount);
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 var uniformTypes = new int[activeUniformCount];
                 GL.GetActiveUniforms(resourceId, activeUniformCount, Enumerable.Range(0, activeUniformCount).ToArray(), ActiveUniformParameter.UniformType, uniformTypes);
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (GraphicsDevice.IsOpenGLES2)
                 {
                     // Register global "fake" cbuffer
@@ -494,7 +494,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 for (int activeUniformIndex = 0; activeUniformIndex < activeUniformCount; ++activeUniformIndex)
                 {
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     var uniformType = (ActiveUniformType)uniformTypes[activeUniformIndex];
                     var uniformName = GL.GetActiveUniformName(resourceId, activeUniformIndex);
 #else
@@ -508,7 +508,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                     switch (uniformType)
                     {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                         case ActiveUniformType.Bool:
                         case ActiveUniformType.Int:
                             AddUniform(effectReflection, sizeof(int) * 1, uniformCount, uniformName, uniformType);
@@ -544,7 +544,7 @@ namespace SiliconStudio.Paradox.Graphics
                         case ActiveUniformType.FloatMat3:
                             throw new NotImplementedException();
 #endif
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                         case ActiveUniformType.Sampler1D:
                         case ActiveUniformType.Sampler1DShadow:
 #endif
@@ -627,7 +627,7 @@ namespace SiliconStudio.Paradox.Graphics
             GL.UseProgram(currentProgram);
         }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 
         private void AddUniform(EffectReflection effectReflection, int uniformSize, int uniformCount, string uniformName, ActiveUniformType uniformType)
         {
@@ -800,7 +800,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case ActiveUniformType.Sampler2DArrayShadow:
                 case ActiveUniformType.IntSampler2DArray:
                 case ActiveUniformType.UnsignedIntSampler2DArray:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.Sampler1D:
                 case ActiveUniformType.Sampler1DShadow:
                 case ActiveUniformType.Sampler2DRect:
@@ -815,7 +815,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case ActiveUniformType.UnsignedIntSampler1DArray:
 #endif
                     return 1;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.SamplerBuffer:
                 case ActiveUniformType.IntSamplerBuffer:
                 case ActiveUniformType.UnsignedIntSamplerBuffer:
@@ -883,7 +883,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case ActiveUniformType.UnsignedIntSampler3D:
                 case ActiveUniformType.UnsignedIntSamplerCube:
                 case ActiveUniformType.UnsignedIntSampler2DArray:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.Sampler1D:
                 case ActiveUniformType.Sampler1DShadow:
                 case ActiveUniformType.Sampler2DRect:
@@ -945,7 +945,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case ActiveUniformType.UnsignedIntVec3:
                 case ActiveUniformType.UnsignedIntVec4:
                     return EffectParameterType.UInt;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.Sampler1D:
                 case ActiveUniformType.Sampler1DShadow:
                 case ActiveUniformType.IntSampler1D:
@@ -956,7 +956,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case ActiveUniformType.Sampler2DShadow:
                 case ActiveUniformType.IntSampler2D:
                 case ActiveUniformType.UnsignedIntSampler2D:
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.Sampler2DRect:
                 case ActiveUniformType.Sampler2DRectShadow:
                 case ActiveUniformType.IntSampler2DRect:
@@ -977,7 +977,7 @@ namespace SiliconStudio.Paradox.Graphics
                 case ActiveUniformType.IntSampler2DArray:
                 case ActiveUniformType.UnsignedIntSampler2DArray:
                     return EffectParameterType.Texture2DArray;
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 case ActiveUniformType.Sampler1DArray:
                 case ActiveUniformType.Sampler1DArrayShadow:
                 case ActiveUniformType.IntSampler1DArray:

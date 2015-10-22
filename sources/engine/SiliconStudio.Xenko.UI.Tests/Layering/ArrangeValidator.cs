@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI.Tests.Layering
+namespace SiliconStudio.Xenko.UI.Tests.Layering
 {
     class ArrangeValidator : UIElement
     {

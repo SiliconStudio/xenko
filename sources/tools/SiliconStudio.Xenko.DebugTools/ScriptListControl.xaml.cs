@@ -11,11 +11,11 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Framework.MicroThreading;
-using SiliconStudio.Paradox.DebugTools.ViewModels;
+using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Framework.MicroThreading;
+using SiliconStudio.Xenko.DebugTools.ViewModels;
 
-namespace SiliconStudio.Paradox.DebugTools
+namespace SiliconStudio.Xenko.DebugTools
 {
     /// <summary>
     /// Interaction logic for ScriptListControl.xaml

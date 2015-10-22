@@ -5,9 +5,9 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Utilities;
 
-using SiliconStudio.Paradox.VisualStudio.BuildEngine;
+using SiliconStudio.Xenko.VisualStudio.BuildEngine;
 
-namespace SiliconStudio.Paradox.VisualStudio
+namespace SiliconStudio.Xenko.VisualStudio
 {
     public partial class OutputClassifier
     {
@@ -23,12 +23,12 @@ namespace SiliconStudio.Paradox.VisualStudio
             classificationTypes.Add('F', BuildEngineFatal);
         }
 
-        public const string BuildEngineDebug = "pdx.buildengine.debug";
-        public const string BuildEngineVerbose = "pdx.buildengine.verbose";
-        public const string BuildEngineInfo = "pdx.buildengine.info";
-        public const string BuildEngineWarning = "pdx.buildengine.warning";
-        public const string BuildEngineError = "pdx.buildengine.error";
-        public const string BuildEngineFatal = "pdx.buildengine.fatal";
+        public const string BuildEngineDebug = "xk.buildengine.debug";
+        public const string BuildEngineVerbose = "xk.buildengine.verbose";
+        public const string BuildEngineInfo = "xk.buildengine.info";
+        public const string BuildEngineWarning = "xk.buildengine.warning";
+        public const string BuildEngineError = "xk.buildengine.error";
+        public const string BuildEngineFatal = "xk.buildengine.fatal";
 
         [Export]
         [Name(BuildEngineDebug)]
@@ -64,7 +64,7 @@ namespace SiliconStudio.Paradox.VisualStudio
             [ImportingConstructor]
             public BuildEngineDebugFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Paradox BuildEngine Debug";
+                DisplayName = "Xenko BuildEngine Debug";
                 this.IsBold = false;
                 var classificationColor = colorManager.GetClassificationColor(BuildEngineDebug);
                 ForegroundColor = classificationColor.ForegroundColor;
@@ -82,7 +82,7 @@ namespace SiliconStudio.Paradox.VisualStudio
             [ImportingConstructor]
             public BuildEngineVerboseFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Paradox BuildEngine Verbose";
+                DisplayName = "Xenko BuildEngine Verbose";
                 this.IsBold = false;
                 var classificationColor = colorManager.GetClassificationColor(BuildEngineVerbose);
                 ForegroundColor = classificationColor.ForegroundColor;
@@ -100,7 +100,7 @@ namespace SiliconStudio.Paradox.VisualStudio
             [ImportingConstructor]
             public BuildEngineInfoFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Paradox BuildEngine Info";
+                DisplayName = "Xenko BuildEngine Info";
                 this.IsBold = false;
                 var classificationColor = colorManager.GetClassificationColor(BuildEngineInfo);
                 ForegroundColor = classificationColor.ForegroundColor;
@@ -118,7 +118,7 @@ namespace SiliconStudio.Paradox.VisualStudio
             [ImportingConstructor]
             public BuildEngineWarningFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Paradox BuildEngine Warning";
+                DisplayName = "Xenko BuildEngine Warning";
                 this.IsBold = false;
                 var classificationColor = colorManager.GetClassificationColor(BuildEngineWarning);
                 ForegroundColor = classificationColor.ForegroundColor;
@@ -136,7 +136,7 @@ namespace SiliconStudio.Paradox.VisualStudio
             [ImportingConstructor]
             public BuildEngineErrorFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Paradox BuildEngine Error";
+                DisplayName = "Xenko BuildEngine Error";
                 this.IsBold = true;
                 var classificationColor = colorManager.GetClassificationColor(BuildEngineError);
                 ForegroundColor = classificationColor.ForegroundColor;
@@ -154,7 +154,7 @@ namespace SiliconStudio.Paradox.VisualStudio
             [ImportingConstructor]
             public BuildEngineFatalFormat(OutputClassificationColorManager colorManager)
             {
-                DisplayName = "Paradox BuildEngine Fatal";
+                DisplayName = "Xenko BuildEngine Fatal";
                 this.IsBold = true;
                 var classificationColor = colorManager.GetClassificationColor(BuildEngineFatal);
                 ForegroundColor = classificationColor.ForegroundColor;

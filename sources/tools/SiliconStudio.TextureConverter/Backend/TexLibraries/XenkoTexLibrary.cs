@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.TextureConverter.Requests;
@@ -16,29 +16,29 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 {
 
     /// <summary>
-    /// Class containing the needed native Data used by Paradox
+    /// Class containing the needed native Data used by Xenko
     /// </summary>
-    internal class ParadoxTextureLibraryData : ITextureLibraryData
+    internal class XenkoTextureLibraryData : ITextureLibraryData
     {
         /// <summary>
         /// The <see cref="Image"/> image
         /// </summary>
-        public Image PdxImage;
+        public Image XkImage;
     }
 
 
     /// <summary>
-    /// Peforms requests from <see cref="TextureTool" /> using Paradox framework.
+    /// Peforms requests from <see cref="TextureTool" /> using Xenko framework.
     /// </summary>
-    internal class ParadoxTexLibrary : ITexLibrary
+    internal class XenkoTexLibrary : ITexLibrary
     {
-        private static Logger Log = GlobalLogger.GetLogger("ParadoxTexLibrary");
-        public static readonly string Extension = ".pdx";
+        private static Logger Log = GlobalLogger.GetLogger("XenkoTexLibrary");
+        public static readonly string Extension = ".xk";
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParadoxTexLibrary"/> class.
+        /// Initializes a new instance of the <see cref="XenkoTexLibrary"/> class.
         /// </summary>
-        public ParadoxTexLibrary(){}
+        public XenkoTexLibrary(){}
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources. Nothing in this case
@@ -48,8 +48,8 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
         public void Dispose(TexImage image)
         {
-            ParadoxTextureLibraryData libraryData = (ParadoxTextureLibraryData)image.LibraryData[this];
-            if (libraryData.PdxImage != null) libraryData.PdxImage.Dispose();
+            XenkoTextureLibraryData libraryData = (XenkoTextureLibraryData)image.LibraryData[this];
+            if (libraryData.XkImage != null) libraryData.XkImage.Dispose();
         }
 
         public bool SupportBGRAOrder()
@@ -59,7 +59,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
         public void StartLibrary(TexImage image)
         {
-            ParadoxTextureLibraryData libraryData = new ParadoxTextureLibraryData();
+            XenkoTextureLibraryData libraryData = new XenkoTextureLibraryData();
             image.LibraryData[this] = libraryData;
         }
 
@@ -78,12 +78,12 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         return extension.Equals(".dds") || extension.Equals(Extension);
                     }
 
-                case RequestType.ExportToParadox:
+                case RequestType.ExportToXenko:
                     return true;
 
-                case RequestType.Loading: // Paradox can load dds file or his own format or a Paradox <see cref="Image"/> instance.
+                case RequestType.Loading: // Xenko can load dds file or his own format or a Xenko <see cref="Image"/> instance.
                     LoadingRequest load = (LoadingRequest)request;
-                    if(load.Mode == LoadingRequest.LoadingMode.PdxImage) return true;
+                    if(load.Mode == LoadingRequest.LoadingMode.XkImage) return true;
                     else if(load.Mode == LoadingRequest.LoadingMode.FilePath)
                     {
                         string extension = Path.GetExtension(load.FilePath);
@@ -96,7 +96,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
         public void Execute(TexImage image, IRequest request)
         {
-            ParadoxTextureLibraryData libraryData = image.LibraryData.ContainsKey(this) ? (ParadoxTextureLibraryData)image.LibraryData[this] : null;
+            XenkoTextureLibraryData libraryData = image.LibraryData.ContainsKey(this) ? (XenkoTextureLibraryData)image.LibraryData[this] : null;
 
             switch (request.Type)
             {
@@ -104,8 +104,8 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     Export(image, libraryData, (ExportRequest)request);
                     break;
 
-                case RequestType.ExportToParadox:
-                    ExportToParadox(image, libraryData, (ExportToParadoxRequest)request);
+                case RequestType.ExportToXenko:
+                    ExportToXenko(image, libraryData, (ExportToXenkoRequest)request);
                     break;
 
                 case RequestType.Loading:
@@ -116,7 +116,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
 
 
         /// <summary>
-        /// Exports the specified image into regular DDS file or a Paradox own file format.
+        /// Exports the specified image into regular DDS file or a Xenko own file format.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
@@ -128,11 +128,11 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// </exception>
         /// <exception cref="System.NotImplementedException"></exception>
         /// <exception cref="TexLibraryException">Unsupported file extension.</exception>
-        private void Export(TexImage image, ParadoxTextureLibraryData libraryDataf, ExportRequest request)
+        private void Export(TexImage image, XenkoTextureLibraryData libraryDataf, ExportRequest request)
         {
             Log.Debug("Exporting to " + request.FilePath + " ...");
 
-            Image pdxImage = null;
+            Image xkImage = null;
 
             if (request.MinimumMipMapSize > 1) // Check whether a minimum mipmap size was requested
             {
@@ -159,7 +159,7 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     int SubImagePerArrayElement = image.SubImageArray.Length / image.ArraySize; // number of SubImage in each texture array element.
 
                     // Initializing library native data according to the new mipmap level
-                    pdxImage = Image.New3D(image.Width, image.Height, image.Depth, newMipMapCount, image.Format);
+                    xkImage = Image.New3D(image.Width, image.Height, image.Depth, newMipMapCount, image.Format);
 
                     try
                     {
@@ -168,14 +168,14 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         {
                             for (int j = 0; j < ct; ++j)
                             {
-                                Utilities.CopyMemory(pdxImage.PixelBuffer[ct2].DataPointer, pdxImage.PixelBuffer[j + i * SubImagePerArrayElement].DataPointer, pdxImage.PixelBuffer[j + i * SubImagePerArrayElement].BufferStride);
+                                Utilities.CopyMemory(xkImage.PixelBuffer[ct2].DataPointer, xkImage.PixelBuffer[j + i * SubImagePerArrayElement].DataPointer, xkImage.PixelBuffer[j + i * SubImagePerArrayElement].BufferStride);
                                 ++ct2;
                             }
                         }
                     }
                     catch (AccessViolationException e)
                     {
-                        pdxImage.Dispose();
+                        xkImage.Dispose();
                         Log.Error("Failed to export texture with the mipmap minimum size request. ", e);
                         throw new TextureToolsException("Failed to export texture with the mipmap minimum size request. ", e);
                     }
@@ -198,19 +198,19 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                     switch (image.Dimension)
                     {
                         case TexImage.TextureDimension.Texture1D:
-                            pdxImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
+                            xkImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
                         case TexImage.TextureDimension.Texture2D:
-                            pdxImage = Image.New2D(image.Width, image.Height, newMipMapCount, image.Format, image.ArraySize); break;
+                            xkImage = Image.New2D(image.Width, image.Height, newMipMapCount, image.Format, image.ArraySize); break;
                         case TexImage.TextureDimension.TextureCube:
-                            pdxImage = Image.NewCube(image.Width, newMipMapCount, image.Format); break;
+                            xkImage = Image.NewCube(image.Width, newMipMapCount, image.Format); break;
                     }
-                    if (pdxImage == null)
+                    if (xkImage == null)
                     {
                         Log.Error("Image could not be created.");
                         throw new InvalidOperationException("Image could not be created.");
                     }
 
-                    if (pdxImage.TotalSizeInBytes != dataSize)
+                    if (xkImage.TotalSizeInBytes != dataSize)
                     {
                         Log.Error("Image size different than expected.");
                         throw new InvalidOperationException("Image size different than expected.");
@@ -223,13 +223,13 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                         for (int i = 0; i < image.ArraySize * newMipMapCount; ++i)
                         {
                             if (i == newMipMapCount || (i > newMipMapCount && (i % newMipMapCount == 0))) j += gap;
-                            Utilities.CopyMemory(pdxImage.PixelBuffer[i].DataPointer, image.SubImageArray[j].Data, image.SubImageArray[j].DataSize);
+                            Utilities.CopyMemory(xkImage.PixelBuffer[i].DataPointer, image.SubImageArray[j].Data, image.SubImageArray[j].DataSize);
                             ++j;
                         }
                     }
                     catch (AccessViolationException e)
                     {
-                        pdxImage.Dispose();
+                        xkImage.Dispose();
                         Log.Error("Failed to export texture with the mipmap minimum size request. ", e);
                         throw new TextureToolsException("Failed to export texture with the mipmap minimum size request. ", e);
                     }
@@ -240,36 +240,36 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 switch (image.Dimension)
                 {
                     case TexImage.TextureDimension.Texture1D:
-                        pdxImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
+                        xkImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
                     case TexImage.TextureDimension.Texture2D:
-                        pdxImage = Image.New2D(image.Width, image.Height, image.MipmapCount, image.Format, image.ArraySize); break;
+                        xkImage = Image.New2D(image.Width, image.Height, image.MipmapCount, image.Format, image.ArraySize); break;
                     case TexImage.TextureDimension.Texture3D:
-                        pdxImage = Image.New3D(image.Width, image.Height, image.Depth, image.MipmapCount, image.Format); break;
+                        xkImage = Image.New3D(image.Width, image.Height, image.Depth, image.MipmapCount, image.Format); break;
                     case TexImage.TextureDimension.TextureCube:
-                        pdxImage = Image.NewCube(image.Width, image.MipmapCount, image.Format); break;
+                        xkImage = Image.NewCube(image.Width, image.MipmapCount, image.Format); break;
                 }
-                if (pdxImage == null)
+                if (xkImage == null)
                 {
                     Log.Error("Image could not be created.");
                     throw new InvalidOperationException("Image could not be created.");
                 }
 
-                if (pdxImage.TotalSizeInBytes != image.DataSize)
+                if (xkImage.TotalSizeInBytes != image.DataSize)
                 {
                     Log.Error("Image size different than expected.");
                     throw new InvalidOperationException("Image size different than expected.");
                 }
 
-                Utilities.CopyMemory(pdxImage.DataPointer, image.Data, image.DataSize);
+                Utilities.CopyMemory(xkImage.DataPointer, image.Data, image.DataSize);
             }
 
             using (var fileStream = new FileStream(request.FilePath, FileMode.Create, FileAccess.Write))
             {
                 String extension = Path.GetExtension(request.FilePath);
                 if(extension.Equals(Extension))
-                    pdxImage.Save(fileStream, ImageFileType.Paradox);
+                    xkImage.Save(fileStream, ImageFileType.Xenko);
                 else if (extension.Equals(".dds"))
-                    pdxImage.Save(fileStream, ImageFileType.Dds);
+                    xkImage.Save(fileStream, ImageFileType.Dds);
                 else
                 {
                     Log.Error("Unsupported file extension.");
@@ -277,13 +277,13 @@ namespace SiliconStudio.TextureConverter.TexLibraries
                 }
             }
 
-            pdxImage.Dispose();
+            xkImage.Dispose();
             image.Save(request.FilePath);
         }
 
 
         /// <summary>
-        /// Exports to Paradox <see cref="Image"/>. An instance will be stored in the <see cref="ExportToParadoxRequest"/> instance.
+        /// Exports to Xenko <see cref="Image"/>. An instance will be stored in the <see cref="ExportToXenkoRequest"/> instance.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="libraryData">The library data.</param>
@@ -291,40 +291,40 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <exception cref="System.InvalidOperationException">
         /// Image size different than expected.
         /// or
-        /// Failed to convert texture into Paradox Image.
+        /// Failed to convert texture into Xenko Image.
         /// </exception>
         /// <exception cref="System.NotImplementedException"></exception>
-        private void ExportToParadox(TexImage image, ParadoxTextureLibraryData libraryData, ExportToParadoxRequest request)
+        private void ExportToXenko(TexImage image, XenkoTextureLibraryData libraryData, ExportToXenkoRequest request)
         {
-            Log.Debug("Exporting to Paradox Image ...");
+            Log.Debug("Exporting to Xenko Image ...");
 
-            Image pdxImage = null;
+            Image xkImage = null;
             switch (image.Dimension)
             {
                 case TexImage.TextureDimension.Texture1D:
-                    pdxImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
+                    xkImage = Image.New1D(image.Width, image.MipmapCount, image.Format, image.ArraySize); break;
                 case TexImage.TextureDimension.Texture2D:
-                    pdxImage = Image.New2D(image.Width, image.Height, image.MipmapCount, image.Format, image.ArraySize); break;
+                    xkImage = Image.New2D(image.Width, image.Height, image.MipmapCount, image.Format, image.ArraySize); break;
                 case TexImage.TextureDimension.Texture3D:
-                    pdxImage = Image.New3D(image.Width, image.Height, image.Depth, image.MipmapCount, image.Format); break;
+                    xkImage = Image.New3D(image.Width, image.Height, image.Depth, image.MipmapCount, image.Format); break;
                 case TexImage.TextureDimension.TextureCube:
-                    pdxImage = Image.NewCube(image.Width, image.MipmapCount, image.Format); break;
+                    xkImage = Image.NewCube(image.Width, image.MipmapCount, image.Format); break;
             }
-            if (pdxImage == null)
+            if (xkImage == null)
             {
                 Log.Error("Image could not be created.");
                 throw new InvalidOperationException("Image could not be created.");
             }
 
-            if (pdxImage.TotalSizeInBytes != image.DataSize)
+            if (xkImage.TotalSizeInBytes != image.DataSize)
             {
                 Log.Error("Image size different than expected.");
                 throw new InvalidOperationException("Image size different than expected.");
             }
 
-            Utilities.CopyMemory(pdxImage.DataPointer, image.Data, image.DataSize);
+            Utilities.CopyMemory(xkImage.DataPointer, image.Data, image.DataSize);
 
-            request.PdxImage = pdxImage;
+            request.XkImage = xkImage;
         }
 
 
@@ -335,22 +335,22 @@ namespace SiliconStudio.TextureConverter.TexLibraries
         /// <param name="request">The request.</param>
         private void Load(TexImage image, LoadingRequest request)
         {
-            Log.Debug("Loading Paradox Image ...");
+            Log.Debug("Loading Xenko Image ...");
 
-            var libraryData = new ParadoxTextureLibraryData();
+            var libraryData = new XenkoTextureLibraryData();
             image.LibraryData[this] = libraryData;
 
             Image inputImage;
-            if (request.Mode == LoadingRequest.LoadingMode.PdxImage)
+            if (request.Mode == LoadingRequest.LoadingMode.XkImage)
             {
-                inputImage = request.PdxImage;
+                inputImage = request.XkImage;
             }
             else if (request.Mode == LoadingRequest.LoadingMode.FilePath)
             {
                 using (var fileStream = new FileStream(request.FilePath, FileMode.Open, FileAccess.Read))
                     inputImage = Image.Load(fileStream);
 
-                libraryData.PdxImage = inputImage; // the image need to be disposed by the paradox text library
+                libraryData.XkImage = inputImage; // the image need to be disposed by the xenko text library
             }
             else
             {

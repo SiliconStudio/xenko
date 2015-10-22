@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// A dictionary of associations betweens asset shader urls and <see cref="ObjectId"/>

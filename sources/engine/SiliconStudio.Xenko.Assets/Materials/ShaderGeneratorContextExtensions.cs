@@ -4,7 +4,7 @@
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Xenko.Assets.Materials
 {
     public static class ShaderGeneratorContextExtensions
     {
