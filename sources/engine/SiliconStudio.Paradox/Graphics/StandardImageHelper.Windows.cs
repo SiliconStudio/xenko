@@ -2,18 +2,19 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_RUNTIME_CORECLR
 using System;
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+#if !SILICONSTUDIO_UI_SDL2
 using System.Drawing;
 using System.Drawing.Imaging;
 #endif
 using System.IO;
 using System.Runtime.InteropServices;
+using SDL2;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Graphics
 {
 
-#if SILICONSTUDIO_RUNTIME_CORECLR
+#if SILICONSTUDIO_UI_SDL2
     public sealed class ImageFormat
     {
         // Format IDs
@@ -93,7 +94,7 @@ namespace SiliconStudio.Paradox.Graphics
     {
         public unsafe static Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+#if !SILICONSTUDIO_UI_SDL2
             using (var memoryStream = new UnmanagedMemoryStream((byte*)pSource, size))
             using (var bitmap = (Bitmap)System.Drawing.Image.FromStream(memoryStream))
             {
@@ -127,7 +128,10 @@ namespace SiliconStudio.Paradox.Graphics
                 return image;
             }
 #else
-                // FIXME: Manu: System.Drawing is not available in CoreCLR yet.
+                // FIXME: Manu: The following beginning of code shows that we can read images using SDL.
+                // FIXME: We will do the implementation logic later.
+            IntPtr rw = SDL.SDL_RWFromMemNative((byte *)pSource, size);
+            IntPtr image = SDL_image.IMG_Load_RW(rw, 1);
             return null;
 #endif
 
@@ -165,7 +169,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private static void SaveFromMemory(PixelBuffer[] pixelBuffers, int count, ImageDescription description, Stream imageStream, ImageFormat imageFormat)
         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
+#if !SILICONSTUDIO_UI_SDL2
             using (var bitmap = new Bitmap(description.Width, description.Height))
             {
                 var sourceArea = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
@@ -191,6 +195,8 @@ namespace SiliconStudio.Paradox.Graphics
                 // Save
                 bitmap.Save(imageStream, imageFormat);
             }
+#else
+                // FIXME: Manu: Currently SDL can only save to BMP or PNG.
 #endif
         }
     }
