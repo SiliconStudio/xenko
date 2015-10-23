@@ -32,6 +32,11 @@ namespace SiliconStudio.Assets
         private readonly string originalString;
 
         /// <summary>
+        /// Defines version 0.
+        /// </summary>
+        public static readonly PackageVersion Zero = Parse("0");
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="PackageVersion"/> class.
         /// </summary>
         /// <param name="version">The version.</param>
@@ -205,7 +210,7 @@ namespace SiliconStudio.Assets
             {
                 // Support integer version numbers (i.e. 1 -> 1.0)
                 int versionNumber;
-                if (Int32.TryParse(version, out versionNumber) && versionNumber > 0)
+                if (Int32.TryParse(version, out versionNumber))
                 {
                     semVer = new PackageVersion(new Version(versionNumber, 0));
                     return true;

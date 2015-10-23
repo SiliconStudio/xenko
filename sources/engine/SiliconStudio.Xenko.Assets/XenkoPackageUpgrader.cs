@@ -19,7 +19,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader("Xenko", "1.0.0-beta01", "1.4.0-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.4.0-beta")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-beta"))
             {
                 // Update file extensions with Xenko prefix
                 var legacyAssets = from assetFile in assetFiles
@@ -87,9 +87,24 @@ namespace SiliconStudio.Xenko.Assets
 
                 // Change package extension
                 dependentPackage.FullPath = new UFile(dependentPackage.FullPath.GetFullPathWithoutExtension(), Package.PackageFileExtension);
+
+                // Make sure all assets are upgraded
+                RunAssetUpgradersUntilVersion(log, dependentPackage, XenkoConfig.PackageName, assetFiles, PackageVersion.Parse("1.4.0-beta"));
             }
 
             return true;
+        }
+
+        private void RunAssetUpgradersUntilVersion(ILogger log, Package dependentPackage, string dependencyName, IList<PackageLoadingAssetFile> assetFiles, PackageVersion maxVersion)
+        {
+            foreach (var assetFile in assetFiles)
+            {
+                if (assetFile.Deleted)
+                    continue;
+
+                var context = new AssetMigrationContext(dependentPackage, log);
+                AssetMigration.MigrateAssetIfNeeded(context, assetFile, dependencyName, maxVersion);
+            }
         }
 
         /// <inheritdoc/>

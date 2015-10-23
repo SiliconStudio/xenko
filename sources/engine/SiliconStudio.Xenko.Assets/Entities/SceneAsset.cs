@@ -28,29 +28,30 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [ThumbnailCompiler(PreviewerCompilerNames.SceneThumbnailCompilerQualifiedName)]
-    [AssetFormatVersion(CurrentVersion)]
-    [AssetUpgrader(0, 1, typeof(RemoveSourceUpgrader))]
-    [AssetUpgrader(1, 2, typeof(RemoveBaseUpgrader))]
-    [AssetUpgrader(2, 3, typeof(RemoveModelDrawOrderUpgrader))]
-    [AssetUpgrader(3, 4, typeof(RenameSpriteProviderUpgrader))]
-    [AssetUpgrader(4, 5, typeof(RemoveSpriteExtrusionMethodUpgrader))]
-    [AssetUpgrader(5, 6, typeof(RemoveModelParametersUpgrader))]
-    [AssetUpgrader(6, 7, typeof(RemoveEnabledFromIncompatibleComponent))]
-    [AssetUpgrader(7, 8, typeof(SceneIsNotEntityUpgrader))]
-    [AssetUpgrader(8, 9, typeof(ColliderShapeAssetOnlyUpgrader))]
-    [AssetUpgrader(9, 10, typeof(NoBox2DUpgrader))]
-    [AssetUpgrader(10, 11, typeof(RemoveShadowImportanceUpgrader))]
-    [AssetUpgrader(11, 12, typeof(NewElementLayoutUpgrader))]
-    [AssetUpgrader(12, 13, typeof(NewElementLayoutUpgrader2))]
-    [AssetUpgrader(13, 14, typeof(RemoveGammaTransformUpgrader))]
-    [AssetUpgrader(14, 15, typeof(EntityDesignUpgrader))]
-    [AssetUpgrader(15, 16, typeof(NewElementLayoutUpgrader3))]
-    [AssetUpgrader(16, 17, typeof(NewElementLayoutUpgrader4))]
-    [AssetUpgrader(17, 18, typeof(RemoveSceneEditorCameraSettings))]    
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveSourceUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveBaseUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 2, 3, typeof(RemoveModelDrawOrderUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 3, 4, typeof(RenameSpriteProviderUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 4, 5, typeof(RemoveSpriteExtrusionMethodUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 5, 6, typeof(RemoveModelParametersUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 6, 7, typeof(RemoveEnabledFromIncompatibleComponent))]
+    [AssetUpgrader(XenkoConfig.PackageName, 7, 8, typeof(SceneIsNotEntityUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 8, 9, typeof(ColliderShapeAssetOnlyUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 9, 10, typeof(NoBox2DUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 10, 11, typeof(RemoveShadowImportanceUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 11, 12, typeof(NewElementLayoutUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 12, 13, typeof(NewElementLayoutUpgrader2))]
+    [AssetUpgrader(XenkoConfig.PackageName, 13, 14, typeof(RemoveGammaTransformUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 14, 15, typeof(EntityDesignUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 15, 16, typeof(NewElementLayoutUpgrader3))]
+    [AssetUpgrader(XenkoConfig.PackageName, 16, 17, typeof(NewElementLayoutUpgrader4))]
+    [AssetUpgrader(XenkoConfig.PackageName, 17, 18, typeof(RemoveSceneEditorCameraSettings))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.18", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAsset
     {
-        private const int CurrentVersion = 18;
+        private const string CurrentVersion = "1.4.0-beta";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
 
@@ -69,7 +70,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class RemoveSourceUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 if (asset.Source != null)
                     asset.Source = DynamicYamlEmpty.Default;
@@ -80,27 +81,20 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class RemoveBaseUpgrader : IAssetUpgrader
         {
-            public void Upgrade(AssetMigrationContext context, int currentVersion, int targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
+            public void Upgrade(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
             {
                 dynamic asset = new DynamicYamlMapping(yamlAssetNode);
                 var baseBranch = asset["~Base"];
                 if (baseBranch != null)
                     asset["~Base"] = DynamicYamlEmpty.Default;
 
-                SetSerializableVersion(asset, targetVersion);
-            }
-
-            private static void SetSerializableVersion(dynamic asset, int value)
-            {
-                asset.SerializedVersion = value;
-                // Ensure that it is stored right after the asset Id
-                asset.MoveChild("SerializedVersion", asset.IndexOf("Id") + 1);
+                AssetUpgraderBase.SetSerializableVersion(asset, dependencyName, targetVersion);
             }
         }
 
         class RemoveModelDrawOrderUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -116,7 +110,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class RenameSpriteProviderUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -141,7 +135,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class RemoveSpriteExtrusionMethodUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -157,7 +151,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class RemoveModelParametersUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -173,7 +167,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class RemoveEnabledFromIncompatibleComponent : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -200,7 +194,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class SceneIsNotEntityUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 // Transform RootEntity in RootEntities
                 var rootEntityFieldIndex = asset.Hierarchy.IndexOf("RootEntity");
@@ -244,7 +238,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class ColliderShapeAssetOnlyUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -274,7 +268,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class NoBox2DUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -306,7 +300,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class RemoveShadowImportanceUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -358,7 +352,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class NewElementLayoutUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -411,7 +405,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class NewElementLayoutUpgrader2 : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -439,7 +433,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private class RemoveGammaTransformUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
 
@@ -489,7 +483,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class EntityDesignUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var entities = asset.Hierarchy.Entities;
                 var designEntities = new YamlSequenceNode();
@@ -507,7 +501,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class NewElementLayoutUpgrader3 : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -546,7 +540,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class NewElementLayoutUpgrader4 : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var hierarchy = asset.Hierarchy;
                 var entities = (DynamicYamlArray)hierarchy.Entities;
@@ -570,7 +564,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class RemoveSceneEditorCameraSettings : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 asset.Hierarchy.SceneSettings.EditorSettings.Camera = DynamicYamlEmpty.Default;
             }

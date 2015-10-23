@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 
@@ -26,7 +27,13 @@ namespace SiliconStudio.Assets
         {
             Id = Guid.NewGuid();
             Tags = new TagCollection();
-            SerializedVersion = AssetRegistry.GetCurrentFormatVersion(GetType());
+
+            // Initializse asset with default versions
+            var defaultPackageVersion = AssetRegistry.GetCurrentFormatVersions(GetType());
+            if (defaultPackageVersion != null)
+            {
+                SerializedVersion = new Dictionary<string, PackageVersion>(defaultPackageVersion);
+            }
         }
 
         /// <summary>
@@ -63,10 +70,11 @@ namespace SiliconStudio.Assets
         /// Gets or sets the version number for this asset, used internally when migrating assets.
         /// </summary>
         /// <value>The version.</value>
-        [DataMember(-1000)]
+        [DataMember(-1000, DataMemberMode.Assign)]
+        [DataStyle(DataStyle.Compact)]
         [Browsable(false)]
-        [DefaultValue(0)]
-        public int SerializedVersion { get;  set; }
+        [DefaultValue(null)]
+        public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
 
         /// <summary>
         /// Gets or sets the base.

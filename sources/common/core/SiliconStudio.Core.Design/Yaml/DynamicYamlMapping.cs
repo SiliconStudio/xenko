@@ -84,8 +84,14 @@ namespace SiliconStudio.Core.Yaml
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            result = GetValue(new YamlScalarNode(binder.Name));
-            return true;
+            YamlNode tempNode;
+            if (node.Children.TryGetValue(new YamlScalarNode(binder.Name), out tempNode))
+            {
+                result = ConvertToDynamic(tempNode);
+                return true;
+            }
+            result = null;
+            return false;
         }
 
         public override bool TrySetMember(SetMemberBinder binder, object value)

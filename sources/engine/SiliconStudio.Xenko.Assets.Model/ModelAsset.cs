@@ -21,8 +21,9 @@ namespace SiliconStudio.Xenko.Assets.Model
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true, Priority = 10000)]
     [Display(190, "Model", "A 3D model")]
-    [AssetFormatVersion(2)]
-    [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     public sealed class ModelAsset : AssetImportTracked, IModelAsset
     {
         /// <summary>
@@ -159,7 +160,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 foreach (var modelMaterial in asset.Materials)
                 {
