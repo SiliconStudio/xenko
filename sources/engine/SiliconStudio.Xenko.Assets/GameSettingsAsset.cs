@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
     [DataContract("GameSettingsAsset")]
-    [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true)]
+    [AssetDescription(FileExtensions, false, AlwaysMarkAsRoot = true)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
     [ThumbnailCompiler(PreviewerCompilerNames.GameSettingsThumbnailCompilerQualifiedName)]
@@ -33,7 +33,9 @@ namespace SiliconStudio.Xenko.Assets
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkgamesettings;.pdxgamesettings";
+        public const string FileExtension = ".xkgamesettings";
+
+        public const string FileExtensions = FileExtension + ";.pdxgamesettings";
 
         public const string GameSettingsLocation = GameSettings.AssetUrl;
         public const string DefaultSceneLocation = "MainScene";
