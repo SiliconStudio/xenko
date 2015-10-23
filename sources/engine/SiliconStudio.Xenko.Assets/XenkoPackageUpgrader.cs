@@ -145,16 +145,6 @@ namespace SiliconStudio.Xenko.Assets
             }
         }
 
-        public override bool IsProjectUpgradeRequired(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
-        {
-            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
-            {
-                return true;
-            }
-
-            return false;
-        }
-
         public override bool UpgradeBeforeAssembliesLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
         {
             if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
