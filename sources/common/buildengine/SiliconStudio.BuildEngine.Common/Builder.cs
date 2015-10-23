@@ -21,47 +21,9 @@ using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.BuildEngine
 {
-    public class StepCounter
-    {
-        private readonly int[] stepResults;
-        public int Total { get; private set; }
-
-        public StepCounter()
-        {
-            stepResults = new int[Enum.GetValues(typeof(ResultStatus)).Length];
-        }
-
-        public void AddStepResult(ResultStatus result)
-        {
-            lock (stepResults)
-            {
-                ++Total;
-                ++stepResults[(int)result];
-            }
-        }
-
-        public int Get(ResultStatus result)
-        {
-            lock (stepResults)
-            {
-                return stepResults[(int)result];
-            }
-        }
-
-        public void Clear()
-        {
-            lock (stepResults)
-            {
-                Total = 0;
-                foreach (var value in Enum.GetValues(typeof(ResultStatus)))
-                    stepResults[(int)value] = 0;
-            }
-        }
-    }
-
     public class Builder : IDisposable
     {
-        public const int ExpectedVersion = 3;
+        public const int ExpectedVersion = 4;
         public static readonly string DoNotPackTag = "DoNotPack";
         public static readonly string DoNotCompressTag = "DoNotCompress";
 
@@ -194,7 +156,7 @@ namespace SiliconStudio.BuildEngine
         /// <summary>
         /// The full path of the index file from the build directory.
         /// </summary>
-        private string IndexFileFullPath => indexName != null ? VirtualFileSystem.ApplicationDatabasePath + indexName : null;
+        private string IndexFileFullPath => indexName != null ? VirtualFileSystem.ApplicationDatabasePath + VirtualFileSystem.DirectorySeparatorChar + indexName : null;
 
         public Builder(ILogger logger, string buildPath, string buildProfile, string indexName)
         {
@@ -216,63 +178,6 @@ namespace SiliconStudio.BuildEngine
             MaxParallelProcesses = ThreadCount;
             BuilderId = Guid.NewGuid();
             InitialVariables = new Dictionary<string, string>();
-
-            SetupBuildPath(buildPath, indexName);
-
-            var objectDatabase = IndexFileCommand.ObjectDatabase;
-
-            // Check current database version, and erase it if too old
-            int currentVersion = 0;
-            var versionFile = Path.Combine(VirtualFileSystem.GetAbsolutePath(VirtualFileSystem.ApplicationDatabasePath), "version");
-            if (File.Exists(versionFile))
-            {
-                try
-                {
-                    var versionText = File.ReadAllText(versionFile);
-                    currentVersion = int.Parse(versionText);
-                }
-                catch (Exception e)
-                {
-                    e.Ignore();
-                }
-            }
-
-            if (currentVersion != ExpectedVersion)
-            {
-                var looseObjects = objectDatabase.EnumerateLooseObjects().ToArray();
-
-                if (looseObjects.Length > 0)
-                {
-                    Logger.Info("Database version number has been updated from {0} to {1}, erasing all objects...", currentVersion, ExpectedVersion);
-
-                    // Database version has been updated, let's clean it
-                    foreach (var objectId in looseObjects)
-                    {
-                        try
-                        {
-                            objectDatabase.Delete(objectId);
-                        }
-                        catch (IOException)
-                        {
-                        }
-                    }
-                }
-
-                // Create directory
-                File.WriteAllText(versionFile, ExpectedVersion.ToString(CultureInfo.InvariantCulture));
-            }
-
-            // Prepare data base directories
-            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
-            var databasePathSplits = VirtualFileSystem.ApplicationDatabasePath.Split('/');
-            var accumulatorPath = "/";
-            foreach (var pathPart in databasePathSplits.Where(x=>x!=""))
-            {
-                accumulatorPath += pathPart + "/";
-                VirtualFileSystem.CreateDirectory(accumulatorPath);
-
-                accumulatorPath += "";
-            }
         }
 
         public static void SetupBuildPath(string buildPath, string indexName)
@@ -280,7 +185,10 @@ namespace SiliconStudio.BuildEngine
             // Mount build path
             ((FileSystemProvider)VirtualFileSystem.ApplicationData).ChangeBasePath(buildPath);
             if (IndexFileCommand.ObjectDatabase == null)
-                IndexFileCommand.ObjectDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, indexName, null, false); // note: this has to be done after VFS.ChangeBasePath
+            {
+                // Note: this has to be done after VFS.ChangeBasePath
+                IndexFileCommand.ObjectDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, indexName, null, false);
+            }
         }
 
         public static void ReleaseBuildPath()
@@ -546,7 +454,7 @@ namespace SiliconStudio.BuildEngine
             }
         }
 
-        public void RunUntilEnd()
+        private void RunUntilEnd()
         {
             foreach (var threadMonitor in threadMonitors)
                 threadMonitor.RegisterThread(Thread.CurrentThread.ManagedThreadId);
@@ -584,13 +492,7 @@ namespace SiliconStudio.BuildEngine
         {
             if (!mergeWithCurrentIndexFile)
             {
-                try
-                {
-                    VirtualFileSystem.FileDelete(IndexFileFullPath);
-                }
-                catch (IOException)
-                {
-                }
+                VirtualFileSystem.FileDelete(IndexFileFullPath);
             }
 
             using (var indexFile = AssetIndexMap.NewTool(indexName))
@@ -616,6 +518,12 @@ namespace SiliconStudio.BuildEngine
         /// </summary>
         public BuildResultCode Run(Mode mode, bool writeIndexFile = true, bool enableMonitor = true)
         {
+            // When we setup the database ourself we have to take responsibility to close it after
+            var shouldCloseDatabase = IndexFileCommand.ObjectDatabase == null;
+            SetupBuildPath(buildPath, indexName);
+
+            PreRun();
+
             runMode = mode;
 
             if (IsRunning)
@@ -738,7 +646,71 @@ namespace SiliconStudio.BuildEngine
             resultMap = null;
             IsRunning = false;
 
+            if (shouldCloseDatabase && IndexFileCommand.ObjectDatabase != null)
+            {
+                IndexFileCommand.ObjectDatabase.Dispose();
+                IndexFileCommand.ObjectDatabase = null;
+            }
+
             return result;
+        }
+
+        private void PreRun()
+        {
+            var objectDatabase = IndexFileCommand.ObjectDatabase;
+
+            // Check current database version, and erase it if too old
+            int currentVersion = 0;
+            var versionFile = Path.Combine(VirtualFileSystem.GetAbsolutePath(VirtualFileSystem.ApplicationDatabasePath), "version");
+            if (File.Exists(versionFile))
+            {
+                try
+                {
+                    var versionText = File.ReadAllText(versionFile);
+                    currentVersion = int.Parse(versionText);
+                }
+                catch (Exception e)
+                {
+                    e.Ignore();
+                }
+            }
+
+            if (currentVersion != ExpectedVersion)
+            {
+                var looseObjects = objectDatabase.EnumerateLooseObjects().ToArray();
+
+                if (looseObjects.Length > 0)
+                {
+                    Logger.Info("Database version number has been updated from {0} to {1}, erasing all objects...", currentVersion, ExpectedVersion);
+
+                    // Database version has been updated, let's clean it
+                    foreach (var objectId in looseObjects)
+                    {
+                        try
+                        {
+                            objectDatabase.Delete(objectId);
+                        }
+                        catch (IOException)
+                        {
+                        }
+                    }
+                }
+
+                // Create directory
+                File.WriteAllText(versionFile, ExpectedVersion.ToString(CultureInfo.InvariantCulture));
+            }
+
+            // Prepare data base directories
+            AssetManager.GetFileProvider = () => IndexFileCommand.DatabaseFileProvider;
+            var databasePathSplits = VirtualFileSystem.ApplicationDatabasePath.Split('/');
+            var accumulatorPath = "/";
+            foreach (var pathPart in databasePathSplits.Where(x => x != ""))
+            {
+                accumulatorPath += pathPart + "/";
+                VirtualFileSystem.CreateDirectory(accumulatorPath);
+
+                accumulatorPath += "";
+            }
         }
     }
 }

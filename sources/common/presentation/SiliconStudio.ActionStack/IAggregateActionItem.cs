@@ -22,9 +22,9 @@ namespace SiliconStudio.ActionStack
         bool ContainsAction(IActionItem actionItem);
 
         /// <summary>
-        /// Gets all action items contained in this aggregate that are not <see cref="IAggregateActionItem"/> themselves, recursively.
+        /// Gets all action items contained in this aggregate (including itself), recursively.
         /// </summary>
-        /// <returns>An enumeration of all action items contained in this aggregate that are not <see cref="IAggregateActionItem"/> themselves, recursively.</returns>
+        /// <returns>An enumeration of all action items contained in this aggregate (including itself), recursively.</returns>
         IEnumerable<IActionItem> GetInnerActionItems();
     }
 }

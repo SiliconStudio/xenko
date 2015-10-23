@@ -25,7 +25,7 @@ Hierarchy:
                 Components:
                     LightComponent.Key:
                         Type: !LightAmbient
-                            Color: !LightColorRgb
+                            Color: !ColorRgbProvider
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
                     TransformComponent.Key:
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}

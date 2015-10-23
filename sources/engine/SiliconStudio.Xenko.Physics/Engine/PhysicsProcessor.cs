@@ -9,6 +9,7 @@ using SiliconStudio.Xenko.Games;
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
@@ -24,7 +25,7 @@ namespace SiliconStudio.Xenko.Physics
         }
 
         private readonly List<PhysicsElementBase> elements = new List<PhysicsElementBase>();
-        private readonly List<PhysicsElementBase> boneElements = new List<PhysicsElementBase>();
+        private readonly List<PhysicsSkinnedElementBase> boneElements = new List<PhysicsSkinnedElementBase>();
         private readonly List<PhysicsElementBase> characters = new List<PhysicsElementBase>();
 
         private Bullet2PhysicsSystem physicsSystem;
@@ -32,6 +33,8 @@ namespace SiliconStudio.Xenko.Physics
 
         public static ProfilingKey CharactersProfilingKey = new ProfilingKey(Simulation.SimulationProfilingKey, "Characters");
         private ProfilingState charactersProfilingState;
+
+        private PhysicsDebugShapeRendering debugShapeRendering;
 
         public PhysicsProcessor()
             : base(PhysicsComponent.Key, TransformComponent.Key)
@@ -45,10 +48,11 @@ namespace SiliconStudio.Xenko.Physics
             {
                 PhysicsComponent = entity.Get(PhysicsComponent.Key),
                 TransformComponent = entity.Get(TransformComponent.Key),
-                ModelComponent = entity.Get(ModelComponent.Key),
+                ModelComponent = entity.Get(ModelComponent.Key)
             };
 
             data.PhysicsComponent.Simulation = simulation;
+            data.PhysicsComponent.DebugShapeRendering = debugShapeRendering;
 
             return data;
         }
@@ -72,6 +76,14 @@ namespace SiliconStudio.Xenko.Physics
             {
                 element.UpdateBoneTransformation(ref physicsTransform);
             }
+
+            if (element.DebugEntity == null) return;
+
+            Vector3 scale, pos;
+            Quaternion rot;
+            physicsTransform.Decompose(out scale, out rot, out pos);
+            element.DebugEntity.Transform.Position = pos;
+            element.DebugEntity.Transform.Rotation = rot;
         }
 
         //This is valid for Dynamic rigidbodies (called once at initialization)
@@ -86,6 +98,14 @@ namespace SiliconStudio.Xenko.Physics
             {
                 element.DeriveBonePhysicsTransformation(out physicsTransform);
             }
+
+            if (element.DebugEntity == null) return;
+
+            Vector3 scale, pos;
+            Quaternion rot;
+            physicsTransform.Decompose(out scale, out rot, out pos);
+            element.DebugEntity.Transform.Position = pos;
+            element.DebugEntity.Transform.Rotation = rot;
         }
 
         private void NewElement(PhysicsElementBase element, AssociatedData data, Entity entity)
@@ -266,10 +286,10 @@ namespace SiliconStudio.Xenko.Physics
             }
 
             elements.Add(element);
-            if (element.BoneIndex != -1) boneElements.Add(element);
+            if (element.BoneIndex != -1) boneElements.Add(skinnedElement);
         }
 
-        private void DeleteElement(PhysicsElementBase element, bool now = false)
+        private void DeleteElement(PhysicsElementBase element)
         {
             element.Data = null;
 
@@ -279,7 +299,7 @@ namespace SiliconStudio.Xenko.Physics
             var toDispose = new List<IDisposable>();
 
             elements.Remove(element);
-            if (element.BoneIndex != -1) boneElements.Remove(element);
+            if (element.BoneIndex != -1) boneElements.Remove((PhysicsSkinnedElementBase)element);
 
             switch (element.Type)
             {
@@ -377,7 +397,7 @@ namespace SiliconStudio.Xenko.Physics
             {
                 if (element == null) continue;
                 var e = (PhysicsElementBase)element;
-                DeleteElement(e, true);
+                DeleteElement(e);
             }
         }
 
@@ -412,6 +432,11 @@ namespace SiliconStudio.Xenko.Physics
 
             simulation = physicsSystem.Create(this);
 
+            if (Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice != null)
+            {
+                debugShapeRendering = new PhysicsDebugShapeRendering(Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice);
+            }
+
             //setup debug device and debug shader
             //var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
             //Simulation.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
@@ -428,92 +453,6 @@ namespace SiliconStudio.Xenko.Physics
             physicsSystem.Release(this);
         }
 
-        /*
-        private static void DrawDebugCompound(ref Matrix viewProj, CompoundColliderShape compound, PhysicsElement element)
-        {
-            for (var i = 0; i < compound.Count; i++)
-            {
-                var subShape = compound[i];
-                switch (subShape.Type)
-                {
-                    case ColliderShapeTypes.StaticPlane:
-                        continue;
-                    case ColliderShapeTypes.Compound:
-                        DrawDebugCompound(ref viewProj, (CompoundColliderShape)compound[i], element);
-                        break;
-
-                    default:
-                        {
-                            var physTrans = Matrix.Multiply(subShape.PositiveCenterMatrix, element.Collider.PhysicsWorldTransform);
-
-                            //must account collider shape scaling
-                            Matrix worldTrans;
-                            Matrix.Multiply(ref subShape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
-
-                            Simulation.DebugEffect.WorldViewProj = worldTrans * viewProj;
-                            Simulation.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
-                            Simulation.DebugEffect.UseUv = subShape.Type != ColliderShapeTypes.ConvexHull;
-
-                            Simulation.DebugEffect.Apply();
-
-                            subShape.DebugPrimitive.Draw();
-                        }
-                        break;
-                }
-            }
-        }
-
-        private void DebugShapesDraw(RenderContext context)
-        {
-            if (    !Simulation.CreateDebugPrimitives ||
-                    !Simulation.RenderDebugPrimitives ||
-                    Simulation.DebugGraphicsDevice == null ||
-                    Simulation.DebugEffect == null)
-                return;
-
-            Matrix viewProj;
-            if (context.Parameters.ContainsKey(TransformationKeys.View) && context.Parameters.ContainsKey(TransformationKeys.Projection))
-            {
-                viewProj = context.Parameters.Get(TransformationKeys.View) * context.Parameters.Get(TransformationKeys.Projection);
-            }
-            else
-            {
-                return;
-            }
-
-            var rasterizers = Simulation.DebugGraphicsDevice.RasterizerStates;
-            Simulation.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullNone);
-
-            foreach (var element in elements)
-            {
-                var shape = element.Shape.Shape;
-
-                if (shape.Type == ColliderShapeTypes.Compound) //multiple shapes
-                {
-                    DrawDebugCompound(ref viewProj, (CompoundColliderShape)shape, element);
-                }
-                else if (shape.Type != ColliderShapeTypes.StaticPlane) //a single shape
-                {
-                    var physTrans = element.Collider.PhysicsWorldTransform;
-
-                    //must account collider shape scaling
-                    Matrix worldTrans;
-                    Matrix.Multiply(ref element.Shape.Shape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
-
-                    Simulation.DebugEffect.WorldViewProj = worldTrans * viewProj;
-                    Simulation.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
-                    Simulation.DebugEffect.UseUv = shape.Type != ColliderShapeTypes.ConvexHull;
-
-                    Simulation.DebugEffect.Apply();
-
-                    shape.DebugPrimitive.Draw();
-                }
-            }
-
-            Simulation.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullBack);
-        }
-        */
-
         internal void UpdateCharacters()
         {
             charactersProfilingState.Begin();
@@ -524,6 +463,20 @@ namespace SiliconStudio.Xenko.Physics
 
                 var worldTransform = element.Collider.PhysicsWorldTransform;
                 element.UpdateTransformationComponent(ref worldTransform);
+
+                if (element.DebugEntity != null)
+                {
+                    Vector3 scale, pos;
+                    Quaternion rot;
+                    worldTransform.Decompose(out scale, out rot, out pos);
+                    element.DebugEntity.Transform.Position = pos;
+                    element.DebugEntity.Transform.Rotation = rot;
+                }
+
+                charactersProfilingState.Mark();
+            charactersProfilingState.Begin();
+                if(!element.Collider.Enabled) continue;
+
                 charactersProfilingState.Mark();
             }
             charactersProfilingState.End();
@@ -540,6 +493,15 @@ namespace SiliconStudio.Xenko.Physics
                 if ((element.Collider as RigidBody) != null && element.RigidBody.Type == RigidBodyTypes.Dynamic)
                 {
                     model.Skeleton.NodeTransformations[element.BoneIndex].WorldMatrix = element.BoneWorldMatrixOut;
+
+                    if (element.DebugEntity != null)
+                    {
+                        Vector3 scale, pos;
+                        Quaternion rot;
+                        element.BoneWorldMatrixOut.Decompose(out scale, out rot, out pos);
+                        element.DebugEntity.Transform.Position = pos;
+                        element.DebugEntity.Transform.Rotation = rot;
+                    }
                 }
             }
         }
