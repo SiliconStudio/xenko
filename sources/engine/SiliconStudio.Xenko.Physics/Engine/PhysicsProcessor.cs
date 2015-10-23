@@ -9,6 +9,7 @@ using SiliconStudio.Xenko.Games;
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
