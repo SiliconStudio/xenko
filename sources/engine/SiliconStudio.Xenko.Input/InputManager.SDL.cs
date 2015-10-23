@@ -24,9 +24,6 @@ namespace SiliconStudio.Xenko.Input
             HasPointer = true;
 
             _pointerClock = new Stopwatch();
-
-            GamePadFactories.Add(new XInputGamePadFactory());
-            GamePadFactories.Add(new DirectInputGamePadFactory());
         }
 
         public override void Initialize()
