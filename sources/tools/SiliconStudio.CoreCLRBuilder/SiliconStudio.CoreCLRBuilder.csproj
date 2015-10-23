@@ -3,7 +3,7 @@
   <PropertyGroup>
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
   </PropertyGroup>
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -15,7 +15,7 @@
     <AssemblyName>SiliconStudio.CoreCLRBuilder</AssemblyName>
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)' == 'Debug'">
     <Prefer32Bit>true</Prefer32Bit>
