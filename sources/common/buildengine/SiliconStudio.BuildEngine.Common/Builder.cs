@@ -23,7 +23,7 @@ namespace SiliconStudio.BuildEngine
 {
     public class Builder : IDisposable
     {
-        public const int ExpectedVersion = 3;
+        public const int ExpectedVersion = 4;
         public static readonly string DoNotPackTag = "DoNotPack";
         public static readonly string DoNotCompressTag = "DoNotCompress";
 
