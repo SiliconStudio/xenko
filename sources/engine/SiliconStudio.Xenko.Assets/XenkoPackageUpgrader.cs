@@ -145,6 +145,16 @@ namespace SiliconStudio.Xenko.Assets
             }
         }
 
+        public override bool IsProjectUpgradeRequired(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
+        {
+            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public override bool UpgradeBeforeAssembliesLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
         {
             if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
@@ -170,11 +180,15 @@ namespace SiliconStudio.Xenko.Assets
         {
             // Upgrade .csproj file
             var fileContents = File.ReadAllText(projectPath);
-            fileContents = fileContents.Replace(".pdxpkg", ".xkpkg");
-            fileContents = fileContents.Replace("Paradox", "Xenko");
+            var newFileContents = fileContents.Replace(".pdxpkg", ".xkpkg");
+            newFileContents = fileContents.Replace("Paradox", "Xenko");
             //fileContents = fileContents.Replace("$(SiliconStudioParadoxDir)", "$(SiliconStudioXenkoDir)");
             //fileContents = fileContents.Replace("$(EnsureSiliconStudioParadoxInstalled)", "$(EnsureSiliconStudioXenkoInstalled)");
-            File.WriteAllText(projectPath, fileContents);
+
+            if (newFileContents != fileContents)
+            {
+                File.WriteAllText(projectPath, newFileContents);
+            }
 
             // Upgrade source code
             var project = await workspace.OpenProjectAsync(projectPath.ToWindowsPath());
