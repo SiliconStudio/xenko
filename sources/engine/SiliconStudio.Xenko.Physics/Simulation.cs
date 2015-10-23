@@ -60,10 +60,6 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public static bool DisableSimulation = false;
 
-        public static bool CreateDebugShapes = false;
-
-        public static bool RenderDebugShapes = false;
-
         public delegate PhysicsEngineFlags OnSimulationCreationDelegate();
 
         /// <summary>
