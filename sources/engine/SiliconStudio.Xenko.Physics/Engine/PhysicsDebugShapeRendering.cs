@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Physics
 
             var debugEntity = new Entity();
 
-            var colliderEntity = CreateChildEntity(physicsElement.ColliderShape, physicsElement.Type);
+            var colliderEntity = CreateChildEntity(physicsElement.ColliderShape, physicsElement.Type, true);
             if (colliderEntity == null) return null;
 
             debugEntity.AddChild(colliderEntity);
