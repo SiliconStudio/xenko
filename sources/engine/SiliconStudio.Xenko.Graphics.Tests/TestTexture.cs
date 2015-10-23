@@ -351,6 +351,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             foreach (ImageFileType sourceFormat in Enum.GetValues(typeof(ImageFileType)))
             {
+                if(Platform.Type == PlatformType.Android && (
+                    sourceFormat == ImageFileType.Xenko || sourceFormat == ImageFileType.Dds || // TODO remove this when mipmap copy is supported on OpenGL by the engine.
+                    sourceFormat == ImageFileType.Tiff)) // TODO remove when the tiff format is supported on android.
+                    continue; 
+
                 RunDrawTest(
                     game =>
                     {
