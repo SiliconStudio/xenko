@@ -11,7 +11,7 @@ namespace SiliconStudio.Core.Updater
             Value = value;
         }
 
-        public UpdateObjectData(int value) : this()
+        public UpdateObjectData(object value) : this()
         {
             Condition = 1;
             Value = value;
