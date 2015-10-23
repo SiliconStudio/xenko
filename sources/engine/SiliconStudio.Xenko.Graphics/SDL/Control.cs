@@ -243,7 +243,10 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     return FormBorderStyle.FixedSingle;
                 }
             }
-            set { throw new NotImplementedException("Cannot change the border style after creation");
+            set
+            {
+                // FIXME: How to implement this since this is being called.
+                // throw new NotImplementedException("Cannot change the border style after creation");
             }
         }
 
