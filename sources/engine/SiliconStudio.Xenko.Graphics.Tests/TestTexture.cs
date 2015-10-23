@@ -373,14 +373,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         Texture texture;
                         using (var inStream = game.Asset.OpenAsStream(filePath, StreamFlags.None))
                             texture = Texture.Load(device, inStream);
-
-                        // Copy GPU to GPU
-                        var texture2 = texture.Clone();
-                        device.Copy(texture, texture2);
-
-                        // dispose original
-                        texture.Dispose();
-                        texture = texture2;
                             
                         var tempStream = new MemoryStream();
                         texture.Save(tempStream, intermediateFormat);
