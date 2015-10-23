@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
                 // Create the SDL window and then extract the native handle.
             SdlHandle = SDL.SDL_CreateWindow(title, SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 640, 480,
-                SDL.SDL_WindowFlags.SDL_WINDOW_SHOWN | SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE);
+                SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN);
 
             if (SdlHandle == IntPtr.Zero)
             {
@@ -93,11 +93,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             }
             set
             {
-                if (SDL.SDL_SetWindowFullscreen(SdlHandle, (uint) SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN) != 0)
-                {
-                    // Handle error!
-                }
-                    
+                SDL.SDL_SetWindowFullscreen(SdlHandle, (uint) (value ? SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN : 0));
             }
         }
 
