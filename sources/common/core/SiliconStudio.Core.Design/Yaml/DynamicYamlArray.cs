@@ -12,7 +12,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// Dynamic version of <see cref="YamlSequenceNode"/>.
     /// </summary>
-    public class DynamicYamlArray : DynamicYamlObject, IEnumerable
+    public class DynamicYamlArray : DynamicYamlObject, IDynamicYamlNode, IEnumerable
     {
         internal YamlSequenceNode node;
 
@@ -23,6 +23,8 @@ namespace SiliconStudio.Core.Yaml
                 return node;
             }
         }
+
+        YamlNode IDynamicYamlNode.Node => Node;
 
         public DynamicYamlArray(YamlSequenceNode node)
         {

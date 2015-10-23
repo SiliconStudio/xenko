@@ -9,7 +9,7 @@ namespace SiliconStudio.Core.Yaml
 {
     public static class DynamicYamlExtensions
     {
-        public static T ConvertTo<T>(DynamicYamlMapping yamObject)
+        public static T ConvertTo<T>(IDynamicYamlNode yamObject)
         {
             using (var memoryStream = new MemoryStream())
             {
@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.Yaml
             }
         }
 
-        public static DynamicYamlMapping ConvertFrom<T>(T dataObject)
+        public static IDynamicYamlNode ConvertFrom<T>(T dataObject)
         {
             using (var stream = new MemoryStream())
             {
@@ -42,7 +42,7 @@ namespace SiliconStudio.Core.Yaml
                 {
                     var yamlStream = new YamlStream();
                     yamlStream.Load(reader);
-                    return new DynamicYamlMapping((YamlMappingNode)yamlStream.Documents[0].RootNode);
+                    return (IDynamicYamlNode)DynamicYamlObject.ConvertToDynamic(yamlStream.Documents[0].RootNode);
                 }
             }
         }

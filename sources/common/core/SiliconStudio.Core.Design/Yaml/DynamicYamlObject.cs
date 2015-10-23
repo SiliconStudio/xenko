@@ -27,7 +27,7 @@ namespace SiliconStudio.Core.Yaml
             return new YamlScalarNode(String.Format(CultureInfo.InvariantCulture, "{0}", obj));
         }
 
-        protected static object ConvertToDynamic(object obj)
+        public static object ConvertToDynamic(object obj)
         {
             if (obj is YamlScalarNode)
                 return new DynamicYamlScalar((YamlScalarNode)obj);

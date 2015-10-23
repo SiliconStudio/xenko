@@ -973,7 +973,7 @@ namespace SiliconStudio.Assets
                 AssetMigration.MigrateAssetIfNeeded(context, assetFile);
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
-                var assetPath = fileUPath.MakeRelative(sourceFolder).GetDirectoryAndFileName();
+                var assetPath = assetFile.AssetPath;
 
                 var assetFullPath = fileUPath.FullPath;
                 var assetContent = assetFile.AssetContent;

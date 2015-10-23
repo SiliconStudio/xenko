@@ -12,7 +12,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// Dynamic version of <see cref="YamlMappingNode"/>.
     /// </summary>
-    public class DynamicYamlMapping : DynamicYamlObject, IEnumerable
+    public class DynamicYamlMapping : DynamicYamlObject, IDynamicYamlNode, IEnumerable
     {
         internal YamlMappingNode node;
 
@@ -23,6 +23,8 @@ namespace SiliconStudio.Core.Yaml
                 return node;
             }
         }
+
+        YamlNode IDynamicYamlNode.Node => Node;
 
         public DynamicYamlMapping(YamlMappingNode node)
         {
