@@ -171,7 +171,7 @@ namespace SiliconStudio.Xenko.Assets
             // Upgrade .csproj file
             var fileContents = File.ReadAllText(projectPath);
             var newFileContents = fileContents.Replace(".pdxpkg", ".xkpkg");
-            newFileContents = fileContents.Replace("Paradox", "Xenko");
+            newFileContents = newFileContents.Replace("Paradox", "Xenko");
             //fileContents = fileContents.Replace("$(SiliconStudioParadoxDir)", "$(SiliconStudioXenkoDir)");
             //fileContents = fileContents.Replace("$(EnsureSiliconStudioParadoxInstalled)", "$(EnsureSiliconStudioXenkoInstalled)");
 
