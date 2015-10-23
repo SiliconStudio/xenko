@@ -50,7 +50,23 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 
 #region Comparison
         /// <summary>
-        /// Optimized version of <see cref="Equals"/> for Size instances.
+        /// The == operator to compare 2 Size instances using <see cref="Equals(Size)"/>.
+        /// </summary>
+        public static bool operator ==(Size r1, Size r2)
+        {
+            return r1.Equals(r2);
+        }
+
+        /// <summary>
+        /// The != operator to compare 2 Size instances using <see cref="Equals(Size)"/>.
+        /// </summary>
+        public static bool operator !=(Size r1, Size r2)
+        {
+            return !r1.Equals(r2);
+        }
+
+        /// <summary>
+        /// Optimized version of <see cref="Equals(object)"/> for Size instances.
         /// </summary>
         /// <param name="o">Other Size instance to compare against.</param>
         /// <returns></returns>

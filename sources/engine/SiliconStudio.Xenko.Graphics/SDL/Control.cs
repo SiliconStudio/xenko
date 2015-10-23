@@ -48,8 +48,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                     Handle = info.info.win.window;
-#else
-                    throw new NotImplementedException("Handle for non-Windows platform is not yet supported.");
 #endif
                 }
             }
@@ -75,14 +73,33 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             SDL.SDL_SetWindowPosition(SdlHandle, loc.X, loc.Y);
         }
 
+        public Point MousePosition
+        {
+            get
+            {
+                int x, y;
+                SDL.SDL_GetMouseState(out x, out y);
+                return new Point(x, y);
+            }
+            set
+            {
+                SDL.SDL_WarpMouseInWindow(SdlHandle, value.X, value.Y);
+            }
+        }
+
         public bool TopMost
         {
             get { return SDL.SDL_GetHint(SDL.SDL_HINT_ALLOW_TOPMOST) == "1"; }
-            set { SDL.SDL_SetHint(SDL.SDL_HINT_ALLOW_TOPMOST, (TopMost ? "1" : "0")); }
+            set { SDL.SDL_SetHint(SDL.SDL_HINT_ALLOW_TOPMOST, (value ? "1" : "0")); }
         }
 
         public void Show()
         {
+            if (!_hasBeenShownOnce)
+            {
+                _hasBeenShownOnce = true;
+                HandleCreated?.Invoke(this, EventArgs.Empty);
+            }
             SDL.SDL_ShowWindow(SdlHandle);
         }
 
@@ -152,7 +169,8 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 
         public bool MaximizeBox { get; set; }
 
-        public Size Size {
+        public Size Size
+        {
             get
             {
                 int w, h;
@@ -162,10 +180,10 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             set { SDL.SDL_SetWindowSize(SdlHandle, value.Width, value.Height); }
         }
 
-        public unsafe Size ClientSize {
+        public unsafe Size ClientSize
+        {
             get
             {
-                int w, h;
                 SDL.SDL_Surface *surfPtr = (SDL.SDL_Surface *) SDL.SDL_GetWindowSurface(SdlHandle);
                 return new Size(surfPtr->w, surfPtr->h);
             }
@@ -174,6 +192,21 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 // FIXME: We need to adapt the ClientSize to an actual Size to take into account borders.
                 // FIXME: On Windows you do this by using AdjustWindowRect.
                 SDL.SDL_SetWindowSize(SdlHandle, value.Width, value.Height);
+            }
+        }
+        public unsafe Rect ClientRectangle
+        {
+            get
+            {
+                SDL.SDL_Surface *surfPtr = (SDL.SDL_Surface *) SDL.SDL_GetWindowSurface(SdlHandle);
+                return new Rect(0, 0, surfPtr->w, surfPtr->h);
+            }
+            set
+            {
+                // FIXME: We need to adapt the ClientRectangle to an actual Size to take into account borders.
+                // FIXME: On Windows you do this by using AdjustWindowRect.
+                SDL.SDL_SetWindowSize(SdlHandle, value.Width, value.Height);
+                SDL.SDL_SetWindowPosition(SdlHandle, value.X, value.Y);
             }
         }
 
@@ -210,29 +243,26 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     return FormBorderStyle.FixedSingle;
                 }
             }
-            set
-            {
+            set { throw new NotImplementedException("Cannot change the border style after creation");
             }
         }
 
-        public delegate void PointerButtonPressDelegate(int x, int y, int button);
-        public delegate void MouseMoveDelegate(int x , int y );
+        public delegate void MouseButtonDelegate(SDL.SDL_MouseButtonEvent e);
+        public delegate void MouseMoveDelegate(SDL.SDL_MouseMotionEvent e);
         public delegate void MouseWheelDelegate(SDL.SDL_MouseWheelEvent e);
         //public delegate void ExposeDelegate(Dc a_dc, Rect a_rect);
         public delegate void TextEditingDelegate(SDL.SDL_TextEditingEvent e);
         public delegate void TextInputDelegate(SDL.SDL_TextInputEvent e);
         public delegate void WindowEventDelegate(SDL.SDL_WindowEvent e);
         public delegate void KeyDelegate(SDL.SDL_KeyboardEvent e);
-        public delegate void CharDelegate(char a_char, int a_key_flags);
         public delegate void NotificationDelegate();
 
-        public event PointerButtonPressDelegate PointerButtonPressActions;
-        public event PointerButtonPressDelegate PointerButtonReleaseActions;
+        public event MouseButtonDelegate PointerButtonPressActions;
+        public event MouseButtonDelegate PointerButtonReleaseActions;
         public event MouseWheelDelegate MouseWheelActions;
         public event MouseMoveDelegate MouseMoveActions;
         public event KeyDelegate KeyDownActions;
         public event KeyDelegate KeyUpActions;
-        public event CharDelegate CharActions;
         public event TextEditingDelegate TextEditingActions;
         public event TextInputDelegate TextInputActions;
         public event NotificationDelegate CloseActions;
@@ -245,6 +275,8 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         public event WindowEventDelegate RestoredActions;
         public event WindowEventDelegate MouseEnterActions;
         public event WindowEventDelegate MouseLeaveActions;
+        public event WindowEventDelegate FocusGainedActions;
+        public event WindowEventDelegate FocusLostActions;
 
         /// <summary>
         /// Those event handlers are for backward compatibility with Windows forms.
@@ -252,6 +284,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         public event EventHandler MouseEnter;
         public event EventHandler MouseLeave;
         public event EventHandler Resize;
+        public event EventHandler HandleCreated;
       
         /// <summary>
         /// Process events for the current window
@@ -261,15 +294,15 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             switch (e.type)
             {
                 case SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN:
-                    PointerButtonPressActions?.Invoke(e.button.x, e.button.y, e.button.button);
+                    PointerButtonPressActions?.Invoke(e.button);
                     break;
 
                 case SDL.SDL_EventType.SDL_MOUSEBUTTONUP:
-                    PointerButtonReleaseActions?.Invoke(e.button.x, e.button.y, e.button.button);
+                    PointerButtonReleaseActions?.Invoke(e.button);
                     break;
 
                 case SDL.SDL_EventType.SDL_MOUSEMOTION:
-                    MouseMoveActions?.Invoke(e.button.x, e.button.y);
+                    MouseMoveActions?.Invoke(e.motion);
                     break;
 
                 case SDL.SDL_EventType.SDL_MOUSEWHEEL:
@@ -293,6 +326,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     break;
 
                 case SDL.SDL_EventType.SDL_WINDOWEVENT:
+                {
                     switch (e.window.windowEvent)
                     {
                         case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_SIZE_CHANGED:
@@ -338,20 +372,26 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                             MouseLeaveActions?.Invoke(e.window);
                             break;
 
-                        default:
+                        case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_GAINED:
+                            FocusGainedActions?.Invoke(e.window);
+                            break;
+
+                        case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_FOCUS_LOST:
+                            FocusLostActions?.Invoke(e.window);
                             break;
 
                     }
                     break;
-
-                default:
-                    break;
+                }
             }
         }
 
+        /// <summary>
+        /// Platform specific handle for Control:
+        /// - On Windows: the HWND of the window
+        /// - On Unix: ...
+        /// </summary>
         public IntPtr Handle { get; private set; }
-        public IntPtr SdlHandle { get; private set; }
-
 
 #region Disposal
         ~Control()
@@ -398,6 +438,15 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 // Performance improvement to avoid being called a second time by the GC.
             GC.SuppressFinalize(this);
         }
+#endregion
+
+#region Implementation
+        /// <summary>
+        /// The SDL window handle.
+        /// </summary>
+        private IntPtr SdlHandle { get; set; }
+
+        private bool _hasBeenShownOnce;
 #endregion
     }
 }

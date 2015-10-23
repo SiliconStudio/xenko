@@ -35,6 +35,21 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// Access to low level pointer to the SDL_Cursor struct.
         /// </summary>
         public IntPtr Handle { get; private set; }
+
+        /// <summary>
+        /// Position of cursor on screen.
+        /// </summary>
+        public static Point Position {
+            get
+            {
+                int x, y;
+                SDL.SDL_GetMouseState(out x, out y);
+                return new Point(x, y);
+            }
+            set
+            {
+            }
+        }
 #endregion
 
 #region Basic Operations

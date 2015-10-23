@@ -72,12 +72,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// </summary>
         public Point Location
         {
-            get
-            {
-                Point l_point = new Point(Left, Top);
-
-                return l_point;
-            }
+            get { return new Point(Left, Top); }
         }
 
         /// <summary>
@@ -102,9 +97,26 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         }
 #endregion
 
+#region Status report
+
+        public bool IsEmpty { get { return Width == 0 && Height == 0; } }
+
+        public bool Contains(Point pt)
+        {
+            if (IsEmpty)
+            {
+                return false;
+            }
+            else
+            {
+                return (pt.X >= Left) && (pt.Y >= Top) && (pt.X - Width <= Left) && (pt.Y - Height <= Bottom);
+            }
+        }
+#endregion
+
 #region Comparison
         /// <summary>
-        /// The == operator to compare 2 Rect instances using <see cref="Equals"/>.
+        /// The == operator to compare 2 Rect instances using <see cref="Equals(Rect)"/>.
         /// </summary>
         public static bool operator ==(Rect r1, Rect r2)
         {
@@ -112,15 +124,15 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         }
 
         /// <summary>
-        /// The != operator to compare 2 Rect instances using <see cref="Equals"/>.
+        /// The ~= operator to compare 2 Rect instances using <see cref="Equals(Rect)"/>.
         /// </summary>
         public static bool operator !=(Rect r1, Rect r2)
         {
-            return !r1.Equals(r2);
-        }
-
+            return r1.Equals(r2);
+        } 
+        
         /// <summary>
-        /// Optimized version of <see cref="Equals"/> for Rect instances.
+        /// Optimized version of <see cref="Equals(object)"/> for Rect instances.
         /// </summary>
         /// <param name="r">Other rectangle to compare against.</param>
         /// <returns></returns>
