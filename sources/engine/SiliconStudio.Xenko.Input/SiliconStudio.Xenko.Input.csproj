@@ -70,7 +70,7 @@
     <Compile Include="InputManager.cs" />
     <Compile Include="InputManager.iOS.cs" />
     <Compile Include="InputManager.OpenTK.cs" />
-    <Compile Include="InputManager.Windows.Desktop.SDL.cs" />
+    <Compile Include="InputManager.SDL.cs" />
     <Compile Include="InputManager.Windows.Desktop.cs" />
     <Compile Include="InputManager.Windows.DirectInput.cs" />
     <Compile Include="InputManager.Windows.RawInput.Keyboard.cs" />
@@ -112,6 +112,10 @@
     <Compile Include="VirtualButtonType.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Condition="'$(SiliconStudioUI)' == 'SDL2'" Include="..\..\..\externals\SDL2\SDL2-CS.csproj">
+      <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
+      <Name>SDL2-CS</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
