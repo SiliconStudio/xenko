@@ -23,11 +23,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract("EntityAsset")]
     [AssetDescription(FileExtension, false)]
-    [AssetCompiler(typeof(SceneAssetCompiler))]
+    //[AssetCompiler(typeof(SceneAssetCompiler))]
     //[ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
     [Display("Entity", "An entity")]
     //[AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
-    public class EntityAsset : Asset, IDiffResolver, IAssetComposer
+    public class EntityAsset : EntityAssetBase
     {
         public const int AssetFormatVersion = 0;
 
@@ -35,8 +35,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// The default file extension used by the <see cref="EntityAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkentity;.pdxentity";
+    }
 
-        public EntityAsset()
+    [DataContract()]
+    public abstract class EntityAssetBase : Asset, IDiffResolver
+    {
+        protected EntityAssetBase()
         {
             Hierarchy = new EntityHierarchyData();
         }
@@ -53,16 +57,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <summary>
         /// The various <see cref="EntityAsset"/> that are instantiated in this one.
         /// </summary>
-        [DataMemberIgnore]
-        public Dictionary<Guid, EntityBase> AssetBases = new Dictionary<Guid, EntityBase>();
-
-        private class EntityFactory : IObjectFactory
-        {
-            public object New(Type type)
-            {
-                return new EntityAsset();
-            }
-        }
+        [DataMemberIgnore] public Dictionary<Guid, EntityBase> AssetBases = new Dictionary<Guid, EntityBase>();
 
         void IDiffResolver.BeforeDiff(Asset baseAsset, Asset asset1, Asset asset2)
         {
@@ -95,40 +90,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             EntityAnalysis.RemapEntitiesId(entityAsset2.Hierarchy, idRemapping);
         }
-
-        class Upgrader : IAssetUpgrader
-        {
-            public void Upgrade(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
-            {
-                dynamic asset = new DynamicYamlMapping(yamlAssetNode);
-
-                // Get the EntityData, and generate an Id
-                var oldEntityData = asset.Data;
-                oldEntityData.Id = Guid.NewGuid().ToString().ToLowerInvariant();
-
-                // Create a new EntityDataHierarchy object
-                asset.Hierarchy = new YamlMappingNode();
-                asset.Hierarchy.Entities = new YamlSequenceNode();
-                asset.Hierarchy.Entities.Add(oldEntityData);
-
-                asset["~Base"] = DynamicYamlEmpty.Default;
-
-                // Bump asset version -- make sure it is stored right after Id
-                asset.SerializedVersion = AssetFormatVersion;
-                asset.MoveChild("SerializedVersion", asset.IndexOf("Id") + 1);
-
-                // Currently not final, so enable at your own risk
-                throw new NotImplementedException();
-            }
-        }
-
-        public IEnumerable<IContentReference> GetCompositionBases()
-        {
-            return AssetBases.Values.Select(assetBase => assetBase.Base);
-        }
     }
 
- 
     [DataContract("EntityBase")]
     public class EntityBase
     {

@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public static class EntityAssetOperations
     {
-        public static EntityAsset ExtractSceneClone(EntityAsset source, Guid sourceRootEntity)
+        public static EntityAsset ExtractSceneClone(EntityAssetBase source, Guid sourceRootEntity)
         {
             if (source == null) throw new ArgumentNullException("source");
 
@@ -174,7 +174,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             public MergeResult MergeResult;
         }
 
-        public static EntityHierarchyData ImportScene(UFile sourceUrl, EntityAsset source, Guid sourceRootEntity, out EntityBase entityBase)
+        public static EntityHierarchyData ImportScene(UFile sourceUrl, EntityAssetBase source, Guid sourceRootEntity, out EntityBase entityBase)
         {
             if (source == null) throw new ArgumentNullException("source");
 
