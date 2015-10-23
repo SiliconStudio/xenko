@@ -35,7 +35,7 @@ using NUnit.Framework.Internal;
 using System.Collections.Generic;
 using NUnitLite.Runner;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     /// <summary>
     /// NUnit2XmlOutputWriter is able to create an xml file representing

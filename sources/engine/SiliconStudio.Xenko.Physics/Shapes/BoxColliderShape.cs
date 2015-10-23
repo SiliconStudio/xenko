@@ -2,12 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class BoxColliderShape : ColliderShape
     {

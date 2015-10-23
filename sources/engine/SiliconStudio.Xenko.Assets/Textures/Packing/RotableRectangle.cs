@@ -3,7 +3,7 @@ using System.Globalization;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Assets.Textures.Packing
+namespace SiliconStudio.Xenko.Assets.Textures.Packing
 {
     /// <summary>
     /// RotableRectangle adds a rotating status to Rectangle struct type indicating that this rectangle is rotated by 90 degree and that width and height is swapped.

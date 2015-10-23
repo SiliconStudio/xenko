@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public enum CollisionFilterGroups //needed for the editor as this is not tagged as flag...
     {

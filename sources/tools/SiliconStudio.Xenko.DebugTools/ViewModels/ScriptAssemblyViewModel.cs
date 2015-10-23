@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Collections.ObjectModel;
 using SiliconStudio.Presentation;
 
-namespace SiliconStudio.Paradox.DebugTools.ViewModels
+namespace SiliconStudio.Xenko.DebugTools.ViewModels
 {
     public class ScriptAssemblyViewModel : DeprecatedViewModelBase
     {

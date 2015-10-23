@@ -9,13 +9,13 @@ using System.Reflection;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.UI.Events;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.UI.Events;
 
-namespace SiliconStudio.Paradox.UI
+namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
-    /// Provides a base class for all the User Interface elements in Paradox applications.
+    /// Provides a base class for all the User Interface elements in Xenko applications.
     /// </summary>
     [DebuggerDisplay("UIElement: {Name}")]
     public abstract class UIElement : IUIElementUpdate

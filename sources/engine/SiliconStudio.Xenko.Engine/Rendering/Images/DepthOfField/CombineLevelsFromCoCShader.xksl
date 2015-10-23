@@ -4,7 +4,7 @@
 // Define to visualize debug colors for the different CoC levels.
 #define DEBUG_COC_LEVEL_COLOR 0
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// This takes in entry several blurred levels, and depending on the pixel CoC,

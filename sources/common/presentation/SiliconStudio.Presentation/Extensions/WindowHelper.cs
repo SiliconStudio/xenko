@@ -87,7 +87,7 @@ namespace SiliconStudio.Presentation.Extensions
             window.FillArea(workArea);
         }
 
-        // Internals
+        #region Internals
         internal static NativeHelper.MONITORINFO GetMonitorInfo(IntPtr hWnd)
         {
             var monitor = NativeHelper.MonitorFromWindow(hWnd, NativeHelper.MONITOR_DEFAULTTONEAREST);
@@ -100,5 +100,6 @@ namespace SiliconStudio.Presentation.Extensions
 
             return null;
         }
+        #endregion // Internals
     }
 }

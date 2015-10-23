@@ -7,13 +7,13 @@
     <ProjectGuid>{7934E565-E44B-40C7-8060-EB025EE67BF8}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Paradox.PublicApiCheck</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.PublicApiCheck</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.PublicApiCheck</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.PublicApiCheck</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SiliconStudioDependenciesDir>..\..\common\deps\</SiliconStudioDependenciesDir>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>

@@ -80,7 +80,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Imaging;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     // Extracts font glyphs from a specially marked 2D bitmap. Characters should be
     // arranged in a grid ordered from top left to bottom right. Monochrome characters

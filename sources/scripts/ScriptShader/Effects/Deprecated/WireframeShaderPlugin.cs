@@ -1,9 +1,9 @@
 using System.Linq;
 
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class WireframeShaderPlugin : ShaderPlugin<RenderPassPlugin>
     {

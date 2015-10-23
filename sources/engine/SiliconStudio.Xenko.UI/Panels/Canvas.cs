@@ -6,7 +6,7 @@ using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI.Panels
+namespace SiliconStudio.Xenko.UI.Panels
 {
     /// <summary> 
     /// Defines an area within which you can position and size child elements with respect to in the Canvas area size.

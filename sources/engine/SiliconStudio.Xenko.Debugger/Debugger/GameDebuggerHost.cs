@@ -6,7 +6,7 @@ using System.ServiceModel;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Paradox.Debugger.Target
+namespace SiliconStudio.Xenko.Debugger.Target
 {
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode = ConcurrencyMode.Multiple)]
     public class GameDebuggerHost : IGameDebuggerHost

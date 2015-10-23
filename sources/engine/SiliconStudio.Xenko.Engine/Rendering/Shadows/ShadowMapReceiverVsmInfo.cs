@@ -3,7 +3,7 @@
 
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox.Rendering.Shadows
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
     internal struct ShadowMapReceiverVsmInfo

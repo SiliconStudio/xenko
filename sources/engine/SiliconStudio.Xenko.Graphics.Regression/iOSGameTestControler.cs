@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_IOS
 
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
-    public class iOSGameTestController : ParadoxGameController
+    public class iOSGameTestController : XenkoGameController
     {
         private readonly GameBase game;
 

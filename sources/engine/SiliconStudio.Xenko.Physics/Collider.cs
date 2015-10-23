@@ -3,11 +3,11 @@
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.MicroThreading;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 using System;
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class Collider : IDisposable, IRelative
     {

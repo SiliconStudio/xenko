@@ -3,11 +3,11 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Animations;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Rendering.Sprites
+namespace SiliconStudio.Xenko.Rendering.Sprites
 {
     /// <summary>
     /// A system in charge of animating the sprites 

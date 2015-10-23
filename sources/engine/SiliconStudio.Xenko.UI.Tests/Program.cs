@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Paradox.UI.Tests.Events;
-using SiliconStudio.Paradox.UI.Tests.Layering;
+using SiliconStudio.Xenko.UI.Tests.Events;
+using SiliconStudio.Xenko.UI.Tests.Layering;
 
-namespace SiliconStudio.Paradox.UI.Tests
+namespace SiliconStudio.Xenko.UI.Tests
 {
     public class Program
     {

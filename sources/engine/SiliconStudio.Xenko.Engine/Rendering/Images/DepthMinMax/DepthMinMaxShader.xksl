@@ -1,10 +1,10 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 /// <remarks>
-/// SILICONSTUDIO_PARADOX_GRAPHICS_PROFILE: Macro - graphics profile level.
+/// SILICONSTUDIO_XENKO_GRAPHICS_PROFILE: Macro - graphics profile level.
 /// </remarks>
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// A reduction shader
@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             {
                 float4 values;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_PROFILE >= GRAPHICS_PROFILE_LEVEL_10_1
+#if SILICONSTUDIO_XENKO_GRAPHICS_PROFILE >= GRAPHICS_PROFILE_LEVEL_10_1
                 values = TextureMap.Gather(LinearSampler, streams.TexCoord);
 #else
                 values.x = TextureMap.Sample(PointSampler, streams.TexCoord, int2(0, 1)).r;
@@ -46,7 +46,7 @@ namespace SiliconStudio.Paradox.Rendering.Images
             {
                 float4 minValues, maxValues;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_PROFILE >= GRAPHICS_PROFILE_LEVEL_11_0
+#if SILICONSTUDIO_XENKO_GRAPHICS_PROFILE >= GRAPHICS_PROFILE_LEVEL_11_0
                 minValues = TextureReduction.GatherRed(LinearSampler, streams.TexCoord);
                 maxValues = TextureReduction.GatherGreen(LinearSampler, streams.TexCoord);
 #else

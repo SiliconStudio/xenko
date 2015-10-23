@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SiliconStudio.Paradox.Graphics.RenderDocPlugin")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Graphics.RenderDocPlugin")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("SiliconStudio.Paradox.Graphics.RenderDocPlugin")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Graphics.RenderDocPlugin")]
 [assembly: AssemblyCopyright("Copyright ©  2014")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

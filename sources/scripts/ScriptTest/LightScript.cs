@@ -2,21 +2,21 @@
 using System.Linq;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Effects;
-//using Paradox.Mathematics;
-using SiliconStudio.Paradox.Effects;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Effects;
+//using Xenko.Mathematics;
+using SiliconStudio.Xenko.Effects;
 using System.Diagnostics;
 
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Games.MicroThreading;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Configuration;
+using SiliconStudio.Xenko.Games.MicroThreading;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Configuration;
 
 namespace ScriptTest
 {
-    [ParadoxScript]
+    [XenkoScript]
     public class LightScript
     {
         struct LightInfo
@@ -38,7 +38,7 @@ namespace ScriptTest
             public bool AnimatedLights { get; set; }
         }
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task MoveLights(EngineContext engineContext)
         {
             var r = new Random(0);

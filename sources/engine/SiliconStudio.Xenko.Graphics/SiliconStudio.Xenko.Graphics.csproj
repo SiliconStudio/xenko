@@ -3,17 +3,17 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Paradox.Graphics</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Graphics</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Graphics</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Graphics</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -26,40 +26,40 @@
         <Reference Include="System.Windows.Forms" />
         <Reference Include="SharpDX.Desktop">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.Desktop.dll</HintPath>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Desktop.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(ParadoxGraphicsApi)' == 'Direct3D11' ">
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.D3DCompiler">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.Direct3D11">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Direct3D11.dll</HintPath>
         </Reference>
         <Reference Include="SharpDX.DXGI">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.DXGI.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
   <Choose>
-    <When Condition=" '$(ParadoxGraphicsApi)' == 'OpenGL' Or '$(ParadoxGraphicsApi)' == 'OpenGLES' ">
+    <When Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES' ">
       <Choose>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <ItemGroup>
             <Reference Include="OpenTK">
-              <HintPath>$(ParadoxDependenciesDir)OpenTK\OpenTK.dll</HintPath>
+              <HintPath>$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>
@@ -83,19 +83,19 @@
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\Windows\Release\SharpFont.dll</HintPath>
+      <HintPath>$(XenkoDependenciesDir)SharpFont\Windows\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
+      <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>$(ParadoxDependenciesDir)SharpFont\Android\Release\SharpFont.dll</HintPath>
+      <HintPath>$(XenkoDependenciesDir)SharpFont\Android\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
   <!-- Files for Direct3D  -->
@@ -137,29 +137,29 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>BackgroundEffect.pdxsl</DependentUpon>
+      <DependentUpon>BackgroundEffect.xksl</DependentUpon>
     </Compile>
     <Compile Include="Shaders\ColorUtility.cs">
-      <DependentUpon>ColorUtility.pdxsl</DependentUpon>
+      <DependentUpon>ColorUtility.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\UIEffect.cs">
-      <DependentUpon>UIEffect.pdxfx</DependentUpon>
+      <DependentUpon>UIEffect.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\SpriteBatch.cs">
-      <DependentUpon>SpriteBatch.pdxfx</DependentUpon>
+      <DependentUpon>SpriteBatch.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Sprite3DBatch.cs" />
     <Compile Include="Shaders\ShaderBaseStream.cs">
-      <DependentUpon>ShaderBaseStream.pdxsl</DependentUpon>
+      <DependentUpon>ShaderBaseStream.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -237,25 +237,25 @@
     <Compile Include="Shaders\TexturingKeys.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.Extensions.cs" />
     <Compile Include="Shaders\SpriteBase.cs">
-      <DependentUpon>SpriteBase.pdxsl</DependentUpon>
+      <DependentUpon>SpriteBase.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\SpriteBatchShader.cs">
-      <DependentUpon>SpriteBatchShader.pdxsl</DependentUpon>
+      <DependentUpon>SpriteBatchShader.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\ShaderBase.cs">
-      <DependentUpon>ShaderBase.pdxsl</DependentUpon>
+      <DependentUpon>ShaderBase.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Shaders\SpriteEffect.cs">
-      <DependentUpon>SpriteEffect.pdxsl</DependentUpon>
+      <DependentUpon>SpriteEffect.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -263,7 +263,7 @@
     <Compile Include="Shaders.Bytecodes\SpriteEffect.Extensions.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBaseKeys.cs" />
     <Compile Include="Shaders\Texturing.cs">
-      <DependentUpon>Texturing.pdxsl</DependentUpon>
+      <DependentUpon>Texturing.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
@@ -273,7 +273,7 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>UIEffectShader.pdxsl</DependentUpon>
+      <DependentUpon>UIEffectShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Sprite.Extensions.cs" />
     <Compile Include="SpriteBatch.cs" />
@@ -471,14 +471,14 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
-      <Name>SiliconStudio.Paradox.Shaders</Name>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -495,50 +495,50 @@
   <ItemGroup />
   <ItemGroup>
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
-    <None Include="Shaders.Bytecodes\Graphics.pdxpkg" />
-    <None Include="Shaders.Bytecodes\Shaders.pdxeffectlog" />
-    <None Include="Shaders\BackgroundEffect.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders.Bytecodes\Graphics.xkpkg" />
+    <None Include="Shaders.Bytecodes\Shaders.xkeffectlog" />
+    <None Include="Shaders\BackgroundEffect.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BackgroundEffect.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\UIEffect.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders\UIEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffect.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\SpriteBatch.pdxfx">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders\SpriteBatch.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SpriteBatch.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\ShaderBaseStream.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders\ShaderBaseStream.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShaderBaseStream.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\ColorUtility.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders\ColorUtility.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ColorUtility.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\SpriteBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders\SpriteBase.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SpriteBase.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\SpriteBatchShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders\SpriteBatchShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SpriteBatchShader.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\ShaderBase.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders\ShaderBase.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ShaderBase.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\SpriteEffect.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders\SpriteEffect.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>SpriteEffect.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\Texturing.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders\Texturing.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Texturing.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\UIEffectShader.pdxsl">
-      <Generator>ParadoxShaderKeyGenerator</Generator>
+    <None Include="Shaders\UIEffectShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>UIEffectShader.cs</LastGenOutput>
     </None>
   </ItemGroup>

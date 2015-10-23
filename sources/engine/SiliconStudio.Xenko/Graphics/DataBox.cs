@@ -3,7 +3,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Provides access to data organized in 3D.

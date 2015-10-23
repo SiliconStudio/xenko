@@ -4,10 +4,10 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering.Tessellation;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Rendering.Tessellation;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering.Materials
+namespace SiliconStudio.Xenko.Rendering.Materials
 {
     /// <summary>
     /// The displacement map for a surface material feature.
@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Rendering.Materials
             if (AdjacentEdgeAverage && !context.Tags.Get(HasFinalCallback))
             {
                 context.Tags.Set(HasFinalCallback, true);
-                context.Material.TessellationMethod = ParadoxTessellationMethod.AdjacentEdgeAverage;
+                context.Material.TessellationMethod = XenkoTessellationMethod.AdjacentEdgeAverage;
                 context.AddFinalCallback(MaterialShaderStage.Domain, AddAdjacentEdgeAverageMacros);
                 context.AddFinalCallback(MaterialShaderStage.Domain, AddAdjacentEdgeAverageShaders);
             }

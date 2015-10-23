@@ -7,10 +7,10 @@ using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Input;
 using System.Globalization;
-using SiliconStudio.Paradox.DebugTools.DataStructures;
+using SiliconStudio.Xenko.DebugTools.DataStructures;
 using SiliconStudio.Presentation.Core;
 
-namespace SiliconStudio.Paradox.DebugTools
+namespace SiliconStudio.Xenko.DebugTools
 {
     public class RenderRoutedEventArgs : RoutedEventArgs
     {

@@ -85,7 +85,7 @@ using SiliconStudio.Core.Mathematics;
 using DrawingColor = System.Drawing.Color;
 using Rectangle = System.Drawing.Rectangle;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont.Compiler
+namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 {
     // Assorted helpers for doing useful things with bitmaps.
     internal static class BitmapUtils

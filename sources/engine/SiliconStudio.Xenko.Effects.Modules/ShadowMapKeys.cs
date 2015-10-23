@@ -3,10 +3,10 @@
 using System;
 using System.Runtime.InteropServices;
 
-using Paradox.Framework.Graphics;
-using Paradox.Framework.Mathematics;
+using Xenko.Framework.Graphics;
+using Xenko.Framework.Mathematics;
 
-namespace Paradox.Effects.Modules
+namespace Xenko.Effects.Modules
 {
 
     /// <summary>

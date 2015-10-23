@@ -4,10 +4,10 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A forward rendering mode.
@@ -16,7 +16,7 @@ namespace SiliconStudio.Paradox.Rendering
     [Display("Forward")]
     public sealed class CameraRendererModeForward : CameraRendererMode
     {
-        private const string ForwardEffect = "ParadoxForwardShadingEffect";
+        private const string ForwardEffect = "XenkoForwardShadingEffect";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CameraRendererModeForward"/> class.

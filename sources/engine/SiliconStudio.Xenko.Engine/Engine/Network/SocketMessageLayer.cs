@@ -7,7 +7,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Engine.Network
+namespace SiliconStudio.Xenko.Engine.Network
 {
     /// <summary>
     /// High-level layer that can be used on top of <see cref="SimpleSocket"/> to send and receive objects using serialization.

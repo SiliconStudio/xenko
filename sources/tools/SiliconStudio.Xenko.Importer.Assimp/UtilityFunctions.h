@@ -4,7 +4,7 @@
 
 
 using namespace System;
-using namespace SiliconStudio::Paradox::Animations;
+using namespace SiliconStudio::Xenko::Animations;
 using namespace SiliconStudio::Core::Diagnostics;
 using namespace SiliconStudio::Core::Mathematics;
 
@@ -17,7 +17,7 @@ Matrix aiMatrixToMatrix(aiMatrix4x4 mat);
 Vector2 aiVector2ToVector2(aiVector2D vec);
 Vector3 aiVector3ToVector3(aiVector3D vec);
 Quaternion aiQuaternionToQuaternion(aiQuaterniont<float> quat);
-CompressedTimeSpan aiTimeToPdxTimeSpan(double time, double tickPerSecond);
+CompressedTimeSpan aiTimeToXkTimeSpan(double time, double tickPerSecond);
 
 // Others
 Vector3 QuaternionToEulerAngles(Quaternion q);

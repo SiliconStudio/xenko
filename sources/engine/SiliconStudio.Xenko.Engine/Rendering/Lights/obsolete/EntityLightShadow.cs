@@ -1,12 +1,12 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Paradox.Effects.Lights;
-using SiliconStudio.Paradox.Effects.Shadows;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
+using SiliconStudio.Xenko.Effects.Lights;
+using SiliconStudio.Xenko.Effects.Shadows;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
 
-namespace SiliconStudio.Paradox.Effects.Processors
+namespace SiliconStudio.Xenko.Effects.Processors
 {
     public class EntityLightShadow
     {

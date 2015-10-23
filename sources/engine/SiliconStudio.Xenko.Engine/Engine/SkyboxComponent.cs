@@ -4,10 +4,10 @@
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Rendering.Skyboxes;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Add a <see cref="Skybox"/> to an <see cref="Entity"/>, that will be used during rendering.

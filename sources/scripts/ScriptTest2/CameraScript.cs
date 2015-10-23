@@ -7,16 +7,16 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 using System.Xml.Serialization;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Games.MicroThreading;
-using SiliconStudio.Paradox.Configuration;
-using SiliconStudio.Paradox.Input;
-using Keys = SiliconStudio.Paradox.Input.Keys;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Games.MicroThreading;
+using SiliconStudio.Xenko.Configuration;
+using SiliconStudio.Xenko.Input;
+using Keys = SiliconStudio.Xenko.Input.Keys;
 
 #if NET45
 using TaskEx = System.Threading.Tasks.Task;
@@ -24,7 +24,7 @@ using TaskEx = System.Threading.Tasks.Task;
 
 namespace ScriptTest2
 {
-    [ParadoxScript(ScriptFlags.AssemblyStartup)]
+    [XenkoScript(ScriptFlags.AssemblyStartup)]
     public class CameraScript : ScriptContext
     {
         private Camera camera;

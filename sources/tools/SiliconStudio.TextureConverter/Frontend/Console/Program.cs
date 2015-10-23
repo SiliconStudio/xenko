@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Diagnostics;
 
 

@@ -7,7 +7,7 @@ using System;
 using System.IO;
 using System.Net.Sockets;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public static partial class ImageTester
     {
@@ -21,7 +21,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             try
             {
                 ImageComparisonServer = new TcpClient();
-                ImageComparisonServer.Connect(ParadoxImageServerHost, ParadoxImageServerPort);
+                ImageComparisonServer.Connect(XenkoImageServerHost, XenkoImageServerPort);
 
                 // Send initial parameters
                 var networkStream = ImageComparisonServer.GetStream();

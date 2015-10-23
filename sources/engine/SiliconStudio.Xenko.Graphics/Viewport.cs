@@ -5,7 +5,7 @@ using System.Globalization;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Defines the window dimensions of a render-target surface onto which a 3D volume projects.

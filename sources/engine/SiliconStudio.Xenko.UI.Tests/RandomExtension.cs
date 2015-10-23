@@ -5,7 +5,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI.Tests
+namespace SiliconStudio.Xenko.UI.Tests
 {
     internal static class RandomExtension
     {

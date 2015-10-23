@@ -6,7 +6,7 @@ using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Base class for <see cref="Entity"/> components.

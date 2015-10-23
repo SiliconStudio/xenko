@@ -5,7 +5,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Rendering.Skyboxes
+namespace SiliconStudio.Xenko.Rendering.Skyboxes
 {
     /// <summary>
     /// The Skybox at runtime.

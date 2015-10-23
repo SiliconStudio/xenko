@@ -39,7 +39,7 @@ and used by most projects.
 ###shaders###
 
 * __Irony__: Parsing library, used by SiliconStudio.Shaders. Should later be replaced by ANTLR4.
-* __SiliconStudio.Shaders__: Shader parsing, type analysis and conversion library (used by HLSL->GLSL and Paradox Shader Language)
+* __SiliconStudio.Shaders__: Shader parsing, type analysis and conversion library (used by HLSL->GLSL and Xenko Shader Language)
 
 ###targets###
 

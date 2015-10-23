@@ -8,9 +8,9 @@ using UIKit;
 #endif
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public class GameTester
     {
@@ -63,15 +63,15 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                     var window = UIApplication.SharedApplication.KeyWindow;
                     var rootNavigationController = (UINavigationController)window.RootViewController;
 
-                    // create the paradox game view 
+                    // create the xenko game view 
                     var bounds = UIScreen.MainScreen.Bounds;
-                    var paradoxGameView = new Starter.ParadoxApplicationDelegate.iOSParadoxView((System.Drawing.RectangleF)bounds) { ContentScaleFactor = UIScreen.MainScreen.Scale };
+                    var xenkoGameView = new Starter.XenkoApplicationDelegate.iOSXenkoView((System.Drawing.RectangleF)bounds) { ContentScaleFactor = UIScreen.MainScreen.Scale };
 
-                    // create the view controller used to display the paradox game
-                    var paradoxGameController = new iOSGameTestController(game) { View = paradoxGameView };
+                    // create the view controller used to display the xenko game
+                    var xenkoGameController = new iOSGameTestController(game) { View = xenkoGameView };
 
                     // create the game context
-                    var gameContext = new GameContext(window, paradoxGameView, paradoxGameController);
+                    var gameContext = new GameContext(window, xenkoGameView, xenkoGameController);
 
                     // push view
                     rootNavigationController.PushViewController(gameContext.GameViewController, false);

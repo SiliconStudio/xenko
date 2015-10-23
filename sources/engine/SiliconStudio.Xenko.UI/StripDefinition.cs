@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI
+namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
     /// Represent the definition of a grid strip.

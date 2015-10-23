@@ -7,7 +7,7 @@ using SiliconStudio.Core.Serialization;
 
 using YamlDotNet.Serialization;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
     [DataContract("TestAsset")]
     [AssetAlias("AssetTest")]
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Assets
             ThirdValue
         }
 
-        public const string FileExtension = ".pdxtest";
+        public const string FileExtension = ".xktest";
 
         public TestAsset()
         {

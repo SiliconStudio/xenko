@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Games.Collections;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.Collections;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Input;
 using SiliconStudio.Shaders;
-using Keys = SiliconStudio.Paradox.Input.Keys;
+using Keys = SiliconStudio.Xenko.Input.Keys;
 
 namespace ScriptTest
 {

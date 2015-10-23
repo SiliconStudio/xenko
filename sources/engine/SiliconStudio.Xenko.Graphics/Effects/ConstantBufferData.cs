@@ -4,11 +4,11 @@ using System;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Graphics.Internals
+namespace SiliconStudio.Xenko.Graphics.Internals
 {
     internal class ConstantBufferData
     {

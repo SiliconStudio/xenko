@@ -9,10 +9,10 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Engine.Shaders.Mixins;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Engine.Shaders.Mixins;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Shaders.Compiler;
 using SiliconStudio.Shaders.Ast;
 
 namespace SiliconStudio.Shaders.Tests
@@ -44,7 +44,7 @@ namespace SiliconStudio.Shaders.Tests
 
             Assert.IsFalse(mcm.ErrorWarningLog.HasErrors);
 
-            var mixer = new ParadoxShaderMixer(mcm.Mixins["Child"], mcm.Mixins, null);
+            var mixer = new XenkoShaderMixer(mcm.Mixins["Child"], mcm.Mixins, null);
             mixer.Mix();
 
             //var childMixinInfo = mcm.Mixins["Child"].ParsingInfo;
@@ -66,7 +66,7 @@ namespace SiliconStudio.Shaders.Tests
 
             Assert.IsFalse(mcm.ErrorWarningLog.HasErrors);
 
-            var mixer = new ParadoxShaderMixer(mcm.Mixins["StaticCallMixin"], mcm.Mixins, null);
+            var mixer = new XenkoShaderMixer(mcm.Mixins["StaticCallMixin"], mcm.Mixins, null);
             mixer.Mix();
 
             //var staticCallMixinInfo = mcm.Mixins["StaticCallMixin"].ParsingInfo;
@@ -91,7 +91,7 @@ namespace SiliconStudio.Shaders.Tests
             var externDictionary = new Dictionary<Variable, List<ModuleMixin>>();
             externDictionary.Add(mcmFinal.Mixins["ExternTest"].VariableDependencies.First().Key, new List<ModuleMixin>{ mcm.Mixins["ExternMixin"].DeepClone() });
 
-            var mixer = new ParadoxShaderMixer(mcmFinal.Mixins["ExternTest"], mcmFinal.Mixins, externDictionary);
+            var mixer = new XenkoShaderMixer(mcmFinal.Mixins["ExternTest"], mcmFinal.Mixins, externDictionary);
             mixer.Mix();
 
             //var externTestMixinInfo = mcmFinal.Mixins["ExternTest"].ParsingInfo;
@@ -118,7 +118,7 @@ namespace SiliconStudio.Shaders.Tests
             var deepDictionary = new Dictionary<Variable, List<ModuleMixin>>();
             deepDictionary.Add(mcmFinal.Mixins["DeepExternTest"].VariableDependencies.First().Key, new List<ModuleMixin> { depext });
             deepDictionary.Add(depext.VariableDependencies.First().Key, new List<ModuleMixin> { mcm.Mixins["ExternMixin"].DeepClone() });
-            var mixer = new ParadoxShaderMixer(mcmFinal.Mixins["DeepExternTest"], mcmFinal.Mixins, deepDictionary);
+            var mixer = new XenkoShaderMixer(mcmFinal.Mixins["DeepExternTest"], mcmFinal.Mixins, deepDictionary);
             mixer.Mix();
 
             //var externDeepTest = mcmFinal.Mixins["DeepExternTest"].ParsingInfo;
@@ -143,7 +143,7 @@ namespace SiliconStudio.Shaders.Tests
             var mcmFinal = mcm.DeepClone();
             var extDictionary = new Dictionary<Variable, List<ModuleMixin>>();
             extDictionary.Add(mcmFinal.Mixins["TestMultipleStatic"].VariableDependencies.First().Key, new List<ModuleMixin>{ mcm.Mixins["StaticCallMixin"].DeepClone() });
-            var mixer = new ParadoxShaderMixer(mcmFinal.Mixins["TestMultipleStatic"], mcmFinal.Mixins, extDictionary);
+            var mixer = new XenkoShaderMixer(mcmFinal.Mixins["TestMultipleStatic"], mcmFinal.Mixins, extDictionary);
             mixer.Mix();
 
             //Assert.AreEqual(1, mixer.MixedShader.Members.OfType<MethodDeclaration>().Count(x => x.Name.Text == "StaticMixin_staticCall"));
@@ -167,7 +167,7 @@ namespace SiliconStudio.Shaders.Tests
             var mcmFinal = mcm.DeepClone();
             var extDictionary = new Dictionary<Variable, List<ModuleMixin>>();
             extDictionary.Add(mcmFinal.Mixins["StaticStageCallTest"].VariableDependencies.First().Key, new List<ModuleMixin>{mcm.Mixins["StageCallExtern"].DeepClone()});
-            var mixer = new ParadoxShaderMixer(mcmFinal.Mixins["StaticStageCallTest"], mcmFinal.Mixins, extDictionary);
+            var mixer = new XenkoShaderMixer(mcmFinal.Mixins["StaticStageCallTest"], mcmFinal.Mixins, extDictionary);
             mixer.Mix();
 
             //var extPI = mcmExtern.Mixins["StageCallExtern"].ParsingInfo;
@@ -196,7 +196,7 @@ namespace SiliconStudio.Shaders.Tests
 
             Assert.IsFalse(mcm.ErrorWarningLog.HasErrors);
 
-            var mixer = new ParadoxShaderMixer(mcm.Mixins["SemanticTest"], mcm.Mixins, null);
+            var mixer = new XenkoShaderMixer(mcm.Mixins["SemanticTest"], mcm.Mixins, null);
             mixer.Mix();
 
             //Assert.AreEqual(1, mixer.MixedShader.Members.OfType<Variable>().Count());
@@ -214,7 +214,7 @@ namespace SiliconStudio.Shaders.Tests
 
             Assert.IsFalse(mcm.ErrorWarningLog.HasErrors);
 
-            var mixer = new ParadoxShaderMixer(mcm.Mixins["StreamTest"], mcm.Mixins, null);
+            var mixer = new XenkoShaderMixer(mcm.Mixins["StreamTest"], mcm.Mixins, null);
             mixer.Mix();
         }
 
@@ -234,7 +234,7 @@ namespace SiliconStudio.Shaders.Tests
             var mcmFinal = mcm.DeepClone();
             var extDictionary = new Dictionary<Variable, List<ModuleMixin>>();
             extDictionary.Add(mcmFinal.Mixins["StageValueTest"].VariableDependencies.First().Key, new List<ModuleMixin>{ mcm.Mixins["StageValueReference"].DeepClone() });
-            var mixerFinal = new ParadoxShaderMixer(mcmFinal.Mixins["StageValueTest"], mcmFinal.Mixins, extDictionary);
+            var mixerFinal = new XenkoShaderMixer(mcmFinal.Mixins["StageValueTest"], mcmFinal.Mixins, extDictionary);
             mixerFinal.Mix();
         }
 
@@ -257,7 +257,7 @@ namespace SiliconStudio.Shaders.Tests
             var keys = mcmFinal.Mixins["CloneTestRoot"].VariableDependencies.Keys.ToList();
             extDictionary.Add(keys[0], new List<ModuleMixin>{ mcm.Mixins["CloneTestExtern"].DeepClone() });
             extDictionary.Add(keys[1], new List<ModuleMixin>{ mcm.Mixins["CloneTestExtern"].DeepClone() });
-            var mixerFinal = new ParadoxShaderMixer(mcmFinal.Mixins["CloneTestRoot"], mcmFinal.Mixins, extDictionary);
+            var mixerFinal = new XenkoShaderMixer(mcmFinal.Mixins["CloneTestRoot"], mcmFinal.Mixins, extDictionary);
             mixerFinal.Mix();
         }
 
@@ -275,7 +275,7 @@ namespace SiliconStudio.Shaders.Tests
 
             Assert.IsFalse(mcm.ErrorWarningLog.HasErrors);
 
-            var mixerFinal = new ParadoxShaderMixer(mcm.Mixins["BaseTestChild"], mcm.Mixins, null);
+            var mixerFinal = new XenkoShaderMixer(mcm.Mixins["BaseTestChild"], mcm.Mixins, null);
             mixerFinal.Mix();
         }
 
@@ -291,7 +291,7 @@ namespace SiliconStudio.Shaders.Tests
 
             Assert.IsFalse(mcm.ErrorWarningLog.HasErrors);
 
-            var mixerFinal = new ParadoxShaderMixer(mcm.Mixins["ForEachTest"], mcm.Mixins, null);
+            var mixerFinal = new XenkoShaderMixer(mcm.Mixins["ForEachTest"], mcm.Mixins, null);
             mixerFinal.Mix();
         }
 
@@ -309,7 +309,7 @@ namespace SiliconStudio.Shaders.Tests
 
             Assert.IsFalse(mcm.ErrorWarningLog.HasErrors);
 
-            var mixerFinal = new ParadoxShaderMixer(mcm.Mixins["StreamChild"], mcm.Mixins, null);
+            var mixerFinal = new XenkoShaderMixer(mcm.Mixins["StreamChild"], mcm.Mixins, null);
             mixerFinal.Mix();
         }
 
@@ -331,7 +331,7 @@ namespace SiliconStudio.Shaders.Tests
             var keys = mcmFinal.Mixins["NonStageStreamTest"].VariableDependencies.Keys.ToList();
             extDictionary.Add(keys[0], new List<ModuleMixin> { mcm.Mixins["StreamParent2"].DeepClone() });
             extDictionary.Add(keys[1], new List<ModuleMixin> { mcm.Mixins["StreamParent2"].DeepClone() });
-            var mixerFinal = new ParadoxShaderMixer(mcmFinal.Mixins["NonStageStreamTest"], mcmFinal.Mixins, extDictionary);
+            var mixerFinal = new XenkoShaderMixer(mcmFinal.Mixins["NonStageStreamTest"], mcmFinal.Mixins, extDictionary);
             mixerFinal.Mix();
         }
 
@@ -354,7 +354,7 @@ namespace SiliconStudio.Shaders.Tests
 
             var extDictionary = new Dictionary<Variable, List<ModuleMixin>>();
             extDictionary.Add(mcmFinal.Mixins["StreamSolverExternTest"].VariableDependencies.First().Key, new List<ModuleMixin>{ mcm.Mixins["StreamChild"].DeepClone() });
-            var mixerFinal = new ParadoxShaderMixer(mcmFinal.Mixins["StreamSolverExternTest"], mcmFinal.Mixins, extDictionary);
+            var mixerFinal = new XenkoShaderMixer(mcmFinal.Mixins["StreamSolverExternTest"], mcmFinal.Mixins, extDictionary);
             mixerFinal.Mix();
         }
 
@@ -376,7 +376,7 @@ namespace SiliconStudio.Shaders.Tests
             var extDictionary = new Dictionary<Variable, List<ModuleMixin>>();
             var mixins = new List<ModuleMixin> { mcm.Mixins["ExternMixin"].DeepClone(), mcm.Mixins["ExternMixin"].DeepClone() };
             extDictionary.Add(mcmFinal.Mixins["TestExternArray"].VariableDependencies.First().Key, mixins);
-            var mixerFinal = new ParadoxShaderMixer(mcmFinal.Mixins["TestExternArray"], mcmFinal.Mixins, extDictionary);
+            var mixerFinal = new XenkoShaderMixer(mcmFinal.Mixins["TestExternArray"], mcmFinal.Mixins, extDictionary);
             mixerFinal.Mix();
         }
 
@@ -392,7 +392,7 @@ namespace SiliconStudio.Shaders.Tests
 
             Assert.IsFalse(mcm.ErrorWarningLog.HasErrors);
 
-            var mixerFinal = new ParadoxShaderMixer(mcm.Mixins["ConstantBufferTest"], mcm.Mixins, null);
+            var mixerFinal = new XenkoShaderMixer(mcm.Mixins["ConstantBufferTest"], mcm.Mixins, null);
             mixerFinal.Mix();
         }
 
@@ -408,7 +408,7 @@ namespace SiliconStudio.Shaders.Tests
 
             Assert.IsFalse(mcm.ErrorWarningLog.HasErrors);
 
-            var mixerFinal = new ParadoxShaderMixer(mcm.Mixins["TestComputeShader"], mcm.Mixins, null);
+            var mixerFinal = new XenkoShaderMixer(mcm.Mixins["TestComputeShader"], mcm.Mixins, null);
             mixerFinal.Mix();
         }
     }

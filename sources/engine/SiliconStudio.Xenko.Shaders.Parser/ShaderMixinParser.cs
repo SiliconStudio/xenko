@@ -6,16 +6,16 @@ using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
-using SiliconStudio.Paradox.Shaders.Parser.Performance;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Shaders.Parser.Performance;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Analysis.Hlsl;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.Shaders.Parser
+namespace SiliconStudio.Xenko.Shaders.Parser
 {
     /// <summary>
     /// Parser for mixin.
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <summary>
         /// The library containing all the shaders
         /// </summary>
-        private readonly ParadoxShaderLibrary shaderLibrary;
+        private readonly XenkoShaderLibrary shaderLibrary;
 
         #endregion
 
@@ -67,7 +67,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             
             if (shaderLibrary == null)
             {
-                shaderLibrary = new ParadoxShaderLibrary(shaderLoader);
+                shaderLibrary = new XenkoShaderLibrary(shaderLoader);
             }
 
             // Create the clone context with the instances of Hlsl classes
@@ -101,7 +101,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             }
         }
 
-        internal ShaderCompilationContext ParseAndAnalyze(ShaderMixinSource shaderMixinSource, Paradox.Shaders.ShaderMacro[] macros, out ShaderMixinParsingResult parsingResult, out HashSet<ModuleMixinInfo> mixinsToAnalyze)
+        internal ShaderCompilationContext ParseAndAnalyze(ShaderMixinSource shaderMixinSource, Xenko.Shaders.ShaderMacro[] macros, out ShaderMixinParsingResult parsingResult, out HashSet<ModuleMixinInfo> mixinsToAnalyze)
         {
             // Creates a parsing result
             parsingResult = new ShaderMixinParsingResult();
@@ -183,7 +183,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <param name="macros">The shader perprocessor macros.</param>
         /// <param name="modifiedShaders">The list of modified shaders.</param>
         /// <returns>The combined shader in AST form.</returns>
-        public ShaderMixinParsingResult Parse(ShaderMixinSource shaderMixinSource, Paradox.Shaders.ShaderMacro[] macros = null)
+        public ShaderMixinParsingResult Parse(ShaderMixinSource shaderMixinSource, Xenko.Shaders.ShaderMacro[] macros = null)
         {
             // Creates a parsing result
             HashSet<ModuleMixinInfo> mixinsToAnalyze;
@@ -224,7 +224,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             var extraExternDict = new Dictionary<Variable, List<ModuleMixin>>();
             foreach (var item in externDict)
             {
-                if (item.Key.Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                if (item.Key.Qualifiers.Contains(XenkoStorageQualifier.Stage))
                     FullLinkStageCompositions(item.Key, item.Value, externDict, extraExternDict, parsingResult);
             }
             foreach (var item in extraExternDict)
@@ -236,7 +236,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
             {
                 var finalModule = finalModuleList[0];
                 //PerformanceLogger.Start(PerformanceStage.Mix);
-                var mixer = new ParadoxShaderMixer(finalModule, parsingResult, mixinDictionary, externDict, new CloneContext(mixCloneContext));
+                var mixer = new XenkoShaderMixer(finalModule, parsingResult, mixinDictionary, externDict, new CloneContext(mixCloneContext));
                 mixer.Mix();
                 //PerformanceLogger.Stop(PerformanceStage.Mix);
 
@@ -251,8 +251,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 simplifier.Run(finalShader);
 
                 parsingResult.Reflection = new EffectReflection();
-                var pdxShaderLinker = new ShaderLinker(parsingResult);
-                pdxShaderLinker.Run(finalShader);
+                var xkShaderLinker = new ShaderLinker(parsingResult);
+                xkShaderLinker.Run(finalShader);
 
                 // Return directly if there was any errors
                 if (parsingResult.HasErrors)
@@ -276,7 +276,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                         break;
                 }
 
-                var typeCleaner = new ParadoxShaderCleaner();
+                var typeCleaner = new XenkoShaderCleaner();
                 typeCleaner.Run(finalShader);
 
                 //PerformanceLogger.Stop(PerformanceStage.Global);
@@ -332,11 +332,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                 foreach (var composition in shaderMixinSource.Compositions)
                 {
                     //look for the key
-                    var foundVars = finalModule.FindAllVariablesByName(composition.Key).Where(value => value.Variable.Qualifiers.Contains(ParadoxStorageQualifier.Compose)).ToList();
+                    var foundVars = finalModule.FindAllVariablesByName(composition.Key).Where(value => value.Variable.Qualifiers.Contains(XenkoStorageQualifier.Compose)).ToList();
 
                     if (foundVars.Count > 1)
                     {
-                        log.Error(ParadoxMessageCode.ErrorAmbiguousComposition, new SourceSpan(), composition.Key);
+                        log.Error(XenkoMessageCode.ErrorAmbiguousComposition, new SourceSpan(), composition.Key);
                     }
                     else if (foundVars.Count > 0)
                     {
@@ -395,7 +395,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <param name="log">The logger.</param>
         private static void FullLinkStageCompositions(Variable variable, List<ModuleMixin> composition, CompositionDictionary dictionary, Dictionary<Variable, List<ModuleMixin>> extraDictionary, LoggerResult log)
         {
-            var mixin = variable.GetTag(ParadoxTags.ShaderScope) as ModuleMixin;
+            var mixin = variable.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
             if (mixin != null)
             {
                 var className = mixin.MixinName;
@@ -409,10 +409,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                         if (module.MixinName == className || module.InheritanceList.Any(x => x.MixinName == className))
                         {
                             // add reference
-                            var foundVars = module.FindAllVariablesByName(variable.Name).Where(value => value.Variable.Qualifiers.Contains(ParadoxStorageQualifier.Compose)).ToList();;
+                            var foundVars = module.FindAllVariablesByName(variable.Name).Where(value => value.Variable.Qualifiers.Contains(XenkoStorageQualifier.Compose)).ToList();;
                             if (foundVars.Count > 1)
                             {
-                                log.Error(ParadoxMessageCode.ErrorAmbiguousComposition, new SourceSpan(), variable.Name);
+                                log.Error(XenkoMessageCode.ErrorAmbiguousComposition, new SourceSpan(), variable.Name);
                             }
                             else if (foundVars.Count > 0)
                             {

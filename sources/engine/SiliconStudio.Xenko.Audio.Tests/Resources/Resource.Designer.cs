@@ -9,9 +9,9 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-[assembly: global::Android.Runtime.ResourceDesignerAttribute("SiliconStudio.Paradox.Audio.Tests.Resource", IsApplication=true)]
+[assembly: global::Android.Runtime.ResourceDesignerAttribute("SiliconStudio.Xenko.Audio.Tests.Resource", IsApplication=true)]
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
 	
 	
@@ -26,32 +26,32 @@ namespace SiliconStudio.Paradox.Audio.Tests
 		
 		public static void UpdateIdValues()
 		{
-			global::SiliconStudio.Paradox.Resource.Id.EditTextLayout = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.EditTextLayout;
-			global::SiliconStudio.Paradox.Resource.Id.GameMainLayout = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.GameMainLayout;
-			global::SiliconStudio.Paradox.Resource.Id.GameViewLayout = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.GameViewLayout;
-			global::SiliconStudio.Paradox.Resource.Layout.Game = global::SiliconStudio.Paradox.Audio.Tests.Resource.Layout.Game;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.OptionHostName;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionPort = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.OptionPort;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.OptionRemoteServer;
-			global::Xamarin.Android.NUnitLite.Resource.Id.OptionsButton = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.OptionsButton;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultFullName = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultFullName;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultMessage = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultMessage;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultResultState = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultResultState;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultRunSingleMethodTest = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultRunSingleMethodTest;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultStackTrace = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultStackTrace;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsFailed = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultsFailed;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsId = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultsId;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsIgnored = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultsIgnored;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsInconclusive = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultsInconclusive;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsMessage = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultsMessage;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsPassed = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultsPassed;
-			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsResult = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.ResultsResult;
-			global::Xamarin.Android.NUnitLite.Resource.Id.RunTestsButton = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.RunTestsButton;
-			global::Xamarin.Android.NUnitLite.Resource.Id.TestSuiteListView = global::SiliconStudio.Paradox.Audio.Tests.Resource.Id.TestSuiteListView;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.options = global::SiliconStudio.Paradox.Audio.Tests.Resource.Layout.options;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.results = global::SiliconStudio.Paradox.Audio.Tests.Resource.Layout.results;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.test_result = global::SiliconStudio.Paradox.Audio.Tests.Resource.Layout.test_result;
-			global::Xamarin.Android.NUnitLite.Resource.Layout.test_suite = global::SiliconStudio.Paradox.Audio.Tests.Resource.Layout.test_suite;
+			global::SiliconStudio.Xenko.Resource.Id.EditTextLayout = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.EditTextLayout;
+			global::SiliconStudio.Xenko.Resource.Id.GameMainLayout = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.GameMainLayout;
+			global::SiliconStudio.Xenko.Resource.Id.GameViewLayout = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.GameViewLayout;
+			global::SiliconStudio.Xenko.Resource.Layout.Game = global::SiliconStudio.Xenko.Audio.Tests.Resource.Layout.Game;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionHostName = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.OptionHostName;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionPort = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.OptionPort;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionRemoteServer = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.OptionRemoteServer;
+			global::Xamarin.Android.NUnitLite.Resource.Id.OptionsButton = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.OptionsButton;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultFullName = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultFullName;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultMessage = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultMessage;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultResultState = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultResultState;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultRunSingleMethodTest = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultRunSingleMethodTest;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultStackTrace = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultStackTrace;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsFailed = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultsFailed;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsId = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultsId;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsIgnored = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultsIgnored;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsInconclusive = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultsInconclusive;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsMessage = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultsMessage;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsPassed = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultsPassed;
+			global::Xamarin.Android.NUnitLite.Resource.Id.ResultsResult = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.ResultsResult;
+			global::Xamarin.Android.NUnitLite.Resource.Id.RunTestsButton = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.RunTestsButton;
+			global::Xamarin.Android.NUnitLite.Resource.Id.TestSuiteListView = global::SiliconStudio.Xenko.Audio.Tests.Resource.Id.TestSuiteListView;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.options = global::SiliconStudio.Xenko.Audio.Tests.Resource.Layout.options;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.results = global::SiliconStudio.Xenko.Audio.Tests.Resource.Layout.results;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.test_result = global::SiliconStudio.Xenko.Audio.Tests.Resource.Layout.test_result;
+			global::Xamarin.Android.NUnitLite.Resource.Layout.test_suite = global::SiliconStudio.Xenko.Audio.Tests.Resource.Layout.test_suite;
 		}
 		
 		public partial class Attribute

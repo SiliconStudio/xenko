@@ -3,9 +3,9 @@
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Visitor;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class ParadoxReplaceExtern : ShaderVisitor
+    internal class XenkoReplaceExtern : ShaderVisitor
     {
         #region Private members
 
@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         #region Constructor
 
-        public ParadoxReplaceExtern(Variable variable, IndexerExpression expression)
+        public XenkoReplaceExtern(Variable variable, IndexerExpression expression)
             : base(false, true)
         {
             VariableToReplace = variable;

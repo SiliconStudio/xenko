@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-//using Paradox.Framework.Build.Pipeline;
+//using Xenko.Framework.Build.Pipeline;
 using SiliconStudio.Core.IO;
 
 // Temporary disabling build unit tests, until we move them to a new csproj with correct dependencies

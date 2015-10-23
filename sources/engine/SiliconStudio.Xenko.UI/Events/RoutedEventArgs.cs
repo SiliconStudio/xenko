@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
-namespace SiliconStudio.Paradox.UI.Events
+namespace SiliconStudio.Xenko.UI.Events
 {
     /// <summary>
     /// Contains state information and event data associated with a routed event.

@@ -22,7 +22,7 @@
 // THE SOFTWARE.
 using System;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// An interface for a drawable game component that is called by the <see cref="GameBase"/> class.

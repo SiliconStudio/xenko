@@ -1,4 +1,4 @@
-﻿using SiliconStudio.Paradox.Shaders;
+﻿using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using LayoutQualifier = SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier;
 using ParameterQualifier = SiliconStudio.Shaders.Ast.ParameterQualifier;
@@ -13,7 +13,7 @@ using SiliconStudio.Shaders.Ast.Glsl;
 using SiliconStudio.Shaders.Convertor;
 using SiliconStudio.Shaders.Writer.Hlsl;
 
-namespace SiliconStudio.Paradox.Graphics.ShaderCompiler.OpenGL
+namespace SiliconStudio.Xenko.Graphics.ShaderCompiler.OpenGL
 {
     public class ShaderCompiler : IShaderCompilerOld
     {

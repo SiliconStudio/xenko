@@ -9,16 +9,16 @@ using System.Xml;
 
 namespace SiliconStudio.BuildEngine
 {
-    public class ParadoxDataContractOperationBehavior : DataContractSerializerOperationBehavior
+    public class XenkoDataContractOperationBehavior : DataContractSerializerOperationBehavior
     {
-        private static ParadoxXmlObjectSerializer serializer = new ParadoxXmlObjectSerializer();
+        private static XenkoXmlObjectSerializer serializer = new XenkoXmlObjectSerializer();
 
-        public ParadoxDataContractOperationBehavior(OperationDescription operation)
+        public XenkoDataContractOperationBehavior(OperationDescription operation)
             : base(operation)
         {
         }
 
-        public ParadoxDataContractOperationBehavior(
+        public XenkoDataContractOperationBehavior(
             OperationDescription operation,
             DataContractFormatAttribute dataContractFormatAttribute)
             : base(operation, dataContractFormatAttribute)

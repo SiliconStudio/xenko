@@ -9,7 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Paradox.StorageTool
+namespace SiliconStudio.Xenko.StorageTool
 {
     /// <summary>
     /// Description of an object entry in the bundle.
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.StorageTool
         /// Gets the listing from a bundle.
         /// </summary>
         /// <param name="bundlePath">The bundle path.</param>
-        /// <returns>System.Collections.Generic.List&lt;SiliconStudio.Paradox.StorageTool.ObjectEntry&gt;.</returns>
+        /// <returns>System.Collections.Generic.List&lt;SiliconStudio.Xenko.StorageTool.ObjectEntry&gt;.</returns>
         private static List<ObjectEntry> GetBundleListing(string bundlePath)
         {
             if (bundlePath == null) throw new ArgumentNullException("bundlePath");

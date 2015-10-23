@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
-namespace SiliconStudio.Paradox.Graphics.Font
+namespace SiliconStudio.Xenko.Graphics.Font
 {
     [DataSerializerGlobal(typeof(ReferenceSerializer<StaticSpriteFont>), Profile = "Asset")]
     [ContentSerializer(typeof(StaticSpriteFontContentSerializer))]

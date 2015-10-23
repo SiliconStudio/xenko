@@ -1,11 +1,11 @@
 // Copyright (c) 2011 Silicon Studio
 
 using System.Collections.Generic;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class PostEffectPlugin : RenderPassPlugin
     {

@@ -25,10 +25,10 @@
 -->
 <style xmlns="SharpDoc">
   <!-- Name of this style. Must match the parent directory name. -->
-  <name>Paradox</name>
+  <name>Xenko</name>
 
   <!-- Description for this style -->
-  <description>Paradox Style</description>
+  <description>Xenko Style</description>
   
   <param name="FileExt">.htm</param>
   <param name="RootFileExt">.aspx</param>

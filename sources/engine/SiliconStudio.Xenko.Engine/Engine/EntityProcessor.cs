@@ -7,10 +7,10 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>Entity processor, triggered on various <see cref="EntityManager"/> events such as Entity and Component additions and removals.</summary>
     public abstract class EntityProcessor

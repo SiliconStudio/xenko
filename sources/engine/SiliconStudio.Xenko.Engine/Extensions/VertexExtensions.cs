@@ -3,12 +3,12 @@
 using System;
 using System.Linq;
 using System.Runtime.InteropServices;
-using SiliconStudio.Paradox.Rendering.Data;
+using SiliconStudio.Xenko.Rendering.Data;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics.Data;
 
-namespace SiliconStudio.Paradox.Extensions
+namespace SiliconStudio.Xenko.Extensions
 {
     public static class VertexExtensions
     {

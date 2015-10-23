@@ -7,7 +7,7 @@ using System.Text;
 
 using Mono.Cecil;
 
-namespace SiliconStudio.Paradox.PublicApiCheck
+namespace SiliconStudio.Xenko.PublicApiCheck
 {
     /// <summary>
     /// Helper class to check public API consistency between assemblies.

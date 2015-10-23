@@ -3,7 +3,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Describes an input signature for an <see cref="Effect"/>.

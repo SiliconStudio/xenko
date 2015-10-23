@@ -6,10 +6,10 @@ using System;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.UI.Controls;
 
-namespace SiliconStudio.Paradox.UI.Tests.Layering
+namespace SiliconStudio.Xenko.UI.Tests.Layering
 {
     /// <summary>
     /// A class that contains test functions for layering of the <see cref="ImageElement"/> class.
@@ -83,7 +83,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Layering
             // Test minimal size due to borders
             image.StretchType = StretchType.Fill;
             image.Measure(new Vector3());
-            Assert.AreEqual(new Vector3(3, 7, 0), image.DesiredSizeWithMargins);
+            Assert.AreEqual(new Vector3(4, 6, 0), image.DesiredSizeWithMargins);
 
             // Test with infinite value
             for (var type = 0; type < 5; ++type)

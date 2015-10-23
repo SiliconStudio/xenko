@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics.Font
+namespace SiliconStudio.Xenko.Graphics.Font
 {
     /// <summary>
     /// A character of a specific font with a specific size.

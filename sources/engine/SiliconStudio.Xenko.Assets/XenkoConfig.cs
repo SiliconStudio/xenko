@@ -9,13 +9,13 @@ using SiliconStudio.Assets;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Settings;
 using SiliconStudio.Core.VisualStudio;
-using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
-    [DataContract("Paradox")]
-    public sealed class ParadoxConfig
+    [DataContract("Xenko")]
+    public sealed class XenkoConfig
     {
         private const string XamariniOSBuild = @"MSBuild\Xamarin\iOS\Xamarin.iOS.CSharp.targets";
         private const string XamarinAndroidBuild = @"MSBuild\Xamarin\Android\Xamarin.Android.CSharp.targets";
@@ -29,11 +29,11 @@ namespace SiliconStudio.Paradox.Assets
         private const string Windows10UniversalRuntimeBuild = @"MSBuild\Microsoft\WindowsXaml\v14.0\8.2\Microsoft.Windows.UI.Xaml.Common.Targets";
         private static readonly string ProgramFilesX86 = Environment.GetEnvironmentVariable(Environment.Is64BitOperatingSystem ? "ProgramFiles(x86)" : "ProgramFiles");
 
-        public static readonly PackageVersion LatestPackageVersion = new PackageVersion(ParadoxVersion.CurrentAsText);
+        public static readonly PackageVersion LatestPackageVersion = new PackageVersion(XenkoVersion.CurrentAsText);
 
         public static PackageDependency GetLatestPackageDependency()
         {
-            return new PackageDependency("Paradox", new PackageVersionRange()
+            return new PackageDependency("Xenko", new PackageVersionRange()
                 {
                     MinVersion = LatestPackageVersion,
                     IsMinInclusive = true
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Assets
         }
 
         /// <summary>
-        /// Registers the solution platforms supported by Paradox.
+        /// Registers the solution platforms supported by Xenko.
         /// </summary>
         internal static void RegisterSolutionPlatforms()
         {

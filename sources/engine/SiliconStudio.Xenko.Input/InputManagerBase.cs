@@ -9,10 +9,10 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// Interface for input management system, including keyboard, mouse, gamepads and touch.

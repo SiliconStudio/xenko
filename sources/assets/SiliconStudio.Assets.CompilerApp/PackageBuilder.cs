@@ -16,7 +16,7 @@ using SiliconStudio.Core.Serialization.Assets;
 
 using System.Threading;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Assets;
+using SiliconStudio.Xenko.Assets;
 
 namespace SiliconStudio.Assets.CompilerApp
 {

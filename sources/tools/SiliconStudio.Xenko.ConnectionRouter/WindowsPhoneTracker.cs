@@ -14,16 +14,16 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Win32;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Engine.Network;
+using SiliconStudio.Xenko.Engine.Network;
 
-namespace SiliconStudio.Paradox.ConnectionRouter
+namespace SiliconStudio.Xenko.ConnectionRouter
 {
     /// <summary>
     /// Track Windows Phone devices (with IpOverUsbEnum.exe) and establish port mapping.
     /// </summary>
     class WindowsPhoneTracker
     {
-        private static string IpOverUsbParadoxName = "ParadoxRouterServer";
+        private static string IpOverUsbXenkoName = "XenkoRouterServer";
         private static readonly Logger Log = GlobalLogger.GetLogger("WindowsPhoneTracker");
 
         public static void TrackDevices(Router router)
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 return;
             }
 
-            var portRegex = new Regex(string.Format(@"{0} (\d+) ->", IpOverUsbParadoxName));
+            var portRegex = new Regex(string.Format(@"{0} (\d+) ->", IpOverUsbXenkoName));
             var currentWinPhoneDevices = new Dictionary<int, ConnectedDevice>();
 
             bool checkIfPortMappingIsSetup = false;
@@ -67,9 +67,9 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     {
                         if (ipOverUsb != null)
                         {
-                            using (var ipOverUsbParadox = ipOverUsb.OpenSubKey(IpOverUsbParadoxName))
+                            using (var ipOverUsbXenko = ipOverUsb.OpenSubKey(IpOverUsbXenkoName))
                             {
-                                if (ipOverUsbParadox == null)
+                                if (ipOverUsbXenko == null)
                                 {
                                     RegisterWindowsPhonePortMapping();
                                 }
@@ -134,12 +134,12 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                     Log.Error("There is no IpOverUsb in registry. Is Windows Phone SDK properly installed?");
                     return;
                 }
-                using (var ipOverUsbParadox = ipOverUsb.CreateSubKey(IpOverUsbParadoxName))
+                using (var ipOverUsbXenko = ipOverUsb.CreateSubKey(IpOverUsbXenkoName))
                 {
-                    ipOverUsbParadox.SetValue("LocalAddress", "127.0.0.1");
-                    ipOverUsbParadox.SetValue("LocalPort", 40153);
-                    ipOverUsbParadox.SetValue("DestinationAddress", "127.0.0.1");
-                    ipOverUsbParadox.SetValue("DestinationPort", RouterClient.DefaultListenPort);
+                    ipOverUsbXenko.SetValue("LocalAddress", "127.0.0.1");
+                    ipOverUsbXenko.SetValue("LocalPort", 40153);
+                    ipOverUsbXenko.SetValue("DestinationAddress", "127.0.0.1");
+                    ipOverUsbXenko.SetValue("DestinationPort", RouterClient.DefaultListenPort);
                 }
             }
 

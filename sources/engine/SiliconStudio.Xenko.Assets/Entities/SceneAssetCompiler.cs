@@ -10,10 +10,10 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets.Serializers;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Assets.Serializers;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     public class SceneAssetCompiler : AssetCompilerBase<SceneAsset>
     {

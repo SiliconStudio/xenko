@@ -36,7 +36,7 @@ using NUnit.Framework;
 using NUnit.Framework.Internal;
 using NUnit.Framework.Api;
 
-namespace SiliconStudio.Paradox.UnitTesting.UI {
+namespace SiliconStudio.Xenko.UnitTesting.UI {
 	
 	class TestCaseElement : TestElement {
 		

@@ -4,7 +4,7 @@
 using System;
 using System.IO;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public static class TextureExtensions
     {

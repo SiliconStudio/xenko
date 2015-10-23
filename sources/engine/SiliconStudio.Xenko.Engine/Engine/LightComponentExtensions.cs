@@ -4,10 +4,10 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering.Colors;
-using SiliconStudio.Paradox.Rendering.Lights;
+using SiliconStudio.Xenko.Rendering.Colors;
+using SiliconStudio.Xenko.Rendering.Lights;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Extensions for the <see cref="LightComponent"/> class.

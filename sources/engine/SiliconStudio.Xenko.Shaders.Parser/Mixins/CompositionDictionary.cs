@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Shaders.Ast;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     internal class CompositionDictionary : IDictionary<Variable, List<ModuleMixin>>
     {

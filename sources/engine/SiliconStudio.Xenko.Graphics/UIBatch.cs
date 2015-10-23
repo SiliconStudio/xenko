@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// A utility class to batch and draw UI images.
@@ -310,11 +310,11 @@ namespace SiliconStudio.Paradox.Graphics
                 Swizzle = swizzle,
                 SnapImage = snapImage,
                 Primitive = borderSize == Vector4.Zero? PrimitiveType.Rectangle : PrimitiveType.BorderRectangle,
-                BorderSize = new Vector4(borderSize.X / sourceRectangle.Width, borderSize.Y / sourceRectangle.Width, borderSize.Z / sourceRectangle.Height, borderSize.W / sourceRectangle.Height),
+                BorderSize = new Vector4(borderSize.X / sourceRectangle.Width, borderSize.Y / sourceRectangle.Height, borderSize.Z / sourceRectangle.Width, borderSize.W / sourceRectangle.Height),
             };
 
             var rotatedSize = imageOrientation == ImageOrientation.AsIs? elementSize: new Vector3(elementSize.Y, elementSize.X, 0);
-            drawInfo.VertexShift = new Vector4(borderSize.X / rotatedSize.X, 1f - borderSize.Y / rotatedSize.X, borderSize.Z / rotatedSize.Y, 1f - borderSize.W / rotatedSize.Y);
+            drawInfo.VertexShift = new Vector4(borderSize.X / rotatedSize.X, borderSize.Y / rotatedSize.Y, 1f - borderSize.Z / rotatedSize.X, 1f - borderSize.W / rotatedSize.Y);
 
             var matrix = worldMatrix;
             matrix.M11 *= elementSize.X;
@@ -539,21 +539,21 @@ namespace SiliconStudio.Paradox.Graphics
             uvX[0] = drawInfo->Source.Left;
             uvX[3] = drawInfo->Source.Right;
             uvX[1] = uvX[0] + drawInfo->Source.Width * drawInfo->BorderSize.X;
-            uvX[2] = uvX[3] - drawInfo->Source.Width * drawInfo->BorderSize.Y;
+            uvX[2] = uvX[3] - drawInfo->Source.Width * drawInfo->BorderSize.Z;
             var uvY = new Vector4();
             uvY[0] = drawInfo->Source.Top;
             uvY[3] = drawInfo->Source.Bottom;
-            uvY[1] = uvY[0] + drawInfo->Source.Height * drawInfo->BorderSize.Z;
+            uvY[1] = uvY[0] + drawInfo->Source.Height * drawInfo->BorderSize.Y;
             uvY[2] = uvY[3] - drawInfo->Source.Height * drawInfo->BorderSize.W;
 
             // set the shift vectors
             shiftVectorX[0] = Vector4.Zero;
             Vector4.Multiply(ref drawInfo->UnitXWorld, drawInfo->VertexShift.X, out shiftVectorX[1]);
-            Vector4.Multiply(ref drawInfo->UnitXWorld, drawInfo->VertexShift.Y, out shiftVectorX[2]);
+            Vector4.Multiply(ref drawInfo->UnitXWorld, drawInfo->VertexShift.Z, out shiftVectorX[2]);
             shiftVectorX[3] = drawInfo->UnitXWorld;
 
             shiftVectorY[0] = Vector4.Zero;
-            Vector4.Multiply(ref drawInfo->UnitYWorld, drawInfo->VertexShift.Z, out shiftVectorY[1]);
+            Vector4.Multiply(ref drawInfo->UnitYWorld, drawInfo->VertexShift.Y, out shiftVectorY[1]);
             Vector4.Multiply(ref drawInfo->UnitYWorld, drawInfo->VertexShift.W, out shiftVectorY[2]);
             shiftVectorY[3] = drawInfo->UnitYWorld;
 

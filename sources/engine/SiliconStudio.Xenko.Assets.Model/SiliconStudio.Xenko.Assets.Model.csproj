@@ -1,12 +1,12 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProjectGuid>{C904D2C6-5A15-4E0B-8432-33967E1735AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Paradox.Assets.Model</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Assets.Model</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Assets.Model</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Assets.Model</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
@@ -66,46 +66,46 @@
       <Name>SiliconStudio.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\tools\SiliconStudio.Paradox.Importer.Assimp\SiliconStudio.Paradox.Importer.Assimp.vcxproj">
+    <ProjectReference Include="..\..\tools\SiliconStudio.Xenko.Importer.Assimp\SiliconStudio.Xenko.Importer.Assimp.vcxproj">
       <Project>{c2306552-6c42-464c-8981-32fef4f9458d}</Project>
-      <Name>SiliconStudio.Paradox.Importer.Assimp</Name>
+      <Name>SiliconStudio.Xenko.Importer.Assimp</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\tools\SiliconStudio.Paradox.Importer.Common\SiliconStudio.Paradox.Importer.Common.vcxproj">
+    <ProjectReference Include="..\..\tools\SiliconStudio.Xenko.Importer.Common\SiliconStudio.Xenko.Importer.Common.vcxproj">
       <Project>{43a6e62e-1b1c-4630-abb8-c3f716004645}</Project>
-      <Name>SiliconStudio.Paradox.Importer.Common</Name>
+      <Name>SiliconStudio.Xenko.Importer.Common</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\tools\SiliconStudio.Paradox.Importer.FBX\SiliconStudio.Paradox.Importer.FBX.vcxproj">
+    <ProjectReference Include="..\..\tools\SiliconStudio.Xenko.Importer.FBX\SiliconStudio.Xenko.Importer.FBX.vcxproj">
       <Project>{0467d515-fd66-4b8a-a128-cb642c2ed03f}</Project>
-      <Name>SiliconStudio.Paradox.Importer.FBX</Name>
+      <Name>SiliconStudio.Xenko.Importer.FBX</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Assets\SiliconStudio.Paradox.Assets.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Assets\SiliconStudio.Xenko.Assets.csproj">
       <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
-      <Name>SiliconStudio.Paradox.Assets</Name>
+      <Name>SiliconStudio.Xenko.Assets</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
-      <Name>SiliconStudio.Paradox.Engine</Name>
+      <Name>SiliconStudio.Xenko.Engine</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Games\SiliconStudio.Paradox.Games.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
-      <Name>SiliconStudio.Paradox.Games</Name>
+      <Name>SiliconStudio.Xenko.Games</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
-      <Name>SiliconStudio.Paradox.Shaders</Name>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

@@ -9,14 +9,14 @@ using ObjCRuntime;
 using UIKit;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.iPhoneOS;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 
 using RenderbufferInternalFormat = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
 
-namespace SiliconStudio.Paradox.Starter
+namespace SiliconStudio.Xenko.Starter
 {
-    public class ParadoxApplicationDelegate : UIApplicationDelegate
+    public class XenkoApplicationDelegate : UIApplicationDelegate
     {
         /// <summary>
         /// The instance of the game to run.
@@ -38,14 +38,14 @@ namespace SiliconStudio.Paradox.Starter
             // create the game main windows
             MainWindow = new UIWindow(bounds);
 
-            // create the paradox game view 
-            var paradoxGameView = new iOSParadoxView((RectangleF)bounds) {ContentScaleFactor = UIScreen.MainScreen.Scale};
+            // create the xenko game view 
+            var xenkoGameView = new iOSXenkoView((RectangleF)bounds) {ContentScaleFactor = UIScreen.MainScreen.Scale};
 
-            // create the view controller used to display the paradox game
-            var paradoxGameController = new ParadoxGameController { View = paradoxGameView };
+            // create the view controller used to display the xenko game
+            var xenkoGameController = new XenkoGameController { View = xenkoGameView };
 
             // create the game context
-            var gameContext = new GameContext(MainWindow, paradoxGameView, paradoxGameController);
+            var gameContext = new GameContext(MainWindow, xenkoGameView, xenkoGameController);
 
             // Force fullscreen
             UIApplication.SharedApplication.SetStatusBarHidden(true, false);
@@ -67,13 +67,13 @@ namespace SiliconStudio.Paradox.Starter
         // note: for more information on iOS application life cycle, 
         // see http://docs.xamarin.com/guides/cross-platform/application_fundamentals/backgrounding/part_1_introduction_to_backgrounding_in_ios
 
-        [Register("iOSParadoxView")]
-        internal class iOSParadoxView : iPhoneOSGameView, IAnimatedGameView
+        [Register("iOSXenkoView")]
+        internal class iOSXenkoView : iPhoneOSGameView, IAnimatedGameView
         {
             CADisplayLink displayLink;
             private bool isRunning;
 
-            public iOSParadoxView(RectangleF frame)
+            public iOSXenkoView(RectangleF frame)
                 : base(frame)
             {
             }

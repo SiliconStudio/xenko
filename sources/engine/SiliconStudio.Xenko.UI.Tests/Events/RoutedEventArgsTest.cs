@@ -4,10 +4,10 @@ using System;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.UI.Controls;
-using SiliconStudio.Paradox.UI.Events;
+using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Events;
 
-namespace SiliconStudio.Paradox.UI.Tests.Events
+namespace SiliconStudio.Xenko.UI.Tests.Events
 {
     /// <summary>
     /// class used to test <see cref="RoutedEventArgs"/>

@@ -18,7 +18,7 @@
     <SiliconStudioPlatform><#= Properties.CurrentPlatform #></SiliconStudioPlatform>
     <SiliconStudioBuildProfile><#= Properties.CurrentPlatformName #></SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{<#= Properties.Package.Id  #>}</SiliconStudioPackageGuid>
-    <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)<#= Properties.ParadoxSdkRelativeDir #></SiliconStudioParadoxDir>
+    <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)<#= Properties.XenkoSdkRelativeDir #></SiliconStudioXenkoDir>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -32,7 +32,7 @@
     <Compile Include="TestClass1.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
+    <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 <#@ include file="..\Common.Imports.targets.t4" #>

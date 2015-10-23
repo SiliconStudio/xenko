@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
@@ -299,7 +298,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 referencesByObjectId[objectId] = references = new List<string>();
 
                 // Open stream to read list of chunk references
-                using (var stream = AssetManager.FileProvider.OpenStream("obj/" + objectId, VirtualFileMode.Open, VirtualFileAccess.Read))
+                using (var stream = AssetManager.FileProvider.OpenStream(DatabaseFileProvider.ObjectIdUrl + objectId, VirtualFileMode.Open, VirtualFileAccess.Read))
                 {
                     // Read chunk header
                     var streamReader = new BinarySerializationReader(stream);

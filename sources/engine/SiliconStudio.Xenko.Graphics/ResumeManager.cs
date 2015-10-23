@@ -4,7 +4,7 @@ using System;
 using System.Linq;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     public class ResumeManager
     {

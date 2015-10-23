@@ -1,4 +1,4 @@
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class ShadowMapPermutation : Permutation
     {

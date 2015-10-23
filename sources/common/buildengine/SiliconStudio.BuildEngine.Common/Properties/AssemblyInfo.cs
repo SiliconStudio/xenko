@@ -7,11 +7,11 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("Paradox.BuildEngine.Shared")]
+[assembly: AssemblyTitle("Xenko.BuildEngine.Shared")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Silicon Studio")]
-[assembly: AssemblyProduct("Paradox.BuildEngine.Shared")]
+[assembly: AssemblyProduct("Xenko.BuildEngine.Shared")]
 [assembly: AssemblyCopyright("Copyright © Silicon Studio 2011")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

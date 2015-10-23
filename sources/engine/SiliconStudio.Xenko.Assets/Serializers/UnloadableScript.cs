@@ -7,9 +7,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Assets.Serializers
+namespace SiliconStudio.Xenko.Assets.Serializers
 {
     /// <summary>
     /// Represents a Script that could not be loaded properly (usually due to missing/broken assemblies).

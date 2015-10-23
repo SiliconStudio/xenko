@@ -4,11 +4,11 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// The scene system handles the scenes of a game.

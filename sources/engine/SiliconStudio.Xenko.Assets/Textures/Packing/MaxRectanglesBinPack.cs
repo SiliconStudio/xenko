@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Assets.Textures.Packing
+namespace SiliconStudio.Xenko.Assets.Textures.Packing
 {
     /// <summary>
     /// Implementation of texture packer using MaxRects algorithm.

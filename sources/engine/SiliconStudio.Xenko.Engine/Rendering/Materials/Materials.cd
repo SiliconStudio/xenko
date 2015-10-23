@@ -1,89 +1,89 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialAttributes" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialAttributes" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="1" Y="4.25" Width="2" />
     <Members>
       <Method Name="MaterialAttributes" Hidden="true" />
       <Method Name="Visit" Hidden="true" />
     </Members>
-    <AssociationLine Name="Tessellation" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialTessellationFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Tessellation" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialTessellationFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="2.438" Y="4.812" />
         <Point X="2.438" Y="11.596" />
         <Point X="3.5" Y="11.596" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Displacement" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialDisplacementFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Displacement" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialDisplacementFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="2.562" Y="4.812" />
         <Point X="2.562" Y="10.096" />
         <Point X="3.5" Y="10.096" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Surface" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSurfaceFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Surface" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialSurfaceFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="2.812" Y="4.812" />
         <Point X="2.812" Y="7.096" />
         <Point X="3.5" Y="7.096" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="MicroSurface" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialMicroSurfaceFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="MicroSurface" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialMicroSurfaceFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="2.688" Y="4.812" />
         <Point X="2.688" Y="8.596" />
         <Point X="3.5" Y="8.596" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Diffuse" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialDiffuseFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Diffuse" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialDiffuseFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="2.312" Y="4.812" />
         <Point X="2.312" Y="14.346" />
         <Point X="3.5" Y="14.346" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="DiffuseModel" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialDiffuseModelFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="DiffuseModel" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialDiffuseModelFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="2.062" Y="4.812" />
         <Point X="2.062" Y="19.096" />
         <Point X="3.5" Y="19.096" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Specular" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Specular" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="2.188" Y="4.812" />
         <Point X="2.188" Y="15.846" />
         <Point X="3.5" Y="15.846" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="SpecularModel" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularModelFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="SpecularModel" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularModelFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="1.812" Y="4.812" />
         <Point X="1.812" Y="22.346" />
         <Point X="3.25" Y="22.346" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Occlusion" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialOcclusionFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Occlusion" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialOcclusionFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="1.688" Y="4.812" />
         <Point X="1.688" Y="23.596" />
         <Point X="3.25" Y="23.596" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Emissive" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialEmissiveFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Emissive" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialEmissiveFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="1.938" Y="4.812" />
         <Point X="1.938" Y="20.596" />
         <Point X="3.5" Y="20.596" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Transparency" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialTransparencyFeature" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Transparency" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialTransparencyFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="1.562" Y="4.812" />
         <Point X="1.562" Y="25.096" />
         <Point X="3.25" Y="25.096" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="Overrides" Type="SiliconStudio.Paradox.Rendering.Materials.MaterialOverrides" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Overrides" Type="SiliconStudio.Xenko.Rendering.Materials.MaterialOverrides" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="3" Y="4.75" />
         <Point X="4" Y="4.75" />
@@ -110,7 +110,7 @@
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialBlendLayer" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialBlendLayer" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="8.5" Y="5.5" Width="1.75" />
     <TypeIdentifier>
       <HashCode>AEAAAAAAAQAAAIQAAAAAAAQAQACAAAAAAAAAAEAAAAA=</HashCode>
@@ -121,7 +121,7 @@
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialBlendLayers" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialBlendLayers" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="8.5" Y="4.25" Width="1.75" />
     <Compartments>
       <Compartment Name="Methods" Collapsed="true" />
@@ -132,7 +132,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialDiffuseLambertModelFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialDiffuseLambertModelFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6.25" Y="18.75" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAABAAAQAgAAAAAAAAAAgAIAAAAAAAAAAAAA=</HashCode>
@@ -140,7 +140,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialDiffuseMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialDiffuseMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6.75" Y="14" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAEAAAAAAAAAAAQAAAABAAAAAAAAABAAAAAAAAAAQAA=</HashCode>
@@ -148,7 +148,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialDisplacementMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialDisplacementMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6.75" Y="9.75" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAQAAAAAAAAAAQAAAAAAAAIAAAAAgAAAAgACAAAAAA=</HashCode>
@@ -156,7 +156,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialEmissiveMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialEmissiveMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6.25" Y="20.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAQAAAAAAABAAAQAgQgBAAAIAAAAAAAAAAAAAAAAAAA=</HashCode>
@@ -164,7 +164,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialGlossinessMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialGlossinessMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6.75" Y="8.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAEAAAAAAAAQAAAABAAEAAAAABAAAAAAAAAAAAAA=</HashCode>
@@ -172,7 +172,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialMetalnessMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialMetalnessMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="9.25" Y="15.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AACAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
@@ -180,7 +180,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialNormalMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialNormalMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6.75" Y="7" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAIABQAQAABAAAAAAAAAAAAAAAACAAAAAA=</HashCode>
@@ -188,7 +188,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialOcclusionMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialOcclusionMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6.25" Y="23.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AFAAAAAAAAAAAAQAAACBAAAAAABAAAAAAECQAAAAAAA=</HashCode>
@@ -196,14 +196,14 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialOverrides" Collapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialOverrides" Collapsed="true">
     <Position X="3.5" Y="5.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAIAAAAAAAAAAAAAEAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\MaterialOverrides.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMapFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6.75" Y="15.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAABgAAIAAAgAAAABAAAAAAAAAA=</HashCode>
@@ -211,7 +211,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetFresnelNone" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetFresnelNone" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="22" Y="23.5" Width="3" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -219,7 +219,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetFresnelSchlick" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetFresnelSchlick" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="18.75" Y="23.5" Width="3" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -227,20 +227,20 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetModelFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetModelFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="13.25" Y="22" Width="3" />
     <Compartments>
       <Compartment Name="Properties" Collapsed="true" />
       <Compartment Name="Methods" Collapsed="true" />
     </Compartments>
-    <AssociationLine Name="Visibility" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetVisibilityFunction" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="Visibility" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularMicrofacetVisibilityFunction" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="13.625" Y="22.562" />
         <Point X="13.625" Y="27.346" />
         <Point X="15.25" Y="27.346" />
       </Path>
     </AssociationLine>
-    <AssociationLine Name="NormalDistribution" Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetNormalDistributionFunction" FixedFromPoint="true" FixedToPoint="true">
+    <AssociationLine Name="NormalDistribution" Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularMicrofacetNormalDistributionFunction" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="13.938" Y="22.562" />
         <Point X="13.938" Y="25.096" />
@@ -258,7 +258,7 @@
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetNormalDistributionBeckmann" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetNormalDistributionBeckmann" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="24" Y="24.75" Width="4" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -266,7 +266,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetNormalDistributionBlinnPhong" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetNormalDistributionBlinnPhong" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="19.5" Y="25.75" Width="4" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -274,7 +274,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetNormalDistributionGGX" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetNormalDistributionGGX" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="19.5" Y="24.75" Width="4.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -282,7 +282,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetVisibilityCookTorrance" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetVisibilityCookTorrance" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="19.5" Y="28" Width="3.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -290,7 +290,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetVisibilityImplicit" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetVisibilityImplicit" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="24" Y="28" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -298,7 +298,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetVisibilityKelemen" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetVisibilityKelemen" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="24" Y="30" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -306,7 +306,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetVisibilityNeumann" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetVisibilityNeumann" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="19.5" Y="30" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -314,7 +314,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetVisibilitySmithBeckmann" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetVisibilitySmithBeckmann" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="24" Y="27" Width="3.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -322,7 +322,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetVisibilitySmithGGXCorrelated" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="24" Y="29" Width="4" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -330,7 +330,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" Collapsed="true" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetVisibilitySmithSchlickBeckmann" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="19.5" Y="27" Width="4" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -338,7 +338,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialSpecularMicrofacetVisibilitySmithSchlickGGX" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialSpecularMicrofacetVisibilitySmithSchlickGGX" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="19.5" Y="29" Width="3.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAIAAAAAAAEAAAAA=</HashCode>
@@ -346,7 +346,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialTessellationBaseFeature" Collapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialTessellationBaseFeature" Collapsed="true">
     <Position X="6.75" Y="11.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AACAAAAACAAAAIQAAAAAAAQAAAAAAAQCAAAAAAAAAAA=</HashCode>
@@ -354,21 +354,21 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialTessellationFlatFeature" Collapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialTessellationFlatFeature" Collapsed="true">
     <Position X="5" Y="12.5" Width="2.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\MaterialTessellationFlatFeature.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialTessellationPNFeature" Collapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialTessellationPNFeature" Collapsed="true">
     <Position X="8.25" Y="12.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\MaterialTessellationPNFeature.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialTransparencyAdditiveFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialTransparencyAdditiveFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="6.25" Y="25.25" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAEAAAAQABAAAAASAAAAAABAAAAAAAAIAAAA=</HashCode>
@@ -376,7 +376,7 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialTransparencyCutoffFeature" Collapsed="true" BaseTypeListCollapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialTransparencyCutoffFeature" Collapsed="true" BaseTypeListCollapsed="true">
     <Position X="9.25" Y="25.25" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAACAAAQABAAAAAQAAAAAABEAAAAAAAAAAAA=</HashCode>
@@ -384,14 +384,14 @@
     </TypeIdentifier>
     <Lollipop Position="0.2" />
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Material" Collapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Material" Collapsed="true">
     <Position X="13.75" Y="5.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAgAABEAAgCAAAAAAAAAAAAAAAAAAAIAAEAAAAAA=</HashCode>
       <FileName>Rendering\Material.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="SiliconStudio.Paradox.Rendering.Materials.MaterialDescriptor" Collapsed="true">
+  <Class Name="SiliconStudio.Xenko.Rendering.Materials.MaterialDescriptor" Collapsed="true">
     <Position X="5" Y="4.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAAAAAAQAAAAAAAEAAAAAAAAAAA=</HashCode>
@@ -403,9 +403,9 @@
     </ShowAsAssociation>
     <Lollipop Position="0.2" />
   </Class>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialAttributes" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialAttributes" Collapsed="true">
     <Position X="1" Y="3" Width="2" />
-    <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialFeature" FixedToPoint="true">
+    <InheritanceLine Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialFeature" FixedToPoint="true">
       <Path>
         <Point X="12.375" Y="2.191" />
         <Point X="12.375" Y="2.625" />
@@ -420,9 +420,9 @@
       <FileName>Rendering\Materials\IMaterialAttributes.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialDescriptor" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialDescriptor" Collapsed="true">
     <Position X="5" Y="3" Width="2" />
-    <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialShaderGenerator" FixedFromPoint="true">
+    <InheritanceLine Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialShaderGenerator" FixedFromPoint="true">
       <Path>
         <Point X="6" Y="1.062" />
         <Point X="6" Y="3" />
@@ -433,9 +433,9 @@
       <FileName>Rendering\Materials\IMaterialDescriptor.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialDiffuseFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialDiffuseFeature" Collapsed="true">
     <Position X="3.5" Y="14" Width="2.25" />
-    <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialFeature" FixedToPoint="true">
+    <InheritanceLine Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialFeature" FixedToPoint="true">
       <Path>
         <Point X="12.375" Y="2.191" />
         <Point X="12.375" Y="13.625" />
@@ -448,23 +448,23 @@
       <FileName>Rendering\Materials\IMaterialDiffuseFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialDiffuseModelFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialDiffuseModelFeature" Collapsed="true">
     <Position X="3.5" Y="18.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialDiffuseModelFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialDisplacementFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialDisplacementFeature" Collapsed="true">
     <Position X="3.5" Y="9.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialDisplacementFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialEmissiveFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialEmissiveFeature" Collapsed="true">
     <Position X="3.5" Y="20.25" Width="2" />
-    <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialShadingModelFeature" FixedToPoint="true">
+    <InheritanceLine Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialShadingModelFeature" FixedToPoint="true">
       <Path>
         <Point X="10.375" Y="17.82" />
         <Point X="10.375" Y="19.875" />
@@ -477,9 +477,9 @@
       <FileName>Rendering\Materials\IMaterialEmissiveFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialFeature" Collapsed="true">
     <Position X="11.5" Y="1.5" Width="1.75" />
-    <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialShaderGenerator" FixedFromPoint="true">
+    <InheritanceLine Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialShaderGenerator" FixedFromPoint="true">
       <Path>
         <Point X="6.312" Y="1.062" />
         <Point X="6.312" Y="1.312" />
@@ -492,9 +492,9 @@
       <FileName>Rendering\Materials\IMaterialFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialLayers" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialLayers" Collapsed="true">
     <Position X="8.5" Y="3" Width="1.5" />
-    <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialFeature" FixedToPoint="true">
+    <InheritanceLine Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialFeature" FixedToPoint="true">
       <Path>
         <Point X="12.375" Y="2.191" />
         <Point X="12.375" Y="2.625" />
@@ -507,9 +507,9 @@
       <FileName>Rendering\Materials\IMaterialLayers.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialMicroSurfaceFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialMicroSurfaceFeature" Collapsed="true">
     <Position X="3.5" Y="8.25" Width="2.25" />
-    <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialFeature" FixedToPoint="true">
+    <InheritanceLine Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialFeature" FixedToPoint="true">
       <Path>
         <Point X="12.375" Y="2.191" />
         <Point X="12.375" Y="7.875" />
@@ -522,37 +522,37 @@
       <FileName>Rendering\Materials\IMaterialMicroSurfaceFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialOcclusionFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialOcclusionFeature" Collapsed="true">
     <Position X="3.25" Y="23.25" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialOcclusionFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialShaderGenerator" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialShaderGenerator" Collapsed="true">
     <Position X="5" Y="0.5" Width="2" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialShaderGenerator.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialShadingModelFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialShadingModelFeature" Collapsed="true">
     <Position X="9" Y="17" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAABAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialShadingModelFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularFeature" Collapsed="true">
     <Position X="3.5" Y="15.5" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialSpecularFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetFresnelFunction" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularMicrofacetFresnelFunction" Collapsed="true">
     <Position X="15.25" Y="23.5" Width="3.25" />
-    <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetFunction" FixedToPoint="true">
+    <InheritanceLine Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularMicrofacetFunction" FixedToPoint="true">
       <Path>
         <Point X="28.375" Y="22.562" />
         <Point X="28.375" Y="23.125" />
@@ -565,16 +565,16 @@
       <FileName>Rendering\Materials\IMaterialSpecularMicrofacetFresnelFunction.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetFunction" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularMicrofacetFunction" Collapsed="true">
     <Position X="27" Y="22" Width="2.75" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAEAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialSpecularMicrofacetFunction.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetNormalDistributionFunction" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularMicrofacetNormalDistributionFunction" Collapsed="true">
     <Position X="15.25" Y="24.75" Width="4" />
-    <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetFunction" FixedToPoint="true">
+    <InheritanceLine Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularMicrofacetFunction" FixedToPoint="true">
       <Path>
         <Point X="28.375" Y="22.562" />
         <Point X="28.375" Y="24.45" />
@@ -587,16 +587,16 @@
       <FileName>Rendering\Materials\IMaterialSpecularMicrofacetNormalDistributionFunction.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularMicrofacetVisibilityFunction" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularMicrofacetVisibilityFunction" Collapsed="true">
     <Position X="15.25" Y="27" Width="3.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialSpecularMicrofacetVisibilityFunction.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialSpecularModelFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialSpecularModelFeature" Collapsed="true">
     <Position X="3.25" Y="22" Width="2.5" />
-    <InheritanceLine Type="SiliconStudio.Paradox.Rendering.Materials.IMaterialShadingModelFeature" FixedFromPoint="true" FixedToPoint="true">
+    <InheritanceLine Type="SiliconStudio.Xenko.Rendering.Materials.IMaterialShadingModelFeature" FixedFromPoint="true" FixedToPoint="true">
       <Path>
         <Point X="10.375" Y="17.82" />
         <Point X="10.375" Y="21.625" />
@@ -609,21 +609,21 @@
       <FileName>Rendering\Materials\IMaterialSpecularModelFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialSurfaceFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialSurfaceFeature" Collapsed="true">
     <Position X="3.5" Y="6.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialSurfaceFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialTessellationFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialTessellationFeature" Collapsed="true">
     <Position X="3.5" Y="11.25" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Rendering\Materials\IMaterialTessellationFeature.cs</FileName>
     </TypeIdentifier>
   </Interface>
-  <Interface Name="SiliconStudio.Paradox.Rendering.Materials.IMaterialTransparencyFeature" Collapsed="true">
+  <Interface Name="SiliconStudio.Xenko.Rendering.Materials.IMaterialTransparencyFeature" Collapsed="true">
     <Position X="3.25" Y="24.75" Width="2.25" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>

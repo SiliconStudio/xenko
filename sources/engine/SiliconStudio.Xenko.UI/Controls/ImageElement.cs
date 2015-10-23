@@ -4,9 +4,9 @@ using System;
 using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// Represents a control that displays an image.
@@ -86,7 +86,7 @@ namespace SiliconStudio.Paradox.UI.Controls
             if (source == null || !source.HasBorders)
                 return desiredSize;
 
-            var borderSum = new Vector2(source.BordersInternal.X + source.BordersInternal.Y, source.BordersInternal.Z + source.BordersInternal.W);
+            var borderSum = new Vector2(source.BordersInternal.X + source.BordersInternal.Z, source.BordersInternal.Y + source.BordersInternal.W);
             if(source.Orientation == ImageOrientation.Rotated90)
                 Utilities.Swap(ref borderSum.X, ref borderSum.Y);
 

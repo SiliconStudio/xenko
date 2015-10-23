@@ -4,7 +4,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Text;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// A combination of <see cref="IVirtualButton"/>, by default evaluated as the operator '&&' to produce a value if all buttons are pressed.

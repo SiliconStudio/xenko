@@ -343,20 +343,26 @@ namespace SiliconStudio.Assets
                     {
                         // Call the importer. For some assts, this operation can take some time
                         var itemsToImport = toImportByImporter.Importer.Import(fileToImport.File, toImportByImporter.ImporterParameters).ToList();
-                        CheckAssetsToImport(itemsToImport, ids);
-
-                        foreach (var itemToImport in itemsToImport)
+                        if (!CheckAssetsToImport(itemsToImport, ids))
                         {
-                            if (itemToImport == null)
-                                continue;
-
-                            itemToImport.SourceFolder = fileToImport.Package.GetDefaultAssetFolder();
-
-                            var assetToImport = new AssetToImportMergeGroup(toImportByImporter, itemToImport);
-                            toImportByImporter.Items.Add(assetToImport);
+                            toImportByImporter.Log.Warning("Unsuccessfully processed file [{0}]. Expecting at least one [AssetImport] while importing assets to a package", fileToImport.File);
+                            isImportOk = false;
                         }
+                        else
+                        {
+                            foreach (var itemToImport in itemsToImport)
+                            {
+                                if (itemToImport == null)
+                                    continue;
 
-                        toImportByImporter.Log.Info("Successfully processed file [{0}]", fileToImport.File);
+                                itemToImport.SourceFolder = fileToImport.Package.GetDefaultAssetFolder();
+
+                                var assetToImport = new AssetToImportMergeGroup(toImportByImporter, itemToImport);
+                                toImportByImporter.Items.Add(assetToImport);
+                            }
+
+                            toImportByImporter.Log.Info("Successfully processed file [{0}]", fileToImport.File); 
+                        }
                     }
                     catch (Exception ex)
                     {
@@ -1243,11 +1249,12 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="assets"></param>
         /// <param name="ids"></param>
-        private void CheckAssetsToImport(IEnumerable<AssetItem> assets, HashSet<Guid> ids)
+        /// <returns>True if there is at least one AssetImport, False otherwise.</returns>
+        private bool CheckAssetsToImport(IEnumerable<AssetItem> assets, HashSet<Guid> ids)
         {
             // Pre-check
             var log = new LoggerResult();
-            bool hasAssetImport = false;
+            var hasAssetImport = false;
             foreach (var assetItem in assets)
             {
                 if (assetItem.Id == Guid.Empty)
@@ -1285,18 +1292,13 @@ namespace SiliconStudio.Assets
                 ids.Add(assetItem.Id);
             }
 
-            // Check that there is at least an AssetImport
-            if (!hasAssetImport)
-            {
-                log.Error("Error expecting at least one AssetImport while importing assets to a package");
-            }
-
             // If we have any errors, don't process further
             if (log.HasErrors)
             {
-                // Genegerate an exception as all checks above are supposed to be an invalid usage of the API
+                // Generate an exception as all checks above are supposed to be an invalid usage of the API
                 throw new InvalidOperationException("Unexpected error while processing items to importItem: " + log.ToText());
             }
+            return hasAssetImport;
         }
 
         [DebuggerDisplay("Location: {location}")]

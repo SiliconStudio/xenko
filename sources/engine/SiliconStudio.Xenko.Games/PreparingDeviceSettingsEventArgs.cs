@@ -23,7 +23,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Describes settings to apply before preparing a device for creation, used by <see cref="GraphicsDeviceManager.OnPreparingDeviceSettings"/>.

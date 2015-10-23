@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Assets.SpriteFont
+namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
     /// <summary>
     /// Describes a range of consecutive characters that should be included in the font.

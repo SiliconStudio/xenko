@@ -4,11 +4,11 @@
 using System;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Images;
-using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Images;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Rendering.ComputeEffect.LambertianPrefiltering
+namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
 {
     /// <summary>
     /// Performs Lambertian pre-filtering in the form of Spherical Harmonics.

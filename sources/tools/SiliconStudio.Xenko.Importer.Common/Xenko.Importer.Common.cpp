@@ -8,15 +8,15 @@ using namespace System::IO;
 using namespace SiliconStudio::Core::Diagnostics;
 using namespace SiliconStudio::Core::Mathematics;
 using namespace SiliconStudio::Core::Serialization;
-using namespace SiliconStudio::Paradox::Rendering;
-using namespace SiliconStudio::Paradox::Rendering::Materials;
-using namespace SiliconStudio::Paradox::Rendering::Materials::ComputeColors;
-using namespace SiliconStudio::Paradox::Assets::Materials;
-using namespace SiliconStudio::Paradox::Engine;
-using namespace SiliconStudio::Paradox::Graphics;
-using namespace SiliconStudio::Paradox::Shaders;
+using namespace SiliconStudio::Xenko::Rendering;
+using namespace SiliconStudio::Xenko::Rendering::Materials;
+using namespace SiliconStudio::Xenko::Rendering::Materials::ComputeColors;
+using namespace SiliconStudio::Xenko::Assets::Materials;
+using namespace SiliconStudio::Xenko::Engine;
+using namespace SiliconStudio::Xenko::Graphics;
+using namespace SiliconStudio::Xenko::Shaders;
 
-namespace SiliconStudio { namespace Paradox { namespace Importer { namespace Common {
+namespace SiliconStudio { namespace Xenko { namespace Importer { namespace Common {
 	
 public ref class MeshParameters
 {

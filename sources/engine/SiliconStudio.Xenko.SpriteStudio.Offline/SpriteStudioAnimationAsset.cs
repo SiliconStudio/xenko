@@ -6,14 +6,14 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Animations;
-using SiliconStudio.Paradox.SpriteStudio.Runtime;
+using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.SpriteStudio.Runtime;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Offline
+namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     [DataContract("SpriteStudioAnimationAsset")] // Name of the Asset serialized in YAML
     [AssetCompiler(typeof(SpriteStudioAnimationAssetCompiler))] // The compiler used to transform this asset to RangeValues
-    [AssetDescription(".pdxss4a", false)] // A description used to display in the asset editor
+    [AssetDescription(".xkss4a;.pdxss4a", false)] // A description used to display in the asset editor
     [ObjectFactory(typeof(SpriteStudioAnimationAssetFactory))]
     [Display("Sprite Studio Animation")]
     public class SpriteStudioAnimationAsset : AssetImportTracked

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 using System.Runtime.CompilerServices;
 using System.Collections;
 
-namespace SiliconStudio.Paradox.Engine.Network
+namespace SiliconStudio.Xenko.Engine.Network
 {
     /// <summary>
     /// Manages socket connection+ack and low-level communication.

@@ -2,12 +2,12 @@
 Id: 637e7e88-bc09-4ddd-95eb-00114fd32e5e
 Tags: []
 Meta:
-    Name: SiliconStudio.Paradox.Audio.Tests
+    Name: SiliconStudio.Xenko.Audio.Tests
     Version: 1.0.0.0
     Authors: []
     Owners: []
     Dependencies:
-        -   Name: Paradox
+        -   Name: Xenko
             Version: 1.2.0-beta
 LocalDependencies: []
 Profiles:
@@ -25,7 +25,7 @@ Profiles:
             GameSettingsAsset.DefaultScene: 6df0e4b8-ed18-4c60-8a5d-43e5d0a97ba6:MainScene
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
-                Location: SiliconStudio.Paradox.Audio.Tests.Windows.csproj
+                Location: SiliconStudio.Xenko.Audio.Tests.Windows.csproj
                 Type: Library
     -   Name: Windows
         Platform: Windows
@@ -36,7 +36,7 @@ Profiles:
             GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
-                Location: SiliconStudio.Paradox.Audio.Tests.Windows.csproj
+                Location: SiliconStudio.Xenko.Audio.Tests.Windows.csproj
                 Type: Executable
     -   Name: Android
         Platform: Android
@@ -47,7 +47,7 @@ Profiles:
             GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
-                Location: SiliconStudio.Paradox.Audio.Tests.Android.csproj
+                Location: SiliconStudio.Xenko.Audio.Tests.Android.csproj
                 Type: Executable
     -   Name: iOS
         Platform: iOS
@@ -58,7 +58,7 @@ Profiles:
             GameSettingsAsset.DefaultGraphicsProfile: Level_9_1
         ProjectReferences:
             -   Id: 7af4b563-aad3-42ff-b91e-84b9d34d904a
-                Location: SiliconStudio.Paradox.Audio.Tests.iOS.csproj
+                Location: SiliconStudio.Xenko.Audio.Tests.iOS.csproj
                 Type: Executable
 ExplicitFolders: []
 Bundles: []

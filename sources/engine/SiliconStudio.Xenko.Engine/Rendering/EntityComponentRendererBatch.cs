@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A dedicated batch renderer of <see cref="IEntityComponentRenderer"/>

@@ -13,11 +13,11 @@ using namespace System::Security::Permissions;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 //
-[assembly:AssemblyTitleAttribute("Paradox.Importer.FBX")];
+[assembly:AssemblyTitleAttribute("Xenko.Importer.FBX")];
 [assembly:AssemblyDescriptionAttribute("")];
 [assembly:AssemblyConfigurationAttribute("")];
 [assembly:AssemblyCompanyAttribute("Silicon Studio")];
-[assembly:AssemblyProductAttribute("Paradox.Importer.FBX")];
+[assembly:AssemblyProductAttribute("Xenko.Importer.FBX")];
 [assembly:AssemblyCopyrightAttribute("Copyright (c) Silicon Studio 2011")];
 [assembly:AssemblyTrademarkAttribute("")];
 [assembly:AssemblyCultureAttribute("")];

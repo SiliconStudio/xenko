@@ -12,7 +12,7 @@ using namespace System::Runtime::InteropServices;
 using namespace SiliconStudio::Core::Mathematics;
 
 namespace SiliconStudio {
-	namespace Paradox {
+	namespace Xenko {
 		namespace Importer {
 			namespace FBX {
 

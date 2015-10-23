@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <!--
-// Copyright (c) 2010-2013 Paradox - Silicon Studio
+// Copyright (c) 2010-2013 Xenko - Silicon Studio
 // 
 // TODO: Insert proper license text here
 // *****************************************************************************
-// Config file for Paradox documentation
+// Config file for Xenko documentation
 // *****************************************************************************
 -->
 <config xmlns="SharpDoc">
@@ -20,7 +20,7 @@
 
   <!-- If a new topic is referenced but the file is not yet created, use sharpdoc-template.html file as a template -->
   <!-- Disabled for the moment
-  <topic-template>paradox-template.html</topic-template>
+  <topic-template>xenko-template.html</topic-template>
   -->
 
   <!-- Topics -->

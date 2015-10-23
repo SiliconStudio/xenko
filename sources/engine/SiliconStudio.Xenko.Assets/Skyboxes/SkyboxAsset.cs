@@ -8,7 +8,7 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
-namespace SiliconStudio.Paradox.Assets.Skyboxes
+namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     /// <summary>
     /// The skybox asset.
@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Assets.Skyboxes
         /// <summary>
         /// The default file extension used by the <see cref="SkyboxAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxsky";
+        public const string FileExtension = ".xksky;.pdxsky";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SkyboxAsset"/> class.

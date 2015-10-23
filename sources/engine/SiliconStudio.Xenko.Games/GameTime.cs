@@ -25,7 +25,7 @@ using System;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Current timing used for variable-step (real time) or fixed-step (game time) games.

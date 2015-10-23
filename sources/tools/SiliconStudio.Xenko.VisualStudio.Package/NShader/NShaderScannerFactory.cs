@@ -23,7 +23,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 namespace NShader
 {
     public class NShaderScannerFactory {
-        private static NShaderScanner paradoxShaderScanner;
+        private static NShaderScanner xenkoShaderScanner;
         private static Dictionary<string, NShaderScanner> mapExtensionToScanner;
 
         static void Init() {
@@ -31,13 +31,13 @@ namespace NShader
             {
                 mapExtensionToScanner = new Dictionary<string, NShaderScanner>();
 
-                // Paradox Scanner
-                paradoxShaderScanner = new NShaderScanner(new ParadoxShaderTokenProvider());
+                // Xenko Scanner
+                xenkoShaderScanner = new NShaderScanner(new XenkoShaderTokenProvider());
 
                 foreach (var field in typeof (NShaderSupportedExtensions).GetFields())
                 {
-                    if (field.Name.StartsWith("Paradox_"))
-                        mapExtensionToScanner.Add(field.GetValue(null).ToString(), paradoxShaderScanner);
+                    if (field.Name.StartsWith("Xenko_"))
+                        mapExtensionToScanner.Add(field.GetValue(null).ToString(), xenkoShaderScanner);
                 }
             }
         }
@@ -50,7 +50,7 @@ namespace NShader
             NShaderScanner scanner;
             if (!mapExtensionToScanner.TryGetValue(ext, out scanner))
             {
-                scanner = paradoxShaderScanner;
+                scanner = xenkoShaderScanner;
             }
             return scanner;
         }

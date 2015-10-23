@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Graphics.Data
+namespace SiliconStudio.Xenko.Graphics.Data
 {
     /// <summary>
     /// Various extension method for serialization of GPU types having separate CPU serialized data format.

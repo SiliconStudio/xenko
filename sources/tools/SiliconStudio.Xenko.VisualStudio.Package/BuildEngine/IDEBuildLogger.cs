@@ -15,7 +15,7 @@ using Microsoft.VisualStudio.TextManager.Interop;
 using Microsoft.Win32;
 using IOleServiceProvider = Microsoft.VisualStudio.OLE.Interop.IServiceProvider;
 
-namespace SiliconStudio.Paradox.VisualStudio.BuildEngine
+namespace SiliconStudio.Xenko.VisualStudio.BuildEngine
 {
 
     /// <summary>

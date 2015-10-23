@@ -6,12 +6,12 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
-    /// This class is used to control a <see cref="SiliconStudio.Paradox.Audio.SoundEffect"/> associated to a <see cref="AudioEmitterComponent"/>.
+    /// This class is used to control a <see cref="SiliconStudio.Xenko.Audio.SoundEffect"/> associated to a <see cref="AudioEmitterComponent"/>.
     /// </summary>
     /// <remarks>
     /// <para>

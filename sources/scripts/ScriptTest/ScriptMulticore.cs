@@ -2,24 +2,24 @@
 using System.Linq;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Games.MicroThreading;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Games.MicroThreading;
 
 namespace ScriptTest
 {
-    [ParadoxScript]
+    [XenkoScript]
     public class ScriptMulticore
     {
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task Run(EngineContext engineContext)
         {
-#if PARADOX_YEBIS
+#if XENKO_YEBIS
             YebisPlugin yebisPlugin;
             if (engineContext.DataContext.RenderPassPlugins.TryGetValueCast("YebisPlugin", out yebisPlugin))
             {

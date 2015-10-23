@@ -1,7 +1,7 @@
 #!/usr/bin/python
 # -*- coding: utf-8 -*-
 #
-#	paradox-ios-relay.py - Paradox TCP connection relay for iOS devices to Windows developer host (using usbmuxd)
+#	xenko-ios-relay.py - Xenko TCP connection relay for iOS devices to Windows developer host (using usbmuxd)
 #
 # Copyright (C) 2015    Silicon Studio Corp. (http://siliconstudio.co.jp)
 # Copyright (C) 2009	Hector Martin "marcan" <hector@marcansoft.com>
