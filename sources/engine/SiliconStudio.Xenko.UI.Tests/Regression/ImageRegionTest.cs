@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             var image1 = new ImageElement
             {
-                Source = new Sprite(Asset.Load<Texture>("BorderButtonCentered")) { Region = new Rectangle(256, 128, 512, 256), Borders = new Vector4(0.125f, 0.125f, 0.25f, 0.25f) },
+                Source = new Sprite(Asset.Load<Texture>("BorderButtonCentered")) { Region = new Rectangle(256, 128, 512, 256), Borders = new Vector4(0.125f, 0.25f, 0.125f, 0.25f) },
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };

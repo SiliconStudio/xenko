@@ -19,7 +19,6 @@ namespace SiliconStudio.Paradox.Assets.Model
     [DataContract("Model")]
     [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true, Priority = 10000)]
     [Display(190, "Model", "A 3D model")]
     [AssetFormatVersion(2)]
     [AssetUpgrader(0, 1, 2, typeof(Upgrader))]

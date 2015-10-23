@@ -11,13 +11,11 @@ namespace SiliconStudio.BuildEngine
 {
     public abstract class CommandContextBase : ICommandContext
     {
-        public Command CurrentCommand { get; private set; }
+        public Command CurrentCommand { get; }
 
         public abstract LoggerResult Logger { get; }
 
-        public BuildParameterCollection BuildParameters { get; private set; }
-
-        public IMetadataProvider MetadataProvider { get; private set; }
+        public BuildParameterCollection BuildParameters { get; }
 
         protected internal readonly CommandResultEntry ResultEntry;
 
@@ -32,7 +30,6 @@ namespace SiliconStudio.BuildEngine
             CurrentCommand = command;
             BuildParameters = builderContext.Parameters;
             ResultEntry = new CommandResultEntry();
-            MetadataProvider = builderContext.MetadataProvider;
         }
 
         public Task<ResultStatus> ScheduleAndExecuteCommand(Command command)

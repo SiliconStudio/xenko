@@ -186,7 +186,7 @@ namespace SiliconStudio.TextureConverter.Tests
 
             var pdx = texTool.ConvertToParadoxImage(image);
 
-            TexImage pdxImage = texTool.Load(pdx);
+            TexImage pdxImage = texTool.Load(pdx, false);
 
             Assert.IsTrue(image.Equals(pdxImage));
 

@@ -68,6 +68,12 @@ namespace SiliconStudio.Paradox.UI.Controls
             }
         }
 
+        /// <summary>
+        /// Gets or set the color used to tint the image. Default value is white.
+        /// </summary>
+        /// <remarks>The initial image color is multiplied by this color.</remarks>
+        public Color Color { get; set; } = Color.White;
+
         private void InvalidateMeasure(object sender, EventArgs eventArgs)
         {
             InvalidateMeasure();

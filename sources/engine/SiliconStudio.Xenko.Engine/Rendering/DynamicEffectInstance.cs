@@ -11,7 +11,7 @@ namespace SiliconStudio.Paradox.Rendering
     /// <summary>
     /// A dynamic effect instance updated by <see cref="DynamicEffectCompiler"/>.
     /// </summary>
-    public abstract class DynamicEffectInstance
+    public abstract class DynamicEffectInstance : IDisposable
     {
         internal DynamicEffectParameterUpdaterDefinition UpdaterDefinition;
         internal DynamicEffectParameterCollectionGroup ParameterCollectionGroup;
@@ -39,5 +39,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// </summary>
         /// <param name="parameterCollections">The parameter collections.</param>
         public abstract void FillParameterCollections(ref FastListStruct<ParameterCollection> parameterCollections);
+
+        public abstract void Dispose();
     }
 }

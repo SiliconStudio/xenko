@@ -1,11 +1,10 @@
-using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Paradox.Physics
 {
     [DataContract("PhysicsSkinnedElementBase")]
     [Display(40, "PhysicsSkinnedElementBase")]
-    public abstract class PhysicsSkinnedElementBase : PhysicsElementBase
+    public abstract class PhysicsSkinnedElementBase : PhysicsTriggerElementBase
     {
         /// <summary>
         /// Gets or sets the link (usually a bone).

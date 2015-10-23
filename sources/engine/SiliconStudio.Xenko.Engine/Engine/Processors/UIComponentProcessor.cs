@@ -35,6 +35,13 @@ namespace SiliconStudio.Paradox.Engine.Processors
             };
         }
 
+        protected override bool IsAssociatedDataValid(Entity entity, UIComponentState associatedData)
+        {
+            return
+                entity.Get(UIComponent.Key) == associatedData.UIComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+        }
+
         public override void Draw(RenderContext gameTime)
         {
             UIRoots.Clear();

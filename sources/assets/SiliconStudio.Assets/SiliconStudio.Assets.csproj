@@ -93,6 +93,7 @@
     <Compile Include="AssetImporterBase.cs" />
     <Compile Include="AssetToImport.cs" />
     <Compile Include="AssetImportSession.cs" />
+    <Compile Include="Compiler\ICompilerRegistry.cs" />
     <Compile Include="Compiler\IPackageCompilerSource.cs" />
     <Compile Include="Compiler\IPackageCompiler.cs" />
     <Compile Include="Compiler\PackageAssetEnumerator.cs" />
@@ -160,7 +161,6 @@
     <Compile Include="Compiler\ImportStreamCommand.cs" />
     <Compile Include="Compiler\ItemListCompiler.cs" />
     <Compile Include="Compiler\PackageCompiler.cs" />
-    <Compile Include="Compiler\ThumbnailCompilerAttribute.cs" />
     <Compile Include="AssetBaseChangedEvent.cs" />
     <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />
@@ -175,6 +175,7 @@
     <Compile Include="Serializers\YamlForwardLogger.cs" />
     <Compile Include="SolutionPlatformCollection.cs" />
     <Compile Include="TemplateFolder.cs" />
+    <Compile Include="Templates\TemplateAssetDescription.cs" />
     <Compile Include="Templates\TemplateSampleDescription.cs" />
     <Compile Include="Templates\TemplateScope.cs" />
     <Compile Include="Templates\TemplateGeneratorContext.cs" />

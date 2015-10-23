@@ -42,5 +42,8 @@ namespace SiliconStudio.Paradox.Engine
         {
             return Key;
         }
+
+        [DataMemberIgnore]
+        internal PhysicsDebugShapeRendering DebugShapeRendering;
     }
 }

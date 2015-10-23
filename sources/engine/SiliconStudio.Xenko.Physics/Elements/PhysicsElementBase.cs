@@ -319,12 +319,39 @@ namespace SiliconStudio.Paradox.Physics
         [DataMemberIgnore]
         public Character Character => Collider as Character;
 
-        internal Matrix BoneWorldMatrix;
-        internal Matrix BoneWorldMatrixOut;
+        [DataMemberIgnore]
+        public Matrix BoneWorldMatrix;
 
-        internal int BoneIndex;
+        [DataMemberIgnore]
+        public Matrix BoneWorldMatrixOut;
+
+        [DataMemberIgnore]
+        public int BoneIndex = -1;
 
         internal PhysicsProcessor.AssociatedData Data;
+
+        [DataMemberIgnore]
+        public Entity DebugEntity;
+
+        public void AddDebugEntity(Scene scene)
+        {
+            if (DebugEntity != null) return;
+
+            var entity = Data?.PhysicsComponent?.DebugShapeRendering?.CreateDebugEntity(this);
+            DebugEntity = entity;
+            if (DebugEntity != null)
+            {
+                scene.Entities.Add(entity);
+            }
+        }
+
+        public void RemoveDebugEntity(Scene scene)
+        {
+            if (DebugEntity == null) return;
+
+            scene.Entities.Remove(DebugEntity);
+            DebugEntity = null;
+        }
 
         #endregion Ignore or Private/Internal
 
@@ -352,6 +379,11 @@ namespace SiliconStudio.Paradox.Physics
                 {
                     ColliderShape.Scaling = scale;
                     ColliderShape.UpdateLocalTransformations();
+
+                    if (DebugEntity != null)
+                    {
+                        DebugEntity.Transform.Scale = scale;
+                    }
                 }
             }
 
@@ -380,6 +412,11 @@ namespace SiliconStudio.Paradox.Physics
                 {
                     ColliderShape.Scaling = scale;
                     ColliderShape.UpdateLocalTransformations();
+
+                    if (DebugEntity != null)
+                    {
+                        DebugEntity.Transform.Scale = scale;
+                    }
                 }
             }
 

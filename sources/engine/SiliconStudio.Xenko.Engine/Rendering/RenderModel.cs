@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Collections;
@@ -9,7 +10,7 @@ using SiliconStudio.Paradox.Engine;
 
 namespace SiliconStudio.Paradox.Rendering
 {
-    public class RenderModel
+    public class RenderModel : IDisposable
     {
         public RenderModel(ModelComponent modelComponent)
         {
@@ -49,6 +50,15 @@ namespace SiliconStudio.Paradox.Rendering
             return true;
         }
 
+        internal void ReleaseSlot(int modelRenderSlot)
+        {
+            foreach (var mesh in RenderMeshesPerEffectSlot[modelRenderSlot])
+            {
+                mesh.Dispose();
+            }
+            RenderMeshesPerEffectSlot[modelRenderSlot].Clear();
+        }
+
         public Material GetMaterial(int materialIndex)
         {
             // TBD, but for now, -1 means null material
@@ -69,10 +79,19 @@ namespace SiliconStudio.Paradox.Rendering
         {
             if (materials != null && index < materials.Count)
             {
-                return materials[index].Material;
+                return materials[index]?.Material;
             }
 
             return null;
+        }
+
+        public void Dispose()
+        {
+            for (int i = 0; i < RenderMeshesPerEffectSlot.Count; i++)
+            {
+                ReleaseSlot(i);
+            }
+            RenderMeshesPerEffectSlot.Clear();
         }
     }
 }

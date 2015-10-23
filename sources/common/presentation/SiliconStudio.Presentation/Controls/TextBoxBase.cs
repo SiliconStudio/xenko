@@ -15,6 +15,7 @@ namespace SiliconStudio.Presentation.Controls
     public class TextBoxBase : System.Windows.Controls.TextBox
     {
         private bool validating;
+        private bool hasChangesToValidate;
 
         /// <summary>
         /// Identifies the <see cref="HasText"/> dependency property.
@@ -93,7 +94,7 @@ namespace SiliconStudio.Presentation.Controls
 
         static TextBoxBase()
         {
-            TextProperty.OverrideMetadata(typeof(TextBox), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal, OnTextChanged, null, true, UpdateSourceTrigger.Explicit));
+            TextProperty.OverrideMetadata(typeof(TextBoxBase), new FrameworkPropertyMetadata(string.Empty, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault | FrameworkPropertyMetadataOptions.Journal, OnTextChanged, null, true, UpdateSourceTrigger.Explicit));
         }
 
         public TextBoxBase()
@@ -181,6 +182,9 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public void Validate()
         {
+            if (!hasChangesToValidate)
+                return;
+
             var cancelRoutedEventArgs = new CancelRoutedEventArgs(ValidatingEvent);
             OnValidating(cancelRoutedEventArgs);
             if (cancelRoutedEventArgs.Cancel)
@@ -195,8 +199,7 @@ namespace SiliconStudio.Presentation.Controls
             SetCurrentValue(TextProperty, coercedText);
 
             BindingExpression expression = GetBindingExpression(TextProperty);
-            if (expression != null)
-                expression.UpdateSource();
+            expression?.UpdateSource();
 
             ClearUndoStack();
 
@@ -207,6 +210,7 @@ namespace SiliconStudio.Presentation.Controls
             if (ValidateCommand != null && ValidateCommand.CanExecute(ValidateCommandParameter))
                 ValidateCommand.Execute(ValidateCommandParameter);
             validating = false;
+            hasChangesToValidate = false;
         }
 
         /// <summary>
@@ -215,8 +219,7 @@ namespace SiliconStudio.Presentation.Controls
         public void Cancel()
         {
             BindingExpression expression = GetBindingExpression(TextProperty);
-            if (expression != null)
-                expression.UpdateTarget();
+            expression?.UpdateTarget();
 
             ClearUndoStack();
 
@@ -348,6 +351,9 @@ namespace SiliconStudio.Presentation.Controls
         {
             var input = (TextBoxBase)d;
             input.HasText = e.NewValue != null && ((string)e.NewValue).Length > 0;
+            if (!input.validating)
+                input.hasChangesToValidate = true;
+
             input.OnTextChanged((string)e.OldValue, (string)e.NewValue);
             if (input.ValidateOnTextChange && !input.validating)
                 input.Validate();

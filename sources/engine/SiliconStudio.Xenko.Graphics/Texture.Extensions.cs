@@ -64,7 +64,6 @@ namespace SiliconStudio.Paradox.Graphics
         /// </summary>
         /// <param name="graphicsDevice">The graphics device in which to create the texture</param>
         /// <param name="data">The image file data</param>
-        /// <param name="loadAsSRgb">Load the image as an SRgb image</param>
         /// <returns>The texture</returns>
         public static Texture FromFileData(GraphicsDevice graphicsDevice, byte[] data)
         {
@@ -74,9 +73,8 @@ namespace SiliconStudio.Paradox.Graphics
 
             using (var imageStream = new MemoryStream(data))
             {
-                using (var image = Image.Load(imageStream))
+                using (var image = Image.Load(imageStream, loadAsSRgb))
                 {
-                    image.Description.Format = loadAsSRgb ? image.Description.Format.ToSRgb() : image.Description.Format.ToNonSRgb();
                     result = Texture.New(graphicsDevice, image);
                 }
             }
@@ -85,7 +83,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 using (var imageStream = new MemoryStream(data))
                 {
-                    using (var image = Image.Load(imageStream))
+                    using (var image = Image.Load(imageStream, loadAsSRgb))
                     {
                         ((Texture)graphicsResource).Recreate(image.ToDataBox());
                     }

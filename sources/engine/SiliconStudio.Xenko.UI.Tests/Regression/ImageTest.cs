@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 
 using NUnit.Framework;
 
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Paradox.Graphics;
 using SiliconStudio.Paradox.UI.Controls;
 
@@ -14,6 +15,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
     /// </summary>
     public class ImageTest : UITestGameBase
     {
+        private ImageElement imageElement;
+
         public ImageTest()
         {
             CurrentVersion = 3;
@@ -23,7 +26,8 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            UIComponent.RootElement = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv"))};
+            imageElement = new ImageElement { Source = new Sprite(Asset.Load<Texture>("uv"))};
+            UIComponent.RootElement = imageElement;
         }
 
         protected override void RegisterTests()
@@ -31,6 +35,15 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
             base.RegisterTests();
 
             FrameGameSystem.TakeScreenshot();
+            FrameGameSystem.Draw(() => ChangeImageColor(Color.Brown)).TakeScreenshot();
+            FrameGameSystem.Draw(() => ChangeImageColor(Color.Blue)).TakeScreenshot();
+            FrameGameSystem.Draw(() => ChangeImageColor(Color.Red)).TakeScreenshot();
+            FrameGameSystem.Draw(() => ChangeImageColor(Color.Lime)).TakeScreenshot();
+        }
+
+        private void ChangeImageColor(Color color)
+        {
+            imageElement.Color = color;
         }
 
         [Test]

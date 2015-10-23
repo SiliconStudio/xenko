@@ -243,6 +243,7 @@ namespace SiliconStudio.Paradox.Audio
         internal static void StaticDestroy()
         {
             JNIEnv.DeleteGlobalRef(blankJavaDataBuffer);
+            blankJavaDataBuffer = IntPtr.Zero;
 
             // release created audio tracks and java buffers.
             foreach (var trackInfo in audioTrackPool)

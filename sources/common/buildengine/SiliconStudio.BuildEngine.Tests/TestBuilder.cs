@@ -5,7 +5,6 @@ using NUnit.Framework;
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.BuildEngine.Tests.Commands;
-using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.BuildEngine.Tests
 {
@@ -16,7 +15,7 @@ namespace SiliconStudio.BuildEngine.Tests
         public void TestBlockingCommands()
         {
             Utils.CleanContext();
-            var builder = Utils.CreateBuilder();
+            var builder = Utils.CreateBuilder(false);
             var commands = new List<Command>();
 
             for (int i = 0; i < 100; ++i)
@@ -33,7 +32,7 @@ namespace SiliconStudio.BuildEngine.Tests
         public void TestAwaitingCommands()
         {
             Utils.CleanContext();
-            var builder = Utils.CreateBuilder();
+            var builder = Utils.CreateBuilder(false);
             var commands = new List<Command>();
             
             for (int i = 0; i < 100; ++i)
@@ -66,7 +65,7 @@ namespace SiliconStudio.BuildEngine.Tests
         public void TestSameCommandParallelExecution()
         {
             Utils.CleanContext();
-            var builder = Utils.CreateBuilder();
+            var builder = Utils.CreateBuilder(false);
             var commands = new List<Command>();
 
             for (int i = 0; i < 100; ++i)
@@ -95,7 +94,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
         private static void ExecuteSimpleBuilder(ResultStatus expectedResult)
         {
-            var builder = Utils.CreateBuilder();
+            var builder = Utils.CreateBuilder(false);
             var commands = new List<Command>();
 
             for (int i = 0; i < 10; ++i)
@@ -119,7 +118,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
         private static void ExecuteSpawnAndAwaitCommands(ResultStatus expectedResult)
         {
-            var builder = Utils.CreateBuilder();
+            var builder = Utils.CreateBuilder(false);
             var commands = new List<Command>();
 
             for (int i = 0; i < 10; ++i)
@@ -131,9 +130,9 @@ namespace SiliconStudio.BuildEngine.Tests
             foreach (var step in steps)
             {
                 Assert.That(step.Status, Is.EqualTo(expectedResult));
-                Assert.That(step.Result.SpawnedCommands.Count(), Is.EqualTo(10));
+                Assert.That(step.Result.SpawnedCommands.Count, Is.EqualTo(10));
                 Assert.That(step.SpawnedSteps.Count(), Is.EqualTo(10));
-                foreach (BuildStep childStep in step.SpawnedSteps)
+                foreach (var childStep in step.SpawnedSteps)
                 {
                     Assert.That(childStep.Status, Is.EqualTo(expectedResult));
                 }

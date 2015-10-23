@@ -14,7 +14,9 @@ namespace SiliconStudio.Assets.CompilerApp
             try
             {
                 var packageBuilder = new PackageBuilderApp();
-                return packageBuilder.Run(args);
+                var returnValue =  packageBuilder.Run(args);
+
+                return returnValue;
             }
             catch (Exception ex)
             {

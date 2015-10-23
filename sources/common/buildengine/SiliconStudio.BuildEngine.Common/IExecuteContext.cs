@@ -20,7 +20,6 @@ namespace SiliconStudio.BuildEngine
         CancellationTokenSource CancellationTokenSource { get; }
         ObjectDatabase ResultMap { get; }
         Dictionary<string, string> Variables { get; }
-        IMetadataProvider MetadataProvider { get; }
 
         void ScheduleBuildStep(BuildStep step);
 

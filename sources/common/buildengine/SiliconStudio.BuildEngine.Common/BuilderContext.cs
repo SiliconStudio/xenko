@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Threading;
 
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.BuildEngine
 {
@@ -20,11 +19,9 @@ namespace SiliconStudio.BuildEngine
 
         public string SlaveBuilderPath { get; private set; }
 
-        public IMetadataProvider MetadataProvider { get; set; }
-
         public BuildParameterCollection Parameters { get; private set; }
 
-        public int MaxParallelProcesses { get; private set; }
+        public int MaxParallelProcesses { get; }
 
         private int spawnedProcessCount;
 

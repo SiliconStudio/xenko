@@ -19,21 +19,21 @@ namespace SiliconStudio.Paradox.ProjectGenerator
 
         public override bool IsSupportingTemplate(TemplateDescription templateDescription)
         {
-            if (templateDescription == null) throw new ArgumentNullException("templateDescription");
+            if (templateDescription == null) throw new ArgumentNullException(nameof(templateDescription));
             return templateDescription.Id == TemplateId;
         }
 
-        public override Action PrepareForRun(TemplateGeneratorParameters parameters)
+        public override Func<bool> PrepareForRun(TemplateGeneratorParameters parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             parameters.Validate();
 
             return () => Generate(parameters);
         }
 
-        public void Generate(TemplateGeneratorParameters parameters)
+        public bool Generate(TemplateGeneratorParameters parameters)
         {
-            if (parameters == null) throw new ArgumentNullException("parameters");
+            if (parameters == null) throw new ArgumentNullException(nameof(parameters));
             parameters.Validate();
 
             var name = parameters.Name;
@@ -57,6 +57,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
 
             // Load missing references
             session.LoadMissingReferences(parameters.Logger);
+            return true;
         }
 
         /// <summary>

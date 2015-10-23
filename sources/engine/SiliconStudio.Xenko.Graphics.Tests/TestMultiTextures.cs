@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
         {
             await base.LoadContent();
 
-            var objDatabase = new ObjectDatabase("/data/db");
+            var objDatabase = new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath);
             using (var assetIndexMap = new AssetIndexMap("/assets"))
             {
                 assetIndexMap.LoadNewValues();

@@ -14,11 +14,12 @@ namespace SiliconStudio.Paradox.Assets.Scripts
     }
 
     [DataContract("ScriptSourceFileAsset")]
-    [AssetDescription(".cs", AlwaysMarkAsRoot = true)]
-    [ThumbnailCompiler(PreviewerCompilerNames.ScriptSourceFileThumbnailCompilerQualifiedName)]
+    [AssetDescription(Extension, AlwaysMarkAsRoot = true)]
     [Display(95, "Script Source Code", "A C# source code file")]
     public sealed class ScriptSourceFileAsset : ProjectSourceCodeAsset
     {
+        public const string Extension = ".cs";
+
         public IReadOnlyCollection<Type> GetContainedScriptTypes()
         {
             lock(ProviderLocker)
