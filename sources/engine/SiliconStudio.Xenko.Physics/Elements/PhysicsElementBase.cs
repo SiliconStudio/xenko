@@ -328,7 +328,8 @@ namespace SiliconStudio.Xenko.Physics
         [DataMemberIgnore]
         public int BoneIndex = -1;
 
-        internal PhysicsProcessor.AssociatedData Data;
+        [DataMemberIgnore]
+        public PhysicsProcessor.AssociatedData Data;
 
         [DataMemberIgnore]
         public Entity DebugEntity;

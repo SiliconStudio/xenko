@@ -22,7 +22,6 @@ namespace SiliconStudio.Xenko.Physics
             public TransformComponent TransformComponent;
             public ModelComponent ModelComponent; //not mandatory, could be null e.g. invisible triggers
             public bool BoneMatricesUpdated;
-            public List<Entity> DebugEntities;
         }
 
         private readonly List<PhysicsElementBase> elements = new List<PhysicsElementBase>();
