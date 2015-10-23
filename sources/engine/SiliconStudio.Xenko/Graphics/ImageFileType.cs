@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Graphics
             switch (fileType)
             {
                 case ImageFileType.Xenko:
-                    return ".xkimage";
+                    return ".xkimg";
                 default:
                     return "." + fileType.ToString().ToLowerInvariant();
             }
