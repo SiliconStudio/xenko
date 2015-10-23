@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Rendering.Data;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class MaterialShaderPlugin : ShaderPlugin<RenderPassPlugin>
     {

@@ -10,8 +10,8 @@ using System.Runtime.CompilerServices;
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
 [assembly: InternalsVisibleTo("SiliconStudio.Core.IO.Serializers" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Step1" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine.Step1" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Core.Tests" + SiliconStudio.PublicKeys.Default)]
 
 #if SILICONSTUDIO_PLATFORM_IOS

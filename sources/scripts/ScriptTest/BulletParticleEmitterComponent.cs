@@ -1,21 +1,21 @@
 using System;
 using System.Linq;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.EntityModel;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Games.Collections;
-using SiliconStudio.Paradox.Games.Serialization.Contents;
-using Paradox.Framework.Shaders;
-using Utilities = SiliconStudio.Paradox.Games.Utilities;
-using Vector3 = SiliconStudio.Paradox.Games.Mathematics.Vector3;
-using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
-using Half = SiliconStudio.Paradox.Games.Mathematics.Half;
-using Half4 = SiliconStudio.Paradox.Games.Mathematics.Half4;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.EntityModel;
+using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.Collections;
+using SiliconStudio.Xenko.Games.Serialization.Contents;
+using Xenko.Framework.Shaders;
+using Utilities = SiliconStudio.Xenko.Games.Utilities;
+using Vector3 = SiliconStudio.Xenko.Games.Mathematics.Vector3;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
+using Half = SiliconStudio.Xenko.Games.Mathematics.Half;
+using Half4 = SiliconStudio.Xenko.Games.Mathematics.Half4;
 
 namespace ScriptTest
 {

@@ -1,0 +1,104 @@
+<!-- Global settings used to configure the XenkoGraphicsApi -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <!-- Default values -->
+  <PropertyGroup>
+    <XenkoGraphicsApi Condition=" '$(XenkoGraphicsApi)' == ''">Direct3D11</XenkoGraphicsApi>
+    <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAssemblyProcessorOptions)' == ''">$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
+  </PropertyGroup>
+
+  <!-- 
+    Global Settings per project
+  -->
+  <PropertyGroup>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == ''">$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
+    <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\..\deps\</XenkoDependenciesDir>
+    <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' != '' and !HasTrailingSlash('$(XenkoDependenciesDir)')">$(XenkoDependenciesDir)\</XenkoDependenciesDir>
+  </PropertyGroup>
+
+  <!--Import global SiliconStudio settings-->
+  <Import Project="$(MSBuildThisFileDirectory)..\common\targets\SiliconStudio.GlobalSettings.targets"/>
+  
+  <!-- 
+    Settings XenkoGraphicsApi specific
+  -->
+  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
+    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D;SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11</XenkoGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Null' ">
+    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_NULL</XenkoGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' ">
+    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE</XenkoGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'OpenGLES' ">
+    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES</XenkoGraphicsApiDefines>
+  </PropertyGroup>
+
+  <!-- 
+    Settings SiliconStudioPlatform specific
+  -->
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+    <XenkoGraphicsApiDefines>FRAMEWORK_SHADER_USE_SHARPDX;$(XenkoGraphicsApiDefines)</XenkoGraphicsApiDefines>
+    <FrameworkShaderUseSharpDX>true</FrameworkShaderUseSharpDX>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsStore' ">
+    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
+    <XenkoGraphicsApiDefines>FRAMEWORK_SHADER_USE_SHARPDX;$(XenkoGraphicsApiDefines)</XenkoGraphicsApiDefines>
+   
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsPhone' ">
+    <XenkoGraphicsApiDefines>FRAMEWORK_SHADER_USE_SHARPDX;$(XenkoGraphicsApiDefines)</XenkoGraphicsApiDefines>
+   
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows10' ">
+    <ProjectLockFile Condition="'$(ProjectLockFile)' == ''">$(MSBuildThisFileDirectory)..\build\project.lock.json</ProjectLockFile>
+  </PropertyGroup>
+
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
+    <XenkoExternalSuffix>.Android</XenkoExternalSuffix>
+    <FrameworkShaderUseSharpDX>false</FrameworkShaderUseSharpDX>
+    <AndroidSupportedAbis>armeabi-v7a%3barmeabi%3bx86</AndroidSupportedAbis>
+  </PropertyGroup>
+  
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
+    <XenkoExternalSuffix>.iOS</XenkoExternalSuffix>
+    <FrameworkShaderUseSharpDX>false</FrameworkShaderUseSharpDX>
+    <NUnitLiteBinDir>$(XenkoDependenciesDir)NUnitLite\net-monotouch\</NUnitLiteBinDir>
+  </PropertyGroup>
+
+  <!-- 
+    Global Defines
+  -->
+  <PropertyGroup Condition=" '$(Yebis)' == 'true' ">
+    <XenkoGraphicsApiDefines>$(XenkoGraphicsApiDefines);XENKO_YEBIS</XenkoGraphicsApiDefines>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+    <XenkoGraphicsApiDefines>$(XenkoGraphicsApiDefines);SILICONSTUDIO_XENKO_EFFECT_COMPILER</XenkoGraphicsApiDefines>
+    <XenkoEffectCompiler>true</XenkoEffectCompiler>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);$(XenkoGraphicsApiDefines)</DefineConstants>
+    <SiliconStudioOutputCommonDir>$(SolutionDir)Bin\$(SiliconStudioBuildDirectory)\</SiliconStudioOutputCommonDir>
+  </PropertyGroup>
+  
+  <!--Building Xenko SDK itself?-->
+  <PropertyGroup Condition=" '$(XenkoUserBuild)' != 'true' ">
+    <!--Output All files in solution\Bin directory-->
+    <OutputPath>$(SiliconStudioOutputCommonDir)</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Yebis Condition=" '$(Yebis)' == '' And '$(SiliconStudioPlatform)' == 'Windows' ">true</Yebis>
+    <Yebis Condition=" '$(Yebis)' == '' ">false</Yebis>
+  </PropertyGroup>
+</Project>

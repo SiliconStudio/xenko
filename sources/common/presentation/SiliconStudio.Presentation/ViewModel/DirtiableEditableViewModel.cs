@@ -4,9 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel.ActionStack;
 
 namespace SiliconStudio.Presentation.ViewModel
@@ -15,7 +13,7 @@ namespace SiliconStudio.Presentation.ViewModel
     /// An implementation of the <see cref="EditableViewModel"/> that is also itself an <see cref="IDirtiableViewModel"/>. The <see cref="Dirtiables"/> 
     /// property returns an enumerable containing the instance itself.
     /// </summary>
-    public class DirtiableEditableViewModel : EditableViewModel, IDirtiableViewModel, IDisposable
+    public abstract class DirtiableEditableViewModel : EditableViewModel, IDirtiableViewModel, IDisposable
     {
         private readonly HashSet<ViewModelActionItem> changes = new HashSet<ViewModelActionItem>();
         private readonly List<IDirtiableViewModel> dependencies = new List<IDirtiableViewModel>();
@@ -25,7 +23,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// Initializes a new instance of the <see cref="DirtiableEditableViewModel"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ITransactionalActionStack"/> to use for this view model.</param>
-        public DirtiableEditableViewModel(IViewModelServiceProvider serviceProvider)
+        protected DirtiableEditableViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
         }

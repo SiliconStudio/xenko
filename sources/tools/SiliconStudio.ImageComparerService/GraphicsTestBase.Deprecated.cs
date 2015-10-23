@@ -13,9 +13,9 @@ using System.Threading;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     [TestFixture]
     public class GraphicsTestBase : TestGameBase
@@ -102,9 +102,9 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         private bool onBamboo;
 
         /// <summary>
-        /// The directory containing the Paradox SDK.
+        /// The directory containing the Xenko SDK.
         /// </summary>
-        private string paradoxSdkDir;
+        private string xenkoSdkDir;
 
         /// <summary>
         /// A flag stating if the client is connected.
@@ -114,7 +114,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         /// <summary>
         /// Name of the assembly.
         /// </summary>
-        private string assemblyNameForAndroid = "SiliconStudio.Paradox.Graphics.Regression";
+        private string assemblyNameForAndroid = "SiliconStudio.Xenko.Graphics.Regression";
 
         /// <summary>
         /// The name of the branch the test is done on;
@@ -159,7 +159,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         /// <summary>
         /// Location of the csproj.
         /// </summary>
-        public string CsprojLocationForAndroid = @"sources\engine\SiliconStudio.Paradox.Graphics.Regression\SiliconStudio.Paradox.Graphics.Regression.Android.csproj";
+        public string CsprojLocationForAndroid = @"sources\engine\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.Android.csproj";
 
         #endregion
 
@@ -178,15 +178,15 @@ namespace SiliconStudio.Paradox.Graphics.Regression
             runTests = false;
             isClientConnected = false;
 
-            onBamboo = Environment.GetEnvironmentVariable("PARADOX_BAMBOO_TEST") != null;
+            onBamboo = Environment.GetEnvironmentVariable("XENKO_BAMBOO_TEST") != null;
             if (!Int32.TryParse(Environment.GetEnvironmentVariable(@"BAMBOO_BUILD_NUMBER"), out buildNumber))
                 buildNumber = 0;
             
-            paradoxSdkDir = Environment.GetEnvironmentVariable(@"ParadoxSdkDir");
+            xenkoSdkDir = Environment.GetEnvironmentVariable(@"XenkoSdkDir");
 
             if (onBamboo)
             {
-                branchName = Environment.GetEnvironmentVariable("PARADOX_BAMBOO_BRANCH_NAME");
+                branchName = Environment.GetEnvironmentVariable("XENKO_BAMBOO_BRANCH_NAME");
                 if (branchName != null)
                     branchName = branchName.Trim();
             }
@@ -374,11 +374,11 @@ namespace SiliconStudio.Paradox.Graphics.Regression
         {
             var devices = new List<ConnectedDevice>();
 
-            var addPcD3DDevices = Environment.GetEnvironmentVariable("PARADOX_PC_DIRECT3D_DEVICES") != null;
-            var addPcOglDevices = Environment.GetEnvironmentVariable("PARADOX_PC_OPENGL_DEVICES") != null;
-            var addPcOglEsDevices = Environment.GetEnvironmentVariable("PARADOX_PC_OPENGLES_DEVICES") != null;
-            var addAndroidDevices = Environment.GetEnvironmentVariable("PARADOX_ANDROID_DEVICES") != null;
-            var addiOsDevices = Environment.GetEnvironmentVariable("PARADOX_IOS_DEVICES") != null;
+            var addPcD3DDevices = Environment.GetEnvironmentVariable("XENKO_PC_DIRECT3D_DEVICES") != null;
+            var addPcOglDevices = Environment.GetEnvironmentVariable("XENKO_PC_OPENGL_DEVICES") != null;
+            var addPcOglEsDevices = Environment.GetEnvironmentVariable("XENKO_PC_OPENGLES_DEVICES") != null;
+            var addAndroidDevices = Environment.GetEnvironmentVariable("XENKO_ANDROID_DEVICES") != null;
+            var addiOsDevices = Environment.GetEnvironmentVariable("XENKO_IOS_DEVICES") != null;
             
             if (!(addPcD3DDevices || addPcOglDevices || addPcOglEsDevices || addAndroidDevices || addiOsDevices))
             {
@@ -679,12 +679,12 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                 // run
                 var parameters = new StringBuilder();
                 parameters.Append("-s "); parameters.Append(serial);
-                parameters.Append(@" shell am start -a android.intent.action.MAIN -n " + assemblyNameForAndroid + "/siliconstudio.paradox.graphicstests.GraphicsTestRunner");
-                AddAndroidParameter(parameters, TestRunner.ParadoxServerIp, serverAddresses);
-                AddAndroidParameter(parameters, TestRunner.ParadoxServerPort, serverPort.ToString());
-                AddAndroidParameter(parameters, TestRunner.ParadoxBuildNumber, buildNumber.ToString());
-                AddAndroidParameter(parameters, TestRunner.ParadoxDeviceSerial, serial);
-                AddAndroidParameter(parameters, TestRunner.ParadoxTestName, this.GetType().Name);
+                parameters.Append(@" shell am start -a android.intent.action.MAIN -n " + assemblyNameForAndroid + "/siliconstudio.xenko.graphicstests.GraphicsTestRunner");
+                AddAndroidParameter(parameters, TestRunner.XenkoServerIp, serverAddresses);
+                AddAndroidParameter(parameters, TestRunner.XenkoServerPort, serverPort.ToString());
+                AddAndroidParameter(parameters, TestRunner.XenkoBuildNumber, buildNumber.ToString());
+                AddAndroidParameter(parameters, TestRunner.XenkoDeviceSerial, serial);
+                AddAndroidParameter(parameters, TestRunner.XenkoTestName, this.GetType().Name);
 
                 Console.WriteLine(parameters.ToString());
 
@@ -721,7 +721,7 @@ namespace SiliconStudio.Paradox.Graphics.Regression
                     default:
                         throw new ArgumentOutOfRangeException("platform");
                 }
-                command.Append(@"SiliconStudio.Paradox.Graphics.Regression.exe");
+                command.Append(@"SiliconStudio.Xenko.Graphics.Regression.exe");
 
                 parameters.Append(serverAddresses);
                 parameters.Append(" "); parameters.Append(serverPort);

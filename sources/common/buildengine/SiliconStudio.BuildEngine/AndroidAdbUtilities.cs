@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using Paradox.Framework.Diagnostics;
-using Paradox.Framework.Serialization;
+using Xenko.Framework.Diagnostics;
+using Xenko.Framework.Serialization;
 
-namespace Paradox.BuildEngine
+namespace Xenko.BuildEngine
 {
     public static class AndroidAdbUtilities
     {

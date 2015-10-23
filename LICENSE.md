@@ -1,26 +1,26 @@
-Paradox Licensing
+Xenko Licensing
 ======
 
 ## Binary Release version
 
-Paradox binary release (as distributed on the [official website](http://paradox3d.net), with unmodified signed assemblies) is under the "Paradox 1.x version" License Agreement (see below).
+Xenko binary release (as distributed on the [official website](http://xenko.com), with unmodified signed assemblies) is under the "Xenko 1.x version" License Agreement (see below).
 
 It allows you to create games and distribute them freely and royalty-free, as long as you use the signed binary runtime.
 
 ## Source version
 
-* Most of Paradox source code is released under the [GPL v3 License](LICENSE.GPL3.md) (unless otherwise stated).
+* Most of Xenko source code is released under the [GPL v3 License](LICENSE.GPL3.md) (unless otherwise stated).
 * A few specific parts (stated explicitely in the source header) are released under [MIT](http://opensource.org/licenses/MIT), [CPL](http://opensource.org/licenses/CPL)
   or [Apache 2.0](http://opensource.org/licenses/Apache-2.0) (usually matching license of original contribution).
 * Some libraries (i.e. SiliconStudio.Core) will probably be converted to MIT later.
 
-It means that if you use Paradox built from sources (either unmodified or modified), you must publish source of your game,
-as well as any changes to Paradox that you might have done (as per GPLv3 license).
+It means that if you use Xenko built from sources (either unmodified or modified), you must publish source of your game,
+as well as any changes to Xenko that you might have done (as per GPLv3 license).
 
-Even for Binary Release version users, it allows to easily browse the sources and understand what's happening inside Paradox.
+Even for Binary Release version users, it allows to easily browse the sources and understand what's happening inside Xenko.
 
-If you want specific license terms (i.e. use a modified and/or self-compiled version of Paradox for your project),
-feel free to contact us at contact@paradox3d.net
+If you want specific license terms (i.e. use a modified and/or self-compiled version of Xenko for your project),
+feel free to contact us at contact@xenko.com
 
 ## Contributions
 
@@ -31,58 +31,58 @@ It allows us to use your changes in the commercial version, and relicense code e
 
 Otherwise you are free to fork, as long as you maintain the [GPL v3 License](LICENSE.GPL3.md).
 
-## "Paradox 1.x version" License Agreement
+## "Xenko 1.x version" License Agreement
 
-Important: Please read this License Agreement ("Agreement") carefully before installing or using the software "Paradox 1.x version" ("PARADOX"), so that you may well understand the terms and conditions for obtaining a license to use the Software.
+Important: Please read this License Agreement ("Agreement") carefully before installing or using the software "Xenko 1.x version" ("XENKO"), so that you may well understand the terms and conditions for obtaining a license to use the Software.
  * What is written in this Agreement will be the terms and conditions of the contract between you and Silicon Studio Corporation. ("SS"), concerning use of the Software. So, please retain a copy of this document if necessary.
 
-If you agree to all of the provisions in this Agreement applicable to the license obtained by you, please choose the column [I agree to the provisions of the License Agreement] below and proceed to installation. This will conclude this Agreement between you and SS, and SS will grant you a license to install and use the PARADOX.
+If you agree to all of the provisions in this Agreement applicable to the license obtained by you, please choose the column [I agree to the provisions of the License Agreement] below and proceed to installation. This will conclude this Agreement between you and SS, and SS will grant you a license to install and use the XENKO.
  If you do not agree to any of the provisions in this Agreement, please choose the column [I disagree about the provisions of the License Agreement], and stop the procedure of installation or use immediately.
- If you have installed or used the PARADOX in any manner, SS will deem that you have agreed to this Agreement and that this Agreement has been effectively made between you and SS. If an individual indicating the above-mentioned agreement or disagreement is your representative or employee, such individual should represent and warrant that he/she is duly authorized to act on your behalf with binding effect, whereby his/her act will be done for and on behalf of you and the effects of such act will belong to you.
- In this Agreement, "you" means an entity (or a similar organization) which will obtain the PARADOX and the license for such PARADOX, and install and use the PARADOX.
+ If you have installed or used the XENKO in any manner, SS will deem that you have agreed to this Agreement and that this Agreement has been effectively made between you and SS. If an individual indicating the above-mentioned agreement or disagreement is your representative or employee, such individual should represent and warrant that he/she is duly authorized to act on your behalf with binding effect, whereby his/her act will be done for and on behalf of you and the effects of such act will belong to you.
+ In this Agreement, "you" means an entity (or a similar organization) which will obtain the XENKO and the license for such XENKO, and install and use the XENKO.
 
 ### 1. Grant of License:
 
-If you obtain a License of PARADOX, SS will grant you a non-exclusive, and free license of PARADOX, which is available only in accordance with the provisions of this Agreement. The available period is unlimited or such other period agreed on between the parties ("License Period").
+If you obtain a License of XENKO, SS will grant you a non-exclusive, and free license of XENKO, which is available only in accordance with the provisions of this Agreement. The available period is unlimited or such other period agreed on between the parties ("License Period").
 
 ### 2. Prohibitions
 
- 2.1) You may not use, install or copy PARADOX for any purpose other than those set forth in Sections 1, and modify, reverse engineer, decompile or disassemble the Software at any time.
- 2.2) You may not transfer, sell, sublease, sublicense or otherwise dispose of PARADOX or any copy thereof to any third party for any reason, or use the same for commercial services or any other similar purpose without obtaining prior written consent of SS.
- 2.3) You may not directly or indirectly export, re-export, re-sell or ship PARADOX to a third party, under any circumstance, or cause such third party to use the same without obtaining all the necessary approval of the governments within Japan and other countries concerned. Even if you obtain the above-mentioned consent and approvals, you will comply with all applicable export and import laws and regulations of Japan and other foreign governments concerned as well as those of Japan ("Export and Import Regulations") in using PARADOX (including its technical data). You will agree that PARADOX or any of its direct products will not be exported, directly or indirectly, in breach of the Export and Import Regulations, or used for any purpose that may violate the Export and Import Regulations (including, but not limited to, for purposes of proliferation of nuclear, chemical or biological weapons, or development of missile technology).
- 2.4) You may not use PARADOX in such manner as not described in the related materials of PARADOX including a user manual and documentation thereof.
- 2.5) You may neither remove nor change the copyright notice or other indications of PARADOX.
+ 2.1) You may not use, install or copy XENKO for any purpose other than those set forth in Sections 1, and modify, reverse engineer, decompile or disassemble the Software at any time.
+ 2.2) You may not transfer, sell, sublease, sublicense or otherwise dispose of XENKO or any copy thereof to any third party for any reason, or use the same for commercial services or any other similar purpose without obtaining prior written consent of SS.
+ 2.3) You may not directly or indirectly export, re-export, re-sell or ship XENKO to a third party, under any circumstance, or cause such third party to use the same without obtaining all the necessary approval of the governments within Japan and other countries concerned. Even if you obtain the above-mentioned consent and approvals, you will comply with all applicable export and import laws and regulations of Japan and other foreign governments concerned as well as those of Japan ("Export and Import Regulations") in using XENKO (including its technical data). You will agree that XENKO or any of its direct products will not be exported, directly or indirectly, in breach of the Export and Import Regulations, or used for any purpose that may violate the Export and Import Regulations (including, but not limited to, for purposes of proliferation of nuclear, chemical or biological weapons, or development of missile technology).
+ 2.4) You may not use XENKO in such manner as not described in the related materials of XENKO including a user manual and documentation thereof.
+ 2.5) You may neither remove nor change the copyright notice or other indications of XENKO.
 
 ### 3. Rights
 
- 3.1) PARADOX is the product in possession of or distributed by SS, which is protected under the Copyright Law and other intellectual property related laws of Japan.
- 3.2) You are expressly or impliedly granted no right to PARADOX or a medium containing the same for any purpose other than those set forth in this Agreement. SS or the original proprietor of PARADOX holds and will hold any and all rights and interests to PARADOX and the medium including intellectual property right thereto in any respect. 
+ 3.1) XENKO is the product in possession of or distributed by SS, which is protected under the Copyright Law and other intellectual property related laws of Japan.
+ 3.2) You are expressly or impliedly granted no right to XENKO or a medium containing the same for any purpose other than those set forth in this Agreement. SS or the original proprietor of XENKO holds and will hold any and all rights and interests to XENKO and the medium including intellectual property right thereto in any respect. 
 
 ### 4. No Warranty:
 
-PARADOX WILL BE PROVIDED TO YOU ON AN "AS IS" BASIS. SS DISCLAIMS ANY AND ALL WARRANTIES AND LIABILITIES REGARDING YOUR USE OF PARADOX UNDER this Agreement. SS WILL NOT BE RESPONSIBLE OR LIABLE, UNDER ANY CIRCUMSTANCE, FOR ANY DAMAGES SUCH AS DIRECT DAMAGES, YOUR LOST PROFIT, DAMAGES INCURRED IN A SPECIAL CONDITIONS (REGARDLESS OF FORESEEABILITY OF THE DAMAGES INCURRED BY SS), LOST DATA, DATA CORRUPTION, INDIRECT AND CONSEQUENTIAL DAMAGES, AND CLAIMS FOR DAMAGES MADE BY ANY THIRD PARTY.
+XENKO WILL BE PROVIDED TO YOU ON AN "AS IS" BASIS. SS DISCLAIMS ANY AND ALL WARRANTIES AND LIABILITIES REGARDING YOUR USE OF XENKO UNDER this Agreement. SS WILL NOT BE RESPONSIBLE OR LIABLE, UNDER ANY CIRCUMSTANCE, FOR ANY DAMAGES SUCH AS DIRECT DAMAGES, YOUR LOST PROFIT, DAMAGES INCURRED IN A SPECIAL CONDITIONS (REGARDLESS OF FORESEEABILITY OF THE DAMAGES INCURRED BY SS), LOST DATA, DATA CORRUPTION, INDIRECT AND CONSEQUENTIAL DAMAGES, AND CLAIMS FOR DAMAGES MADE BY ANY THIRD PARTY.
 
 ### 5. Term of Agreement:
 
- 5.1) This Agreement will become effective on the day PARADOX is delivered to you, and remain in full force until expiration of the License Period. However, if you breach any provision of this Agreement, SS may terminate this Agreement at any time without prior notice to you.
+ 5.1) This Agreement will become effective on the day XENKO is delivered to you, and remain in full force until expiration of the License Period. However, if you breach any provision of this Agreement, SS may terminate this Agreement at any time without prior notice to you.
  5.2) Upon expiration or termination of this Agreement, you will immediately delete or destroy the Software and all copies thereof (including those stored into a fixed memory unit of your computer), and submit a document certifying such deletion or destruction to SS.
  5.3) The provisions of Section 4 "No warranty", Section 5.2 "Term of Agreement", and Section 6 "Miscellaneous" will survive termination of this Agreement.
 
 ### 6. Miscellaneous
 
- 6.1) PARADOX will be subject to change for improvement without prior notice.
+ 6.1) XENKO will be subject to change for improvement without prior notice.
  6.2) This Agreement will be governed by the law of Japan. The parties hereto agree the exclusive jurisdiction of the Tokyo District Court of Japan as a court of first instance with respect to any dispute arising out of this Agreement.
  6.3) Any matter not provided in this Agreement will be subject to the Copyright Law, and other laws and regulations of Japan.
- 6.4) You hereby understand and agree that the terms and conditions of this Agreement will govern any and all claims and disputes arising between you and SS with respect to PARADOX or the use thereof even when you are granted the license of PARADOX to enter into an agreement with a third party concerning the same (e.g., a distributorship agreement and a lease agreement), you will indemnify and hold SS harmless against any responsibility and liability except those expressly set forth in this Agreement, and that no covenant or agreement between you and such third party will affect SS.
- 6.5) PARADOX might contain any software or other intellectual property of a third party other than SS or its affiliate, such as Open Source Software. In such case, you will be required to comply with the terms and conditions of the software license agreement concerning the software or intellectual property of such third party, if any. SS and such third party disclaim any and all warranties and liabilities of the software or intellectual property of such third party.
- 6.6) If you use other software in which a third party has any interest, together with PARADOX, you will be required to comply with all requirements for the use applicable to such software. If such compliance causes any restriction on the use of PARADOX, SS disclaims any and all warranties and liabilities concerning such restriction.
+ 6.4) You hereby understand and agree that the terms and conditions of this Agreement will govern any and all claims and disputes arising between you and SS with respect to XENKO or the use thereof even when you are granted the license of XENKO to enter into an agreement with a third party concerning the same (e.g., a distributorship agreement and a lease agreement), you will indemnify and hold SS harmless against any responsibility and liability except those expressly set forth in this Agreement, and that no covenant or agreement between you and such third party will affect SS.
+ 6.5) XENKO might contain any software or other intellectual property of a third party other than SS or its affiliate, such as Open Source Software. In such case, you will be required to comply with the terms and conditions of the software license agreement concerning the software or intellectual property of such third party, if any. SS and such third party disclaim any and all warranties and liabilities of the software or intellectual property of such third party.
+ 6.6) If you use other software in which a third party has any interest, together with XENKO, you will be required to comply with all requirements for the use applicable to such software. If such compliance causes any restriction on the use of XENKO, SS disclaims any and all warranties and liabilities concerning such restriction.
  6.7) Any matter not provided in this Agreement or any ambiguity of certain provisions hereof will be settled in amicable consultation among the parties hereto in good faith.
 
 End
 
 ## Acknowledgements
 
-We use several open-source products from Paradox, and would like to thanks them for their contributions:
+We use several open-source products from Xenko, and would like to thanks them for their contributions:
 
 * [SharpDX](http://sharpdx.org/) (MIT License)
 * [OpenTK](http://www.opentk.com/) (MIT License)

@@ -44,6 +44,7 @@
     <Compile Include="FileEnumerationBuildStep.cs" />
     <Compile Include="IBuildMonitorRemote.cs" />
     <Compile Include="MicroThreadFileProvider.cs" />
+    <Compile Include="StepCounter.cs" />
     <Compile Include="TimeInterval.cs" />
     <Compile Include="TransactionAssetIndexMap.cs" />
     <Compile Include="CommandIOMonitor.cs" />
@@ -63,15 +64,15 @@
     <Compile Include="IProcessBuilderRemote.cs" />
     <Compile Include="ListBuildStep.cs" />
     <Compile Include="LocalCommandContext.cs" />
-    <Compile Include="ParadoxDataContractOperationBehavior.cs" />
+    <Compile Include="XenkoDataContractOperationBehavior.cs" />
     <Compile Include="OutputObject.cs" />
-    <Compile Include="ParadoxXmlObjectSerializer.cs" />
+    <Compile Include="XenkoXmlObjectSerializer.cs" />
     <Compile Include="ParamFilter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ResultStatus.cs" />
     <Compile Include="BuildStepEventArgs.cs" />
     <Compile Include="TagSymbol.cs" />
-    <Compile Include="UseParadoxDataContractSerializerAttribute.cs" />
+    <Compile Include="UseXenkoDataContractSerializerAttribute.cs" />
     <Compile Include="WaitBuildStep.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,0 +1,70 @@
+!Package
+Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
+SerializedVersion: 2
+Meta:
+    Name: Xenko
+    Version: 1.4.0-beta
+    Owners:
+      - Silicon Studio Corp.
+    Authors: 
+      - Silicon Studio Corp.
+    Copyright: © Silicon Studio Corp. All rights reserved.
+    Description: Xenko Game Package
+    LicenseUrl: http://xenko.com/license.txt
+    ProjectUrl: http://xenko.com
+Profiles:
+    - Name: Shared
+      AssetFolders:
+        - Path: sources/engine/SiliconStudio.Xenko.Engine/Rendering
+        - Path: sources/engine/SiliconStudio.Xenko.Graphics/Shaders
+        - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Shaders
+TemplateFolders:
+    - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates
+      Group: Core
+      Exclude: "**/*.cs;**/*.xaml"
+      Files:
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/NewPackage.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectExecutable.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/ProjectLibrary.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/UpdatePlatforms.xktpl
+    - Path: sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts
+      Group: Scripts
+      Files:
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/SideScrollingCamera.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Camera/FpsCamera.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Physics/PlayerController.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/BasicAsyncScript.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/BasicSyncScript.xktpl
+    - Path: sources/data/images/NewGame
+      Group: Core
+      Exclude: "**/*.psd;**/*.md"
+    - Path: samples
+      Group: Samples
+      Exclude: "**/.git/**;**/_ReSharper.*/**;**/Bin/**;**/obj/**;**/*.sln;**/*.suo;**/*.GhostDoc.xml;**/samples2/readme.md;**/samples2/.gitignore;**/*.psess;**/*.vspx;**/*.userprefs"
+      Files:
+        - samples\Audio\SimpleAudio\SimpleAudio.xktpl
+        - samples\Games\JumpyJet\JumpyJet.xktpl
+        - samples\Games\SpaceEscape\SpaceEscape.xktpl
+        - samples\Graphics\AnimatedModel\AnimatedModel.xktpl
+        - samples\Graphics\CustomEffect\CustomEffect.xktpl
+        - samples\Graphics\ForwardLighting\ForwardLighting.xktpl
+        - samples\Graphics\GeometricPrimitives\GeometricPrimitives.xktpl
+        - samples\Graphics\HelloWorld\HelloWorld.xktpl
+        - samples\Graphics\MaterialSample\MaterialSample.xktpl
+        - samples\Graphics\MaterialShader\MaterialShader.xktpl
+        - samples\Graphics\RenderSceneToTexture\RenderSceneToTexture.xktpl
+        - samples\Graphics\SimpleDynamicTexture\SimpleDynamicTexture.xktpl
+        - samples\Graphics\SimpleModel\SimpleModel.xktpl
+        - samples\Graphics\SimpleSprite\SimpleSprite.xktpl
+        - samples\Graphics\SpriteEntity\SpriteEntity.xktpl
+        - samples\Graphics\SpriteFonts\SpriteFonts.xktpl
+        - samples\Graphics\SimpleTerrain\SimpleTerrain.xktpl
+        - samples\Graphics\SpriteStudioDemo\SpriteStudioDemo.xktpl
+        - samples\Input\TouchInputs\TouchInputs.xktpl
+        - samples\Input\GravitySensor\GravitySensor.xktpl
+        - samples\Physics\CharacterControllerSample\CharacterControllerSample.xktpl
+        - samples\Physics\Constraints\Constraints.xktpl
+        - samples\Physics\Raycasting\Raycasting.xktpl
+        - samples\Physics\VolumeTrigger\VolumeTrigger.xktpl
+        - samples\UI\GameMenu\GameMenu.xktpl
+        - samples\Others\NativeLinking\NativeLinking.xktpl

@@ -4,16 +4,16 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
-using SiliconStudio.Paradox.Rendering.Data;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
-using PrimitiveType = SiliconStudio.Paradox.Graphics.PrimitiveType;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
+using PrimitiveType = SiliconStudio.Xenko.Graphics.PrimitiveType;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     internal class LightingPrepassShaderPlugin : ShaderPlugin<LightingPrepassPlugin>
     {
@@ -125,7 +125,7 @@ namespace SiliconStudio.Paradox.Rendering
                     if (currentTiles == null)
                         currentTiles = new LightData[LightingPrepassPlugin.MaxLightsPerTileDrawCall];
 
-                    //((Paradox.Framework.Graphics.Direct3D.GraphicsDevice)context.GraphicsDevice).NativeDeviceContext.InputAssembler.InputLayout = null;
+                    //((Xenko.Framework.Graphics.Direct3D.GraphicsDevice)context.GraphicsDevice).NativeDeviceContext.InputAssembler.InputLayout = null;
 
                     for (int i = 0; i < (tiles.Count + LightingPrepassPlugin.MaxLightsPerTileDrawCall - 1) / LightingPrepassPlugin.MaxLightsPerTileDrawCall; ++i)
                     {

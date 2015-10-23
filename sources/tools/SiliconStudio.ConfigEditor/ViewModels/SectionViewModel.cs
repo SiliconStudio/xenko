@@ -10,7 +10,7 @@ using System.Xml;
 
 using SiliconStudio.Presentation.ViewModel;
 
-namespace SiliconStudio.Paradox.ConfigEditor.ViewModels
+namespace SiliconStudio.Xenko.ConfigEditor.ViewModels
 {
     public class SectionViewModel : ViewModelBase
     {

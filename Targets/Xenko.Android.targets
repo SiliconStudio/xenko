@@ -1,0 +1,58 @@
+<!-- Build file post-included by all Xenko projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioIsExecutable Condition=" '$(AndroidApplication)' == 'true'">true</SiliconStudioIsExecutable>
+    <SiliconStudioNETFrameworkVersion>v2.3</SiliconStudioNETFrameworkVersion>
+  </PropertyGroup>
+  
+  <!-- Embed native libraries -->
+  <ItemGroup>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\armeabi\libfreetype.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\armeabi-v7a\libfreetype.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\arm64-v8a\libfreetype.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libfreetype.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86_64\libfreetype.so"/>
+    
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\armeabi\libcore.so" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\armeabi-v7a\libcore.so" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\arm64-v8a\libcore.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libcore.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86_64\libcore.so"/>
+    
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\armeabi\libbulletc.so" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\armeabi-v7a\libbulletc.so" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\arm64-v8a\libbulletc.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86\libbulletc.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\x86_64\libbulletc.so"/>
+    
+    <!-- Users custom native libraries -->
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\armeabi\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\armeabi-v7a\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\arm64-v8a\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\x86\*.so" />
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\x86_64\*.so" />
+  </ItemGroup>
+
+  <ItemGroup Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
+    <AndroidNativeLibrary Include="@(SiliconStudioEmbeddedNativeLibrary)"/>
+  </ItemGroup>
+
+  <!-- Target to get signed .apk name -->
+  <Target Name="GetAndroidPackage" DependsOnTargets="_ValidateAndroidPackageProperties" Returns="$(_AndroidPackage)"/>
+
+  <!-- Register Android asset deployment task -->
+  <PropertyGroup>
+    <PrepareForRunDependsOn>
+      $(PrepareForRunDependsOn);
+      DeployAndroidCustom
+    </PrepareForRunDependsOn>
+  </PropertyGroup>
+  
+  <Target Name="DeployAndroidCustom">
+    <!-- Add .bundle to list of uncompressed extensions -->
+    <PropertyGroup>
+      <AndroidStoreUncompressedFileExtensions>$(AndroidStoreUncompressedFileExtensions);.bundle</AndroidStoreUncompressedFileExtensions>
+    </PropertyGroup>
+  </Target>  
+  
+</Project>

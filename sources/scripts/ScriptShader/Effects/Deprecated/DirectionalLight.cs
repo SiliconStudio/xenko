@@ -1,8 +1,8 @@
-using SiliconStudio.Paradox.DataModel;
+using SiliconStudio.Xenko.DataModel;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public class DirectionalLight : Light
     {

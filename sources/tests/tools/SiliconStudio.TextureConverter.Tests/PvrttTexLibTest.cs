@@ -48,7 +48,7 @@ namespace SiliconStudio.TextureConverter.Tests
         public void CanHandleRequestTest()
         {
             TexImage image = TestTools.Load(library, "TextureArray_WMipMaps_PVRTC2_4bpp.pvr");
-            Assert.IsTrue(library.CanHandleRequest(image, new CompressingRequest(Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)));
+            Assert.IsTrue(library.CanHandleRequest(image, new CompressingRequest(Xenko.Graphics.PixelFormat.PVRTC_II_4bpp)));
             Assert.IsTrue(library.CanHandleRequest(image, new DecompressingRequest(false)));
             Assert.IsTrue(library.CanHandleRequest(image, new LoadingRequest("TextureArray_WMipMaps_PVRTC2_4bpp.pvr", false)));
             Assert.IsTrue(library.CanHandleRequest(image, new MipMapsGenerationRequest(Filter.MipMapGeneration.Linear)));
@@ -76,11 +76,11 @@ namespace SiliconStudio.TextureConverter.Tests
 
 
         [Ignore]
-        [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)]
-        [TestCase("TextureCube_WMipMaps_RGBA8888.pvr", Paradox.Graphics.PixelFormat.PVRTC_II_4bpp)]
-        [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Paradox.Graphics.PixelFormat.ETC2_RGBA)]
-        [TestCase("TextureCube_WMipMaps_RGBA8888.pvr", Paradox.Graphics.PixelFormat.ETC2_RGBA)]
-        public void CompressTest(string file, Paradox.Graphics.PixelFormat format)
+        [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Xenko.Graphics.PixelFormat.PVRTC_II_4bpp)]
+        [TestCase("TextureCube_WMipMaps_RGBA8888.pvr", Xenko.Graphics.PixelFormat.PVRTC_II_4bpp)]
+        [TestCase("TextureArray_WMipMaps_RGBA8888.pvr", Xenko.Graphics.PixelFormat.ETC2_RGBA)]
+        [TestCase("TextureCube_WMipMaps_RGBA8888.pvr", Xenko.Graphics.PixelFormat.ETC2_RGBA)]
+        public void CompressTest(string file, Xenko.Graphics.PixelFormat format)
         {
             TexImage image = TestTools.Load(library, file);
 

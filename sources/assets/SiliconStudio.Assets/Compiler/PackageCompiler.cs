@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Compiler
 
         static PackageCompiler()
         {
-            // Compute ParadoxSdkDir from this assembly
+            // Compute XenkoSdkDir from this assembly
             // TODO Move this code to a reusable method
             var codeBase = typeof(PackageCompiler).Assembly.CodeBase;
             var uri = new UriBuilder(codeBase);
@@ -43,7 +43,7 @@ namespace SiliconStudio.Assets.Compiler
         }
 
         /// <summary>
-        /// Gets or sets the SDK directory. Default is bound to env variable ParadoxSdkDir
+        /// Gets or sets the SDK directory. Default is bound to env variable XenkoSdkDir
         /// </summary>
         /// <value>The SDK directory.</value>
         public static string SdkDirectory { get; set; }

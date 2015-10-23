@@ -25,7 +25,7 @@ namespace SiliconStudio.Assets.Tests.Diff
         public static readonly PropertyKey<DiffComponent> ComponentKey1 = new PropertyKey<DiffComponent>("ComponentKey1", typeof(TestDiff));
 
         [DataContract("TestDiffAsset")]
-        [AssetDescription(".pdxdiff")]
+        [AssetDescription(".xkdiff")]
         public class TestDiffAsset : Asset
         {
             public TestDiffAsset()

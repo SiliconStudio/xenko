@@ -7,7 +7,7 @@ using System.IO;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.TextureConverter.Requests;
 using FreeImageAPI;
 using FreeImageAPI.Plugins;

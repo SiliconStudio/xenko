@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2011 Silicon Studio
 
 using System.Linq;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Plugin used for the main rendering view.
@@ -58,7 +58,7 @@ namespace SiliconStudio.Paradox.Rendering
             RenderTarget = GraphicsDevice.BackBuffer;
 
             // Create depth stencil
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             var depthStencilFormat = PixelFormat.D16_UNorm;
 #else
             var depthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;

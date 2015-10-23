@@ -31,7 +31,7 @@ namespace SiliconStudio.BuildEngine
             var p = new OptionSet
                 {
                     "Copyright (C) 2011-2013 Silicon Studio Corporation. All Rights Reserved",
-                    "Paradox Build Tool - Version: "
+                    "Xenko Build Tool - Version: "
                     +
                     String.Format(
                         "{0}.{1}.{2}",
