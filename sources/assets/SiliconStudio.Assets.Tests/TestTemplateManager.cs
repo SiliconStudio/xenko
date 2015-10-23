@@ -31,7 +31,7 @@ namespace SiliconStudio.Assets.Tests
             // Preload templates defined in Xenko.xkpkg
             var descriptions = TemplateManager.FindTemplates().ToList();
 
-            Assert.IsTrue(descriptions.Count > 0);
+            Assert.Greater(descriptions.Count, 0);
 
             var templateGenerator = TemplateManager.FindTemplateGenerator(descriptions[0]);
 

@@ -7,6 +7,7 @@ using SiliconStudio.Presentation.ViewModel;
 
 namespace SiliconStudio.Presentation.Commands
 {
+    [Obsolete]
     public class AsyncCommand : CommandBase
     {
         private readonly Action<object> action;
@@ -55,6 +56,7 @@ namespace SiliconStudio.Presentation.Commands
         }
     }
 
+    [Obsolete]
     public class AsyncCommand<T> : CommandBase
     {
         private readonly Action<T> action;

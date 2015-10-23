@@ -1,4 +1,3 @@
-using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Physics

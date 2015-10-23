@@ -66,6 +66,8 @@
     <Compile Include="Elements\StaticColliderElement.cs" />
     <Compile Include="Engine\PhysicsColliderShape.cs" />
     <Compile Include="Engine\PhysicsComponent.cs" />
+    <Compile Include="Engine\PhysicsDebugShapeMaterial.cs" />
+    <Compile Include="Engine\PhysicsDebugShapeRendering.cs" />
     <Compile Include="Engine\PhysicsProcessor.cs" />
     <Compile Include="IPhysicsSystem.cs" />
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
