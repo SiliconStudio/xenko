@@ -153,12 +153,14 @@ namespace SiliconStudio.Xenko.Assets
                 var csharpWorkspaceAssemblies = new[] { Assembly.Load("Microsoft.CodeAnalysis.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.CSharp.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.Workspaces.Desktop") };
                 var workspace = MSBuildWorkspace.Create(ImmutableDictionary<string, string>.Empty, MefHostServices.Create(csharpWorkspaceAssemblies));
 
-                var tasks = from profile in dependentPackage.Profiles
-                    from projectReference in profile.ProjectReferences
-                    let projectFullPath = UPath.Combine(dependentPackage.RootDirectory, projectReference.Location)
-                    select Task.Run(() => UpgradeProject(workspace, projectFullPath));
+                var tasks = dependentPackage.Profiles
+                    .SelectMany(profile => profile.ProjectReferences)
+                    .Select(projectReference => UPath.Combine(dependentPackage.RootDirectory, projectReference.Location))
+                    .Distinct()
+                    .Select(projectFullPath => Task.Run(() => UpgradeProject(workspace, projectFullPath)))
+                    .ToArray();
 
-                Task.WaitAll(tasks.ToArray());
+                Task.WaitAll(tasks);
             }
 
             return true;
