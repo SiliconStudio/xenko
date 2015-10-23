@@ -2,13 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
@@ -17,7 +20,7 @@ namespace SiliconStudio.Xenko.Assets.Model
     [AssetCompiler(typeof(AnimationAssetCompiler))]
     [ObjectFactory(typeof(AnimationFactory))]
     [Display(180, "Animation", "A skeletal animation")]
-    public class AnimationAsset : AssetImport
+    public class AnimationAsset : AssetImport, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
@@ -42,12 +45,34 @@ namespace SiliconStudio.Xenko.Assets.Model
         public AnimationRepeatMode RepeatMode { get; set; }
 
         /// <summary>
+        /// Gets or sets the Skeleton.
+        /// </summary>
+        /// <userdoc>
+        /// Describes the node hierarchy that will be active at runtime.
+        /// </userdoc>
+        [DataMember(50)]
+        public Skeleton Skeleton { get; set; }
+
+        /// <summary>
         /// Create an instance of <see cref="AnimationAsset"/> with default values.
         /// </summary>
         public AnimationAsset()
         {
             RepeatMode = AnimationRepeatMode.LoopInfinite;
             ScaleImport = 1.0f;
+        }
+
+        /// <inheritdoc/>
+        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
+        {
+            if (Skeleton != null)
+            {
+                var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
+                if (reference != null)
+                {
+                    yield return new AssetReference<Asset>(reference.Id, reference.Url);
+                }
+            }
         }
 
         private class AnimationFactory : IObjectFactory

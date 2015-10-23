@@ -13,7 +13,7 @@ using Vector3 = SiliconStudio.Core.Mathematics.Vector3;
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
-    /// Applies animation from a <see cref="AnimationClip"/> to a <see cref="ModelViewHierarchyUpdater"/>.
+    /// Applies animation from a <see cref="AnimationClip"/> to a <see cref="SkeletonUpdater"/>.
     /// </summary>
     public class MeshAnimationUpdater
     {
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering
         private UpdateChannel[] updateChannels;
         private CompiledUpdate compiledUpdate;
 
-        public unsafe void Update(Entity entity, ModelViewHierarchyUpdater hierarchy, AnimationClipResult result)
+        public unsafe void Update(Entity entity, SkeletonUpdater hierarchy, AnimationClipResult result)
         {
             // Check if we need to regenerate "update channels" (i.e. how to copy data from result to hierarchy)
             if (updateChannels == null // First time?...
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Rendering
             return name1 == name2;
         }
 
-        private void RegenerateUpdateChannels(ModelViewHierarchyUpdater hierarchy, List<AnimationBlender.Channel> channels)
+        private void RegenerateUpdateChannels(SkeletonUpdater hierarchy, List<AnimationBlender.Channel> channels)
         {
             var newUpdateChannels = new List<UpdateChannel>();
 
@@ -142,7 +142,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
-        /// Describes how to update data from <see cref="AnimationClipResult"/> to <see cref="ModelViewHierarchyUpdater"/>.
+        /// Describes how to update data from <see cref="AnimationClipResult"/> to <see cref="SkeletonUpdater"/>.
         /// </summary>
         private struct UpdateChannel
         {

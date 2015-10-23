@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
@@ -31,6 +31,11 @@ namespace SiliconStudio.Xenko.Assets.Model
             var allowUnsignedBlendIndices = context.GetGraphicsPlatform() != GraphicsPlatform.OpenGLES;
             var extension = asset.Source.GetFileExtension();
 
+            // Find skeleton asset, if any
+            SkeletonAsset skeleton = null;
+            if (asset.Skeleton != null)
+                skeleton = (SkeletonAsset)AssetItem.Package.FindAssetFromAttachedReference(asset.Skeleton)?.Asset;
+
             if (ImportFbxCommand.IsSupportingExtensions(extension))
             {
                 result.BuildSteps = new AssetBuildStep(AssetItem)
@@ -41,8 +46,8 @@ namespace SiliconStudio.Xenko.Assets.Model
                                 Location = urlInStorage,
                                 Allow32BitIndex = allow32BitIndex,
                                 AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
-                                Compact = asset.Compact,
-                                PreservedNodes = asset.PreservedNodes,
+                                Compact = skeleton?.Compact ?? true,
+                                PreservedNodes = skeleton?.PreservedNodes,
                                 Materials = asset.Materials,
                                 ScaleImport = asset.ScaleImport
                             }
@@ -58,8 +63,8 @@ namespace SiliconStudio.Xenko.Assets.Model
                                 Location = urlInStorage,
                                 Allow32BitIndex = allow32BitIndex,
                                 AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
-                                Compact = asset.Compact,
-                                PreservedNodes = asset.PreservedNodes,
+                                Compact = skeleton?.Compact ?? true,
+                                PreservedNodes = skeleton?.PreservedNodes,
                                 Materials = asset.Materials,
                                 ScaleImport = asset.ScaleImport
                             }

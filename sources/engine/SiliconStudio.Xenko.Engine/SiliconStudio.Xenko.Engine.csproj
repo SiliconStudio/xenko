@@ -2179,8 +2179,8 @@
     <Compile Include="Rendering\MeshSkinningUpdater.cs" />
     <Compile Include="Rendering\MeshSkinningDefinition.cs" />
     <Compile Include="Rendering\ModelNodeFlags.cs" />
-    <Compile Include="Rendering\ModelViewHierarchyUpdater.cs" />
-    <Compile Include="Rendering\ModelViewHierarchyDefinition.cs" />
+    <Compile Include="Rendering\SkeletonUpdater.cs" />
+    <Compile Include="Rendering\Skeleton.cs" />
     <Compile Include="Rendering\ModelNodeDefinition.cs" />
     <Compile Include="Rendering\ModelNodeTransformation.cs" />
     <Compile Include="Rendering\EffectSystemExtensions.cs" />

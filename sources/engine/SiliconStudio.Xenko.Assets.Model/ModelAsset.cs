@@ -11,6 +11,7 @@ using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Rendering;
 
@@ -22,7 +23,7 @@ namespace SiliconStudio.Xenko.Assets.Model
     [Display(190, "Model", "A 3D model")]
     [AssetFormatVersion(2)]
     [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
-    public sealed class ModelAsset : AssetImportTracked, IModelAsset
+    public sealed class ModelAsset : AssetImportTracked, IModelAsset, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
@@ -36,7 +37,6 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             ScaleImport = 1.0f;
             Materials = new List<ModelMaterial>();
-            Nodes = new List<NodeInformation>();
             SetDefaults();
         }
 
@@ -60,100 +60,34 @@ namespace SiliconStudio.Xenko.Assets.Model
         public List<ModelMaterial> Materials { get; private set; }
 
         /// <summary>
-        /// List that stores if a node should be preserved
+        /// Gets or sets the Skeleton.
         /// </summary>
         /// <userdoc>
-        /// The mesh nodes of the model.
-        /// When checked, the nodes are kept in the runtime version of the model. 
-        /// Otherwise, all the meshes of model are merged and the node information is lost.
-        /// Nodes should be preserved in order to be animated or linked to entities.
+        /// Describes the node hierarchy that will be active at runtime.
         /// </userdoc>
-        [DataMember(50), DiffMember(Diff3ChangeType.MergeFromAsset2)]
-        public List<NodeInformation> Nodes { get; private set; }
-
-        /// <summary>
-        /// Gets or sets if the mesh will be compacted (meshes will be merged).
-        /// </summary>
-        [DataMemberIgnore]
-        public bool Compact
-        {
-            get
-            {
-                return Nodes.Any(x => !x.Preserve);
-            }
-        }
+        [DataMember(50)]
+        public Skeleton Skeleton { get; set; }
 
         protected override int InternalBuildOrder
         {
             get { return -100; } // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
         }
 
-        /// <summary>
-        /// Returns to list of nodes that are preserved (they cannot be merged with other ones).
-        /// </summary>
-        /// <userdoc>
-        /// Checking nodes will garantee them to be available at runtime. Otherwise, it may be merged with their parents (for optimization purposes).
-        /// </userdoc>
-        [DataMemberIgnore]
-        public List<string> PreservedNodes
-        {
-            get
-            {
-                return Nodes.Where(x => x.Preserve).Select(x => x.Name).ToList();
-            }
-        }
-
         /// <inheritdoc/>
         [DataMemberIgnore]
         public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { return Materials.Select(x => new KeyValuePair<string, MaterialInstance>(x.Name, x.MaterialInstance)); } }
-        
-        /// <summary>
-        /// Preserve the nodes.
-        /// </summary>
-        /// <param name="nodesToPreserve">List of nodes to preserve.</param>
-        public void PreserveNodes(List<string> nodesToPreserve)
+
+        /// <inheritdoc/>
+        public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
         {
-            foreach (var nodeName in nodesToPreserve)
+            if (Skeleton != null)
             {
-                foreach (var node in Nodes)
+                var reference = AttachedReferenceManager.GetAttachedReference(Skeleton);
+                if (reference != null)
                 {
-                    if (node.Name.Equals(nodeName))
-                        node.Preserve = true;
+                    yield return new AssetReference<Asset>(reference.Id, reference.Url);
                 }
             }
-        }
-
-        /// <summary>
-        /// No longer preserve any node.
-        /// </summary>
-        public void PreserveNoNode()
-        {
-            foreach (var node in Nodes)
-                node.Preserve = false;
-        }
-
-        /// <summary>
-        /// Preserve all the nodes.
-        /// </summary>
-        public void PreserveAllNodes()
-        {
-            foreach (var node in Nodes)
-                node.Preserve = true;
-        }
-
-        /// <summary>
-        /// Invert the preservation of the nodes.
-        /// </summary>
-        public void InvertPreservation()
-        {
-            foreach (var node in Nodes)
-                node.Preserve = !node.Preserve;
-        }
-
-        public override void SetDefaults()
-        {
-            if (Nodes != null)
-                Nodes.Clear();
         }
 
         class Upgrader : AssetUpgraderBase

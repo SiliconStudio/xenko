@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 {
     public abstract class ModelAssetImporter : AssetImporterBase
     {
-        private static readonly Type[] supportedTypes = { typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(AnimationAsset) };
+        private static readonly Type[] supportedTypes = { typeof(ModelAsset), typeof(TextureAsset), typeof(MaterialAsset), typeof(SkeletonAsset), typeof(AnimationAsset) };
 
         public override AssetImporterParameters GetDefaultParameters(bool isForReImport)
         {
@@ -65,22 +65,29 @@ namespace SiliconStudio.Xenko.Assets.Model
                 ImportTextures(entityInfo.TextureDependencies, rawAssetReferences);
             }
 
-            // 2. Animation
-            if (importParameters.IsTypeSelectedForOutput<AnimationAsset>())
+            // 2. Skeleton
+            AssetItem skeletonAsset = null;
+            if (importParameters.IsTypeSelectedForOutput<SkeletonAsset>())
             {
-                ImportAnimation(rawAssetReferences, localPath, entityInfo.AnimationNodes, isImportingModel);
+                skeletonAsset = ImportSkeleton(rawAssetReferences, localPath, localPath, entityInfo);
             }
 
-            // 3. Materials
+            // 3. Animation
+            if (importParameters.IsTypeSelectedForOutput<AnimationAsset>())
+            {
+                ImportAnimation(rawAssetReferences, localPath, entityInfo.AnimationNodes, isImportingModel, skeletonAsset);
+            }
+
+            // 4. Materials
             if (isImportingMaterial)
             {
                 ImportMaterials(rawAssetReferences, entityInfo.Materials);
             }
 
-            // 4. Model
+            // 5. Model
             if (isImportingModel)
             {
-                var modelItem = ImportModel(rawAssetReferences, localPath, localPath, entityInfo, false);
+                var modelItem = ImportModel(rawAssetReferences, localPath, localPath, entityInfo, false, skeletonAsset);
 
                 // 5. Entity (currently disabled)
                 //if (isImportingEntity)
@@ -95,48 +102,42 @@ namespace SiliconStudio.Xenko.Assets.Model
             return rawAssetReferences;
         }
 
-        private static Entity CreateTrackingEntity(EntityAsset entityAsset, Entity rootEntityAsset, ModelAsset modelAsset, string nodeName)
+        private static AssetItem ImportSkeleton(List<AssetItem> assetReferences, UFile assetSource, UFile localPath, EntityInfo entityInfo)
         {
-            var childEntity = new Entity { Name = nodeName };
+            var asset = new SkeletonAsset { Source = assetSource };
 
-            // Add TransformComponent
-            childEntity.Add(TransformComponent.Key, new TransformComponent());
-
-            // Add ModelNodeLinkComponent
-            childEntity.Add(ModelNodeLinkComponent.Key, new ModelNodeLinkComponent
+            if (entityInfo.Nodes != null)
             {
-                NodeName = nodeName,
-            });
+                foreach (var node in entityInfo.Nodes)
+                    asset.Nodes.Add(new NodeInformation(node.Name, node.Depth, node.Preserve));
+            }
 
-            // Add this asset to the list
-            entityAsset.Hierarchy.Entities.Add(childEntity);
+            if (entityInfo.AnimationNodes != null && entityInfo.AnimationNodes.Count > 0)
+                asset.PreserveNodes(entityInfo.AnimationNodes);
 
-            // Get or create transformation component
-            var transformationComponent = rootEntityAsset.GetOrCreate(TransformComponent.Key);
-
-            // Mark node as preserved
-            modelAsset.PreserveNodes(new List<string> { nodeName });
-
-            // Add as children of model entity
-            transformationComponent.Children.Add(childEntity.GetOrCreate(TransformComponent.Key));
-
-            return childEntity;
+            var skeletonUrl = new UFile(localPath.GetFileName() + " Skeleton", null);
+            var assetItem = new AssetItem(skeletonUrl, asset);
+            assetReferences.Add(assetItem);
+            return assetItem;
         }
 
-        private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes, bool shouldPostFixName)
+        private static void ImportAnimation(List<AssetItem> assetReferences, UFile localPath, List<string> animationNodes, bool shouldPostFixName, AssetItem skeletonAsset)
         {
             if (animationNodes != null && animationNodes.Count > 0)
             {
                 var assetSource = localPath;
 
                 var asset = new AnimationAsset { Source = assetSource };
-                var animUrl = localPath.GetFileName() + (shouldPostFixName? " Animation": "");
+                var animUrl = localPath.GetFileName() + (shouldPostFixName ? " Animation" : "");
+
+                if (skeletonAsset != null)
+                    asset.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
 
                 assetReferences.Add(new AssetItem(animUrl, asset));
             }
         }
 
-        private static AssetItem ImportModel(List<AssetItem> assetReferences, UFile assetSource, UFile localPath, EntityInfo entityInfo, bool shouldPostFixName)
+        private static AssetItem ImportModel(List<AssetItem> assetReferences, UFile assetSource, UFile localPath, EntityInfo entityInfo, bool shouldPostFixName, AssetItem skeletonAsset)
         {
             var asset = new ModelAsset { Source = assetSource };
 
@@ -157,14 +158,8 @@ namespace SiliconStudio.Xenko.Assets.Model
                 }
             }
 
-            if (entityInfo.Nodes != null)
-            {
-                foreach (var node in entityInfo.Nodes)
-                    asset.Nodes.Add(new NodeInformation(node.Name, node.Depth, node.Preserve));
-            }
-
-            if (entityInfo.AnimationNodes != null && entityInfo.AnimationNodes.Count > 0)
-                asset.PreserveNodes(entityInfo.AnimationNodes);
+            if (skeletonAsset != null)
+                asset.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(skeletonAsset.Id, skeletonAsset.Location);
 
             var modelUrl = new UFile(localPath.GetFileName() + (shouldPostFixName?" Model": ""), null);
             var assetItem = new AssetItem(modelUrl, asset);

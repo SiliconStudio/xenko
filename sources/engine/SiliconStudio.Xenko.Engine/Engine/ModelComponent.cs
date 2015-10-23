@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Engine
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
 
         private Model model;
-        private ModelViewHierarchyUpdater modelViewHierarchy;
+        private SkeletonUpdater skeleton;
         private bool modelViewHierarchyDirty = true;
         private readonly List<Material> materials = new List<Material>();
 
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         [DataMemberIgnore]
-        public ModelViewHierarchyUpdater ModelViewHierarchy
+        public SkeletonUpdater Skeleton
         {
             get
             {
@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Engine
                     modelViewHierarchyDirty = false;
                 }
 
-                return modelViewHierarchy;
+                return skeleton;
             }
         }
 
@@ -142,21 +142,21 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (model != null)
             {
-                if (modelViewHierarchy != null)
+                if (skeleton != null)
                 {
                     // Reuse previous ModelViewHierarchy
-                    modelViewHierarchy.Initialize(model);
+                    skeleton.Initialize(model);
                 }
                 else
                 {
-                    modelViewHierarchy = new ModelViewHierarchyUpdater(model);
+                    skeleton = new SkeletonUpdater(model);
                 }
             }
         }
 
         internal void Update(TransformComponent transformComponent, ref Matrix worldMatrix)
         {
-            if (!Enabled || ModelViewHierarchy == null || model == null)
+            if (!Enabled || Skeleton == null || model == null)
                 return;
 
             // Check if scaling is negative
@@ -169,9 +169,9 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             // Update model view hierarchy node matrices
-            modelViewHierarchy.NodeTransformations[0].LocalMatrix = worldMatrix;
-            modelViewHierarchy.NodeTransformations[0].IsScalingNegative = isScalingNegative;
-            modelViewHierarchy.UpdateMatrices();
+            skeleton.NodeTransformations[0].LocalMatrix = worldMatrix;
+            skeleton.NodeTransformations[0].IsScalingNegative = isScalingNegative;
+            skeleton.UpdateMatrices();
 
             // Update the bounding sphere / bounding box in world space
             var meshes = Model.Meshes;
@@ -183,7 +183,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 var meshBoundingSphere = mesh.BoundingSphere;
 
-                modelViewHierarchy.GetWorldMatrix(mesh.NodeIndex, out world);
+                skeleton.GetWorldMatrix(mesh.NodeIndex, out world);
                 Vector3.TransformCoordinate(ref meshBoundingSphere.Center, ref world, out meshBoundingSphere.Center);
                 BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
 

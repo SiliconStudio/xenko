@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Animations
                     // Update animation data if we have a model component
                     if (associatedData.ModelComponent != null)
                     {
-                        var modelViewHierarchy = associatedData.ModelComponent.ModelViewHierarchy;
+                        var modelViewHierarchy = associatedData.ModelComponent.Skeleton;
                         if (modelViewHierarchy != null)
                             meshAnimation.Update(entity.Key, modelViewHierarchy, associatedData.AnimationClipResult);
                     }

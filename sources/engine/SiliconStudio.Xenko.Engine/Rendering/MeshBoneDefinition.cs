@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     public struct MeshBoneDefinition
     {
         /// <summary>
-        /// The node index in <see cref="ModelViewHierarchyUpdater.NodeTransformations"/>.
+        /// The node index in <see cref="SkeletonUpdater.NodeTransformations"/>.
         /// </summary>
         public int NodeIndex;
         

@@ -12,7 +12,7 @@ using SiliconStudio.Xenko.Engine.Design;
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
-    /// Add animation capabilities to an <see cref="Entity"/>. It will usually apply to <see cref="ModelComponent.ModelViewHierarchy"/>
+    /// Add animation capabilities to an <see cref="Entity"/>. It will usually apply to <see cref="ModelComponent.Skeleton"/>
     /// </summary>
     /// <remarks>
     /// Data is stored as in http://altdevblogaday.com/2011/10/23/low-level-animation-part-2/.

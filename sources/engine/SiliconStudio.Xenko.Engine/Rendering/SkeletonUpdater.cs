@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// Performs hierarchical updates for a given <see cref="Model"/>.
     /// </summary>
     [DataContract] // Here for update engine; TODO: better separation and different attribute?
-    public class ModelViewHierarchyUpdater
+    public class SkeletonUpdater
     {
         private ModelNodeDefinition[] nodes;
         private ModelNodeTransformation[] nodeTransformations;
@@ -37,27 +37,27 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelViewHierarchyUpdater"/> class.
+        /// Initializes a new instance of the <see cref="SkeletonUpdater"/> class.
         /// </summary>
         /// <param name="model">The model.</param>
-        public ModelViewHierarchyUpdater(Model model)
+        public SkeletonUpdater(Model model)
         {
             if (model == null) throw new ArgumentNullException("model");
             Initialize(model);
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelViewHierarchyUpdater" /> class.
+        /// Initializes a new instance of the <see cref="SkeletonUpdater" /> class.
         /// </summary>
         /// <param name="newNodes">The new nodes.</param>
-        public ModelViewHierarchyUpdater(ModelNodeDefinition[] newNodes)
+        public SkeletonUpdater(ModelNodeDefinition[] newNodes)
         {
             Initialize(newNodes);
         }
 
         public void Initialize(Model model)
         {
-            Initialize(model.Hierarchy?.Nodes);
+            Initialize(model.Skeleton?.Nodes);
             nodeTransformations[0].Flags &= ~ModelNodeFlags.EnableTransform;
         }
 

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -11,8 +12,10 @@ namespace SiliconStudio.Xenko.Rendering
     /// <remarks>
     /// Nodes are ordered so that parents always come first, allowing for hierarchical updates in a simple loop.
     /// </remarks>
+    [DataSerializerGlobal(typeof(ReferenceSerializer<Skeleton>), Profile = "Asset")]
+    [ContentSerializer(typeof(DataContentSerializer<Skeleton>))]
     [DataContract]
-    public class ModelViewHierarchyDefinition
+    public class Skeleton
     {
         /// <summary>
         /// The nodes in this hierarchy.

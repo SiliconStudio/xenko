@@ -1313,7 +1313,7 @@ private:
 	Model^ ConvertAssimpScene(const aiScene *scene)
 	{
 		modelData = gcnew Model();
-		modelData->Hierarchy = gcnew ModelViewHierarchyDefinition();
+		modelData->Skeleton = gcnew Skeleton();
 
 		std::map<aiMesh*, std::string> meshNames;
 		GenerateMeshNames(scene, meshNames);
@@ -1325,7 +1325,7 @@ private:
 		std::map<int, std::vector<int>*> meshIndexToNodeIndex;
 
 		RegisterNodes(scene->mRootNode, -1, nodeNames, meshIndexToNodeIndex);
-		modelData->Hierarchy->Nodes = nodes.ToArray();
+		modelData->Skeleton->Nodes = nodes.ToArray();
 
 		// meshes
 		for (unsigned int i = 0; i < scene->mNumMeshes; ++i)

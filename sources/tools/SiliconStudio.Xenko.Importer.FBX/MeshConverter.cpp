@@ -1847,8 +1847,8 @@ public:
 
 			// Create default ModelViewData
 			modelData = gcnew Model();
-			modelData->Hierarchy = gcnew ModelViewHierarchyDefinition();
-			modelData->Hierarchy->Nodes = sceneMapping->Nodes;
+			modelData->Skeleton = gcnew Skeleton();
+			modelData->Skeleton->Nodes = sceneMapping->Nodes;
 
 			//auto sceneName = scene->GetName();
 			//if (sceneName != NULL && strlen(sceneName) > 0)

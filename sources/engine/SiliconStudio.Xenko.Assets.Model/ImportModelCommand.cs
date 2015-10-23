@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                     }
 
                     model.BoundingBox = BoundingBox.Empty;
-                    var hierarchyUpdater = new ModelViewHierarchyUpdater(model.Hierarchy.Nodes);
+                    var hierarchyUpdater = new SkeletonUpdater(model.Skeleton.Nodes);
                     hierarchyUpdater.UpdateMatrices();
 
                     bool hasErrors = false;
@@ -139,9 +139,9 @@ namespace SiliconStudio.Xenko.Assets.Model
                         var indicesBlackList = new HashSet<int>();
                         if (PreservedNodes != null)
                         {
-                            for (var index = 0; index < model.Hierarchy.Nodes.Length; ++index)
+                            for (var index = 0; index < model.Skeleton.Nodes.Length; ++index)
                             {
-                                var node = model.Hierarchy.Nodes[index];
+                                var node = model.Skeleton.Nodes[index];
                                 if (PreservedNodes.Contains(node.Name))
                                     indicesBlackList.Add(index);
                             }
@@ -181,7 +181,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                             // transform the buffers
                             foreach (var mesh in meshList)
                             {
-                                var transformationMatrix = GetMatrixFromIndex(model.Hierarchy.Nodes, hierarchyUpdater, meshList.Key, mesh.NodeIndex);
+                                var transformationMatrix = GetMatrixFromIndex(model.Skeleton.Nodes, hierarchyUpdater, meshList.Key, mesh.NodeIndex);
                                 mesh.Draw.VertexBuffers[0].TransformBuffer(ref transformationMatrix);
 
                                 // Check if geometry is inverted, to know if we need to reverse winding order
@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                         }
 
                         // delete empty nodes (neither mesh nor bone attached)
-                        var keptNodes = new bool[model.Hierarchy.Nodes.Length];
+                        var keptNodes = new bool[model.Skeleton.Nodes.Length];
                         for (var i = 0; i < keptNodes.Length; ++i)
                         {
                             keptNodes[i] = false;
@@ -236,7 +236,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                             while (nodeIndex != -1 && !keptNodes[nodeIndex])
                             {
                                 keptNodes[nodeIndex] = true;
-                                nodeIndex = model.Hierarchy.Nodes[nodeIndex].ParentIndex;
+                                nodeIndex = model.Skeleton.Nodes[nodeIndex].ParentIndex;
                             }
                         }
                         foreach (var mesh in finalMeshes)
@@ -245,7 +245,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                             while (nodeIndex != -1 && !keptNodes[nodeIndex])
                             {
                                 keptNodes[nodeIndex] = true;
-                                nodeIndex = model.Hierarchy.Nodes[nodeIndex].ParentIndex;
+                                nodeIndex = model.Skeleton.Nodes[nodeIndex].ParentIndex;
                             }
 
                             if (mesh.Skinning != null)
@@ -256,23 +256,23 @@ namespace SiliconStudio.Xenko.Assets.Model
                                     while (nodeIndex != -1 && !keptNodes[nodeIndex])
                                     {
                                         keptNodes[nodeIndex] = true;
-                                        nodeIndex = model.Hierarchy.Nodes[nodeIndex].ParentIndex;
+                                        nodeIndex = model.Skeleton.Nodes[nodeIndex].ParentIndex;
                                     }
                                 }
                             }
                         }
 
                         var newNodes = new List<ModelNodeDefinition>();
-                        var newMapping = new int[model.Hierarchy.Nodes.Length];
+                        var newMapping = new int[model.Skeleton.Nodes.Length];
                         for (var i = 0; i < keptNodes.Length; ++i)
                         {
                             if (keptNodes[i])
                             {
-                                var parentIndex = model.Hierarchy.Nodes[i].ParentIndex;
+                                var parentIndex = model.Skeleton.Nodes[i].ParentIndex;
                                 if (parentIndex != -1)
-                                    model.Hierarchy.Nodes[i].ParentIndex = newMapping[parentIndex]; // assume that the nodes are well ordered
+                                    model.Skeleton.Nodes[i].ParentIndex = newMapping[parentIndex]; // assume that the nodes are well ordered
                                 newMapping[i] = newNodes.Count;
-                                newNodes.Add(model.Hierarchy.Nodes[i]);
+                                newNodes.Add(model.Skeleton.Nodes[i]);
                             }
                         }
 
@@ -290,9 +290,9 @@ namespace SiliconStudio.Xenko.Assets.Model
                         }
 
                         model.Meshes = finalMeshes;
-                        model.Hierarchy.Nodes = newNodes.ToArray();
+                        model.Skeleton.Nodes = newNodes.ToArray();
 
-                        hierarchyUpdater = new ModelViewHierarchyUpdater(model.Hierarchy.Nodes);
+                        hierarchyUpdater = new SkeletonUpdater(model.Skeleton.Nodes);
                         hierarchyUpdater.UpdateMatrices();
                     }
 
@@ -453,7 +453,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <returns>A list of mergeable meshes in progress.</returns>
         private Dictionary<int, List<Mesh>> GroupFromIndex(Rendering.Model model, int index, HashSet<int> nodeBlackList, List<Mesh> meshes, List<GroupList<int, Mesh>> finalLists)
         {
-            var children = GetChildren(model.Hierarchy.Nodes, index);
+            var children = GetChildren(model.Skeleton.Nodes, index);
             
             var materialGroups = new Dictionary<int, List<Mesh>>();
 
@@ -503,7 +503,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <param name="rootIndex">The root index.</param>
         /// <param name="index">The current index.</param>
         /// <returns>The matrix at this index.</returns>
-        private Matrix GetMatrixFromIndex(ModelNodeDefinition[] hierarchy, ModelViewHierarchyUpdater updater, int rootIndex, int index)
+        private Matrix GetMatrixFromIndex(ModelNodeDefinition[] hierarchy, SkeletonUpdater updater, int rootIndex, int index)
         {
             if (index == -1 || index == rootIndex)
                 return Matrix.Identity;

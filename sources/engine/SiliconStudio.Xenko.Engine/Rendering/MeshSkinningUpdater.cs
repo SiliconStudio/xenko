@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
             boneMatrices = new Matrix[skinningCapacity];
         }
 
-        public void Update(ModelViewHierarchyUpdater hierarchyUpdater, RenderMesh renderMesh, out BoundingBoxExt boundingBox)
+        public void Update(SkeletonUpdater hierarchyUpdater, RenderMesh renderMesh, out BoundingBoxExt boundingBox)
         {
             var mesh = renderMesh.Mesh;
             var skinning = mesh.Skinning;
