@@ -25,7 +25,7 @@ using System;
 #if !SILICONSTUDIO_UI_SDL2
 using System.Windows.Forms;
 #else
-using SiliconStudio.Xenko.Graphics.SDL;
+using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
 #endif
 using SiliconStudio.Xenko.Games.Resources;
 

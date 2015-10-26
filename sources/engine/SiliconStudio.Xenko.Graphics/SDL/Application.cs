@@ -17,26 +17,26 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// </summary>
         static Application()
         {
-            InternalWindows = new Dictionary<IntPtr, WeakReference<Control>>(10);
+            InternalWindows = new Dictionary<IntPtr, WeakReference<Window>>(10);
         }
 
         /// <summary>
         /// Register <paramref name="c"/> to the list of available windows.
         /// </summary>
-        /// <param name="c">Control to register</param>
-        public static void RegisterControl(Control c)
+        /// <param name="c">Window to register</param>
+        public static void RegisterWindow(Window c)
         {
             lock (InternalWindows)
             {
-                InternalWindows.Add(c.SdlHandle, new WeakReference<Control>(c));
+                InternalWindows.Add(c.SdlHandle, new WeakReference<Window>(c));
             }
         }
 
         /// <summary>
         /// Unregister <paramref name="c"/> from the list of available windows.
         /// </summary>
-        /// <param name="c">Control to unregister</param> 
-        public static void UnregisterControl(Control c)
+        /// <param name="c">Window to unregister</param> 
+        public static void UnregisterWindow(Window c)
         {
             lock (InternalWindows)
             {
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <summary>
         /// Window that currently has the focus.
         /// </summary>
-        public static Control WindowWithFocus { get; private set; }
+        public static Window WindowWithFocus { get; private set; }
 
         /// <summary>
         /// Screen coordinate of the mouse.
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
             get
             {
-                Control focusedWindow = WindowWithFocus;
+                Window focusedWindow = WindowWithFocus;
                 if (focusedWindow != null)
                 {
                     int x, y;
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             }
             set
             {
-                Control focusedWindow = WindowWithFocus;
+                Window focusedWindow = WindowWithFocus;
                 if (focusedWindow != null)
                 {
                     Point windowPos = WindowWithFocus.Location;
@@ -90,24 +90,24 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <summary>
         /// List of windows managed by the application.
         /// </summary>
-        public static List<Control> Windows
+        public static List<Window> Windows
         {
             get
             {
                 lock (InternalWindows)
                 {
-                    var res = new List<Control>(InternalWindows.Count);
+                    var res = new List<Window>(InternalWindows.Count);
                     List<IntPtr> toRemove = null;
                     foreach (var weakRef in InternalWindows)
                     {
-                        Control ctrl;
+                        Window ctrl;
                         if (weakRef.Value.TryGetTarget(out ctrl))
                         {
                             res.Add(ctrl);
                         }
                         else
                         {
-                                // Control was reclaimed without being unregistered first.
+                                // Window was reclaimed without being unregistered first.
                                 // We add it to `toRemove' to remove it from InternalWindows later.
                             if (toRemove == null)
                             {
@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                             toRemove.Add(weakRef.Key);
                         }
                     }
-                        // Clean InternalWindows from controls that have been collected.
+                        // Clean InternalWindows from windows that have been collected.
                     if (toRemove != null)
                     {
                         foreach (var w in toRemove)
@@ -134,9 +134,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// </summary>
         public static void ProcessEvent(SDL.SDL_Event e)
         {
-            Control ctrl = null;
+            Window ctrl = null;
 
-                // Code below is to extract the associated `Control' instance and to find out the window
+                // Code below is to extract the associated `Window' instance and to find out the window
                 // with focus. In the future, we could even add events handled at the application level.
             switch (e.type)
             {
@@ -191,21 +191,21 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// </summary>
         /// <param name="w">SDL Handle of the window we are looking for</param>
         /// <returns></returns>
-        private static Control WindowFromSdlHandle(IntPtr w)
+        private static Window WindowFromSdlHandle(IntPtr w)
         {
             lock (InternalWindows)
             {
-                WeakReference<Control> weakRef;
+                WeakReference<Window> weakRef;
                 if (InternalWindows.TryGetValue(w, out weakRef))
                 {
-                    Control ctrl;
+                    Window ctrl;
                     if (weakRef.TryGetTarget(out ctrl))
                     {
                         return ctrl;
                     } 
                     else
                     {
-                            // Control does not exist anymore in our code. Clean `controls'.
+                            // Window does not exist anymore in our code. Clean `InternalWindows'.
                         InternalWindows.Remove(w);
                         return null;
                     }
@@ -220,7 +220,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <summary>
         /// Backup storage for windows of current application.
         /// </summary>
-        private readonly static Dictionary<IntPtr, WeakReference<Control>> InternalWindows;
+        private readonly static Dictionary<IntPtr, WeakReference<Window>> InternalWindows;
     }
 }
 #endif

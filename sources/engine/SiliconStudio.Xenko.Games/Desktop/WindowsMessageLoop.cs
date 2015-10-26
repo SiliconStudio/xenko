@@ -27,6 +27,7 @@ using System.Globalization;
 using System.Windows.Forms;
 #else
 using SiliconStudio.Xenko.Graphics.SDL;
+using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
 using SDL2;
 #endif
 using System.Runtime.InteropServices;

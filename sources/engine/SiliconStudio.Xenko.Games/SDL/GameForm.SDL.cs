@@ -4,7 +4,6 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && SILICONSTUDIO_UI_SDL2
 using System;
 using System.ComponentModel;
-using Form = SiliconStudio.Xenko.Graphics.SDL.Control;
 using Size = SiliconStudio.Xenko.Graphics.SDL.Size;
 using SiliconStudio.Xenko.Graphics.SDL;
 using SDL2;
@@ -15,7 +14,7 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// Default Rendering Form on SDL based applications.
     /// </summary>
-    public class GameForm : Form
+    public class GameForm : Window
     {
 #region Initialization
         /// <summary>

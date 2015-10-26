@@ -8,13 +8,13 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         // Using is here otherwise it would conflict with the current namespace that also defines SDL.
     using SDL2;
 
-    public class Control: IDisposable
+    public class Window: IDisposable
     {
 #region Initialization
         /// <summary>
-        /// Type initializer for `Control' which automatically initializes the SDL infrastructure.
+        /// Type initializer for `Window' which automatically initializes the SDL infrastructure.
         /// </summary>
-        static Control()
+        static Window()
         {
             SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
                 // Disable effect of doing Alt+F4
@@ -22,10 +22,10 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         }
 
         /// <summary>
-        /// Initialize current instance with <paramref name="title"/> as the title of the Control.
+        /// Initialize current instance with <paramref name="title"/> as the title of the Window.
         /// </summary>
         /// <param name="title">Title of the window, see Text property.</param>
-        public Control(string title)
+        public Window(string title)
         {
                 // Create the SDL window and then extract the native handle.
             SdlHandle = SDL.SDL_CreateWindow(title, SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 640, 480,
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 #endif
                 }
             }
-            Application.RegisterControl(this);
+            Application.RegisterWindow(this);
         }
 #endregion
 
@@ -446,7 +446,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         }
 
         /// <summary>
-        /// Platform specific handle for Control:
+        /// Platform specific handle for Window:
         /// - On Windows: the HWND of the window
         /// - On Unix: ...
         /// </summary>
@@ -459,7 +459,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 
 #region Disposal
         /// <inheritDoc/>
-        ~Control()
+        ~Window()
         {
             Dispose(false);
         }
@@ -478,7 +478,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         public event EventHandler Disposed;
 
         /// <summary>
-        /// Dispose of current Control.
+        /// Dispose of current Window.
         /// </summary>
         /// <param name="disposing">If <c>false</c> we are being called from the Finalizer.</param>
         protected virtual void Dispose(bool disposing)
@@ -489,7 +489,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 {
                         // Dispose managed state (managed objects).
                     Disposed?.Invoke(this, EventArgs.Empty);
-                    Application.UnregisterControl(this);
+                    Application.UnregisterWindow(this);
                 }
 
                     // Free unmanaged resources (unmanaged objects) and override a finalizer below.

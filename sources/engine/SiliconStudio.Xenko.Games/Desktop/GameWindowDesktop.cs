@@ -1,4 +1,5 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -36,7 +37,8 @@ using Size = System.Drawing.Size;
 #else
 using Point = SiliconStudio.Xenko.Graphics.SDL.Point;
 using SiliconStudio.Xenko.Graphics.SDL;
-using Form = SiliconStudio.Xenko.Graphics.SDL.Control;
+using Form = SiliconStudio.Xenko.Graphics.SDL.Window;
+using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
 using Size = SiliconStudio.Xenko.Graphics.SDL.Size;
 #endif
 

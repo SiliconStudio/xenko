@@ -78,34 +78,34 @@ namespace SiliconStudio.Xenko.Input
 
         protected override void SetMousePosition(Vector2 normalizedPosition)
         {
-            _control.MousePosition = new Point(
-                (int)(_control.ClientRectangle.Width * normalizedPosition.X),
-                (int)(_control.ClientRectangle.Height * normalizedPosition.Y));
+            _window.MousePosition = new Point(
+                (int)(_window.ClientRectangle.Width * normalizedPosition.X),
+                (int)(_window.ClientRectangle.Height * normalizedPosition.Y));
         }
 
         private void InitializeFromWindowsForms(GameContext uiContext)
         {
-            _control = (Control)uiContext.Control;
+            _window = (Window)uiContext.Control;
 
             _pointerClock.Restart();
 
             EnsureMapKeys();
-            _control.KeyDownActions += e => OnKeyEvent(e, false);
-            _control.KeyUpActions += e => OnKeyEvent(e, true);
-            _control.FocusGainedActions += e => OnUiControlGotFocus();
-            _control.FocusLostActions += e => OnUiControlLostFocus();
-            _control.MouseMoveActions += OnMouseMoveEvent;
-            _control.PointerButtonPressActions += e => { OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), InputEventType.Down); };
-            _control.PointerButtonReleaseActions += e => OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), InputEventType.Up);
-            _control.MouseWheelActions += e =>
+            _window.KeyDownActions += e => OnKeyEvent(e, false);
+            _window.KeyUpActions += e => OnKeyEvent(e, true);
+            _window.FocusGainedActions += e => OnUiControlGotFocus();
+            _window.FocusLostActions += e => OnUiControlLostFocus();
+            _window.MouseMoveActions += OnMouseMoveEvent;
+            _window.PointerButtonPressActions += e => { OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), InputEventType.Down); };
+            _window.PointerButtonReleaseActions += e => OnMouseInputEvent(new Vector2(e.x, e.y), ConvertMouseButton(e.button), InputEventType.Up);
+            _window.MouseWheelActions += e =>
             {
-                Point pos = _control.MousePosition;
+                Point pos = _window.MousePosition;
                 OnMouseInputEvent(new Vector2(pos.X, pos.Y), MouseButton.Middle, InputEventType.Wheel, Math.Max(e.x, e.y));
             };
-            _control.ResizeEndActions += UiControlOnSizeChanged;
+            _window.ResizeEndActions += UiWindowOnSizeChanged;
 
-            ControlWidth = _control.ClientSize.Width;
-            ControlHeight = _control.ClientSize.Height;
+            ControlWidth = _window.ClientSize.Width;
+            ControlHeight = _window.ClientSize.Height;
         }
 
         private void OnKeyEvent(SDL.SDL_KeyboardEvent e, bool isKeyUp)
@@ -121,16 +121,16 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        private void UiControlOnSizeChanged(SDL.SDL_WindowEvent eventArgs)
+        private void UiWindowOnSizeChanged(SDL.SDL_WindowEvent eventArgs)
         {
-            ControlWidth = _control.ClientSize.Width;
-            ControlHeight = _control.ClientSize.Height;
+            ControlWidth = _window.ClientSize.Width;
+            ControlHeight = _window.ClientSize.Height;
         }
 
         private void OnMouseInputEvent(Vector2 pixelPosition, MouseButton button, InputEventType type, float value = 0)
         {
-            // The mouse wheel event are still received even when the mouse cursor is out of the control boundaries. Discard the event in this case.
-            if (type == InputEventType.Wheel && !_control.ClientRectangle.Contains(_control.MousePosition))
+            // The mouse wheel event are still received even when the mouse cursor is out of the Window boundaries. Discard the event in this case.
+            if (type == InputEventType.Wheel && !_window.ClientRectangle.Contains(_window.MousePosition))
                 return;
 
             // the mouse events series has been interrupted because out of the window.
@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Input
             var previousMousePosition = CurrentMousePosition;
             CurrentMousePosition = NormalizeScreenPosition(new Vector2(e.x, e.y));
             // Discard this event if it has been triggered by the replacing the cursor to its capture initial position
-            if (IsMousePositionLocked && _control.MousePosition == _capturedPosition)
+            if (IsMousePositionLocked && _window.MousePosition == _capturedPosition)
                 return;
 
             CurrentMouseDelta += CurrentMousePosition - previousMousePosition;
@@ -239,7 +239,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        private Control _control;
+        private Window _window;
         private readonly Stopwatch _pointerClock;
         private Point _capturedPosition;
         private bool _wasMouseVisibleBeforeCapture;
