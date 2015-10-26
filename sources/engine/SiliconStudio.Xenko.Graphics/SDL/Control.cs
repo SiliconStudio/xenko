@@ -51,6 +51,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 #endif
                 }
             }
+            Application.RegisterControl(this);
         }
 #endregion
 
@@ -73,18 +74,13 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             SDL.SDL_SetWindowPosition(SdlHandle, loc.X, loc.Y);
         }
 
+        /// <summary>
+        /// Get or set the mouse position on screen.
+        /// </summary>
         public Point MousePosition
         {
-            get
-            {
-                int x, y;
-                SDL.SDL_GetMouseState(out x, out y);
-                return new Point(x, y);
-            }
-            set
-            {
-                SDL.SDL_WarpMouseInWindow(SdlHandle, value.X, value.Y);
-            }
+            get { return Application.MousePosition; }
+            set { Application.MousePosition = value; }
         }
 
         public bool TopMost
@@ -292,7 +288,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <summary>
         /// Process events for the current window
         /// </summary>
-        public virtual void ProcessEvents(SDL.SDL_Event e)
+        public virtual void ProcessEvent(SDL.SDL_Event e)
         {
             switch (e.type)
             {
@@ -396,7 +392,12 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// </summary>
         public IntPtr Handle { get; private set; }
 
-#region Disposal
+        /// <summary>
+        /// The SDL window handle.
+        /// </summary>
+        public IntPtr SdlHandle { get; private set; }
+
+        #region Disposal
         ~Control()
         {
             Dispose(false);
@@ -422,8 +423,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             {
                 if (disposing)
                 {
-                    // Dispose managed state (managed objects).
+                        // Dispose managed state (managed objects).
                     Disposed?.Invoke(this, EventArgs.Empty);
+                    Application.UnregisterControl(this);
                 }
 
                     // Free unmanaged resources (unmanaged objects) and override a finalizer below.
@@ -444,11 +446,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 #endregion
 
 #region Implementation
-        /// <summary>
-        /// The SDL window handle.
-        /// </summary>
-        private IntPtr SdlHandle { get; set; }
-
         private bool _hasBeenShownOnce;
 #endregion
     }

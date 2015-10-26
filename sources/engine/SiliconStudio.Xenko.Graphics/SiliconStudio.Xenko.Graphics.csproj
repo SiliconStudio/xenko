@@ -123,6 +123,7 @@
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="DepthStencilStateSerializer.cs" />
+    <Compile Include="SDL\Application.cs" />
     <Compile Include="SDL\Control.cs" />
     <Compile Include="SDL\Cursor.cs" />
     <Compile Include="SDL\FormBorderStyle.cs" />

@@ -40,15 +40,8 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// Position of cursor on screen.
         /// </summary>
         public static Point Position {
-            get
-            {
-                int x, y;
-                SDL.SDL_GetMouseState(out x, out y);
-                return new Point(x, y);
-            }
-            set
-            {
-            }
+            get { return Application.MousePosition; }
+            set { Application.MousePosition = value; }
         }
 #endregion
 

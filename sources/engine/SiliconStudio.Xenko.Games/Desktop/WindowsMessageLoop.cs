@@ -189,7 +189,7 @@ namespace SiliconStudio.Xenko.Games
                 SDL.SDL_Event e;
                 while (SDL.SDL_PollEvent(out e) != 0)
                 {
-                    Control.ProcessEvents(e);
+                    Application.ProcessEvent(e);
                 }
 #endif
             }
