@@ -9,6 +9,5 @@ namespace SiliconStudio.Assets.Templates
     [DataContract("TemplateAsset")]
     public class TemplateAssetDescription : TemplateDescription
     {
-        public string AssetTypeName { get; set; }
     }
 }
