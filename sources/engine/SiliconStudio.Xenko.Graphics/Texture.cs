@@ -797,7 +797,7 @@ namespace SiliconStudio.Xenko.Graphics
             // If depth == 1 (Texture, Texture or TextureCube), then depthStride is not used
             var boxDepthStride = this.Depth == 1 ? box.SlicePitch : textureDepthStride;
 
-            var isFlippedTexture = IsFlippedTexture();
+            var isFlippedTexture = IsFlipped();
 
             // The fast way: If same stride, we can directly copy the whole texture in one shot
             if (box.RowPitch == rowStride && boxDepthStride == textureDepthStride && !isFlippedTexture)
