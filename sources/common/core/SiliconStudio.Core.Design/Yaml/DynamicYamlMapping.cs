@@ -91,7 +91,8 @@ namespace SiliconStudio.Core.Yaml
                 return true;
             }
             result = null;
-            return false;
+            // Probably not very good, but unfortunately we have some asset upgraders that relies on null check to check existence
+            return true;
         }
 
         public override bool TrySetMember(SetMemberBinder binder, object value)
