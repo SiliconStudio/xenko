@@ -1087,6 +1087,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public Image GetDataAsImage()
         {
+            if (Usage == GraphicsResourceUsage.Staging)
+                return GetDataAsImage(this); // Directly if this is a staging resource
+
             using (var stagingTexture = ToStaging())
                 return GetDataAsImage(stagingTexture);
         }
