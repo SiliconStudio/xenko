@@ -51,6 +51,7 @@
     </Compile>
     <Compile Include="Module.cs" />
     <Compile Include="PropertyKeySerializerTest.cs" />
+    <Compile Include="TestAssetCloner.cs" />
     <Compile Include="TestAssetCollision.cs" />
     <Compile Include="TestAssetItemAccessor.cs" />
     <Compile Include="TestAssetReferenceAnalysis.cs" />

@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 
@@ -18,6 +19,8 @@ namespace SiliconStudio.Assets
         private readonly object streamOrValueType;
 
         private readonly List<object> invariantObjects;
+        private readonly Dictionary<object, int> objectReferences;
+
         public static SerializerSelector ClonerSelector { get; internal set; }
         public static PropertyKey<List<object>> InvariantObjectListProperty = new PropertyKey<List<object>>("InvariantObjectList", typeof(AssetCloner));
 
@@ -32,7 +35,7 @@ namespace SiliconStudio.Assets
         /// <param name="value">The value to clone.</param>
         /// <param name="keepOnlySealedOverride">if set to <c>true</c> to discard override information except sealed.</param>
         /// <param name="referencesAsNull">if set to <c>true</c>, attached references will be cloned as <c>null</c>.</param>
-        public AssetCloner(object value, bool keepOnlySealedOverride = false, bool referencesAsNull = false)
+        private AssetCloner(object value, bool keepOnlySealedOverride = false, bool referencesAsNull = false)
         {
             this.referencesAsNull = referencesAsNull;
             invariantObjects = null;
@@ -53,11 +56,15 @@ namespace SiliconStudio.Assets
                 writer.SerializeExtended(value, ArchiveMode.Serialize);
                 writer.Flush();
 
+                // Retrieve back object references
+                objectReferences = writer.Context.Get(MemberSerializer.ObjectSerializeReferences);
+
                 streamOrValueType = stream;
             }
             else
             {
                 streamOrValueType = value;
+                objectReferences = null;
             }
         }
 
@@ -65,7 +72,7 @@ namespace SiliconStudio.Assets
         /// Clones the current value of this cloner with the specified new shadow registry (optional)
         /// </summary>
         /// <returns>A clone of the value associated with this cloner.</returns>
-        public object Clone()
+        private object Clone()
         {
             var stream = streamOrValueType as Stream;
             if (stream != null)
@@ -79,6 +86,19 @@ namespace SiliconStudio.Assets
                 reader.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
                 object newObject = null;
                 reader.SerializeExtended(ref newObject, ArchiveMode.Deserialize);
+
+                // If there are any references, we would like to copy all dynamic properties from ShadowObject to the new instances
+                if (objectReferences != null)
+                {
+                    var newObjectReferences = reader.Context.Get(MemberSerializer.ObjectDeserializeReferences);
+                    foreach (var objRef in objectReferences)
+                    {
+                        var innerObject = objRef.Key;
+                        var newInnerObject = newObjectReferences[objRef.Value];
+                        ShadowObject.CopyDynamicProperties(innerObject, newInnerObject);
+                    }
+                }
+
                 return newObject;
             }
             // Else this is a value type, so it is cloned automatically
