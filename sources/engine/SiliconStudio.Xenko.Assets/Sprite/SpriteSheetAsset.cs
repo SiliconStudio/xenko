@@ -235,7 +235,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
-                // Due to the fact that we had already asset upgraders using old format while adding the new SerializedVersion to match package version and merging it back in master.
+                // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
                 // As a result, upgrade is not needed for version 3
                 var sprites = asset.Sprites;
                 if (sprites == null || currentVersion == PackageVersion.Parse("0.0.3"))

@@ -574,7 +574,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
-                // Due to the fact that we had already asset upgraders using old format while adding the new SerializedVersion to match package version and merging it back in master.
+                // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
                 // As a result, sprite component upgrade is not needed for version 19 and 20, and physics component upgrade is not needed for version 20
                 var version19 = PackageVersion.Parse("0.0.19");
                 var version20 = PackageVersion.Parse("0.0.20");
@@ -585,7 +585,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     var components = entity.Entity.Components;
                     var spriteComponent = components["SpriteComponent.Key"];
-                    if (spriteComponent != null && (currentVersion != version19 || currentVersion != version20))
+                    if (spriteComponent != null && (currentVersion != version19 && currentVersion != version20))
                     {
                         var color = spriteComponent.Color;
                         spriteComponent.Color = DynamicYamlExtensions.ConvertFrom((Color4)DynamicYamlExtensions.ConvertTo<Color>(color));

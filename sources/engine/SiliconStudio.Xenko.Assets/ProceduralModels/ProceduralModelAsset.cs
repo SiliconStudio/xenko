@@ -180,10 +180,10 @@ namespace SiliconStudio.Xenko.Assets.ProceduralModels
         {
             protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
-                // Note: due to the late merge of new SerializedVersion from 1.4 to master, we might have asset version 6 which are already upgraded.
-                // However, this upgrader is safe to run multiple time so no special care is needed.
+                // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
+                // However since this upgrader can be reapplied, it is not a problem
                 var proceduralType = asset.Type;
-                if (proceduralType.Node.Tag == "!CapsuleProceduralModel")
+                if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && currentVersion != PackageVersion.Parse("0.0.6"))
                 {
                     if (proceduralType.Radius == null)
                     {
