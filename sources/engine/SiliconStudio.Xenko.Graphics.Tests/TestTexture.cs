@@ -457,5 +457,112 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             // Assert that data are the same
             Assert.That(Utilities.Compare(data, data2), Is.True);
         }
+
+        [TestCase(GraphicsProfile.Level_9_1, GraphicsResourceUsage.Staging)]
+        [TestCase(GraphicsProfile.Level_9_1, GraphicsResourceUsage.Default)]
+        [TestCase(GraphicsProfile.Level_10_0, GraphicsResourceUsage.Staging)]
+        [TestCase(GraphicsProfile.Level_10_0, GraphicsResourceUsage.Default)]
+        public void TestGetData(GraphicsProfile profile, GraphicsResourceUsage usage)
+        {
+            if(usage == GraphicsResourceUsage.Staging)
+                IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
+
+            var testArray = profile >= GraphicsProfile.Level_10_0 && GraphicsDevice.Platform == GraphicsPlatform.Direct3D11; // TODO modify this when when supported on openGL
+            var mipmaps = GraphicsDevice.Platform == GraphicsPlatform.Direct3D11 ? 3 : 1; // TODO remove this limitation when GetData is fixed on OpenGl ES for mipmap levels other than 0
+            
+            RunDrawTest(
+                game =>
+                {
+                    const int width = 16;
+                    const int height = width;
+                    var arraySize = testArray ? 2 : 1;
+                    var flags = usage == GraphicsResourceUsage.Default?
+                        new[] { TextureFlags.ShaderResource, TextureFlags.RenderTarget, TextureFlags.RenderTarget | TextureFlags.ShaderResource }:
+                        new[] { TextureFlags.None };
+                    
+                    var mipmapSize = 0;
+                    for (int i = 0; i < mipmaps; i++)
+                        mipmapSize += (width >> i)*(height >> i);
+
+                    var dataSize = arraySize*mipmapSize;
+                    var data = new int[dataSize];
+                    {
+                        var offset = 0;
+                        for (int array = 0; array < arraySize; array++)
+                        {
+                            for (int mip = 0; mip < mipmaps; mip++)
+                            {
+                                var w = width >> mip;
+                                var h = height >> mip;
+
+                                for (int r = 0; r < h; r++)
+                                {
+                                    for (int c = 0; c < w; c++)
+                                    {
+                                        var color = new Color((byte)array, (byte)c, (byte)r, (byte)mip).ToRgba();
+                                        data[offset + r * w + c] = color;
+                                    }
+                                }
+                                offset += w * h;
+                            }
+                        }
+                    }
+
+                    foreach (var flag in flags)
+                    {
+                        unsafe
+                        {
+                            fixed(int* pData = data)
+                            {
+                                var offset = 0;
+                                var dataBoxes = new DataBox[arraySize*mipmaps];
+                                for (int array = 0; array < arraySize; array++)
+                                {
+                                    for (int mip = 0; mip < mipmaps; mip++)
+                                    {
+                                        var w = width >> mip;
+                                        var h = height >> mip;
+                                        var rowStride = w*sizeof(int);
+                                        var sliceStride = rowStride*h;
+
+                                        dataBoxes[array * mipmaps + mip] = new DataBox((IntPtr)pData + offset, rowStride, sliceStride);
+
+                                        offset += sliceStride;
+                                    }
+                                }
+
+                                var texture = Texture.New2D(game.GraphicsDevice, width, height, mipmaps, PixelFormat.R8G8B8A8_UNorm, dataBoxes, flag, arraySize, usage);
+
+                                for (int arraySlice = 0; arraySlice < arraySize; arraySlice++)
+                                {
+                                    for (int mipSlice = 0; mipSlice < mipmaps; mipSlice++)
+                                    {
+                                        var w = width >> mipSlice;
+                                        var h = height >> mipSlice;
+
+                                        var readData = texture.GetData<int>(arraySlice, mipSlice);
+
+                                        for (int r = 0; r < h; r++)
+                                        {
+                                            for (int c = 0; c < w; c++)
+                                            {
+                                                var value = Color.FromRgba(readData[r*w + c]);
+                                                var expectedValue = new Color((byte)arraySlice, (byte)c, (byte)r, (byte)mipSlice);
+
+                                                if (expectedValue != value)
+                                                    Assert.Fail("The texture data get at [{0}, {1}] for mipmap level '{2}' and slice '{3}' with flags '{4}' and usage '{5}' is not valid. " +
+                                                                "Expected '{6}' but was '{7}'", 
+                                                                c, r, mipSlice, arraySlice, flag, usage, expectedValue, value);
+                                            }
+                                        }
+                                    }
+                                }
+                                texture.Dispose();
+                            }
+                        }
+                    }
+                },
+                profile);
+        }
     }
 }

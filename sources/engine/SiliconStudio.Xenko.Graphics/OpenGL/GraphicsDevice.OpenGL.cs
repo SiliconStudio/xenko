@@ -556,11 +556,6 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (IsOpenGLES2)
                 {
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                    // TODO: This issue might just be because we don't specify alignment to glPixelStorei().
-                    if (sourceTexture.Width <= 16 || sourceTexture.Height <= 16)
-                        throw new NotSupportedException("ReadPixels from texture smaller or equal to 16x16 pixels seems systematically to fails on some android devices."); // example: Galaxy S3
-#endif
                     GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, destTexture.StagingData);
                 }
                 else
