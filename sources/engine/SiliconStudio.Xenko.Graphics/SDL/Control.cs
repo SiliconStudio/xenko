@@ -57,18 +57,24 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 
 
         /// <summary>
-        /// Move window to Back.
-        /// FIXME: This is not yet implemented on SDL.
+        /// Move window to back.
         /// </summary>
         public virtual void SendToBack()
         {
+                // FIXME: This is not yet implemented on SDL. We are using SDL_SetWindowPosition in
+                // FIXME: the hope that it will apply the new hint.
             Point loc = Location;
             SDL.SDL_SetHint(SDL.SDL_HINT_ALLOW_TOPMOST, "0");
             SDL.SDL_SetWindowPosition(SdlHandle, loc.X, loc.Y);
         }
 
+        /// <summary>
+        /// Move window to front.
+        /// </summary>
         public virtual void BringToFront()
         {
+                // FIXME: This is not yet implemented on SDL. We are using SDL_SetWindowPosition in
+                // FIXME: the hope that it will apply the new hint.
             Point loc = Location;
             SDL.SDL_SetHint(SDL.SDL_HINT_ALLOW_TOPMOST, "1");
             SDL.SDL_SetWindowPosition(SdlHandle, loc.X, loc.Y);
@@ -83,12 +89,25 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             set { Application.MousePosition = value; }
         }
 
+        /// <summary>
+        /// Make the window topmost
+        /// </summary>
         public bool TopMost
         {
             get { return SDL.SDL_GetHint(SDL.SDL_HINT_ALLOW_TOPMOST) == "1"; }
-            set { SDL.SDL_SetHint(SDL.SDL_HINT_ALLOW_TOPMOST, (value ? "1" : "0")); }
+            set
+            {
+                // FIXME: This is not yet implemented on SDL. We are using SDL_SetWindowPosition in
+                // FIXME: the hope that it will apply the new hint.
+                Point loc = Location;
+                SDL.SDL_SetHint(SDL.SDL_HINT_ALLOW_TOPMOST, (value ? "1" : "0"));
+                SDL.SDL_SetWindowPosition(SdlHandle, loc.X, loc.Y);
+            }
         }
 
+        /// <summary>
+        /// Show window. The first time a window is shown we execute any actions from <see cref="HandleCreated"/>.
+        /// </summary>
         public void Show()
         {
             if (!_hasBeenShownOnce)
@@ -99,6 +118,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             SDL.SDL_ShowWindow(SdlHandle);
         }
 
+        /// <summary>
+        /// Are we showing the window in full screen mode?
+        /// </summary>
         public bool IsFullScreen {
             get
             {
@@ -110,6 +132,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             }
         }
 
+        /// <summary>
+        /// Is current window visible?
+        /// </summary>
         public bool Visible {
             get
             {
@@ -128,6 +153,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             }
         }
 
+        /// <summary>
+        /// State of the window which can be either of Normal, Maximized or Minimized.
+        /// </summary>
         public FormWindowState WindowState
         {
             get
@@ -163,8 +191,21 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             }
         }
 
-        public bool MaximizeBox { get; set; }
+        /// <summary>
+        /// Does current window offer a maximize button?
+        /// </summary>
+        /// <remarks>Setter is not implemented on SDL, since we do have callers, for the time being, the code does nothing instead of throwing an exception.</remarks>
+        public bool MaximizeBox {
+            get { return FormBorderStyle == FormBorderStyle.Sizable; }
+            set
+            {
+                // FIXME: How to implement this since this is being called.
+            }
+        }
 
+        /// <summary>
+        /// Size of window.
+        /// </summary>
         public Size Size
         {
             get
@@ -176,6 +217,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             set { SDL.SDL_SetWindowSize(SdlHandle, value.Width, value.Height); }
         }
 
+        /// <summary>
+        /// Size of the client area of a window.
+        /// </summary>
         public unsafe Size ClientSize
         {
             get
@@ -185,11 +229,15 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             }
             set
             {
-                // FIXME: We need to adapt the ClientSize to an actual Size to take into account borders.
-                // FIXME: On Windows you do this by using AdjustWindowRect.
+                    // FIXME: We need to adapt the ClientSize to an actual Size to take into account borders.
+                    // FIXME: On Windows you do this by using AdjustWindowRect.
                 SDL.SDL_SetWindowSize(SdlHandle, value.Width, value.Height);
             }
         }
+
+        /// <summary>
+        /// Size of client area expressed as a rectangle.
+        /// </summary>
         public unsafe Rect ClientRectangle
         {
             get
@@ -206,6 +254,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             }
         }
 
+        /// <summary>
+        /// Coordinates of the top-left corner of the window in screen coordinate.
+        /// </summary>
         public Point Location
         {
             get
@@ -220,11 +271,18 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             }
         }
 
+        /// <summary>
+        /// Text of the title of the Window.
+        /// </summary>
         public string Text {
             get { return SDL.SDL_GetWindowTitle(SdlHandle); }
             set { SDL.SDL_SetWindowTitle(SdlHandle, value); }
         }
 
+        /// <summary>
+        /// Style of border. Currently can only be Sizable or FixedSingle.
+        /// </summary>
+        /// <remarks>On SDL, one cannot change the style after the window has been created.</remarks>
         public FormBorderStyle FormBorderStyle
         {
             get
@@ -242,14 +300,16 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             set
             {
                 // FIXME: How to implement this since this is being called.
-                // throw new NotImplementedException("Cannot change the border style after creation");
             }
         }
 
+        /// <summary>
+        /// List of all events one can hook up.
+        /// </summary>
+        /// <param name="e"></param>
         public delegate void MouseButtonDelegate(SDL.SDL_MouseButtonEvent e);
         public delegate void MouseMoveDelegate(SDL.SDL_MouseMotionEvent e);
         public delegate void MouseWheelDelegate(SDL.SDL_MouseWheelEvent e);
-        //public delegate void ExposeDelegate(Dc a_dc, Rect a_rect);
         public delegate void TextEditingDelegate(SDL.SDL_TextEditingEvent e);
         public delegate void TextInputDelegate(SDL.SDL_TextInputEvent e);
         public delegate void WindowEventDelegate(SDL.SDL_WindowEvent e);
@@ -397,7 +457,8 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// </summary>
         public IntPtr SdlHandle { get; private set; }
 
-        #region Disposal
+#region Disposal
+        /// <inheritDoc/>
         ~Control()
         {
             Dispose(false);
@@ -411,6 +472,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             get { return SdlHandle == IntPtr.Zero; }
         }
 
+        /// <summary>
+        /// Actions to be called when we dispose of current.
+        /// </summary>
         public event EventHandler Disposed;
 
         /// <summary>
@@ -446,6 +510,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 #endregion
 
 #region Implementation
+        /// <summary>
+        /// Flag to know if the window has been shown once already. Used by `Show' to figure when to call the actions from <see cref="HandleCreated"/>.
+        /// </summary>
         private bool _hasBeenShownOnce;
 #endregion
     }
