@@ -286,6 +286,8 @@ namespace SiliconStudio.Xenko.Physics
             set { InternalRigidBody.LinearFactor = value; }
         }
 
+        private RigidBodyTypes? type;
+
         /// <summary>
         /// Gets or sets the type.
         /// </summary>
@@ -296,8 +298,12 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) return RigidBodyTypes.Kinematic;
-                return InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject) ? RigidBodyTypes.Static : RigidBodyTypes.Dynamic;
+                if (!type.HasValue)
+                {
+                    type = InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject) ? RigidBodyTypes.Kinematic : InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject) ? RigidBodyTypes.Static : RigidBodyTypes.Dynamic;
+                }
+
+                return type.Value;
             }
             set
             {
@@ -313,7 +319,7 @@ namespace SiliconStudio.Xenko.Physics
                             InternalRigidBody.LinearVelocity = Vector3.Zero;
                             InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
                             InternalRigidBody.AngularVelocity = Vector3.Zero;
-                        }
+                        }                     
                         break;
 
                     case RigidBodyTypes.Static:
@@ -342,6 +348,8 @@ namespace SiliconStudio.Xenko.Physics
                         }
                         break;
                 }
+
+                type = value;
             }
         }
 

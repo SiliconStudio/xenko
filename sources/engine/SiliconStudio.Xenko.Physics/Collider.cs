@@ -197,6 +197,8 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
+        private bool? isTrigger;
+
         /// <summary>
         /// Gets or sets a value indicating whether this instance is a trigger.
         /// </summary>
@@ -205,11 +207,27 @@ namespace SiliconStudio.Xenko.Physics
         /// </value>
         public bool IsTrigger
         {
-            get { return InternalCollider.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.NoContactResponse); }
+            get
+            {
+                if (!isTrigger.HasValue)
+                {
+                    isTrigger = InternalCollider.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.NoContactResponse);
+                }
+                return isTrigger.Value;
+            }
             set
             {
-                if (value) InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
-                else if (InternalCollider.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.NoContactResponse)) InternalCollider.CollisionFlags ^= BulletSharp.CollisionFlags.NoContactResponse;
+                if (value)
+                {
+                    InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
+                    isTrigger = true;
+                }
+                else 
+                {
+                    if (InternalCollider.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.NoContactResponse))
+                        InternalCollider.CollisionFlags ^= BulletSharp.CollisionFlags.NoContactResponse;
+                    isTrigger = false;
+                }
             }
         }
 
