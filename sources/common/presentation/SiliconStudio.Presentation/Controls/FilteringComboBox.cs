@@ -36,6 +36,10 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private bool clearing;
         /// <summary>
+        /// Indicates that the user clicked in the listbox with the mouse and that the drop
+        /// </summary>
+        private bool listBoxClicking;
+        /// <summary>
         /// Indicates that the selection is being internally updated and that the text should not be cleared.
         /// </summary>
         private bool updatingSelection;
@@ -200,7 +204,7 @@ namespace SiliconStudio.Presentation.Controls
             editableTextBox.Validated += EditableTextBoxValidated;
             editableTextBox.Cancelled += EditableTextBoxCancelled;
             editableTextBox.LostFocus += EditableTextBoxLostFocus;
-            listBox.PreviewMouseUp += ListBoxMouseUp;
+            listBox.MouseUp += ListBoxMouseUp;
         }
 
         protected override void OnSelectionChanged(SelectionChangedEventArgs e)
@@ -217,10 +221,11 @@ namespace SiliconStudio.Presentation.Controls
         protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
             base.OnGotKeyboardFocus(e);
-            if (OpenDropDownOnFocus)
+            if (OpenDropDownOnFocus && !listBoxClicking)
             {
                 IsDropDownOpen = true;
             }
+            listBoxClicking = false;
         }
 
         private static void OnItemsSourceRefresh(DependencyObject d, DependencyPropertyChangedEventArgs e)
@@ -258,7 +263,9 @@ namespace SiliconStudio.Presentation.Controls
                 var displayValue = ResolveDisplayMemberValue(SelectedItem);
                 editableTextBox.Text = displayValue?.ToString();
                 if (editableTextBox.Text != null)
+                {
                     editableTextBox.CaretIndex = editableTextBox.Text.Length;
+                }
             }
 
             // Update the source of the text property binding
@@ -267,14 +274,18 @@ namespace SiliconStudio.Presentation.Controls
 
             // Close the dropdown
             if (IsDropDownOpen)
+            {
                 IsDropDownOpen = false;
+            }
 
             validating = false;
 
             var cancelRoutedEventArgs = new CancelRoutedEventArgs(ValidatingEvent);
             RaiseEvent(cancelRoutedEventArgs);
             if (cancelRoutedEventArgs.Cancel)
+            {
                 e.Cancel = true;
+            }
         }
 
         private void EditableTextBoxValidated(object sender, ValidationRoutedEventArgs<string> e)
@@ -294,7 +305,7 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
-        private async void EditableTextBoxCancelled(object sender, RoutedEventArgs e)
+        private void EditableTextBoxCancelled(object sender, RoutedEventArgs e)
         {
             // This may happens somehow when the template is refreshed.
             if (!ReferenceEquals(sender, editableTextBox))
@@ -304,12 +315,11 @@ namespace SiliconStudio.Presentation.Controls
             expression?.UpdateTarget();
 
             clearing = true;
-            await Task.Delay(100);
             IsDropDownOpen = false;
             clearing = false;
         }
 
-        private async void EditableTextBoxLostFocus(object sender, RoutedEventArgs e)
+        private void EditableTextBoxLostFocus(object sender, RoutedEventArgs e)
         {
             // This may happens somehow when the template is refreshed.
             if (!ReferenceEquals(sender, editableTextBox))
@@ -323,10 +333,7 @@ namespace SiliconStudio.Presentation.Controls
                 updatingSelection = false;
             }
             editableTextBox.Validate();
-
-            // Defer closing the popup in case we lost the focus because of a click in the list box - so it can still raise the correct event
-            // This is a very hackish, we should find a better way to do it!
-            await Task.Delay(100);
+            // Make sure the drop down is closed
             IsDropDownOpen = false;
             clearing = false;
         }
@@ -369,11 +376,14 @@ namespace SiliconStudio.Presentation.Controls
 
         private void EditableTextBoxPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (listBox.Items.Count > 0)
+            if (listBox.Items.Count <= 0)
+                return;
+
+            updatingSelection = true;
+            var stackPanel = listBox.FindVisualChildOfType<VirtualizingStackPanel>();
+            switch (e.Key)
             {
-                updatingSelection = true;
-                if (e.Key == Key.Escape)
-                {
+                case Key.Escape:
                     if (IsDropDownOpen)
                     {
                         IsDropDownOpen = false;
@@ -384,20 +394,19 @@ namespace SiliconStudio.Presentation.Controls
                     {
                         editableTextBox.Cancel();
                     }
-                }
-                if (e.Key == Key.Up)
-                {
+                    break;
+
+                case Key.Up:
                     listBox.SelectedIndex = Math.Max(listBox.SelectedIndex - 1, 0);
                     BringSelectedItemIntoView();
-                }
-                if (e.Key == Key.Down)
-                {
+                    break;
+
+                case Key.Down:
                     listBox.SelectedIndex = Math.Min(listBox.SelectedIndex + 1, listBox.Items.Count - 1);
                     BringSelectedItemIntoView();
-                }
-                if (e.Key == Key.PageUp)
-                {
-                    var stackPanel = listBox.FindVisualChildOfType<VirtualizingStackPanel>();
+                    break;
+
+                case Key.PageUp:
                     if (stackPanel != null)
                     {
                         var count = stackPanel.Children.Count;
@@ -408,10 +417,9 @@ namespace SiliconStudio.Presentation.Controls
                         listBox.SelectedIndex = 0;
                     }
                     BringSelectedItemIntoView();
-                }
-                if (e.Key == Key.PageDown)
-                {
-                    var stackPanel = listBox.FindVisualChildOfType<VirtualizingStackPanel>();
+                    break;
+
+                case Key.PageDown:
                     if (stackPanel != null)
                     {
                         var count = stackPanel.Children.Count;
@@ -422,34 +430,39 @@ namespace SiliconStudio.Presentation.Controls
                         listBox.SelectedIndex = listBox.Items.Count - 1;
                     }
                     BringSelectedItemIntoView();
-                }
-                if (e.Key == Key.Home)
-                {
+                    break;
+
+                case Key.Home:
                     listBox.SelectedIndex = 0;
                     BringSelectedItemIntoView();
-                }
-                if (e.Key == Key.End)
-                {
+                    break;
+
+                case Key.End:
                     listBox.SelectedIndex = listBox.Items.Count - 1;
                     BringSelectedItemIntoView();
-                }
-                updatingSelection = false;
+                    break;
             }
+            updatingSelection = false;
         }
 
         private void ListBoxMouseUp(object sender, MouseButtonEventArgs e)
         {
             if (e.ChangedButton == MouseButton.Left && listBox.SelectedIndex > -1)
             {
-                editableTextBox.Validate();
+                // We need to force the validation here
+                // The user might have clicked on the list after the drop down was automatically open (see OpenDropDownOnFocus).
+                editableTextBox.ForceValidate();
             }
+            listBoxClicking = true;
         }
 
         private void BringSelectedItemIntoView()
         {
             var selectedItem = listBox.SelectedItem;
             if (selectedItem != null)
+            {
                 listBox.ScrollIntoView(selectedItem);
+            }
         }
 
         private bool InternalFilter(object obj)
@@ -497,11 +510,11 @@ namespace SiliconStudio.Presentation.Controls
         {
             var camelCaseSplit = text.CamelCaseSplit();
             var filter = inputText.ToLowerInvariant();
-            int currentFilterChar = 0;
+            var currentFilterChar = 0;
 
             foreach (var word in camelCaseSplit)
             {
-                int currentWordChar = 0;
+                var currentWordChar = 0;
                 while (currentFilterChar > 0)
                 {
                     if (char.ToLower(word[currentWordChar]) == filter[currentFilterChar])

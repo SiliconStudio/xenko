@@ -432,6 +432,7 @@
                         <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
                             <Grid>
                                 <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"
+                                         FocusManager.IsFocusScope="True"
                                          ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
                                          SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
                                          SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=TwoWay}"
@@ -439,8 +440,7 @@
                                          SelectedValuePath="{Binding SelectedValuePath, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, Mode=OneWay}"
                                          ItemTemplate="{TemplateBinding ItemTemplate}" ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"
                                          ItemStringFormat="{TemplateBinding ItemStringFormat}"
-                                         Visibility="{Binding Items.Count, RelativeSource={RelativeSource Self}, Converter={cvt:VisibleOrCollapsed}}">
-                                </ListBox>
+                                         Visibility="{Binding Items.Count, RelativeSource={RelativeSource Self}, Converter={cvt:VisibleOrCollapsed}}" />
                             </Grid>
                         </Popup>
                     </Grid>
