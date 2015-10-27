@@ -163,7 +163,7 @@ namespace SiliconStudio.Xenko.Rendering
                 if (string.IsNullOrEmpty(key.Name))
                     key.SetName(name);
                 keyByNames[name] = key;
-                keyByNamesVersion += keyByNamesVersion;
+                keyByNamesVersion++;
                 
                 if (key.OwnerType == null && ownerType != null)
                     key.SetOwnerType(ownerType);
@@ -317,7 +317,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                         // Register key. Also register real name in case it was remapped.
                         keyByNames[name] = key;
-                        keyByNamesVersion += keyByNamesVersion;
+                        keyByNamesVersion++;
                     }
                 }
 
