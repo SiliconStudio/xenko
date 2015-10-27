@@ -18,7 +18,6 @@ using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
-    [ReferenceToEffects]
     public class TesselationTest : EngineTestBase
     {
         private List<Entity> entities = new List<Entity>();
