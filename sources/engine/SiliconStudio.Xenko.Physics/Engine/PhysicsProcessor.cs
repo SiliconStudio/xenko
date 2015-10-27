@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
@@ -68,6 +69,8 @@ namespace SiliconStudio.Xenko.Physics
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
         private static void RigidBodySetWorldTransform(PhysicsElementBase element, ref Matrix physicsTransform)
         {
+            element.Data.PhysicsComponent.Simulation.SimulationProfiler.ProfilingState.Mark();
+
             if (element.BoneIndex == -1)
             {
                 element.UpdateTransformationComponent(ref physicsTransform);
@@ -90,6 +93,8 @@ namespace SiliconStudio.Xenko.Physics
         //and Kinematic rigidbodies, called every simulation tick (if body not sleeping) to let the physics engine know where the kinematic body is.
         private static void RigidBodyGetWorldTransform(PhysicsElementBase element, out Matrix physicsTransform)
         {
+            element.Data.PhysicsComponent.Simulation.SimulationProfiler.ProfilingState.Mark();
+
             if (element.BoneIndex == -1)
             {
                 element.DerivePhysicsTransformation(out physicsTransform);
@@ -432,10 +437,25 @@ namespace SiliconStudio.Xenko.Physics
 
             simulation = physicsSystem.Create(this);
 
-            if (Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice != null)
+            var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice;
+            if (gfxDevice != null)
             {
-                debugShapeRendering = new PhysicsDebugShapeRendering(Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice);
+                debugShapeRendering = new PhysicsDebugShapeRendering(gfxDevice);
             }
+
+            var profiler = Services.GetSafeServiceAs<GameProfilerSystem>();
+            if (profiler != null)
+            {
+                profiler.AddExternalProfiler(new GameProfiler
+                {
+                    ProfilingState = charactersProfilingState,
+                    ValueDescs = new[] { ProfilerValueDesc.Int },
+                    FormatString = string.Intern("Number of characters: {0}"),
+                    LogAt = ProfilingMessageType.End
+                });
+                simulation.AddProfilers(profiler);
+            }
+
 
             //setup debug device and debug shader
             //var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();

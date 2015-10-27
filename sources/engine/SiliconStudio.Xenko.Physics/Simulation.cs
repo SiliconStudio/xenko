@@ -8,6 +8,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core.Diagnostics;
 using System.Collections.Concurrent;
 using System.Linq;
+using SiliconStudio.Xenko.Profiling;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -28,10 +29,16 @@ namespace SiliconStudio.Xenko.Physics
         private readonly bool canCcd;
 
         public static ProfilingKey SimulationProfilingKey = new ProfilingKey("Physics.Simulation");
-        private ProfilingState simulationProfilingState;
+        internal readonly GameProfiler SimulationProfiler;       
 
         public static ProfilingKey ContactsProfilingKey = new ProfilingKey("Physics.Contacts");
-        private ProfilingState contactsProfilingState;
+        private readonly GameProfiler contactsProfiler;
+
+        public void AddProfilers(GameProfilerSystem profiler)
+        {
+            profiler.AddExternalProfiler(contactsProfiler);
+            profiler.AddExternalProfiler(SimulationProfiler);
+        }
 
         public bool ContinuousCollisionDetection
         {
@@ -82,8 +89,21 @@ namespace SiliconStudio.Xenko.Physics
                 }
             }
 
-            simulationProfilingState = Profiler.New(SimulationProfilingKey);
-            contactsProfilingState = Profiler.New(ContactsProfilingKey);
+            contactsProfiler = new GameProfiler
+            {
+                FormatString = "Number of contacts: {0}",
+                ProfilingState = Profiler.New(ContactsProfilingKey),
+                ValueDescs = new[] { ProfilerValueDesc.Int },
+                LogAt = ProfilingMessageType.End
+            };
+
+            SimulationProfiler = new GameProfiler
+            {
+                FormatString = "Simulation time: ",
+                ProfilingState = Profiler.New(SimulationProfilingKey),
+                LogAt = ProfilingMessageType.End,
+                ReportTime = true
+            };
 
             MaxSubSteps = 1;
             FixedTimeStep = 1.0f / 60.0f;
@@ -154,7 +174,7 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void ProcessContacts()
         {
-            contactsProfilingState.Begin();
+            contactsProfiler.ProfilingState.Begin();
 
             processedPairsFastCache.Clear();
             var numManifolds = collisionWorld.Dispatcher.NumManifolds;
@@ -244,7 +264,7 @@ namespace SiliconStudio.Xenko.Physics
                         break;
                     }
 
-                    contactsProfilingState.Mark();
+                    //contactsProfilingState.Mark();
 
                     if (newContact)
                     {
@@ -434,7 +454,7 @@ namespace SiliconStudio.Xenko.Physics
                 }
             }
 
-            contactsProfilingState.End();
+            contactsProfiler.ProfilingState.End(alivePairsFastCache.Count);
         }
 
         /// <summary>
@@ -1158,12 +1178,12 @@ namespace SiliconStudio.Xenko.Physics
 
             OnSimulationBegin(simulationArgs);
 
-            simulationProfilingState.Begin();
+            SimulationProfiler.ProfilingState.Begin();
 
             if (discreteDynamicsWorld != null) discreteDynamicsWorld.StepSimulation(deltaTime, MaxSubSteps, FixedTimeStep);
             else collisionWorld.PerformDiscreteCollisionDetection();
 
-            simulationProfilingState.End();
+            SimulationProfiler.ProfilingState.End();
 
             OnSimulationEnd(simulationArgs);
         }

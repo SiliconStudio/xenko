@@ -256,8 +256,10 @@ namespace SiliconStudio.Core.Diagnostics
                 if (events.Count == 0) return null;
 
                 var res = events.ToArray();
+
                 events.Clear();
                 eventsByKey.Clear();
+
                 return res;
             }
         }
@@ -344,7 +346,7 @@ namespace SiliconStudio.Core.Diagnostics
             }
         }
 
-        private static void AppendTime(StringBuilder builder, long accumulatedTime)
+        public static void AppendTime(StringBuilder builder, long accumulatedTime)
         {
             var accumulatedTimeSpan = new TimeSpan((accumulatedTime * 10000000) / Stopwatch.Frequency);
             if (accumulatedTimeSpan > new TimeSpan(0, 0, 1, 0))

@@ -45,10 +45,10 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         public readonly Dictionary<object, object> Attributes;
 
-        public ProfilingCustomValue Custom0;
-        public ProfilingCustomValue Custom1;
-        public ProfilingCustomValue Custom2;
-        public ProfilingCustomValue Custom3;
+        public readonly ProfilingCustomValue? Custom0;
+        public readonly ProfilingCustomValue? Custom1;
+        public readonly ProfilingCustomValue? Custom2;
+        public readonly ProfilingCustomValue? Custom3;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfilingEvent" /> struct.
@@ -84,10 +84,10 @@ namespace SiliconStudio.Core.Diagnostics
             ElapsedTime = elapsedTime;
             Text = text;
             Attributes = attributes;
-            Custom0 = value0 ?? new ProfilingCustomValue();
-            Custom1 = value1 ?? new ProfilingCustomValue();
-            Custom2 = value2 ?? new ProfilingCustomValue();
-            Custom3 = value3 ?? new ProfilingCustomValue();
+            Custom0 = value0;
+            Custom1 = value1;
+            Custom2 = value2;
+            Custom3 = value3;
         }
     }
 }
