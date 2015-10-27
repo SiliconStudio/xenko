@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using NUnit.Framework;
@@ -508,25 +509,34 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     const int height = width;
                     var arraySize = testArray ? 2 : 1;
 
-                    var pixelFormats = new[] { PixelFormat.R8G8B8A8_UNorm, PixelFormat.R8G8B8A8_UNorm_SRgb, PixelFormat.R8_UNorm};
+                    var destinationIsStaged = new[] { true, false };
 
-                    foreach (var pixelFormat in pixelFormats)
+                    foreach (var destinationStaged in destinationIsStaged)
                     {
-                        var computer = pixelFormat.SizeInBytes() == 1? (Func < int, int, int, int, int, byte> )ColorComputerR8 : DefaultColorComputer;
-                        var data = CreateDebugTextureData(width, height, mipmaps, arraySize, pixelFormat, computer);
+                        var pixelFormats = new List<PixelFormat> { PixelFormat.R8G8B8A8_UNorm, PixelFormat.R8G8B8A8_UNorm_SRgb, PixelFormat.R8_UNorm };
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                        if(!game.GraphicsDevice.HasTextureRG)
+                            pixelFormats.Remove(PixelFormat.R8_UNorm);
+#endif
 
-                        var sourceFlags = usageSource == GraphicsResourceUsage.Default ?
-                            new[] { TextureFlags.ShaderResource, TextureFlags.RenderTarget, TextureFlags.RenderTarget | TextureFlags.ShaderResource } :
-                            new[] { TextureFlags.None };
-
-                        foreach (var flag in sourceFlags)
+                        foreach (var pixelFormat in pixelFormats)
                         {
-                            using (var texture = CreateDebugTexture(game.GraphicsDevice, data, width, height, mipmaps, arraySize, pixelFormat, flag, usageSource))
-                            using (var copyTexture = texture.ToStaging())
-                            {
-                                game.GraphicsDevice.Copy(texture, copyTexture);
+                            var computer = pixelFormat.SizeInBytes() == 1 ? (Func<int, int, int, int, int, byte>)ColorComputerR8 : DefaultColorComputer;
+                            var data = CreateDebugTextureData(width, height, mipmaps, arraySize, pixelFormat, computer);
 
-                                CheckDebugTextureData(copyTexture, width, height, mipmaps, arraySize, pixelFormat, flag, usageSource, computer);
+                            var sourceFlags = usageSource == GraphicsResourceUsage.Default ?
+                                new[] { TextureFlags.ShaderResource, TextureFlags.RenderTarget, TextureFlags.RenderTarget | TextureFlags.ShaderResource } :
+                                new[] { TextureFlags.None };
+
+                            foreach (var flag in sourceFlags)
+                            {
+                                using (var texture = CreateDebugTexture(game.GraphicsDevice, data, width, height, mipmaps, arraySize, pixelFormat, flag, usageSource))
+                                using (var copyTexture = destinationStaged ? texture.ToStaging(): texture.Clone())
+                                {
+                                    game.GraphicsDevice.Copy(texture, copyTexture);
+
+                                    CheckDebugTextureData(copyTexture, width, height, mipmaps, arraySize, pixelFormat, flag, usageSource, computer);
+                                }
                             }
                         }
                     }

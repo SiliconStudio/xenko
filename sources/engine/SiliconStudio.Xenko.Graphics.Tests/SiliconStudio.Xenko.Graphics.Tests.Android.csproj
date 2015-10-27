@@ -39,7 +39,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\Android\Debug\</IntermediateOutputPath>
@@ -51,34 +51,10 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Android' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\Android\Release\</IntermediateOutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|Android' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
-    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
-    <IntermediateOutputPath>obj\Android\Testing\</IntermediateOutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|Android' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
-    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
-    <IntermediateOutputPath>obj\Android\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
