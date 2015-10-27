@@ -14,6 +14,7 @@ namespace SiliconStudio.Core
     {
         private static int globalCounterId;
         private string name;
+        private string fullName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ComponentBase"/> class.
@@ -30,6 +31,7 @@ namespace SiliconStudio.Core
         protected ComponentBase(string name)
         {
             Name = name ?? GetType().Name;
+
             Id = Interlocked.Increment(ref globalCounterId);
 
             // Track this component
@@ -56,6 +58,9 @@ namespace SiliconStudio.Core
                 if (value == name) return;
 
                 name = value;
+
+                fullName = $"{GetType().Name}: {name}";
+
                 OnNameChanged();
             }
         }
@@ -80,7 +85,7 @@ namespace SiliconStudio.Core
 
         public override string ToString()
         {
-            return string.Format("{0}: {1}", this.GetType().Name, Name);
+            return fullName;
         }
 
         protected override void OnAddReference()

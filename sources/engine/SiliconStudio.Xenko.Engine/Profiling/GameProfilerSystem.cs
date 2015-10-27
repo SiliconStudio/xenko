@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.UI;
 using Color = SiliconStudio.Core.Mathematics.Color;
 
 namespace SiliconStudio.Xenko.Profiling
@@ -29,7 +30,7 @@ namespace SiliconStudio.Xenko.Profiling
         public bool ReportTime;
     }
 
-    public class GameProfilerSystem : GameSystemBase
+    public class GameProfilingSystem : GameSystemBase
     {
         private readonly GcProfiling gcProfiler;
 
@@ -44,6 +45,8 @@ namespace SiliconStudio.Xenko.Profiling
         private readonly Dictionary<ProfilingKey, GameProfiler> externalProfilers = new Dictionary<ProfilingKey, GameProfiler>(); 
         private readonly StringBuilder externalProfilersString = new StringBuilder();
 
+        private readonly List<KeyValuePair<ProfilingResult,ProfilingEvent>> microthreadEvents = new List<KeyValuePair<ProfilingResult, ProfilingEvent>>();
+
         struct ProfilingResult
         {
             public long AccumulatedTime;
@@ -54,21 +57,16 @@ namespace SiliconStudio.Xenko.Profiling
 
         private readonly Dictionary<ProfilingKey, ProfilingResult> profilingResults = new Dictionary<ProfilingKey, ProfilingResult>(); 
 
-        public GameProfilerSystem(IServiceRegistry registry) : base(registry)
+        public GameProfilingSystem(IServiceRegistry registry) : base(registry)
         {
-            registry.AddService(typeof(GameProfilerSystem), this);
+            registry.AddService(typeof(GameProfilingSystem), this);
 
             DrawOrder = 0xffffff;
 
-            Profiler.Enable(GcProfiling.GcCollectionCountKey);
-            Profiler.Enable(GcProfiling.GcMemoryKey);
-
             gcProfiler = new GcProfiling();        
 
-            gcMemoryStringBase = string.Intern(         "Memory>        Total: {0} Peak: {1} Last allocations: {2}");
-            gcCollectionsStringBase = string.Intern(    "Collections>   Gen 0: {0} Gen 1: {1} Gen 3: {2}");
-
-            Profiler.EnableAll();
+            gcMemoryStringBase =        "Memory>        Total: {0} Peak: {1} Last allocations: {2}";
+            gcCollectionsStringBase =   "Collections>   Gen 0: {0} Gen 1: {1} Gen 3: {2}";
         }
 
         public override void Update(GameTime gameTime)
@@ -81,6 +79,8 @@ namespace SiliconStudio.Xenko.Profiling
             var eventsCopy = Profiler.GetEvents();
             if(eventsCopy == null) return;
 
+            microthreadEvents.Clear();
+
             var elapsedTime = eventsCopy.Length > 0 ? eventsCopy[eventsCopy.Length - 1].TimeStamp - eventsCopy[0].TimeStamp : 0;
 
             //update strings that need update
@@ -90,12 +90,16 @@ namespace SiliconStudio.Xenko.Profiling
                 {
                     gcMemoryString.Clear();
                     gcMemoryString.AppendFormat(gcMemoryStringBase, e.Custom0.Value.LongValue, e.Custom2.Value.LongValue, e.Custom1.Value.LongValue);
+                    gcCollectionsString.AppendLine();
+                    continue;
                 }
 
                 if (e.Key == GcProfiling.GcCollectionCountKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
                 {
                     gcCollectionsString.Clear();
                     gcCollectionsString.AppendFormat(gcCollectionsStringBase, e.Custom0.Value.IntValue, e.Custom1.Value.IntValue, e.Custom2.Value.IntValue);
+                    gcCollectionsString.AppendLine();
+                    continue;
                 }
 
                 ProfilingResult profilingResult;
@@ -119,6 +123,7 @@ namespace SiliconStudio.Xenko.Profiling
 
                 profilingResults[e.Key] = profilingResult;
 
+                var processed = false;
                 lock (externalProfilers)
                 {
                     GameProfiler p;
@@ -185,46 +190,56 @@ namespace SiliconStudio.Xenko.Profiling
 
                         if (p.ReportTime)
                         {
-                            profilingResults.Remove(p.ProfilingState.ProfilingKey);
-                            externalProfilersString.AppendFormat("{0,-7:P1} | ", profilingResult.AccumulatedTime/(double)elapsedTime);
-                            Profiler.AppendTime(externalProfilersString, profilingResult.AccumulatedTime);
-
-                            externalProfilersString.Append(" |  ");
-                            Profiler.AppendTime(externalProfilersString, profilingResult.MinTime);
-                            externalProfilersString.Append(" |  ");
-                            Profiler.AppendTime(externalProfilersString, profilingResult.Count != 0 ? profilingResult.AccumulatedTime/profilingResult.Count : 0);
-                            externalProfilersString.Append(" |  ");
-                            Profiler.AppendTime(externalProfilersString, profilingResult.MaxTime);
-
-                            externalProfilersString.AppendFormat(" | {0:00000} | {1}", profilingResult.Count, e.Key);
-                            externalProfilersString.AppendLine();
+                            AppendEvent(profilingResult, e, elapsedTime);
                         }
-                    }
-                    else
-                    {
-                        if(e.Type != ProfilingMessageType.End) continue;
 
-                        profilingResults.Remove(e.Key);
-                        externalProfilersString.AppendFormat("{0,-7:P1} | ", profilingResult.AccumulatedTime / (double)elapsedTime);
-                        Profiler.AppendTime(externalProfilersString, profilingResult.AccumulatedTime);
-
-                        externalProfilersString.Append(" |  ");
-                        Profiler.AppendTime(externalProfilersString, profilingResult.MinTime);
-                        externalProfilersString.Append(" |  ");
-                        Profiler.AppendTime(externalProfilersString, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
-                        externalProfilersString.Append(" |  ");
-                        Profiler.AppendTime(externalProfilersString, profilingResult.MaxTime);
-
-                        externalProfilersString.AppendFormat(" | {0:00000} | {1}", profilingResult.Count, e.Key);
-                        externalProfilersString.AppendLine();
+                        processed = true;
                     }
                 }
+
+                if (processed || e.Type != ProfilingMessageType.End) continue;
+
+                if (e.Key == MicroThread.ProfilingKey)
+                {
+                    microthreadEvents.Add(new KeyValuePair<ProfilingResult, ProfilingEvent>(profilingResult, e));
+                }
+                else
+                {
+                    AppendEvent(profilingResult, e, elapsedTime);
+                }
             }
+
+            foreach (var microthreadEvent in microthreadEvents)
+            {
+                AppendEvent(microthreadEvent.Key, microthreadEvent.Value, elapsedTime);
+            }
+        }
+
+        private void AppendEvent(ProfilingResult profilingResult, ProfilingEvent e, double elapsedTime)
+        {
+            profilingResults.Remove(e.Key);
+            externalProfilersString.AppendFormat("{0,-7:P1} | ", profilingResult.AccumulatedTime / elapsedTime);
+            Profiler.AppendTime(externalProfilersString, profilingResult.AccumulatedTime);
+
+            externalProfilersString.Append(" |  ");
+            Profiler.AppendTime(externalProfilersString, profilingResult.MinTime);
+            externalProfilersString.Append(" |  ");
+            Profiler.AppendTime(externalProfilersString, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
+            externalProfilersString.Append(" |  ");
+            Profiler.AppendTime(externalProfilersString, profilingResult.MaxTime);
+
+            externalProfilersString.AppendFormat(" | {0:00000} | {1} ", profilingResult.Count, e.Key);
+            if (!e.Text.IsNullOrEmpty()) externalProfilersString.AppendFormat(e.Text);
+            externalProfilersString.AppendLine();
         }
 
         protected override void Destroy()
         {
             gcProfiler.Dispose();
+            lock (externalProfilers)
+            {
+                externalProfilers.Clear();
+            }
         }
 
         public override void Draw(GameTime gameTime)
@@ -236,18 +251,54 @@ namespace SiliconStudio.Xenko.Profiling
             }
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(spriteFont, gcMemoryString, new Vector2(10, 10), Color.LightGreen);
-            spriteBatch.DrawString(spriteFont, gcCollectionsString, new Vector2(10, 20), Color.LightGreen);
-            spriteBatch.DrawString(spriteFont, externalProfilersString, new Vector2(10, 10), Color.LightGreen);
+            spriteBatch.DrawString(spriteFont, gcMemoryString, new Vector2(10, 10), TextColor);
+            spriteBatch.DrawString(spriteFont, gcCollectionsString, new Vector2(10, 20), TextColor);
+            spriteBatch.DrawString(spriteFont, externalProfilersString, new Vector2(10, 30), TextColor);
             externalProfilersString.Clear();
             spriteBatch.End();
         }
 
-        public void AddExternalProfiler(GameProfiler profiler)
+        public void AddProfiler(GameProfiler profiler)
         {
-            Profiler.Enable(profiler.ProfilingState.ProfilingKey);
-            profiler.ProfilingState.CheckIfEnabled();
             lock (externalProfilers) externalProfilers.Add(profiler.ProfilingState.ProfilingKey, profiler);          
         }
+
+        public void EnableProfiling()
+        {
+            Enabled = true;
+            Visible = true;
+            lock (externalProfilers)
+            {
+                foreach (var externalProfiler in externalProfilers)
+                {
+                    Profiler.Enable(externalProfiler.Value.ProfilingState.ProfilingKey);
+                    externalProfiler.Value.ProfilingState.CheckIfEnabled();
+                }
+            }
+
+            Profiler.EnableAll();
+
+            gcProfiler.Enable();
+        }
+
+        public void DisableProfiling()
+        {
+            Enabled = false;
+            Visible = false;
+            lock (externalProfilers)
+            {
+                foreach (var externalProfiler in externalProfilers)
+                {
+                    Profiler.Disable(externalProfiler.Value.ProfilingState.ProfilingKey);
+                    externalProfiler.Value.ProfilingState.CheckIfEnabled();
+                }
+            }
+
+            Profiler.DisableAll();
+
+            gcProfiler.Disable();
+        }
+
+        public Color4 TextColor { get; set; } = Color.LightGreen;
     }
 }

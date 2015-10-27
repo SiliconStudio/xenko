@@ -443,10 +443,10 @@ namespace SiliconStudio.Xenko.Physics
                 debugShapeRendering = new PhysicsDebugShapeRendering(gfxDevice);
             }
 
-            var profiler = Services.GetSafeServiceAs<GameProfilerSystem>();
+            var profiler = Services.GetSafeServiceAs<GameProfilingSystem>();
             if (profiler != null)
             {
-                profiler.AddExternalProfiler(new GameProfiler
+                profiler.AddProfiler(new GameProfiler
                 {
                     ProfilingState = charactersProfilingState,
                     ValueDescs = new[] { ProfilerValueDesc.Int },

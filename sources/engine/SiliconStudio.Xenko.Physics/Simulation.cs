@@ -34,10 +34,10 @@ namespace SiliconStudio.Xenko.Physics
         public static ProfilingKey ContactsProfilingKey = new ProfilingKey("Physics.Contacts");
         private readonly GameProfiler contactsProfiler;
 
-        public void AddProfilers(GameProfilerSystem profiler)
+        public void AddProfilers(GameProfilingSystem profiler)
         {
-            profiler.AddExternalProfiler(contactsProfiler);
-            profiler.AddExternalProfiler(SimulationProfiler);
+            profiler.AddProfiler(contactsProfiler);
+            profiler.AddProfiler(SimulationProfiler);
         }
 
         public bool ContinuousCollisionDetection

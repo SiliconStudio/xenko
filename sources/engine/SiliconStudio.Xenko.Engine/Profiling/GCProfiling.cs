@@ -69,5 +69,21 @@ namespace SiliconStudio.Xenko.Profiling
             gen2Count = GC.CollectionCount(2);
             collectionCountState.End(gen0Count, gen1Count, gen2Count);
         }
+
+        public void Enable()
+        {
+            Profiler.Enable(GcCollectionCountKey);
+            Profiler.Enable(GcMemoryKey);
+            gcMemoryState.CheckIfEnabled();
+            collectionCountState.CheckIfEnabled();
+        }
+
+        public void Disable()
+        {
+            Profiler.Disable(GcCollectionCountKey);
+            Profiler.Disable(GcMemoryKey);
+            gcMemoryState.CheckIfEnabled();
+            collectionCountState.CheckIfEnabled();
+        }
     }
 }

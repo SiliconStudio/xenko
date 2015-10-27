@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets the game profiler system
         /// </summary>
-        public GameProfilerSystem ProfilerSystem { get; private set; }
+        public GameProfilingSystem ProfilerSystem { get; private set; }
 
         /// <summary>
         /// Gets the font system.
@@ -174,7 +174,7 @@ namespace SiliconStudio.Xenko.Engine
             UI = new UISystem(Services);
             gameFontSystem = new GameFontSystem(Services);
             SpriteAnimation = new SpriteAnimationSystem(Services);
-            ProfilerSystem = new GameProfilerSystem(Services);
+            ProfilerSystem = new GameProfilingSystem(Services);
 
             // ---------------------------------------------------------
             // Add common GameSystems - Adding order is important 

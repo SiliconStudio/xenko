@@ -175,84 +175,46 @@ namespace SiliconStudio.Core.Diagnostics
             EmitEvent(ProfilingMessageType.Begin, textFormat, textFormatArguments);
         }
 
-        public void Begin(int value0)
+        /// <summary>
+        /// Emits a Begin event with the specified formatted text.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        public void Begin(ProfilingCustomValue value0)
         {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { IntValue = value0 }, null, null, null);
+            EmitEvent(ProfilingMessageType.Begin, value0, null, null, null);
         }
 
-        public void Begin(int value0, int value1)
+        /// <summary>
+        /// Emits a Begin event with the specified formatted text.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        public void Begin(ProfilingCustomValue value0, ProfilingCustomValue value1)
         {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, null, null);
+            EmitEvent(ProfilingMessageType.Begin, value0, value1, null, null);
         }
 
-        public void Begin(int value0, int value1, int value2)
+        /// <summary>
+        /// Emits a Begin event with the specified formatted text.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        public void Begin(ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2)
         {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, null);
+            EmitEvent(ProfilingMessageType.Begin, value0, value1, value2, null);
         }
 
-        public void Begin(int value0, int value1, int value2, int value3)
+        /// <summary>
+        /// Emits a Begin event with the specified formatted text.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void Begin(ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2, ProfilingCustomValue value3)
         {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, new ProfilingCustomValue { IntValue = value3 });
-        }
-
-        public void Begin(float value0)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { FloatValue = value0 }, null, null, null);
-        }
-
-        public void Begin(float value0, float value1)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, null, null);
-        }
-
-        public void Begin(float value0, float value1, float value2)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, null);
-        }
-
-        public void Begin(float value0, float value1, float value2, float value3)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, new ProfilingCustomValue { FloatValue = value3 });
-        }
-
-        public void Begin(long value0)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { LongValue = value0 }, null, null, null);
-        }
-
-        public void Begin(long value0, long value1)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, null, null);
-        }
-
-        public void Begin(long value0, long value1, long value2)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, null);
-        }
-
-        public void Begin(long value0, long value1, long value2, long value3)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, new ProfilingCustomValue { LongValue = value3 });
-        }
-
-        public void Begin(double value0)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { DoubleValue = value0 }, null, null, null);
-        }
-
-        public void Begin(double value0, double value1)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, null, null);
-        }
-
-        public void Begin(double value0, double value1, double value2)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, null);
-        }
-
-        public void Begin(double value0, double value1, double value2, double value3)
-        {
-            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, new ProfilingCustomValue { DoubleValue = value3 });
+            EmitEvent(ProfilingMessageType.Begin, value0, value1, value2, value3);
         }
 
         /// <summary>
@@ -282,84 +244,46 @@ namespace SiliconStudio.Core.Diagnostics
             EmitEvent(ProfilingMessageType.Mark, textFormat, textFormatArguments);
         }
 
-        public void Mark(int value0)
+        /// <summary>
+        /// Emits a Mark profiling event with the specified text.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        public void Mark(ProfilingCustomValue value0)
         {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { IntValue = value0 }, null, null, null);
+            EmitEvent(ProfilingMessageType.Mark, value0, null, null, null);
         }
 
-        public void Mark(int value0, int value1)
+        /// <summary>
+        /// Emits a Mark profiling event with the specified text.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        public void Mark(ProfilingCustomValue value0, ProfilingCustomValue value1)
         {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, null, null);
+            EmitEvent(ProfilingMessageType.Mark, value0, value1, null, null);
         }
 
-        public void Mark(int value0, int value1, int value2)
+        /// <summary>
+        /// Emits a Mark profiling event with the specified text.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        public void Mark(ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2)
         {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, null);
+            EmitEvent(ProfilingMessageType.Mark, value0, value1, value2, null);
         }
 
-        public void Mark(int value0, int value1, int value2, int value3)
+        /// <summary>
+        /// Emits a Mark profiling event with the specified text.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void Mark(ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2, ProfilingCustomValue value3)
         {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, new ProfilingCustomValue { IntValue = value3 });
-        }
-
-        public void Mark(float value0)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { FloatValue = value0 }, null, null, null);
-        }
-
-        public void Mark(float value0, float value1)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, null, null);
-        }
-
-        public void Mark(float value0, float value1, float value2)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, null);
-        }
-
-        public void Mark(float value0, float value1, float value2, float value3)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, new ProfilingCustomValue { FloatValue = value3 });
-        }
-
-        public void Mark(long value0)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { LongValue = value0 }, null, null, null);
-        }
-
-        public void Mark(long value0, long value1)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, null, null);
-        }
-
-        public void Mark(long value0, long value1, long value2)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, null);
-        }
-
-        public void Mark(long value0, long value1, long value2, long value3)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, new ProfilingCustomValue { LongValue = value3 });
-        }
-
-        public void Mark(double value0)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { DoubleValue = value0 }, null, null, null);
-        }
-
-        public void Mark(double value0, double value1)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, null, null);
-        }
-
-        public void Mark(double value0, double value1, double value2)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, null);
-        }
-
-        public void Mark(double value0, double value1, double value2, double value3)
-        {
-            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, new ProfilingCustomValue { DoubleValue = value3 });
+            EmitEvent(ProfilingMessageType.Mark, value0, value1, value2, value3);
         }
 
         /// <summary>
@@ -389,84 +313,46 @@ namespace SiliconStudio.Core.Diagnostics
             EmitEvent(ProfilingMessageType.End, textFormat, textFormatArguments);
         }
 
-        public void End(int value0)
+        /// <summary>
+        /// Emits a End profiling event with the specified custom value.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        public void End(ProfilingCustomValue value0)
         {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { IntValue = value0 }, null, null, null);
+            EmitEvent(ProfilingMessageType.End, value0, null, null, null);
         }
 
-        public void End(int value0, int value1)
+        /// <summary>
+        /// Emits a End profiling event with the specified custom value.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        public void End(ProfilingCustomValue value0, ProfilingCustomValue value1)
         {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, null, null);
+            EmitEvent(ProfilingMessageType.End, value0, value1, null, null);
         }
 
-        public void End(int value0, int value1, int value2)
+        /// <summary>
+        /// Emits a End profiling event with the specified custom value.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        public void End(ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2)
         {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, null);
+            EmitEvent(ProfilingMessageType.End, value0, value1, value2, null);
         }
 
-        public void End(int value0, int value1, int value2, int value3)
+        /// <summary>
+        /// Emits a End profiling event with the specified custom value.
+        /// </summary>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void End(ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2, ProfilingCustomValue value3)
         {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, new ProfilingCustomValue { IntValue = value3 });
-        }
-
-        public void End(float value0)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { FloatValue = value0 }, null, null, null);
-        }
-
-        public void End(float value0, float value1)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, null, null);
-        }
-
-        public void End(float value0, float value1, float value2)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, null);
-        }
-
-        public void End(float value0, float value1, float value2, float value3)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, new ProfilingCustomValue { FloatValue = value3 });
-        }
-
-        public void End(long value0)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { LongValue = value0 }, null, null, null);
-        }
-
-        public void End(long value0, long value1)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, null, null);
-        }
-
-        public void End(long value0, long value1, long value2)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, null);
-        }
-
-        public void End(long value0, long value1, long value2, long value3)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, new ProfilingCustomValue { LongValue = value3 });
-        }
-
-        public void End(double value0)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { DoubleValue = value0 }, null, null, null);
-        }
-
-        public void End(double value0, double value1)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, null, null);
-        }
-
-        public void End(double value0, double value1, double value2)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, null);
-        }
-
-        public void End(double value0, double value1, double value2, double value3)
-        {
-            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, new ProfilingCustomValue { DoubleValue = value3 });
+            EmitEvent(ProfilingMessageType.End, value0, value1, value2, value3);
         }
 
         private void EmitEvent(ProfilingMessageType profilingType, string text = null)

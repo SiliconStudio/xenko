@@ -26,6 +26,26 @@ namespace SiliconStudio.Core.Diagnostics
 
         [FieldOffset(0)]
         public double DoubleValue;
+
+        public static implicit operator ProfilingCustomValue(int value)
+        {
+            return new ProfilingCustomValue { IntValue = value };
+        }
+
+        public static implicit operator ProfilingCustomValue(float value)
+        {
+            return new ProfilingCustomValue { FloatValue = value };
+        }
+
+        public static implicit operator ProfilingCustomValue(long value)
+        {
+            return new ProfilingCustomValue { LongValue = value };
+        }
+
+        public static implicit operator ProfilingCustomValue(double value)
+        {
+            return new ProfilingCustomValue { DoubleValue = value };
+        }
     }
 
     /// <summary>
