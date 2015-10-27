@@ -198,8 +198,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
             var builder = Utils.CreateBuilder(true);
             CommandBuildStep step = builder.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1" });
-            builder.Root.Add(new WaitBuildStep());
-            CommandBuildStep childStep = builder.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2" });
+            CommandBuildStep childStep = builder.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/url2" });
             BuildStep.LinkBuildSteps(step, childStep);
             builder.Run(Builder.Mode.Build);
             builder.WriteIndexFile(false);
@@ -225,8 +224,7 @@ namespace SiliconStudio.BuildEngine.Tests
 
             var builder1 = Utils.CreateBuilder(false);
             CommandBuildStep step = builder1.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1" });
-            builder1.Root.Add(new WaitBuildStep());
-            CommandBuildStep childStep = builder1.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url2" });
+            CommandBuildStep childStep = builder1.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/url2" });
             BuildStep.LinkBuildSteps(step, childStep);
             builder1.Run(Builder.Mode.Build);
 
@@ -338,9 +336,8 @@ namespace SiliconStudio.BuildEngine.Tests
             var builder = Utils.CreateBuilder(false);
             CommandBuildStep step1 = builder.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input1")), OutputUrl = "/db/url1", InputDependencies = { inputDep } });
             CommandBuildStep step2 = builder.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.File, Utils.GetSourcePath("input2")), OutputUrl = "/db/url2", InputDependencies = { inputDep } });
-            builder.Root.Add(new WaitBuildStep());
-            CommandBuildStep concurrencyStep1 = builder.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/url", InputDependencies = { inputDep } });
-            CommandBuildStep concurrencyStep2 = builder.Root.Add(new InputOutputCommand { Delay = 150, Source = new ObjectUrl(UrlType.ContentLink, "/db/url2"), OutputUrl = "/db/url", InputDependencies = { inputDep } });
+            CommandBuildStep concurrencyStep1 = builder.Root.Add(new InputOutputCommand { Delay = 100, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/url", InputDependencies = { inputDep } });
+            CommandBuildStep concurrencyStep2 = builder.Root.Add(new InputOutputCommand { Delay = 150, Source = new ObjectUrl(UrlType.Content, "/db/url2"), OutputUrl = "/db/url", InputDependencies = { inputDep } });
             BuildStep.LinkBuildSteps(step1, concurrencyStep1);
             BuildStep.LinkBuildSteps(step2, concurrencyStep2);
 
@@ -359,14 +356,12 @@ namespace SiliconStudio.BuildEngine.Tests
             var buildStepList1 = new ListBuildStep
                 {
                     new ListBuildStep { new InputOutputCommand { Delay = 100, Source = inputDep, OutputUrl = "/db/url1", InputDependencies = { inputDep } } },
-                    new WaitBuildStep(),
-                    new InputOutputCommand { Delay = 1500, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/dump1", InputDependencies = { inputDep } },
+                    new InputOutputCommand { Delay = 1500, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/dump1", InputDependencies = { inputDep } },
                 };
             var buildStepList2 = new ListBuildStep
                 {
                     new ListBuildStep { new InputOutputCommand { Delay = 100, Source = inputDep, OutputUrl = "/db/url1", InputDependencies = { inputDep } } },
-                    new WaitBuildStep(),
-                    new InputOutputCommand { Delay = 1500, Source = new ObjectUrl(UrlType.ContentLink, "/db/url1"), OutputUrl = "/db/dump2", InputDependencies = { inputDep } },
+                    new InputOutputCommand { Delay = 1500, Source = new ObjectUrl(UrlType.Content, "/db/url1"), OutputUrl = "/db/dump2", InputDependencies = { inputDep } },
                 };
 
             var builder = Utils.CreateBuilder(false);

@@ -37,6 +37,11 @@ namespace SiliconStudio.BuildEngine
         public virtual IEnumerable<Tuple<string, string>> TagList { get { yield break; } }
 
         /// <summary>
+        /// The object this command writes (if any).
+        /// </summary>
+        public virtual string OutputLocation => null;
+
+        /// <summary>
         /// Safeguard to ensure inheritance will always call base.PreCommand
         /// </summary>
         internal bool BasePreCommandCalled = false;

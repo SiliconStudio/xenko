@@ -43,6 +43,9 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
 
         public int Delay = 0;
 
+        public Guid Id { get { throw new NotImplementedException(); } }
+        public string Location => OutputUrl;
+
         public ObjectUrl Source;
         public string OutputUrl;
         public List<ObjectUrl> InputDependencies = new List<ObjectUrl>();
@@ -50,6 +53,8 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
         public bool ExecuteRemotely = false;
 
         public List<Command> CommandsToSpawn = new List<Command>();
+
+        public override string OutputLocation => Location;
 
         private bool WaitDelay()
         {
@@ -83,7 +88,8 @@ namespace SiliconStudio.BuildEngine.Tests.Commands
                     }
                     break;
                 case UrlType.ContentLink:
-                     var container = assetManager.Load<DataContainer>(Source.Path);
+                case UrlType.Content:
+                    var container = assetManager.Load<DataContainer>(Source.Path);
 
                         if (!WaitDelay())
                             return ResultStatus.Cancelled;

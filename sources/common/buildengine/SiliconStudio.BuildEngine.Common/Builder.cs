@@ -317,6 +317,9 @@ namespace SiliconStudio.BuildEngine
                     buildStep.Parent = instigator;
                 }
 
+                // Compute content dependencies before scheduling the build
+                GenerateDependencies(buildStep);
+
                 var executeContext = new ExecuteContext(this, builderContext, buildStep) { Variables = new Dictionary<string, string>(variables) };
                 //buildStep.ExpandStrings(executeContext);
 
@@ -561,9 +564,6 @@ namespace SiliconStudio.BuildEngine
                         threadMonitor.Start();
                 }
 
-                // Compute content dependencies before scheduling the build
-                GenerateDependencies(Root);
-
                 // Schedule the build
                 ScheduleBuildStep(builderContext, null, Root, InitialVariables);
 
@@ -725,34 +725,42 @@ namespace SiliconStudio.BuildEngine
         }
 
         /// <summary>
-        /// Collects dependencies between <see cref="IContentReference"/> BuildStep and fill the <see cref="BuildStep.PrerequisiteSteps"/> accordingly.
+        /// Collects dependencies between <see cref="BuildStep.OutputLocation"/> and fill the <see cref="BuildStep.PrerequisiteSteps"/> accordingly.
         /// </summary>
         /// <param name="rootStep">The root BuildStep</param>
         private void GenerateDependencies(BuildStep rootStep)
         {
+            // TODO: Support proper incremental dependecies
+            if (rootStep.ProcessedDependencies)
+                return;
+
+            rootStep.ProcessedDependencies = true;
+
             var contentBuildSteps = new Dictionary<string, KeyValuePair<BuildStep, HashSet<string>>>();
             PrepareDependencyGraph(rootStep, contentBuildSteps);
             ComputeDependencyGraph(contentBuildSteps);
         }
 
         /// <summary>
-        /// Collects dependencies between <see cref="IContentReference"/> BuildStep. See remarks.
+        /// Collects dependencies between <see cref="BuildStep.OutputLocation"/> BuildStep. See remarks.
         /// </summary>
         /// <param name="step">The step to compute the dependencies for</param>
         /// <param name="contentBuildSteps">A cache of content reference location to buildsteps </param>
         /// <remarks>
-        /// Each BuildStep inheriting from <see cref="IContentReference"/> is considered as a top-level dependency step that can have depedencies
+        /// Each BuildStep inheriting from <see cref="BuildStep.OutputLocation"/> is considered as a top-level dependency step that can have depedencies
         /// on other top-level dependency. We are collecting all of them here.
         /// </remarks>
-        private void PrepareDependencyGraph(BuildStep step, Dictionary<string, KeyValuePair<BuildStep, HashSet<string>>> contentBuildSteps)
+        private static void PrepareDependencyGraph(BuildStep step, Dictionary<string, KeyValuePair<BuildStep, HashSet<string>>> contentBuildSteps)
         {
-            var contentBuildStep = step as IContentReference;
-            if (contentBuildStep != null)
+            step.ProcessedDependencies = true;
+
+            var outputLocation = step.OutputLocation;
+            if (outputLocation != null)
             {
                 var dependencies = new HashSet<string>();
-                if (!contentBuildSteps.ContainsKey(contentBuildStep.Location))
+                if (!contentBuildSteps.ContainsKey(outputLocation))
                 {
-                    contentBuildSteps.Add(contentBuildStep.Location, new KeyValuePair<BuildStep, HashSet<string>>(step, dependencies));
+                    contentBuildSteps.Add(outputLocation, new KeyValuePair<BuildStep, HashSet<string>>(step, dependencies));
                     CollectContentReferenceDependencies(step, dependencies);
                 }
 
@@ -784,11 +792,16 @@ namespace SiliconStudio.BuildEngine
                     {
                         BuildStep.LinkBuildSteps(deps.Key, step);
                     }
+                    else
+                    {
+                        // TODO: Either something is wrong, or it's because dependencies added afterwise (incremental) are not supported yet
+                        Logger.Error($"BuildStep [{step}] depends on [{dependency}] but nothing that generates it could be found (or maybe incremental dependencies need to be implemented)");
+                    }
                 }
             }
         }
 
-        private void CollectContentReferenceDependencies(BuildStep step, HashSet<string> locations)
+        private static void CollectContentReferenceDependencies(BuildStep step, HashSet<string> locations)
         {
             // For each CommandStep for the current build step, collects all dependencies to ContenrReference-BuildStep
             foreach (var commandStep in CollectCommandSteps(step))
@@ -803,7 +816,7 @@ namespace SiliconStudio.BuildEngine
             }
         }
 
-        private IEnumerable<CommandBuildStep> CollectCommandSteps(BuildStep step)
+        private static IEnumerable<CommandBuildStep> CollectCommandSteps(BuildStep step)
         {
             if (step is CommandBuildStep)
             {

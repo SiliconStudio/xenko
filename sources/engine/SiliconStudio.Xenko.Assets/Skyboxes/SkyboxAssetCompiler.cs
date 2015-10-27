@@ -3,7 +3,7 @@
 
 using System.Collections.Generic;
 using System.Threading.Tasks;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
     {
         protected override void Compile(AssetCompilerContext context, string urlInStorage, UFile assetAbsolutePath, SkyboxAsset asset, AssetCompilerResult result)
         {
-            result.BuildSteps = new AssetBuildStep(AssetItem);
+            result.BuildSteps = new ListBuildStep();
             result.ShouldWaitForPreviousBuilds = true;
 
             var colorSpace = context.GetColorSpace();
@@ -43,15 +43,16 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     // Select the best graphics profile
                     var graphicsProfile = gameSettingsAsset.DefaultGraphicsProfile >= GraphicsProfile.Level_10_0 ? gameSettingsAsset.DefaultGraphicsProfile : GraphicsProfile.Level_10_0;
 
+                    var textureAssetItem = new AssetItem(textureUrl, textureAsset);
+
                     // Create and add the texture command.
                     var textureParameters = new TextureConvertParameters(assetSource, textureAsset, PlatformType.Windows, GraphicsPlatform.Direct3D11, graphicsProfile, gameSettingsAsset.TextureQuality, colorSpace);
-                    result.BuildSteps.Add(new AssetBuildStep(AssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters) });
+                    result.BuildSteps.Add(new AssetBuildStep(textureAssetItem) { new TextureAssetCompiler.TextureConvertCommand(textureUrl, textureParameters) });
                 }
             }
 
             // add the skybox command itself.
-            result.BuildSteps.Add(new WaitBuildStep());
-            result.BuildSteps.Add(new SkyboxCompileCommand(urlInStorage, asset));
+            result.BuildSteps.Add(new AssetBuildStep(AssetItem) {  new SkyboxCompileCommand(urlInStorage, asset) });
         }
 
         private class SkyboxCompileCommand : AssetCommand<SkyboxAsset>
@@ -76,7 +77,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     foreach (var dependency in AssetParameters.Model.GetDependencies())
                     {
                         // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to compute the skybox
-                        yield return new ObjectUrl(UrlType.Content, dependency.Location);
+                        yield return new ObjectUrl(UrlType.Content, SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(dependency.Location));
                     }
                 }
             }
