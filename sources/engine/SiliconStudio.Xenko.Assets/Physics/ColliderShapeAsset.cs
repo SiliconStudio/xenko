@@ -21,9 +21,10 @@ namespace SiliconStudio.Xenko.Assets.Physics
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(ColliderShapeAssetCompiler))]
     [ObjectFactory(typeof(ColliderShapeFactory))]
-    [AssetFormatVersion(2)]
-    [AssetUpgrader(0, 1, typeof(UpgraderShapeDescriptions))]
-    [AssetUpgrader(1, 2, typeof(Box2DRemovalUpgrader))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(UpgraderShapeDescriptions))]
+    [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(Box2DRemovalUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [Display("Collider Shape", "A physics collider shape")]
     public class ColliderShapeAsset : Asset, IAssetCompileTimeDependencies
     {
@@ -56,7 +57,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 
         private class UpgraderShapeDescriptions : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 if (asset.ColliderShapes == null)
                     return;
@@ -102,7 +103,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 
         private class Box2DRemovalUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 if (asset.ColliderShapes == null)
                     return;

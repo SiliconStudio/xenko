@@ -8,6 +8,7 @@ using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
 {
+    [Obsolete("This class is deprecated will be removed in the future. Use AttachedReference instead.")]
     public abstract class ContentReference : ITypedContentReference, IEquatable<ContentReference>
     {
         internal const int NullIdentifier = -1;
@@ -103,6 +104,7 @@ namespace SiliconStudio.Core.Serialization
     }
 
     [DataSerializer(typeof(ContentReferenceDataSerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
+    [Obsolete("This class is deprecated will be removed in the future. Use AttachedReference instead.")]
     public sealed class ContentReference<T> : ContentReference where T : class
     {
         // Depending on state, either value or Location is null (they can't be both non-null)

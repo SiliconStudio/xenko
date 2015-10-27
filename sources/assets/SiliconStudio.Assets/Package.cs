@@ -51,9 +51,9 @@ namespace SiliconStudio.Assets
     [DataContract("Package")]
     [AssetDescription(PackageFileExtensions)]
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
-    [AssetFormatVersion(PackageFileVersion)]
-    [AssetUpgrader(0, 1, typeof(RemoveRawImports))]
-    [AssetUpgrader(1, 2, typeof(RenameSystemPackage))]
+    [AssetFormatVersion("Assets", PackageFileVersion)]
+    [AssetUpgrader("Assets", 0, 1, typeof(RemoveRawImports))]
+    [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     public sealed class Package : Asset, IFileSynchronizable
     {
         private const int PackageFileVersion = 2;
@@ -106,7 +106,6 @@ namespace SiliconStudio.Assets
             Profiles = new PackageProfileCollection();
             IsDirty = true;
             settings = new Lazy<PackageUserSettings>(() => new PackageUserSettings(this));
-            SerializedVersion = PackageFileVersion;
         }
 
         /// <summary>
@@ -728,7 +727,7 @@ namespace SiliconStudio.Assets
                 bool aliasOccurred;
                 var packageFile = new PackageLoadingAssetFile(filePath, Path.GetDirectoryName(filePath));
                 var context = new AssetMigrationContext(null, log);
-                AssetMigration.MigrateAssetIfNeeded(context, packageFile);
+                AssetMigration.MigrateAssetIfNeeded(context, packageFile, "Assets");
 
                 var package = packageFile.AssetContent != null
                     ? (Package)AssetSerializer.Load(new MemoryStream(packageFile.AssetContent), Path.GetExtension(filePath), log, out aliasOccurred)
@@ -970,7 +969,7 @@ namespace SiliconStudio.Assets
             // the loop
             try
             {
-                AssetMigration.MigrateAssetIfNeeded(context, assetFile);
+                AssetMigration.MigrateAssetIfNeeded(context, assetFile, PackageStore.Instance.DefaultPackageName);
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
                 var assetPath = assetFile.AssetPath;
@@ -1370,7 +1369,7 @@ namespace SiliconStudio.Assets
 
         private class RemoveRawImports : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 if (asset.Profiles != null)
                 {
@@ -1396,7 +1395,7 @@ namespace SiliconStudio.Assets
 
         private class RenameSystemPackage : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var dependencies = asset.Meta?.Dependencies;
 

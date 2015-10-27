@@ -25,10 +25,10 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [CategoryOrder(10, "Parameters")]
     [CategoryOrder(50, "Atlas Packing")]
     [CategoryOrder(150, "Sprites")]
-    [AssetFormatVersion(3)]
-    [AssetUpgrader(0, 1, typeof(RenameImageGroupsUpgrader))]
-    [AssetUpgrader(1, 2, typeof(RemoveMaxSizeUpgrader))]
-    [AssetUpgrader(2, 3, typeof(BorderSizeOrderUpgrader))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha01")]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RenameImageGroupsUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveMaxSizeUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.5.0-alpha01", typeof(BorderSizeOrderUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
     [ObjectFactory(typeof(SpriteSheetFactory))]
@@ -210,7 +210,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
 
         class RenameImageGroupsUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var images = asset.Images;
                 if (images != null)
@@ -222,7 +222,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         }
         class RemoveMaxSizeUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var packing = asset.Packing;
                 if (packing != null)
@@ -233,10 +233,12 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         }
         class BorderSizeOrderUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
+                // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
+                // As a result, upgrade is not needed for version 3
                 var sprites = asset.Sprites;
-                if (sprites == null)
+                if (sprites == null || currentVersion == PackageVersion.Parse("0.0.3"))
                     return;
 
                 foreach (var sprite in asset.Sprites)

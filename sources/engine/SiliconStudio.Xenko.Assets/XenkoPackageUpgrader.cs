@@ -22,7 +22,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader("Xenko", "1.0.0-beta01", "1.5.0-alpha01")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.5.0-alpha02")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
-            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
+            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-beta"))
             {
                 // Update file extensions with Xenko prefix
                 var legacyAssets = from assetFile in assetFiles
@@ -90,9 +90,17 @@ namespace SiliconStudio.Xenko.Assets
 
                 // Change package extension
                 dependentPackage.FullPath = new UFile(dependentPackage.FullPath.GetFullPathWithoutExtension(), Package.PackageFileExtension);
+
+                // Make sure all assets are upgraded
+                RunAssetUpgradersUntilVersion(log, dependentPackage, XenkoConfig.PackageName, assetFiles, PackageVersion.Parse("1.4.0-beta"));
             }
 
             if (dependency.Version.MinVersion < new PackageVersion("1.5.0-alpha01"))
+            {
+                RunAssetUpgradersUntilVersion(log, dependentPackage, XenkoConfig.PackageName, assetFiles, PackageVersion.Parse("1.5.0-alpha01"));
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.5.0-alpha02"))
             {
                 // Ideally, this should be part of asset upgrader but we can't upgrade multiple assets at once yet
 
@@ -185,6 +193,8 @@ namespace SiliconStudio.Xenko.Assets
                     assetFiles.Add(skeletonAsset);
                 }
 
+                var assetVersion = PackageVersion.Parse("1.5.0-alpha02");
+
                 // Update animation to point to skeleton
                 foreach (var animToModelEntry in animToModelMapping)
                 {
@@ -193,6 +203,8 @@ namespace SiliconStudio.Xenko.Assets
 
                     var skeletonAsset = modelToSkeletonMapping[modelAsset];
                     animationAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
+
+                    AssetUpgraderBase.SetSerializableVersion(animationAsset.DynamicRootNode, XenkoConfig.PackageName, assetVersion);
                 }
 
                 // Remove Nodes from models
@@ -200,6 +212,8 @@ namespace SiliconStudio.Xenko.Assets
                 {
                     modelAsset.DynamicRootNode.Nodes = DynamicYamlEmpty.Default;
                     modelAsset.DynamicRootNode["~Base"].Asset.Nodes = DynamicYamlEmpty.Default;
+
+                    AssetUpgraderBase.SetSerializableVersion(modelAsset.DynamicRootNode, XenkoConfig.PackageName, assetVersion);
                 }
 
                 // Save back
@@ -210,6 +224,18 @@ namespace SiliconStudio.Xenko.Assets
             }
 
             return true;
+        }
+
+        private void RunAssetUpgradersUntilVersion(ILogger log, Package dependentPackage, string dependencyName, IList<PackageLoadingAssetFile> assetFiles, PackageVersion maxVersion)
+        {
+            foreach (var assetFile in assetFiles)
+            {
+                if (assetFile.Deleted)
+                    continue;
+
+                var context = new AssetMigrationContext(dependentPackage, log);
+                AssetMigration.MigrateAssetIfNeeded(context, assetFile, dependencyName, maxVersion);
+            }
         }
 
         /// <inheritdoc/>
@@ -291,7 +317,7 @@ namespace SiliconStudio.Xenko.Assets
             // Upgrade .csproj file
             var fileContents = File.ReadAllText(projectPath);
             var newFileContents = fileContents.Replace(".pdxpkg", ".xkpkg");
-            newFileContents = fileContents.Replace("Paradox", "Xenko");
+            newFileContents = newFileContents.Replace("Paradox", "Xenko");
             //fileContents = fileContents.Replace("$(SiliconStudioParadoxDir)", "$(SiliconStudioXenkoDir)");
             //fileContents = fileContents.Replace("$(EnsureSiliconStudioParadoxInstalled)", "$(EnsureSiliconStudioXenkoInstalled)");
 
