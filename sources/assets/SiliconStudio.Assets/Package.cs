@@ -49,13 +49,14 @@ namespace SiliconStudio.Assets
     /// A package managing assets.
     /// </summary>
     [DataContract("Package")]
-    [AssetDescription(PackageFileExtension)]
+    [AssetDescription(PackageFileExtensions)]
     [DebuggerDisplay("Id: {Id}, Name: {Meta.Name}, Version: {Meta.Version}, Assets [{Assets.Count}]")]
-    [AssetFormatVersion(PackageFileVersion)]
-    [AssetUpgrader(0, 1, typeof(RemoveRawImports))]
+    [AssetFormatVersion("Assets", PackageFileVersion)]
+    [AssetUpgrader("Assets", 0, 1, typeof(RemoveRawImports))]
+    [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
     public sealed class Package : Asset, IFileSynchronizable
     {
-        private const int PackageFileVersion = 1;
+        private const int PackageFileVersion = 2;
 
         private readonly PackageAssetCollection assets;
 
@@ -72,13 +73,16 @@ namespace SiliconStudio.Assets
         private PackageSession session;
 
         private UFile packagePath;
+        private UFile previousPackagePath;
         private bool isDirty;
         private Lazy<PackageUserSettings> settings;
 
         /// <summary>
         /// The file extension used for <see cref="Package"/>.
         /// </summary>
-        public const string PackageFileExtension = ".pdxpkg";
+        public const string PackageFileExtension = ".xkpkg";
+
+        public const string PackageFileExtensions = PackageFileExtension + ";.pdxpkg";
 
         /// <summary>
         /// Occurs when an asset dirty changed occured.
@@ -102,7 +106,6 @@ namespace SiliconStudio.Assets
             Profiles = new PackageProfileCollection();
             IsDirty = true;
             settings = new Lazy<PackageUserSettings>(() => new PackageUserSettings(this));
-            SerializedVersion = PackageFileVersion;
         }
 
         /// <summary>
@@ -506,6 +509,13 @@ namespace SiliconStudio.Assets
 
                         AssetSerializer.Save(FullPath, this);
 
+                        // Move the package if the path has changed
+                        if (previousPackagePath != null && previousPackagePath != packagePath)
+                        {
+                            filesToDelete.Add(previousPackagePath);
+                        }
+                        previousPackagePath = packagePath;
+
                         IsDirty = false;
                     }
                     catch (Exception ex)
@@ -568,7 +578,7 @@ namespace SiliconStudio.Assets
                                 if (project.Items.All(x => x.EvaluatedInclude != codeFile.ToWindowsPath()))
                                 {
                                     project.AddItem(AssetRegistry.GetDefaultExtension(sourceCodeAsset.GetType()) == ".cs" ? "Compile" : "None", codeFile.ToWindowsPath());
-                                    //todo None case needs Generator and LastGenOutput properties support! (eg pdxsl)
+                                    //todo None case needs Generator and LastGenOutput properties support! (eg xksl)
                                 }
 
                                 asset.SourceProject = projectFullPath;
@@ -619,7 +629,7 @@ namespace SiliconStudio.Assets
 
                 Assets.IsDirty = false;
 
-                // Save properties like the Paradox version used
+                // Save properties like the Xenko version used
                 PackageSessionHelper.SaveProperties(this);
             }
             finally
@@ -717,13 +727,14 @@ namespace SiliconStudio.Assets
                 bool aliasOccurred;
                 var packageFile = new PackageLoadingAssetFile(filePath, Path.GetDirectoryName(filePath));
                 var context = new AssetMigrationContext(null, log);
-                AssetMigration.MigrateAssetIfNeeded(context, packageFile);
+                AssetMigration.MigrateAssetIfNeeded(context, packageFile, "Assets");
 
                 var package = packageFile.AssetContent != null
                     ? (Package)AssetSerializer.Load(new MemoryStream(packageFile.AssetContent), Path.GetExtension(filePath), log, out aliasOccurred)
                     : AssetSerializer.Load<Package>(filePath, log, out aliasOccurred);
 
                 package.FullPath = filePath;
+                package.previousPackagePath = package.FullPath;
                 package.IsDirty = packageFile.AssetContent != null || aliasOccurred;
 
                 return package;
@@ -944,14 +955,21 @@ namespace SiliconStudio.Assets
             if (assetFile.Deleted)
             {
                 IsDirty = true;
-                filesToDelete.Add(assetFile.FilePath);
+
+                lock (filesToDelete)
+                {
+                    filesToDelete.Add(assetFile.FilePath);
+                }
+
+                // Don't create temporary assets for files deleted during package upgrading
+                return;
             }
 
-                // An exception can occur here, so we make sure that loading a single asset is not going to break 
-                // the loop
+            // An exception can occur here, so we make sure that loading a single asset is not going to break 
+            // the loop
             try
             {
-                AssetMigration.MigrateAssetIfNeeded(context, assetFile);
+                AssetMigration.MigrateAssetIfNeeded(context, assetFile, PackageStore.Instance.DefaultPackageName);
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
                 var assetPath = fileUPath.MakeRelative(sourceFolder).GetDirectoryAndFileName();
@@ -1351,7 +1369,7 @@ namespace SiliconStudio.Assets
 
         private class RemoveRawImports : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 if (asset.Profiles != null)
                 {
@@ -1370,6 +1388,23 @@ namespace SiliconStudio.Assets
                                 }
                             }
                         }
+                    }
+                }
+            }
+        }
+
+        private class RenameSystemPackage : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                var dependencies = asset.Meta?.Dependencies;
+
+                if (dependencies != null)
+                {
+                    foreach (var dependency in dependencies)
+                    {
+                        if (dependency.Name == "Paradox")
+                            dependency.Name = "Xenko";
                     }
                 }
             }

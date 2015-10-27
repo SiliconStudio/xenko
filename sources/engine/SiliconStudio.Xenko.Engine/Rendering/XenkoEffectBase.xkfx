@@ -1,18 +1,18 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using SiliconStudio.Paradox.Rendering.Data;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Base shader
     /// </summary>
-    partial shader ParadoxEffectBase
+    partial shader XenkoEffectBase
     {
         using params MaterialKeys;
-        using params ParadoxEffectBaseKeys;
+        using params XenkoEffectBaseKeys;
 
         // -----------------------------------------------
         // Base shaders
@@ -108,7 +108,7 @@ namespace SiliconStudio.Paradox.Rendering
         // -----------------------------------------------
         // Mix Extension after vertex stage
         // -----------------------------------------------
-        var extensionPostVertexStage = ParadoxEffectBaseKeys.ExtensionPostVertexStageShader;
+        var extensionPostVertexStage = XenkoEffectBaseKeys.ExtensionPostVertexStageShader;
         if (extensionPostVertexStage != null)
         {
             mixin (extensionPostVertexStage);

@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 
-namespace SiliconStudio.Paradox.UI.Tests.Events
+namespace SiliconStudio.Xenko.UI.Tests.Events
 {
     internal delegate void MyTestRoutedEventHandler(Object sender, MyTestRoutedEventArgs e);
 }

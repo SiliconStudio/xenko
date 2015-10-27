@@ -13,29 +13,29 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Xenko.Assets.Materials
 {
     /// <summary>
     /// The material asset.
     /// </summary>
     [DataContract("MaterialAsset")]
     [AssetDescription(FileExtension)]
-    [ThumbnailCompiler(PreviewerCompilerNames.MaterialThumbnailCompilerQualifiedName, true, Priority = -5000)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [ObjectFactory(typeof(MaterialFactory))]
-    [AssetFormatVersion(1)]
-    [AssetUpgrader(0, 1, typeof(RemoveParametersUpgrader))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveParametersUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [Display(115, "Material", "A material")]
     public sealed class MaterialAsset : Asset, IMaterialDescriptor, IAssetCompileTimeDependencies
     {
         /// <summary>
         /// The default file extension used by the <see cref="MaterialAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxmat";
+        public const string FileExtension = ".xkmat;.pdxmat";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MaterialAsset"/> class.
@@ -149,7 +149,7 @@ namespace SiliconStudio.Paradox.Assets.Materials
 
         public class RemoveParametersUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 asset.Parameters = DynamicYamlEmpty.Default;
             }

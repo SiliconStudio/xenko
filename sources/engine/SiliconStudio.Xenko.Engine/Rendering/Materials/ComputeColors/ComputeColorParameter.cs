@@ -5,9 +5,9 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
+namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 {
     /// <summary>
     /// Base class for a Color compute color parameter.

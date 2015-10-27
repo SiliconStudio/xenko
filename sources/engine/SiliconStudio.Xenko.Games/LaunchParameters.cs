@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Parameters used when launching an application.

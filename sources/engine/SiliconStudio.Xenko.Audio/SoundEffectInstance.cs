@@ -3,10 +3,10 @@
 
 using System;
 
-using SiliconStudio.Paradox.Audio.Wave;
+using SiliconStudio.Xenko.Audio.Wave;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
     /// Instance of a SoundEffect sound which can be independently localized and played.

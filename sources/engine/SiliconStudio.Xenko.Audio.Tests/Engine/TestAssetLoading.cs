@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using NUnit.Framework;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Audio.Tests.Engine
+namespace SiliconStudio.Xenko.Audio.Tests.Engine
 {
     /// <summary>
     /// Test that <see cref="SoundEffect"/> and <see cref="SoundMusic"/> can be loaded without problem with the asset loader.

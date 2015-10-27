@@ -24,7 +24,7 @@
 using System;
 using System.Collections.Generic;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Features supported by a <see cref="GraphicsDevice"/>.

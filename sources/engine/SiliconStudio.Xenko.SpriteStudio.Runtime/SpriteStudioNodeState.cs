@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Runtime
+namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     [DataContract]
     public class SpriteStudioNodeState

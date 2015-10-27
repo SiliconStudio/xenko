@@ -1,13 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Reflection;
 
-using SiliconStudio.Paradox.Effects;
-#if PARADOX_YEBIS
-using Paradox.Effects.Yebis;
+using SiliconStudio.Xenko.Effects;
+#if XENKO_YEBIS
+using Xenko.Effects.Yebis;
 #endif
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Games.Mathematics;
-using SiliconStudio.Paradox.Games.ViewModel;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.Mathematics;
+using SiliconStudio.Xenko.Games.ViewModel;
 
 namespace ScriptTest
 {
@@ -61,7 +61,7 @@ namespace ScriptTest
                     viewModelNode.Children.Add(new ViewModelNode(fieldinfo.Name, viewModelContent).GenerateChildren(context));
                 }
             }
-#if PARADOX_YEBIS
+#if XENKO_YEBIS
             else if (viewModelNode.Type.Namespace == typeof(ToneMap).Namespace
                 && viewModelNode.Type.IsValueType && !viewModelNode.Type.IsPrimitive && !viewModelNode.Type.IsEnum)
             {

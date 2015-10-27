@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// Structure containing the shaders for both OpenGL ES 2 and OpenGL ES 3.

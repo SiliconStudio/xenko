@@ -7,6 +7,6 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SiliconStudio.Paradox.Graphics.Regression")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Graphics.Regression")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyProduct("SiliconStudio.Paradox.Graphics.Regression")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Graphics.Regression")]

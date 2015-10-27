@@ -4,7 +4,7 @@
 using System;
 using System.Runtime.CompilerServices;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     /// <summary>
     /// Various helper functions for float, Vector3 and Quaternion interpolations.

@@ -15,31 +15,31 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.ProceduralModels;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
-namespace SiliconStudio.Paradox.Assets.ProceduralModels
+namespace SiliconStudio.Xenko.Assets.ProceduralModels
 {
     /// <summary>
     /// The geometric primitive asset.
     /// </summary>
     [DataContract("ProceduralModelAsset")]
     [AssetDescription(FileExtension)]
-    [ThumbnailCompiler(PreviewerCompilerNames.ProceduralModelThumbnailCompilerQualifiedName, true)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(185, "Procedural Model", "A procedural model")]
-    [AssetFormatVersion(5)]
-    [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
-    [AssetUpgrader(2, 3, typeof(RenameCapsuleHeight))]
-    [AssetUpgrader(3, 4, typeof(RenameDiameters))]
-    [AssetUpgrader(4, 5, typeof(Standardization))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha01")]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 2, 3, typeof(RenameCapsuleHeight))]
+    [AssetUpgrader(XenkoConfig.PackageName, 3, 4, typeof(RenameDiameters))]
+    [AssetUpgrader(XenkoConfig.PackageName, 4, 5, typeof(Standardization))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.5", "1.5.0-alpha01", typeof(CapsuleRadiusDefaultChange))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
         /// <summary>
         /// The default file extension used by the <see cref="ProceduralModelAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxpromodel";
+        public const string FileExtension = ".xkpromodel;.pdxpromodel";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ProceduralModelAsset"/> class.
@@ -65,7 +65,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         private class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 // Introduction of MaterialInstance
                 var material = asset.Type.Material;
@@ -97,7 +97,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         class RenameCapsuleHeight : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && proceduralType.Height != null)
@@ -110,7 +110,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         class RenameDiameters : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Diameter != null)
@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
 
         class Standardization : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var proceduralType = asset.Type;
 
@@ -172,6 +172,23 @@ namespace SiliconStudio.Paradox.Assets.ProceduralModels
                     vecSize.Style = YamlStyle.Flow;
 
                     proceduralType.UvScale = vecSize;
+                }
+            }
+        }
+
+        class CapsuleRadiusDefaultChange : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
+                // However since this upgrader can be reapplied, it is not a problem
+                var proceduralType = asset.Type;
+                if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && currentVersion != PackageVersion.Parse("0.0.6"))
+                {
+                    if (proceduralType.Radius == null)
+                    {
+                        proceduralType.Radius = 0.25f;
+                    }
                 }
             }
         }

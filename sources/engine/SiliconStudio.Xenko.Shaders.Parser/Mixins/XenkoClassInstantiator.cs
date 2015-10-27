@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
@@ -14,9 +14,9 @@ using SiliconStudio.Shaders.Visitor;
 
 using StorageQualifier = SiliconStudio.Shaders.Ast.StorageQualifier;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class ParadoxClassInstantiator : ShaderVisitor
+    internal class XenkoClassInstantiator : ShaderVisitor
     {
         private ShaderClassType shaderClassType;
 
@@ -32,7 +32,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         private Dictionary<string, string> stringGenerics;
 
-        private ParadoxClassInstantiator(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, bool autoGenericInstances, LoggerResult log)
+        private XenkoClassInstantiator(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, bool autoGenericInstances, LoggerResult log)
             : base(false, false)
         {
             shaderClassType = classType;
@@ -45,7 +45,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         public static void Instantiate(ShaderClassType classType, Dictionary<string, Expression> expressions, Dictionary<string, Identifier> identifiers, bool autoGenericInstances, LoggerResult log)
         {
-            var instantiator = new ParadoxClassInstantiator(classType, expressions, identifiers, autoGenericInstances, log);
+            var instantiator = new XenkoClassInstantiator(classType, expressions, identifiers, autoGenericInstances, log);
             instantiator.Run();
         }
 
@@ -122,7 +122,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
                 if (stringGenerics.TryGetValue(sem.Name, out replacementSemantic))
                 {
                     if (logger != null && !(variableGenerics[sem.Name].Type is SemanticType))
-                        logger.Warning(ParadoxMessageCode.WarningUseSemanticType, variable.Span, variableGenerics[sem.Name]);
+                        logger.Warning(XenkoMessageCode.WarningUseSemanticType, variable.Span, variableGenerics[sem.Name]);
                     sem.Name = replacementSemantic;
                 }
             }

@@ -4,7 +4,7 @@
 using NUnit.Framework;
 
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     [Description("Check Dynamic Font")]

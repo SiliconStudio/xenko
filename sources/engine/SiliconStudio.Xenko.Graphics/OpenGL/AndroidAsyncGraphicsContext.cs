@@ -10,7 +10,7 @@ using OpenTK.Platform;
 using OpenTK.Platform.Android;
 using System.Linq;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Used internally on Android to provide a context for async resource creation (through <see cref="UseOpenGLCreationContext"/>).

@@ -6,12 +6,12 @@ using System.Text;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Font;
-using SiliconStudio.Paradox.UI.Events;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Font;
+using SiliconStudio.Xenko.UI.Events;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// Represent an edit text where the user can enter text.

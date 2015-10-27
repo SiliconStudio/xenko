@@ -9,7 +9,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI.Panels
+namespace SiliconStudio.Xenko.UI.Panels
 {
     /// <summary>
     /// Represents a grid control with adjustable columns, rows and layers.

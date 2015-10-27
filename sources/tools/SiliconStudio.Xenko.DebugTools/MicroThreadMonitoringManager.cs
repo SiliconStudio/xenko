@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using SiliconStudio.Paradox.Framework;
-using SiliconStudio.Paradox.Framework.MicroThreading;
+using SiliconStudio.Xenko.Framework;
+using SiliconStudio.Xenko.Framework.MicroThreading;
 using SiliconStudio.Core.Extensions;
 using System.Diagnostics;
 using System.Threading;
-using SiliconStudio.Paradox.Framework.Time;
-using SiliconStudio.Paradox.DebugTools.DataStructures;
+using SiliconStudio.Xenko.Framework.Time;
+using SiliconStudio.Xenko.DebugTools.DataStructures;
 using SiliconStudio.Presentation.Observable;
 
-namespace SiliconStudio.Paradox.DebugTools
+namespace SiliconStudio.Xenko.DebugTools
 {
     /// <summary>
     /// Manager class that monitors the micro threads executions.

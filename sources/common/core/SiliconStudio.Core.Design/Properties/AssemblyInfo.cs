@@ -8,8 +8,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("SiliconStudio Core IO assembly")]
 
 [assembly: InternalsVisibleTo("SiliconStudio.Core.Design.Serializers")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine.Step1")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine.Step1")]
 [assembly: InternalsVisibleTo("SiliconStudio.Core.Tests")]
 // looks like whenever we open the generated iOS solution with visual studio, it removes the dot in the assembly name -_-
 #if SILICONSTUDIO_PLATFORM_IOS

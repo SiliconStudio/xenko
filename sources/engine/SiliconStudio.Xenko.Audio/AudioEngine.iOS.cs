@@ -7,7 +7,7 @@ using AVFoundation;
 using AudioToolbox;
 using Foundation;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     public partial class AudioEngine
     {

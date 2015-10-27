@@ -2,17 +2,17 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Visitor;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class ParadoxVariableUsageVisitor : ShaderVisitor
+    internal class XenkoVariableUsageVisitor : ShaderVisitor
     {
         private Dictionary<Variable, bool> VariablesUsages;
 
-        public ParadoxVariableUsageVisitor(Dictionary<Variable, bool> variablesUsages)
+        public XenkoVariableUsageVisitor(Dictionary<Variable, bool> variablesUsages)
             : base(false, false)
         {
             if (variablesUsages == null)

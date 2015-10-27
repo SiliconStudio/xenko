@@ -5,9 +5,9 @@ using System.Diagnostics;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// A text viewer that scrolls automatically the text from right to left.

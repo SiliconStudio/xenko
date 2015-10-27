@@ -6,7 +6,7 @@ using System.Linq;
 using System.Xml.Linq;
 using System.Xml.XPath;
 
-namespace SiliconStudio.Paradox.ProjectGenerator
+namespace SiliconStudio.Xenko.ProjectGenerator
 {
     class SynchronizeProjectProcessor : IProjectProcessor
     {
@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.ProjectGenerator
         {
             return itemGroup
                 .Elements()
-                .Where(x => !x.Attributes().Any(y => y.Name == "Label" && y.Value == "Paradox.DoNotSync"))
+                .Where(x => !x.Attributes().Any(y => y.Name == "Label" && y.Value == "Xenko.DoNotSync"))
                 .ToArray();
         }
 

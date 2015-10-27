@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace SiliconStudio.Paradox.UI.Events
+namespace SiliconStudio.Xenko.UI.Events
 {
     /// <summary>
     /// Provides event-related utility methods that register routed events for class owners and add class handlers.

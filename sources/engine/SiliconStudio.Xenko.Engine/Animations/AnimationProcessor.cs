@@ -4,10 +4,10 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     public class AnimationProcessor : EntityProcessor<AnimationProcessor.AssociatedData>
     {
@@ -24,13 +24,16 @@ namespace SiliconStudio.Paradox.Animations
         {
             return new AssociatedData
             {
-                AnimationComponent = entity.Get(AnimationComponent.Key)
+                AnimationComponent = entity.Get(AnimationComponent.Key),
+                ModelComponent = entity.Get(ModelComponent.Key)
             };
         }
 
-        protected override void UpdateAssociatedData(Entity entity, ref AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
         {
-            associatedData.ModelComponent = entity.Get(ModelComponent.Key);
+            return
+                entity.Get(AnimationComponent.Key) == associatedData.AnimationComponent &&
+                entity.Get(ModelComponent.Key) == associatedData.ModelComponent;
         }
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)

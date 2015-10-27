@@ -4,9 +4,9 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
     /// Represents a reference to an <see cref="Entity"/>, using its Id (and Name for easier matching and readability).

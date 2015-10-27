@@ -5,7 +5,7 @@
 <#@ import namespace="System.Text" #>
 <#@ import namespace="System.Collections.Generic" #>
 <#@ output extension=".cs" #>
-namespace SiliconStudio.Paradox.UI.Tests.Regression
+namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
     public static class ElementTestDesigns
     {

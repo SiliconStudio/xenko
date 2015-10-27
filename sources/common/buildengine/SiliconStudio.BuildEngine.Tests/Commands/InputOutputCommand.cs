@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 namespace SiliconStudio.BuildEngine.Tests.Commands
 {
     [ContentSerializer(typeof(DataContentSerializer<DataContainer>))]
+    [DataContract]
     [Serializable]
     public class DataContainer 
     {

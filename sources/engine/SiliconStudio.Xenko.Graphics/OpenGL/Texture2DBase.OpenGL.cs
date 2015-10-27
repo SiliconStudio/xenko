@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using OpenTK.Graphics;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 using RenderbufferStorage = OpenTK.Graphics.ES30.RenderbufferInternalFormat;
@@ -15,7 +15,7 @@ using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Represents a 2D grid of texels.
@@ -104,7 +104,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 if (Description.Usage == GraphicsResourceUsage.Staging)
                 {
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     GL.GenBuffers(1, out resourceId);
                     GL.BindBuffer(BufferTarget.PixelPackBuffer, resourceId);
                     GL.BufferData(BufferTarget.PixelPackBuffer, (IntPtr)DepthPitch, IntPtr.Zero,
@@ -138,7 +138,7 @@ namespace SiliconStudio.Paradox.Graphics
                         GL.TexParameter(Target, TextureParameterName.TextureWrapT,
                                         (int)TextureWrapMode.ClampToEdge);
                     }
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     else if (Description.MipLevels <= 1)
                     {
                         GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureMinFilter, (int)TextureMinFilter.Nearest);
@@ -146,7 +146,7 @@ namespace SiliconStudio.Paradox.Graphics
                     }
 #endif
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     GL.TexParameter(Target, TextureParameterName.TextureBaseLevel, 0);
                     GL.TexParameter(Target, TextureParameterName.TextureMaxLevel, Description.MipLevels - 1);
 #endif
@@ -168,7 +168,7 @@ namespace SiliconStudio.Paradox.Graphics
                         }
                         if (compressed)
                         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                             throw new NotSupportedException("Can't use compressed textures on desktop OpenGL ES.");
 #else
                             GL.CompressedTexImage2D(Target, i, internalFormat,
@@ -177,7 +177,7 @@ namespace SiliconStudio.Paradox.Graphics
                         }
                         else
                         {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES && !SILICONSTUDIO_PLATFORM_MONO_MOBILE
                             GL.TexImage2D(TextureTarget2d.Texture2D, i, internalFormat.ToOpenGL(),
                                             width, height, 0, format, type, data);
 #else
@@ -190,7 +190,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                     resourceId = textureId;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (!GraphicsDevice.IsOpenGLES2)
 #endif
                     {

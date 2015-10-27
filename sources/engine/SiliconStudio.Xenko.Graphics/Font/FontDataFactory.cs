@@ -4,9 +4,9 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Graphics.Data;
 
-namespace SiliconStudio.Paradox.Graphics.Font
+namespace SiliconStudio.Xenko.Graphics.Font
 {
     /// <summary>
     /// A font factory initializing only the data members of font. 

@@ -9,8 +9,8 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SiliconStudio.ActionStack</RootNamespace>
     <AssemblyName>SiliconStudio.ActionStack</AssemblyName>
-    <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <TargetFrameworkVersion>$(TargetFrameworkVersionToolLow)</TargetFrameworkVersion>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
   </PropertyGroup>
   <ItemGroup>

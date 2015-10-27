@@ -25,7 +25,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 
-namespace SiliconStudio.Paradox.Audio.Wave
+namespace SiliconStudio.Xenko.Audio.Wave
 {
     /// <summary>
     /// Riff chunk enumerator.

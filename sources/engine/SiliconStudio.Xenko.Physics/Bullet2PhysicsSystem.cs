@@ -2,12 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class Bullet2PhysicsSystem : GameSystemBase, IPhysicsSystem
     {

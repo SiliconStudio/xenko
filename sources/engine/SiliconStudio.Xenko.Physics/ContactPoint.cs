@@ -4,7 +4,7 @@
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     /// <summary>
     ///     Generic contact between colliders, Always using Vector3 as the engine allows mixed 2D/3D contacts.
@@ -21,8 +21,6 @@ namespace SiliconStudio.Paradox.Physics
         public Vector3 PositionOnB;
 
         public Collision Pair;
-
-        internal BulletSharp.ManifoldPoint Manifold;
 
         internal GCHandle Handle;
     }

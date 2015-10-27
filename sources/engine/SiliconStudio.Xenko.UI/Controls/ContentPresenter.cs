@@ -5,7 +5,7 @@ using SiliconStudio.Core;
 using System.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// A class aiming at presenting another <see cref="UIElement"/>.

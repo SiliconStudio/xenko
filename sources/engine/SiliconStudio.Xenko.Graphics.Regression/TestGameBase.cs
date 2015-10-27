@@ -2,10 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     public class TestGameBase : Game
     {

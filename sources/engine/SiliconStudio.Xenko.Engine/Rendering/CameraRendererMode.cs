@@ -5,11 +5,11 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Defines the type of rendering (Forward, Deferred...etc.)
@@ -42,7 +42,7 @@ namespace SiliconStudio.Paradox.Rendering
         /// Gets or sets the effect to use to render the models in the scene.
         /// </summary>
         /// <value>The main model effect.</value>
-        /// <userdoc>The name of the effect to use to render models (a '.pdxsl' or '.pdxfx' filename without the extension).</userdoc>
+        /// <userdoc>The name of the effect to use to render models (a '.xksl' or '.xkfx' filename without the extension).</userdoc>
         [DataMember(10)]
         public abstract string ModelEffect { get; set; }// TODO: This is not a good extensibility point. Check how to improve this
 

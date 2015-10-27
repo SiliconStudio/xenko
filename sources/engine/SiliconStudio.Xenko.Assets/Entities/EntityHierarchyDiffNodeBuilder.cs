@@ -7,10 +7,10 @@ using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
     /// Transforms <see cref="EntityHierarchyData"/> nodes into hierarchical <see cref="EntityDiffNode"/>.

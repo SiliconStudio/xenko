@@ -7,9 +7,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Engine.Processors
+namespace SiliconStudio.Xenko.Engine.Processors
 {
     /// <summary>
     /// The processor for <see cref="ModelComponent"/>.
@@ -44,6 +44,11 @@ namespace SiliconStudio.Paradox.Engine.Processors
             return new RenderModelItem(new RenderModel(entity.Get<ModelComponent>()), entity.Transform);
         }
 
+        protected override bool IsAssociatedDataValid(Entity entity, RenderModelItem associatedData)
+        {
+            return entity.Get(ModelComponent.Key) == associatedData.ModelComponent && entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+        }
+
         protected override void OnEntityAdding(Entity entity, RenderModelItem data)
         {
             // Register model view hierarchy update
@@ -52,6 +57,9 @@ namespace SiliconStudio.Paradox.Engine.Processors
 
         protected override void OnEntityRemoved(Entity entity, RenderModelItem data)
         {
+            // Dispose the RenderModel and all associated data
+            data.RenderModel.Dispose();
+
             // Unregister model view hierarchy update
             entity.Transform.PostOperations.Remove(data.TransformOperation);
         }

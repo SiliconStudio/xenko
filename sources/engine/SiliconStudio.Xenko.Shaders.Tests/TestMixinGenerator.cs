@@ -6,9 +6,9 @@ using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Shaders.Tests
+namespace SiliconStudio.Xenko.Shaders.Tests
 {
     /// <summary>
     /// Tests for the mixins code generation and runtime API.

@@ -4,10 +4,10 @@
 
 using System.Runtime.CompilerServices;
 
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Engine.Tests
+namespace SiliconStudio.Xenko.Engine.Tests
 {
     public class Module
     {

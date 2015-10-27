@@ -1,9 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Paradox.Rendering.Lights;
+using SiliconStudio.Xenko.Rendering.Lights;
 
-namespace SiliconStudio.Paradox.Rendering.Shadows
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     public abstract class LightShadowMapRendererBase : ILightShadowMapRenderer
     {

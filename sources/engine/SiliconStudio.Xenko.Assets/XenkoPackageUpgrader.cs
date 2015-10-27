@@ -2,18 +2,25 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
-
+using System.Reflection;
+using System.Threading.Tasks;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.CodeAnalysis.Host.Mef;
+using Microsoft.CodeAnalysis.MSBuild;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Assets.Effect;
+using SiliconStudio.Xenko.Assets.Effect;
 
-namespace SiliconStudio.Paradox.Assets
+namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader("Paradox", "1.0.0-beta01", "1.3.0-beta")]
-    public class ParadoxPackageUpgrader : PackageUpgrader
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.5.0-alpha01")]
+    public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
         {
@@ -57,7 +64,47 @@ namespace SiliconStudio.Paradox.Assets
                 }
             }
 
+            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-beta"))
+            {
+                // Update file extensions with Xenko prefix
+                var legacyAssets = from assetFile in assetFiles
+                                   where !assetFile.Deleted
+                                   let extension = assetFile.FilePath.GetFileExtension()
+                                   where extension.StartsWith(".pdx")
+                                   select new { AssetFile = assetFile, NewExtension = ".xk" + extension.Substring(4) };
+
+                foreach (var legacyAsset in legacyAssets.ToArray())
+                {
+                    // Load asset data, so the renamed file will have it's AssetContent set
+                    if (legacyAsset.AssetFile.AssetContent == null)
+                        legacyAsset.AssetFile.AssetContent = File.ReadAllBytes(legacyAsset.AssetFile.FilePath);
+
+                    ChangeFileExtension(assetFiles, legacyAsset.AssetFile, legacyAsset.NewExtension);
+                }
+
+                // Force loading of user settings with old extension
+                var userSettings = dependentPackage.UserSettings;
+
+                // Change package extension
+                dependentPackage.FullPath = new UFile(dependentPackage.FullPath.GetFullPathWithoutExtension(), Package.PackageFileExtension);
+
+                // Make sure all assets are upgraded
+                RunAssetUpgradersUntilVersion(log, dependentPackage, XenkoConfig.PackageName, assetFiles, PackageVersion.Parse("1.4.0-beta"));
+            }
+
             return true;
+        }
+
+        private void RunAssetUpgradersUntilVersion(ILogger log, Package dependentPackage, string dependencyName, IList<PackageLoadingAssetFile> assetFiles, PackageVersion maxVersion)
+        {
+            foreach (var assetFile in assetFiles)
+            {
+                if (assetFile.Deleted)
+                    continue;
+
+                var context = new AssetMigrationContext(dependentPackage, log);
+                AssetMigration.MigrateAssetIfNeeded(context, assetFile, dependencyName, maxVersion);
+            }
         }
 
         /// <inheritdoc/>
@@ -110,6 +157,83 @@ namespace SiliconStudio.Paradox.Assets
 
                 // rename the file
                 ChangeFileExtension(assetFiles, file, ".pdxsheet");
+            }
+        }
+
+        public override bool UpgradeBeforeAssembliesLoaded(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage)
+        {
+            if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
+            {
+                // Only load workspace for C# assemblies (default includes VB but not added as a NuGet package)
+                var csharpWorkspaceAssemblies = new[] { Assembly.Load("Microsoft.CodeAnalysis.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.CSharp.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.Workspaces.Desktop") };
+                var workspace = MSBuildWorkspace.Create(ImmutableDictionary<string, string>.Empty, MefHostServices.Create(csharpWorkspaceAssemblies));
+
+                var tasks = dependentPackage.Profiles
+                    .SelectMany(profile => profile.ProjectReferences)
+                    .Select(projectReference => UPath.Combine(dependentPackage.RootDirectory, projectReference.Location))
+                    .Distinct()
+                    .Select(projectFullPath => Task.Run(() => UpgradeProject(workspace, projectFullPath)))
+                    .ToArray();
+
+                Task.WaitAll(tasks);
+            }
+
+            return true;
+        }
+
+        private async Task UpgradeProject(MSBuildWorkspace workspace, UFile projectPath)
+        {
+            // Upgrade .csproj file
+            var fileContents = File.ReadAllText(projectPath);
+            var newFileContents = fileContents.Replace(".pdxpkg", ".xkpkg");
+            newFileContents = newFileContents.Replace("Paradox", "Xenko");
+            //fileContents = fileContents.Replace("$(SiliconStudioParadoxDir)", "$(SiliconStudioXenkoDir)");
+            //fileContents = fileContents.Replace("$(EnsureSiliconStudioParadoxInstalled)", "$(EnsureSiliconStudioXenkoInstalled)");
+
+            if (newFileContents != fileContents)
+            {
+                File.WriteAllText(projectPath, newFileContents);
+            }
+
+            // Upgrade source code
+            var project = await workspace.OpenProjectAsync(projectPath.ToWindowsPath());
+            var compilation = await project.GetCompilationAsync();
+            var tasks = compilation.SyntaxTrees.Select(syntaxTree => Task.Run(() => UpgradeSourceFile(syntaxTree))).ToList();
+
+            await Task.WhenAll(tasks);
+        }
+
+        private async Task UpgradeSourceFile(SyntaxTree syntaxTree)
+        {
+            var root = await syntaxTree.GetRootAsync();
+            var rewriter = new RenamingRewriter();
+            var newRoot = rewriter.Visit(root);
+
+            if (newRoot != root)
+            {
+                var newSyntaxTree = syntaxTree.WithRootAndOptions(newRoot, syntaxTree.Options);
+                var sourceText = await newSyntaxTree.GetTextAsync();
+
+                using (var textWriter = new StreamWriter(syntaxTree.FilePath))
+                {
+                    sourceText.Write(textWriter);
+                }
+            }
+        }
+
+        private class RenamingRewriter : CSharpSyntaxRewriter
+        {
+            public override SyntaxNode VisitIdentifierName(IdentifierNameSyntax node)
+            {
+                var identifier = node.Identifier;
+
+                if (node.Identifier.ValueText.Contains("Paradox"))
+                {
+                    var newName = node.Identifier.ValueText.Replace("Paradox", "Xenko");
+                    return node.WithIdentifier(SyntaxFactory.Identifier(identifier.LeadingTrivia, newName, identifier.TrailingTrivia));
+                }
+
+                return base.VisitIdentifierName(node);
             }
         }
     }

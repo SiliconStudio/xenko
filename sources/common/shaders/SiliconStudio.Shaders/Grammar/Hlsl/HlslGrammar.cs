@@ -522,7 +522,7 @@ namespace SiliconStudio.Shaders.Grammar.Hlsl
 
             /*
             //// ------------------------------------------------------------------------------------
-            //// Paradox Grammar
+            //// Xenko Grammar
             //// ------------------------------------------------------------------------------------
             //var identifier_csharp = new NonTerminal("identifier_csharp");
             //var group = new NonTerminal("group");

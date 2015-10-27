@@ -1,10 +1,10 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Runtime
+namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     //TODO this whole renderer is not optimized at all! batching is wrong and depth calculation should be done differently
     public class SpriteStudioRenderer : EntityComponentRendererBase
@@ -229,8 +229,7 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
                     worldMatrix.M42 -= centerOffset.X*worldMatrix.M12 + centerOffset.Y*worldMatrix.M22;
 
                     // draw the sprite
-                    var color = (Color)color4;
-                    sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref size, ref color, node.Sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+                    sprite3DBatch.Draw(texture, ref worldMatrix, ref sourceRegion, ref size, ref color4, node.Sprite.Orientation, SwizzleMode.None, renderItem.Depth);
                 }
             }
 

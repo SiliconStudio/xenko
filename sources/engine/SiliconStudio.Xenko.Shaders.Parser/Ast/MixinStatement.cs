@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Shaders.Ast;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Ast
+namespace SiliconStudio.Xenko.Shaders.Parser.Ast
 {
     /// <summary>
     /// A mixin statement.

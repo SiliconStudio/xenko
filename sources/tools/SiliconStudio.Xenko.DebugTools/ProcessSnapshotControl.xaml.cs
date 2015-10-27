@@ -12,10 +12,10 @@ using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
 using SiliconStudio.Presentation.Commands;
-using SiliconStudio.Paradox.DebugTools.DataStructures;
+using SiliconStudio.Xenko.DebugTools.DataStructures;
 using SiliconStudio.Presentation.Controls;
 
-namespace SiliconStudio.Paradox.DebugTools
+namespace SiliconStudio.Xenko.DebugTools
 {
     /// <summary>
     /// Interaction logic for ProcessSnapshotControl.xaml

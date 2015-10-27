@@ -7,9 +7,9 @@ using System.IO;
 
 using NUnit.Framework;
 
-using SiliconStudio.Paradox.PublicApiCheck;
+using SiliconStudio.Xenko.PublicApiCheck;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     // CANNOT WORK INSIDE THE SAME SOLUTION. NEED TO RUN THIS OUTSIDE THE SOLUTION
     [TestFixture]
@@ -30,7 +30,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         private static string GraphicsPath(string api)
         {
-            return string.Format(PathPattern, Platform, api, Target, "SiliconStudio.Paradox.Graphics.dll");
+            return string.Format(PathPattern, Platform, api, Target, "SiliconStudio.Xenko.Graphics.dll");
         }
 
 

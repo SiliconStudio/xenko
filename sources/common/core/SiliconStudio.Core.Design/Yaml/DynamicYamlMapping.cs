@@ -84,7 +84,14 @@ namespace SiliconStudio.Core.Yaml
 
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            result = GetValue(new YamlScalarNode(binder.Name));
+            YamlNode tempNode;
+            if (node.Children.TryGetValue(new YamlScalarNode(binder.Name), out tempNode))
+            {
+                result = ConvertToDynamic(tempNode);
+                return true;
+            }
+            result = null;
+            // Probably not very good, but unfortunately we have some asset upgraders that relies on null check to check existence
             return true;
         }
 

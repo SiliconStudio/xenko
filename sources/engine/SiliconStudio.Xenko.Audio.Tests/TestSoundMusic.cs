@@ -8,9 +8,9 @@ using NUnit.Framework;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     /// <summary>
     /// Tests for <see cref="SoundMusic"/>.

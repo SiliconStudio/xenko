@@ -9,7 +9,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
 
-namespace SiliconStudio.Paradox.Engine.Tests
+namespace SiliconStudio.Xenko.Engine.Tests
 {
     [TestFixture]
     class EntitySerializerTest
@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Engine.Tests
         private static void InitializeAssetDatabase()
         {
             // Create and mount database file system
-            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var objDatabase = ObjectDatabase.CreateDefaultDatabase();
 
             // Only set a mount path if not mounted already
             var mountPath = VirtualFileSystem.ResolveProviderUnsafe("/asset", true).Provider == null ? "/asset" : null;

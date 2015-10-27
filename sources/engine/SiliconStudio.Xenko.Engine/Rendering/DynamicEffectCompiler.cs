@@ -4,10 +4,10 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Provides a dynamic compiler for an effect based on parameters changed.

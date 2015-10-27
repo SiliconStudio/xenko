@@ -6,12 +6,12 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine.Design;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Sprites;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Sprites;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
     /// Add a <see cref="Sprite"/> to an <see cref="Entity"/>. It could be an animated sprite.
@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Engine
         /// <userdoc>The color to apply to the sprite.</userdoc>
         [DataMember(40)]
         [Display("Color")]
-        public Color Color = Color.White;
+        public Color4 Color = Color4.White;
 
         /// <summary>
         /// Gets or sets a value indicating whether the sprite is a pre-multiplied alpha (default is true).

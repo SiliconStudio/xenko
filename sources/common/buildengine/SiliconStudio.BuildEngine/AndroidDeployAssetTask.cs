@@ -6,10 +6,10 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using Microsoft.Build.Framework;
-using Paradox.Framework.Build.Storage;
-using Paradox.Framework.Diagnostics;
+using Xenko.Framework.Build.Storage;
+using Xenko.Framework.Diagnostics;
 
-namespace Paradox.BuildTool
+namespace Xenko.BuildTool
 {
     public class AndroidDeployAssetTask : Microsoft.Build.Utilities.Task
     {

@@ -16,7 +16,7 @@ namespace SiliconStudio.Assets.Tests
         [Test, Ignore]
         public void TestTemplateDescriptions()
         {
-            // Preload templates defined in Paradox.pdxpkg
+            // Preload templates defined in Xenko.xkpkg
             var descriptions = TemplateManager.FindTemplates().ToList();
 
             // Expect currently 4 templates
@@ -28,10 +28,10 @@ namespace SiliconStudio.Assets.Tests
         {
             TemplateManager.Register(this);
 
-            // Preload templates defined in Paradox.pdxpkg
+            // Preload templates defined in Xenko.xkpkg
             var descriptions = TemplateManager.FindTemplates().ToList();
 
-            Assert.IsTrue(descriptions.Count > 0);
+            Assert.Greater(descriptions.Count, 0);
 
             var templateGenerator = TemplateManager.FindTemplateGenerator(descriptions[0]);
 
@@ -45,14 +45,15 @@ namespace SiliconStudio.Assets.Tests
             return true;
         }
 
-        public Action PrepareForRun(TemplateGeneratorParameters parameters)
+        public Func<bool> PrepareForRun(TemplateGeneratorParameters parameters)
         {
             // Nothing to do in the tests
             return null;
         }
 
-        public void AfterRun(TemplateGeneratorParameters parameters)
+        public bool AfterRun(TemplateGeneratorParameters parameters)
         {
+            return true;
         }
 
         public static void Main()

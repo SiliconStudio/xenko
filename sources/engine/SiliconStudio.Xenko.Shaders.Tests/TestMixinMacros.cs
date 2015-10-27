@@ -9,11 +9,11 @@ using NUnit.Framework;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Shaders.Parser;
+using SiliconStudio.Xenko.Shaders.Parser;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 
-namespace SiliconStudio.Paradox.Shaders.Tests
+namespace SiliconStudio.Xenko.Shaders.Tests
 {
     public class TestMixinMacros
     {
@@ -23,7 +23,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void Init()
         {
             // Create and mount database file system
-            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var objDatabase = ObjectDatabase.CreateDefaultDatabase();
             var databaseFileProvider = new DatabaseFileProvider(objDatabase);
             AssetManager.GetFileProvider = () => databaseFileProvider;
 
@@ -36,7 +36,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         {
             // test that macros are correctly used
             var baseMixin = new ShaderMixinSource();
-            baseMixin.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D", 1);
+            baseMixin.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D", 1);
             baseMixin.Macros.Add(new ShaderMacro("MACRO_TEST", "int"));
             baseMixin.Mixins.Add(new ShaderClassSource("TestMacros"));
             
@@ -64,7 +64,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
 
             // test clash when reloading
             var baseMixin2 = new ShaderMixinSource();
-            baseMixin2.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D", 1);
+            baseMixin2.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D", 1);
             baseMixin2.Macros.Add(new ShaderMacro("MACRO_TEST", "int"));
             baseMixin2.Mixins.Add(new ShaderClassSource("TestMacros"));
 
@@ -96,7 +96,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         {
             // test that macros are correctly used through an array
             var baseMixin = new ShaderMixinSource();
-            baseMixin.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_DIRECT3D", 1);
+            baseMixin.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D", 1);
             baseMixin.Macros.Add(new ShaderMacro("MACRO_TEST", "int"));
             baseMixin.Mixins.Add(new ShaderClassSource("TestMacrosArray"));
 

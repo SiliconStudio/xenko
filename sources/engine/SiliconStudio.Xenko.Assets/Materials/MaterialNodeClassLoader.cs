@@ -2,12 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Compiler;
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Shaders.Compiler;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Xenko.Assets.Materials
 {
     [Obsolete]
     internal class MaterialNodeClassLoader

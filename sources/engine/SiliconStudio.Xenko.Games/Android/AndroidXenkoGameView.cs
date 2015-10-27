@@ -4,8 +4,8 @@
 using System;
 using System.Text.RegularExpressions;
 using Android.App;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.OpenGL;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.OpenGL;
 using Android.Content;
 using Android.Content.PM;
 using Android.Runtime;
@@ -13,15 +13,15 @@ using Javax.Microedition.Khronos.Egl;
 using OpenTK.Graphics;
 using OpenTK.Graphics.ES30;
 using OpenTK.Platform.Android;
-using PixelFormat = SiliconStudio.Paradox.Graphics.PixelFormat;
+using PixelFormat = SiliconStudio.Xenko.Graphics.PixelFormat;
 
-namespace SiliconStudio.Paradox.Games.Android
+namespace SiliconStudio.Xenko.Games.Android
 {
-    public class AndroidParadoxGameView : AndroidGameView
+    public class AndroidXenkoGameView : AndroidGameView
     {
         public EventHandler<EventArgs> OnPause;
 
-        public AndroidParadoxGameView(Context context) : base(context)
+        public AndroidXenkoGameView(Context context) : base(context)
         {
             RequestedBackBufferFormat = PixelFormat.R8G8B8A8_UNorm;
             RequestedGraphicsProfile =  new [] { GraphicsProfile.Level_10_0, GraphicsProfile.Level_9_1 };

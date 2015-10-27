@@ -5,9 +5,9 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Assets.Sprite
+namespace SiliconStudio.Xenko.Assets.Sprite
 {
     /// <summary>
     /// This class contains all the information to describe one sprite.
@@ -89,7 +89,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         /// </summary>
         /// <userdoc>
         /// The size in pixels of the non-stretchable parts of the sprite.
-        /// The part sizes are organized as follow: X->Left, Y->Right, Z->Top, W->Bottom.
+        /// The part sizes are organized as follow: X->Left, Y->Top, Z->Right, W->Bottom.
         /// </userdoc>
         [DataMember(60)]
         public Vector4 Borders { get; set; }

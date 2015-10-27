@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Xenko.UI.Controls;
 
-namespace SiliconStudio.Paradox.UI
+namespace SiliconStudio.Xenko.UI
 {
     /// <summary>
     /// Interface providing anchor information to its <see cref="ScrollViewer"/>.

@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SiliconStudio.Paradox.DebugTools.Properties
+namespace SiliconStudio.Xenko.DebugTools.Properties
 {
 
 
@@ -44,7 +44,7 @@ namespace SiliconStudio.Paradox.DebugTools.Properties
             {
                 if ((resourceMan == null))
                 {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Paradox.DebugTools.Properties.Resources", typeof(Resources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("Xenko.DebugTools.Properties.Resources", typeof(Resources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

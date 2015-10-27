@@ -41,7 +41,6 @@
     <Compile Include="TestCancellation.cs" />
     <Compile Include="TestDependencies.cs" />
     <Compile Include="TestIO.cs" />
-    <Compile Include="TestMetadata.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

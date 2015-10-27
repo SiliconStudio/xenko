@@ -19,16 +19,16 @@ namespace SiliconStudio.Assets.Tests
     public class TestAssetUpgrade : TestBase
     {
         [DataContract("MyUpgradedAsset")]
-        [AssetDescription(".pdxobj")]
-        [AssetFormatVersion(5, 1)]
-        [AssetUpgrader(1, 2, typeof(AssetUpgrader1))]
-        [AssetUpgrader(2, 3, 4, typeof(AssetUpgrader2))]
-        [AssetUpgrader(4, 5, typeof(AssetUpgrader3))]
+        [AssetDescription(".xkobj")]
+        [AssetFormatVersion("TestPackage", 5, 1)]
+        [AssetUpgrader("TestPackage", 1, 2, typeof(AssetUpgrader1))]
+        [AssetUpgrader("TestPackage", 2, 4, typeof(AssetUpgrader2))]
+        [AssetUpgrader("TestPackage", 4, 5, typeof(AssetUpgrader3))]
         public class MyUpgradedAsset : Asset
         {
             public MyUpgradedAsset(int version)
             {
-                SerializedVersion = version;
+                SerializedVersion["TestPackage"] = PackageVersion.Parse("0.0." + version);
             }
 
             public MyUpgradedAsset()
@@ -44,11 +44,13 @@ namespace SiliconStudio.Assets.Tests
 
             class AssetUpgrader1 : IAssetUpgrader
             {
-                public void Upgrade(AssetMigrationContext context, int currentVersion, int targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
+                public void Upgrade(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
                 {
                     dynamic asset = new DynamicYamlMapping(yamlAssetNode);
 
-                    asset.SerializedVersion = AssetRegistry.GetCurrentFormatVersion(typeof(MyUpgradedAsset));
+                    // Note: seems little bit strange, but original test was not using targetVersion...
+                    var serializedVersion = AssetRegistry.GetCurrentFormatVersions(typeof(MyUpgradedAsset))[dependencyName];
+                    AssetUpgraderBase.SetSerializableVersion(asset, dependencyName, serializedVersion);
 
                     // Move Test1 to Test2
                     asset.Test2 = asset.Test1;
@@ -58,20 +60,20 @@ namespace SiliconStudio.Assets.Tests
 
             class AssetUpgrader2 : IAssetUpgrader
             {
-                public void Upgrade(AssetMigrationContext context, int currentVersion, int targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
+                public void Upgrade(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
                 {
                     dynamic asset = new DynamicYamlMapping(yamlAssetNode);
 
-                    asset.SerializedVersion = targetVersion;
+                    AssetUpgraderBase.SetSerializableVersion(asset, dependencyName, targetVersion);
 
                     // Move Test2 to Test4
-                    if (currentVersion == 2)
+                    if (currentVersion == PackageVersion.Parse("0.0.2"))
                     {
                         asset.Test4 = asset.Test2;
                         asset.Test2 = DynamicYamlEmpty.Default;
                     }
                     // Move Test3 to Test4
-                    else if (currentVersion == 3)
+                    else if (currentVersion == PackageVersion.Parse("0.0.3"))
                     {
                         asset.Test4 = asset.Test3;
                         asset.Test3 = DynamicYamlEmpty.Default;
@@ -81,11 +83,11 @@ namespace SiliconStudio.Assets.Tests
 
             class AssetUpgrader3 : IAssetUpgrader
             {
-                public void Upgrade(AssetMigrationContext context, int currentVersion, int targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
+                public void Upgrade(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
                 {
                     dynamic asset = new DynamicYamlMapping(yamlAssetNode);
 
-                    asset.SerializedVersion = targetVersion;
+                    AssetUpgraderBase.SetSerializableVersion(asset, dependencyName, targetVersion);
 
                     // Move Test4 to Test5
                     asset.Test5 = asset.Test4;
@@ -131,13 +133,13 @@ namespace SiliconStudio.Assets.Tests
 
         public void TestUpgrade(MyUpgradedAsset asset, bool needMigration)
         {
-            var loadingFilePath = new PackageLoadingAssetFile(Path.Combine(DirectoryTestBase, "TestUpgrade\\Asset1.pdxobj"), "");
+            var loadingFilePath = new PackageLoadingAssetFile(Path.Combine(DirectoryTestBase, "TestUpgrade\\Asset1.xkobj"), "");
             var outputFilePath = loadingFilePath.FilePath.FullPath;
             AssetSerializer.Save(outputFilePath, asset);
 
             var logger = new LoggerResult();
             var context = new AssetMigrationContext(null, logger);
-            Assert.AreEqual(AssetMigration.MigrateAssetIfNeeded(context, loadingFilePath), needMigration);
+            Assert.AreEqual(AssetMigration.MigrateAssetIfNeeded(context, loadingFilePath, "TestPackage"), needMigration);
 
             if (needMigration)
             {
@@ -153,7 +155,7 @@ namespace SiliconStudio.Assets.Tests
 
         private static void AssertUpgrade(MyUpgradedAsset asset)
         {
-            Assert.That(asset.SerializedVersion, Is.EqualTo(5));
+            Assert.That(asset.SerializedVersion["TestPackage"], Is.EqualTo(new PackageVersion("0.0.5")));
             Assert.That(asset.Test1, Is.Null);
             Assert.That(asset.Test2, Is.Null);
             Assert.That(asset.Test3, Is.Null);

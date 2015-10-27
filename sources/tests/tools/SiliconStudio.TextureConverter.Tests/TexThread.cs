@@ -44,7 +44,7 @@ namespace SiliconStudio.TextureConverter.Tests
                 string outFile = Path.GetDirectoryName(filePath) + "\\out\\" + Path.GetFileName(filePath);
                 outFile = Path.ChangeExtension(outFile, ".dds");
 
-                texTool.Save(image, outFile, Paradox.Graphics.PixelFormat.BC3_UNorm);
+                texTool.Save(image, outFile, Xenko.Graphics.PixelFormat.BC3_UNorm);
 
                 image.Dispose();
             }

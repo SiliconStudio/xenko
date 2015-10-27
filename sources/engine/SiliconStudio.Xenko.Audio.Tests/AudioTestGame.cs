@@ -3,9 +3,9 @@
 using System;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox.Graphics.Regression;
+using SiliconStudio.Xenko.Graphics.Regression;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     /// <summary>
     /// The base class for all the audio games.

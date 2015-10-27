@@ -3,11 +3,11 @@
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Visitor;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
-    internal class ParadoxTypeCleaner : ShaderVisitor
+    internal class XenkoTypeCleaner : ShaderVisitor
     {
-        public ParadoxTypeCleaner()
+        public XenkoTypeCleaner()
             : base(false, false)
         {
         }

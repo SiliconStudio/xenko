@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.MicroThreading;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class Collision
     {

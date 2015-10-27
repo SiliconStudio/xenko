@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Rendering.Sprites
+namespace SiliconStudio.Xenko.Rendering.Sprites
 {
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
@@ -46,6 +46,13 @@ namespace SiliconStudio.Paradox.Rendering.Sprites
                 SpriteComponent = entity.Get(SpriteComponent.Key),
                 TransformComponent = entity.Get(TransformComponent.Key),
             };
+        }
+
+        protected override bool IsAssociatedDataValid(Entity entity, SpriteComponentState associatedData)
+        {
+            return
+                entity.Get(SpriteComponent.Key) == associatedData.SpriteComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
         }
 
         public class SpriteComponentState

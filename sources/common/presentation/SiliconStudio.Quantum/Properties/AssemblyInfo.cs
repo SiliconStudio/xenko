@@ -3,8 +3,8 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyProduct("Paradox.ViewModel")]
-[assembly: AssemblyTitle("Paradox.ViewModel")]
+[assembly: AssemblyProduct("Xenko.ViewModel")]
+[assembly: AssemblyTitle("Xenko.ViewModel")]
 
-[assembly: InternalsVisibleTo("Paradox.Presentation")]
+[assembly: InternalsVisibleTo("Xenko.Presentation")]
 

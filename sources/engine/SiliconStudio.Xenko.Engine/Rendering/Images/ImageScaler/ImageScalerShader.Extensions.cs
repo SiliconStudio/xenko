@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Rendering.Images
+namespace SiliconStudio.Xenko.Rendering.Images
 {
     /// <summary>
     /// Defines default values.

@@ -1,8 +1,8 @@
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
-using SiliconStudio.Paradox.Starter;
+using SiliconStudio.Xenko.Starter;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public class ManualApplication
     {
@@ -13,7 +13,7 @@ namespace SiliconStudio.Paradox.Graphics.Tests
     }
 
     [Register("ManualAppDelegate")]
-    public class ManualAppDelegate : ParadoxApplicationDelegate
+    public class ManualAppDelegate : XenkoApplicationDelegate
     {
         public override bool FinishedLaunching(UIApplication app, NSDictionary options)
         {

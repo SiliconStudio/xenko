@@ -8,9 +8,9 @@ using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Debugger.Target
+namespace SiliconStudio.Xenko.Debugger.Target
 {
     /// <summary>
     /// When serializing/deserializing Yaml for live objects, this serializer will handle those objects as reference (similar to Clone serializer).

@@ -1,9 +1,9 @@
 ﻿#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Graphics.ShaderCompiler.Direct3D
+namespace SiliconStudio.Xenko.Graphics.ShaderCompiler.Direct3D
 {
     public class ShaderCompiler : IShaderCompilerOld
     {

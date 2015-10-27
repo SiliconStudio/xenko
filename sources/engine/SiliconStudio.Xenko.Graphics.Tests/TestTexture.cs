@@ -12,7 +12,7 @@ using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     [Description("Check Texture")]

@@ -43,8 +43,10 @@ namespace NShader
         public const string CG_CG = ".cg";
         public const string CG_CGFX = ".cgfx";
 
-        // Paradox file extensions
+        // Xenko file extensions
         public const string Paradox_Shader = ".pdxsl";
         public const string Paradox_Effect = ".pdxfx";
+        public const string Xenko_Shader = ".xksl";
+        public const string Xenko_Effect = ".xkfx";
     }
 }

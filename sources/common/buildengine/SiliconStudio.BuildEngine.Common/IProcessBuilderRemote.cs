@@ -14,31 +14,31 @@ namespace SiliconStudio.BuildEngine
     public interface IProcessBuilderRemote
     {
         [OperationContract]
-        [UseParadoxDataContractSerializer]
+        [UseXenkoDataContractSerializer]
         Command GetCommandToExecute();
 
         [OperationContract]
-        [UseParadoxDataContractSerializer]
+        [UseXenkoDataContractSerializer]
         BuildParameterCollection GetBuildParameters();
 
         [OperationContract]
-        [UseParadoxDataContractSerializer]
+        [UseXenkoDataContractSerializer]
         void ForwardLog(SerializableLogMessage message);
 
         [OperationContract]
-        [UseParadoxDataContractSerializer]
+        [UseXenkoDataContractSerializer]
         void RegisterResult(CommandResultEntry commandResult);
 
         [OperationContract]
-        [UseParadoxDataContractSerializer]
+        [UseXenkoDataContractSerializer]
         Task<ResultStatus> SpawnCommand(Command command);
 
         [OperationContract]
-        [UseParadoxDataContractSerializer]
+        [UseXenkoDataContractSerializer]
         ObjectId ComputeInputHash(UrlType type, string filePath);
 
         [OperationContract]
-        [UseParadoxDataContractSerializer]
+        [UseXenkoDataContractSerializer]
         Dictionary<ObjectUrl, ObjectId> GetOutputObjects();
     }
 }

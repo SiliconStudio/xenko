@@ -3,9 +3,9 @@
 using System.Diagnostics;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// Represents a Windows button control, which reacts to the Click event.

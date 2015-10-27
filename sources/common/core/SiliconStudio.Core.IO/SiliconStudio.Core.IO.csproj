@@ -15,7 +15,7 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer</SiliconStudioAssemblyProcessorOptions>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
     <Reference Include="System" />
@@ -27,7 +27,7 @@
       <ItemGroup>
         <Reference Include="SharpDX">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(ParadoxSharpDXSdkBinDir)\SharpDX.dll</HintPath>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>

@@ -6,15 +6,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering.Lights;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Composers;
-using SiliconStudio.Paradox.Extensions;
-using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
-using SiliconStudio.Paradox.Input;
+using SiliconStudio.Xenko.Rendering.Lights;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Composers;
+using SiliconStudio.Xenko.Extensions;
+using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
+using SiliconStudio.Xenko.Input;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     public class TestMultipleRenderTargets : TestGameBase
     {

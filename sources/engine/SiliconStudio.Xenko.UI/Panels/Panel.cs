@@ -8,12 +8,12 @@ using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Xenko.UI.Controls;
 
-namespace SiliconStudio.Paradox.UI.Panels
+namespace SiliconStudio.Xenko.UI.Panels
 {
     /// <summary>
-    /// Provides a base class for all Panel elements. Use Panel elements to position and arrange child objects Paradox applications.
+    /// Provides a base class for all Panel elements. Use Panel elements to position and arrange child objects Xenko applications.
     /// </summary>
     [DebuggerDisplay("Panel - Name={Name}")]
     public abstract class Panel : UIElement, IScrollAnchorInfo

@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler
+namespace SiliconStudio.Xenko.Shaders.Compiler
 {
     /// <summary>
     /// Result of a compilation.

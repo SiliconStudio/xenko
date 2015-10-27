@@ -8,10 +8,10 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Materials;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Materials;
 
-namespace SiliconStudio.Paradox.Assets.Materials
+namespace SiliconStudio.Xenko.Assets.Materials
 {
     internal class MaterialAssetCompiler : AssetCompilerBase<MaterialAsset>
     {

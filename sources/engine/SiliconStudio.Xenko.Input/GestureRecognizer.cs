@@ -6,7 +6,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     internal abstract class GestureRecognizer
     {

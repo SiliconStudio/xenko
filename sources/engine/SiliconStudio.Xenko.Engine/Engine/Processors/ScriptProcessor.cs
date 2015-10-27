@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 
-namespace SiliconStudio.Paradox.Engine.Processors
+namespace SiliconStudio.Xenko.Engine.Processors
 {
     /// <summary>
     /// Manage scripts
@@ -24,6 +24,11 @@ namespace SiliconStudio.Paradox.Engine.Processors
         protected override AssociatedData GenerateAssociatedData(Entity entity)
         {
             return new AssociatedData(entity.Get<ScriptComponent>());
+        }
+
+        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        {
+            return entity.Get(ScriptComponent.Key) == associatedData.Component;
         }
 
         protected internal override void OnSystemAdd()

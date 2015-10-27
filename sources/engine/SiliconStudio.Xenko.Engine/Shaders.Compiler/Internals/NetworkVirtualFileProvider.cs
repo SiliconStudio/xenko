@@ -4,9 +4,9 @@ using System;
 using System.IO;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Paradox.Engine.Network;
+using SiliconStudio.Xenko.Engine.Network;
 
-namespace SiliconStudio.Paradox.Shaders.Compiler.Internals
+namespace SiliconStudio.Xenko.Shaders.Compiler.Internals
 {
     internal class DownloadFileQuery : SocketMessage
     {

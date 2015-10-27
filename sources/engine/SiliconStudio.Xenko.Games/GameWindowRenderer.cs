@@ -24,10 +24,10 @@
 using System;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// A GameSystem that allows to draw to another window or control. Currently only valid on desktop with Windows.Forms.

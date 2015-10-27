@@ -10,10 +10,10 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Assets.Textures;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Assets.Skyboxes
+namespace SiliconStudio.Xenko.Assets.Skyboxes
 {
     internal class SkyboxAssetCompiler : AssetCompilerBase<SkyboxAsset>
     {

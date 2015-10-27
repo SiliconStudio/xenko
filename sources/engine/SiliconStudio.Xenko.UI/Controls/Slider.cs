@@ -5,11 +5,11 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Input;
-using SiliconStudio.Paradox.UI.Events;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.UI.Events;
 
-namespace SiliconStudio.Paradox.UI.Controls
+namespace SiliconStudio.Xenko.UI.Controls
 {
     /// <summary>
     /// Represents a slider element.

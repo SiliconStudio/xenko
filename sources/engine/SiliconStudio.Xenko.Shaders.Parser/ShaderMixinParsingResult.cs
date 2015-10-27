@@ -2,10 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Shaders.Parser;
 
-namespace SiliconStudio.Paradox.Shaders.Parser
+namespace SiliconStudio.Xenko.Shaders.Parser
 {
     public class ShaderMixinParsingResult : ParsingResult
     {

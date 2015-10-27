@@ -1,40 +1,40 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!--
-Build file used to build Paradox and package it from the command line.
+Build file used to build Xenko and package it from the command line.
 Example of use: 
-"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" Paradox.build /t:PackageLauncher
+"C:\Program Files (x86)\MSBuild\14.0\Bin\MSBuild" Xenko.build /t:PackageLauncher
 -->
 <Project ToolsVersion="14.0" DefaultTarget="Help" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ParadoxRoot>$(MSBuildThisFileDirectory)..\</ParadoxRoot>
-    <ParadoxRootBin>$(ParadoxRoot)Bin\Windows-Direct3D11\</ParadoxRootBin>
-    <ParadoxPackage>$(ParadoxRoot)Paradox.pdxpkg</ParadoxPackage>
-    <ParadoxSolution>$(ParadoxRoot)build\Paradox</ParadoxSolution>
+    <XenkoRoot>$(MSBuildThisFileDirectory)..\</XenkoRoot>
+    <XenkoRootBin>$(XenkoRoot)Bin\Windows-Direct3D11\</XenkoRootBin>
+    <XenkoPackage>$(XenkoRoot)Xenko.xkpkg</XenkoPackage>
+    <XenkoSolution>$(XenkoRoot)build\Xenko</XenkoSolution>
     <BuildProperties>Configuration=Release;SiliconStudioGenerateDoc=true;NoWarn=1591;DeployExtension=false</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioSign)' != ''">$(BuildProperties);SiliconStudioSign=$(SiliconStudioSign)</BuildProperties>
     <BuildProperties Condition="'$(SiliconStudioOfficialBuild)' != ''">$(BuildProperties);SiliconStudioOfficialBuild=$(SiliconStudioOfficialBuild)</BuildProperties>
-    <ILRepackPath>$(ParadoxRootBin)ILRepack.exe</ILRepackPath>
+    <ILRepackPath>$(XenkoRootBin)ILRepack.exe</ILRepackPath>
     <NuGetPath>$(MSBuildThisFileDirectory).nuget\NuGet.exe</NuGetPath>
-    <SiliconStudioStoreUrl>https://store.paradox3d.net</SiliconStudioStoreUrl>
+    <SiliconStudioStoreUrl>https://store.xenko.com</SiliconStudioStoreUrl>
     <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.6.3\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.6.3\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
 
-  <UsingTask TaskName="SiliconStudio.Assets.PackageArchiveTask" AssemblyFile="$(ParadoxRootBin)SiliconStudio.Assets.dll" />
+  <UsingTask TaskName="SiliconStudio.Assets.PackageArchiveTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Assets.dll" />
   
   <Target Name="Help">
     <Message Importance="high" Text="TODO"/>
   </Target>
   
   <!--
-  Package Paradox to a nupkg
+  Package Xenko to a nupkg
   -->
   <Target Name="Package">
     <ItemGroup>
-        <FilesToDeletePackage Include="$(MSBuildThisFileDirectory)Paradox*.nupkg"/>
+        <FilesToDeletePackage Include="$(MSBuildThisFileDirectory)Xenko*.nupkg"/>
     </ItemGroup>    
     
     <Delete Files="@(FilesToDeletePackage)"/>
-    <PackageArchiveTask File="$(ParadoxPackage)" SpecialVersion="$(ParadoxPackageSpecialVersion)"/>
+    <PackageArchiveTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)"/>
   </Target>
 
   <!--
@@ -47,45 +47,45 @@ Example of use:
 
     <Delete Files="@(FilesToDeleteLauncher)"/>
 
-    <MSBuild Targets="10-Assets\SiliconStudio_LauncherApp" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <MSBuild Targets="10-Assets\SiliconStudio_LauncherApp" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
     <!-- IL Repack is not used anymore -->
-    <!--<Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Paradox.exe' WorkingDirectory="$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>-->
+    <!--<Exec Command='"$(ILRepackPath)" SiliconStudio.LauncherApp.exe Nuget.Core.dll /out:Xenko.exe' WorkingDirectory="$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"/>-->
     <!-- Generate the nuget package for the launcher application -->
-    <Exec Command='"$(NuGetPath)" pack "$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\SiliconStudio.LauncherApp.nuspec" -BasePath "$(ParadoxRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"' />
+    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\SiliconStudio.LauncherApp.nuspec" -BasePath "$(XenkoRoot)sources\install\SiliconStudio.LauncherApp\bin\Release"' />
   </Target>
 
   <!--
-  VSIX Paradox plugin
+  VSIX Xenko plugin
   Don't forget to build for VS2013 by using MSBuild 12.0, 
   or if you're using a newer version of MSBuild, pass the flag /p:VisualStudioVersion=12.0 when calling MSBuild in the command line.
   -->
   <Target Name="VSIXPlugin">
     <ItemGroup>
-      <FilesToDeleteVSIX Include="$(MSBuildThisFileDirectory)SiliconStudio.Paradox.VisualStudio.Package.*.nupkg"/>
+      <FilesToDeleteVSIX Include="$(MSBuildThisFileDirectory)SiliconStudio.Xenko.VisualStudio.Package.*.nupkg"/>
     </ItemGroup>
 
     <Delete Files="@(FilesToDeleteVSIX)"/>
 
-    <MSBuild Targets="91-VisualStudio\SiliconStudio_Paradox_VisualStudio_Package" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
-    <Exec Command='"$(NuGetPath)" pack "$(ParadoxRoot)sources\tools\SiliconStudio.Paradox.VisualStudio.Package\SiliconStudio.Paradox.VisualStudio.Package.nuspec" -BasePath "$(ParadoxRoot)Bin\Windows-Direct3D11"' />
+    <MSBuild Targets="91-VisualStudio\SiliconStudio_Xenko_VisualStudio_Package" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+    <Exec Command='"$(NuGetPath)" pack "$(XenkoRoot)sources\tools\SiliconStudio.Xenko.VisualStudio.Package\SiliconStudio.Xenko.VisualStudio.Package.nuspec" -BasePath "$(XenkoRoot)Bin\Windows-Direct3D11"' />
   </Target>  
   
   <!--
-  Package Installer: ParadoxSetup.exe
+  Package Installer: XenkoSetup.exe
   -->
   <Target Name="PackageInstaller" DependsOnTargets="PackageLauncher">
-    <Delete Files="ParadoxSetup.exe"/>
-    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(ParadoxRoot)sources\install\Setup\setup.aip"'/>
-    <Copy SourceFiles="$(ParadoxRoot)sources\install\Setup\setup-SetupFiles\ParadoxSetup.exe" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+    <Delete Files="XenkoSetup.exe"/>
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Setup\setup.aip"'/>
+    <Copy SourceFiles="$(XenkoRoot)sources\install\Setup\setup-SetupFiles\XenkoSetup.exe" DestinationFolder="$(MSBuildThisFileDirectory)"/>
   </Target>
   
   <!--
   Package Installer: install-prerequisites.exe
   -->
   <Target Name="PrerequisitesInstaller">
-    <Delete Files="$(ParadoxRoot)Bin\Prerequisites\install-prerequisites.exe"/>
-    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(ParadoxRoot)sources\install\Prerequisites\prerequisites.aip"'/>
-    <Copy SourceFiles="$(ParadoxRoot)sources\install\Prerequisites\install-prerequisites.exe" DestinationFolder="$(ParadoxRoot)Bin\Prerequisites"/>
+    <Delete Files="$(XenkoRoot)Bin\Prerequisites\install-prerequisites.exe"/>
+    <Exec Command='"$(AdvancedInstallerPath)" /rebuild "$(XenkoRoot)sources\install\Prerequisites\prerequisites.aip"'/>
+    <Copy SourceFiles="$(XenkoRoot)sources\install\Prerequisites\install-prerequisites.exe" DestinationFolder="$(XenkoRoot)Bin\Prerequisites"/>
   </Target>
   
   <!--
@@ -100,11 +100,11 @@ Example of use:
   </Target>
   
   <!--
-  Publish Paradox nupkg from this folder to the store
+  Publish Xenko nupkg from this folder to the store
   -->
   <Target Name="Publish">
     <Error Condition="'$(SiliconStudioStoreApiKey)' == ''" Text="Missing env variable SiliconStudioStoreApiKey"/>
-    <Exec Command='"$(NuGetPath)" push Paradox*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
+    <Exec Command='"$(NuGetPath)" push Xenko*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
   </Target>
 
   <!--
@@ -120,47 +120,47 @@ Example of use:
   -->
   <Target Name="PublishVSIX">
     <Error Condition="'$(SiliconStudioStoreApiKey)' == ''" Text="Missing env variable SiliconStudioStoreApiKey"/>
-    <Exec Command='"$(NuGetPath)" push SiliconStudio.Paradox.VisualStudio.Package*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
+    <Exec Command='"$(NuGetPath)" push SiliconStudio.Xenko.VisualStudio.Package*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
   </Target>
   
   <!--
-  Build Paradox: Windows, Android, iOS, Windows Store, Windows Phone
+  Build Xenko: Windows, Android, iOS, Windows Store, Windows Phone
   -->
   <Target Name="Clean">
-    <Exec Command="RMDIR /Q /S $(ParadoxRoot)\Bin"/>
+    <Exec Command="RMDIR /Q /S $(XenkoRoot)\Bin"/>
   </Target>
   
   <Target Name="Build" DependsOnTargets="Clean;BuildWindows;BuildEditorShaders;BuildAndroid;BuildiOS;BuildWindowsStore;BuildWindowsPhone"/>
   
-  <Target Name="CopyParadoxKey">
-    <Copy Condition="'$(SiliconStudioSign)' == 'true' And Exists('$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\ParadoxBuildKey\paradox.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
+  <Target Name="CopyXenkoKey">
+    <Copy Condition="'$(SiliconStudioSign)' == 'true' And Exists('$(LOCALAPPDATA)\SiliconStudio\XenkoBuildKey\xenko.snk')" SourceFiles="$(LOCALAPPDATA)\SiliconStudio\XenkoBuildKey\xenko.snk" DestinationFolder="$(MSBuildThisFileDirectory)"/>
   </Target>
 
   <Target Name="BuildEditorShaders">
-    <Exec Command="$(ParadoxRoot)sources\editor\SiliconStudio.Paradox.Assets.Presentation\EditorPackage\generate-editor-package.bat" WorkingDirectory="$(ParadoxRoot)sources\editor\SiliconStudio.Paradox.Assets.Presentation\EditorPackage"/>
+    <Exec Command="$(XenkoRoot)sources\editor\SiliconStudio.Xenko.Assets.Presentation\EditorPackage\generate-editor-package.bat" WorkingDirectory="$(XenkoRoot)sources\editor\SiliconStudio.Xenko.Assets.Presentation\EditorPackage"/>
   </Target>
 
-  <Target Name="BuildWindows" DependsOnTargets="CopyParadoxKey">
-    <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
+  <Target Name="BuildWindows" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
   </Target>
 
-  <Target Name="BuildAndroid" DependsOnTargets="CopyParadoxKey">
-    <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).Android.sln" Properties="$(BuildProperties);Platform=Android"/>
+  <Target Name="BuildAndroid" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Android.sln" Properties="$(BuildProperties);Platform=Android"/>
   </Target>
 
-  <Target Name="BuildiOS" DependsOnTargets="CopyParadoxKey">
-    <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).iOS.sln" Properties="$(BuildProperties);Platform=iPhone"/>
+  <Target Name="BuildiOS" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).iOS.sln" Properties="$(BuildProperties);Platform=iPhone"/>
   </Target>
   
-  <Target Name="BuildWindowsStore" DependsOnTargets="CopyParadoxKey">
-    <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).WindowsStore.sln" Properties="$(BuildProperties);Platform=WindowsStore"/>
+  <Target Name="BuildWindowsStore" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).WindowsStore.sln" Properties="$(BuildProperties);Platform=WindowsStore"/>
   </Target>
 
-  <Target Name="BuildWindows10" DependsOnTargets="CopyParadoxKey">
-    <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).Windows10.sln" Properties="$(BuildProperties);Platform=Windows10"/>
+  <Target Name="BuildWindows10" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Windows10.sln" Properties="$(BuildProperties);Platform=Windows10"/>
   </Target>
   
-  <Target Name="BuildWindowsPhone" DependsOnTargets="CopyParadoxKey">
-    <MSBuild Targets="Clean;Build" Projects="$(ParadoxSolution).WindowsPhone.sln" Properties="$(BuildProperties);Platform=WindowsPhone"/>
+  <Target Name="BuildWindowsPhone" DependsOnTargets="CopyXenkoKey">
+    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).WindowsPhone.sln" Properties="$(BuildProperties);Platform=WindowsPhone"/>
   </Target>
 </Project>

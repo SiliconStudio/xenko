@@ -6,7 +6,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Graphics.Font
+namespace SiliconStudio.Xenko.Graphics.Font
 {
     /// <summary>
     /// Serializer for <see cref="DynamicSpriteFont"/>.
@@ -27,7 +27,7 @@ namespace SiliconStudio.Paradox.Graphics.Font
             parentSerializer = SerializerSelector.Default.GetSerializer<SpriteFont>();
             if (parentSerializer == null)
             {
-                throw new InvalidOperationException(string.Format("Could not find parent serializer for type {0}", "SiliconStudio.Paradox.Graphics.SpriteFont"));
+                throw new InvalidOperationException(string.Format("Could not find parent serializer for type {0}", "SiliconStudio.Xenko.Graphics.SpriteFont"));
             }
         }
 

@@ -1,13 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using Matrix = SiliconStudio.Core.Mathematics.Matrix;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 using System;
 using System.Collections.Generic;
+using Windows.Devices.Input;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 using Windows.Foundation;
 using Windows.System;
 using Windows.UI.Core;
@@ -23,8 +23,9 @@ using WindowsAccelerometer = Windows.Devices.Sensors.Accelerometer;
 using WindowsGyroscope = Windows.Devices.Sensors.Gyrometer;
 using WindowsOrientation = Windows.Devices.Sensors.OrientationSensor;
 using WindowsCompass = Windows.Devices.Sensors.Compass;
+using Matrix = SiliconStudio.Core.Mathematics.Matrix;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManager
     {
@@ -264,6 +265,13 @@ namespace SiliconStudio.Paradox.Input
             Orientation.IsSupported = windowsOrientation != null;
             Gravity.IsSupported = Orientation.IsSupported && Accelerometer.IsSupported;
             UserAcceleration.IsSupported = Gravity.IsSupported;
+
+            MouseDevice.GetForCurrentView().MouseMoved += (_,y) => HandleRelativeOnMouseMoved(y);
+        }
+
+        private void HandleRelativeOnMouseMoved(MouseEventArgs args)
+        {
+            CurrentMouseDelta = NormalizeScreenPosition(new Vector2(args.MouseDelta.X, args.MouseDelta.Y));
         }
 
         internal override void CheckAndEnableSensors()
@@ -391,7 +399,7 @@ namespace SiliconStudio.Paradox.Input
         {
             base.OnApplicationResumed(sender, e);
 
-            // reset the paradox sampling rate to activated sensors
+            // reset the xenko sampling rate to activated sensors
 
             if (Accelerometer.IsEnabled || Gravity.IsEnabled || UserAcceleration.IsEnabled)
                 windowsAccelerometer.ReportInterval = Math.Max(DesiredSensorUpdateIntervalMs, windowsAccelerometer.MinimumReportInterval);

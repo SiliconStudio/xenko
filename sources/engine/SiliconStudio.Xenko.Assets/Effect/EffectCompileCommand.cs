@@ -12,13 +12,13 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Assets.Effect
+namespace SiliconStudio.Xenko.Assets.Effect
 {
     /// <summary>
-    /// This command is responsible to compile a single permutation of an effect (pdxfx or pdxsl)
+    /// This command is responsible to compile a single permutation of an effect (xkfx or xksl)
     /// </summary>
     internal class EffectCompileCommand : IndexFileCommand
     {
@@ -62,8 +62,8 @@ namespace SiliconStudio.Paradox.Assets.Effect
             var compiler = GetOrCreateEffectCompiler(context);
 
             // Get main effect name (before the first dot)
-            var isPdxfx = ShaderMixinManager.Contains(effectName);
-            var source = isPdxfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
+            var isXkfx = ShaderMixinManager.Contains(effectName);
+            var source = isXkfx ? new ShaderMixinGeneratorSource(effectName) : (ShaderSource)new ShaderClassSource(effectName);
 
             int permutationCount;
             lock (PermutationCount)
@@ -145,7 +145,7 @@ namespace SiliconStudio.Paradox.Assets.Effect
                     var shaderLocations = context.Properties.Get(EffectShaderAssetCompiler.ShaderLocationsKey);
 
                     // Temp copy URL to absolute file path to inform the compiler the absolute file location
-                    // of all pdxsl files.
+                    // of all xksl files.
                     if (shaderLocations != null)
                     {
                         foreach (var shaderLocation in shaderLocations)

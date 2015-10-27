@@ -4,15 +4,15 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Threading;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     public class PhysicsProcessor : EntityProcessor<PhysicsProcessor.AssociatedData>
     {
@@ -25,15 +25,21 @@ namespace SiliconStudio.Paradox.Physics
         }
 
         private readonly List<PhysicsElementBase> elements = new List<PhysicsElementBase>();
-        private readonly List<PhysicsElementBase> boneElements = new List<PhysicsElementBase>();
+        private readonly List<PhysicsSkinnedElementBase> boneElements = new List<PhysicsSkinnedElementBase>();
         private readonly List<PhysicsElementBase> characters = new List<PhysicsElementBase>();
 
         private Bullet2PhysicsSystem physicsSystem;
         private Simulation simulation;
 
+        public static ProfilingKey CharactersProfilingKey = new ProfilingKey(Simulation.SimulationProfilingKey, "Characters");
+        private ProfilingState charactersProfilingState;
+
+        private PhysicsDebugShapeRendering debugShapeRendering;
+
         public PhysicsProcessor()
             : base(PhysicsComponent.Key, TransformComponent.Key)
         {
+            charactersProfilingState = Profiler.New(CharactersProfilingKey);
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -42,16 +48,21 @@ namespace SiliconStudio.Paradox.Physics
             {
                 PhysicsComponent = entity.Get(PhysicsComponent.Key),
                 TransformComponent = entity.Get(TransformComponent.Key),
+                ModelComponent = entity.Get(ModelComponent.Key)
             };
 
             data.PhysicsComponent.Simulation = simulation;
+            data.PhysicsComponent.DebugShapeRendering = debugShapeRendering;
 
             return data;
         }
 
-        protected override void UpdateAssociatedData(Entity entity, ref AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
         {
-            associatedData.ModelComponent = entity.Get(ModelComponent.Key);
+            return
+                entity.Get(PhysicsComponent.Key) == associatedData.PhysicsComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent &&
+                entity.Get(ModelComponent.Key) == associatedData.ModelComponent;
         }
 
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
@@ -65,6 +76,14 @@ namespace SiliconStudio.Paradox.Physics
             {
                 element.UpdateBoneTransformation(ref physicsTransform);
             }
+
+            if (element.DebugEntity == null) return;
+
+            Vector3 scale, pos;
+            Quaternion rot;
+            physicsTransform.Decompose(out scale, out rot, out pos);
+            element.DebugEntity.Transform.Position = pos;
+            element.DebugEntity.Transform.Rotation = rot;
         }
 
         //This is valid for Dynamic rigidbodies (called once at initialization)
@@ -79,6 +98,14 @@ namespace SiliconStudio.Paradox.Physics
             {
                 element.DeriveBonePhysicsTransformation(out physicsTransform);
             }
+
+            if (element.DebugEntity == null) return;
+
+            Vector3 scale, pos;
+            Quaternion rot;
+            physicsTransform.Decompose(out scale, out rot, out pos);
+            element.DebugEntity.Transform.Position = pos;
+            element.DebugEntity.Transform.Rotation = rot;
         }
 
         private void NewElement(PhysicsElementBase element, AssociatedData data, Entity entity)
@@ -151,8 +178,6 @@ namespace SiliconStudio.Paradox.Physics
                         element.Collider = c; //required by the next call
                         element.Collider.Entity = entity; //required by the next call
                         element.UpdatePhysicsTransformation(); //this will set position and rotation of the collider
-
-                        c.IsTrigger = false;
 
                         if (defaultGroups)
                         {
@@ -261,10 +286,10 @@ namespace SiliconStudio.Paradox.Physics
             }
 
             elements.Add(element);
-            if (element.BoneIndex != -1) boneElements.Add(element);
+            if (element.BoneIndex != -1) boneElements.Add(skinnedElement);
         }
 
-        private void DeleteElement(PhysicsElementBase element, bool now = false)
+        private void DeleteElement(PhysicsElementBase element)
         {
             element.Data = null;
 
@@ -274,7 +299,7 @@ namespace SiliconStudio.Paradox.Physics
             var toDispose = new List<IDisposable>();
 
             elements.Remove(element);
-            if (element.BoneIndex != -1) boneElements.Remove(element);
+            if (element.BoneIndex != -1) boneElements.Remove((PhysicsSkinnedElementBase)element);
 
             switch (element.Type)
             {
@@ -332,10 +357,12 @@ namespace SiliconStudio.Paradox.Physics
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
         {
+            //this is mostly required for the game studio gizmos
             if (Simulation.DisableSimulation)
             {
                 foreach (var element in data.PhysicsComponent.Elements)
                 {
+                    if(element == null) continue;
                     var e = (PhysicsElementBase)element;
                     e.Data = data;
                 }
@@ -347,16 +374,19 @@ namespace SiliconStudio.Paradox.Physics
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
+                if (element == null) continue;
                 NewElement((PhysicsElementBase)element, data, entity);
             }
         }
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
         {
+            //this is mostly required for the game studio gizmos
             if (Simulation.DisableSimulation)
             {
                 foreach (var element in data.PhysicsComponent.Elements)
                 {
+                    if (element == null) continue;
                     var e = (PhysicsElementBase)element;
                     e.Data = null;
                 }
@@ -365,8 +395,9 @@ namespace SiliconStudio.Paradox.Physics
 
             foreach (var element in data.PhysicsComponent.Elements)
             {
+                if (element == null) continue;
                 var e = (PhysicsElementBase)element;
-                DeleteElement(e, true);
+                DeleteElement(e);
             }
         }
 
@@ -401,6 +432,11 @@ namespace SiliconStudio.Paradox.Physics
 
             simulation = physicsSystem.Create(this);
 
+            if (Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice != null)
+            {
+                debugShapeRendering = new PhysicsDebugShapeRendering(Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice);
+            }
+
             //setup debug device and debug shader
             //var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
             //Simulation.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
@@ -417,123 +453,67 @@ namespace SiliconStudio.Paradox.Physics
             physicsSystem.Release(this);
         }
 
-        /*
-        private static void DrawDebugCompound(ref Matrix viewProj, CompoundColliderShape compound, PhysicsElement element)
-        {
-            for (var i = 0; i < compound.Count; i++)
-            {
-                var subShape = compound[i];
-                switch (subShape.Type)
-                {
-                    case ColliderShapeTypes.StaticPlane:
-                        continue;
-                    case ColliderShapeTypes.Compound:
-                        DrawDebugCompound(ref viewProj, (CompoundColliderShape)compound[i], element);
-                        break;
-
-                    default:
-                        {
-                            var physTrans = Matrix.Multiply(subShape.PositiveCenterMatrix, element.Collider.PhysicsWorldTransform);
-
-                            //must account collider shape scaling
-                            Matrix worldTrans;
-                            Matrix.Multiply(ref subShape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
-
-                            Simulation.DebugEffect.WorldViewProj = worldTrans * viewProj;
-                            Simulation.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
-                            Simulation.DebugEffect.UseUv = subShape.Type != ColliderShapeTypes.ConvexHull;
-
-                            Simulation.DebugEffect.Apply();
-
-                            subShape.DebugPrimitive.Draw();
-                        }
-                        break;
-                }
-            }
-        }
-
-        private void DebugShapesDraw(RenderContext context)
-        {
-            if (    !Simulation.CreateDebugPrimitives ||
-                    !Simulation.RenderDebugPrimitives ||
-                    Simulation.DebugGraphicsDevice == null ||
-                    Simulation.DebugEffect == null)
-                return;
-
-            Matrix viewProj;
-            if (context.Parameters.ContainsKey(TransformationKeys.View) && context.Parameters.ContainsKey(TransformationKeys.Projection))
-            {
-                viewProj = context.Parameters.Get(TransformationKeys.View) * context.Parameters.Get(TransformationKeys.Projection);
-            }
-            else
-            {
-                return;
-            }
-
-            var rasterizers = Simulation.DebugGraphicsDevice.RasterizerStates;
-            Simulation.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullNone);
-
-            foreach (var element in elements)
-            {
-                var shape = element.Shape.Shape;
-
-                if (shape.Type == ColliderShapeTypes.Compound) //multiple shapes
-                {
-                    DrawDebugCompound(ref viewProj, (CompoundColliderShape)shape, element);
-                }
-                else if (shape.Type != ColliderShapeTypes.StaticPlane) //a single shape
-                {
-                    var physTrans = element.Collider.PhysicsWorldTransform;
-
-                    //must account collider shape scaling
-                    Matrix worldTrans;
-                    Matrix.Multiply(ref element.Shape.Shape.DebugPrimitiveScaling, ref physTrans, out worldTrans);
-
-                    Simulation.DebugEffect.WorldViewProj = worldTrans * viewProj;
-                    Simulation.DebugEffect.Color = element.Collider.IsActive ? Color.Green : Color.Red;
-                    Simulation.DebugEffect.UseUv = shape.Type != ColliderShapeTypes.ConvexHull;
-
-                    Simulation.DebugEffect.Apply();
-
-                    shape.DebugPrimitive.Draw();
-                }
-            }
-
-            Simulation.DebugGraphicsDevice.SetRasterizerState(rasterizers.CullBack);
-        }
-        */
-
         internal void UpdateCharacters()
         {
+            charactersProfilingState.Begin();
             //characters need manual updating
-            foreach (var element in characters.Where(x => x.Collider.Enabled))
+            foreach (var element in characters)
             {
+                if(!element.Collider.Enabled) continue;
+
                 var worldTransform = element.Collider.PhysicsWorldTransform;
                 element.UpdateTransformationComponent(ref worldTransform);
+
+                if (element.DebugEntity != null)
+                {
+                    Vector3 scale, pos;
+                    Quaternion rot;
+                    worldTransform.Decompose(out scale, out rot, out pos);
+                    element.DebugEntity.Transform.Position = pos;
+                    element.DebugEntity.Transform.Rotation = rot;
+                }
+
+                charactersProfilingState.Mark();
+            charactersProfilingState.Begin();
+                if(!element.Collider.Enabled) continue;
+
+                charactersProfilingState.Mark();
             }
+            charactersProfilingState.End();
         }
 
         public override void Draw(RenderContext context)
         {
-            foreach (var element in boneElements.Where(x => x.Collider.Enabled))
+            foreach (var element in boneElements)
             {
-                var model = element.Data.ModelComponent;
+                if (!element.Collider.Enabled) continue;
 
                 //write to ModelViewHierarchy
+                var model = element.Data.ModelComponent;
                 if ((element.Collider as RigidBody) != null && element.RigidBody.Type == RigidBodyTypes.Dynamic)
                 {
                     model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix = element.BoneWorldMatrixOut;
+
+                    if (element.DebugEntity != null)
+                    {
+                        Vector3 scale, pos;
+                        Quaternion rot;
+                        element.BoneWorldMatrixOut.Decompose(out scale, out rot, out pos);
+                        element.DebugEntity.Transform.Position = pos;
+                        element.DebugEntity.Transform.Rotation = rot;
+                    }
                 }
             }
         }
 
         internal void UpdateBones()
         {
-            foreach (var element in boneElements.Where(x => x.Collider.Enabled))
+            foreach (var element in boneElements)
             {
-                var model = element.Data.ModelComponent;
+                if (!element.Collider.Enabled) continue;
 
                 //read from ModelViewHierarchy
+                var model = element.Data.ModelComponent;
                 element.BoneWorldMatrix = model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix;
             }
         }

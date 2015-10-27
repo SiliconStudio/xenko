@@ -12,23 +12,23 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("Model")]
     [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.ModelThumbnailCompilerQualifiedName, true, Priority = 10000)]
     [Display(190, "Model", "A 3D model")]
-    [AssetFormatVersion(2)]
-    [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     public sealed class ModelAsset : AssetImportTracked, IModelAsset
     {
         /// <summary>
         /// The default file extension used by the <see cref="ModelAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxm3d";
+        public const string FileExtension = ".xkm3d;pdxm3d";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelAsset"/> class.
@@ -159,7 +159,7 @@ namespace SiliconStudio.Paradox.Assets.Model
 
         class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 foreach (var modelMaterial in asset.Materials)
                 {

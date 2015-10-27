@@ -18,7 +18,7 @@ namespace SiliconStudio.TextureConverter.Requests
         /// <summary>
         /// The format.
         /// </summary>
-        public SiliconStudio.Paradox.Graphics.PixelFormat Format { get; private set; }
+        public SiliconStudio.Xenko.Graphics.PixelFormat Format { get; private set; }
 
         /// <summary>
         /// Gets the quality.
@@ -30,7 +30,7 @@ namespace SiliconStudio.TextureConverter.Requests
         /// Initializes a new instance of the <see cref="CompressingRequest"/> class.
         /// </summary>
         /// <param name="format">The compression format.</param>
-        public CompressingRequest(SiliconStudio.Paradox.Graphics.PixelFormat format, TextureQuality quality = TextureQuality.Fast)
+        public CompressingRequest(SiliconStudio.Xenko.Graphics.PixelFormat format, TextureQuality quality = TextureQuality.Fast)
         {
             this.Format = format;
             this.Quality = quality;

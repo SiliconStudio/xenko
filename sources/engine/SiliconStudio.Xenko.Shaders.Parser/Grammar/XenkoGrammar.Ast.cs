@@ -5,14 +5,14 @@ using System.Collections.Generic;
 
 using Irony.Parsing;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Utility;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
+namespace SiliconStudio.Xenko.Shaders.Parser.Grammar
 {
-    public partial class ParadoxGrammar
+    public partial class XenkoGrammar
     {
         private static void CreateStreamsType(ParsingContext context, ParseTreeNode parseNode)
         {
@@ -79,7 +79,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Grammar
 
             if (node.ChildNodes.Count == 1)
             {
-                qualifier = ParadoxStorageQualifier.Parse(node.ChildNodes[0].Token.Text);
+                qualifier = XenkoStorageQualifier.Parse(node.ChildNodes[0].Token.Text);
                 qualifier.Span = SpanConverter.Convert(node.Span);
             }
 

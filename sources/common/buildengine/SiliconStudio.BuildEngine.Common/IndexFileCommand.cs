@@ -29,13 +29,7 @@ namespace SiliconStudio.BuildEngine
         /// Gets a value indicating whether this instance has a valid database file provider.
         /// </summary>
         /// <value><c>true</c> if this instance has database file provider; otherwise, <c>false</c>.</value>
-        public static bool HasValidDatabaseFileProvider
-        {
-            get
-            {
-                return MicroThreadLocalDatabaseFileProvider.Value != null;
-            }
-        }
+        public static bool HasValidDatabaseFileProvider => MicroThreadLocalDatabaseFileProvider.Value != null;
 
         /// <summary>
         /// Gets the currently mounted microthread-local database provider.
@@ -74,13 +68,6 @@ namespace SiliconStudio.BuildEngine
         public static DatabaseFileProvider GetCommonDatabase()
         {
             return CreateDatabase(CreateTransaction(null));
-        }
-
-        // TODO: Remove this once the thumbnail has been refactored to be done out of the preview game, if possible
-        public static void MountDatabase(DatabaseFileProvider databaseFileProvider)
-        {
-
-            MicroThreadLocalDatabaseFileProvider.Value = databaseFileProvider;
         }
         
         /// <summary>

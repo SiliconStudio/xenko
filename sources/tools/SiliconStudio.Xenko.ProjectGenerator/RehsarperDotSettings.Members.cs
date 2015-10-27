@@ -3,7 +3,7 @@
 using System;
 using System.IO;
 
-namespace SiliconStudio.Paradox.ProjectGenerator
+namespace SiliconStudio.Xenko.ProjectGenerator
 {
     public partial class ResharperDotSettings
     {

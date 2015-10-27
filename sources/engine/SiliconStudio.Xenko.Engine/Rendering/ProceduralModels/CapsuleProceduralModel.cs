@@ -4,10 +4,10 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.GeometricPrimitives;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
 
-namespace SiliconStudio.Paradox.Rendering.ProceduralModels
+namespace SiliconStudio.Xenko.Rendering.ProceduralModels
 {
     /// <summary>
     /// A Capsule descriptor
@@ -22,7 +22,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         public CapsuleProceduralModel()
         {
             Length = 0.5f;
-            Radius = 0.25f;
+            Radius = 0.35f;
             Tessellation = 8;
         }
 
@@ -41,7 +41,7 @@ namespace SiliconStudio.Paradox.Rendering.ProceduralModels
         /// <value>The radius.</value>
         /// <userdoc>The radius of the capsule.</userdoc>
         [DataMember(20)]
-        [DefaultValue(0.25f)]
+        [DefaultValue(0.35f)]
         public float Radius { get; set; }
 
         /// <summary>

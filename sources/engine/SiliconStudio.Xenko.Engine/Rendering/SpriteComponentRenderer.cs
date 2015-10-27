@@ -3,12 +3,12 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Sprites;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Sprites;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// This <see cref="EntityComponentRendererBase"/> is responsible to prepare and render sprites for a specific pass.
@@ -121,7 +121,7 @@ namespace SiliconStudio.Paradox.Rendering
                 var texture = sprite.Texture;
                 var color = spriteComp.Color;
                 if (isPicking) // TODO move this code corresponding to picking out of the runtime code.
-                    color = (Color)new Color4(spriteComp.Id);
+                    color = new Color4(spriteComp.Id);
 
                 // skip the sprite if no texture is set.
                 if (texture == null)

@@ -17,13 +17,20 @@ namespace SiliconStudio.Assets.Templates
         bool IsSupportingTemplate(TemplateDescription templateDescription);
 
         /// <summary>
-        /// Prepares this generator with the specified parameters and return a runnable action that must be run just after 
-        /// this method.
+        /// Prepares this generator with the specified parameters and return a runnable function that must be run just after 
+        /// this method. The returned runnable function should return true if it succeeded or false otherwise.
         /// </summary>
+        /// <remarks>This method can also return <see langword="null"/> in case the preparation did not complete and nothing
+        /// can be further executed.</remarks>
         /// <param name="parameters">The parameters.</param>
-        Action PrepareForRun(TemplateGeneratorParameters parameters);
+        Func<bool> PrepareForRun(TemplateGeneratorParameters parameters);
 
-        void AfterRun(TemplateGeneratorParameters parameters);
+        /// <summary>
+        /// Called only if the generation succeeded.
+        /// </summary>
+        /// <param name="parameters"></param>
+        /// <returns>True if the method succeeded, False otherwise.</returns>
+        bool AfterRun(TemplateGeneratorParameters parameters);
     }
 
 
@@ -34,10 +41,11 @@ namespace SiliconStudio.Assets.Templates
     {
         public abstract bool IsSupportingTemplate(TemplateDescription templateDescription);
 
-        public abstract Action PrepareForRun(TemplateGeneratorParameters parameters);
+        public abstract Func<bool> PrepareForRun(TemplateGeneratorParameters parameters);
 
-        public virtual void AfterRun(TemplateGeneratorParameters parameters)
+        public virtual bool AfterRun(TemplateGeneratorParameters parameters)
         {
+            return true;
         }
     }
 }

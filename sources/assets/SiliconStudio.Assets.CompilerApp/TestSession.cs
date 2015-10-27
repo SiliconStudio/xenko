@@ -89,10 +89,10 @@ namespace SiliconStudio.Assets.CompilerApp
                 Directory.Delete(dbPath, true);
 
             Directory.CreateDirectory(dbPath);
-            VirtualFileSystem.MountFileSystem("/data/db", dbPath);
+            VirtualFileSystem.MountFileSystem(VirtualFileSystem.ApplicationDatabasePath, dbPath);
 
             logger.ActivateLog(LogMessageType.Debug);
-            var builder = new Builder(appPath, "Windows", "index", "inputHashes", logger) { BuilderName = "TestBuilder" };
+            var builder = new Builder(logger, appPath, "Windows", "index") { BuilderName = "TestBuilder" };
             var steps = new List<BuildStep>();
             const int StepsPerLevel = 5;
             const int MaxLevel = 5;

@@ -24,7 +24,7 @@ namespace SiliconStudio.Assets.CompilerApp
         public string SolutionFile { get; set; }
         public Guid PackageId { get; set; }
         public PlatformType Platform { get; set; }
-        public Paradox.Graphics.GraphicsPlatform? GraphicsPlatform { get; set; }
+        public Xenko.Graphics.GraphicsPlatform? GraphicsPlatform { get; set; }
         public bool GetGraphicsPlatform { get; set; }
         public string PackageFile { get; set; }
         public List<string> LogPipeNames = new List<string>();

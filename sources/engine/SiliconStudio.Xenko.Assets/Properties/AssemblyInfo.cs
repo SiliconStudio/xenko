@@ -7,10 +7,10 @@ using System.Reflection;
 // associated with an assembly.
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("SiliconStudio.Paradox.Assets")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Assets")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyProduct("SiliconStudio.Paradox.Engine")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Engine")]
 
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Assets.Serializers")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Assets.Model")]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Assets.Tests")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Assets.Serializers")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Assets.Model")]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Assets.Tests")]

@@ -6,26 +6,26 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Grammar;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Grammar;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Parser;
 using SiliconStudio.Shaders.Visitor;
 
-namespace SiliconStudio.Paradox.Shaders.Parser
+namespace SiliconStudio.Xenko.Shaders.Parser
 {
     /// <summary>
-    /// Main class for parsing Paradox HLSL grammar.
+    /// Main class for parsing Xenko HLSL grammar.
     /// </summary>
-    public static class ParadoxShaderParser
+    public static class XenkoShaderParser
     {
         /// <summary>
         /// Preinitialize the parser.
         /// </summary>
         public static void Initialize()
         {
-            ShaderParser.GetParser<ParadoxGrammar>();
+            ShaderParser.GetParser<XenkoGrammar>();
         }
 
         /// <summary>
@@ -39,7 +39,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         public static ParsingResult TryPreProcessAndParse(string source, string sourceFileName, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null, params string[] includeDirectories)
         {
 
-            var result = ShaderParser.GetParser<ParadoxGrammar>().TryPreProcessAndParse(source, sourceFileName, macros, includeDirectories);
+            var result = ShaderParser.GetParser<XenkoGrammar>().TryPreProcessAndParse(source, sourceFileName, macros, includeDirectories);
             PrepareShader(result.Shader);
             return result;
         }
@@ -54,7 +54,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <returns>Result of parsing</returns>
         public static Shader PreProcessAndParse(string source, string sourceFileName, SiliconStudio.Shaders.Parser.ShaderMacro[] macros = null, params string[] includeDirectories)
         {
-            return PrepareShader(ShaderParser.GetParser<ParadoxGrammar>().PreProcessAndParse(source, sourceFileName, macros, includeDirectories));
+            return PrepareShader(ShaderParser.GetParser<XenkoGrammar>().PreProcessAndParse(source, sourceFileName, macros, includeDirectories));
         }
 
         /// <summary>
@@ -90,7 +90,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <returns></returns>
         public static Shader Parse(string sourceCode, string sourceFileName)
         {
-            return PrepareShader(ShaderParser.GetParser<ParadoxGrammar>().ParseAndCheck(sourceCode, sourceFileName));
+            return PrepareShader(ShaderParser.GetParser<XenkoGrammar>().ParseAndCheck(sourceCode, sourceFileName));
         }
 
         /// <summary>
@@ -101,7 +101,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
         /// <returns></returns>
         public static ParsingResult TryParse(string sourceCode, string sourceFileName)
         {
-            var parsingResult = ShaderParser.GetParser<ParadoxGrammar>().Parse(sourceCode, sourceFileName);
+            var parsingResult = ShaderParser.GetParser<XenkoGrammar>().Parse(sourceCode, sourceFileName);
             PrepareShader(parsingResult.Shader);
             return parsingResult;
         }
@@ -127,7 +127,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser
                         {
                             foreach (var subVariable in variable.Instances())
                             {
-                                subVariable.SetTag(ParadoxTags.ConstantBuffer, constantBuffer.Name.Text);
+                                subVariable.SetTag(XenkoTags.ConstantBuffer, constantBuffer.Name.Text);
                                 if (variable.IsGroup && !ReferenceEquals(variable, subVariable))
                                 {
                                     subVariable.Qualifiers |= variable.Qualifiers;

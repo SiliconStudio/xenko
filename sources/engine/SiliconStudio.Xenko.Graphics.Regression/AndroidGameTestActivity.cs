@@ -6,14 +6,14 @@ using System;
 using System.Collections.Generic;
 using Android.App;
 using Android.OS;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Starter;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Starter;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Graphics.Regression
+namespace SiliconStudio.Xenko.Graphics.Regression
 {
     [Activity]
-    public class AndroidGameTestActivity : AndroidParadoxActivity
+    public class AndroidGameTestActivity : AndroidXenkoActivity
     {
         public static Queue<GameBase> GamesToStart = new Queue<GameBase>();
 

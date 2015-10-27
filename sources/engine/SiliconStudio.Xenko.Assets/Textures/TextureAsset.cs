@@ -10,7 +10,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Assets.Textures
+namespace SiliconStudio.Xenko.Assets.Textures
 {
     /// <summary>
     /// Describes a texture asset.
@@ -18,21 +18,21 @@ namespace SiliconStudio.Paradox.Assets.Textures
     [DataContract("Texture")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(TextureAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.TextureThumbnailCompilerQualifiedName, true, Priority = -10000)]
     [Display(105, "Texture", "A texture")]
     [CategoryOrder(10, "Size")]
     [CategoryOrder(20, "Format")]
     [CategoryOrder(30, "Transparency")]
-    [AssetFormatVersion(TextureAssetVersion)]
-    [AssetUpgrader(0, 1, typeof(TransformSRgbToColorSpace))]
+    [AssetFormatVersion(XenkoConfig.PackageName, TextureAssetVersion)]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(TransformSRgbToColorSpace))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     public sealed class TextureAsset : AssetImport
     {
-        private const int TextureAssetVersion = 1;
+        private const string TextureAssetVersion = "1.4.0-beta";
 
         /// <summary>
         /// The default file extension used by the <see cref="TextureAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxtex";
+        public const string FileExtension = ".xktex;.pdxtex";
 
         /// <summary>
         /// Initializes a new instance of the <see cref="TextureAsset"/> class.
@@ -198,7 +198,7 @@ namespace SiliconStudio.Paradox.Assets.Textures
 
         private class TransformSRgbToColorSpace : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 if (asset.SRgb != null)
                 {

@@ -18,8 +18,11 @@ namespace SiliconStudio.Core.IO
     {
         public static readonly char DirectorySeparatorChar = '/';
         public static readonly char AltDirectorySeparatorChar = '\\';
-        public static readonly char[] AllDirectorySeparatorChars = new[] { DirectorySeparatorChar, AltDirectorySeparatorChar };
-
+        public static readonly char[] AllDirectorySeparatorChars = { DirectorySeparatorChar, AltDirectorySeparatorChar };
+        public static readonly string ApplicationDatabasePath = "/data/db";
+        public static readonly string LocalDatabasePath = "/local/db";
+        public static readonly string ApplicationDatabaseIndexName = "index";
+        public static readonly string ApplicationDatabaseIndexPath = ApplicationDatabasePath + DirectorySeparatorChar + ApplicationDatabaseIndexName;
         private static readonly Regex pathSplitRegex = new Regex(@"(\\|/)");
 
         // As opposed to real Path.GetTempFileName, we don't have a 65536 limit.
@@ -340,7 +343,7 @@ namespace SiliconStudio.Core.IO
             string filename;
             do
             {
-                filename = "pdx" + ((tempFileRandom.Next() + 1)).ToString("x") + ".tmp";
+                filename = "xk" + ((tempFileRandom.Next() + 1)).ToString("x") + ".tmp";
                 try
                 {
                     stream = ApplicationTemporary.OpenStream(filename, VirtualFileMode.CreateNew, VirtualFileAccess.ReadWrite);

@@ -9,18 +9,18 @@ using SiliconStudio.Assets;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Data;
-using SiliconStudio.Paradox.Extensions;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Animations;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     public abstract class ImportModelCommand : SingleFileImportCommand
     {

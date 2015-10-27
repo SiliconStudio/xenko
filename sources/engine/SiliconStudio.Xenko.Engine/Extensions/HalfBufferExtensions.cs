@@ -2,13 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Linq;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Graphics.Data;
 
-namespace SiliconStudio.Paradox.Extensions
+namespace SiliconStudio.Xenko.Extensions
 {
     public static class HalfBufferExtensions
     {

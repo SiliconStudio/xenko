@@ -24,7 +24,7 @@ using System.Windows.Media;
 using Microsoft.VisualStudio.Text.Classification;
 using Microsoft.VisualStudio.Text.Formatting;
 
-namespace SiliconStudio.Paradox.VisualStudio.Classifiers
+namespace SiliconStudio.Xenko.VisualStudio.Classifiers
 {
     public class ClassificationColorManager : IDisposable
     {

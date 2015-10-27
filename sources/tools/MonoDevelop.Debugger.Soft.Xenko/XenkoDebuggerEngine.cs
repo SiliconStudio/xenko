@@ -6,17 +6,17 @@ using MonoDevelop.Core.Execution;
 using MonoDevelop.Debugger.Soft;
 using Mono.Debugging.Client;
 
-namespace MonoDevelop.Debugger.Soft.Paradox
+namespace MonoDevelop.Debugger.Soft.Xenko
 {
-	public class ParadoxDebuggerEngine : IDebuggerEngine
+	public class XenkoDebuggerEngine : IDebuggerEngine
 	{
-		public ParadoxDebuggerEngine ()
+		public XenkoDebuggerEngine ()
 		{
 		}
 		
 	    public bool CanDebugCommand(ExecutionCommand cmd)
 		{
-			return cmd.CommandString.StartsWith("ParadoxDebug");
+			return cmd.CommandString.StartsWith("XenkoDebug");
 		}
 	    public DebuggerStartInfo CreateDebuggerStartInfo(ExecutionCommand cmd)
 	    {
@@ -28,7 +28,7 @@ namespace MonoDevelop.Debugger.Soft.Paradox
 		}
 	    public DebuggerSession CreateSession()
 		{
-			return new ParadoxRemoteSoftDebuggerSession();
+			return new XenkoRemoteSoftDebuggerSession();
 		}
 	    public ProcessInfo[] GetAttachableProcesses()
 		{

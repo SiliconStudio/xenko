@@ -23,11 +23,11 @@
 
 using System;
 
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Assets;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Base class for a <see cref="GameSystemBase"/> component.

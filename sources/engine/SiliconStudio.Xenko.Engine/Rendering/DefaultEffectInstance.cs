@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// An effect instance using a set of <see cref="ParameterCollection"/> for creating <see cref="Effect"/>.
@@ -71,6 +71,10 @@ namespace SiliconStudio.Paradox.Rendering
                     }
                 }
             }
+        }
+
+        public override void Dispose()
+        {
         }
     }
 }

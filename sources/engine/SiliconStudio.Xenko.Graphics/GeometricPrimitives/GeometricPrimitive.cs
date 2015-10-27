@@ -25,7 +25,7 @@ using System;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics.GeometricPrimitives
+namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
 {
     /// <summary>
     /// A geometric primitive used to draw a simple model built from a set of vertices and indices.

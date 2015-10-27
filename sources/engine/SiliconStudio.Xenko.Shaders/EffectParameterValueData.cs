@@ -4,7 +4,7 @@ using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Shaders
+namespace SiliconStudio.Xenko.Shaders
 {
     /// <summary>
     /// Describes a shader parameter for a valuetype (usually stored in constant buffers).

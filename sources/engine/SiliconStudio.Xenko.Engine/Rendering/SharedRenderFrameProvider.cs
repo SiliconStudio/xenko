@@ -4,9 +4,9 @@
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering.Composers;
+using SiliconStudio.Xenko.Rendering.Composers;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A link to a shared <see cref="RenderFrame"/>.

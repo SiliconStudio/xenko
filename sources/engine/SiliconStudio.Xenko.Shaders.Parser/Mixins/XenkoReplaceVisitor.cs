@@ -3,12 +3,12 @@
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Visitor;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
+namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     /// <summary>
     /// Class to replace a node by another in an AST
     /// </summary>
-    internal class ParadoxReplaceVisitor : ShaderVisitor
+    internal class XenkoReplaceVisitor : ShaderVisitor
     {
         #region Private members
 
@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Mixins
 
         #region Constructor
 
-        public ParadoxReplaceVisitor(Node toReplace, Node replacement) : base(false, false)
+        public XenkoReplaceVisitor(Node toReplace, Node replacement) : base(false, false)
         {
             nodeToReplace = toReplace;
             replacementNode = replacement;

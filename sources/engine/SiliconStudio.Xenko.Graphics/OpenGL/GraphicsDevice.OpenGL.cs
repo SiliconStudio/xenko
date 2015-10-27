@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
 #if SILICONSTUDIO_PLATFORM_ANDROID
 extern alias opentkold;
 #endif
@@ -12,9 +12,9 @@ using OpenTK.Graphics;
 using OpenTK.Platform;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Shaders;
-using SiliconStudio.Paradox.Graphics.OpenGL;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Graphics.OpenGL;
 using Color4 = SiliconStudio.Core.Mathematics.Color4;
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System.Text;
@@ -23,7 +23,7 @@ using OpenTK.Platform.Android;
 #elif SILICONSTUDIO_PLATFORM_IOS
 using OpenTK.Platform.iPhoneOS;
 #endif
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using DrawBuffersEnum = OpenTK.Graphics.ES30.DrawBufferMode;
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
@@ -37,7 +37,7 @@ using OpenTK.Graphics.OpenGL;
 #endif
 
 // TODO: remove these when OpenTK API is consistent between OpenGL, mobile OpenGL ES and desktop OpenGL ES
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.ES30.PixelInternalFormat;
 using TextureTarget_TextureTarget2d = OpenTK.Graphics.ES30.TextureTarget;
@@ -50,7 +50,7 @@ using PixelInternalFormat_TextureComponentCount = OpenTK.Graphics.OpenGL.PixelIn
 using TextureTarget_TextureTarget2d = OpenTK.Graphics.OpenGL.TextureTarget;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Performs primitive-based rendering, creates resources, handles system-level variables, adjusts gamma ramp levels, and creates shaders.
@@ -92,7 +92,7 @@ namespace SiliconStudio.Paradox.Graphics
 
         internal bool HasVAO;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         internal bool HasDepth24;
         internal bool HasPackedDepthStencilExtension;
         internal bool HasExtTextureFormatBGRA8888;
@@ -110,7 +110,7 @@ namespace SiliconStudio.Paradox.Graphics
         private Rectangle[] _currentScissorRectangles = new Rectangle[MaxBoundRenderTargets];
         private int contextBeginCounter = 0;
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private float[] _currentViewportsSetBuffer = new float[4 * MaxBoundRenderTargets];
         private int[] _currentScissorsSetBuffer = new int[4 * MaxBoundRenderTargets];
 #endif
@@ -185,7 +185,7 @@ namespace SiliconStudio.Paradox.Graphics
         private Texture[] textures = new Texture[64];
         private SamplerState[] samplerStates = new SamplerState[64];
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         public bool IsOpenGLES2 { get; private set; }
 
         private Buffer constantBuffer;
@@ -209,7 +209,7 @@ namespace SiliconStudio.Paradox.Graphics
             1.0f, 1.0f,
         };
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
         private const TextureTarget TextureTargetTexture2D = TextureTarget.Texture2D;
         private const TextureTarget3D TextureTargetTexture3D = TextureTarget3D.Texture3D;
@@ -268,8 +268,8 @@ namespace SiliconStudio.Paradox.Graphics
 
         public void ApplyPlatformSpecificParams(Effect effect)
         {
-            //effect.Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
-            Parameters.Set(ShaderBaseKeys.ParadoxFlipRendertarget, flipRenderTarget ? 1.0f : -1.0f);
+            //effect.Parameters.Set(ShaderBaseKeys.XenkoFlipRendertarget, flipRenderTarget ? -1.0f : 1.0f);
+            Parameters.Set(ShaderBaseKeys.XenkoFlipRendertarget, flipRenderTarget ? 1.0f : -1.0f);
         }
 
         /// <summary>
@@ -379,7 +379,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
             if((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
@@ -397,7 +397,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
             if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
@@ -415,7 +415,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
             if ((buffer.ViewFlags & BufferFlags.UnorderedAccess) != BufferFlags.UnorderedAccess)
@@ -433,7 +433,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
             GL.BindTexture(texture.Target, texture.resourceId);
@@ -450,7 +450,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
             GL.BindTexture(texture.Target, texture.resourceId);
@@ -467,7 +467,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
             GL.BindTexture(texture.Target, texture.resourceId);
@@ -545,7 +545,7 @@ namespace SiliconStudio.Paradox.Graphics
                 GL.Viewport(0, 0, destTexture.Description.Width, destTexture.Description.Height);
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, FindOrCreateFBO(source));
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (IsOpenGLES2)
                 {
 #if SILICONSTUDIO_PLATFORM_ANDROID
@@ -568,7 +568,7 @@ namespace SiliconStudio.Paradox.Graphics
                 return;
             }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (IsOpenGLES2)
             {
                 CopyScaler2D(sourceTexture, destTexture, sourceRectangle, new Rectangle(dstX, dstY, sourceRectangle.Width, sourceRectangle.Height));
@@ -769,7 +769,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             GL.DispatchCompute(threadCountX, threadCountY, threadCountZ);
 #else
             throw new NotImplementedException();
@@ -782,7 +782,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             GL.BindBuffer(BufferTarget.DispatchIndirectBuffer, indirectBuffer.resourceId);
 
             GL.DispatchComputeIndirect((IntPtr)offsetInBytes);
@@ -828,7 +828,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             PreDraw();
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if(baseVertexLocation != 0)
                 throw new NotSupportedException("DrawIndexed with no null baseVertexLocation is not supported on OpenGL ES.");
             GL.DrawElements(primitiveType.ToOpenGL(), indexCount, drawElementsType, indexBufferOffset + (startIndexLocation * indexElementSize)); // conversion to IntPtr required on Android
@@ -852,7 +852,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
             PreDraw();
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
             GL.DrawElementsInstancedBaseVertex(primitiveType.ToOpenGL(), indexCountPerInstance, DrawElementsType.UnsignedInt, (IntPtr)(startIndexLocation * indexElementSize), instanceCount, baseVertexLocation);
@@ -892,7 +892,7 @@ namespace SiliconStudio.Paradox.Graphics
 #endif
             PreDraw();
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (IsOpenGLES2)
                 throw new NotSupportedException("DrawArraysInstanced is not supported on OpenGL ES 2");
             GL.DrawArraysInstanced(primitiveType.ToOpenGLES(), startVertexLocation, vertexCountPerInstance, instanceCount);
@@ -918,7 +918,7 @@ namespace SiliconStudio.Paradox.Graphics
 
             PreDraw();
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
             GL.BindBuffer(BufferTarget.DrawIndirectBuffer, argumentsBuffer.resourceId);
@@ -1079,11 +1079,11 @@ namespace SiliconStudio.Paradox.Graphics
                     }
                 }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (!IsOpenGLES2)
 #endif
                 {
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (lastRenderTargetIndex <= 0)
                     {
                         GL.DrawBuffer(lastRenderTargetIndex != -1 ? DrawBufferMode.ColorAttachment0 : DrawBufferMode.None);
@@ -1165,7 +1165,7 @@ namespace SiliconStudio.Paradox.Graphics
                 if (lengthInBytes == 0)
                     lengthInBytes = buffer.Description.SizeInBytes;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (buffer.StagingData != IntPtr.Zero)
                 {
                     // Specific case for constant buffers
@@ -1182,7 +1182,7 @@ namespace SiliconStudio.Paradox.Graphics
                 UnbindVertexArrayObject();
                 GL.BindBuffer(buffer.bufferTarget, buffer.ResourceId);
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (mapMode != MapMode.WriteDiscard && mapMode != MapMode.WriteNoOverwrite)
                     mapResult = GL.MapBuffer(buffer.bufferTarget, mapMode.ToOpenGL());
                 else
@@ -1199,7 +1199,7 @@ namespace SiliconStudio.Paradox.Graphics
             var texture = resource as Texture;
             if (texture != null)
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (lengthInBytes == 0)
                     lengthInBytes = texture.DepthPitch;
 #endif
@@ -1209,7 +1209,7 @@ namespace SiliconStudio.Paradox.Graphics
                     if (texture.Description.Usage != GraphicsResourceUsage.Staging)
                         throw new NotSupportedException("Only staging textures can be mapped.");
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (IsOpenGLES2 || texture.StagingData != IntPtr.Zero)
                     {
                         return new MappedResource(resource, subResourceIndex,
@@ -1223,7 +1223,7 @@ namespace SiliconStudio.Paradox.Graphics
                 }
                 else if (mapMode == MapMode.WriteDiscard)
                 {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (IsOpenGLES2)
                         throw new NotImplementedException();
 #endif
@@ -1240,7 +1240,7 @@ namespace SiliconStudio.Paradox.Graphics
         private MappedResource MapTexture(Texture texture, BufferTarget pixelPackUnpack, MapMode mapMode, int subResourceIndex, int offsetInBytes, int lengthInBytes)
         {
             GL.BindBuffer(pixelPackUnpack, texture.PixelBufferObjectId);
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             
             var mapResult = GL.MapBufferRange(pixelPackUnpack, (IntPtr)offsetInBytes, (IntPtr)lengthInBytes, mapMode.ToOpenGLMask());
             GL.BindBuffer(pixelPackUnpack, 0);
@@ -1339,7 +1339,7 @@ namespace SiliconStudio.Paradox.Graphics
                 GL.FrontFace(boundFrontFace);
             }
             
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             unsafe
             {
                 fixed(byte* boundUniforms = effectProgram.BoundUniforms)
@@ -1464,7 +1464,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             // TODO: Dirty flags on both constant buffer content and if constant buffer changed
             if (IsOpenGLES2)
             {
@@ -1638,7 +1638,7 @@ namespace SiliconStudio.Paradox.Graphics
             EnsureContextActive();
 #endif
             
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             throw new NotImplementedException();
 #else
             var scissorCount = scissorRectangles.Length > _currentScissorRectangles.Length ? _currentScissorRectangles.Length : scissorRectangles.Length;
@@ -1777,7 +1777,7 @@ namespace SiliconStudio.Paradox.Graphics
             boundVertexArrayObject = null;
             if (HasVAO)
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (IsOpenGLES2)
                     OpenTK.Graphics.ES20.GL.Oes.BindVertexArray(0);
                 else
@@ -1811,7 +1811,7 @@ namespace SiliconStudio.Paradox.Graphics
                 return;
             needViewportUpdate = false;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             // TODO: Check all non-empty viewports are identical and match what is active in FBO!
             UpdateViewport(currentState.Viewports[0]);
 #else
@@ -1826,7 +1826,7 @@ namespace SiliconStudio.Paradox.Graphics
             GL.Viewport((int)viewport.X, (int)GetViewportY(viewport), (int)viewport.Width, (int)viewport.Height);
         }
 
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private void UpdateViewports()
         {
             int nbViewports = _currentViewports.Length;
@@ -1878,7 +1878,7 @@ namespace SiliconStudio.Paradox.Graphics
             {
                 if (texture.Description.Usage == GraphicsResourceUsage.Staging)
                 {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     // unmapping on OpenGL ES 2 means doing nothing since the buffer is on the CPU memory
                     if (!IsOpenGLES2)
 #endif
@@ -1888,7 +1888,7 @@ namespace SiliconStudio.Paradox.Graphics
                         GL.BindBuffer(BufferTarget.PixelPackBuffer, 0);
                     }
                 }
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 else if (!IsOpenGLES2 && texture.Description.Usage == GraphicsResourceUsage.Dynamic)
 #else
                 else if (texture.Description.Usage == GraphicsResourceUsage.Dynamic)
@@ -1902,7 +1902,7 @@ namespace SiliconStudio.Paradox.Graphics
                     // Bind buffer to texture
                     switch (texture.Target)
                     {
-#if !SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                         case TextureTarget.Texture1D:
                             GL.TexSubImage1D(TextureTarget.Texture1D, 0, 0, texture.Width, texture.FormatGl, texture.Type, IntPtr.Zero);
                             break;
@@ -1929,7 +1929,7 @@ namespace SiliconStudio.Paradox.Graphics
                 var buffer = unmapped.Resource as Buffer;
                 if (buffer != null)
                 {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (IsOpenGLES2)
                     {
                         // Only buffer with StagingData (fake cbuffer) could be mapped
@@ -1985,7 +1985,7 @@ namespace SiliconStudio.Paradox.Graphics
             var buffer = resource as Buffer;
             if (buffer != null)
             {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (buffer.StagingData != IntPtr.Zero)
                 {
                     // Specific case for constant buffers
@@ -2188,7 +2188,7 @@ namespace SiliconStudio.Paradox.Graphics
                 currentVersionMinor = versionMinor;
             }
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             IsOpenGLES2 = (versionMajor < 3);
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif

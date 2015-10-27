@@ -1,12 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL 
 using System;
 using System.IO;
 
 using OpenTK.Graphics;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 #else
@@ -14,14 +14,14 @@ using OpenTK.Graphics.OpenGL;
 using PixelFormatGl = OpenTK.Graphics.OpenGL.PixelFormat;
 #endif
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Represents a 1D grid of texels.
     /// </summary>
     public partial class Texture1D
     {
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private const TextureTarget TextureTarget1D = TextureTarget.Texture2D;
 #else
         private const TextureTarget TextureTarget1D = TextureTarget.Texture1D;
@@ -94,7 +94,7 @@ namespace SiliconStudio.Paradox.Graphics
                             throw new NotSupportedException("Can't upload texture with pitch in glTexImage1D."); // Might be possible, need to check API better.
                         data = textureDatas[i].DataPointer;
                     }
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
                     GL.TexImage2D(TextureTarget1D, i, internalFormat, width, 1, 0, format, type, data);
 #else
@@ -108,7 +108,7 @@ namespace SiliconStudio.Paradox.Graphics
 
                 resourceId = textureId;
 
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (!GraphicsDevice.IsOpenGLES2)
 #endif
                 {

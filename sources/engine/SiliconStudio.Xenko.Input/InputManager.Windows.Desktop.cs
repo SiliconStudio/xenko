@@ -9,12 +9,12 @@ using System.Windows;
 using System.Windows.Forms;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko.Games;
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
 using WinFormsKeys = System.Windows.Forms.Keys;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManager
     {
@@ -48,7 +48,7 @@ namespace SiliconStudio.Paradox.Input
                 case AppContextType.DesktopWpf:
                     InitializeFromWindowsWpf(Game.Context);
                     break;
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
                 case AppContextType.DesktopOpenTK:
                     InitializeFromOpenTK(Game.Context);
                     break;
@@ -67,12 +67,16 @@ namespace SiliconStudio.Paradox.Input
         private IntPtr defaultWndProc;
         private Win32Native.WndProc inputWndProc;
 
-        public override void LockMousePosition()
+        public override void LockMousePosition(bool forceCenter = false)
         {
             if (!IsMousePositionLocked)
             {
                 wasMouseVisibleBeforeCapture = Game.IsMouseVisible;
                 Game.IsMouseVisible = false;
+                if (forceCenter)
+                {
+                    SetMousePosition(new Vector2(0.5f, 0.5f));
+                }
                 capturedPosition = Cursor.Position;
                 IsMousePositionLocked = true;
             }
@@ -86,6 +90,13 @@ namespace SiliconStudio.Paradox.Input
                 capturedPosition = System.Drawing.Point.Empty;
                 Game.IsMouseVisible = wasMouseVisibleBeforeCapture;
             }
+        }
+
+        protected override void SetMousePosition(Vector2 normalizedPosition)
+        {
+            var newPos = uiControl.PointToScreen(
+                new System.Drawing.Point((int)(uiControl.ClientRectangle.Width*normalizedPosition.X), (int)(uiControl.ClientRectangle.Height*normalizedPosition.Y)));
+            Cursor.Position = newPos;
         }
 
         private IntPtr WndProc(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam)

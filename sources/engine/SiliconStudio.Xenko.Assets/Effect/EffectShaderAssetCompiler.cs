@@ -6,10 +6,10 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Assets.Effect
+namespace SiliconStudio.Xenko.Assets.Effect
 {
     /// <summary>
     /// Entry point to compile an <see cref="EffectCompositorAsset"/>

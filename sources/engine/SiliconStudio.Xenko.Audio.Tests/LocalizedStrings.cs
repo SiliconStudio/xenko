@@ -1,6 +1,6 @@
-﻿using SiliconStudio.Paradox.Audio.Tests.Resources;
+﻿using SiliconStudio.Xenko.Audio.Tests.Resources;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     /// <summary>
     /// Provides access to string resources.

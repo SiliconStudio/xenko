@@ -3,18 +3,18 @@
   <PropertyGroup>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{14A47447-2A24-4ECD-B24D-6571499DCD4C}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Paradox.Shaders.Parser</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Shaders.Parser</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Shaders.Parser</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Shaders.Parser</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
-    <ParadoxBuildTags>Windows</ParadoxBuildTags>
+    <XenkoBuildTags>Windows</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -27,9 +27,9 @@
     <Compile Include="Analysis\AssignmentOperatorStatus.cs" />
     <Compile Include="Analysis\ExpressionNodeCouple.cs" />
     <Compile Include="Analysis\MemberReferenceExpressionNodeCouple.cs" />
-    <Compile Include="Analysis\ParadoxParsingInfo.cs" />
-    <Compile Include="Analysis\ParadoxSemanticAnalysis.cs" />
-    <Compile Include="Analysis\ParadoxTypeAnalysis.cs" />
+    <Compile Include="Analysis\XenkoParsingInfo.cs" />
+    <Compile Include="Analysis\XenkoSemanticAnalysis.cs" />
+    <Compile Include="Analysis\XenkoTypeAnalysis.cs" />
     <Compile Include="Analysis\StatementNodeCouple.cs" />
     <Compile Include="Ast\ClassIdentifierGeneric.cs" />
     <Compile Include="Ast\EnumType.cs" />
@@ -41,9 +41,9 @@
     <Compile Include="Ast\MixinStatement.cs" />
     <Compile Include="Ast\MixinStatementType.cs" />
     <Compile Include="Ast\NamespaceBlock.cs" />
-    <Compile Include="Ast\ParadoxAttributes.cs" />
-    <Compile Include="Ast\ParadoxStorageQualifier.cs" />
-    <Compile Include="Ast\ParadoxTags.cs" />
+    <Compile Include="Ast\XenkoAttributes.cs" />
+    <Compile Include="Ast\XenkoStorageQualifier.cs" />
+    <Compile Include="Ast\XenkoTags.cs" />
     <Compile Include="Ast\ParametersBlock.cs" />
     <Compile Include="Ast\SemanticType.cs" />
     <Compile Include="Ast\ShaderBlock.cs" />
@@ -56,26 +56,26 @@
     <Compile Include="Ast\UsingParametersStatement.cs" />
     <Compile Include="Ast\UsingStatement.cs" />
     <Compile Include="Ast\VarType.cs" />
-    <Compile Include="Grammar\ParadoxGrammar.Ast.cs" />
-    <Compile Include="Grammar\ParadoxGrammar.cs" />
+    <Compile Include="Grammar\XenkoGrammar.Ast.cs" />
+    <Compile Include="Grammar\XenkoGrammar.cs" />
     <Compile Include="Mixins\CompositionDictionary.cs" />
     <Compile Include="Mixins\ExpressionSimplifierVisitor.cs" />
     <Compile Include="Mixins\MethodDeclarationShaderCouple.cs" />
     <Compile Include="Mixins\MixinVirtualTable.cs" />
     <Compile Include="Mixins\ModuleMixin.cs" />
     <Compile Include="Mixins\ModuleMixinInfo.cs" />
-    <Compile Include="Mixins\ParadoxAssignmentCloner.cs" />
-    <Compile Include="Mixins\ParadoxClassInstantiator.cs" />
-    <Compile Include="Mixins\ParadoxReplaceAppend.cs" />
-    <Compile Include="Mixins\ParadoxReplaceExtern.cs" />
-    <Compile Include="Mixins\ParadoxReplaceVisitor.cs" />
-    <Compile Include="Mixins\ParadoxShaderLibrary.cs" />
-    <Compile Include="Mixins\ParadoxShaderMixer.cs" />
-    <Compile Include="Mixins\ParadoxStreamAnalyzer.cs" />
-    <Compile Include="Mixins\ParadoxStreamCreator.cs" />
-    <Compile Include="Mixins\ParadoxTagCleaner.cs" />
-    <Compile Include="Mixins\ParadoxTypeCleaner.cs" />
-    <Compile Include="Mixins\ParadoxVariableUsageVisitor.cs" />
+    <Compile Include="Mixins\XenkoAssignmentCloner.cs" />
+    <Compile Include="Mixins\XenkoClassInstantiator.cs" />
+    <Compile Include="Mixins\XenkoReplaceAppend.cs" />
+    <Compile Include="Mixins\XenkoReplaceExtern.cs" />
+    <Compile Include="Mixins\XenkoReplaceVisitor.cs" />
+    <Compile Include="Mixins\XenkoShaderLibrary.cs" />
+    <Compile Include="Mixins\XenkoShaderMixer.cs" />
+    <Compile Include="Mixins\XenkoStreamAnalyzer.cs" />
+    <Compile Include="Mixins\XenkoStreamCreator.cs" />
+    <Compile Include="Mixins\XenkoTagCleaner.cs" />
+    <Compile Include="Mixins\XenkoTypeCleaner.cs" />
+    <Compile Include="Mixins\XenkoVariableUsageVisitor.cs" />
     <Compile Include="Mixins\ReferencesPool.cs" />
     <Compile Include="Mixins\ShaderCompilationContext.cs" />
     <Compile Include="Mixins\ShaderDependencyVisitor.cs" />
@@ -87,7 +87,7 @@
     <Compile Include="Mixins\StreamFieldVisitor.cs" />
     <Compile Include="Mixins\StreamOutputParser.cs" />
     <Compile Include="Mixins\VariableShaderCouple.cs" />
-    <Compile Include="ParadoxShaderCleaner.cs" />
+    <Compile Include="XenkoShaderCleaner.cs" />
     <Compile Include="Parser.cs" />
     <Compile Include="Performance\GenerateShaderPerformance.cs" />
     <Compile Include="Performance\MixPerformance.cs" />
@@ -101,7 +101,7 @@
     <Compile Include="ShaderMixinParsingResult.cs" />
     <Compile Include="ShaderNavigation.cs" />
     <Compile Include="ShaderNavigationResult.cs" />
-    <Compile Include="Utility\ParadoxMessageCode.cs" />
+    <Compile Include="Utility\XenkoMessageCode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
@@ -134,14 +134,14 @@
       <Name>SiliconStudio.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
-      <Name>SiliconStudio.Paradox.Shaders</Name>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

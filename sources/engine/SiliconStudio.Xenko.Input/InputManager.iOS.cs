@@ -12,7 +12,7 @@ using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     public partial class InputManager
     {

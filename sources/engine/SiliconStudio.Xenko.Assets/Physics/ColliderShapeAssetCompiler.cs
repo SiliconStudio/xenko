@@ -8,10 +8,10 @@ using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Physics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Physics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using VHACDSharp;
 
-namespace SiliconStudio.Paradox.Assets.Physics
+namespace SiliconStudio.Xenko.Assets.Physics
 {
     internal class ColliderShapeAssetCompiler : AssetCompilerBase<ColliderShapeAsset>
     {

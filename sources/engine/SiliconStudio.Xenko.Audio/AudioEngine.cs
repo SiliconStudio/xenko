@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
 
     /// <summary>

@@ -6,11 +6,11 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Engine.Processors;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Processors;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
 
     public class ModelComponentRendererCallback
@@ -285,7 +285,6 @@ namespace SiliconStudio.Paradox.Rendering
         private void PrepareModels(RenderContext context, List<RenderModel> renderModels, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             var preRenderModel = Callbacks.PreRenderModel;
-
             foreach (var renderModel in renderModels)
             {
                 var modelComponent = renderModel.ModelComponent;

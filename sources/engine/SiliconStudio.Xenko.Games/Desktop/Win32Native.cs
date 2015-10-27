@@ -25,7 +25,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-namespace SiliconStudio.Paradox.Games
+namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Internal class to interact with Native Message

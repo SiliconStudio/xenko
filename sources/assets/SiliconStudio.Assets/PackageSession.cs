@@ -1075,12 +1075,6 @@ namespace SiliconStudio.Assets
                     }
                 }
 
-                // Load assemblies
-                package.LoadAssemblies(log, newLoadParameters);
-
-                // Load list of assets
-                newLoadParameters.AssetFiles = Package.ListAssetFiles(log, package, loadParameters.CancelToken);
-
                 if (pendingPackageUpgrades.Count > 0)
                 {
                     var upgradeAllowed = true;
@@ -1096,6 +1090,29 @@ namespace SiliconStudio.Assets
                         return false;
                     }
 
+                    // Perform pre assembly load upgrade
+                    foreach (var pendingPackageUpgrade in pendingPackageUpgrades)
+                    {
+                        var packageUpgrader = pendingPackageUpgrade.PackageUpgrader;
+                        var dependencyPackage = pendingPackageUpgrade.DependencyPackage;
+                        if (!packageUpgrader.UpgradeBeforeAssembliesLoaded(session, log, package, pendingPackageUpgrade.Dependency, dependencyPackage))
+                        {
+                            log.Error("Error while upgrading package [{0}] for [{1}] from version [{2}] to [{3}]", package.Meta.Name, dependencyPackage.Meta.Name, pendingPackageUpgrade.Dependency.Version, dependencyPackage.Meta.Version);
+                            return false;
+                        }
+                    }
+                }
+
+                // Load assemblies. Set the package filename to the path on disk, in case of renaming.
+                // TODO: Could referenced projects be associated to other packages than this one?
+                newLoadParameters.ExtraCompileProperties.Add("SiliconStudioCurrentPackagePath", package.FullPath);
+                package.LoadAssemblies(log, newLoadParameters);
+
+                // Load list of assets
+                newLoadParameters.AssetFiles = Package.ListAssetFiles(log, package, loadParameters.CancelToken);
+
+                if (pendingPackageUpgrades.Count > 0)
+                {
                     // Perform upgrades
                     foreach (var pendingPackageUpgrade in pendingPackageUpgrades)
                     {
@@ -1214,7 +1231,7 @@ namespace SiliconStudio.Assets
 
                     if (file == null)
                     {
-                        // TODO: We need to support automatic download of packages. This is not supported yet when only Paradox
+                        // TODO: We need to support automatic download of packages. This is not supported yet when only Xenko
                         // package is supposed to be installed, but It will be required for full store
                         log.Error("Unable to find package {0} not installed", packageDependency);
                         packageDependencyErrors = true;

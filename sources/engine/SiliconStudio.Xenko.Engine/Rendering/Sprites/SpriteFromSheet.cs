@@ -3,10 +3,10 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Paradox.Rendering.Sprites
+namespace SiliconStudio.Xenko.Rendering.Sprites
 {
     /// <summary>
     /// A sprite provider from a <see cref="Sheet"/>

@@ -5,13 +5,13 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Input;
-using SiliconStudio.Paradox.UI.Controls;
-using SiliconStudio.Paradox.UI.Panels;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.UI.Controls;
+using SiliconStudio.Xenko.UI.Panels;
 
-namespace SiliconStudio.Paradox.UI.Tests.Regression
+namespace SiliconStudio.Xenko.UI.Tests.Regression
 {
     /// <summary>
     /// Class for rendering tests on the <see cref="ImageElement"/> 
@@ -33,7 +33,7 @@ namespace SiliconStudio.Paradox.UI.Tests.Regression
 
             var image1 = new ImageElement
             {
-                Source = new Sprite(Asset.Load<Texture>("BorderButtonCentered")) { Region = new Rectangle(256, 128, 512, 256), Borders = new Vector4(0.125f, 0.125f, 0.25f, 0.25f) },
+                Source = new Sprite(Asset.Load<Texture>("BorderButtonCentered")) { Region = new Rectangle(256, 128, 512, 256), Borders = new Vector4(0.125f, 0.25f, 0.125f, 0.25f) },
                 VerticalAlignment = VerticalAlignment.Center,
                 HorizontalAlignment = HorizontalAlignment.Center
             };

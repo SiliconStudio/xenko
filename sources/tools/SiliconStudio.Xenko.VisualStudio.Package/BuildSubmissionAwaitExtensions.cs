@@ -5,7 +5,7 @@ using Microsoft.Build.Execution;
 
 // Source: http://blog.nerdbank.net/2011/07/c-await-for-msbuild.html
 
-namespace SiliconStudio.Paradox.VisualStudio
+namespace SiliconStudio.Xenko.VisualStudio
 {
     public static class BuildSubmissionAwaitExtensions
     {

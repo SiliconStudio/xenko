@@ -3,7 +3,7 @@
 using System;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     ///   Describess how data will be displayed to the screen.

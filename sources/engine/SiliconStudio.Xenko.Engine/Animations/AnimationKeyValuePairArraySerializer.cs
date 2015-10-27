@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     [DataSerializerGlobal(null, typeof(AnimationData<float>))]
     [DataSerializerGlobal(null, typeof(AnimationData<Quaternion>))]

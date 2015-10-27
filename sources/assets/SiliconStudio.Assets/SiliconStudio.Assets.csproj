@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -62,7 +62,6 @@
     <Compile Include="Analysis\PackageAnalysis.cs" />
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
-    <Compile Include="Analysis\AttachedContentReference.cs" />
     <Compile Include="AssetCloner.cs" />
     <Compile Include="Analysis\AssetCollision.cs" />
     <Compile Include="AssetImport.cs" />
@@ -93,6 +92,7 @@
     <Compile Include="AssetImporterBase.cs" />
     <Compile Include="AssetToImport.cs" />
     <Compile Include="AssetImportSession.cs" />
+    <Compile Include="Compiler\ICompilerRegistry.cs" />
     <Compile Include="Compiler\IPackageCompilerSource.cs" />
     <Compile Include="Compiler\IPackageCompiler.cs" />
     <Compile Include="Compiler\PackageAssetEnumerator.cs" />
@@ -107,6 +107,7 @@
     <Compile Include="Diff\IDiffProxy.cs" />
     <Compile Include="Diff\IDiffResolver.cs" />
     <Compile Include="DirectoryHelper.cs" />
+    <Compile Include="EmptyAssetUpgrader.cs" />
     <Compile Include="FileVersionManager.cs" />
     <Compile Include="Compiler\AssetCommand.cs" />
     <Compile Include="Compiler\AssetCompiledArgs.cs" />
@@ -160,7 +161,6 @@
     <Compile Include="Compiler\ImportStreamCommand.cs" />
     <Compile Include="Compiler\ItemListCompiler.cs" />
     <Compile Include="Compiler\PackageCompiler.cs" />
-    <Compile Include="Compiler\ThumbnailCompilerAttribute.cs" />
     <Compile Include="AssetBaseChangedEvent.cs" />
     <Compile Include="AssetBase.cs" />
     <Compile Include="PackageSessionProfilingKeys.cs" />
@@ -175,6 +175,7 @@
     <Compile Include="Serializers\YamlForwardLogger.cs" />
     <Compile Include="SolutionPlatformCollection.cs" />
     <Compile Include="TemplateFolder.cs" />
+    <Compile Include="Templates\TemplateAssetDescription.cs" />
     <Compile Include="Templates\TemplateSampleDescription.cs" />
     <Compile Include="Templates\TemplateScope.cs" />
     <Compile Include="Templates\TemplateGeneratorContext.cs" />
@@ -278,14 +279,14 @@
       <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

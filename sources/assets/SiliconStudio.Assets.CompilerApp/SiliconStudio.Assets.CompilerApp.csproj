@@ -9,7 +9,7 @@
   <PropertyGroup Condition="'$(Configuration)' == 'Release'">
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -76,44 +76,44 @@
       <Name>SiliconStudio.BuildEngine.Common</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Assets\SiliconStudio.Paradox.Assets.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Assets\SiliconStudio.Xenko.Assets.csproj">
       <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
-      <Name>SiliconStudio.Paradox.Assets</Name>
+      <Name>SiliconStudio.Xenko.Assets</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Engine\SiliconStudio.Paradox.Engine.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{C121A566-555E-42B9-9B0A-1696529A9088}</Project>
-      <Name>SiliconStudio.Paradox.Engine</Name>
+      <Name>SiliconStudio.Xenko.Engine</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Graphics\SiliconStudio.Paradox.Graphics.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
-      <Name>SiliconStudio.Paradox.Graphics</Name>
+      <Name>SiliconStudio.Xenko.Graphics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Assets.Model\SiliconStudio.Paradox.Assets.Model.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Assets.Model\SiliconStudio.Xenko.Assets.Model.csproj">
       <Project>{C904D2C6-5A15-4E0B-8432-33967E1735AA}</Project>
-      <Name>SiliconStudio.Paradox.Assets.Model</Name>
+      <Name>SiliconStudio.Xenko.Assets.Model</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Physics\SiliconStudio.Paradox.Physics.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
-      <Name>SiliconStudio.Paradox.Physics</Name>
+      <Name>SiliconStudio.Xenko.Physics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.Shaders\SiliconStudio.Paradox.Shaders.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
       <Project>{273BDD15-7392-4078-91F0-AF23594A3D7B}</Project>
-      <Name>SiliconStudio.Paradox.Shaders</Name>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox.SpriteStudio.Offline\SiliconStudio.Paradox.SpriteStudio.Offline.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.SpriteStudio.Offline\SiliconStudio.Xenko.SpriteStudio.Offline.csproj">
       <Project>{63562b0a-e501-42c2-97bb-13d3ad3a7db4}</Project>
-      <Name>SiliconStudio.Paradox.SpriteStudio.Offline</Name>
+      <Name>SiliconStudio.Xenko.SpriteStudio.Offline</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Paradox\SiliconStudio.Paradox.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
-      <Name>SiliconStudio.Paradox</Name>
+      <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Assets\SiliconStudio.Assets.csproj">

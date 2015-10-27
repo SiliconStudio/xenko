@@ -1,7 +1,7 @@
 /////////////////////////
 // SOME CONSTANTS
 /////////////////////////
-var GOLD_SERVER = "\\\\paradoxbuild/GraphicsTestShare/";
+var GOLD_SERVER = "\\\\xenkobuild/GraphicsTestShare/";
 var BUILD_FOLDER = "build/";
 var USER_FOLDER = "user/";
 var GOLD_FOLDER = "gold/";

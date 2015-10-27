@@ -8,7 +8,7 @@ using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Engine.Design
+namespace SiliconStudio.Xenko.Engine.Design
 {
     public class CloneEntityComponentSerializer<T> : DataSerializer<T> where T : EntityComponent, new()
     {

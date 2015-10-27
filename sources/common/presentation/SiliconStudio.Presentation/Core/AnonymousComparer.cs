@@ -19,7 +19,7 @@ namespace SiliconStudio.Presentation.Core
         /// <param name="compare">The comparison function to use for this comparer.</param>
         public AnonymousComparer(Func<T, T, int> compare)
         {
-            if (compare == null) throw new ArgumentNullException("compare");
+            if (compare == null) throw new ArgumentNullException(nameof(compare));
             this.compare = compare;
         }
 

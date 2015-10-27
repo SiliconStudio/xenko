@@ -4,13 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Engine.Design;
+using SiliconStudio.Xenko.Engine.Design;
 
-namespace SiliconStudio.Paradox.Physics
+namespace SiliconStudio.Xenko.Physics
 {
     [DataContract]
     [ContentSerializer(typeof(DataContentSerializer<PhysicsColliderShape>))]
@@ -40,6 +41,7 @@ namespace SiliconStudio.Paradox.Physics
             if (descs.Count == 1) //single shape case
             {
                 res = CreateShape(descs[0]);
+                if (res == null) return null;
                 res.IsPartOfAsset = true;
             }
             else if (descs.Count > 1) //need a compound shape in this case
@@ -47,7 +49,9 @@ namespace SiliconStudio.Paradox.Physics
                 var compound = new CompoundColliderShape();
                 foreach (var desc in descs)
                 {
-                    compound.AddChildShape(CreateShape(desc));
+                    var subShape = CreateShape(desc);
+                    if(subShape == null) continue;
+                    compound.AddChildShape(subShape);
                 }
                 res = compound;
                 res.IsPartOfAsset = true;
@@ -96,6 +100,8 @@ namespace SiliconStudio.Paradox.Physics
             else if (type == typeof(ConvexHullColliderShapeDesc))
             {
                 var convexDesc = (ConvexHullColliderShapeDesc)desc;
+
+                if (convexDesc.ConvexHulls == null) return null;
 
                 //Optimize performance and focus on less shapes creation since this shape could be nested
 
@@ -214,6 +220,10 @@ namespace SiliconStudio.Paradox.Physics
         public void Dispose()
         {
             if (Shape == null) return;
+
+            var compound = Shape.Parent;
+            compound?.RemoveChildShape(Shape);
+
             Shape.Dispose();
             Shape = null;
         }

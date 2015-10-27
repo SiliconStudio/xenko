@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Input
+namespace SiliconStudio.Xenko.Input
 {
     /// <summary>
     /// This class represents a sensor of type Accelerometer. It measures the acceleration forces (including gravity) applying on the device.

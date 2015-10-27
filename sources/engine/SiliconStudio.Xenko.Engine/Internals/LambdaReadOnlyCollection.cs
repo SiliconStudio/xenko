@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SiliconStudio.Paradox.Internals
+namespace SiliconStudio.Xenko.Internals
 {
     class LambdaReadOnlyCollection<TSource, T> : IReadOnlyList<T>
     {

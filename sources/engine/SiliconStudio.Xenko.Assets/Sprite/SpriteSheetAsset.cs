@@ -9,13 +9,14 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Paradox.Assets.Textures;
+using SiliconStudio.Xenko.Assets.Textures;
 
-namespace SiliconStudio.Paradox.Assets.Sprite
+namespace SiliconStudio.Xenko.Assets.Sprite
 {
     /// <summary>
     /// This asset represents a sheet (group) of sprites.
@@ -24,26 +25,27 @@ namespace SiliconStudio.Paradox.Assets.Sprite
     [CategoryOrder(10, "Parameters")]
     [CategoryOrder(50, "Atlas Packing")]
     [CategoryOrder(150, "Sprites")]
-    [AssetFormatVersion(2)]
-    [AssetUpgrader(0, 1, typeof(RenameImageGroupsUpgrader))]
-    [AssetUpgrader(1, 2, typeof(RemoveMaxSizeUpgrader))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha01")]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RenameImageGroupsUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveMaxSizeUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.5.0-alpha01", typeof(BorderSizeOrderUpgrader))]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
     [ObjectFactory(typeof(SpriteSheetFactory))]
-    [ThumbnailCompiler(PreviewerCompilerNames.SpriteSheetThumbnailCompilerQualifiedName, true)]
     [Display(160, "Sprite Sheet", "A sheet of sprites")]
     public class SpriteSheetAsset : Asset
     {
         /// <summary>
         /// The default file extension used by the <see cref="SpriteSheetAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxsheet;.pdxsprite;.pdxuiimage";
+        public const string FileExtension = ".xksheet;.pdxsheet;.pdxsprite;.pdxuiimage";
         
         /// <summary>
         /// Create an empty sprite sheet asset.
         /// </summary>
         public SpriteSheetAsset()
         {
+            // FIXME: shouldn't this constructor be made private and move the call to the virtual method in the factory?
             SetDefaults();
         }
 
@@ -208,7 +210,7 @@ namespace SiliconStudio.Paradox.Assets.Sprite
 
         class RenameImageGroupsUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var images = asset.Images;
                 if (images != null)
@@ -220,12 +222,34 @@ namespace SiliconStudio.Paradox.Assets.Sprite
         }
         class RemoveMaxSizeUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var packing = asset.Packing;
                 if (packing != null)
                 {
                     packing.AtlasMaximumSize = DynamicYamlEmpty.Default;
+                }
+            }
+        }
+        class BorderSizeOrderUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
+                // As a result, upgrade is not needed for version 3
+                var sprites = asset.Sprites;
+                if (sprites == null || currentVersion == PackageVersion.Parse("0.0.3"))
+                    return;
+
+                foreach (var sprite in asset.Sprites)
+                {
+                    if (sprite.Borders == null)
+                    {
+                        continue;
+                    }
+                    var y = sprite.Borders.Y ?? 0.0f;
+                    sprite.Borders.Y = sprite.Borders.Z ?? 0.0f;
+                    sprite.Borders.Z = y;
                 }
             }
         }

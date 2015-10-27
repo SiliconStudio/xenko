@@ -4,11 +4,11 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
 
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Games;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Games;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;

@@ -5,7 +5,7 @@
 using SharpDX.Mathematics.Interop;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     internal static class ConversionExtensions
     {

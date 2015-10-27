@@ -3,18 +3,18 @@
 using System;
 using System.Collections.Generic;
 
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Rendering.Data;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Rendering.Data;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-using Buffer = SiliconStudio.Paradox.Graphics.Buffer;
+using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Posteffect manager.

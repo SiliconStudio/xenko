@@ -3,7 +3,7 @@
 using System;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics.Font
+namespace SiliconStudio.Xenko.Graphics.Font
 {
     /// <summary>
     /// Type of a font.

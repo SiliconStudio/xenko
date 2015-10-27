@@ -1,7 +1,7 @@
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 
-namespace SiliconStudio.Paradox.Audio.Tests
+namespace SiliconStudio.Xenko.Audio.Tests
 {
     [Register("AppDelegateiOS")]
     public class AppDelegate : UIApplicationDelegate

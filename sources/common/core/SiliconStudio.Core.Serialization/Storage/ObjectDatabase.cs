@@ -20,12 +20,6 @@ namespace SiliconStudio.Core.Storage
         // When reading, first try backendRead2, then backendRead1.
         // When writing, try backendWrite.
         private readonly IOdbBackend backendRead1, backendRead2, backendWrite;
-        private readonly BundleOdbBackend bundleBackend;
-
-        public BundleOdbBackend BundleBackend
-        {
-            get { return bundleBackend; }
-        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ObjectDatabase" /> class.
@@ -33,16 +27,16 @@ namespace SiliconStudio.Core.Storage
         /// <param name="vfsMainUrl">The VFS main URL.</param>
         /// <param name="indexName">Name of the index file.</param>
         /// <param name="vfsAdditionalUrl">The VFS additional URL. It will be used only if vfsMainUrl is read-only.</param>
-        public ObjectDatabase(string vfsMainUrl, string indexName = "index", string vfsAdditionalUrl = null, bool loadDefaultBundle = true)
+        public ObjectDatabase(string vfsMainUrl, string indexName, string vfsAdditionalUrl = null, bool loadDefaultBundle = true)
         {
-            if (vfsMainUrl == null) throw new ArgumentNullException("vfsMainUrl");
+            if (vfsMainUrl == null) throw new ArgumentNullException(nameof(vfsMainUrl));
 
             // Create the merged asset index map
             AssetIndexMap = new ObjectDatabaseAssetIndexMap();
 
             // Try to open file backends
             bool isReadOnly = Platform.Type != PlatformType.Windows;
-            var backend = new FileOdbBackend(vfsMainUrl, isReadOnly, indexName);
+            var backend = new FileOdbBackend(vfsMainUrl, indexName, isReadOnly);
 
             AssetIndexMap.Merge(backend.AssetIndexMap);
             if (backend.IsReadOnly)
@@ -50,7 +44,7 @@ namespace SiliconStudio.Core.Storage
                 backendRead1 = backend;
                 if (vfsAdditionalUrl != null)
                 {
-                    backendWrite = backendRead2 = new FileOdbBackend(vfsAdditionalUrl, false);
+                    backendWrite = backendRead2 = new FileOdbBackend(vfsAdditionalUrl, indexName, false);
                     AssetIndexMap.Merge(backendWrite.AssetIndexMap);
                 }
             }
@@ -61,14 +55,14 @@ namespace SiliconStudio.Core.Storage
 
             AssetIndexMap.WriteableAssetIndexMap = backendWrite.AssetIndexMap;
 
-            bundleBackend = new BundleOdbBackend(vfsMainUrl);
+            BundleBackend = new BundleOdbBackend(vfsMainUrl);
 
             // Try to open "default" pack file synchronously
             if (loadDefaultBundle)
             {
                 try
                 {
-                    bundleBackend.LoadBundle("default", AssetIndexMap).GetAwaiter().GetResult();
+                    BundleBackend.LoadBundle("default", AssetIndexMap).GetAwaiter().GetResult();
                 }
                 catch (FileNotFoundException)
                 {
@@ -76,7 +70,18 @@ namespace SiliconStudio.Core.Storage
             }
         }
 
-        public ObjectDatabaseAssetIndexMap AssetIndexMap { get; private set; }
+        public ObjectDatabaseAssetIndexMap AssetIndexMap { get; }
+
+        public BundleOdbBackend BundleBackend { get; }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="ObjectDatabase"/> class using default database path, index name, and local database path, and loading default bundle.
+        /// </summary>
+        /// <returns>A new instance of the <see cref="ObjectDatabase"/> class.</returns>
+        public static ObjectDatabase CreateDefaultDatabase()
+        {
+            return new ObjectDatabase(VirtualFileSystem.ApplicationDatabasePath, VirtualFileSystem.ApplicationDatabaseIndexName, VirtualFileSystem.LocalDatabasePath);
+        }
 
         public void Dispose()
         {
@@ -112,7 +117,7 @@ namespace SiliconStudio.Core.Storage
         /// <returns></returns>
         public Task LoadBundle(string bundleName)
         {
-            return bundleBackend.LoadBundle(bundleName, AssetIndexMap);
+            return BundleBackend.LoadBundle(bundleName, AssetIndexMap);
         }
 
         /// <summary>
@@ -122,15 +127,15 @@ namespace SiliconStudio.Core.Storage
         /// <returns></returns>
         public void UnloadBundle(string bundleName)
         {
-            bundleBackend.UnloadBundle(bundleName, AssetIndexMap);
+            BundleBackend.UnloadBundle(bundleName, AssetIndexMap);
         }
 
         public IEnumerable<ObjectId> EnumerateObjects()
         {
             var result = backendRead1.EnumerateObjects();
 
-            if (bundleBackend != null)
-                result = result.Union(bundleBackend.EnumerateObjects());
+            if (BundleBackend != null)
+                result = result.Union(BundleBackend.EnumerateObjects());
 
             if (backendRead2 != null)
                 result = result.Union(backendRead2.EnumerateObjects());
@@ -153,13 +158,13 @@ namespace SiliconStudio.Core.Storage
 
         public bool Exists(ObjectId objectId)
         {
-            return (bundleBackend != null && bundleBackend.Exists(objectId)) || backendRead1.Exists(objectId) || (backendRead2 != null && backendRead2.Exists(objectId));
+            return (BundleBackend != null && BundleBackend.Exists(objectId)) || backendRead1.Exists(objectId) || (backendRead2 != null && backendRead2.Exists(objectId));
         }
 
         public int GetSize(ObjectId objectId)
         {
-            if (bundleBackend != null && bundleBackend.Exists(objectId))
-                return bundleBackend.GetSize(objectId);
+            if (BundleBackend != null && BundleBackend.Exists(objectId))
+                return BundleBackend.GetSize(objectId);
 
             if (backendRead1.Exists(objectId))
                 return backendRead1.GetSize(objectId);
@@ -172,7 +177,7 @@ namespace SiliconStudio.Core.Storage
 
         public string GetFilePath(ObjectId objectId)
         {
-            if (bundleBackend != null && bundleBackend.Exists(objectId))
+            if (BundleBackend != null && BundleBackend.Exists(objectId))
                 throw new InvalidOperationException();
 
             if (backendRead1.Exists(objectId))
@@ -256,10 +261,7 @@ namespace SiliconStudio.Core.Storage
                 {
                     var stream = backendWrite.OpenStream(objectId, mode, access, share);
 
-                    if (streamRead != null)
-                    {
-                        streamRead.CopyTo(stream);
-                    }
+                    streamRead?.CopyTo(stream);
                     stream.Position = 0;
                     return stream;
                 }
@@ -389,8 +391,8 @@ namespace SiliconStudio.Core.Storage
 
         private Stream OpenStreamForRead(ObjectId objectId, VirtualFileMode mode, VirtualFileAccess access, VirtualFileShare share)
         {
-            if (bundleBackend != null && bundleBackend.Exists(objectId))
-                return bundleBackend.OpenStream(objectId, mode, access, share);
+            if (BundleBackend != null && BundleBackend.Exists(objectId))
+                return BundleBackend.OpenStream(objectId, mode, access, share);
 
             if (backendRead1.Exists(objectId))
                 return backendRead1.OpenStream(objectId, mode, access, share);

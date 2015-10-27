@@ -4,11 +4,11 @@
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Sprites;
-using SiliconStudio.Paradox.UI;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Sprites;
+using SiliconStudio.Xenko.UI;
 
-namespace SiliconStudio.Paradox.Engine.Processors
+namespace SiliconStudio.Xenko.Engine.Processors
 {
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
@@ -33,6 +33,13 @@ namespace SiliconStudio.Paradox.Engine.Processors
                 UIComponent = entity.Get(UIComponent.Key),
                 TransformComponent = entity.Get(TransformComponent.Key),
             };
+        }
+
+        protected override bool IsAssociatedDataValid(Entity entity, UIComponentState associatedData)
+        {
+            return
+                entity.Get(UIComponent.Key) == associatedData.UIComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
         }
 
         public override void Draw(RenderContext gameTime)

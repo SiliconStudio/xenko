@@ -25,14 +25,13 @@ namespace SiliconStudio.Assets
         private static readonly Logger Log = GlobalLogger.GetLogger("Assets.Registry");
 
         private static readonly Dictionary<Type, string> RegisteredDefaultAssetExtension = new Dictionary<Type, string>();
-        private static readonly Dictionary<Type, bool> RegisteredDynamicThumbnails = new Dictionary<Type, bool>();
         private static readonly HashSet<Type> AssetTypes = new HashSet<Type>();
         private static readonly HashSet<Type> RegisteredPackageSessionAnalysisTypes = new HashSet<Type>();
         private static readonly List<IAssetImporter> RegisteredImportersInternal = new List<IAssetImporter>();
-        private static readonly Dictionary<Type, Tuple<int, int>> RegisteredFormatVersions = new Dictionary<Type, Tuple<int, int>>();
+        private static readonly Dictionary<Type, SortedList<string, PackageVersion>> RegisteredFormatVersions = new Dictionary<Type, SortedList<string, PackageVersion>>();
         private static readonly HashSet<Type> RegisteredInternalAssetTypes = new HashSet<Type>();
         private static readonly HashSet<Type> AlwaysMarkAsRootAssetTypes = new HashSet<Type>();
-        private static readonly Dictionary<Type, AssetUpgraderCollection> RegisteredAssetUpgraders = new Dictionary<Type, AssetUpgraderCollection>();
+        private static readonly Dictionary<KeyValuePair<Type, string>, AssetUpgraderCollection> RegisteredAssetUpgraders = new Dictionary<KeyValuePair<Type, string>, AssetUpgraderCollection>();
         private static readonly Dictionary<string, Type> RegisteredAssetFileExtensions = new Dictionary<string, Type>(StringComparer.InvariantCultureIgnoreCase);
         private static readonly Dictionary<string, PackageUpgrader> RegisteredPackageUpgraders = new Dictionary<string, PackageUpgrader>();
         private static readonly HashSet<Assembly> RegisteredAssemblies = new HashSet<Assembly>();
@@ -196,30 +195,14 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="assetType">The asset type.</param>
         /// <returns>The current format version of this asset.</returns>
-        public static int GetCurrentFormatVersion(Type assetType)
+        public static SortedList<string, PackageVersion> GetCurrentFormatVersions(Type assetType)
         {
             IsAssetType(assetType, true);
             lock (RegistryLock)
             {
-                Tuple<int, int> version;
-                RegisteredFormatVersions.TryGetValue(assetType, out version);
-                return version != null ? version.Item2 : 0;
-            }
-        }
-
-        /// <summary>
-        /// Gets the minimal upgradable format version of an asset.
-        /// </summary>
-        /// <param name="assetType">The asset type.</param>
-        /// <returns>The current format version of this asset.</returns>
-        public static int GetMinimalFormatVersion(Type assetType)
-        {
-            IsAssetType(assetType, true);
-            lock (RegistryLock)
-            {
-                Tuple<int, int> version;
-                RegisteredFormatVersions.TryGetValue(assetType, out version);
-                return version != null ? version.Item1 : 0;
+                SortedList<string, PackageVersion> versions;
+                RegisteredFormatVersions.TryGetValue(assetType, out versions);
+                return versions;
             }
         }
 
@@ -227,14 +210,15 @@ namespace SiliconStudio.Assets
         /// Gets the <see cref="AssetUpgraderCollection"/> of an asset type, if available.
         /// </summary>
         /// <param name="assetType">The asset type.</param>
+        /// <param name="dependencyName">The dependency name.</param>
         /// <returns>The <see cref="AssetUpgraderCollection"/> of an asset type if available, or <c>null</c> otherwise.</returns>
-        public static AssetUpgraderCollection GetAssetUpgraders(Type assetType)
+        public static AssetUpgraderCollection GetAssetUpgraders(Type assetType, string dependencyName)
         {
             IsAssetType(assetType, true);
             lock (RegistryLock)
             {
                 AssetUpgraderCollection upgraders;
-                RegisteredAssetUpgraders.TryGetValue(assetType, out upgraders);
+                RegisteredAssetUpgraders.TryGetValue(new KeyValuePair<Type, string>(assetType, dependencyName), out upgraders);
                 return upgraders;
             }
         }
@@ -283,22 +267,6 @@ namespace SiliconStudio.Assets
             lock (AlwaysMarkAsRootAssetTypes)
             {
                 return AlwaysMarkAsRootAssetTypes.Contains(type);
-            }
-        }
-
-        /// <summary>
-        /// Gets a boolean indicating whether an asset type has a dynamic thumbnail.
-        /// </summary>
-        /// <param name="assetType">Type of the asset.</param>
-        /// <returns><c>true</c> if [has dynamic thumbnail] [the specified asset type]; otherwise, <c>false</c>.</returns>
-        public static bool HasDynamicThumbnail(Type assetType)
-        {
-            IsAssetType(assetType, true);
-            lock (RegistryLock)
-            {
-                bool hasThumbnail;
-                RegisteredDynamicThumbnails.TryGetValue(assetType, out hasThumbnail);
-                return hasThumbnail;
             }
         }
 
@@ -384,20 +352,6 @@ namespace SiliconStudio.Assets
             lock (RegistryLock)
             {
                 return RegisteredDataVisitNodeBuilders;
-            }
-        }
-        /// <summary>
-        /// Registers a whether the the specified asset type has dynamic thumbnails.
-        /// </summary>
-        /// <param name="assetType">Type of the asset.</param>
-        /// <param name="isDynamicThumbnail">if set to <c>true</c>, this asset type has dynamic thumbnails.</param>
-        /// <exception cref="System.ArgumentNullException">description</exception>
-        private static void RegisterDynamicThumbnail(Type assetType, bool isDynamicThumbnail)
-        {
-            IsAssetType(assetType, true);
-            lock (RegistryLock)
-            {
-                RegisteredDynamicThumbnails[assetType] = isDynamicThumbnail;
             }
         }
 
@@ -552,26 +506,34 @@ namespace SiliconStudio.Assets
                         }
                     }
 
-                    // Asset format version
-                    var assetFormatVersion = assetType.GetCustomAttribute<AssetFormatVersionAttribute>();
-                    int formatVersion = assetFormatVersion != null ? assetFormatVersion.Version : 0;
-                    int minVersion = assetFormatVersion != null ? assetFormatVersion.MinUpgradableVersion : 0;
-                    RegisteredFormatVersions.Add(assetType, Tuple.Create(minVersion, formatVersion));
-
-                    // Asset upgraders
-                    var assetUpgraders = assetType.GetCustomAttributes<AssetUpgraderAttribute>();
-                    AssetUpgraderCollection upgraderCollection = null;
-                    foreach (var upgrader in assetUpgraders)
+                    // Asset format version (process name by name)
+                    var assetFormatVersions = assetType.GetCustomAttributes<AssetFormatVersionAttribute>();
+                    foreach (var assetFormatVersion in assetFormatVersions)
                     {
-                        if (upgraderCollection == null)
-                            upgraderCollection = new AssetUpgraderCollection(assetType, formatVersion);
+                        var formatVersion = assetFormatVersion.Version;
+                        var minVersion = assetFormatVersion.MinUpgradableVersion;
+                        SortedList<string, PackageVersion> formatVersions;
+                        if (!RegisteredFormatVersions.TryGetValue(assetType, out formatVersions))
+                        {
+                            RegisteredFormatVersions.Add(assetType, formatVersions = new SortedList<string, PackageVersion>());
+                        }
+                        formatVersions.Add(assetFormatVersion.Name, formatVersion);
 
-                        upgraderCollection.RegisterUpgrader(upgrader.AssetUpgraderType, upgrader.StartMinVersion, upgrader.StartMaxVersion, upgrader.TargetVersion);
-                    }
-                    if (upgraderCollection != null)
-                    {
-                        upgraderCollection.Validate(minVersion);
-                        RegisteredAssetUpgraders.Add(assetType, upgraderCollection);
+                        // Asset upgraders (only those matching current name)
+                        var assetUpgraders = assetType.GetCustomAttributes<AssetUpgraderAttribute>().Where(x => x.Name == assetFormatVersion.Name);
+                        AssetUpgraderCollection upgraderCollection = null;
+                        foreach (var upgrader in assetUpgraders)
+                        {
+                            if (upgraderCollection == null)
+                                upgraderCollection = new AssetUpgraderCollection(assetType, formatVersion);
+
+                            upgraderCollection.RegisterUpgrader(upgrader.AssetUpgraderType, upgrader.StartVersion, upgrader.TargetVersion);
+                        }
+                        if (upgraderCollection != null)
+                        {
+                            upgraderCollection.Validate(minVersion);
+                            RegisteredAssetUpgraders.Add(new KeyValuePair<Type, string>(assetType, assetFormatVersion.Name), upgraderCollection);
+                        }
                     }
 
                     // Asset factory
@@ -595,13 +557,6 @@ namespace SiliconStudio.Assets
                             // Register the asset even if it has no factory (default using empty constructor)
                             ObjectFactory.RegisterFactory(assetType, null);
                         }
-                    }
-
-                    // Asset description
-                    var thumbnailCompilerAttribute = assetType.GetCustomAttribute<ThumbnailCompilerAttribute>();
-                    if (thumbnailCompilerAttribute != null)
-                    {
-                        RegisterDynamicThumbnail(assetType, thumbnailCompilerAttribute.DynamicThumbnails);
                     }
                 }
             }
@@ -629,11 +584,6 @@ namespace SiliconStudio.Assets
                     RegisteredDefaultAssetExtension.Remove(typeToRemove);
                 }
 
-                foreach (var typeToRemove in RegisteredDynamicThumbnails.Keys.ToList().Where(type => type.Assembly == assembly))
-                {
-                    RegisteredDynamicThumbnails.Remove(typeToRemove);
-                }
-
                 foreach (var typeToRemove in AssetTypes.ToList().Where(type => type.Assembly == assembly))
                 {
                     AssetTypes.Remove(typeToRemove);
@@ -659,7 +609,7 @@ namespace SiliconStudio.Assets
                     RegisteredInternalAssetTypes.Remove(typeToRemove);
                 }
 
-                foreach (var typeToRemove in RegisteredAssetUpgraders.Keys.ToList().Where(type => type.Assembly == assembly))
+                foreach (var typeToRemove in RegisteredAssetUpgraders.Keys.ToList().Where(type => type.Key.Assembly == assembly))
                 {
                     RegisteredAssetUpgraders.Remove(typeToRemove);
                 }

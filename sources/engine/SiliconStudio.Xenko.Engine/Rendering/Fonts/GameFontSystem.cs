@@ -2,10 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics.Font;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics.Font;
 
-namespace SiliconStudio.Paradox.Rendering.Fonts
+namespace SiliconStudio.Xenko.Rendering.Fonts
 {
     /// <summary>
     /// The game system in charge of calling <see cref="FontSystem"/>.

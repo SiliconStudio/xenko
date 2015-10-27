@@ -154,7 +154,7 @@ namespace SiliconStudio.Core
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE
             return (Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly()).Location;
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-            return Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "ParadoxGame.exe"); // Use generic name workaround
+            return Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "XenkoGame.exe"); // Use generic name workaround
 #else
             throw new NotImplementedException();
 #endif

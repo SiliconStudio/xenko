@@ -8,13 +8,12 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Paradox.Assets.Audio
+namespace SiliconStudio.Xenko.Assets.Audio
 {
     [DataContract("SoundMusic")]
     [AssetDescription(FileExtension)]
     [ObjectFactory(typeof(SoundMusicFactory))]
     [AssetCompiler(typeof(SoundAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.SoundMusicThumbnailCompilerQualifiedName)]
     [Display(125, "Sound Music", "A music track")]
     public class SoundMusicAsset : SoundAsset
     {

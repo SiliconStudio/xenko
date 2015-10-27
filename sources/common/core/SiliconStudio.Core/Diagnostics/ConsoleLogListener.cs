@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.Diagnostics
             }
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
-            const string appliName = "Paradox";
+            const string appliName = "Xenko";
             var exceptionMsg = GetExceptionText(logMessage);
             var messageText = GetDefaultText(logMessage);
             if (!string.IsNullOrEmpty(exceptionMsg))
@@ -112,17 +112,8 @@ namespace SiliconStudio.Core.Diagnostics
             bool useDebugLogger = true;
 
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-
             useDebugLogger = System.Diagnostics.Debugger.IsAttached;
-
-            // Log the actual message
-            Console.WriteLine(GetDefaultText(logMessage));
-            if (!string.IsNullOrEmpty(exceptionMsg))
-            {
-                Console.WriteLine(exceptionMsg);
-            }
 #endif
-
             if (useDebugLogger)
             {
                 // Log the actual message
@@ -132,6 +123,17 @@ namespace SiliconStudio.Core.Diagnostics
                     System.Diagnostics.Debug.WriteLine(logMessage);
                 }
             }
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            else
+            {
+                // Log the actual message
+                Console.WriteLine(GetDefaultText(logMessage));
+                if (!string.IsNullOrEmpty(exceptionMsg))
+                {
+                    Console.WriteLine(exceptionMsg);
+                }
+            }
+#endif
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 

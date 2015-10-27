@@ -18,7 +18,7 @@
     <SiliconStudioPlatform><#= Properties.CurrentPlatform #></SiliconStudioPlatform>
     <SiliconStudioBuildProfile><#= Properties.CurrentPlatformName #></SiliconStudioBuildProfile>
     <SiliconStudioPackageGuid>{<#= Properties.Package.Id  #>}</SiliconStudioPackageGuid>
-    <SiliconStudioParadoxDir>$(MSBuildThisFileDirectory)<#= Properties.ParadoxSdkRelativeDir #></SiliconStudioParadoxDir>
+    <SiliconStudioXenkoDir>$(MSBuildThisFileDirectory)<#= Properties.XenkoSdkRelativeDir #></SiliconStudioXenkoDir>
     <!-- Force msbuild to check to rebuild this assembly instead of letting VS IDE guess -->
     <DisableFastUpToDateCheck>true</DisableFastUpToDateCheck>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
@@ -27,15 +27,15 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="Xamarin.iOS" Label="Paradox.DoNotSync" />
+    <Reference Include="Xamarin.iOS" Label="Xenko.DoNotSync" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="TestClass1.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Label="Paradox.DoNotSync" Include="Info.plist" />
-    <Compile Label="Paradox.DoNotSync" Include="Properties\AssemblyInfo.cs" />
-    <Compile Label="Paradox.DoNotSync" Include="<#= Properties.ParadoxSdkRelativeDir #>\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.iPhone.cs">
+    <None Label="Xenko.DoNotSync" Include="Info.plist" />
+    <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
+    <Compile Label="Xenko.DoNotSync" Include="<#= Properties.XenkoSdkRelativeDir #>\sources\common\shared\tests\nunitlite\NUnitLiteLauncher.iPhone.cs">
       <Link>NUnitLiteLauncher.iPhone.cs</Link>
     </Compile>
   </ItemGroup>

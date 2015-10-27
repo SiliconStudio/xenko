@@ -5,7 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// A default implementation of <see cref="IGraphicsDeviceService"/>

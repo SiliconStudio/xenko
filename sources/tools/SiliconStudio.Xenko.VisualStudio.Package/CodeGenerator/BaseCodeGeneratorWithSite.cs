@@ -24,7 +24,7 @@ using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
 using Microsoft.VisualStudio.Designer.Interfaces;
 
-namespace SiliconStudio.Paradox.VisualStudio.CodeGenerator
+namespace SiliconStudio.Xenko.VisualStudio.CodeGenerator
 {
     /// <summary>
     /// Base code generator with site implementation

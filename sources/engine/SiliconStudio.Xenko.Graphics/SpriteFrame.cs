@@ -4,7 +4,7 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// A sprite frame represents a single frame a sprite animation.

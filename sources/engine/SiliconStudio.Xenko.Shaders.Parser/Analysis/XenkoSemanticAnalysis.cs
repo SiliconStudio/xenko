@@ -3,9 +3,9 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using SiliconStudio.Paradox.Shaders.Parser.Ast;
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
-using SiliconStudio.Paradox.Shaders.Parser.Utility;
+using SiliconStudio.Xenko.Shaders.Parser.Ast;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Shaders.Parser.Utility;
 using SiliconStudio.Shaders.Ast;
 using SiliconStudio.Shaders.Ast.Hlsl;
 using SiliconStudio.Shaders.Parser;
@@ -13,16 +13,16 @@ using SiliconStudio.Shaders.Visitor;
 
 using StorageQualifier = SiliconStudio.Shaders.Ast.Hlsl.StorageQualifier;
 
-namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
+namespace SiliconStudio.Xenko.Shaders.Parser.Analysis
 {
-    internal class ParadoxSemanticAnalysis : ParadoxTypeAnalysis
+    internal class XenkoSemanticAnalysis : XenkoTypeAnalysis
     {
         #region Static members
 
         /// <summary>
         /// List of useful language keywords
         /// </summary>
-        private static readonly string[] ParadoxKeywords = { "base", "streams", "this" };
+        private static readonly string[] XenkoKeywords = { "base", "streams", "this" };
 
         #endregion
 
@@ -31,7 +31,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// <summary>
         /// The structure that will store all the information
         /// </summary>
-        private ParadoxParsingInfo parsingInfo;
+        private XenkoParsingInfo parsingInfo;
         
         /// <summary>
         /// List of all the mixins inside the module
@@ -68,12 +68,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         #region Constructor and helpers
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ParadoxSemanticAnalysis"/> class.
+        /// Initializes a new instance of the <see cref="XenkoSemanticAnalysis"/> class.
         /// </summary>
         /// <param name="result">The result</param>
         /// <param name="analyzedMixin">the context in which the analysis is set</param>
         /// <param name="moduleMixinsInCompilationGroup">the list of all the modules that are not in the inheritance hierarchy of the context</param>
-        public ParadoxSemanticAnalysis(ParsingResult result, ModuleMixin analyzedMixin, List<ModuleMixin> moduleMixinsInCompilationGroup)
+        public XenkoSemanticAnalysis(ParsingResult result, ModuleMixin analyzedMixin, List<ModuleMixin> moduleMixinsInCompilationGroup)
             : base(result)
         {
             analyzedModuleMixin = analyzedMixin;
@@ -109,18 +109,18 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         /// <param name="mixinToAnalyze">the current context (virtual table) from mixin inheritance</param>
         /// <param name="compilationContext">List of all the mixin in the compilation context</param>
         /// <returns>true if the shader is correct, false otherwise</returns>
-        public static ParadoxParsingInfo RunAnalysis(ModuleMixin mixinToAnalyze, List<ModuleMixin> compilationContext, bool transformForEach = false)
+        public static XenkoParsingInfo RunAnalysis(ModuleMixin mixinToAnalyze, List<ModuleMixin> compilationContext, bool transformForEach = false)
         {
             var shader = new Shader();
             shader.Declarations.Add(mixinToAnalyze.Shader);
             var toParse = new ParsingResult { Shader = shader };
-            var analysis = new ParadoxSemanticAnalysis(toParse, mixinToAnalyze, compilationContext) { parsingInfo = new ParadoxParsingInfo() };
+            var analysis = new XenkoSemanticAnalysis(toParse, mixinToAnalyze, compilationContext) { parsingInfo = new XenkoParsingInfo() };
             analysis.expandForEachStatements = transformForEach;
             analysis.Run();
 
             // look at the static classes
-            analysis.parsingInfo.StaticClasses.UnionWith(analysis.parsingInfo.StaticReferences.VariablesReferences.Select(x => x.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin));
-            analysis.parsingInfo.StaticClasses.UnionWith(analysis.parsingInfo.StaticReferences.MethodsReferences.Select(x => x.Key.GetTag(ParadoxTags.ShaderScope) as ModuleMixin));
+            analysis.parsingInfo.StaticClasses.UnionWith(analysis.parsingInfo.StaticReferences.VariablesReferences.Select(x => x.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin));
+            analysis.parsingInfo.StaticClasses.UnionWith(analysis.parsingInfo.StaticReferences.MethodsReferences.Select(x => x.Key.GetTag(XenkoTags.ShaderScope) as ModuleMixin));
             analysis.parsingInfo.StaticClasses.Remove(mixinToAnalyze);
             analysis.parsingInfo.ErrorsWarnings = analysis.ParsingResult;
 
@@ -163,11 +163,11 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             foreach (var parameter in methodDeclaration.Parameters)
             {
                 if (parameter.Type.TypeInference.Declaration is ShaderClassType)
-                    Error(ParadoxMessageCode.ErrorShaderClassTypeParameter, methodDeclaration.Span, methodDeclaration, parameter, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorShaderClassTypeParameter, methodDeclaration.Span, methodDeclaration, parameter, analyzedModuleMixin.MixinName);
             }
 
             if (methodDeclaration.ReturnType.TypeInference.Declaration is ShaderClassType)
-                Error(ParadoxMessageCode.ErrorShaderClassReturnType, methodDeclaration.Span, methodDeclaration, analyzedModuleMixin.MixinName);
+                Error(XenkoMessageCode.ErrorShaderClassReturnType, methodDeclaration.Span, methodDeclaration, analyzedModuleMixin.MixinName);
         }
 
         /// <summary>
@@ -179,10 +179,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         {
             currentVisitedMethod = methodDeclaration;
             
-            if (!methodDeclaration.Qualifiers.Contains(ParadoxStorageQualifier.Abstract))
-                Error(ParadoxMessageCode.ErrorMissingAbstract, methodDeclaration.Span, methodDeclaration, analyzedModuleMixin.MixinName);
-            if (methodDeclaration.Qualifiers.Contains(ParadoxStorageQualifier.Override))
-                Error(ParadoxMessageCode.ErrorUnnecessaryOverride, methodDeclaration.Span, methodDeclaration, analyzedModuleMixin.MixinName);
+            if (!methodDeclaration.Qualifiers.Contains(XenkoStorageQualifier.Abstract))
+                Error(XenkoMessageCode.ErrorMissingAbstract, methodDeclaration.Span, methodDeclaration, analyzedModuleMixin.MixinName);
+            if (methodDeclaration.Qualifiers.Contains(XenkoStorageQualifier.Override))
+                Error(XenkoMessageCode.ErrorUnnecessaryOverride, methodDeclaration.Span, methodDeclaration, analyzedModuleMixin.MixinName);
 
             Visit((Node)methodDeclaration);
             PostMethodDeclarationVisit(methodDeclaration);
@@ -198,8 +198,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         {
             currentVisitedMethod = methodDefinition;
             
-            if (methodDefinition.Qualifiers.Contains(ParadoxStorageQualifier.Abstract))
-                Error(ParadoxMessageCode.ErrorUnnecessaryAbstract, methodDefinition.Span, methodDefinition, analyzedModuleMixin.MixinName);
+            if (methodDefinition.Qualifiers.Contains(XenkoStorageQualifier.Abstract))
+                Error(XenkoMessageCode.ErrorUnnecessaryAbstract, methodDefinition.Span, methodDefinition, analyzedModuleMixin.MixinName);
 
             var ret = base.Visit(methodDefinition);
 
@@ -242,8 +242,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                     if (finalType is ArrayType)
                         finalType = (finalType as ArrayType).Type;
                     variable.Type = finalType;
-                    if ((forEachStatement.Collection.TypeInference.Declaration as Variable).Qualifiers.Contains(ParadoxStorageQualifier.Extern))
-                        variable.Qualifiers |= ParadoxStorageQualifier.Extern;
+                    if ((forEachStatement.Collection.TypeInference.Declaration as Variable).Qualifiers.Contains(XenkoStorageQualifier.Extern))
+                        variable.Qualifiers |= XenkoStorageQualifier.Extern;
                 }
             }
 
@@ -261,7 +261,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                         if (variable.Qualifiers.Contains(StorageQualifier.Extern) && variable.Type.TypeInference.Declaration is ClassType)
                             parsingInfo.StageInitializedVariables.Add(variable);
                         else
-                            Error(ParadoxMessageCode.ErrorStageInitNotClassType, variable.Span, variable, analyzedModuleMixin.MixinName);
+                            Error(XenkoMessageCode.ErrorStageInitNotClassType, variable.Span, variable, analyzedModuleMixin.MixinName);
                     }
                 }
 
@@ -272,21 +272,21 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                         varType = (varType as ArrayType).Type;
 
                     if (!(varType.TypeInference.Declaration is ClassType))
-                        Error(ParadoxMessageCode.ErrorExternNotClassType, variable.Span, variable, analyzedModuleMixin.MixinName);
+                        Error(XenkoMessageCode.ErrorExternNotClassType, variable.Span, variable, analyzedModuleMixin.MixinName);
                 }
 
                 // should not happen because extern keyword is set in the ShaderCompilationContext
                 if (!variable.Qualifiers.Contains(StorageQualifier.Extern) && variable.Type.TypeInference.Declaration is ClassType)
-                    Error(ParadoxMessageCode.ErrorMissingExtern, variable.Span, variable, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorMissingExtern, variable.Span, variable, analyzedModuleMixin.MixinName);
             }
 
             // check var type
             if (variable.Type is VarType)
             {
                 if (variable.InitialValue == null)
-                    Error(ParadoxMessageCode.ErrorVarNoInitialValue, variable.Span, variable, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorVarNoInitialValue, variable.Span, variable, analyzedModuleMixin.MixinName);
                 else if (variable.InitialValue.TypeInference.TargetType == null)
-                    Error(ParadoxMessageCode.ErrorVarNoTypeFound, variable.Span, variable, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorVarNoTypeFound, variable.Span, variable, analyzedModuleMixin.MixinName);
                 else
                 {
                     variable.Type = variable.InitialValue.TypeInference.TargetType.ResolveType();
@@ -298,7 +298,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 }
             }
 
-            if (variable.ContainsTag(ParadoxTags.ShaderScope))
+            if (variable.ContainsTag(XenkoTags.ShaderScope))
             {
                 if (!parsingInfo.ClassReferences.VariablesReferences.ContainsKey(variable))
                     parsingInfo.ClassReferences.VariablesReferences.Add(variable, new HashSet<ExpressionNodeCouple>());
@@ -307,7 +307,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             if (currentVisitedMethod != null && !(ParentNode is ForEachStatement))
             {
                 if (FindFinalType(variable.Type) is ShaderClassType)
-                    Error(ParadoxMessageCode.ErrorShaderVariable, variable.Span, variable, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorShaderVariable, variable.Span, variable, analyzedModuleMixin.MixinName);
             }
         }
 
@@ -333,7 +333,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             Visit((Node)typedef);
 
             if (currentVisitedMethod != null)
-                Error(ParadoxMessageCode.ErrorTypedefInMethod, typedef.Span, typedef, currentVisitedMethod, analyzedModuleMixin.MixinName);
+                Error(XenkoMessageCode.ErrorTypedefInMethod, typedef.Span, typedef, currentVisitedMethod, analyzedModuleMixin.MixinName);
 
             parsingInfo.Typedefs.Add(typedef);
         }
@@ -345,7 +345,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         [Visit]
         public override void Visit(Technique technique)
         {
-            Error(ParadoxMessageCode.ErrorTechniqueFound, technique.Span, technique, analyzedModuleMixin.MixinName); // TODO: remove because parsing may fail before
+            Error(XenkoMessageCode.ErrorTechniqueFound, technique.Span, technique, analyzedModuleMixin.MixinName); // TODO: remove because parsing may fail before
         }
 
         /// <summary>
@@ -379,9 +379,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                     if (!(ParentNode is MemberReferenceExpression) || varType is VectorType) // do not store the intermediate references, only the last one - except for vector types
                     {
                         if (IsStageInitMember(memberReference))
-                            memberReference.SetTag(ParadoxTags.StageInitRef, null);
+                            memberReference.SetTag(XenkoTags.StageInitRef, null);
                         else
-                            memberReference.SetTag(ParadoxTags.ExternRef, null);
+                            memberReference.SetTag(XenkoTags.ExternRef, null);
                     }
                 }
                 else if (shaderDecl != null)
@@ -391,7 +391,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 }
                 else if (methodDecl == null)
                 {
-                    Error(ParadoxMessageCode.ErrorExternMemberNotFound, memberReference.Span, memberReference, variableTargetDecl.Type, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorExternMemberNotFound, memberReference.Span, memberReference, variableTargetDecl.Type, analyzedModuleMixin.MixinName);
                 }
             }
             else if (targetDecl is ShaderClassType)
@@ -408,8 +408,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 if (memberReference.TypeInference.Declaration is Variable)
                 {
                     var refAsVariable = memberReference.TypeInference.Declaration as Variable;
-                    if (!(refAsVariable.Type is MemberName) && !refAsVariable.Qualifiers.Contains(ParadoxStorageQualifier.Stream) && !refAsVariable.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream))
-                        Error(ParadoxMessageCode.ErrorExtraStreamsPrefix, memberReference.Span, memberReference, refAsVariable, analyzedModuleMixin.MixinName);
+                    if (!(refAsVariable.Type is MemberName) && !refAsVariable.Qualifiers.Contains(XenkoStorageQualifier.Stream) && !refAsVariable.Qualifiers.Contains(XenkoStorageQualifier.PatchStream))
+                        Error(XenkoMessageCode.ErrorExtraStreamsPrefix, memberReference.Span, memberReference, refAsVariable, analyzedModuleMixin.MixinName);
                 }
             }
             else if (IsInputOutputMember(memberReference))
@@ -419,8 +419,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             else if (memberReference.TypeInference.Declaration is Variable)
             {
                 var variableDecl = (Variable)memberReference.TypeInference.Declaration;
-                if (variableDecl.Qualifiers.Contains(ParadoxStorageQualifier.Stream) || variableDecl.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream))
-                    Error(ParadoxMessageCode.ErrorMissingStreamsStruct, memberReference.Span, memberReference, analyzedModuleMixin.MixinName);
+                if (variableDecl.Qualifiers.Contains(XenkoStorageQualifier.Stream) || variableDecl.Qualifiers.Contains(XenkoStorageQualifier.PatchStream))
+                    Error(XenkoMessageCode.ErrorMissingStreamsStruct, memberReference.Span, memberReference, analyzedModuleMixin.MixinName);
             }
 
             if (memberReference.TypeInference.Declaration is Variable) // TODO: check if it is a variable whose scope is inside the hierarchy
@@ -428,14 +428,14 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 var isExtern = HasExternQualifier(memberReference);
                 var shouldStoreExpression = !(ParentNode is MemberReferenceExpression) ^ (memberReference.TypeInference.TargetType is VectorType || memberReference.TypeInference.TargetType is MatrixType);
                 if (shouldStoreExpression && isExtern)
-                    memberReference.SetTag(ParadoxTags.ExternRef, null);
+                    memberReference.SetTag(XenkoTags.ExternRef, null);
 
                 if (!isExtern && memberReference.Target.TypeInference.Declaration is ShaderClassType && !ReferenceEquals(analyzedModuleMixin.Shader, memberReference.Target.TypeInference.Declaration) && analyzedModuleMixin.InheritanceList.All(x => !ReferenceEquals(x.Shader, memberReference.Target.TypeInference.Declaration)))
-                    memberReference.SetTag(ParadoxTags.StaticRef, null);
+                    memberReference.SetTag(XenkoTags.StaticRef, null);
 
                 var varDecl = (Variable)memberReference.TypeInference.Declaration;
-                if (currentVisitedMethod != null && currentVisitedMethod.Qualifiers.Contains(StorageQualifier.Static) && varDecl != null && varDecl.GetTag(ParadoxTags.BaseDeclarationMixin) != null)
-                    Error(ParadoxMessageCode.ErrorNonStaticReferenceInStaticMethod, memberReference.Span, currentVisitedMethod, varDecl, analyzedModuleMixin.MixinName);
+                if (currentVisitedMethod != null && currentVisitedMethod.Qualifiers.Contains(StorageQualifier.Static) && varDecl != null && varDecl.GetTag(XenkoTags.BaseDeclarationMixin) != null)
+                    Error(XenkoMessageCode.ErrorNonStaticReferenceInStaticMethod, memberReference.Span, currentVisitedMethod, varDecl, analyzedModuleMixin.MixinName);
             }
 
             // Add to variable references list
@@ -465,7 +465,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             }
             else
             {
-                Error(ParadoxMessageCode.ErrorStreamNotFound, memberReference.Span, memberReference.Member.Text, analyzedModuleMixin.MixinName);
+                Error(XenkoMessageCode.ErrorStreamNotFound, memberReference.Span, memberReference.Member.Text, analyzedModuleMixin.MixinName);
             }
         }
 
@@ -491,7 +491,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 if (variableDecl != null)
                 {
                     var isStream = IsStreamMember(memberReference);
-                    if (!isStream || variableDecl.Variable.Qualifiers.Contains(ParadoxStorageQualifier.Stream))
+                    if (!isStream || variableDecl.Variable.Qualifiers.Contains(XenkoStorageQualifier.Stream))
                     {
                         memberReference.TypeInference.Declaration = variableDecl.Variable;
                         memberReference.TypeInference.TargetType = variableDecl.Variable.Type.ResolveType();
@@ -567,9 +567,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             var res = base.FindDeclarations(name);
 
             if (res.OfType<Variable>().Any(x => analyzedModuleMixin.PotentialConflictingVariables.Contains(x)))
-                Error(ParadoxMessageCode.ErrorVariableNameAmbiguity, new SourceSpan(), name, analyzedModuleMixin.MixinName);
+                Error(XenkoMessageCode.ErrorVariableNameAmbiguity, new SourceSpan(), name, analyzedModuleMixin.MixinName);
             if (res.OfType<MethodDeclaration>().Any(x => analyzedModuleMixin.PotentialConflictingMethods.Contains(x)))
-                Error(ParadoxMessageCode.ErrorMethodNameAmbiguity, new SourceSpan(), name, analyzedModuleMixin.MixinName);
+                Error(XenkoMessageCode.ErrorMethodNameAmbiguity, new SourceSpan(), name, analyzedModuleMixin.MixinName);
             
             return res;
         }
@@ -581,12 +581,12 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         [Visit]
         protected override void Visit(MethodInvocationExpression expression)
         {
-            expression.SetTag(ParadoxTags.CurrentShader, analyzedModuleMixin);
+            expression.SetTag(XenkoTags.CurrentShader, analyzedModuleMixin);
 
             base.Visit(expression);
 
             if (expression.TypeInference.TargetType == null && expression.Target.TypeInference.Declaration == null)
-                Error(ParadoxMessageCode.ErrorMissingMethod, expression.Span, expression, analyzedModuleMixin.MixinName);
+                Error(XenkoMessageCode.ErrorMissingMethod, expression.Span, expression, analyzedModuleMixin.MixinName);
             else if (!Equals(expression.TypeInference.Declaration, expression.Target.TypeInference.Declaration))
                 expression.TypeInference.Declaration = expression.Target.TypeInference.Declaration;
 
@@ -599,9 +599,9 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
 
                 if (currentVisitedMethod.Qualifiers.Contains(StorageQualifier.Static)
                     && !methodDecl.Qualifiers.Contains(StorageQualifier.Static)
-                    && methodDecl.GetTag(ParadoxTags.BaseDeclarationMixin) != null)
+                    && methodDecl.GetTag(XenkoTags.BaseDeclarationMixin) != null)
                 {
-                        Error(ParadoxMessageCode.ErrorNonStaticCallInStaticMethod, expression.Span, currentVisitedMethod, methodDecl, analyzedModuleMixin.MixinName);
+                        Error(XenkoMessageCode.ErrorNonStaticCallInStaticMethod, expression.Span, currentVisitedMethod, methodDecl, analyzedModuleMixin.MixinName);
                 }
             }
 
@@ -609,7 +609,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             AddToMethodsReferences(expression);
 
             if (methodDecl != null)
-                expression.Target.SetTag(ParadoxTags.VirtualTableReference, methodDecl.GetTag(ParadoxTags.VirtualTableReference));
+                expression.Target.SetTag(XenkoTags.VirtualTableReference, methodDecl.GetTag(XenkoTags.VirtualTableReference));
         }
 
         /// <summary>
@@ -655,7 +655,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                                     expression.Target.TypeInference.Declaration = baseMethod;
                                 }
                                 else
-                                    Error(ParadoxMessageCode.ErrorImpossibleBaseCall, memberReferenceExpression.Span, expression, analyzedModuleMixin.MixinName);
+                                    Error(XenkoMessageCode.ErrorImpossibleBaseCall, memberReferenceExpression.Span, expression, analyzedModuleMixin.MixinName);
                                 break;
                             }
                         case "this":
@@ -674,7 +674,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                                     expression.Target.TypeInference.Declaration = topMethod;
                                 }
                                 else
-                                    Error(ParadoxMessageCode.ErrorImpossibleVirtualCall, memberReferenceExpression.Span, expression, analyzedModuleMixin.MixinName, analyzedModuleMixin.MixinName);
+                                    Error(XenkoMessageCode.ErrorImpossibleVirtualCall, memberReferenceExpression.Span, expression, analyzedModuleMixin.MixinName, analyzedModuleMixin.MixinName);
 
                                 memberReferenceExpression = null;
 
@@ -703,10 +703,10 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             {
                 // check if it is a recursive call
                 if (ReferenceEquals(currentVisitedMethod, expression.Target.TypeInference.Declaration)) // How to handle "this" keyword?
-                    Error(ParadoxMessageCode.ErrorCyclicMethod, currentVisitedMethod.Span, currentVisitedMethod, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorCyclicMethod, currentVisitedMethod.Span, currentVisitedMethod, analyzedModuleMixin.MixinName);
 
                 // check if it is a build-in method
-                isBuiltIn = !methodDecl.ContainsTag(ParadoxTags.ShaderScope);
+                isBuiltIn = !methodDecl.ContainsTag(XenkoTags.ShaderScope);
 
                 if (memberReferenceExpression != null)
                 {
@@ -717,23 +717,23 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                     if (varDecl != null && varDecl.Qualifiers.Contains(StorageQualifier.Extern))
                     {
                         if (IsStageInitMember(memberReferenceExpression))
-                            expression.SetTag(ParadoxTags.StageInitRef, null);
+                            expression.SetTag(XenkoTags.StageInitRef, null);
                         else
-                            expression.SetTag(ParadoxTags.ExternRef, null);
+                            expression.SetTag(XenkoTags.ExternRef, null);
                     }
 
                     var shaderDecl = memberReferenceExpression.Target.TypeInference.Declaration as ShaderClassType;
                     if (shaderDecl != null && shaderDecl != analyzedModuleMixin.Shader && analyzedModuleMixin.InheritanceList.All(x => x.Shader != shaderDecl))
-                        expression.SetTag(ParadoxTags.StaticRef, null);
+                        expression.SetTag(XenkoTags.StaticRef, null);
                 }
 
                 if (!isBuiltIn)
                 {
                     // store if not a base call
-                    if (isNotBaseCall && !expression.ContainsTag(ParadoxTags.ExternRef) && !expression.ContainsTag(ParadoxTags.StageInitRef) && !expression.ContainsTag(ParadoxTags.StaticRef))
+                    if (isNotBaseCall && !expression.ContainsTag(XenkoTags.ExternRef) && !expression.ContainsTag(XenkoTags.StageInitRef) && !expression.ContainsTag(XenkoTags.StaticRef))
                         parsingInfo.ThisMethodCalls.Add(expression);
 
-                    if (methodDecl.Qualifiers.Contains(ParadoxStorageQualifier.Stage))
+                    if (methodDecl.Qualifiers.Contains(XenkoStorageQualifier.Stage))
                         parsingInfo.StageMethodCalls.Add(expression);
                 }
             }
@@ -766,7 +766,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         protected override void Visit(AssignmentExpression assignmentExpression)
         {
             if (currentAssignmentOperatorStatus != AssignmentOperatorStatus.Read)
-                Error(ParadoxMessageCode.ErrorNestedAssignment, assignmentExpression.Span, assignmentExpression, analyzedModuleMixin.MixinName);
+                Error(XenkoMessageCode.ErrorNestedAssignment, assignmentExpression.Span, assignmentExpression, analyzedModuleMixin.MixinName);
 
             assignmentExpression.Value = (Expression)VisitDynamic(assignmentExpression.Value);
             currentAssignmentOperatorStatus = (assignmentExpression.Operator != AssignmentOperator.Default) ? AssignmentOperatorStatus.ReadWrite : AssignmentOperatorStatus.Write;
@@ -788,7 +788,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             var varCount = analyzedModuleMixin.VirtualTable.Variables.Count(x => x.Variable.Name.Text == name);
 
             if (varCount > 1)
-                Error(ParadoxMessageCode.ErrorVariableNameAmbiguity, variableReferenceExpression.Span, variableReferenceExpression, analyzedModuleMixin.MixinName);
+                Error(XenkoMessageCode.ErrorVariableNameAmbiguity, variableReferenceExpression.Span, variableReferenceExpression, analyzedModuleMixin.MixinName);
         }
 
         /// <summary>
@@ -815,7 +815,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             if (name == "stage")
             {
                 if (!(ParentNode is Variable && (ParentNode as Variable).InitialValue == variableReferenceExpression))
-                    Error(ParadoxMessageCode.ErrorStageOutsideVariable, ParentNode.Span, ParentNode, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorStageOutsideVariable, ParentNode.Span, ParentNode, analyzedModuleMixin.MixinName);
 
                 return;
             }
@@ -826,7 +826,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             }
             
             // check if the variable is double-defined
-            if (!ParadoxKeywords.Contains(variableReferenceExpression.Name.Text))
+            if (!XenkoKeywords.Contains(variableReferenceExpression.Name.Text))
                 CheckNameConflict(variableReferenceExpression);
 
             base.Visit(variableReferenceExpression);
@@ -839,25 +839,25 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 if (variableReferenceExpression.TypeInference.TargetType == null)
                     variableReferenceExpression.TypeInference.TargetType = (variableReferenceExpression.TypeInference.Declaration as Variable).Type.ResolveType();
 
-                if (varDecl.ContainsTag(ParadoxTags.ShaderScope))
+                if (varDecl.ContainsTag(XenkoTags.ShaderScope))
                 {
                     // stream variable should be called within the streams scope
-                    if (varDecl.Qualifiers.Contains(ParadoxStorageQualifier.Stream) || varDecl.Qualifiers.Contains(ParadoxStorageQualifier.PatchStream))
-                        Error(ParadoxMessageCode.ErrorMissingStreamsStruct, variableReferenceExpression.Span, variableReferenceExpression, analyzedModuleMixin.MixinName);
+                    if (varDecl.Qualifiers.Contains(XenkoStorageQualifier.Stream) || varDecl.Qualifiers.Contains(XenkoStorageQualifier.PatchStream))
+                        Error(XenkoMessageCode.ErrorMissingStreamsStruct, variableReferenceExpression.Span, variableReferenceExpression, analyzedModuleMixin.MixinName);
                 }
             }
 
             var isMethodName = defaultDeclarations.Any(x => x.Name.Text == variableReferenceExpression.Name.Text);
 
-            if (!ParadoxKeywords.Contains(variableReferenceExpression.Name.Text) && variableReferenceExpression.TypeInference.Declaration == null && !inSampler && !isMethodName)
-                Error(ParadoxMessageCode.ErrorMissingVariable, variableReferenceExpression.Span, variableReferenceExpression, analyzedModuleMixin.MixinName);
+            if (!XenkoKeywords.Contains(variableReferenceExpression.Name.Text) && variableReferenceExpression.TypeInference.Declaration == null && !inSampler && !isMethodName)
+                Error(XenkoMessageCode.ErrorMissingVariable, variableReferenceExpression.Span, variableReferenceExpression, analyzedModuleMixin.MixinName);
 
             // update function static status
             if (!inSampler && !isMethodName && variableReferenceExpression.TypeInference.Declaration == null)
-                Error(ParadoxMessageCode.ErrorNoTypeInference, variableReferenceExpression.Span, variableReferenceExpression, analyzedModuleMixin.MixinName);
+                Error(XenkoMessageCode.ErrorNoTypeInference, variableReferenceExpression.Span, variableReferenceExpression, analyzedModuleMixin.MixinName);
 
-            if (currentVisitedMethod != null && currentVisitedMethod.Qualifiers.Contains(StorageQualifier.Static) && varDecl != null && varDecl.GetTag(ParadoxTags.BaseDeclarationMixin) != null)
-                Error(ParadoxMessageCode.ErrorNonStaticReferenceInStaticMethod, variableReferenceExpression.Span, currentVisitedMethod, varDecl, analyzedModuleMixin.MixinName);
+            if (currentVisitedMethod != null && currentVisitedMethod.Qualifiers.Contains(StorageQualifier.Static) && varDecl != null && varDecl.GetTag(XenkoTags.BaseDeclarationMixin) != null)
+                Error(XenkoMessageCode.ErrorNonStaticReferenceInStaticMethod, variableReferenceExpression.Span, currentVisitedMethod, varDecl, analyzedModuleMixin.MixinName);
 
             // Add to the variables references list
             AddToVariablesReference(variableReferenceExpression);
@@ -879,8 +879,8 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             if (!(indexerExpression.Index is LiteralExpression) && indexerExpression.Target.TypeInference.Declaration is Variable)
             {
                 var varDecl = indexerExpression.Target.TypeInference.Declaration as Variable;
-                if (varDecl.Qualifiers.Contains(ParadoxStorageQualifier.Extern))
-                    Error(ParadoxMessageCode.ErrorIndexerNotLiteral, indexerExpression.Span, indexerExpression, analyzedModuleMixin.MixinName);
+                if (varDecl.Qualifiers.Contains(XenkoStorageQualifier.Extern))
+                    Error(XenkoMessageCode.ErrorIndexerNotLiteral, indexerExpression.Span, indexerExpression, analyzedModuleMixin.MixinName);
             }
         }
 
@@ -891,7 +891,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         [Visit]
         private void Visit(InterfaceType interfaceType)
         {
-            Error(ParadoxMessageCode.ErrorInterfaceFound, interfaceType.Span, interfaceType, analyzedModuleMixin.MixinName);
+            Error(XenkoMessageCode.ErrorInterfaceFound, interfaceType.Span, interfaceType, analyzedModuleMixin.MixinName);
         }
 
         /// <summary>
@@ -903,7 +903,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         {
             Visit((Node)structType);
 
-            if (structType.ContainsTag(ParadoxTags.ShaderScope))
+            if (structType.ContainsTag(XenkoTags.ShaderScope))
                 parsingInfo.StructureDefinitions.Add(structType);
         }
 
@@ -919,7 +919,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
             foreach (var param in genericType.Parameters.OfType<TypeName>())
             {
                 if (param.TypeInference.TargetType is ShaderClassType)
-                    Error(ParadoxMessageCode.ErrorMixinAsGeneric, param.Span, param, genericType, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorMixinAsGeneric, param.Span, param, genericType, analyzedModuleMixin.MixinName);
             }
         }
 
@@ -930,13 +930,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         private void AddToVariablesReference(Expression expression)
         {
             var variable = expression.TypeInference.Declaration as Variable;
-            if (variable != null && variable.ContainsTag(ParadoxTags.ShaderScope))
+            if (variable != null && variable.ContainsTag(XenkoTags.ShaderScope))
             {
-                if (expression.ContainsTag(ParadoxTags.StaticRef) || variable.Qualifiers.Contains(StorageQualifier.Static))
+                if (expression.ContainsTag(XenkoTags.StaticRef) || variable.Qualifiers.Contains(StorageQualifier.Static))
                     parsingInfo.StaticReferences.InsertVariable(variable, new ExpressionNodeCouple(expression, ParentNode));
-                else if (expression.ContainsTag(ParadoxTags.ExternRef))
+                else if (expression.ContainsTag(XenkoTags.ExternRef))
                     parsingInfo.ExternReferences.InsertVariable(variable, new ExpressionNodeCouple(expression, ParentNode));
-                else if (expression.ContainsTag(ParadoxTags.StageInitRef))
+                else if (expression.ContainsTag(XenkoTags.StageInitRef))
                     parsingInfo.StageInitReferences.InsertVariable(variable, new ExpressionNodeCouple(expression, ParentNode));
                 else
                     parsingInfo.ClassReferences.InsertVariable(variable, new ExpressionNodeCouple(expression, ParentNode));
@@ -954,13 +954,13 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
         private void AddToMethodsReferences(MethodInvocationExpression expression)
         {
             var methodDecl = expression.Target.TypeInference.Declaration as MethodDeclaration;
-            if (methodDecl != null && methodDecl.ContainsTag(ParadoxTags.ShaderScope))
+            if (methodDecl != null && methodDecl.ContainsTag(XenkoTags.ShaderScope))
             {
-                if (expression.ContainsTag(ParadoxTags.StaticRef) || methodDecl.Qualifiers.Contains(StorageQualifier.Static))
+                if (expression.ContainsTag(XenkoTags.StaticRef) || methodDecl.Qualifiers.Contains(StorageQualifier.Static))
                     parsingInfo.StaticReferences.InsertMethod(methodDecl, expression);
-                else if (expression.ContainsTag(ParadoxTags.ExternRef))
+                else if (expression.ContainsTag(XenkoTags.ExternRef))
                     parsingInfo.ExternReferences.InsertMethod(methodDecl, expression);
-                else if (expression.ContainsTag(ParadoxTags.StageInitRef))
+                else if (expression.ContainsTag(XenkoTags.StageInitRef))
                     parsingInfo.StageInitReferences.InsertMethod(methodDecl, expression);
                 else
                     parsingInfo.ClassReferences.InsertMethod(methodDecl, expression);
@@ -1020,7 +1020,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
 
                 if ((inference.Type as ArrayType).Dimensions.Count > 1)
                 {
-                    Error(ParadoxMessageCode.ErrorMultiDimArray, forEachStatement.Span, inference, forEachStatement, analyzedModuleMixin.MixinName);
+                    Error(XenkoMessageCode.ErrorMultiDimArray, forEachStatement.Span, inference, forEachStatement, analyzedModuleMixin.MixinName);
                     return forEachStatement;
                 }
 
@@ -1030,7 +1030,7 @@ namespace SiliconStudio.Paradox.Shaders.Parser.Analysis
                 for (int i = 0; i < dim; ++i)
                 {
                     var cloned = forEachStatement.DeepClone();
-                    var replace = new ParadoxReplaceExtern(cloned.Variable, new IndexerExpression(cloned.Collection, new LiteralExpression(i)));
+                    var replace = new XenkoReplaceExtern(cloned.Variable, new IndexerExpression(cloned.Collection, new LiteralExpression(i)));
                     replace.Run(cloned.Body);
                     result.Add(cloned.Body);
                 }

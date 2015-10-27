@@ -8,13 +8,12 @@ using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Paradox.Assets.Audio
+namespace SiliconStudio.Xenko.Assets.Audio
 {
     [DataContract("SoundEffect")]
     [AssetDescription(FileExtension)]
     [ObjectFactory(typeof(SoundEffectFactory))]
     [AssetCompiler(typeof(SoundAssetCompiler))]
-    [ThumbnailCompiler(PreviewerCompilerNames.SoundEffectThumbnailCompilerQualifiedName)]
     [Display(120, "Sound Effect", "A sound effect")]
     public class SoundEffectAsset : SoundAsset
     {

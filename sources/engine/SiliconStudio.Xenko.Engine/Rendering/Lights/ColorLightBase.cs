@@ -4,11 +4,11 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Colors;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Colors;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
     /// Base implementation of <see cref="IColorLight"/>

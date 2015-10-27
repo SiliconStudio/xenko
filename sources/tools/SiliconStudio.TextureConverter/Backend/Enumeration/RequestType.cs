@@ -20,7 +20,7 @@ namespace SiliconStudio.TextureConverter
         Export,
         Decompressing,
         MipMapsGeneration,
-        ExportToParadox,
+        ExportToXenko,
         NormalMapGeneration,
         GammaCorrection,
         PreMultiplyAlpha,

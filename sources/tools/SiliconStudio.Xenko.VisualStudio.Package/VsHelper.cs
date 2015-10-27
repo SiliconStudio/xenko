@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 using System.Diagnostics;
 using Microsoft.VisualStudio.Shell;
 
-namespace SiliconStudio.Paradox.VisualStudio
+namespace SiliconStudio.Xenko.VisualStudio
 {
     internal static class VsHelper
     {

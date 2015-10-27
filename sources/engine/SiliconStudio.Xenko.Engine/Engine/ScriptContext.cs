@@ -2,16 +2,17 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Paradox.Audio;
-using SiliconStudio.Paradox.Engine.Processors;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Input;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Sprites;
+using SiliconStudio.Xenko.Audio;
+using SiliconStudio.Xenko.Engine.Processors;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Sprites;
 
-namespace SiliconStudio.Paradox.Engine
+namespace SiliconStudio.Xenko.Engine
 {
     public interface IScriptContext
     {
@@ -104,6 +105,24 @@ namespace SiliconStudio.Paradox.Engine
 
         protected override void Destroy()
         {
+        }
+
+        static private Logger logger;
+
+        [DataMemberIgnore]
+        protected Logger Log
+        {
+            get
+            {
+                if (logger != null)
+                {
+                    return logger;
+                }
+
+                var className = GetType().FullName;
+                logger = GlobalLogger.GetLogger(className);
+                return logger;
+            }
         }
     }
 }

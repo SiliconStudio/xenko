@@ -10,7 +10,7 @@ using Android.Media;
 using Java.IO;
 using Java.Lang;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     partial class AudioEngine
     {
@@ -18,7 +18,8 @@ namespace SiliconStudio.Paradox.Audio
 
         private void DestroyImpl()
         {
-            SoundEffectInstance.StaticDestroy();
+            if (nbOfAudioEngineInstances == 0)
+                SoundEffectInstance.StaticDestroy();
 
             mediaPlayer.Release();
         }
@@ -29,7 +30,8 @@ namespace SiliconStudio.Paradox.Audio
             mediaPlayer.Error += OnMusicError;
             mediaPlayer.Prepared += OnMusicPrepared;
 
-            SoundEffectInstance.CreateAudioTracks();
+            if(nbOfAudioEngineInstances == 0)
+                SoundEffectInstance.CreateAudioTracks();
         }
 
         private void StopCurrentMusic()

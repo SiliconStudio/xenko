@@ -4,11 +4,11 @@ using System.Diagnostics;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Runtime
+namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     public class SpriteStudioProcessor : EntityProcessor<SpriteStudioProcessor.Data>
     {
@@ -35,12 +35,16 @@ namespace SiliconStudio.Paradox.SpriteStudio.Runtime
             {
                 SpriteStudioComponent = entity.Get<SpriteStudioComponent>(),
                 TransformComponent = entity.Transform,
+                AnimationComponent = entity.Get<AnimationComponent>()
             };
         }
 
-        protected override void UpdateAssociatedData(Entity entity, ref Data associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, Data associatedData)
         {
-            associatedData.AnimationComponent = entity.Get<AnimationComponent>();
+            return
+                entity.Get(SpriteStudioComponent.Key) == associatedData.SpriteStudioComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent &&
+                entity.Get(AnimationComponent.Key) == associatedData.AnimationComponent;
         }
 
         protected override void OnEntityAdding(Entity entity, Data data)

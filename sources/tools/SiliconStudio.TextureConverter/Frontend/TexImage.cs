@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.TextureConverter
 {

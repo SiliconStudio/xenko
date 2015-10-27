@@ -15,15 +15,15 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Assets.Materials;
-using SiliconStudio.Paradox.Rendering.Materials.ComputeColors;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Rendering.Materials;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders.Compiler;
-using SiliconStudio.Paradox.Shaders.Parser.Mixins;
+using SiliconStudio.Xenko.Assets.Materials;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders.Compiler;
+using SiliconStudio.Xenko.Shaders.Parser.Mixins;
 
-namespace SiliconStudio.Paradox.Shaders.Tests
+namespace SiliconStudio.Xenko.Shaders.Tests
 {
     /// <summary>
     /// Tests for the mixins code generation and runtime API.
@@ -38,8 +38,8 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void TestMaterial()
         {
             var compiler = new EffectCompiler { UseFileSystem = true };
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Engine\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Graphics\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Engine\Shaders");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Core");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Lights");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Materials");
@@ -93,7 +93,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
             //compilerParameters.Set(MaterialParameters.HasSkinningNormal, true);
             compilerParameters.Set(MaterialKeys.HasNormalMap, true);
 
-            var results = compiler.Compile(new ShaderMixinGeneratorSource("ParadoxEffectBase"), compilerParameters);
+            var results = compiler.Compile(new ShaderMixinGeneratorSource("XenkoEffectBase"), compilerParameters);
 
             Assert.IsFalse(results.HasErrors);
         }
@@ -103,9 +103,9 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void TestStream()
         {
             var compiler = new EffectCompiler { UseFileSystem = true };
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Compiler");
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Engine\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Compiler");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Graphics\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Engine\Shaders");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Core");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Lights");
             compiler.SourceDirectories.Add(@"..\..\sources\shaders\Materials");
@@ -129,8 +129,8 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void TestMixinAndComposeKeys()
         {
             var compiler = new EffectCompiler { UseFileSystem = true };
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Graphics\Shaders");
-            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Mixins");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Graphics\Shaders");
+            compiler.SourceDirectories.Add(@"..\..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Mixins");
 
             var compilerParameters = new CompilerParameters {Platform = GraphicsPlatform.Direct3D11};
 
@@ -209,16 +209,16 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void TestNoClean(out CompilerResults left, out CompilerResults right)
         {
             // Create and mount database file system
-            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
-            using (var assetIndexMap = AssetIndexMap.Load())
+            var objDatabase = ObjectDatabase.CreateDefaultDatabase();
+            using (var assetIndexMap = AssetIndexMap.Load(VirtualFileSystem.ApplicationDatabaseIndexPath))
             {
                 var database = new DatabaseFileProvider(assetIndexMap, objDatabase);
                 AssetManager.GetFileProvider = () => database;
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\shaders", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\shaders", "*.xksl"))
                     CopyStream(database, shaderName);
 
-                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\engine\SiliconStudio.Paradox.Shaders.Tests\GameAssets\Compiler", "*.pdxsl"))
+                foreach (var shaderName in Directory.EnumerateFiles(@"..\..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\GameAssets\Compiler", "*.xksl"))
                     CopyStream(database, shaderName);
 
                 var compiler = new EffectCompiler();
@@ -236,7 +236,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void TestGlslCompiler()
         {
             VirtualFileSystem.RemountFileSystem("/shaders", "../../../../shaders");
-            VirtualFileSystem.RemountFileSystem("/baseShaders", "../../../../engine/SiliconStudio.Paradox.Graphics/Shaders");
+            VirtualFileSystem.RemountFileSystem("/baseShaders", "../../../../engine/SiliconStudio.Xenko.Graphics/Shaders");
             VirtualFileSystem.RemountFileSystem("/compiler", "Compiler");
 
 
@@ -255,7 +255,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void TestGlslESCompiler()
         {
             VirtualFileSystem.RemountFileSystem("/shaders", "../../../../shaders");
-            VirtualFileSystem.RemountFileSystem("/baseShaders", "../../../../engine/SiliconStudio.Paradox.Graphics/Shaders");
+            VirtualFileSystem.RemountFileSystem("/baseShaders", "../../../../engine/SiliconStudio.Xenko.Graphics/Shaders");
             VirtualFileSystem.RemountFileSystem("/compiler", "Compiler");
 
             var compiler = new EffectCompiler();

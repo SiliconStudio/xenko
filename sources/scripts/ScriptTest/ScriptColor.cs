@@ -3,23 +3,23 @@ using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 
-using SiliconStudio.Paradox.DataModel;
-using SiliconStudio.Paradox.Effects;
-#if PARADOX_YEBIS
-using Paradox.Effects.Yebis;
+using SiliconStudio.Xenko.DataModel;
+using SiliconStudio.Xenko.Effects;
+#if XENKO_YEBIS
+using Xenko.Effects.Yebis;
 #endif
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox;
-using SiliconStudio.Paradox.Effects;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Graphics.Data;
-using SiliconStudio.Paradox.Games.MicroThreading;
-using SiliconStudio.Paradox.Games.Mathematics;
-using Paradox.Framework.Shaders;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko;
+using SiliconStudio.Xenko.Effects;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Games.MicroThreading;
+using SiliconStudio.Xenko.Games.Mathematics;
+using Xenko.Framework.Shaders;
 
 namespace ScriptTest
 {
-    [ParadoxScript]
+    [XenkoScript]
     public class ScriptColor
     {
         public void Dispose()
@@ -50,7 +50,7 @@ namespace ScriptTest
 
             public PostEffectPlugin ReinhardColorPlugin { get; set; }
 
-#if PARADOX_YEBIS
+#if XENKO_YEBIS
             public YebisPlugin YebisPlugin { get; set; }
 #endif
 
@@ -79,7 +79,7 @@ namespace ScriptTest
 
                 ReinhardColorPlugin = new PostEffectPlugin("ReinhardColor") { RenderPass = reinhardColorPass };
 
-#if PARADOX_YEBIS
+#if XENKO_YEBIS
                 YebisPlugin = new YebisPlugin("ReinhardColor") { RenderPass = yebisPass };
 #endif
 
@@ -133,7 +133,7 @@ namespace ScriptTest
         }
 
 
-        [ParadoxScript]
+        [XenkoScript]
         public static async Task Run(EngineContext engineContext)
         {
             var renderingSetup = new RenderingSetup();
@@ -163,7 +163,7 @@ namespace ScriptTest
             effectMeshGroup.AddMesh(reinhardMesh);
 
             var yebisTexture = Texture2D.New(engineContext.RenderContext.GraphicsDevice, 512, 512, PixelFormat.R8G8B8A8_UNorm, TextureFlags.RenderTarget);
-#if PARADOX_YEBIS
+#if XENKO_YEBIS
             var yebisPlugin = renderingSetup.YebisPlugin;
 
             yebisPlugin.RenderSource = reinhardTexture;

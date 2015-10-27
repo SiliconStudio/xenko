@@ -7,10 +7,10 @@ using System.Collections.Specialized;
 using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     /// <summary>
     /// Processor in charge of updating the <see cref="AudioEmitterComponent"/>s.
@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.Audio
         public class AssociatedData
         {
             /// <summary>
-            /// The <see cref="Paradox.Audio.AudioEmitter"/> associated to the <see cref="AudioEmitterComponent"/>.
+            /// The <see cref="Xenko.Audio.AudioEmitter"/> associated to the <see cref="AudioEmitterComponent"/>.
             /// </summary>
             public AudioEmitter AudioEmitter;
 
@@ -61,7 +61,7 @@ namespace SiliconStudio.Paradox.Audio
         /// Create a new instance of the processor.
         /// </summary>
         public AudioEmitterProcessor()
-            : base(new PropertyKey[] { AudioEmitterComponent.Key, TransformComponent.Key })
+            : base(AudioEmitterComponent.Key, TransformComponent.Key)
         {
         }
 
@@ -82,6 +82,13 @@ namespace SiliconStudio.Paradox.Audio
                 TransformComponent = entity.Get(TransformComponent.Key),
                 ListenerControllerToSoundInstance = new Dictionary<Tuple<AudioListenerComponent, AudioEmitterSoundController>, SoundEffectInstance>()
             };
+        }
+
+        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        {
+            return
+                entity.Get(AudioEmitterComponent.Key) == associatedData.AudioEmitterComponent &&
+                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
         }
 
         protected internal override void OnSystemRemove()

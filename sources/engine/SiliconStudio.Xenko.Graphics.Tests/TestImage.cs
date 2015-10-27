@@ -28,7 +28,7 @@ using System.IO;
 using NUnit.Framework;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics.Tests
+namespace SiliconStudio.Xenko.Graphics.Tests
 {
     /// <summary>
     /// Tests for <see cref="Texture"/>

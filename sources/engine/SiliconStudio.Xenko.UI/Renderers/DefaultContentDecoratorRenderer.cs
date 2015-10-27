@@ -2,9 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Xenko.UI.Controls;
 
-namespace SiliconStudio.Paradox.UI.Renderers
+namespace SiliconStudio.Xenko.UI.Renderers
 {
     /// <summary>
     /// The default renderer for <see cref="ContentDecorator"/>.
@@ -28,7 +28,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
             var image = decorator.BackgroundImage;
             var color = decorator.RenderOpacity * Color.White;
 
-            Batch.DrawImage(image.Texture, null, ref decorator.WorldMatrixInternal, ref image.RegionInternal,
+            Batch.DrawImage(image.Texture, ref decorator.WorldMatrixInternal, ref image.RegionInternal,
                             ref decorator.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
         }
     }

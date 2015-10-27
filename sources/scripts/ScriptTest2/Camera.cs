@@ -2,7 +2,7 @@
 
 using System;
 
-using SiliconStudio.Paradox.Games.Mathematics;
+using SiliconStudio.Xenko.Games.Mathematics;
 
 namespace ScriptTest2
 {

@@ -6,10 +6,10 @@ using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Core.Storage;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Shaders.Compiler;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders.Compiler;
 
-namespace SiliconStudio.Paradox.Shaders.Tests
+namespace SiliconStudio.Xenko.Shaders.Tests
 {
     [TestFixture]
     public class TestShaderMixer2
@@ -24,7 +24,7 @@ namespace SiliconStudio.Paradox.Shaders.Tests
         public void Init()
         {
             // Create and mount database file system
-            var objDatabase = new ObjectDatabase("/data/db", "index", "/local/db");
+            var objDatabase = ObjectDatabase.CreateDefaultDatabase();
             var databaseFileProvider = new DatabaseFileProvider(objDatabase);
             AssetManager.GetFileProvider = () => databaseFileProvider;
 

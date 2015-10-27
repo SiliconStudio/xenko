@@ -3,7 +3,7 @@
 
 using System;
 
-namespace SiliconStudio.Paradox.Assets.Entities
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     public interface IEntityScriptReference
     {

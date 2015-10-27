@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using SiliconStudio.Core.Serialization;
 
-namespace SiliconStudio.Paradox.Rendering.Data
+namespace SiliconStudio.Xenko.Rendering.Data
 {
     public class ParameterCollectionHashSerializer : ClassDataSerializer<ParameterCollection>, IDataSerializerInitializer
     {

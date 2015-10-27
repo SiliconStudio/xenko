@@ -63,9 +63,9 @@ namespace SiliconStudio.Assets.Tests
             assetObject.MapItems3.Add("key3", 3);
             assetObject.MapItems3.Add("key4", 3);
 
-            string testGenerated1 = DirectoryTestBase + @"TestSerializing\TestSerializing_TestMyAssetObject_Generated1.pdxobj";
-            string testGenerated2 = DirectoryTestBase + @"TestSerializing\TestSerializing_TestMyAssetObject_Generated2.pdxobj";
-            string referenceFilePath = DirectoryTestBase + @"TestSerializing\TestSerializing_TestMyAssetObject_Reference.pdxobj";
+            string testGenerated1 = DirectoryTestBase + @"TestSerializing\TestSerializing_TestMyAssetObject_Generated1.xkobj";
+            string testGenerated2 = DirectoryTestBase + @"TestSerializing\TestSerializing_TestMyAssetObject_Generated2.xkobj";
+            string referenceFilePath = DirectoryTestBase + @"TestSerializing\TestSerializing_TestMyAssetObject_Reference.xkobj";
 
             var myAssetDescriptor = TypeDescriptorFactory.Default.Find(typeof(MyAsset));
 

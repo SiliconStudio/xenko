@@ -6,7 +6,7 @@ using System.ComponentModel;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// A delegate renderer.

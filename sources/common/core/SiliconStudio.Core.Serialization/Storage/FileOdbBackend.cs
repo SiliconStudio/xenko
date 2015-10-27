@@ -16,34 +16,28 @@ namespace SiliconStudio.Core.Storage
     {
         private static readonly object LockOnMove = new object();
         private const int WriteBufferSize = 1024;
-        private bool isReadOnly;
-
+        private const string TempDirectory = "/tmp/";
         // Resolve provider once at initialization
         private readonly IVirtualFileProvider virtualFileProvider;
         private readonly string vfsRootUrl;
         private readonly string vfsTempUrl;
-        private AssetIndexMap assetIndexMap;
+        private readonly AssetIndexMap assetIndexMap;
 
-        /// <inheritdoc/>
-        public IAssetIndexMap AssetIndexMap
-        {
-            get { return assetIndexMap; }
-        }
-
-        public FileOdbBackend(string vfsRootUrl, bool isReadOnly, string indexName = "index")
+        public FileOdbBackend(string vfsRootUrl, string indexName, bool isReadOnly)
         {
             var resolveProviderResult = VirtualFileSystem.ResolveProvider(vfsRootUrl, true);
             virtualFileProvider = resolveProviderResult.Provider;
             this.vfsRootUrl = resolveProviderResult.Path;
-            vfsTempUrl = this.vfsRootUrl + "/tmp/";
+            vfsTempUrl = this.vfsRootUrl + TempDirectory;
 
             // Ensure directories exists
             if (!virtualFileProvider.DirectoryExists(this.vfsRootUrl))
                 virtualFileProvider.CreateDirectory(this.vfsRootUrl);
 
-            this.isReadOnly = isReadOnly;
+            IsReadOnly = isReadOnly;
 
-            assetIndexMap = Serialization.Assets.AssetIndexMap.Load(vfsRootUrl + VirtualFileSystem.DirectorySeparatorChar + indexName, isReadOnly);
+            assetIndexMap = !string.IsNullOrEmpty(indexName) ? Serialization.Assets.AssetIndexMap.Load(vfsRootUrl + VirtualFileSystem.DirectorySeparatorChar + indexName, isReadOnly)
+                                                             : Serialization.Assets.AssetIndexMap.CreateInMemory();
             if (!isReadOnly && !virtualFileProvider.DirectoryExists(vfsTempUrl))
             {
                 try
@@ -52,15 +46,15 @@ namespace SiliconStudio.Core.Storage
                 }
                 catch (Exception)
                 {
-                    this.isReadOnly = true;
+                    IsReadOnly = true;
                 }
             }
         }
 
-        public bool IsReadOnly
-        {
-            get { return isReadOnly; }
-        }
+        /// <inheritdoc/>
+        public IAssetIndexMap AssetIndexMap => assetIndexMap;
+
+        public bool IsReadOnly { get; }
 
         public void Dispose()
         {
@@ -149,7 +143,7 @@ namespace SiliconStudio.Core.Storage
         /// <inheritdoc/>
         public OdbStreamWriter CreateStream()
         {
-            if (isReadOnly)
+            if (IsReadOnly)
                 throw new InvalidOperationException("Read-only backend.");
 
             string tmpFileName = vfsTempUrl + Guid.NewGuid() + ".tmp";

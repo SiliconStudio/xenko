@@ -270,7 +270,7 @@ namespace SiliconStudio.BuildEngine
                 if (!entryMatch)
                     continue;
 
-                if (entry.OutputObjects.Any(outputObject => !VirtualFileSystem.FileExists(FileOdbBackend.BuildUrl("/data/db", outputObject.Value))))
+                if (entry.OutputObjects.Any(outputObject => !VirtualFileSystem.FileExists(FileOdbBackend.BuildUrl(VirtualFileSystem.ApplicationDatabasePath, outputObject.Value))))
                 {
                     entryMatch = false;
                 }

@@ -4,10 +4,10 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Performs hierarchical updates for a given <see cref="Model"/>.

@@ -3,9 +3,9 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Paradox.Rendering.Images;
+using SiliconStudio.Xenko.Rendering.Images;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// An effect renderer for a scene.

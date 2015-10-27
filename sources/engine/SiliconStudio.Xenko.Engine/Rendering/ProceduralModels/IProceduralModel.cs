@@ -5,9 +5,9 @@ using System.Collections.Generic;
 using System.ComponentModel;
 
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Rendering;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Paradox.Rendering.ProceduralModels
+namespace SiliconStudio.Xenko.Rendering.ProceduralModels
 {
     /// <summary>
     /// Interface to create a procedural model.

@@ -26,7 +26,7 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Extensions to <see cref="PixelFormat"/>.

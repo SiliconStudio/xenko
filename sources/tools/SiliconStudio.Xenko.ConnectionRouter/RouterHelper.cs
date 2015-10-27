@@ -5,53 +5,52 @@ using System.Collections.Specialized;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
 using SiliconStudio.Assets;
 
-namespace SiliconStudio.Paradox.ConnectionRouter
+namespace SiliconStudio.Xenko.ConnectionRouter
 {
     public static class RouterHelper
     {
         /// <summary>
-        /// Gets the paradox SDK dir.
+        /// Gets the xenko SDK dir.
         /// </summary>
-        /// <param name="paradoxVersion">The paradox version. If null, it will get latest version.</param>
+        /// <param name="xenkoVersion">The xenko version. If null, it will get latest version.</param>
         /// <returns></returns>
-        public static string FindParadoxSdkDir(string paradoxVersion = null)
+        public static string FindXenkoSdkDir(string xenkoVersion = null)
         {
-            // TODO: Almost duplicate of ParadoxCommandsProxy.FindParadoxSdkDir!!
+            // TODO: Almost duplicate of XenkoCommandsProxy.FindXenkoSdkDir!!
             // TODO: Maybe move it in some common class somewhere? (in this case it would be included with "Add as link" in VSPackage)
-            var paradoxSdkDir = DirectoryHelper.GetInstallationDirectory("Paradox");
+            var xenkoSdkDir = DirectoryHelper.GetInstallationDirectory("Xenko");
 
-            if (paradoxSdkDir == null)
+            if (xenkoSdkDir == null)
             {
-                paradoxSdkDir = Environment.GetEnvironmentVariable("SiliconStudioParadoxDir");
+                xenkoSdkDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
             }
 
-            if (paradoxSdkDir == null)
+            if (xenkoSdkDir == null)
             {
                 return null;
             }
 
             // Check if it is a dev directory
-            if (File.Exists(Path.Combine(paradoxSdkDir, "build\\Paradox.sln")))
-                return paradoxSdkDir;
+            if (File.Exists(Path.Combine(xenkoSdkDir, "build\\Xenko.sln")))
+                return xenkoSdkDir;
 
             // Check if we are in a root directory with store/packages facilities
-            if (NugetStore.IsStoreDirectory(paradoxSdkDir))
+            if (NugetStore.IsStoreDirectory(xenkoSdkDir))
             {
-                var store = new NugetStore(paradoxSdkDir);
+                var store = new NugetStore(xenkoSdkDir);
 
-                var paradoxPackages = store.GetPackagesInstalled(store.MainPackageId);
-                var paradoxPackage = paradoxVersion != null
-                    ? (paradoxPackages.FirstOrDefault(p => p.Version.ToString() == paradoxVersion)
-                        ?? paradoxPackages.FirstOrDefault(p => VersionWithoutSpecialPart(p.Version.ToString()) == VersionWithoutSpecialPart(paradoxVersion))) // If no exact match, try a second time without the special version tag (beta, alpha, etc...)
-                    : paradoxPackages.FirstOrDefault();
-                if (paradoxPackage == null)
+                var xenkoPackages = store.GetPackagesInstalled(store.MainPackageIds);
+                var xenkoPackage = xenkoVersion != null
+                    ? (xenkoPackages.FirstOrDefault(p => p.Version.ToString() == xenkoVersion)
+                        ?? xenkoPackages.FirstOrDefault(p => VersionWithoutSpecialPart(p.Version.ToString()) == VersionWithoutSpecialPart(xenkoVersion))) // If no exact match, try a second time without the special version tag (beta, alpha, etc...)
+                    : xenkoPackages.FirstOrDefault();
+                if (xenkoPackage == null)
                     return null;
 
-                var packageDirectory = store.PathResolver.GetPackageDirectory(paradoxPackage);
-                return Path.Combine(paradoxSdkDir, store.RepositoryPath, packageDirectory);
+                var packageDirectory = store.PathResolver.GetPackageDirectory(xenkoPackage);
+                return Path.Combine(xenkoSdkDir, store.RepositoryPath, packageDirectory);
             }
 
             return null;
@@ -73,7 +72,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 // Try to connect to router
                 FileVersionInfo runningRouterVersion = null;
                 Process runningRouterProcess = null;
-                foreach (var process in Process.GetProcessesByName("SiliconStudio.Paradox.ConnectionRouter"))
+                foreach (var process in Process.GetProcessesByName("SiliconStudio.Xenko.ConnectionRouter"))
                 {
                     try
                     {
@@ -89,21 +88,21 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 var routerAssemblyLocation = typeof(Router).Assembly.Location;
                 var routerAssemblyExe = Path.GetFileName(routerAssemblyLocation);
 
-                // Find latest paradox
-                var paradoxSdkDir = FindParadoxSdkDir();
-                if (paradoxSdkDir == null)
+                // Find latest xenko
+                var xenkoSdkDir = FindXenkoSdkDir();
+                if (xenkoSdkDir == null)
                 {
-                    throw new FileNotFoundException("Could not find Paradox Sdk Dir");
+                    throw new FileNotFoundException("Could not find Xenko Sdk Dir");
                 }
 
-                var paradoxSdkBinDir = Path.Combine(paradoxSdkDir, @"Bin\Windows-Direct3D11");
+                var xenkoSdkBinDir = Path.Combine(xenkoSdkDir, @"Bin\Windows-Direct3D11");
 
-                var routerAssemblyFile = Path.Combine(paradoxSdkBinDir, routerAssemblyExe);
+                var routerAssemblyFile = Path.Combine(xenkoSdkBinDir, routerAssemblyExe);
 
                 if (!File.Exists(routerAssemblyLocation))
                 {
                     // Should we allow it to continue if there is an existing router? (routerVersion != null)
-                    throw new FileNotFoundException("Could not find Paradox Connection Router executable");
+                    throw new FileNotFoundException("Could not find Xenko Connection Router executable");
                 }
 
                 // If already started, check if found version is better
@@ -111,7 +110,7 @@ namespace SiliconStudio.Paradox.ConnectionRouter
                 {
                     var routerAssemblyFileVersionInfo = FileVersionInfo.GetVersionInfo(routerAssemblyLocation);
 
-                    // Check that current router is at least as good as the one of latest found Paradox
+                    // Check that current router is at least as good as the one of latest found Xenko
                     if (new Version(routerAssemblyFileVersionInfo.FileVersion) <= new Version(runningRouterVersion.FileVersion))
                         return true;
                 }

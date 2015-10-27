@@ -4,7 +4,7 @@
 using System.ComponentModel;
 using System.Globalization;
 
-namespace SiliconStudio.Paradox.Rendering.Materials.ComputeColors
+namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 {
     /// <summary>
     /// An indexed stream. 

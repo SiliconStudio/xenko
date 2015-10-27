@@ -1,14 +1,14 @@
 // Copyright (c) 2011 Silicon Studio
 
 using System;
-using SiliconStudio.Paradox.Rendering;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Shaders;
+using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     public enum AOQuality
     {

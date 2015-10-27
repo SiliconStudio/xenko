@@ -7,9 +7,9 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle("SiliconStudio.Paradox.Input")]
+[assembly: AssemblyTitle("SiliconStudio.Xenko.Input")]
 [assembly: AssemblyDescription("")]
-[assembly: AssemblyProduct("SiliconStudio.Paradox.Input")]
+[assembly: AssemblyProduct("SiliconStudio.Xenko.Input")]
 
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components.  If you need to access a type in this assembly from 
@@ -21,7 +21,7 @@ using System.Runtime.InteropServices;
 
 #pragma warning disable 436 // SiliconStudio.PublicKeys is defined in multiple assemblies
 
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Engine" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.Input.Serializers" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudio.Paradox.UI.Tests" + SiliconStudio.PublicKeys.Default)]
-[assembly: InternalsVisibleTo("SiliconStudioParadoxUITests" + SiliconStudio.PublicKeys.Default)] // iOS removes dot
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.Input.Serializers" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudio.Xenko.UI.Tests" + SiliconStudio.PublicKeys.Default)]
+[assembly: InternalsVisibleTo("SiliconStudioXenkoUITests" + SiliconStudio.PublicKeys.Default)] // iOS removes dot

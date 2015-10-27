@@ -2,12 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.UI.Controls;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.UI.Controls;
 using IServiceRegistry = SiliconStudio.Core.IServiceRegistry;
 using Vector3 = SiliconStudio.Core.Mathematics.Vector3;
 
-namespace SiliconStudio.Paradox.UI.Renderers
+namespace SiliconStudio.Xenko.UI.Renderers
 {
     /// <summary>
     /// The default renderer for <see cref="EditText"/>.
@@ -37,7 +37,7 @@ namespace SiliconStudio.Paradox.UI.Renderers
 
             if (image != null && image.Texture != null)
             {
-                Batch.DrawImage(image.Texture, null, ref editText.WorldMatrixInternal, ref image.RegionInternal, ref editText.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
+                Batch.DrawImage(image.Texture, ref editText.WorldMatrixInternal, ref image.RegionInternal, ref editText.RenderSizeInternal, ref image.BordersInternal, ref color, context.DepthBias, image.Orientation);
             }
             
             // calculate the size of the text region by removing padding

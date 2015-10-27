@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Graphics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.TextureConverter.Requests;
 using SiliconStudio.TextureConverter.TexLibraries;
 using System.Runtime.CompilerServices;
@@ -56,7 +56,7 @@ namespace SiliconStudio.TextureConverter
                 new AtitcTexLibrary(), // used to compress/decompress texture with ATI compression format (ATITC)
                 new DxtTexLib(), // used to compress/decompress texture to DXT1-5 and load/save *.dds compressed texture files.
                 new FITexLib(), // used to open/save common bitmap image formats.
-                new ParadoxTexLibrary(), // used to save/load paradox texture format.
+                new XenkoTexLibrary(), // used to save/load xenko texture format.
                 new PvrttTexLib(), // used to compress/decompress texture to PVRTC1-2 and ETC1-2 and load/save *.pvr compressed texture file.
                 new ColorKeyTexLibrary(), // used to apply ColorKey on R8G8B8A8/B8G8R8A8_Unorm
                 new AtlasTexLibrary(), // used to create and manipulate texture atlas
@@ -340,13 +340,13 @@ namespace SiliconStudio.TextureConverter
         }
 
         /// <summary>
-        /// Loads the specified image of the class <see cref="SiliconStudio.Paradox.Graphics.Image"/>.
+        /// Loads the specified image of the class <see cref="SiliconStudio.Xenko.Graphics.Image"/>.
         /// </summary>
         /// <param name="image">The image.</param>
         /// <param name="isSRgb">Indicate if the input file contains sRGB data</param>
         /// <remarks>The ownership of the provided image is not taken by the tex tool. The user has to dispose it him-self</remarks>
         /// <returns>An instance of the class <see cref="TexImage"/> containing your loaded image</returns>
-        public TexImage Load(Image image, bool isSRgb = false)
+        public TexImage Load(Image image, bool isSRgb)
         {
             if (image == null) throw new ArgumentNullException("image");
             return Load(new LoadingRequest(image, isSRgb));
@@ -958,7 +958,7 @@ namespace SiliconStudio.TextureConverter
             if (texImage.Dimension != TexImage.TextureDimension.Texture2D || texImage.Format.IsCompressed())
                 throw new NotImplementedException();
 
-            Log.Info("Extracting region and exporting to Paradox Image ...");
+            Log.Info("Extracting region and exporting to Xenko Image ...");
 
             // clamp the provided region to be sure it fits in provided image
             region.X = Math.Max(0, Math.Min(region.X, texImage.Width));
@@ -966,23 +966,23 @@ namespace SiliconStudio.TextureConverter
             region.Width = Math.Max(0, Math.Min(region.Width, texImage.Width - region.X));
             region.Height = Math.Max(0, Math.Min(region.Height, texImage.Height - region.Y));
 
-            // create the paradox image
-            var pdxImage = Image.New2D(region.Width, region.Height, 1, texImage.Format);
-            if (pdxImage == null)
+            // create the xenko image
+            var xkImage = Image.New2D(region.Width, region.Height, 1, texImage.Format);
+            if (xkImage == null)
             {
                 Log.Error("Image could not be created.");
                 throw new InvalidOperationException("Image could not be created.");
             }
 
-            // get the row pitch of the paradox image
-            var pixelBuffer = pdxImage.GetPixelBuffer(0, 0);
+            // get the row pitch of the xenko image
+            var pixelBuffer = xkImage.GetPixelBuffer(0, 0);
             var dstRowPitch = pixelBuffer.RowStride;
 
             // copy the data
             if (texImage.ArraySize > 0)
             {
                 var rowSrcPtr = texImage.SubImageArray[0].Data;
-                var rowDstPtr = pdxImage.DataPointer;
+                var rowDstPtr = xkImage.DataPointer;
                 rowSrcPtr = IntPtr.Add(rowSrcPtr, region.Y * texImage.RowPitch);
                 for (int i = 0; i < region.Height; i++)
                 {
@@ -997,23 +997,23 @@ namespace SiliconStudio.TextureConverter
                 }
             }
 
-            return pdxImage;
+            return xkImage;
         }
 
 
         /// <summary>
-        /// Converts to paradox image.
+        /// Converts to xenko image.
         /// </summary>
         /// <param name="image">The image.</param>
-        /// <returns>The converted Paradox <see cref="SiliconStudio.Paradox.Graphics.Image"/>.</returns>
+        /// <returns>The converted Xenko <see cref="SiliconStudio.Xenko.Graphics.Image"/>.</returns>
         /// <remarks>The user is the owner of the returned image, and has to dispose it after he finishes using it</remarks>
-        public SiliconStudio.Paradox.Graphics.Image ConvertToParadoxImage(TexImage image)
+        public SiliconStudio.Xenko.Graphics.Image ConvertToXenkoImage(TexImage image)
         {
-            var request = new ExportToParadoxRequest();
+            var request = new ExportToXenkoRequest();
 
             ExecuteRequest(image, request);
 
-            return request.PdxImage;
+            return request.XkImage;
         }
 
 
@@ -1448,7 +1448,7 @@ namespace SiliconStudio.TextureConverter
                 }
 
                 var cube = texTool.CreateTextureCube(list);
-                //texTool.Compress(cube, Paradox.Framework.Graphics.PixelFormat.BC3_UNorm);
+                //texTool.Compress(cube, Xenko.Framework.Graphics.PixelFormat.BC3_UNorm);
                 texTool.GenerateMipMaps(cube, Filter.MipMapGeneration.Box);
 
                 texTool.Save(cube, @"C:\dev\data\test\cube.pvr");
@@ -1473,7 +1473,7 @@ namespace SiliconStudio.TextureConverter
                 }
 
                 var array = texTool.CreateTextureArray(list);
-                texTool.Compress(array, Paradox.Framework.Graphics.PixelFormat.BC3_UNorm);
+                texTool.Compress(array, Xenko.Framework.Graphics.PixelFormat.BC3_UNorm);
                 //texTool.GenerateMipMaps(array, Filter.MipMapGeneration.Box);
 
                 texTool.Save(array, @"C:\dev\data\test\array_before.dds");

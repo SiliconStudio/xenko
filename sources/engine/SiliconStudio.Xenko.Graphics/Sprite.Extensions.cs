@@ -4,7 +4,7 @@ using System;
 
 using SiliconStudio.Core.Mathematics;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// A sprite represents a series frames in an atlas forming an animation. 
@@ -20,7 +20,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="rotation">The rotation to apply on the sprite</param>
         /// <param name="depthLayer">The depth layer to which draw the sprite</param>
         /// <param name="spriteEffects">The sprite effect to apply on the sprite</param>
-        /// <remarks>This function must be called between the <see cref="SpriteBatch.Begin(SiliconStudio.Paradox.Graphics.SpriteSortMode,SiliconStudio.Paradox.Graphics.Effect)"/> 
+        /// <remarks>This function must be called between the <see cref="SpriteBatch.Begin(SiliconStudio.Xenko.Graphics.SpriteSortMode,SiliconStudio.Xenko.Graphics.Effect)"/> 
         /// and <see cref="SpriteBatch.End()"/> calls of the provided <paramref name="spriteBatch"/></remarks>
         /// <exception cref="ArgumentException">The provided frame index is not valid.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The provided spriteBatch is null</exception>
@@ -40,7 +40,7 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="scales">The scale factors to apply on the sprite</param>
         /// <param name="depthLayer">The depth layer to which draw the sprite</param>
         /// <param name="spriteEffects">The sprite effect to apply on the sprite</param>
-        /// <remarks>This function must be called between the <see cref="SpriteBatch.Begin(SiliconStudio.Paradox.Graphics.SpriteSortMode,SiliconStudio.Paradox.Graphics.Effect)"/> 
+        /// <remarks>This function must be called between the <see cref="SpriteBatch.Begin(SiliconStudio.Xenko.Graphics.SpriteSortMode,SiliconStudio.Xenko.Graphics.Effect)"/> 
         /// and <see cref="SpriteBatch.End()"/> calls of the provided <paramref name="spriteBatch"/></remarks>
         /// <exception cref="ArgumentException">The provided frame index is not valid.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The provided spriteBatch is null</exception>
@@ -61,11 +61,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="spriteBatch">The sprite batch used to draw the sprite.</param>
         /// <param name="worldMatrix">The world matrix of the sprite</param>
         /// <param name="color">The color to apply on the sprite</param>
-        /// <remarks>This function must be called between the <see cref="SpriteBatch.Begin(SiliconStudio.Paradox.Graphics.SpriteSortMode,SiliconStudio.Paradox.Graphics.Effect)"/> 
+        /// <remarks>This function must be called between the <see cref="SpriteBatch.Begin(SiliconStudio.Xenko.Graphics.SpriteSortMode,SiliconStudio.Xenko.Graphics.Effect)"/> 
         /// and <see cref="SpriteBatch.End()"/> calls of the provided <paramref name="spriteBatch"/></remarks>
         /// <exception cref="ArgumentException">The provided frame index is not valid.</exception>
         /// <exception cref="ArgumentOutOfRangeException">The provided spriteBatch is null</exception>
-        public static void Draw3D(this Sprite sprite, Sprite3DBatch spriteBatch, ref Matrix worldMatrix, ref Color color)
+        public static void Draw3D(this Sprite sprite, Sprite3DBatch spriteBatch, ref Matrix worldMatrix, ref Color4 color)
         {
             spriteBatch.Draw(sprite.Texture, ref worldMatrix, ref sprite.RegionInternal, ref sprite.SizeInternal, ref color, sprite.Orientation);
         }

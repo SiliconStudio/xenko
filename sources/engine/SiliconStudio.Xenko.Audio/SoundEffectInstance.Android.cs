@@ -11,11 +11,11 @@ using Android.Media;
 using Android.Runtime;
 
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Audio.Wave;
+using SiliconStudio.Xenko.Audio.Wave;
 
 using Math = System.Math;
 
-namespace SiliconStudio.Paradox.Audio
+namespace SiliconStudio.Xenko.Audio
 {
     partial class SoundEffectInstance
     {
@@ -243,6 +243,7 @@ namespace SiliconStudio.Paradox.Audio
         internal static void StaticDestroy()
         {
             JNIEnv.DeleteGlobalRef(blankJavaDataBuffer);
+            blankJavaDataBuffer = IntPtr.Zero;
 
             // release created audio tracks and java buffers.
             foreach (var trackInfo in audioTrackPool)

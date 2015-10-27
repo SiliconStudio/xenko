@@ -3,9 +3,9 @@
 
 using System.Collections.Generic;
 using System.ServiceModel;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Debugger.Target
+namespace SiliconStudio.Xenko.Debugger.Target
 {
     /// <summary>
     /// Controls a game execution host, that can load and unload assemblies, run games and update assets.

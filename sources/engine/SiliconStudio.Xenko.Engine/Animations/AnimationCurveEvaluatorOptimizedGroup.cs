@@ -5,7 +5,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 
-namespace SiliconStudio.Paradox.Animations
+namespace SiliconStudio.Xenko.Animations
 {
     public abstract class AnimationCurveEvaluatorOptimizedGroup<T> : AnimationCurveEvaluatorGroup
     {

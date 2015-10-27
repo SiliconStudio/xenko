@@ -81,8 +81,6 @@ namespace SiliconStudio.Core.Tests.Build
 
         private void SaveAssetsAndDeleteAChild(AssetManager assetManager)
         {
-            const string vfsRootUrl = "/data/db/";
-
             var simpleAsset = new SimpleAsset("Pa", new SimpleAsset("Son", null));
             assetManager.Save(simpleAsset);
             var databaseFileProvider = (DatabaseFileProvider)VirtualFileSystem.ResolveProvider("/db", true).Provider;
@@ -91,7 +89,7 @@ namespace SiliconStudio.Core.Tests.Build
             ObjectId childId;
             databaseFileProvider.AssetIndexMap.TryGetValue("SimpleAssets/Son", out childId);
 
-            VirtualFileSystem.FileDelete(FileOdbBackend.BuildUrl(vfsRootUrl, childId));
+            VirtualFileSystem.FileDelete(FileOdbBackend.BuildUrl(VirtualFileSystem.ApplicationDatabasePath, childId));
         }
 
         [Test]

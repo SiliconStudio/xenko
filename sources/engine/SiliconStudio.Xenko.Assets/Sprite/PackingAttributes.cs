@@ -3,9 +3,9 @@
 
 using System.ComponentModel;
 using SiliconStudio.Core;
-using SiliconStudio.Paradox.Assets.Textures.Packing;
+using SiliconStudio.Xenko.Assets.Textures.Packing;
 
-namespace SiliconStudio.Paradox.Assets.Sprite
+namespace SiliconStudio.Xenko.Assets.Sprite
 {
     /// <summary>
     /// Specify how the sprite should be packed into atlas

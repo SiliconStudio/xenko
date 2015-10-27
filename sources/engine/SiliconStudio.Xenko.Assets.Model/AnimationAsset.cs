@@ -8,22 +8,21 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Xenko.Animations;
 
-namespace SiliconStudio.Paradox.Assets.Model
+namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("Animation")]
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
     [ObjectFactory(typeof(AnimationFactory))]
-    [ThumbnailCompiler(PreviewerCompilerNames.AnimationThumbnailCompilerQualifiedName)]
     [Display(180, "Animation", "A skeletal animation")]
     public class AnimationAsset : AssetImport
     {
         /// <summary>
         /// The default file extension used by the <see cref="AnimationAsset"/>.
         /// </summary>
-        public const string FileExtension = ".pdxanim";
+        public const string FileExtension = ".xkanim;.pdxanim";
 
         /// <summary>
         /// Gets or sets the scale import.

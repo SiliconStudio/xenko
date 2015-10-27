@@ -29,10 +29,10 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.ReferenceCounting;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
-using SiliconStudio.Paradox.Graphics.Data;
+using SiliconStudio.Xenko.Graphics.Data;
 using Utilities = SiliconStudio.Core.Utilities;
 
-namespace SiliconStudio.Paradox.Graphics
+namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
     /// Class used for all Textures (1D, 2D, 3D, DepthStencil, RenderTargets...etc.)
@@ -913,7 +913,7 @@ namespace SiliconStudio.Paradox.Graphics
             int subResourceIndex = this.GetSubResourceIndex(arraySlice, mipSlice);
 
             // If this texture is declared as default usage, we use UpdateSubresource that supports sub resource region.
-#if SILICONSTUDIO_PARADOX_GRAPHICS_API_OPENGLES
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             if (this.Usage == GraphicsResourceUsage.Default || (this.Usage == GraphicsResourceUsage.Dynamic && GraphicsDevice.IsOpenGLES2))
 #else
             if (this.Usage == GraphicsResourceUsage.Default)
@@ -1013,10 +1013,11 @@ namespace SiliconStudio.Paradox.Graphics
         /// <param name="stream">The stream to load the texture from.</param>
         /// <param name="textureFlags">True to load the texture with unordered access enabled. Default is false.</param>
         /// <param name="usage">Usage of the resource. Default is <see cref="GraphicsResourceUsage.Immutable"/> </param>
+        /// <param name="loadAsSRGB">Indicate if the texture should be loaded as an sRGB texture. If false, the texture is load in its default format.</param>
         /// <returns>A texture</returns>
-        public static Texture Load(GraphicsDevice device, Stream stream, TextureFlags textureFlags = TextureFlags.ShaderResource, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable)
+        public static Texture Load(GraphicsDevice device, Stream stream, TextureFlags textureFlags = TextureFlags.ShaderResource, GraphicsResourceUsage usage = GraphicsResourceUsage.Immutable, bool loadAsSRGB = false)
         {
-            using (var image = Image.Load(stream))
+            using (var image = Image.Load(stream, loadAsSRGB))
                 return New(device, image, textureFlags, usage);
         }
 

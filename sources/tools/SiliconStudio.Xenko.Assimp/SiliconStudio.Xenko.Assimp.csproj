@@ -1,16 +1,16 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\targets\Paradox.PreSettings.targets" />
+  <Import Project="..\..\targets\Xenko.PreSettings.targets" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{F61D86B5-7C3D-4441-957D-A0A6D2FA69CA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Paradox.Assimp</RootNamespace>
-    <AssemblyName>SiliconStudio.Paradox.Assimp</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Assimp</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Assimp</AssemblyName>
     <TargetFrameworkVersion>$(TargetFrameworkVersionTool)</TargetFrameworkVersion>
-    <ParadoxBuildTags>WindowsTools</ParadoxBuildTags>
+    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
     <SiliconStudioAssemblyProcessorOptions/>
   </PropertyGroup>
   <ItemGroup>

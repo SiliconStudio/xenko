@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Paradox.Animations;
+using SiliconStudio.Xenko.Animations;
 using Quaternion = SiliconStudio.Core.Mathematics.Quaternion;
 using Vector3 = SiliconStudio.Core.Mathematics.Vector3;
 
-namespace SiliconStudio.Paradox.Rendering
+namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Applies animation from a <see cref="AnimationClip"/> to a <see cref="ModelViewHierarchyUpdater"/>.

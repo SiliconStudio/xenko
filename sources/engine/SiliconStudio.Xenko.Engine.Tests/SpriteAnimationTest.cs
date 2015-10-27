@@ -4,12 +4,12 @@ using System;
 using System.Collections.Generic;
 
 using NUnit.Framework;
-using SiliconStudio.Paradox.Animations;
-using SiliconStudio.Paradox.Games;
-using SiliconStudio.Paradox.Graphics;
-using SiliconStudio.Paradox.Rendering.Sprites;
+using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Sprites;
 
-namespace SiliconStudio.Paradox.Engine.Tests
+namespace SiliconStudio.Xenko.Engine.Tests
 {
     [TestFixture]
     public class SpriteAnimationTest : Game

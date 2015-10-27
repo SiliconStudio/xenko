@@ -7,9 +7,9 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Paradox.Engine;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Paradox.Rendering.Lights
+namespace SiliconStudio.Xenko.Rendering.Lights
 {
     /// <summary>
     /// A spot light.

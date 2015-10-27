@@ -1,7 +1,7 @@
 using System.Collections.Generic;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Paradox.SpriteStudio.Offline
+namespace SiliconStudio.Xenko.SpriteStudio.Offline
 {
     [DataContract]
     public class NodeAnimationData

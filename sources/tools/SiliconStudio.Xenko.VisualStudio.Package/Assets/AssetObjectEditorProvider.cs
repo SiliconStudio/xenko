@@ -37,7 +37,7 @@ using SharpYaml;
 using SharpYaml.Schemas;
 using SharpYaml.Tokens;
 
-namespace SiliconStudio.Paradox.VisualStudio.Assets
+namespace SiliconStudio.Xenko.VisualStudio.Assets
 {
 
 	#region Provider definition

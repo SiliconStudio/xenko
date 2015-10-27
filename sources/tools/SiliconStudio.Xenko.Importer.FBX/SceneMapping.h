@@ -8,17 +8,17 @@ using namespace System::IO;
 using namespace System::Collections::Generic;
 using namespace System::Runtime::InteropServices;
 using namespace SiliconStudio::Core::Diagnostics;
-using namespace SiliconStudio::Paradox::Animations;
-using namespace SiliconStudio::Paradox::Rendering;
-using namespace SiliconStudio::Paradox::Engine;
+using namespace SiliconStudio::Xenko::Animations;
+using namespace SiliconStudio::Xenko::Rendering;
+using namespace SiliconStudio::Xenko::Engine;
 using namespace SiliconStudio::Core::Mathematics;
 
 namespace SiliconStudio {
-	namespace Paradox {
+	namespace Xenko {
 		namespace Importer {
 			namespace FBX {
 				/// <summary>
-				/// Contains mapping between FBX nodes and Paradox ModelNodeDefinition
+				/// Contains mapping between FBX nodes and Xenko ModelNodeDefinition
 				/// </summary>
 				ref class SceneMapping
 				{
@@ -91,7 +91,7 @@ namespace SiliconStudio {
 					/// Finds the index of the FBX node in the <see cref="ModelNodeDefinition"/> from a FBX node.
 					/// </summary>
 					/// <param name="node">The node.</param>
-					/// <returns>SiliconStudio.Paradox.Rendering.ModelNodeDefinition.</returns>
+					/// <returns>SiliconStudio.Xenko.Rendering.ModelNodeDefinition.</returns>
 					int FindNodeIndex(FbxNode* node)
 					{
 						int nodeIndex;
@@ -108,7 +108,7 @@ namespace SiliconStudio {
 					/// Finds a <see cref="ModelNodeDefinition"/> from a FBX node.
 					/// </summary>
 					/// <param name="node">The node.</param>
-					/// <returns>SiliconStudio.Paradox.Rendering.ModelNodeDefinition.</returns>
+					/// <returns>SiliconStudio.Xenko.Rendering.ModelNodeDefinition.</returns>
 					ModelNodeDefinition FindNode(FbxNode* node)
 					{
 						int nodeIndex;

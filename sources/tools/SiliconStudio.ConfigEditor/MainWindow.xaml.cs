@@ -11,9 +11,9 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
-using SiliconStudio.Paradox.ConfigEditor.ViewModels;
+using SiliconStudio.Xenko.ConfigEditor.ViewModels;
 
-namespace SiliconStudio.Paradox.ConfigEditor
+namespace SiliconStudio.Xenko.ConfigEditor
 {
     /// <summary>
     /// Interaction logic for MainWindow.xaml
