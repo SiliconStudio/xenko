@@ -112,9 +112,9 @@
     <Compile Include="VirtualButtonType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Condition="'$(SiliconStudioUI)' == 'SDL2'" Include="..\..\..\externals\SDL2\SDL2-CS.csproj">
+    <ProjectReference Condition="'$(SiliconStudioUI)' == 'SDL2'" Include="..\..\..\externals\SDL2.csproj">
       <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
-      <Name>SDL2-CS</Name>
+      <Name>SDL2</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
