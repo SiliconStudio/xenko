@@ -26,6 +26,7 @@ using OpenTK.Platform.iPhoneOS;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using DrawBuffersEnum = OpenTK.Graphics.ES30.DrawBufferMode;
+using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
 using ProgramParameter = OpenTK.Graphics.ES30.GetProgramParameterName;
@@ -556,7 +557,19 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (IsOpenGLES2)
                 {
-                    GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, destTexture.StagingData);
+                    var format = destTexture.FormatGl;
+                    var type = destTexture.Type;
+
+                    var srcFormat = sourceTexture.Description.Format;
+                    var destFormat = destTexture.Description.Format;
+
+                    if (srcFormat == destFormat && destFormat.SizeInBytes() == 4)   // in this case we just want to copy the data we don't care about format conversion. 
+                    {                                                               // RGBA/Unsigned-byte is always a working combination whatever is the internal format (sRGB, etc...)
+                        format = PixelFormatGl.Rgba;
+                        type = PixelType.UnsignedByte;
+                    }
+
+                    GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, format, type, destTexture.StagingData);
                 }
                 else
 #endif
