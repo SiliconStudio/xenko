@@ -12,15 +12,16 @@ using SharpYaml.Serialization;
 using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Yaml;
+using System.Linq;
 
 namespace SiliconStudio.Assets
 {
     /// <summary>
     /// Helper for migrating asset to newer versions.
     /// </summary>
-    static class AssetMigration
+    public static class AssetMigration
     {
-        public static bool MigrateAssetIfNeeded(AssetMigrationContext context, PackageLoadingAssetFile loadAsset)
+        public static bool MigrateAssetIfNeeded(AssetMigrationContext context, PackageLoadingAssetFile loadAsset, string dependencyName, PackageVersion untilVersion = null)
         {
             var assetFullPath = loadAsset.FilePath.FullPath;
 
@@ -36,8 +37,8 @@ namespace SiliconStudio.Assets
                 return false;
 
             // We've got a Yaml asset, let's get expected and serialized versions
-            var serializedVersion = 0;
-            int expectedVersion;
+            var serializedVersion = PackageVersion.Zero;
+            PackageVersion expectedVersion;
             Type assetType;
 
             // Read from Yaml file the asset version and its type (to get expected version)
@@ -57,20 +58,67 @@ namespace SiliconStudio.Assets
                 bool typeAliased;
                 assetType = tagTypeRegistry.TypeFromTag(mappingStart.Tag, out typeAliased);
 
-                expectedVersion = AssetRegistry.GetCurrentFormatVersion(assetType);
+                var expectedVersions = AssetRegistry.GetCurrentFormatVersions(assetType);
+                expectedVersion = expectedVersions?.FirstOrDefault(x => x.Key == dependencyName).Value ?? PackageVersion.Zero;
 
                 Scalar assetKey;
                 while ((assetKey = yamlEventReader.Allow<Scalar>()) != null)
                 {
                     // Only allow Id before SerializedVersion
-                    if (assetKey.Value == "Id")
+                    if (assetKey.Value == nameof(Asset.Id))
                     {
                         yamlEventReader.Skip();
-                        continue;
                     }
-                    if (assetKey.Value == "SerializedVersion")
+                    else if (assetKey.Value == nameof(Asset.SerializedVersion))
                     {
-                        serializedVersion = Convert.ToInt32(yamlEventReader.Expect<Scalar>().Value, CultureInfo.InvariantCulture);
+                        // Check for old format: only a scalar
+                        var scalarVersion = yamlEventReader.Allow<Scalar>();
+                        if (scalarVersion != null)
+                        {
+                            serializedVersion = PackageVersion.Parse("0.0." + Convert.ToInt32(scalarVersion.Value, CultureInfo.InvariantCulture));
+
+                            // Let's update to new format
+                            using (var yamlAsset = loadAsset.AsYamlAsset())
+                            {
+                                yamlAsset.DynamicRootNode.RemoveChild(nameof(Asset.SerializedVersion));
+                                AssetUpgraderBase.SetSerializableVersion(yamlAsset.DynamicRootNode, dependencyName, serializedVersion);
+
+                                var baseBranch = yamlAsset.DynamicRootNode["~Base"];
+                                if (baseBranch != null)
+                                {
+                                    var baseAsset = baseBranch["Asset"];
+                                    if (baseAsset != null)
+                                    {
+                                        baseAsset.RemoveChild(nameof(Asset.SerializedVersion));
+                                        AssetUpgraderBase.SetSerializableVersion(baseAsset, dependencyName, serializedVersion);
+                                    }
+                                }
+                            }
+                        }
+                        else
+                        {
+                            // New format: package => version mapping
+                            yamlEventReader.Expect<MappingStart>();
+
+                            while (!yamlEventReader.Accept<MappingEnd>())
+                            {
+                                var packageName = yamlEventReader.Expect<Scalar>().Value;
+                                var packageVersion = PackageVersion.Parse(yamlEventReader.Expect<Scalar>().Value);
+
+                                // For now, we handle only one dependency at a time
+                                if (packageName == dependencyName)
+                                {
+                                    serializedVersion = packageVersion;
+                                }
+                            }
+
+                            yamlEventReader.Expect<MappingEnd>();
+                        }
+                        break;
+                    }
+                    else
+                    {
+                        // If anything else than Id or SerializedVersion, let's stop
                         break;
                     }
                 }
@@ -79,7 +127,7 @@ namespace SiliconStudio.Assets
             if (serializedVersion > expectedVersion)
             {
                 // Try to open an asset newer than what we support (probably generated by a newer Xenko)
-                throw new InvalidOperationException(string.Format("Asset of type {0} has been serialized with newer version {1}, but only version {2} is supported. Was this asset created with a newer version of Xenko?", assetType, serializedVersion, expectedVersion));
+                throw new InvalidOperationException($"Asset of type {assetType} has been serialized with newer version {serializedVersion}, but only version {expectedVersion} is supported. Was this asset created with a newer version of Xenko?");
             }
 
             if (serializedVersion < expectedVersion)
@@ -87,63 +135,48 @@ namespace SiliconStudio.Assets
                 // Perform asset upgrade
                 context.Log.Verbose("{0} needs update, from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
 
-                // transform the stream into string.
-                string assetAsString;
-                using (var assetStream = loadAsset.OpenStream())
-                using (var assetStreamReader = new StreamReader(assetStream, Encoding.UTF8))
+                using (var yamlAsset = loadAsset.AsYamlAsset())
                 {
-                    assetAsString = assetStreamReader.ReadToEnd();
-                }
+                    var yamlRootNode = yamlAsset.RootNode;
 
-                // Load the asset as a YamlNode object
-                var input = new StringReader(assetAsString);
-                var yamlStream = new YamlStream();
-                yamlStream.Load(input);
-                var yamlRootNode = (YamlMappingNode)yamlStream.Documents[0].RootNode;
-
-                // Check if there is any asset updater
-                var assetUpgraders = AssetRegistry.GetAssetUpgraders(assetType);
-                if (assetUpgraders == null)
-                {
-                    throw new InvalidOperationException(string.Format("Asset of type {0} should be updated from version {1} to {2}, but no asset migration path was found", assetType, serializedVersion, expectedVersion));
-                }
-
-                // Instantiate asset updaters
-                var currentVersion = serializedVersion;
-                while (currentVersion != expectedVersion)
-                {
-                    int targetVersion;
-                    // This will throw an exception if no upgrader is available for the given version, exiting the loop in case of error.
-                    var upgrader = assetUpgraders.GetUpgrader(currentVersion, out targetVersion);
-                    upgrader.Upgrade(context, currentVersion, targetVersion, yamlRootNode, loadAsset);
-                    currentVersion = targetVersion;
-                }
-
-                // Make sure asset is updated to latest version
-                YamlNode serializedVersionNode;
-                var newSerializedVersion = 0;
-                if (yamlRootNode.Children.TryGetValue(new YamlScalarNode("SerializedVersion"), out serializedVersionNode))
-                {
-                    newSerializedVersion = Convert.ToInt32(((YamlScalarNode)serializedVersionNode).Value);
-                }
-
-                if (newSerializedVersion != expectedVersion)
-                {
-                    throw new InvalidOperationException(string.Format("Asset of type {0} was migrated, but still its new version {1} doesn't match expected version {2}.", assetType, newSerializedVersion, expectedVersion));
-                }
-
-                context.Log.Info("{0} updated from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
-
-                var preferredIndent = YamlSerializer.GetSerializerSettings().PreferredIndent;
-
-                // Save asset back to disk
-                using (var memoryStream = new MemoryStream())
-                {
-                    using (var streamWriter = new StreamWriter(memoryStream))
+                    // Check if there is any asset updater
+                    var assetUpgraders = AssetRegistry.GetAssetUpgraders(assetType, dependencyName);
+                    if (assetUpgraders == null)
                     {
-                        yamlStream.Save(streamWriter, true, preferredIndent);
+                        throw new InvalidOperationException($"Asset of type {assetType} should be updated from version {serializedVersion} to {expectedVersion}, but no asset migration path was found");
                     }
-                    loadAsset.AssetContent = memoryStream.ToArray();
+
+                    // Instantiate asset updaters
+                    var currentVersion = serializedVersion;
+                    while (currentVersion != expectedVersion)
+                    {
+                        PackageVersion targetVersion;
+                        // This will throw an exception if no upgrader is available for the given version, exiting the loop in case of error.
+                        var upgrader = assetUpgraders.GetUpgrader(currentVersion, out targetVersion);
+
+                        // Stop if the next version would be higher than what is expected
+                        if (untilVersion != null && targetVersion > untilVersion)
+                            break;
+
+                        upgrader.Upgrade(context, dependencyName, currentVersion, targetVersion, yamlRootNode, loadAsset);
+                        currentVersion = targetVersion;
+                    }
+
+                    // Make sure asset is updated to latest version
+                    YamlNode serializedVersionNode;
+                    PackageVersion newSerializedVersion = null;
+                    if (yamlRootNode.Children.TryGetValue(new YamlScalarNode(nameof(Asset.SerializedVersion)), out serializedVersionNode))
+                    {
+                        var newSerializedVersionForDefaultPackage = ((YamlMappingNode)serializedVersionNode).Children[new YamlScalarNode(dependencyName)];
+                        newSerializedVersion = PackageVersion.Parse(((YamlScalarNode)newSerializedVersionForDefaultPackage).Value);
+                    }
+
+                    if (untilVersion == null && newSerializedVersion != expectedVersion)
+                    {
+                        throw new InvalidOperationException($"Asset of type {assetType} was migrated, but still its new version {newSerializedVersion} doesn't match expected version {expectedVersion}.");
+                    }
+
+                    context.Log.Info("{0} updated from version {1} to version {2}", Path.GetFullPath(assetFullPath), serializedVersion, expectedVersion);
                 }
 
                 return true;

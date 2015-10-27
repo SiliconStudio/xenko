@@ -12,25 +12,23 @@ namespace SiliconStudio.Assets
     {
         private struct VersionRange : IComparable<VersionRange>
         {
-            private readonly int minimum;
-            private readonly int maximum;
-            public readonly int Target;
+            private readonly PackageVersion minimum;
+            public readonly PackageVersion Target;
 
-            public VersionRange(int minimum, int maximum, int target)
+            public VersionRange(PackageVersion minimum, PackageVersion target)
             {
                 this.minimum = minimum;
-                this.maximum = maximum;
                 Target = target;
             }
 
-            public bool Contains(int value)
+            public bool Contains(PackageVersion value)
             {
-                return minimum <= value && value <= maximum;
+                return minimum <= value && value < Target;
             }
 
             public bool Overlap(VersionRange other)
             {
-                return minimum < other.maximum && other.minimum < maximum;
+                return minimum < other.Target && other.minimum < Target;
             }
 
             public int CompareTo(VersionRange other)
@@ -41,9 +39,9 @@ namespace SiliconStudio.Assets
 
         private readonly SortedList<VersionRange, Type> upgraders = new SortedList<VersionRange, Type>();
         private readonly Dictionary<Type, IAssetUpgrader> instances = new Dictionary<Type, IAssetUpgrader>();
-        private readonly int currentVersion;
+        private readonly PackageVersion currentVersion;
 
-        public AssetUpgraderCollection(Type assetType, int currentVersion)
+        public AssetUpgraderCollection(Type assetType, PackageVersion currentVersion)
         {
             this.currentVersion = currentVersion;
             AssetRegistry.IsAssetType(assetType, true);
@@ -52,29 +50,29 @@ namespace SiliconStudio.Assets
 
         public Type AssetType { get; private set; }
 
-        internal void RegisterUpgrader(Type upgraderType, int startMinVersion, int startMaxVersion, int targetVersion)
+        internal void RegisterUpgrader(Type upgraderType, PackageVersion startVersion, PackageVersion targetVersion)
         {
             lock (upgraders)
             {
                 if (targetVersion > currentVersion)
                     throw new ArgumentException("The upgrader has a target version higher that the current version.");
 
-                var range = new VersionRange(startMinVersion, startMaxVersion, targetVersion);
+                var range = new VersionRange(startVersion, targetVersion);
 
                 if (upgraders.Any(x => x.Key.Overlap(range)))
                 {
                     throw new ArgumentException("The upgrader overlaps with another upgrader.");
                 }
 
-                upgraders.Add(new VersionRange(startMinVersion, startMaxVersion, targetVersion), upgraderType);
+                upgraders.Add(new VersionRange(startVersion, targetVersion), upgraderType);
             }
         }
 
-        internal void Validate(int minVersion)
+        internal void Validate(PackageVersion minVersion)
         {
             lock (upgraders)
             {
-                int version = minVersion;
+                var version = minVersion;
                 foreach (var upgrader in upgraders)
                 {
                     if (!upgrader.Key.Contains(version))
@@ -90,7 +88,7 @@ namespace SiliconStudio.Assets
             }
         }
 
-        public IAssetUpgrader GetUpgrader(int initialVersion, out int targetVersion)
+        public IAssetUpgrader GetUpgrader(PackageVersion initialVersion, out PackageVersion targetVersion)
         {
             lock (upgraders)
             {

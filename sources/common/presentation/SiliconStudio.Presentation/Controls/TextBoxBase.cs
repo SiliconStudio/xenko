@@ -178,7 +178,7 @@ namespace SiliconStudio.Presentation.Controls
         public event RoutedEventHandler Cancelled { add { AddHandler(CancelledEvent, value); } remove { RemoveHandler(CancelledEvent, value); } }
 
         /// <summary>
-        /// Validates the current changes in the TextBox.
+        /// Validates the current changes in the TextBox. Does nothing is there are no changes.
         /// </summary>
         public void Validate()
         {
@@ -211,6 +211,15 @@ namespace SiliconStudio.Presentation.Controls
                 ValidateCommand.Execute(ValidateCommandParameter);
             validating = false;
             hasChangesToValidate = false;
+        }
+
+        /// <summary>
+        /// Validates the content of the TextBox even if no changes occurred.
+        /// </summary>
+        public void ForceValidate()
+        {
+            hasChangesToValidate = true;
+            Validate();
         }
 
         /// <summary>

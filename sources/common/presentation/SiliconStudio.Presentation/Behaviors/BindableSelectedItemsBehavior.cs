@@ -53,7 +53,7 @@ namespace SiliconStudio.Presentation.Behaviors
         /// </summary>
         protected BindableSelectedItemsBehavior()
         {
-            BindableSelectedItemsControl.BindingReactivated += () => CollectionSelectionChanged(SelectedItems, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset, SelectedItems));
+            BindableSelectedItemsControl.BindingReactivated += () => CollectionSelectionChanged(SelectedItems, new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
         }
 
         /// <summary>

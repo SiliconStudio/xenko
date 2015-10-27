@@ -13,13 +13,31 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetFormatVersionAttribute"/> class.
         /// </summary>
+        /// <param name="name">The dependency name.</param>
         /// <param name="version">The current format version of this asset.</param>
         /// <param name="minUpgradableVersion">The minimum format version that supports upgrade for this asset.</param>
-        public AssetFormatVersionAttribute(int version, int minUpgradableVersion = 0)
+        public AssetFormatVersionAttribute(string name, int version, int minUpgradableVersion = 0)
+            : this(name, "0.0." + version, minUpgradableVersion != 0 ? "0.0." + minUpgradableVersion : null)
         {
-            Version = version;
-            MinUpgradableVersion = minUpgradableVersion;
         }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AssetFormatVersionAttribute"/> class.
+        /// </summary>
+        /// <param name="name">The dependency name.</param>
+        /// <param name="version">The current format version of this asset.</param>
+        /// <param name="minUpgradableVersion">The minimum format version that supports upgrade for this asset.</param>
+        public AssetFormatVersionAttribute(string name, string version, string minUpgradableVersion = null)
+        {
+            Name = name;
+            Version = PackageVersion.Parse(version);
+            MinUpgradableVersion = PackageVersion.Parse(minUpgradableVersion ?? "0");
+        }
+
+        /// <summary>
+        /// Gets or sets the dependency name.
+        /// </summary>
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets the current format version of this asset.
@@ -27,7 +45,7 @@ namespace SiliconStudio.Assets
         /// <value>
         /// The current format version of this asset.
         /// </value>
-        public int Version { get; set; }
+        public PackageVersion Version { get; set; }
 
         /// <summary>
         /// Gets the minimum format version that supports upgrade for this asset.
@@ -35,6 +53,6 @@ namespace SiliconStudio.Assets
         /// <value>
         /// The minimum format version that supports upgrade for this asset.
         /// </value>
-        public int MinUpgradableVersion { get; set; }
+        public PackageVersion MinUpgradableVersion { get; set; }
     }
 }

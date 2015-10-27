@@ -26,8 +26,9 @@ namespace SiliconStudio.Xenko.Assets.Materials
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(MaterialAssetCompiler))]
     [ObjectFactory(typeof(MaterialFactory))]
-    [AssetFormatVersion(1)]
-    [AssetUpgrader(0, 1, typeof(RemoveParametersUpgrader))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveParametersUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.1", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
     [Display(115, "Material", "A material")]
     public sealed class MaterialAsset : Asset, IMaterialDescriptor, IAssetCompileTimeDependencies
     {
@@ -148,7 +149,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
 
         public class RemoveParametersUpgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 asset.Parameters = DynamicYamlEmpty.Default;
             }

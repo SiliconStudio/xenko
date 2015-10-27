@@ -1481,7 +1481,7 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
                     if (attachedReference != null && attachedReference.IsProxy)
-                        reference = new AttachedContentReference(attachedReference);
+                        reference = attachedReference;
                 }
 
                 if (reference != null)
