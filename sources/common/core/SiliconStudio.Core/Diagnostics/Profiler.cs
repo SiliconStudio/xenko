@@ -2,14 +2,32 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Diagnostics
 {
+    [StructLayout(LayoutKind.Explicit)]
+    public struct ProfilingCustomValue
+    {
+        [FieldOffset(0)]
+        public int IntValue;
+
+        [FieldOffset(0)]
+        public float FloatValue;
+
+        [FieldOffset(0)]
+        public long LongValue;
+
+        [FieldOffset(0)]
+        public double DoubleValue;
+    }
+
     /// <summary>
     /// Delegate called when a <see cref="ProfilingState"/> is disposed (end of profiling).
     /// </summary>
@@ -229,6 +247,19 @@ namespace SiliconStudio.Core.Diagnostics
             public long MinTime;
             public long MaxTime;
             public int Count;
+        }
+
+        public static ProfilingEvent[] GetEvents()
+        {
+            lock (Locker)
+            {
+                if (events.Count == 0) return null;
+
+                var res = events.ToArray();
+                events.Clear();
+                eventsByKey.Clear();
+                return res;
+            }
         }
 
         public static string ReportEvents()

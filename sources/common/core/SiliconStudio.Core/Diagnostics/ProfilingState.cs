@@ -174,7 +174,87 @@ namespace SiliconStudio.Core.Diagnostics
         {
             EmitEvent(ProfilingMessageType.Begin, textFormat, textFormatArguments);
         }
-        
+
+        public void Begin(int value0)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { IntValue = value0 }, null, null, null);
+        }
+
+        public void Begin(int value0, int value1)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, null, null);
+        }
+
+        public void Begin(int value0, int value1, int value2)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, null);
+        }
+
+        public void Begin(int value0, int value1, int value2, int value3)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, new ProfilingCustomValue { IntValue = value3 });
+        }
+
+        public void Begin(float value0)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { FloatValue = value0 }, null, null, null);
+        }
+
+        public void Begin(float value0, float value1)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, null, null);
+        }
+
+        public void Begin(float value0, float value1, float value2)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, null);
+        }
+
+        public void Begin(float value0, float value1, float value2, float value3)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, new ProfilingCustomValue { FloatValue = value3 });
+        }
+
+        public void Begin(long value0)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { LongValue = value0 }, null, null, null);
+        }
+
+        public void Begin(long value0, long value1)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, null, null);
+        }
+
+        public void Begin(long value0, long value1, long value2)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, null);
+        }
+
+        public void Begin(long value0, long value1, long value2, long value3)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, new ProfilingCustomValue { LongValue = value3 });
+        }
+
+        public void Begin(double value0)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { DoubleValue = value0 }, null, null, null);
+        }
+
+        public void Begin(double value0, double value1)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, null, null);
+        }
+
+        public void Begin(double value0, double value1, double value2)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, null);
+        }
+
+        public void Begin(double value0, double value1, double value2, double value3)
+        {
+            EmitEvent(ProfilingMessageType.Begin, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, new ProfilingCustomValue { DoubleValue = value3 });
+        }
+
         /// <summary>
         /// Emits a Mark event.
         /// </summary>
@@ -200,6 +280,86 @@ namespace SiliconStudio.Core.Diagnostics
         public void Mark(string textFormat, params object[] textFormatArguments)
         {
             EmitEvent(ProfilingMessageType.Mark, textFormat, textFormatArguments);
+        }
+
+        public void Mark(int value0)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { IntValue = value0 }, null, null, null);
+        }
+
+        public void Mark(int value0, int value1)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, null, null);
+        }
+
+        public void Mark(int value0, int value1, int value2)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, null);
+        }
+
+        public void Mark(int value0, int value1, int value2, int value3)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, new ProfilingCustomValue { IntValue = value3 });
+        }
+
+        public void Mark(float value0)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { FloatValue = value0 }, null, null, null);
+        }
+
+        public void Mark(float value0, float value1)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, null, null);
+        }
+
+        public void Mark(float value0, float value1, float value2)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, null);
+        }
+
+        public void Mark(float value0, float value1, float value2, float value3)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, new ProfilingCustomValue { FloatValue = value3 });
+        }
+
+        public void Mark(long value0)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { LongValue = value0 }, null, null, null);
+        }
+
+        public void Mark(long value0, long value1)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, null, null);
+        }
+
+        public void Mark(long value0, long value1, long value2)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, null);
+        }
+
+        public void Mark(long value0, long value1, long value2, long value3)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, new ProfilingCustomValue { LongValue = value3 });
+        }
+
+        public void Mark(double value0)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { DoubleValue = value0 }, null, null, null);
+        }
+
+        public void Mark(double value0, double value1)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, null, null);
+        }
+
+        public void Mark(double value0, double value1, double value2)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, null);
+        }
+
+        public void Mark(double value0, double value1, double value2, double value3)
+        {
+            EmitEvent(ProfilingMessageType.Mark, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, new ProfilingCustomValue { DoubleValue = value3 });
         }
 
         /// <summary>
@@ -228,7 +388,87 @@ namespace SiliconStudio.Core.Diagnostics
         {
             EmitEvent(ProfilingMessageType.End, textFormat, textFormatArguments);
         }
-        
+
+        public void End(int value0)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { IntValue = value0 }, null, null, null);
+        }
+
+        public void End(int value0, int value1)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, null, null);
+        }
+
+        public void End(int value0, int value1, int value2)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, null);
+        }
+
+        public void End(int value0, int value1, int value2, int value3)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { IntValue = value0 }, new ProfilingCustomValue { IntValue = value1 }, new ProfilingCustomValue { IntValue = value2 }, new ProfilingCustomValue { IntValue = value3 });
+        }
+
+        public void End(float value0)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { FloatValue = value0 }, null, null, null);
+        }
+
+        public void End(float value0, float value1)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, null, null);
+        }
+
+        public void End(float value0, float value1, float value2)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, null);
+        }
+
+        public void End(float value0, float value1, float value2, float value3)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { FloatValue = value0 }, new ProfilingCustomValue { FloatValue = value1 }, new ProfilingCustomValue { FloatValue = value2 }, new ProfilingCustomValue { FloatValue = value3 });
+        }
+
+        public void End(long value0)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { LongValue = value0 }, null, null, null);
+        }
+
+        public void End(long value0, long value1)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, null, null);
+        }
+
+        public void End(long value0, long value1, long value2)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, null);
+        }
+
+        public void End(long value0, long value1, long value2, long value3)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { LongValue = value0 }, new ProfilingCustomValue { LongValue = value1 }, new ProfilingCustomValue { LongValue = value2 }, new ProfilingCustomValue { LongValue = value3 });
+        }
+
+        public void End(double value0)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { DoubleValue = value0 }, null, null, null);
+        }
+
+        public void End(double value0, double value1)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, null, null);
+        }
+
+        public void End(double value0, double value1, double value2)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, null);
+        }
+
+        public void End(double value0, double value1, double value2, double value3)
+        {
+            EmitEvent(ProfilingMessageType.End, new ProfilingCustomValue { DoubleValue = value0 }, new ProfilingCustomValue { DoubleValue = value1 }, new ProfilingCustomValue { DoubleValue = value2 }, new ProfilingCustomValue { DoubleValue = value3 });
+        }
+
         private void EmitEvent(ProfilingMessageType profilingType, string text = null)
         {
             // Perform a Mark event only if the profiling is running
@@ -283,6 +523,30 @@ namespace SiliconStudio.Core.Diagnostics
             // Create profiler event
             // TODO ideally we should make a copy of the attributes
             var profilerEvent = new ProfilingEvent(profilingId, profilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes);
+
+            // Send profiler event to Profiler
+            Profiler.ProcessEvent(ref profilerEvent);
+        }
+
+        private void EmitEvent(ProfilingMessageType profilingType, ProfilingCustomValue? value0, ProfilingCustomValue? value1, ProfilingCustomValue? value2, ProfilingCustomValue? value3)
+        {
+            // Perform a Mark event only if the profiling is running
+            if (!isEnabled) return;
+
+            var timeStamp = Stopwatch.GetTimestamp();
+
+            if (profilingType == ProfilingMessageType.Begin)
+            {
+                startTime = timeStamp;
+            }
+            else if (profilingType == ProfilingMessageType.End)
+            {
+                beginText = null;
+            }
+
+            // Create profiler event
+            // TODO ideally we should make a copy of the attributes
+            var profilerEvent = new ProfilingEvent(profilingId, profilingKey, profilingType, timeStamp, timeStamp - startTime, null, attributes, value0, value1, value2, value3);
 
             // Send profiler event to Profiler
             Profiler.ProcessEvent(ref profilerEvent);
