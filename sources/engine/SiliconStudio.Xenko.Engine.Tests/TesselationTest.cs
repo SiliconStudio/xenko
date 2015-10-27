@@ -207,8 +207,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void RunTestGame()
         {
-            if (Platform.Type == PlatformType.Windows) // this test requires profile 11.0
-                RunGameTest(new TesselationTest());
+            RunGameTest(new TesselationTest());
         }
 
         static public void Main()
