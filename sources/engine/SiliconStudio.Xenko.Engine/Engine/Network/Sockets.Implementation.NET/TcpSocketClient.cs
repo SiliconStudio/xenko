@@ -20,13 +20,7 @@ namespace Sockets.Plugin
     {
         private readonly TcpClient _backingTcpClient;
         private readonly int _bufferSize;
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         private SslStream _secureStream;
-#else
-            // FIXME: Manu: Big Warning here! SslStream is not yet in CoreCLR, so we use a normal one instead
-            // For the time being.
-        private Stream _secureStream;
-#endif
         private Stream _writeStream;
 
         /// <summary>
@@ -65,15 +59,9 @@ namespace Sockets.Plugin
             InitializeWriteStream();
             if (secure)
             {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 var secureStream = new SslStream(_writeStream, true, (sender, cert, chain, sslPolicy) => ServerValidationCallback(sender, cert, chain, sslPolicy));
                 secureStream.AuthenticateAsClient(address, null, System.Security.Authentication.SslProtocols.Tls, false);
                 _secureStream = secureStream;
-#else
-                    // FIXME: Manu: Big Warning here! SslStream is not yet in CoreCLR, so we use a normal one instead
-                    // For the time being.
-                _secureStream = _writeStream;
-#endif
             }            
         }
 
@@ -109,6 +97,7 @@ namespace Sockets.Plugin
         {
             return Task.Run(() => {
 #if !SILICONSTUDIO_RUNTIME_CORECLR
+                    // As long as we target .NET 4.5 we cannot use `Dispose'.
                 _backingTcpClient.Close();
 #else
                 _backingTcpClient.Dispose();
@@ -190,6 +179,8 @@ namespace Sockets.Plugin
 #if !SILICONSTUDIO_RUNTIME_CORECLR
             _writeStream = _bufferSize != 0 ? (Stream)new BufferedStream(_backingTcpClient.GetStream(), _bufferSize) : _backingTcpClient.GetStream();
 #else
+                // Note that BufferedStream is planned for a future release of CoreFX, so once this 
+                // is available we can remove the #if.
             _writeStream = _backingTcpClient.GetStream();
 #endif
         }
