@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         public int FrameIndex;
 
         private bool screenshotAutomationEnabled;
+        private BackBufferSizeMode backBufferSizeMode;
 
         protected GraphicsTestBase()
         {
@@ -63,6 +64,9 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             FrameGameSystem = new FrameGameSystem(Services);
             GameSystems.Add(FrameGameSystem);
+
+            // by default we want the same size for the back buffer on mobiles and windows.
+            BackBufferSizeMode = BackBufferSizeMode.FitToDesiredValues;
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // get build number
@@ -117,15 +121,64 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         /// </summary>
         public bool ScreenShotAutomationEnabled
         {
-            get
-            {
-                return screenshotAutomationEnabled;
-            }
+            get { return screenshotAutomationEnabled; }
             set
             {
                 FrameGameSystem.Visible = value;
                 FrameGameSystem.Enabled = value;
                 screenshotAutomationEnabled = value;
+            }
+        }
+        
+        public BackBufferSizeMode BackBufferSizeMode
+        {
+            get { return backBufferSizeMode; }
+            set
+            {
+                backBufferSizeMode = value;
+#if SILICONSTUDIO_PLATFORM_ANDROID
+                switch (backBufferSizeMode)
+                {
+                    case BackBufferSizeMode.FitToDesiredValues:
+                        SwapChainGraphicsPresenter.ProcessPresentationParametersOverride = FitPresentationParametersToDesiredValues;
+                        break;
+                    case BackBufferSizeMode.FitToWindowSize:
+                        SwapChainGraphicsPresenter.ProcessPresentationParametersOverride = FitPresentationParametersToWindowSize;
+                        break;
+                    case BackBufferSizeMode.FitToWindowRatio:
+                        SwapChainGraphicsPresenter.ProcessPresentationParametersOverride = FitPresentationParametersToWindowRatio;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+#endif // TODO implement it other mobile platforms
+            }
+        }
+
+        private void FitPresentationParametersToDesiredValues(int windowWidth, int windowHeight, PresentationParameters parameters)
+        {
+            // nothing to do (default behavior)
+        }
+
+        private void FitPresentationParametersToWindowSize(int windowWidth, int windowHeight, PresentationParameters parameters)
+        {
+            parameters.BackBufferWidth = windowWidth;
+            parameters.BackBufferHeight = windowHeight;
+        }
+
+        private void FitPresentationParametersToWindowRatio(int windowWidth, int windowHeight, PresentationParameters parameters)
+        {
+            var panelRatio = (float)windowWidth / windowHeight;
+            var desiredWidth = parameters.BackBufferWidth;
+            var desiredHeight = parameters.BackBufferHeight;
+
+            if (panelRatio >= 1.0f) // Landscape => use height as base
+            {
+                parameters.BackBufferHeight = (int)(desiredWidth / panelRatio);
+            }
+            else // Portrait => use width as base
+            {
+                parameters.BackBufferWidth = (int)(desiredHeight * panelRatio);
             }
         }
 
@@ -194,6 +247,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             RunGameTest(game);
         }
+
         protected void RunDrawTest(Action<Game, RenderContext, RenderFrame> action, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
         {
             // create the game instance

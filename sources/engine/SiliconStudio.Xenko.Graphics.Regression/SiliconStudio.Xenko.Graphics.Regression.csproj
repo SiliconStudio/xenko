@@ -134,6 +134,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BackBufferSizeMode.cs" />
     <Compile Include="BlockingBufferedStream.cs" />
     <Compile Include="FrameGameSystem.cs" />
     <Compile Include="GameTester.cs" />
