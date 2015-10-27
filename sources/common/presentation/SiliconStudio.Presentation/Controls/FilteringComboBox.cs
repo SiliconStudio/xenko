@@ -36,7 +36,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private bool clearing;
         /// <summary>
-        /// Indicates that the user clicked in the listbox with the mouse and that the drop
+        /// Indicates that the user clicked in the listbox with the mouse and that the drop down should not be opened.
         /// </summary>
         private bool listBoxClicking;
         /// <summary>
