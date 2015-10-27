@@ -171,16 +171,12 @@ namespace SiliconStudio.Xenko.Assets
                         skeletonAssetYaml.DynamicRootNode.Source = modelAsset.DynamicRootNode.Source;
                         skeletonAssetYaml.DynamicRootNode.SourceHash = modelAsset.DynamicRootNode.SourceHash;
 
-                        // If no nodes are preserved, mark everything as preserved
-                        // TODO: Analyze the actual model file?
+                        // To be on the safe side, mark everything as preserved
                         var nodes = modelAsset.DynamicRootNode.Nodes;
-                        if (((IEnumerable)nodes).Cast<dynamic>().All(x => (bool)x.Preserve == false))
+                        foreach (var node in nodes)
                         {
-                            foreach (var node in nodes)
-                            {
-                                // TODO: Using (bool)true write True in Yaml instead of true, this will need to be fixed
-                                node.Preserve = "true";
-                            }
+                            // TODO: Using (bool)true write True in Yaml instead of true, this will need to be fixed
+                            node.Preserve = "true";
                         }
 
                         skeletonAssetYaml.DynamicRootNode.Nodes = nodes;
@@ -193,8 +189,6 @@ namespace SiliconStudio.Xenko.Assets
                     assetFiles.Add(skeletonAsset);
                 }
 
-                var assetVersion = PackageVersion.Parse("1.5.0-alpha02");
-
                 // Update animation to point to skeleton
                 foreach (var animToModelEntry in animToModelMapping)
                 {
@@ -203,8 +197,6 @@ namespace SiliconStudio.Xenko.Assets
 
                     var skeletonAsset = modelToSkeletonMapping[modelAsset];
                     animationAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
-
-                    AssetUpgraderBase.SetSerializableVersion(animationAsset.DynamicRootNode, XenkoConfig.PackageName, assetVersion);
                 }
 
                 // Remove Nodes from models
@@ -212,8 +204,6 @@ namespace SiliconStudio.Xenko.Assets
                 {
                     modelAsset.DynamicRootNode.Nodes = DynamicYamlEmpty.Default;
                     modelAsset.DynamicRootNode["~Base"].Asset.Nodes = DynamicYamlEmpty.Default;
-
-                    AssetUpgraderBase.SetSerializableVersion(modelAsset.DynamicRootNode, XenkoConfig.PackageName, assetVersion);
                 }
 
                 // Save back

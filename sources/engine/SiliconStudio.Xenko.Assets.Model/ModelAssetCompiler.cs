@@ -32,9 +32,9 @@ namespace SiliconStudio.Xenko.Assets.Model
             var extension = asset.Source.GetFileExtension();
 
             // Find skeleton asset, if any
-            SkeletonAsset skeleton = null;
+            AssetItem skeleton = null;
             if (asset.Skeleton != null)
-                skeleton = (SkeletonAsset)AssetItem.Package.FindAssetFromAttachedReference(asset.Skeleton)?.Asset;
+                skeleton = AssetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
 
             if (ImportFbxCommand.IsSupportingExtensions(extension))
             {
@@ -46,10 +46,11 @@ namespace SiliconStudio.Xenko.Assets.Model
                                 Location = urlInStorage,
                                 Allow32BitIndex = allow32BitIndex,
                                 AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
-                                Compact = skeleton?.Compact ?? true,
-                                PreservedNodes = skeleton?.PreservedNodes,
+                                Compact = ((SkeletonAsset)skeleton?.Asset)?.Compact ?? true,
+                                OptimizedNodes = ((SkeletonAsset)skeleton?.Asset)?.OptimizedNodes,
                                 Materials = asset.Materials,
-                                ScaleImport = asset.ScaleImport
+                                ScaleImport = asset.ScaleImport,
+                                SkeletonUrl = skeleton?.Location,
                             }
                     };
             }
@@ -63,10 +64,11 @@ namespace SiliconStudio.Xenko.Assets.Model
                                 Location = urlInStorage,
                                 Allow32BitIndex = allow32BitIndex,
                                 AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
-                                Compact = skeleton?.Compact ?? true,
-                                PreservedNodes = skeleton?.PreservedNodes,
+                                Compact = ((SkeletonAsset)skeleton?.Asset)?.Compact ?? true,
+                                OptimizedNodes = ((SkeletonAsset)skeleton?.Asset)?.OptimizedNodes,
                                 Materials = asset.Materials,
-                                ScaleImport = asset.ScaleImport
+                                ScaleImport = asset.ScaleImport,
+                                SkeletonUrl = skeleton?.Location,
                             }
                     };
             }

@@ -37,32 +37,18 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="SkeletonUpdater"/> class.
-        /// </summary>
-        /// <param name="model">The model.</param>
-        public SkeletonUpdater(Model model)
-        {
-            if (model == null) throw new ArgumentNullException("model");
-            Initialize(model);
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="SkeletonUpdater" /> class.
         /// </summary>
-        /// <param name="newNodes">The new nodes.</param>
-        public SkeletonUpdater(ModelNodeDefinition[] newNodes)
+        /// <param name="skeleton">The skeleton.</param>
+        public SkeletonUpdater(Skeleton skeleton)
         {
-            Initialize(newNodes);
+            Initialize(skeleton);
         }
 
-        public void Initialize(Model model)
+        public void Initialize(Skeleton skeleton)
         {
-            Initialize(model.Skeleton?.Nodes);
-            nodeTransformations[0].Flags &= ~ModelNodeFlags.EnableTransform;
-        }
+            var newNodes = skeleton?.Nodes;
 
-        public void Initialize(ModelNodeDefinition[] newNodes)
-        {
             if (this.nodes == newNodes && this.nodes != null)
             {
                 return;
@@ -80,6 +66,8 @@ namespace SiliconStudio.Xenko.Rendering
                 nodeTransformations[index].Flags = nodes[index].Flags;
                 nodeTransformations[index].RenderingEnabledRecursive = true;
             }
+
+            nodeTransformations[0].Flags &= ~ModelNodeFlags.EnableTransform;
         }
 
         /// <summary>

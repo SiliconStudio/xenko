@@ -50,8 +50,6 @@ public:
 	property bool AllowUnsignedBlendIndices;
 	property float ScaleImport;
 
-	property TagSymbol^ TextureTagSymbol;
-
 	Logger^ logger;
 
 internal:
@@ -1339,6 +1337,27 @@ public:
 			return config;
 		}
 
+		static ImportConfiguration^ ImportSkeletonOnly()
+		{
+			auto config = gcnew ImportConfiguration();
+
+			config->ImportTemplates = false;
+			config->ImportPivots = false;
+			config->ImportGlobalSettings = true;
+			config->ImportCharacters = false;
+			config->ImportConstraints = false;
+			config->ImportGobos = false;
+			config->ImportShapes = false;
+			config->ImportLinks = false;
+			config->ImportMaterials = false;
+			config->ImportTextures = false;
+			config->ImportModels = false;
+			config->ImportAnimations = false;
+			config->ExtractEmbeddedData = false;
+
+			return config;
+		}
+
 		static ImportConfiguration^ ImportTexturesOnly()
 		{
 			auto config = gcnew ImportConfiguration();
@@ -1661,6 +1680,33 @@ private:
 				meshParams->MeshName = gcnew String(meshName.c_str());
 				meshParams->NodeName = sceneMapping->FindNode(pNode).Name;
 
+				// Collect bones
+				int skinDeformerCount = pMesh->GetDeformerCount(FbxDeformer::eSkin);
+				if (skinDeformerCount > 0)
+				{
+					meshParams->BoneNodes = gcnew HashSet<String^>();
+					for (int deformerIndex = 0; deformerIndex < skinDeformerCount; deformerIndex++)
+					{
+						FbxSkin* skin = FbxCast<FbxSkin>(pMesh->GetDeformer(deformerIndex, FbxDeformer::eSkin));
+
+						auto totalClusterCount = skin->GetClusterCount();
+						for (int clusterIndex = 0; clusterIndex < totalClusterCount; ++clusterIndex)
+						{
+							FbxCluster* cluster = skin->GetCluster(clusterIndex);
+							int indexCount = cluster->GetControlPointIndicesCount();
+							if (indexCount == 0)
+							{
+								continue;
+							}
+
+							FbxNode* link = cluster->GetLink();
+
+							MeshBoneDefinition bone;
+							meshParams->BoneNodes->Add(sceneMapping->FindNode(link).Name);
+						}
+					}
+				}
+
 				FbxGeometryElementMaterial* lMaterialElement = pMesh->GetElementMaterial();
 				if (lMaterialElement != NULL)
 				{
@@ -1799,7 +1845,7 @@ private:
 		auto newNodeInfo = gcnew NodeInfo();
 		newNodeInfo->Name = sceneMapping->FindNode(node).Name;
 		newNodeInfo->Depth = depth;
-		newNodeInfo->Preserve = false;
+		newNodeInfo->Preserve = true;
 		
 		allNodes->Add(newNodeInfo);
 		for (int i = 0; i < node->GetChildCount(); ++i)
@@ -1847,8 +1893,6 @@ public:
 
 			// Create default ModelViewData
 			modelData = gcnew Model();
-			modelData->Skeleton = gcnew Skeleton();
-			modelData->Skeleton->Nodes = sceneMapping->Nodes;
 
 			//auto sceneName = scene->GetName();
 			//if (sceneName != NULL && strlen(sceneName) > 0)
@@ -1903,6 +1947,24 @@ public:
 
 			auto animationConverter = gcnew AnimationConverter(sceneMapping);
 			return animationConverter->ProcessAnimation();
+		}
+		finally
+		{
+			Destroy();
+		}
+
+		return nullptr;
+	}
+
+	Skeleton^ ConvertSkeleton(String^ inputFilename, String^ vfsOutputFilename)
+	{
+		try
+		{
+			Initialize(inputFilename, vfsOutputFilename, ImportConfiguration::ImportSkeletonOnly());
+
+			auto skeleton = gcnew Skeleton();
+			skeleton->Nodes = sceneMapping->Nodes;
+			return skeleton;
 		}
 		finally
 		{

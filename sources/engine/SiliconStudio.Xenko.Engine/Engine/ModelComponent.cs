@@ -145,11 +145,11 @@ namespace SiliconStudio.Xenko.Engine
                 if (skeleton != null)
                 {
                     // Reuse previous ModelViewHierarchy
-                    skeleton.Initialize(model);
+                    skeleton.Initialize(model.Skeleton);
                 }
                 else
                 {
-                    skeleton = new SkeletonUpdater(model);
+                    skeleton = new SkeletonUpdater(model.Skeleton);
                 }
             }
         }

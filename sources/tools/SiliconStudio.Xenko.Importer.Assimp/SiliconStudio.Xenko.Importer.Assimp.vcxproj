@@ -146,6 +146,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\SiliconStudio.Xenko.Importer.Common\ImporterUtils.h" />

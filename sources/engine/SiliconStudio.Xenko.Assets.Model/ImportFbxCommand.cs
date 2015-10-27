@@ -7,6 +7,7 @@ using System.Linq;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
@@ -37,11 +38,17 @@ namespace SiliconStudio.Xenko.Assets.Model
             return sceneData;
         }
 
+        protected override Skeleton LoadSkeleton(ICommandContext commandContext, AssetManager assetManager)
+        {
+            var meshConverter = CreateMeshConverter(commandContext);
+            var sceneData = meshConverter.ConvertSkeleton(SourcePath, Location);
+            return sceneData;
+        }
+
         private Importer.FBX.MeshConverter CreateMeshConverter(ICommandContext commandContext)
         {
             return new Importer.FBX.MeshConverter(commandContext.Logger)
                 {
-                    TextureTagSymbol = TextureTagSymbol,
                     AllowUnsignedBlendIndices = AllowUnsignedBlendIndices,
                     ScaleImport = ScaleImport
                 };

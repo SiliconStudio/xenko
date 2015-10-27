@@ -30,10 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         public override IEnumerable<Tuple<string, string>> TagList { get { yield return Tuple.Create("Texture", "Value of the TextureTag property"); } }
 
         private static int spawnedFbxCommands;
-        protected TagSymbol TextureTagSymbol;
 
-        public string TextureTag { get; set; }
-        
         public string ExportType { get; set; }
         public bool TessellationAEN { get; set; }
         public string EffectName { get; set; }
@@ -42,19 +39,29 @@ namespace SiliconStudio.Xenko.Assets.Model
         public List<ModelMaterial> Materials { get; set; }
 
         public bool Compact { get; set; }
-        public List<string> PreservedNodes { get; set; }
+        public List<string> OptimizedNodes { get; set; }
 
         public bool Allow32BitIndex { get; set; }
         public bool AllowUnsignedBlendIndices { get; set; }
 
         public float ScaleImport { get; set; }
 
+        public string SkeletonUrl { get; set; }
+
+        public static ImportModelCommand Create(string extension)
+        {
+            if (ImportFbxCommand.IsSupportingExtensions(extension))
+                return new ImportFbxCommand();
+            if (ImportAssimpCommand.IsSupportingExtensions(extension))
+                return new ImportAssimpCommand();
+
+            return null;
+        }
+
         protected ImportModelCommand()
         {
             // Set default values
             ExportType = "model";
-            TextureTag = "fbx-texture";
-            TextureTagSymbol = RegisterTag("Texture", () => TextureTag);
             AnimationRepeatMode = AnimationRepeatMode.LoopInfinite;
             ScaleImport = 1.0f;
         }
@@ -84,6 +91,9 @@ namespace SiliconStudio.Xenko.Assets.Model
                 {
                     // Read from model file
                     var animationClip = LoadAnimation(commandContext, assetManager);
+
+                    // Filter and optimize nodes using skeleton (if any)
+
                     exportedObject = animationClip;
                     if (animationClip == null)
                     {
@@ -98,6 +108,40 @@ namespace SiliconStudio.Xenko.Assets.Model
                         animationClip.RepeatMode = AnimationRepeatMode;
                         animationClip.Optimize();
                     }
+                }
+                else if (ExportType == "skeleton")
+                {
+                    var skeleton = LoadSkeleton(commandContext, assetManager);
+
+                    // Build node mapping to expected structure
+                    var modelToAsset = new int[skeleton.Nodes.Length];
+                    var assetToModel = new int[OptimizedNodes.Count];
+
+                    // Clear with -1 (not found)
+                    for (int i = 0; i < OptimizedNodes.Count; ++i)
+                        assetToModel[i] = -1;
+
+                    // Build mapping
+                    for (int i = 0; i < skeleton.Nodes.Length; ++i)
+                    {
+                        var newNodeIndex = OptimizedNodes.IndexOf(skeleton.Nodes[i].Name);
+                        modelToAsset[i] = newNodeIndex;
+                        assetToModel[newNodeIndex] = i;
+                    }
+
+                    // List missing nodes on both sides
+                    var missingNodesInModel = OptimizedNodes.Select((x, i) => new { Item = x, Index = i }).Where(x => assetToModel[x.Index] == -1).Select(x => x.Item).ToList();
+                    var missingNodesInAsset = skeleton.Nodes.Select((x, i) => new { Item = x, Index = i }).Where(x => modelToAsset[x.Index] == -1).Select(x => x.Item).ToList();
+
+                    if (missingNodesInAsset.Count > 0)
+                        commandContext.Logger.Warning($"{missingNodesInAsset.Count} node(s) were present in model [{SourcePath}] but not in asset [{Location}], please reimport: {string.Join(", ", missingNodesInAsset)}");
+
+                    if (missingNodesInModel.Count > 0)
+                        commandContext.Logger.Warning($"{missingNodesInModel.Count} node(s) were present in asset [{Location}] but not in model [{SourcePath}], please reimport: {string.Join(", ", missingNodesInModel)}");
+
+                    // TODO: Remove nodes that don't need to be preserved
+
+                    exportedObject = skeleton;
                 }
                 else if (ExportType == "model")
                 {
@@ -116,7 +160,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                     }
 
                     model.BoundingBox = BoundingBox.Empty;
-                    var hierarchyUpdater = new SkeletonUpdater(model.Skeleton.Nodes);
+                    var hierarchyUpdater = new SkeletonUpdater(model.Skeleton);
                     hierarchyUpdater.UpdateMatrices();
 
                     bool hasErrors = false;
@@ -133,16 +177,21 @@ namespace SiliconStudio.Xenko.Assets.Model
                     // split the meshes if necessary
                     model.Meshes = SplitExtensions.SplitMeshes(model.Meshes, Allow32BitIndex);
 
+                    if (SkeletonUrl != null)
+                    {
+                        var skeleton = assetManager.Load<Skeleton>(SkeletonUrl);
+                    }
+
                     // merge the meshes
                     if (Compact)
                     {
                         var indicesBlackList = new HashSet<int>();
-                        if (PreservedNodes != null)
+                        if (OptimizedNodes != null)
                         {
                             for (var index = 0; index < model.Skeleton.Nodes.Length; ++index)
                             {
                                 var node = model.Skeleton.Nodes[index];
-                                if (PreservedNodes.Contains(node.Name))
+                                if (OptimizedNodes.Contains(node.Name))
                                     indicesBlackList.Add(index);
                             }
                         }
@@ -292,7 +341,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                         model.Meshes = finalMeshes;
                         model.Skeleton.Nodes = newNodes.ToArray();
 
-                        hierarchyUpdater = new SkeletonUpdater(model.Skeleton.Nodes);
+                        hierarchyUpdater = new SkeletonUpdater(model.Skeleton);
                         hierarchyUpdater.UpdateMatrices();
                     }
 
@@ -540,6 +589,8 @@ namespace SiliconStudio.Xenko.Assets.Model
         protected abstract Rendering.Model LoadModel(ICommandContext commandContext, AssetManager assetManager);
 
         protected abstract AnimationClip LoadAnimation(ICommandContext commandContext, AssetManager assetManager);
+
+        protected abstract Skeleton LoadSkeleton(ICommandContext commandContext, AssetManager assetManager);
 
         protected override void ComputeParameterHash(BinarySerializationWriter writer)
         {

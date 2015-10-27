@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("Skeleton")]
     [AssetDescription(FileExtension)]
-    //[AssetCompiler(typeof(SkeletonAssetCompiler))]
+    [AssetCompiler(typeof(SkeletonAssetCompiler))]
     //[ObjectFactory(typeof(SkeletonFactory))]
     [Display(180, "Skeleton", "A skeleton (node hierarchy)")]
     public class SkeletonAsset : AssetImportTracked
@@ -56,6 +56,21 @@ namespace SiliconStudio.Xenko.Assets.Model
             get
             {
                 return Nodes.Where(x => x.Preserve).Select(x => x.Name).ToList();
+            }
+        }
+
+        /// <summary>
+        /// Returns to list of nodes that are preserved (they cannot be merged with other ones).
+        /// </summary>
+        /// <userdoc>
+        /// Checking nodes will garantee them to be available at runtime. Otherwise, it may be merged with their parents (for optimization purposes).
+        /// </userdoc>
+        [DataMemberIgnore]
+        public List<string> OptimizedNodes
+        {
+            get
+            {
+                return Nodes.Where(x => !x.Preserve).Select(x => x.Name).ToList();
             }
         }
 

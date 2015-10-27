@@ -21,9 +21,10 @@ namespace SiliconStudio.Xenko.Assets.Model
     [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(ModelAssetCompiler))]
     [Display(190, "Model", "A 3D model")]
-    [AssetFormatVersion(XenkoConfig.PackageName, "1.4.0-beta")]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha02")]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.4.0-beta", "1.5.0-alpha02", typeof(EmptyAssetUpgrader))]
     public sealed class ModelAsset : AssetImportTracked, IModelAsset, IAssetCompileTimeDependencies
     {
         /// <summary>

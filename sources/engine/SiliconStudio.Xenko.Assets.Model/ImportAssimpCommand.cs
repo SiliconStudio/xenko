@@ -8,6 +8,7 @@ using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Importer.Common;
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Data;
 
 namespace SiliconStudio.Xenko.Assets.Model
@@ -23,9 +24,12 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         public static bool IsSupportingExtensions(string ext)
         {
+            if (string.IsNullOrEmpty(ext))
+                return false;
+
             var extToLower = ext.ToLower();
 
-            return !String.IsNullOrEmpty(ext) && supportedExtensions.Any(supExt => supExt.Equals(extToLower));
+            return supportedExtensions.Any(supExt => supExt.Equals(extToLower));
         }
 
         private Xenko.Importer.AssimpNET.MeshConverter CreateMeshConverter(ICommandContext commandContext)
@@ -53,6 +57,11 @@ namespace SiliconStudio.Xenko.Assets.Model
             var meshConverter = this.CreateMeshConverter(commandContext);
             var sceneData = meshConverter.ConvertAnimation(SourcePath, Location);
             return sceneData;
+        }
+
+        protected override Skeleton LoadSkeleton(ICommandContext commandContext, AssetManager assetManager)
+        {
+            throw new NotImplementedException();
         }
 
         public override string ToString()
