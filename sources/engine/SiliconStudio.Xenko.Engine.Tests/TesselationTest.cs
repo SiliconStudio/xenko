@@ -207,6 +207,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void RunTestGame()
         {
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
+
             RunGameTest(new TesselationTest());
         }
 
