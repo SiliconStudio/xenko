@@ -68,6 +68,50 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         private string ContextAsString => $"model [{Location}] from import [{SourcePath}]";
 
+        class SkeletonMapping
+        {
+            public int[] ModelToSkeleton;
+            public int[] SkeletonToModel;
+            public int[] ModelToModel;
+
+            public SkeletonMapping(Skeleton skeleton, Skeleton modelSkeleton)
+            {
+                ModelToSkeleton = new int[modelSkeleton.Nodes.Length]; // model => skeleton mapping
+                ModelToModel = new int[modelSkeleton.Nodes.Length]; // model => model mapping
+                SkeletonToModel = new int[skeleton.Nodes.Length]; // skeleton => model mapping
+                for (int i = 0; i < SkeletonToModel.Length; ++i)
+                    SkeletonToModel[i] = -1;
+
+                // Build mapping from model to actual skeleton
+                for (int modelIndex = 0; modelIndex < modelSkeleton.Nodes.Length; ++modelIndex)
+                {
+                    var node = modelSkeleton.Nodes[modelIndex];
+                    var parentModelIndex = node.ParentIndex;
+
+                    // Find matching node in skeleton (or map to best parent)
+                    var skeletonIndex = skeleton.Nodes.IndexOf(x => x.Name == node.Name);
+
+                    if (skeletonIndex == -1)
+                    {
+                        // Nothing match, remap to parent node
+                        ModelToSkeleton[modelIndex] = parentModelIndex != -1 ? ModelToSkeleton[parentModelIndex] : 0;
+                        continue;
+                    }
+
+                    // TODO: Check hierarchy for inconsistencies
+
+                    // Name match
+                    ModelToSkeleton[modelIndex] = skeletonIndex;
+                    SkeletonToModel[skeletonIndex] = modelIndex;
+                }
+
+                for (int modelIndex = 0; modelIndex < modelSkeleton.Nodes.Length; ++modelIndex)
+                {
+                    ModelToModel[modelIndex] = SkeletonToModel[ModelToSkeleton[modelIndex]];
+                }
+            }
+        }
+
         /// <summary>
         /// The method to override containing the actual command code. It is called by the <see cref="DoCommand" /> function
         /// </summary>
@@ -178,42 +222,51 @@ namespace SiliconStudio.Xenko.Assets.Model
                     var hierarchyUpdater = new SkeletonUpdater(skeleton);
                     hierarchyUpdater.UpdateMatrices();
 
-                    // Build mapping
-                    var oldToNew = new int[skeleton.Nodes.Length];
-                    var newToOld = new List<int>();
-                    var newNodes = new List<ModelNodeDefinition>();
+                    // Removed optimized nodes
+                    var filteredSkeleton = new Skeleton { Nodes = skeleton.Nodes.Where(x => !optimizedNodes.Contains(x.Name)).ToArray() };
+
+                    // Fix parent indices (since we removed some nodes)
+                    for (int i = 0; i < filteredSkeleton.Nodes.Length; ++i)
+                    {
+                        var parentIndex = filteredSkeleton.Nodes[i].ParentIndex;
+                        if (parentIndex != -1)
+                        {
+                            // Find appropriate parent to map to
+                            var newParentIndex = -1;
+                            while (newParentIndex == -1 && parentIndex != -1)
+                            {
+                                var nodeName = skeleton.Nodes[parentIndex].Name;
+                                parentIndex = skeleton.Nodes[parentIndex].ParentIndex;
+                                newParentIndex = filteredSkeleton.Nodes.IndexOf(x => x.Name == nodeName);
+                            }
+                            filteredSkeleton.Nodes[i].ParentIndex = newParentIndex;
+                        }
+                    }
+
+                    // Generate mapping
+                    var skeletonMapping = new SkeletonMapping(filteredSkeleton, skeleton);
+
+                    // Children of remapped nodes need to have their matrices updated
                     for (int i = 0; i < skeleton.Nodes.Length; ++i)
                     {
                         var node = skeleton.Nodes[i];
+                        var filteredIndex = skeletonMapping.ModelToSkeleton[i];
 
-                        // Find new parent
-                        var newParentIndex = node.ParentIndex != -1 ? oldToNew[node.ParentIndex] : -1;
+                        var oldParentIndex = node.ParentIndex;
 
-                        if (optimizedNodes.Contains(skeleton.Nodes[i].Name))
+                        if (oldParentIndex != -1 && skeletonMapping.ModelToModel[oldParentIndex] != oldParentIndex)
                         {
-                            oldToNew[i] = newParentIndex;
-                            continue;
-                        }
-
-                        oldToNew[i] = newNodes.Count;
-
-                        // If intermediate nodes are removed, we need to update matrices to contains the transforms of everything that was between those two nodes
-                        var expectedParent = newParentIndex != -1 ? newToOld[newParentIndex] : -1;
-                        if (expectedParent != node.ParentIndex)
-                        {
-                            var transformMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, expectedParent, node.ParentIndex);
+                            // Compute matrix for intermediate missing nodes
+                            var transformMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, skeletonMapping.ModelToModel[oldParentIndex], oldParentIndex);
                             var localMatrix = hierarchyUpdater.NodeTransformations[i].LocalMatrix;
 
+                            // Combine it with local matrix, and use that instead in the new skeleton; resulting node should be same position as before optimized nodes were removed
                             localMatrix = Matrix.Multiply(localMatrix, transformMatrix);
-                            localMatrix.Decompose(out node.Transform.Scaling, out node.Transform.Rotation, out node.Transform.Translation);
+                            localMatrix.Decompose(out filteredSkeleton.Nodes[filteredIndex].Transform.Scaling, out filteredSkeleton.Nodes[filteredIndex].Transform.Rotation, out filteredSkeleton.Nodes[filteredIndex].Transform.Translation);
                         }
-                        node.ParentIndex = newParentIndex;
-
-                        newNodes.Add(node);
-                        newToOld.Add(i);
                     }
 
-                    exportedObject = new Skeleton { Nodes = newNodes.ToArray() };
+                    exportedObject = filteredSkeleton;
                 }
                 else if (ExportType == "model")
                 {
@@ -245,53 +298,30 @@ namespace SiliconStudio.Xenko.Assets.Model
                         }
                     }
 
-                    var modelToSkeleton = new int[modelSkeleton.Nodes.Length]; // model => skeleton mapping
-                    var modelToModel = new int[modelSkeleton.Nodes.Length]; // model remapping
+                    SkeletonMapping skeletonMapping;
 
                     Skeleton skeleton;
                     if (SkeletonUrl != null)
                     {
                         // Load skeleton and process it
                         skeleton = assetManager.Load<Skeleton>(SkeletonUrl);
-
-                        // Build mapping from model to actual skeleton
-                        for (int modelIndex = 0; modelIndex < modelSkeleton.Nodes.Length; modelIndex++)
-                        {
-                            var node = modelSkeleton.Nodes[modelIndex];
-                            var parentModelIndex = node.ParentIndex;
-
-                            // Find matching node in skeleton (or map to best parent)
-                            var skeletonIndex = skeleton.Nodes.IndexOf(x => x.Name == node.Name);
-
-                            // Let's check if parents are matching in both modelSkeleton and Skeleton
-                            if (skeletonIndex != -1 && (parentModelIndex != -1 ? modelToSkeleton[parentModelIndex] : -1) == skeleton.Nodes[skeletonIndex].ParentIndex)
-                            {
-                                // Everything matches
-                                modelToSkeleton[modelIndex] = skeletonIndex;
-                                modelToModel[modelIndex] = modelIndex;
-                            }
-                            else
-                            {
-                                // Otherwise, find best parent and merge it
-                                modelToSkeleton[modelIndex] = parentModelIndex != -1 ? modelToSkeleton[parentModelIndex] : 0;
-                                modelToModel[modelIndex] = parentModelIndex != -1 ? modelToModel[parentModelIndex] : 0;
-                            }
-                        }
+                        skeletonMapping = new SkeletonMapping(skeleton, modelSkeleton);
 
                         // Assign skeleton to model
                         model.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(Guid.Empty, SkeletonUrl);
                     }
                     else
                     {
-                        skeleton = null;
+                        throw new NotImplementedException();
+                        //skeleton = null;
 
-                        // No skeleton, we can compact everything
-                        for (int i = 0; i < modelSkeleton.Nodes.Length; ++i)
-                        {
-                            // Map everything to root node
-                            modelToSkeleton[i] = 0;
-                            modelToModel[i] = 0;
-                        }
+                        //// No skeleton, we can compact everything
+                        //for (int i = 0; i < modelSkeleton.Nodes.Length; ++i)
+                        //{
+                        //    // Map everything to root node
+                        //    modelToSkeleton[i] = 0;
+                        //    modelToModel[i] = 0;
+                        //}
                     }
 
                     // Refresh skeleton updater with model skeleton
@@ -302,10 +332,10 @@ namespace SiliconStudio.Xenko.Assets.Model
                     foreach (var mesh in model.Meshes)
                     {
                         // Check if there was a remap using model skeleton
-                        if (modelToModel[mesh.NodeIndex] != mesh.NodeIndex)
+                        if (skeletonMapping.ModelToModel[mesh.NodeIndex] != mesh.NodeIndex)
                         {
                             // Transform vertices
-                            var transformationMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, modelToModel[mesh.NodeIndex], mesh.NodeIndex);
+                            var transformationMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, skeletonMapping.ModelToModel[mesh.NodeIndex], mesh.NodeIndex);
                             mesh.Draw.VertexBuffers[0].TransformBuffer(ref transformationMatrix);
 
                             // Check if geometry is inverted, to know if we need to reverse winding order
@@ -323,7 +353,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                         }
 
                         // Update new node index using real asset skeleton
-                        mesh.NodeIndex = modelToSkeleton[mesh.NodeIndex];
+                        mesh.NodeIndex = skeletonMapping.ModelToSkeleton[mesh.NodeIndex];
                     }
 
                     // Merge meshes with same parent nodes, material and skinning
@@ -372,9 +402,9 @@ namespace SiliconStudio.Xenko.Assets.Model
                         for (int i = 0; i < skinning.Bones.Length; ++i)
                         {
                             var nodeIndex = skinning.Bones[i].NodeIndex;
-                            var newNodeIndex = modelToModel[nodeIndex];
+                            var newNodeIndex = skeletonMapping.ModelToModel[nodeIndex];
 
-                            skinning.Bones[i].NodeIndex = modelToSkeleton[nodeIndex];
+                            skinning.Bones[i].NodeIndex = skeletonMapping.ModelToSkeleton[nodeIndex];
 
                             // If it was remapped, we also need to update matrix
                             if (newNodeIndex != nodeIndex)
@@ -387,170 +417,6 @@ namespace SiliconStudio.Xenko.Assets.Model
 
                     // split the meshes if necessary
                     model.Meshes = SplitExtensions.SplitMeshes(model.Meshes, Allow32BitIndex);
-
-                    // merge the meshes
-                    /*if (Compact)
-                    {
-                        var indicesBlackList = new HashSet<int>();
-                        if (OptimizedNodes != null)
-                        {
-                            for (var index = 0; index < model.Skeleton.Nodes.Length; ++index)
-                            {
-                                var node = model.Skeleton.Nodes[index];
-                                if (OptimizedNodes.Contains(node.Name))
-                                    indicesBlackList.Add(index);
-                            }
-                        }
-
-                        // group meshes with same material and same root
-                        var sameMaterialMeshes = new List<GroupList<int, Mesh>>();
-                        GroupFromIndex(model, 0, indicesBlackList, model.Meshes, sameMaterialMeshes);
-
-                        // remove meshes that cannot be merged
-                        var excludedMeshes = new List<Mesh>();
-                        var finalMeshGroups = new List<GroupList<int, Mesh>>();
-                        foreach (var meshList in sameMaterialMeshes)
-                        {
-                            var mergeList = new GroupList<int, Mesh> { Key = meshList.Key };
-
-                            foreach (var mesh in meshList)
-                            {
-                                if (mesh.Skinning != null || indicesBlackList.Contains(mesh.NodeIndex))
-                                    excludedMeshes.Add(mesh);
-                                else
-                                    mergeList.Add(mesh);
-                            }
-
-                            if (mergeList.Count <= 1)
-                                excludedMeshes.AddRange(mergeList);
-                            else
-                                finalMeshGroups.Add(mergeList);
-                        }
-
-                        var finalMeshes = new List<Mesh>();
-
-                        finalMeshes.AddRange(excludedMeshes);
-
-                        foreach (var meshList in finalMeshGroups)
-                        {
-                            // transform the buffers
-                            foreach (var mesh in meshList)
-                            {
-                                var transformationMatrix = GetMatrixFromIndex(model.Skeleton.Nodes, hierarchyUpdater, meshList.Key, mesh.NodeIndex);
-                                mesh.Draw.VertexBuffers[0].TransformBuffer(ref transformationMatrix);
-
-                                // Check if geometry is inverted, to know if we need to reverse winding order
-                                // TODO: What to do if there is no index buffer? We should create one... (not happening yet)
-                                if (mesh.Draw.IndexBuffer == null)
-                                    throw new InvalidOperationException();
-
-                                Matrix rotation;
-                                Vector3 scale, translation;
-                                if (transformationMatrix.Decompose(out scale, out rotation, out translation)
-                                    && scale.X*scale.Y*scale.Z < 0)
-                                {
-                                    mesh.Draw.ReverseWindingOrder();
-                                }
-                            }
-
-                            // refine the groups base on several tests
-                            var newMeshGroups = new List<GroupList<int, Mesh>> { meshList };
-                            // only regroup meshes if they share the same parameters
-                            newMeshGroups = RefineGroups(model, newMeshGroups, CompareParameters);
-
-                            // only regroup meshes if they share the shadow options
-                            newMeshGroups = RefineGroups(model, newMeshGroups, CompareShadowOptions);
-
-                            // add to the final meshes groups
-                            foreach (var sameParamsMeshes in newMeshGroups)
-                            {
-                                var baseMesh = sameParamsMeshes[0];
-                                var newMeshList = sameParamsMeshes.Select(x => x.Draw).ToList().GroupDrawData(Allow32BitIndex);
-                                foreach (var generatedMesh in newMeshList)
-                                {
-                                    finalMeshes.Add(new Mesh(generatedMesh, baseMesh.Parameters) {
-                                            MaterialIndex = baseMesh.MaterialIndex,
-                                            Name = baseMesh.Name,
-                                            Draw = generatedMesh,
-                                            NodeIndex = meshList.Key,
-                                            Skinning = null,
-                                        });
-                                }
-                            }
-                        }
-
-                        // delete empty nodes (neither mesh nor bone attached)
-                        var keptNodes = new bool[model.Skeleton.Nodes.Length];
-                        for (var i = 0; i < keptNodes.Length; ++i)
-                        {
-                            keptNodes[i] = false;
-                        }
-                        foreach (var keepIndex in indicesBlackList)
-                        {
-                            var nodeIndex = keepIndex;
-                            while (nodeIndex != -1 && !keptNodes[nodeIndex])
-                            {
-                                keptNodes[nodeIndex] = true;
-                                nodeIndex = model.Skeleton.Nodes[nodeIndex].ParentIndex;
-                            }
-                        }
-                        foreach (var mesh in finalMeshes)
-                        {
-                            var nodeIndex = mesh.NodeIndex;
-                            while (nodeIndex != -1 && !keptNodes[nodeIndex])
-                            {
-                                keptNodes[nodeIndex] = true;
-                                nodeIndex = model.Skeleton.Nodes[nodeIndex].ParentIndex;
-                            }
-
-                            if (mesh.Skinning != null)
-                            {
-                                foreach (var bone in mesh.Skinning.Bones)
-                                {
-                                    nodeIndex = bone.NodeIndex;
-                                    while (nodeIndex != -1 && !keptNodes[nodeIndex])
-                                    {
-                                        keptNodes[nodeIndex] = true;
-                                        nodeIndex = model.Skeleton.Nodes[nodeIndex].ParentIndex;
-                                    }
-                                }
-                            }
-                        }
-
-                        var newNodes = new List<ModelNodeDefinition>();
-                        var newMapping = new int[model.Skeleton.Nodes.Length];
-                        for (var i = 0; i < keptNodes.Length; ++i)
-                        {
-                            if (keptNodes[i])
-                            {
-                                var parentIndex = model.Skeleton.Nodes[i].ParentIndex;
-                                if (parentIndex != -1)
-                                    model.Skeleton.Nodes[i].ParentIndex = newMapping[parentIndex]; // assume that the nodes are well ordered
-                                newMapping[i] = newNodes.Count;
-                                newNodes.Add(model.Skeleton.Nodes[i]);
-                            }
-                        }
-
-                        foreach (var mesh in finalMeshes)
-                        {
-                            mesh.NodeIndex = newMapping[mesh.NodeIndex];
-                            
-                            if (mesh.Skinning != null)
-                            {
-                                for (var i = 0; i < mesh.Skinning.Bones.Length; ++i)
-                                {
-                                    mesh.Skinning.Bones[i].NodeIndex = newMapping[mesh.Skinning.Bones[i].NodeIndex];
-                                }
-                            }
-                        }
-
-                        model.Meshes = finalMeshes;
-                        if (SkeletonUrl != null)
-                            model.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(Guid.Empty, SkeletonUrl);
-
-                        hierarchyUpdater = new SkeletonUpdater(model.Skeleton);
-                        hierarchyUpdater.UpdateMatrices();
-                    }*/
 
                     // Refresh skeleton updater with asset skeleton
                     hierarchyUpdater = new SkeletonUpdater(skeleton);
