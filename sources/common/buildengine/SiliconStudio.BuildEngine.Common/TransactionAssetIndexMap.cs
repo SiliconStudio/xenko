@@ -36,7 +36,7 @@ namespace SiliconStudio.BuildEngine
 
         public bool TryGetValue(string url, out ObjectId objectId)
         {
-            var objUrl = new ObjectUrl(UrlType.Internal, url);
+            var objUrl = new ObjectUrl(UrlType.ContentLink, url);
 
             // Lock TransactionAssetIndexMap
             lock (transactionOutputObjects)
@@ -104,7 +104,7 @@ namespace SiliconStudio.BuildEngine
                 {
                     lock (buildTransaction.transactionOutputObjects)
                     {
-                        buildTransaction.transactionOutputObjects[new ObjectUrl(UrlType.Internal, url)] = value;
+                        buildTransaction.transactionOutputObjects[new ObjectUrl(UrlType.ContentLink, url)] = value;
                     }
                 }
             }

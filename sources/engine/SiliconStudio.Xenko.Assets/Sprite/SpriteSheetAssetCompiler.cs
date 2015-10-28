@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         {
             var gameSettingsAsset = context.GetGameSettingsAsset();
 
-            result.BuildSteps = new AssetBuildStep(AssetItem);
+            result.BuildSteps = new ListBuildStep();
             
             // create the registry containing the sprite assets texture index association
             var imageToTextureUrl = new Dictionary<SpriteInfo, string>();
@@ -54,9 +54,11 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     if(!TextureFileIsValid(textureFile))
                         continue;
 
+                    var textureUrl = SpriteSheetAsset.BuildTextureUrl(urlInStorage, i);
+
                     var spriteAssetArray = spriteByTextures[i].ToArray();
                     foreach (var spriteAsset in spriteAssetArray)
-                        imageToTextureUrl[spriteAsset] = SpriteSheetAsset.BuildTextureUrl(urlInStorage, i);
+                        imageToTextureUrl[spriteAsset] = textureUrl;
 
                     // create an texture asset.
                     var textureAsset = new TextureAsset
@@ -77,19 +79,19 @@ namespace SiliconStudio.Xenko.Assets.Sprite
                     var assetSource = UPath.Combine(assetDirectory, spriteAssetArray[0].Source);
 
                     // add the texture build command.
-                    result.BuildSteps.Add(
+                    result.BuildSteps.Add(new AssetBuildStep(new AssetItem(textureUrl, textureAsset))
+                    {
                         new TextureAssetCompiler.TextureConvertCommand(
-                            SpriteSheetAsset.BuildTextureUrl(urlInStorage, i),
-                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality, colorSpace)));
+                            textureUrl,
+                            new TextureConvertParameters(assetSource, textureAsset, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality, colorSpace))
+                    });
                 }
-
-                result.BuildSteps.Add(new WaitBuildStep()); // wait the textures to be imported
             }
 
             if (!result.HasErrors)
             {
                 var parameters = new SpriteSheetParameters(asset, imageToTextureUrl, context.Platform, context.GetGraphicsPlatform(), gameSettingsAsset.DefaultGraphicsProfile, gameSettingsAsset.TextureQuality, colorSpace);
-                result.BuildSteps.Add(new SpriteSheetCommand(urlInStorage, parameters));                
+                result.BuildSteps.Add(new AssetBuildStep(AssetItem) { new SpriteSheetCommand(urlInStorage, parameters) });
             }
         }
 
@@ -101,6 +103,16 @@ namespace SiliconStudio.Xenko.Assets.Sprite
             public SpriteSheetCommand(string url, SpriteSheetParameters assetParameters)
                 : base(url, assetParameters)
             {
+            }
+
+            /// <inheritdoc/>
+            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
+            {
+                foreach (var dependency in AssetParameters.ImageToTextureUrl)
+                {
+                    // Use UrlType.Content instead of UrlType.Link, as we are actualy using the content linked of assets in order to create the spritesheet
+                    yield return new ObjectUrl(UrlType.Content, dependency.Value);
+                }
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)

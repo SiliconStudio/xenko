@@ -85,13 +85,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 this.colorspace = colorspace;
             }
 
-            public override IEnumerable<ObjectUrl> GetInputFiles()
+            protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                foreach (var inputFile in base.GetInputFiles())
-                {
-                    yield return inputFile;
-                }
-
                 if(File.Exists(AssetParameters.CharacterSet))
                     yield return new ObjectUrl(UrlType.File, AssetParameters.CharacterSet);
             }

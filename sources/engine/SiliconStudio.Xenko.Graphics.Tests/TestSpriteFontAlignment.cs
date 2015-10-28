@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    public class TestSpriteFontAlignment : TestGameBase
+    public class TestSpriteFontAlignment : GraphicTestGameBase
     {
         private SpriteFont arial;
 

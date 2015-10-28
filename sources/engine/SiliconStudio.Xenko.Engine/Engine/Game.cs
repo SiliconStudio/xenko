@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets the graphics device manager.
         /// </summary>
         /// <value>The graphics device manager.</value>
-        public GraphicsDeviceManager GraphicsDeviceManager { get; private set; }
+        public GraphicsDeviceManager GraphicsDeviceManager { get; internal set; }
 
         /// <summary>
         /// Gets the script system.
@@ -229,11 +229,12 @@ namespace SiliconStudio.Xenko.Engine
             {
                 InitializeAssetDatabase();
 
-                // Load several default settings
-                if (AutoLoadDefaultSettings && Asset.Exists(GameSettings.AssetUrl))
-                {
+                if(Asset.Exists(GameSettings.AssetUrl))
                     gameSettings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
 
+                // Load several default settings
+                if (AutoLoadDefaultSettings)
+                {
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
                     if (gameSettings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
                     if (gameSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = gameSettings.DefaultBackBufferWidth;

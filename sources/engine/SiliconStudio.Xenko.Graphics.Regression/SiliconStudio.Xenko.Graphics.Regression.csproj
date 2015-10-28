@@ -134,6 +134,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BackBufferSizeMode.cs" />
     <Compile Include="BlockingBufferedStream.cs" />
     <Compile Include="FrameGameSystem.cs" />
     <Compile Include="GameTester.cs" />
@@ -147,8 +148,8 @@
     <Compile Include="NUnitLite\TestNamespace.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RegressionHelpers.cs" />
-    <Compile Include="TestGameBase.cs" />
     <Compile Include="NUnitLite\TextUI.cs" />
+    <Compile Include="TestGraphicsDeviceManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">

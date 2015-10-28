@@ -42,24 +42,6 @@ UsedParameters:
     SpriteBase.ColorIsSRgb: true
 ---
 !EffectCompileRequest
-EffectName: UIEffectSeparateAlpha
-UsedParameters:
-    CompilerParameters.DebugKey: true
-    EffectSourceCode.Enable: true
-    EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
-    EffectSourceCode.ClassDeclaration: internal partial
----
-!EffectCompileRequest
-EffectName: UIEffectSeparateAlpha
-UsedParameters:
-    CompilerParameters.DebugKey: true
-    EffectSourceCode.Enable: true
-    EffectSourceCode.Namespace: SiliconStudio.Xenko.Graphics
-    EffectSourceCode.ClassDeclaration: internal partial
-    EffectSourceCode.FieldName: binaryBytecodeSRgb
-    SpriteBase.ColorIsSRgb: true
----
-!EffectCompileRequest
 EffectName: BackgroundEffect
 UsedParameters:
     CompilerParameters.DebugKey: true

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_ANDROID
+using System;
 using SiliconStudio.Core.Mathematics;
 using OpenTK;
 using OpenTK.Platform.Android;
@@ -9,6 +10,8 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public class SwapChainGraphicsPresenter : GraphicsPresenter
     {
+        internal static Action<int, int, PresentationParameters> ProcessPresentationParametersOverride;
+
         private AndroidGameView gameWindow;
         private Texture backBuffer;
 
@@ -49,16 +52,24 @@ namespace SiliconStudio.Xenko.Graphics
             var panelHeight = gameWindow.Size.Height;
             var panelRatio = (float)panelWidth / panelHeight;
 
-            var desiredWidth = Description.BackBufferWidth;
-            var desiredHeight = Description.BackBufferHeight;
-
-            if (panelRatio >= 1.0f) // Landscape => use height as base
+            var handler = ProcessPresentationParametersOverride; // TODO remove this hack when swap chain creation process is properly designed and flexible.
+            if(handler != null) // override
             {
-                Description.BackBufferHeight = (int)(desiredWidth / panelRatio);
+                handler(panelWidth, panelHeight, Description);
             }
-            else // Portrait => use width as base
+            else // default behavior
             {
-                Description.BackBufferWidth = (int)(desiredHeight * panelRatio);
+                var desiredWidth = Description.BackBufferWidth;
+                var desiredHeight = Description.BackBufferHeight;
+
+                if (panelRatio >= 1.0f) // Landscape => use height as base
+                {
+                    Description.BackBufferHeight = (int)(desiredWidth / panelRatio);
+                }
+                else // Portrait => use width as base
+                {
+                    Description.BackBufferWidth = (int)(desiredHeight * panelRatio);
+                }
             }
         }
 

@@ -125,7 +125,7 @@ namespace SiliconStudio.Assets.Analysis
                 }
                 else if (attachedReference != null)
                 {
-                    AddLink(new AttachedContentReference(attachedReference),
+                    AddLink(attachedReference,
                         (guid, location) =>
                         {
                             object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null;
@@ -175,7 +175,7 @@ namespace SiliconStudio.Assets.Analysis
                 else if (attachedReference != null)
                 {
                     var list = (IList)collection;
-                    AddLink(new AttachedContentReference(attachedReference), (guid, location) => list[index] = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null);
+                    AddLink(attachedReference, (guid, location) => list[index] = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ElementType, guid.Value, location) : null);
                 }
                 else if (item is UFile)
                 {
@@ -217,7 +217,7 @@ namespace SiliconStudio.Assets.Analysis
                 }
                 else if (attachedReference != null)
                 {
-                    AddLink(new AttachedContentReference(attachedReference),
+                    AddLink(attachedReference,
                         (guid, location) =>
                         {
                             object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(descriptor.ValueType, guid.Value, location) : null;
@@ -275,7 +275,7 @@ namespace SiliconStudio.Assets.Analysis
                 }
                 else if (attachedReference != null)
                 {
-                    AddLink(new AttachedContentReference(attachedReference),
+                    AddLink(attachedReference,
                         (guid, location) =>
                         {
                             object newValue = guid.HasValue && guid.Value != Guid.Empty ? AttachedReferenceManager.CreateSerializableVersion(member.Type, guid.Value, location) : null;

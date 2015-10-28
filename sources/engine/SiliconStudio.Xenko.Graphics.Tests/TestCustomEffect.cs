@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     }
 
     [TestFixture]
-    public class TestCustomEffect : TestGameBase
+    public class TestCustomEffect : GraphicTestGameBase
     {
         private ParameterCollection effectParameters;
         private DynamicEffectCompiler dynamicEffectCompiler;

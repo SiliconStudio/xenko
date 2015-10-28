@@ -26,6 +26,7 @@ using OpenTK.Platform.iPhoneOS;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
 using DrawBuffersEnum = OpenTK.Graphics.ES30.DrawBufferMode;
+using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
 using ProgramParameter = OpenTK.Graphics.ES30.GetProgramParameterName;
@@ -68,6 +69,13 @@ namespace SiliconStudio.Xenko.Graphics
         internal object asyncCreationLockObject = new object();
         internal OpenTK.Graphics.IGraphicsContext deviceCreationContext;
 
+        private const GraphicsPlatform GraphicPlatform =
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                                                            GraphicsPlatform.OpenGLES;
+#else
+                                                            GraphicsPlatform.OpenGL;
+#endif
+
 #if SILICONSTUDIO_PLATFORM_ANDROID
         // If context was set before Begin(), try to keep it after End()
         // (otherwise devices with no backbuffer flicker)
@@ -98,6 +106,7 @@ namespace SiliconStudio.Xenko.Graphics
         internal bool HasExtTextureFormatBGRA8888;
         internal bool HasRenderTargetFloat;
         internal bool HasRenderTargetHalf;
+        internal bool HasTextureRG;
 #endif
 
         private int windowProvidedFrameBuffer;
@@ -149,7 +158,7 @@ namespace SiliconStudio.Xenko.Graphics
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         private OpenTK.GameWindow gameWindow;
-#elif  SILICONSTUDIO_PLATFORM_ANDROID
+#elif SILICONSTUDIO_PLATFORM_ANDROID
         private AndroidGameView gameWindow;
 #elif SILICONSTUDIO_PLATFORM_IOS
         private iPhoneOSGameView gameWindow;
@@ -279,7 +288,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             ++contextBeginCounter;
 
-#if  SILICONSTUDIO_PLATFORM_ANDROID
+#if SILICONSTUDIO_PLATFORM_ANDROID
             if (contextBeginCounter == 1)
             {
                 if (Workaround_Context_Tegra2_Tegra3)
@@ -548,12 +557,19 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (IsOpenGLES2)
                 {
-#if SILICONSTUDIO_PLATFORM_ANDROID
-                    // TODO: This issue might just be because we don't specify alignment to glPixelStorei().
-                    if (sourceTexture.Width <= 16 || sourceTexture.Height <= 16)
-                        throw new NotSupportedException("ReadPixels from texture smaller or equal to 16x16 pixels seems systematically to fails on some android devices."); // example: Galaxy S3
-#endif
-                    GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, destTexture.FormatGl, destTexture.Type, destTexture.StagingData);
+                    var format = destTexture.FormatGl;
+                    var type = destTexture.Type;
+
+                    var srcFormat = sourceTexture.Description.Format;
+                    var destFormat = destTexture.Description.Format;
+
+                    if (srcFormat == destFormat && destFormat.SizeInBytes() == 4)   // in this case we just want to copy the data we don't care about format conversion. 
+                    {                                                               // RGBA/Unsigned-byte is always a working combination whatever is the internal format (sRGB, etc...)
+                        format = PixelFormatGl.Rgba;
+                        type = PixelType.UnsignedByte;
+                    }
+
+                    GL.ReadPixels(sourceRectangle.Left, sourceRectangle.Top, sourceRectangle.Width, sourceRectangle.Height, format, type, destTexture.StagingData);
                 }
                 else
 #endif
@@ -2140,7 +2156,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             gameWindow = (OpenTK.GameWindow)windowHandle.NativeHandle;
             graphicsContext = gameWindow.Context;
-#elif  SILICONSTUDIO_PLATFORM_ANDROID
+#elif SILICONSTUDIO_PLATFORM_ANDROID
             // Force a reference to AndroidGameView from OpenTK 0.9, otherwise linking will fail in release mode for MonoDroid.
             typeof (opentkold::OpenTK.Platform.Android.AndroidGameView).ToString();
             gameWindow = (AndroidGameView)windowHandle.NativeHandle;

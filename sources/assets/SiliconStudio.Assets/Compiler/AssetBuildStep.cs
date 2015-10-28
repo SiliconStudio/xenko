@@ -3,6 +3,7 @@
 using System;
 
 using SiliconStudio.BuildEngine;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets.Compiler
 {
@@ -31,5 +32,7 @@ namespace SiliconStudio.Assets.Compiler
         {
             return string.Format("Asset build steps [{0}:'{1}'] ({2} items)", AssetItem.Asset != null ? AssetItem.Asset.GetType().Name : "(null)", AssetItem.Location, Count);
         }
+
+        public override string OutputLocation => AssetItem.Location;
     }
 }

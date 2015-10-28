@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Input;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestBitmapSpriteFont : TestGameBase
+    public class TestBitmapSpriteFont : GraphicTestGameBase
     {
         private SpriteBatch spriteBatch;
         private SpriteFont testFont;

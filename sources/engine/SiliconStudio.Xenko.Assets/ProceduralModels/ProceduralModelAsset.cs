@@ -28,12 +28,12 @@ namespace SiliconStudio.Xenko.Assets.ProceduralModels
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(ProceduralModelAssetCompiler))]
     [Display(185, "Procedural Model", "A procedural model")]
-    [AssetFormatVersion(6)]
-    [AssetUpgrader(0, 1, 2, typeof(Upgrader))]
-    [AssetUpgrader(2, 3, typeof(RenameCapsuleHeight))]
-    [AssetUpgrader(3, 4, typeof(RenameDiameters))]
-    [AssetUpgrader(4, 5, typeof(Standardization))]
-    [AssetUpgrader(5, 6, typeof(CapsuleRadiusDefaultChange))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha01")]
+    [AssetUpgrader(XenkoConfig.PackageName, 0, 2, typeof(Upgrader))]
+    [AssetUpgrader(XenkoConfig.PackageName, 2, 3, typeof(RenameCapsuleHeight))]
+    [AssetUpgrader(XenkoConfig.PackageName, 3, 4, typeof(RenameDiameters))]
+    [AssetUpgrader(XenkoConfig.PackageName, 4, 5, typeof(Standardization))]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.5", "1.5.0-alpha01", typeof(CapsuleRadiusDefaultChange))]
     public sealed class ProceduralModelAsset : Asset, IModelAsset
     {
         /// <summary>
@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Assets.ProceduralModels
 
         private class Upgrader : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 // Introduction of MaterialInstance
                 var material = asset.Type.Material;
@@ -97,7 +97,7 @@ namespace SiliconStudio.Xenko.Assets.ProceduralModels
 
         class RenameCapsuleHeight : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && proceduralType.Height != null)
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Assets.ProceduralModels
 
         class RenameDiameters : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var proceduralType = asset.Type;
                 if (proceduralType.Diameter != null)
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Assets.ProceduralModels
 
         class Standardization : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 var proceduralType = asset.Type;
 
@@ -178,10 +178,12 @@ namespace SiliconStudio.Xenko.Assets.ProceduralModels
 
         class CapsuleRadiusDefaultChange : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
+                // SerializedVersion format changed during renaming upgrade. However, before this was merged back in master, some asset upgrader still with older version numbers were developed.
+                // However since this upgrader can be reapplied, it is not a problem
                 var proceduralType = asset.Type;
-                if (proceduralType.Node.Tag == "!CapsuleProceduralModel")
+                if (proceduralType.Node.Tag == "!CapsuleProceduralModel" && currentVersion != PackageVersion.Parse("0.0.6"))
                 {
                     if (proceduralType.Radius == null)
                     {

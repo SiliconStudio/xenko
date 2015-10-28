@@ -6,13 +6,12 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
-    [TestFixture, Ignore]
     public class ParameterPathTest
     {
         private static readonly ParameterKey<ParameterCollection> PropertyContainer = new ParameterKey<ParameterCollection>("ParameterCollection");
         private static readonly ParameterKey<float> PropertyFloat = new ParameterKey<float>("PropertyFloat");
 
-        [Test]
+        [Test, Ignore]
         [Description("Test PropertyListener")]
         public void Test1()
         {

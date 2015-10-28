@@ -29,7 +29,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             //float3 shadowPositionWSddx = ddx_fine(shadowPositionWS);
             //float3 shadowPositionWSddy = ddy_fine(shadowPositionWS);
 
-            float3 shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCountBase]).xyz;
+            float4 shadowPosition = mul(float4(shadowPositionWS, 1), WorldToShadowCascadeUV[cascadeIndex + lightIndex * TCascadeCountBase]);
+            shadowPosition.xyz /= shadowPosition.w;
             var depthVS = shadowPosition.z;
             depthVS -= DepthBiases[lightIndex];
 
