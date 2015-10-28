@@ -233,10 +233,9 @@ namespace SiliconStudio.CoreCLRBuilder
                 }
 
                 // Check that all references are found in current directory.
-                foreach (var file in EnumerateDlls(dir))
+                foreach (var entry in assemblyTable)
                 {
-                    AssemblyDefinition ass = AssemblyDefinition.ReadAssembly(file.FullName);
-                    foreach (var module in ass.Modules)
+                    foreach (var module in entry.Value.Modules)
                     {
                         foreach (var refAssembly in module.AssemblyReferences)
                         {
@@ -246,11 +245,11 @@ namespace SiliconStudio.CoreCLRBuilder
                                 assemblyCloseMatchTable.TryGetValue(refAssembly.Name, out otherAss);
                                 if (otherAss == null)
                                 {
-                                    Console.WriteLine(string.Format("Assembly {0} refers to {1} which cannot be found.\n", ass.FullName, refAssembly.FullName));
+                                    Console.WriteLine(string.Format("Assembly {0} refers to {1} which cannot be found.\n", entry.Key, refAssembly.FullName));
                                 }
                                 else if (otherAss.Name.Version <= refAssembly.Version)
                                 {
-                                    Console.WriteLine(string.Format("Assembly {0} refers to {1} but we could only find:\n\t {2} cannot be found.\n", ass.FullName, refAssembly.FullName, otherAss.FullName));
+                                    Console.WriteLine(string.Format("Assembly {0} refers to {1} but we could only find:\n\t {2} cannot be found.\n", entry.Key, refAssembly.FullName, otherAss.FullName));
                                 }
                             }
                         }
