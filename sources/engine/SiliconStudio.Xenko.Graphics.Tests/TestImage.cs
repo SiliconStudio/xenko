@@ -246,7 +246,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         
                         // Reload the image from the memory stream.
                         var image2 = Image.Load(tempStream);
-                        CompareImage(image, image2, false, false, fileName);
+                        CompareImage(image, image2, false, 0, fileName);
                         image2.Dispose();
                     }
                 });
@@ -291,9 +291,20 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 if (intermediateFormat == ImageFileType.Xenko || intermediateFormat == ImageFileType.Dds || (sourceFormat == intermediateFormat 
                     && intermediateFormat != ImageFileType.Gif)) // TODO: remove this when Giff compression/decompression is fixed
                 {
-                    var allowSmallDifferences = intermediateFormat == ImageFileType.Png      // TODO: remove this when png  encryption implementation is stable
-                                                || intermediateFormat == ImageFileType.Jpg   // TODO: remove this when jepg encryption implementation is stable
-                                                || intermediateFormat == ImageFileType.Tiff; // TODO: remove this when tiff encryption implementation is stable
+                    int allowSmallDifferences;
+                    switch (intermediateFormat)
+                    {
+                        case ImageFileType.Tiff:// TODO: remove this when tiff encryption implementation is stable
+                        case ImageFileType.Png: // TODO: remove this when png  encryption implementation is stable
+                            allowSmallDifferences = 1;
+                            break;
+                        case ImageFileType.Jpg: // TODO: remove this when jepg encryption implementation is stable
+                            allowSmallDifferences = 30;
+                            break;
+                        default:
+                            allowSmallDifferences = 0;
+                            break;
+                    }
 
                     // Reload the image from the memory stream.
                     var image2 = Image.Load(tempStream);
@@ -313,7 +324,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             Log.Info("Loaded {0} and convert to (Dds, Jpg, Png, Gif, Bmp, Tiff) image from DirectXSDK test Memory: {1} bytes, in {2}ms", imageCount, testMemoryAfter - testMemoryBefore, time);
         }
 
-        internal static void CompareImage(Image from, Image to, bool ignoreAlpha, bool allowSmallDifferences, string file = null)
+        internal static void CompareImage(Image from, Image to, bool ignoreAlpha, int allowedDifference = 0, string file = null)
         {
             // Check that description is identical to original image loaded from the disk.
             Assert.AreEqual(from.Description, to.Description, "Image description is different for image [{0}]", file);
@@ -331,7 +342,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 Assert.AreEqual(srcPixelBuffer.RowStride, dstPixelBuffer.RowStride, "RowPitch are different for index [{0}], image [{1}]", j, file);
                 Assert.AreEqual(srcPixelBuffer.BufferStride, dstPixelBuffer.BufferStride, "SlicePitch are different for index [{0}], image [{1}]", j, file);
 
-                var isSameBuffer = CompareImageData(srcPixelBuffer.DataPointer, dstPixelBuffer.DataPointer, srcPixelBuffer.BufferStride, ignoreAlpha, allowSmallDifferences);
+                var isSameBuffer = CompareImageData(srcPixelBuffer.DataPointer, dstPixelBuffer.DataPointer, srcPixelBuffer.BufferStride, ignoreAlpha, allowedDifference);
                 //if (!isSameBuffer)
                 //{
                 //    var stream = new FileStream("test_from.dds", FileMode.Create, FileAccess.Write, FileShare.Write);
@@ -345,13 +356,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 Assert.True(isSameBuffer, "Content of PixelBuffer is different for index [{0}], image [{1}]", j, file);
             }
         }
-        public unsafe static bool CompareImageData(IntPtr from, IntPtr against, int sizeToCompare, bool ignoreAlpha, bool allowSmallDifferences)
+
+        public static unsafe bool CompareImageData(IntPtr from, IntPtr against, int sizeToCompare, bool ignoreAlpha, int allowedDifference = 0)
         {
             var pSrc = (byte*)from;
             var pDst = (byte*)against;
 
-            var allowedDifference = allowSmallDifferences ? 8 : 0;
-            
             // Compare remaining bytes.
             var pixelCount = sizeToCompare >> 2;
             while (pixelCount > 0)
@@ -360,12 +370,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 {
                     var originalValue = *pSrc;
                     var newValue = *pDst;
-                    var originalValue1 = pSrc[1];
-                    var newValue1 = pDst[1];
-                    var originalValue2 = pSrc[2];
-                    var newValue2 = pDst[2];
-                    var originalValue3 = pSrc[3];
-                    var newValue3 = pDst[3];
                     if ((i != 3 || !ignoreAlpha) && Math.Abs(originalValue - newValue) > allowedDifference)
                         return false;
 
@@ -373,7 +377,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     pDst++;
                 }
 
-                pixelCount -=4;
+                pixelCount -= 4;
             }
 
             return true;

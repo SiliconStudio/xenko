@@ -390,7 +390,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         {
                             using (var textureImage = Image.Load(tempStream))
                             {
-                                TestImage.CompareImage(originalImage, textureImage, false, false, fileName);
+                                TestImage.CompareImage(originalImage, textureImage, false, 0, fileName);
                             }
                         }
                         tempStream.Dispose();
