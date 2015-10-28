@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -39,7 +39,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\Android\Debug\</IntermediateOutputPath>
@@ -51,34 +51,10 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Android' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
+    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL;SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES</DefineConstants>
     <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
     <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
     <IntermediateOutputPath>obj\Android\Release\</IntermediateOutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Testing|Android' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
-    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
-    <IntermediateOutputPath>obj\Android\Testing\</IntermediateOutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|Android' ">
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <DefineConstants>TRACE;SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID</DefineConstants>
-    <SiliconStudioXenkoGraphicsApi>OpenGLES</SiliconStudioXenkoGraphicsApi>
-    <OutputPath>..\..\..\Bin\Android-OpenGLES\</OutputPath>
-    <IntermediateOutputPath>obj\Android\AppStore\</IntermediateOutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AndroidUseSharedRuntime>False</AndroidUseSharedRuntime>
@@ -179,18 +155,6 @@
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Compile Include="Assets\ComputeShaderTestEffect.cs">
-      <DependentUpon>ComputeShaderTestEffect.xkfx</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Assets\HammersleyTest.cs">
-      <DependentUpon>HammersleyTest.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Assets\MultipleRenderTargetsEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -203,41 +167,17 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>MultipleRenderTargetsEffectShader.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Assets\ComputeShaderTest.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ComputeShaderTest.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Assets\CustomEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CustomEffect.xkfx</DependentUpon>
     </Compile>
-    <Compile Include="Assets\MyCustomColorTransformShader.cs">
-      <DependentUpon>MyCustomColorTransformShader.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
-    <Compile Include="Assets\CustomShader2.cs">
-      <DependentUpon>CustomShader2.xksl</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Assets\CustomShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>CustomShader.xksl</DependentUpon>
-    </Compile>
-    <Compile Include="Assets\CubemapSprite.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CubemapSprite.xksl</DependentUpon>
     </Compile>
     <Compile Include="Compiler\MultiTexturesSpriteEffect.cs">
       <AutoGen>True</AutoGen>
@@ -286,14 +226,8 @@
     <Compile Include="TestDynamicSpriteFontVarious.cs" />
     <Compile Include="TestExternSpriteFont.cs" />
     <Compile Include="TestFontManager.cs" />
-    <Compile Include="TestHammersley.cs" />
-    <Compile Include="TestImageEffect.cs" />
     <Compile Include="TestImageLoad.cs" />
-    <Compile Include="TestLambertPrefilteringSHPass2.cs" />
-    <Compile Include="TestLambertPrefilteringSH.cs" />
-    <Compile Include="TestComputeShader.cs" />
     <Compile Include="TestMultipleRenderTargets.cs" />
-    <Compile Include="TestRadiancePrefilteringGGX.cs" />
     <Compile Include="TestScene.cs" />
     <Compile Include="TestSprite.cs" />
     <Compile Include="TestSpriteBatch3D.cs" />
@@ -305,7 +239,7 @@
     <Compile Include="TestCustomEffect.cs" />
     <Compile Include="TestDrawQuad.cs" />
     <Compile Include="TestGeometricPrimitives.cs" />
-    <Compile Include="TestGameBase.cs" />
+    <Compile Include="GraphicTestGameBase.cs" />
     <Compile Include="TestMultiTextures.cs" />
     <Compile Include="TestSpriteBatch.cs" />
     <Compile Include="TestEffect.cs" />
@@ -314,14 +248,6 @@
     <Compile Include="TestTexture.cs" />
     <Compile Include="TestGraphicsApiCheck.cs" />
     <Compile Include="TestTextureSampling.cs" />
-    <None Include="Assets\ComputeShaderTestEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeShaderTestEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\HammersleyTest.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>HammersleyTest.cs</LastGenOutput>
-    </None>
     <None Include="Assets\MultipleRenderTargetsEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
@@ -330,29 +256,13 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MultipleRenderTargetsEffectShader.cs</LastGenOutput>
     </None>
-    <None Include="Assets\ComputeShaderTest.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ComputeShaderTest.cs</LastGenOutput>
-    </None>
     <None Include="Assets\CustomEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CustomEffect.cs</LastGenOutput>
     </None>
-    <None Include="Assets\MyCustomColorTransformShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MyCustomColorTransformShader.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\CustomShader2.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>CustomShader2.cs</LastGenOutput>
-    </None>
     <None Include="Assets\CustomShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CustomShader.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\CubemapSprite.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>CubemapSprite.cs</LastGenOutput>
     </None>
     <None Include="Compiler\MultiTexturesSpriteEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>

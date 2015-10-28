@@ -16,7 +16,7 @@ using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    public class TestMultipleRenderTargets : TestGameBase
+    public class TestMultipleRenderTargets : GraphicTestGameBase
     {
         private Texture[] textures;
         private int renderTargetToDisplayIndex;
@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             CurrentVersion = 4;
             this.rotateModel = rotateModel;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
+            GraphicsDeviceManager.PreferredGraphicsProfile = new [] { GraphicsProfile.Level_10_0, }; // TODO remove that when Multiple render targeting is fixed for profile 9_1.
         }
 
         protected override void RegisterTests()

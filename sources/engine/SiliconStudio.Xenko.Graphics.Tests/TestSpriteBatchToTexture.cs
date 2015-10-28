@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Games;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    class TestSpriteBatchToTexture : TestGameBase
+    class TestSpriteBatchToTexture : GraphicTestGameBase
     {
         private const int OfflineWidth = 512;
         private const int OfflineHeight = 512;

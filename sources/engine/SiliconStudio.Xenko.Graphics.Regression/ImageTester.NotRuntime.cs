@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 // Header
                 binaryWriter.Write((int)ImageServerMessageType.SendImage);
 
-                TestGameBase.TestGameLogger.Info(@"Sending image information...");
+                GraphicsTestBase.TestGameLogger.Info(@"Sending image information...");
                 testResultImage.Write(binaryWriter);
 
                 return binaryReader.ReadBoolean();

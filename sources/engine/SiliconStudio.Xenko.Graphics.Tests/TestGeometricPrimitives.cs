@@ -14,7 +14,7 @@ using SiliconStudio.Xenko.Input;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestGeometricPrimitives : TestGameBase
+    public class TestGeometricPrimitives : GraphicTestGameBase
     {
         private Effect simpleEffect;
         private List<GeometricPrimitive> primitives;

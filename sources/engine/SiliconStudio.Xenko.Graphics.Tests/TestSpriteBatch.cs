@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Games;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestSpriteBatch : TestGameBase
+    public class TestSpriteBatch : GraphicTestGameBase
     {
         private SpriteBatch spriteBatch;
         private Texture sphere;
