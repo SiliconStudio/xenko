@@ -142,10 +142,31 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\MultipleRenderTargetsEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MultipleRenderTargetsEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\MultipleRenderTargetsEffectShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MultipleRenderTargetsEffectShader.xksl</DependentUpon>
+    </Compile>
     <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="GraphicTestGameBase.cs" />
     <Compile Include="TestImageEffect.cs" />
+    <Compile Include="TestMultipleRenderTargets.cs" />
+    <None Include="Assets\MultipleRenderTargetsEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\MultipleRenderTargetsEffectShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MultipleRenderTargetsEffectShader.cs</LastGenOutput>
+    </None>
     <None Include="SiliconStudio.Xenko.Graphics.Tests.10_0.xkpkg" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

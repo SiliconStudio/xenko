@@ -14,8 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <AndroidApplication>true</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-    <AndroidUseLatestPlatformSdk>
-    </AndroidUseLatestPlatformSdk>
+    <AndroidUseLatestPlatformSdk></AndroidUseLatestPlatformSdk>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
@@ -156,9 +155,30 @@
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Compile Include="Assets\MultipleRenderTargetsEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MultipleRenderTargetsEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Assets\MultipleRenderTargetsEffectShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>MultipleRenderTargetsEffectShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Module.cs" />
     <Compile Include="GraphicTestGameBase.cs" />
     <Compile Include="TestImageEffect.cs" />
+    <Compile Include="TestMultipleRenderTargets.cs" />
+    <None Include="Assets\MultipleRenderTargetsEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Assets\MultipleRenderTargetsEffectShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>MultipleRenderTargetsEffectShader.cs</LastGenOutput>
+    </None>
     <None Include="SiliconStudio.Xenko.Graphics.Tests.10_0.xkpkg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
