@@ -3,20 +3,17 @@
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using Android.App;
 using Android.OS;
-using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Starter;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Starter;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
     [Activity]
     public class AndroidGameTestActivity : AndroidXenkoActivity
     {
-        public static Queue<GameBase> GamesToStart = new Queue<GameBase>();
+        public static Game GameToStart;
 
         public static event EventHandler<EventArgs> Destroyed;
 
@@ -26,12 +23,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             if (Game == null) // application can be restarted
             {
-                lock (GamesToStart)
-                {
-                    Game = (Game)GamesToStart.Dequeue();
-                    GameTester.Logger.Info("Dequeued game '{0}'", Game.Name);
-                }
-
+                Game = GameToStart;
                 Game.Exiting += Game_Exiting;
             }
 
