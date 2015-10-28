@@ -33,7 +33,7 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
-        public Guid Identifier { get { return identifier; } }
+        public Guid Identifier => identifier;
 
         /// <inheritdoc/>
         public string Name { get; set; }
@@ -60,8 +60,8 @@ namespace SiliconStudio.ActionStack
         /// <inheritdoc/>
         public void Undo()
         {
-            if (undoRedoInProgress) throw new InvalidOperationException(string.Format(Properties.ExceptionMessages.InvokingUndoRedoWhileAlreadyInProgress, "Undo"));
-            if (IsFrozen) throw new InvalidOperationException(string.Format(Properties.ExceptionMessages.UndoRedoOnFrozenItem, "Undo"));
+            if (undoRedoInProgress) throw new InvalidOperationException(string.Format(Properties.ExceptionMessages.InvokingUndoRedoWhileAlreadyInProgress, nameof(Undo)));
+            if (IsFrozen) throw new InvalidOperationException(string.Format(Properties.ExceptionMessages.UndoRedoOnFrozenItem, nameof(Undo)));
             undoRedoInProgress = true;
             UndoAction();
             IsDone = false;
@@ -71,8 +71,8 @@ namespace SiliconStudio.ActionStack
         /// <inheritdoc/>
         public void Redo()
         {
-            if (undoRedoInProgress) throw new InvalidOperationException(string.Format(Properties.ExceptionMessages.UndoRedoOnFrozenItem, "Redo"));
-            if (IsFrozen) throw new InvalidOperationException("Unable to invoke Undo on a frozen ActionItem.");
+            if (undoRedoInProgress) throw new InvalidOperationException(string.Format(Properties.ExceptionMessages.InvokingUndoRedoWhileAlreadyInProgress, nameof(Redo)));
+            if (IsFrozen) throw new InvalidOperationException(string.Format(Properties.ExceptionMessages.UndoRedoOnFrozenItem, nameof(Redo)));
             undoRedoInProgress = true;
             RedoAction();
             IsDone = true;

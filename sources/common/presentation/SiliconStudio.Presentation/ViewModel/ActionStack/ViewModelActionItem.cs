@@ -29,7 +29,7 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
         }
 
         /// <summary>
-        /// Gets the dirtiable view modle associated to this object, or <c>null</c> if no dirtiable is associated.
+        /// Gets the dirtiable view model associated to this object, or <c>null</c> if no dirtiable is associated.
         /// </summary>
         public IReadOnlyCollection<IDirtiableViewModel> Dirtiables { get { return dirtiables; } }
 
