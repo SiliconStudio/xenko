@@ -43,7 +43,7 @@ namespace SiliconStudio.Presentation.ViewModel
             AddLoggerCommand = new AnonymousCommand<Logger>(serviceProvider, AddLogger);
             RemoveLoggerCommand = new AnonymousCommand<Logger>(serviceProvider, RemoveLogger);
             ClearLoggersCommand = new AnonymousCommand(serviceProvider, ClearLoggers);
-            ClearMessagesCommand = new AsyncCommand(serviceProvider, ClearMessages);
+            ClearMessagesCommand = new AnonymousCommand(serviceProvider, ClearMessages);
             ClearNewMessageFlagCommand = new AnonymousCommand(serviceProvider, () => HasNewMessages = false);
             messages.CollectionChanged += MessagesCollectionChanged;
         }
@@ -75,7 +75,7 @@ namespace SiliconStudio.Presentation.ViewModel
                 Loggers.Add(logger, new List<ILogMessage>());
                 logger.MessageLogged += MessageLogged;
             }
-            ClearMessagesCommand = new AsyncCommand(serviceProvider, ClearMessages);
+            ClearMessagesCommand = new AnonymousCommand(serviceProvider, ClearMessages);
         }
 
         /// <inheritdoc/>

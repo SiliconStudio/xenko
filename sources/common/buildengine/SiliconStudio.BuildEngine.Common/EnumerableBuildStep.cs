@@ -17,13 +17,16 @@ namespace SiliconStudio.BuildEngine
     public abstract class EnumerableBuildStep : BuildStep
     {
         /// <inheritdoc />
-        public override string Title { get { return ToString(); } }
+        public override string Title => ToString();
 
         private int mergeCounter;
         private readonly List<BuildStep> executedSteps = new List<BuildStep>();
 
         protected readonly Dictionary<ObjectUrl, OutputObject> outputObjects = new Dictionary<ObjectUrl, OutputObject>();
-        public IDictionary<ObjectUrl, OutputObject> OutputObjects { get { return outputObjects; } }
+        public IDictionary<ObjectUrl, OutputObject> OutputObjects => outputObjects;
+
+        /// <inheritdoc/>
+        public override IEnumerable<KeyValuePair<ObjectUrl, ObjectId>> OutputObjectIds => outputObjects.Select(x => new KeyValuePair<ObjectUrl, ObjectId>(x.Key, x.Value.ObjectId));
 
         protected readonly Dictionary<ObjectUrl, InputObject> inputObjects = new Dictionary<ObjectUrl, InputObject>();
         public readonly IEnumerable<ObjectUrl> InputUrls;
@@ -43,6 +46,10 @@ namespace SiliconStudio.BuildEngine
         public override async Task<ResultStatus> Execute(IExecuteContext executeContext, BuilderContext builderContext)
         {
             var buildStepsToWait = new List<BuildStep>();
+
+            // Process prerequisites build steps first
+            if (PrerequisiteSteps.Count > 0)
+                await CompleteCommands(executeContext, PrerequisiteSteps.ToList());
 
             foreach (var child in Steps)
             {
@@ -156,7 +163,7 @@ namespace SiliconStudio.BuildEngine
             mergeCounter++;
         }
 
-        protected static async Task WaitCommands(List<BuildStep> buildStepsToWait)
+        internal protected static async Task WaitCommands(List<BuildStep> buildStepsToWait)
         {
             // Wait for steps to be finished
             if (buildStepsToWait.Count > 0)
@@ -288,7 +295,7 @@ namespace SiliconStudio.BuildEngine
             }
         }
 
-        private OutputObject AddOutputObject(IExecuteContext executeContext, ObjectUrl outputObjectUrl, ObjectId outputObjectId, Command command)
+        internal OutputObject AddOutputObject(IExecuteContext executeContext, ObjectUrl outputObjectUrl, ObjectId outputObjectId, Command command)
         {
             OutputObject outputObject;
 

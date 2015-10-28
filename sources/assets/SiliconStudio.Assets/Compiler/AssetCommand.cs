@@ -4,7 +4,6 @@
 using System;
 
 using SiliconStudio.BuildEngine;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets.Compiler
