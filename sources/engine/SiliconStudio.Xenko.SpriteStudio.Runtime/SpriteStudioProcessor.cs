@@ -142,7 +142,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     {
                         //Process animations
                         var results = animComp.CurrentFrameResult;
-                        var channels = results.Channels.Where(x => x.NodeName == node.BaseNode.Name);
+                        var channels = results.Channels.Where(x => x.PropertyName == node.BaseNode.Name);
                         foreach (var channel in channels)
                         {
                             var structureData = (float*)(bytes + channel.Offset);

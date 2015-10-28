@@ -112,50 +112,5 @@ namespace SiliconStudio.Xenko.Animations
 
             return endedTCS.Task;
         }
-
-        /// <summary>
-        /// Filters the animation to the specified sub-trees given by <see cref="roots"/>.
-        /// </summary>
-        /// <param name="nodes">The node hierarchy.</param>
-        /// <param name="roots">The node roots of sub-trees that should be active (others will be filtered out).</param>
-        public void FilterNodes(ModelNodeDefinition[] nodes, params string[] roots)
-        {
-            // Initialize list of factors (matching nodes list)
-            var nodeFactors = new float[nodes.Length];
-            for (int index = 0; index < nodes.Length; index++)
-            {
-                var node = nodes[index];
-                if (roots.Contains(node.Name)
-                    || (node.ParentIndex != -1 && nodeFactors[node.ParentIndex] == 1.0f))
-                {
-                    nodeFactors[index] = 1.0f;
-                }
-            }
-
-            //Make sure Evaluator is populated
-            //TODO this is not optimal, but since evaluators are being pooled there is no other safe way
-            if (Evaluator == null)
-            {
-                Evaluator = AnimationComponent.Blender.CreateEvaluator(Clip);
-            }
-
-            // Update animation channel factors
-            var blenderChannels = Evaluator.BlenderChannels;
-            var channels = Evaluator.Channels.Items;
-            for (int index = 0; index < blenderChannels.Count; index++)
-            {
-                var blenderChannel = blenderChannels[index];
-
-                // Find node index
-                var nodeName = MeshAnimationUpdater.GetNodeName(blenderChannel.PropertyName);
-                var nodeIndex = nodes.IndexOf(x => x.Name == nodeName);
-
-                if (nodeIndex != -1)
-                {
-                    // Update factor
-                    channels[index].Factor *= nodeFactors[nodeIndex];
-                }
-            }
-        }
     }
 }

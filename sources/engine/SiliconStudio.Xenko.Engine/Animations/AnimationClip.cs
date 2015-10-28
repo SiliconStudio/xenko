@@ -66,8 +66,7 @@ namespace SiliconStudio.Xenko.Animations
             // Add channel
             Channels.Add(propertyName, new Channel
             {
-                NodeName = MeshAnimationUpdater.GetNodeName(propertyName),
-                Type = MeshAnimationUpdater.GetType(propertyName),
+                PropertyName = propertyName,
                 CurveIndex = Curves.Count,
                 ElementType = curve.ElementType,
                 ElementSize = curve.ElementSize,
@@ -122,8 +121,7 @@ namespace SiliconStudio.Xenko.Animations
         [DataContract]
         public struct Channel
         {
-            public string NodeName;
-            public MeshAnimationUpdater.ChannelType Type;
+            public string PropertyName;
 
             public int CurveIndex;
             public Type ElementType;

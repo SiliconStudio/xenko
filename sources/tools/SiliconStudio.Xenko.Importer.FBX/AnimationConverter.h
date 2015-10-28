@@ -58,9 +58,9 @@ namespace SiliconStudio {
 						return false;
 					}
 
-					AnimationClip^ ProcessAnimation()
+					Dictionary<System::String^, AnimationClip^>^ ProcessAnimation()
 					{
-						auto animationClip = gcnew AnimationClip();
+						auto animationClips = gcnew Dictionary<System::String^, AnimationClip^>();
 
 						int animStackCount = scene->GetMemberCount<FbxAnimStack>();
 						// We support only anim stack count.
@@ -81,7 +81,7 @@ namespace SiliconStudio {
 							scene->GetRootNode()->ResetPivotSet(FbxNode::eDestinationPivot);
 							SetPivotStateRecursive(scene->GetRootNode());
 							scene->GetRootNode()->ConvertPivotAnimationRecursive(animStack, FbxNode::eDestinationPivot, 30.0f);
-							ProcessAnimationByCurve(animationClip, animLayer, scene->GetRootNode());
+							ProcessAnimationByCurve(animationClips, animLayer, scene->GetRootNode());
 							scene->GetRootNode()->ResetPivotSet(FbxNode::eSourcePivot);
 
 							// Reference code (Uncomment Optimized code to use this part)
@@ -89,10 +89,7 @@ namespace SiliconStudio {
 							//ProcessAnimation(animationClip, animStack, scene->GetRootNode());
 						}
 
-						if (animationClip->Curves->Count == 0)
-							animationClip = nullptr;
-
-						return animationClip;
+						return animationClips;
 					}
 
 					List<String^>^ ExtractAnimationNodesNoInit()
@@ -423,8 +420,10 @@ namespace SiliconStudio {
 						}
 					}
 
-					void ProcessAnimationByCurve(AnimationClip^ animationClip, FbxAnimLayer* animLayer, FbxNode* pNode)
+					void ProcessAnimationByCurve(Dictionary<String^, AnimationClip^>^ animationClips, FbxAnimLayer* animLayer, FbxNode* pNode)
 					{
+						auto animationClip = gcnew AnimationClip();
+
 						auto nodeData = sceneMapping->FindNode(pNode);
 						FbxAnimCurve* curves[3];
 
@@ -440,17 +439,17 @@ namespace SiliconStudio {
 						curves[0] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto translationCurve = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Position[{0}]", nodeName), 3, curves, 0.005f);
+						auto translationCurve = ProcessAnimationCurveVector<Vector3>(animationClip, "Transform.Translation", 3, curves, 0.005f);
 
 						curves[0] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						ProcessAnimationCurveRotation(animationClip, String::Format("Transform.Rotation[{0}]", nodeName), curves, 0.01f, rotation);
+						ProcessAnimationCurveRotation(animationClip, "Transform.Rotation", curves, 0.01f, rotation);
 
 						curves[0] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Scale[{0}]", nodeName), 3, curves, 0.005f);
+						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, "Transform.Scaling", 3, curves, 0.005f);
 
 						if (translationCurve != nullptr)
 						{
@@ -508,9 +507,14 @@ namespace SiliconStudio {
 							}
 						}
 
+						if (animationClip->Curves->Count > 0)
+						{
+							animationClips->Add(nodeName, animationClip);
+						}
+
 						for (int i = 0; i < pNode->GetChildCount(); ++i)
 						{
-							ProcessAnimationByCurve(animationClip, animLayer, pNode->GetChild(i));
+							ProcessAnimationByCurve(animationClips, animLayer, pNode->GetChild(i));
 						}
 					}
 

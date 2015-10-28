@@ -32,6 +32,11 @@ namespace SiliconStudio.Xenko.Assets.Model
         [DataMember(10), DiffMember(Diff3ChangeType.MergeFromAsset2)]
         public List<NodeInformation> Nodes { get; } = new List<NodeInformation>();
 
+        protected override int InternalBuildOrder
+        {
+            get { return -200; } // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
+        }
+
         /// <summary>
         /// Gets or sets if the mesh will be compacted (meshes will be merged).
         /// </summary>
@@ -51,26 +56,11 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// Checking nodes will garantee them to be available at runtime. Otherwise, it may be merged with their parents (for optimization purposes).
         /// </userdoc>
         [DataMemberIgnore]
-        public List<string> PreservedNodes
+        public List<KeyValuePair<string, bool>> NodesWithPreserveInfo
         {
             get
             {
-                return Nodes.Where(x => x.Preserve).Select(x => x.Name).ToList();
-            }
-        }
-
-        /// <summary>
-        /// Returns to list of nodes that are preserved (they cannot be merged with other ones).
-        /// </summary>
-        /// <userdoc>
-        /// Checking nodes will garantee them to be available at runtime. Otherwise, it may be merged with their parents (for optimization purposes).
-        /// </userdoc>
-        [DataMemberIgnore]
-        public List<string> OptimizedNodes
-        {
-            get
-            {
-                return Nodes.Where(x => !x.Preserve).Select(x => x.Name).ToList();
+                return Nodes.Select(x => new KeyValuePair<string, bool>(x.Name, x.Preserve)).ToList();
             }
         }
 

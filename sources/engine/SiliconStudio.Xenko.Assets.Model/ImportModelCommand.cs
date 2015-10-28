@@ -16,6 +16,7 @@ using SiliconStudio.Xenko.Extensions;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Shaders;
@@ -38,8 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         public List<ModelMaterial> Materials { get; set; }
 
-        public bool Compact { get; set; }
-        public List<string> OptimizedNodes { get; set; }
+        public List<KeyValuePair<string, bool>> SkeletonNodesWithPreserveInfo { get; set; }
 
         public bool Allow32BitIndex { get; set; }
         public bool AllowUnsignedBlendIndices { get; set; }
@@ -90,21 +90,63 @@ namespace SiliconStudio.Xenko.Assets.Model
                 if (ExportType == "animation")
                 {
                     // Read from model file
-                    var animationClip = LoadAnimation(commandContext, assetManager);
+                    var modelSkeleton = LoadSkeleton(commandContext, assetManager); // we get model skeleton to compare it to real skeleton we need to map to
+                    var animationClips = LoadAnimation(commandContext, assetManager);
+                    AnimationClip animationClip = null;
 
-                    // Filter and optimize nodes using skeleton (if any)
+                    if (animationClips.Count > 0)
+                    {
+                        animationClip = new AnimationClip();
+
+                        // Load asset reference skeleton
+                        if (SkeletonUrl != null)
+                        {
+                            var skeleton = assetManager.Load<Skeleton>(SkeletonUrl);
+
+                            // Process missing nodes
+                            foreach (var nodeAnimationClip in animationClips)
+                            {
+                                var nodeName = nodeAnimationClip.Key;
+                                var nodeIndex = skeleton.Nodes.IndexOf(x => x.Name == nodeName);
+
+                                // Node doesn't exist in skeleton? skip it
+                                if (nodeIndex == -1)
+                                    continue;
+
+                                foreach (var channel in nodeAnimationClip.Value.Channels)
+                                {
+                                    var curve = nodeAnimationClip.Value.Curves[channel.Value.CurveIndex];
+                                    animationClip.AddCurve($"[SiliconStudio.Xenko.Engine.ModelComponent,SiliconStudio.Xenko.Engine.Key].Skeleton.NodeTransformations[{nodeIndex}]." + channel.Key, curve);
+                                }
+
+                                // Take max of durations
+                                if (animationClip.Duration < nodeAnimationClip.Value.Duration)
+                                    animationClip.Duration = nodeAnimationClip.Value.Duration;
+                            }
+
+                            // Resolve nodes
+
+                        }
+                        else
+                        {
+                            // No skeleton, map root node only
+                            throw new NotImplementedException();
+                        }
+                    }
 
                     exportedObject = animationClip;
                     if (animationClip == null)
                     {
                         commandContext.Logger.Info("File {0} has an empty animation.", SourcePath);
                     }
-                    else if (animationClip.Duration.Ticks == 0)
-                    {
-                        commandContext.Logger.Warning("File {0} has a 0 tick long animation.", SourcePath);
-                    }
                     else
                     {
+                        if (animationClip.Duration.Ticks == 0)
+                        {
+                            commandContext.Logger.Warning("File {0} has a 0 tick long animation.", SourcePath);
+                        }
+                        
+                        // Optimize and set common parameters
                         animationClip.RepeatMode = AnimationRepeatMode;
                         animationClip.Optimize();
                     }
@@ -113,25 +155,15 @@ namespace SiliconStudio.Xenko.Assets.Model
                 {
                     var skeleton = LoadSkeleton(commandContext, assetManager);
 
-                    // Build node mapping to expected structure
-                    var modelToAsset = new int[skeleton.Nodes.Length];
-                    var assetToModel = new int[OptimizedNodes.Count];
+                    var modelNodes = new HashSet<string>(skeleton.Nodes.Select(x => x.Name));
+                    var skeletonNodes = new HashSet<string>(SkeletonNodesWithPreserveInfo.Select(x => x.Key));
 
-                    // Clear with -1 (not found)
-                    for (int i = 0; i < OptimizedNodes.Count; ++i)
-                        assetToModel[i] = -1;
+                    // List missing nodes on both sides, to display warnings
+                    var missingNodesInModel = new HashSet<string>(skeletonNodes);
+                    missingNodesInModel.ExceptWith(modelNodes);
 
-                    // Build mapping
-                    for (int i = 0; i < skeleton.Nodes.Length; ++i)
-                    {
-                        var newNodeIndex = OptimizedNodes.IndexOf(skeleton.Nodes[i].Name);
-                        modelToAsset[i] = newNodeIndex;
-                        assetToModel[newNodeIndex] = i;
-                    }
-
-                    // List missing nodes on both sides
-                    var missingNodesInModel = OptimizedNodes.Select((x, i) => new { Item = x, Index = i }).Where(x => assetToModel[x.Index] == -1).Select(x => x.Item).ToList();
-                    var missingNodesInAsset = skeleton.Nodes.Select((x, i) => new { Item = x, Index = i }).Where(x => modelToAsset[x.Index] == -1).Select(x => x.Item).ToList();
+                    var missingNodesInAsset = new HashSet<string>(modelNodes);
+                    missingNodesInAsset.ExceptWith(skeletonNodes);
 
                     if (missingNodesInAsset.Count > 0)
                         commandContext.Logger.Warning($"{missingNodesInAsset.Count} node(s) were present in model [{SourcePath}] but not in asset [{Location}], please reimport: {string.Join(", ", missingNodesInAsset)}");
@@ -139,13 +171,54 @@ namespace SiliconStudio.Xenko.Assets.Model
                     if (missingNodesInModel.Count > 0)
                         commandContext.Logger.Warning($"{missingNodesInModel.Count} node(s) were present in asset [{Location}] but not in model [{SourcePath}], please reimport: {string.Join(", ", missingNodesInModel)}");
 
-                    // TODO: Remove nodes that don't need to be preserved
+                    // Build node mapping to expected structure
+                    var optimizedNodes = new HashSet<string>(SkeletonNodesWithPreserveInfo.Where(x => !x.Value).Select(x => x.Key));
 
-                    exportedObject = skeleton;
+                    // Refresh skeleton updater with loaded skeleton (to be able to compute matrices)
+                    var hierarchyUpdater = new SkeletonUpdater(skeleton);
+                    hierarchyUpdater.UpdateMatrices();
+
+                    // Build mapping
+                    var oldToNew = new int[skeleton.Nodes.Length];
+                    var newToOld = new List<int>();
+                    var newNodes = new List<ModelNodeDefinition>();
+                    for (int i = 0; i < skeleton.Nodes.Length; ++i)
+                    {
+                        var node = skeleton.Nodes[i];
+
+                        // Find new parent
+                        var newParentIndex = node.ParentIndex != -1 ? oldToNew[node.ParentIndex] : -1;
+
+                        if (optimizedNodes.Contains(skeleton.Nodes[i].Name))
+                        {
+                            oldToNew[i] = newParentIndex;
+                            continue;
+                        }
+
+                        oldToNew[i] = newNodes.Count;
+
+                        // If intermediate nodes are removed, we need to update matrices to contains the transforms of everything that was between those two nodes
+                        var expectedParent = newParentIndex != -1 ? newToOld[newParentIndex] : -1;
+                        if (expectedParent != node.ParentIndex)
+                        {
+                            var transformMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, expectedParent, node.ParentIndex);
+                            var localMatrix = hierarchyUpdater.NodeTransformations[i].LocalMatrix;
+
+                            localMatrix = Matrix.Multiply(localMatrix, transformMatrix);
+                            localMatrix.Decompose(out node.Transform.Scaling, out node.Transform.Rotation, out node.Transform.Translation);
+                        }
+                        node.ParentIndex = newParentIndex;
+
+                        newNodes.Add(node);
+                        newToOld.Add(i);
+                    }
+
+                    exportedObject = new Skeleton { Nodes = newNodes.ToArray() };
                 }
                 else if (ExportType == "model")
                 {
                     // Read from model file
+                    var modelSkeleton = LoadSkeleton(commandContext, assetManager); // we get model skeleton to compare it to real skeleton we need to map to
                     var model = LoadModel(commandContext, assetManager);
 
                     // Apply materials
@@ -160,8 +233,6 @@ namespace SiliconStudio.Xenko.Assets.Model
                     }
 
                     model.BoundingBox = BoundingBox.Empty;
-                    var hierarchyUpdater = new SkeletonUpdater(model.Skeleton);
-                    hierarchyUpdater.UpdateMatrices();
 
                     bool hasErrors = false;
                     foreach (var mesh in model.Meshes)
@@ -174,16 +245,151 @@ namespace SiliconStudio.Xenko.Assets.Model
                         }
                     }
 
+                    var modelToSkeleton = new int[modelSkeleton.Nodes.Length]; // model => skeleton mapping
+                    var modelToModel = new int[modelSkeleton.Nodes.Length]; // model remapping
+
+                    Skeleton skeleton;
+                    if (SkeletonUrl != null)
+                    {
+                        // Load skeleton and process it
+                        skeleton = assetManager.Load<Skeleton>(SkeletonUrl);
+
+                        // Build mapping from model to actual skeleton
+                        for (int modelIndex = 0; modelIndex < modelSkeleton.Nodes.Length; modelIndex++)
+                        {
+                            var node = modelSkeleton.Nodes[modelIndex];
+                            var parentModelIndex = node.ParentIndex;
+
+                            // Find matching node in skeleton (or map to best parent)
+                            var skeletonIndex = skeleton.Nodes.IndexOf(x => x.Name == node.Name);
+
+                            // Let's check if parents are matching in both modelSkeleton and Skeleton
+                            if (skeletonIndex != -1 && (parentModelIndex != -1 ? modelToSkeleton[parentModelIndex] : -1) == skeleton.Nodes[skeletonIndex].ParentIndex)
+                            {
+                                // Everything matches
+                                modelToSkeleton[modelIndex] = skeletonIndex;
+                                modelToModel[modelIndex] = modelIndex;
+                            }
+                            else
+                            {
+                                // Otherwise, find best parent and merge it
+                                modelToSkeleton[modelIndex] = parentModelIndex != -1 ? modelToSkeleton[parentModelIndex] : 0;
+                                modelToModel[modelIndex] = parentModelIndex != -1 ? modelToModel[parentModelIndex] : 0;
+                            }
+                        }
+
+                        // Assign skeleton to model
+                        model.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(Guid.Empty, SkeletonUrl);
+                    }
+                    else
+                    {
+                        skeleton = null;
+
+                        // No skeleton, we can compact everything
+                        for (int i = 0; i < modelSkeleton.Nodes.Length; ++i)
+                        {
+                            // Map everything to root node
+                            modelToSkeleton[i] = 0;
+                            modelToModel[i] = 0;
+                        }
+                    }
+
+                    // Refresh skeleton updater with model skeleton
+                    var hierarchyUpdater = new SkeletonUpdater(modelSkeleton);
+                    hierarchyUpdater.UpdateMatrices();
+
+                    // Move meshes in the new nodes
+                    foreach (var mesh in model.Meshes)
+                    {
+                        // Check if there was a remap using model skeleton
+                        if (modelToModel[mesh.NodeIndex] != mesh.NodeIndex)
+                        {
+                            // Transform vertices
+                            var transformationMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, modelToModel[mesh.NodeIndex], mesh.NodeIndex);
+                            mesh.Draw.VertexBuffers[0].TransformBuffer(ref transformationMatrix);
+
+                            // Check if geometry is inverted, to know if we need to reverse winding order
+                            // TODO: What to do if there is no index buffer? We should create one... (not happening yet)
+                            if (mesh.Draw.IndexBuffer == null)
+                                throw new InvalidOperationException();
+
+                            Matrix rotation;
+                            Vector3 scale, translation;
+                            if (transformationMatrix.Decompose(out scale, out rotation, out translation)
+                                && scale.X * scale.Y * scale.Z < 0)
+                            {
+                                mesh.Draw.ReverseWindingOrder();
+                            }
+                        }
+
+                        // Update new node index using real asset skeleton
+                        mesh.NodeIndex = modelToSkeleton[mesh.NodeIndex];
+                    }
+
+                    // Merge meshes with same parent nodes, material and skinning
+                    var meshesByNodes = model.Meshes.GroupBy(x => x.NodeIndex).ToList();
+
+                    foreach (var meshesByNode in meshesByNodes)
+                    {
+                        foreach (var meshesWithSameMaterial in meshesByNode.GroupBy(x => x,
+                                    new AnonymousEqualityComparer<Mesh>((x, y) => ArrayExtensions.ArraysEqual(x.Skinning?.Bones, y.Skinning?.Bones) && CompareParameters(model, x, y) && CompareShadowOptions(model, x, y), x => 0)).ToList())
+                        {
+                            if (meshesWithSameMaterial.Count() == 1)
+                            {
+                                // Nothing to group, skip to next entry
+                                continue;
+                            }
+
+                            // Remove old meshes
+                            foreach (var mesh in meshesWithSameMaterial)
+                            {
+                                model.Meshes.Remove(mesh);
+                            }
+
+                            // Add new combined mesh(es)
+                            var baseMesh = meshesWithSameMaterial.First();
+                            var newMeshList = meshesWithSameMaterial.Select(x => x.Draw).ToList().GroupDrawData(Allow32BitIndex);
+
+                            foreach (var generatedMesh in newMeshList)
+                            {
+                                model.Meshes.Add(new Mesh(generatedMesh, baseMesh.Parameters)
+                                {
+                                    MaterialIndex = baseMesh.MaterialIndex,
+                                    Name = baseMesh.Name,
+                                    Draw = generatedMesh,
+                                    NodeIndex = baseMesh.NodeIndex,
+                                    Skinning = baseMesh.Skinning,
+                                });
+                            }
+                        }
+                    }
+
+                    // Remap skinning
+                    foreach (var skinning in model.Meshes.Select(x => x.Skinning).Where(x => x != null).Distinct())
+                    {
+                        // Update node mapping
+                        // Note: we only remap skinning matrices, but we could directly remap skinning bones instead
+                        for (int i = 0; i < skinning.Bones.Length; ++i)
+                        {
+                            var nodeIndex = skinning.Bones[i].NodeIndex;
+                            var newNodeIndex = modelToModel[nodeIndex];
+
+                            skinning.Bones[i].NodeIndex = modelToSkeleton[nodeIndex];
+
+                            // If it was remapped, we also need to update matrix
+                            if (newNodeIndex != nodeIndex)
+                            {
+                                var transformationMatrix = CombineMatricesFromNodeIndices(hierarchyUpdater.NodeTransformations, newNodeIndex, nodeIndex);
+                                skinning.Bones[i].LinkToMeshMatrix = Matrix.Multiply(skinning.Bones[i].LinkToMeshMatrix, transformationMatrix);
+                            }
+                        }
+                    }
+
                     // split the meshes if necessary
                     model.Meshes = SplitExtensions.SplitMeshes(model.Meshes, Allow32BitIndex);
 
-                    if (SkeletonUrl != null)
-                    {
-                        var skeleton = assetManager.Load<Skeleton>(SkeletonUrl);
-                    }
-
                     // merge the meshes
-                    if (Compact)
+                    /*if (Compact)
                     {
                         var indicesBlackList = new HashSet<int>();
                         if (OptimizedNodes != null)
@@ -339,11 +545,16 @@ namespace SiliconStudio.Xenko.Assets.Model
                         }
 
                         model.Meshes = finalMeshes;
-                        model.Skeleton.Nodes = newNodes.ToArray();
+                        if (SkeletonUrl != null)
+                            model.Skeleton = AttachedReferenceManager.CreateSerializableVersion<Skeleton>(Guid.Empty, SkeletonUrl);
 
                         hierarchyUpdater = new SkeletonUpdater(model.Skeleton);
                         hierarchyUpdater.UpdateMatrices();
-                    }
+                    }*/
+
+                    // Refresh skeleton updater with asset skeleton
+                    hierarchyUpdater = new SkeletonUpdater(skeleton);
+                    hierarchyUpdater.UpdateMatrices();
 
                     // bounding boxes
                     var modelBoundingBox = model.BoundingBox;
@@ -547,26 +758,24 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// <summary>
         /// Get the transformation matrix to go from rootIndex to index.
         /// </summary>
-        /// <param name="hierarchy">The node hierarchy.</param>
-        /// <param name="updater">The updater containing the local matrices.</param>
+        /// <param name="nodes">The nodes containing the local matrices.</param>
         /// <param name="rootIndex">The root index.</param>
         /// <param name="index">The current index.</param>
         /// <returns>The matrix at this index.</returns>
-        private Matrix GetMatrixFromIndex(ModelNodeDefinition[] hierarchy, SkeletonUpdater updater, int rootIndex, int index)
+        private Matrix CombineMatricesFromNodeIndices(ModelNodeTransformation[] nodes, int rootIndex, int index)
         {
             if (index == -1 || index == rootIndex)
                 return Matrix.Identity;
 
-            Matrix outMatrix;
-            updater.GetLocalMatrix(index, out outMatrix);
+            var result = nodes[index].LocalMatrix;
 
             if (index != rootIndex)
             {
-                var topMatrix = GetMatrixFromIndex(hierarchy, updater, rootIndex, hierarchy[index].ParentIndex);
-                outMatrix = Matrix.Multiply(outMatrix, topMatrix);
+                var topMatrix = CombineMatricesFromNodeIndices(nodes, rootIndex, nodes[index].ParentIndex);
+                result = Matrix.Multiply(result, topMatrix);
             }
 
-            return outMatrix;
+            return result;
         }
         
         /// <summary>
@@ -588,7 +797,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         protected abstract Rendering.Model LoadModel(ICommandContext commandContext, AssetManager assetManager);
 
-        protected abstract AnimationClip LoadAnimation(ICommandContext commandContext, AssetManager assetManager);
+        protected abstract Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, AssetManager assetManager);
 
         protected abstract Skeleton LoadSkeleton(ICommandContext commandContext, AssetManager assetManager);
 
@@ -601,6 +810,10 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
         {
+            // Skeleton is a compile time dependency
+            if (SkeletonUrl != null)
+                yield return new ObjectUrl(UrlType.Content, SkeletonUrl);
+
             yield return new ObjectUrl(UrlType.File, SourcePath);
         }
 

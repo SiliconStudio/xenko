@@ -75,11 +75,6 @@ namespace SiliconStudio.Xenko.Animations
                         channel.BlendType = blendType;
                         channel.Offset = structureSize;
                         channel.PropertyName = curve.Key;
-
-                        // TODO: Remove this totally hardcoded property name parsing!
-                        channel.NodeName = curve.Value.NodeName;
-                        channel.Type = curve.Value.Type;
-
                         channel.Size = curve.Value.ElementSize;
 
                         // Add channel
@@ -409,8 +404,6 @@ namespace SiliconStudio.Xenko.Animations
         public struct Channel
         {
             public string PropertyName;
-            public string NodeName;
-            public MeshAnimationUpdater.ChannelType Type;
             public int Offset;
             public int Size;
             public BlendType BlendType;

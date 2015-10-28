@@ -1194,7 +1194,7 @@ public:
 		}
 	}
 
-	void ProcessNode(FbxNode* pNode, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
+	void ProcessNodeTransformation(FbxNode* pNode)
 	{
 		auto nodeIndex = sceneMapping->FindNodeIndex(pNode);
 		auto nodes = sceneMapping->Nodes;
@@ -1216,6 +1216,15 @@ public:
 		node->Transform.Rotation = rotation;
 		node->Transform.Scaling = scaling;
 
+		// Recursively process the children nodes.
+		for (int j = 0; j < pNode->GetChildCount(); j++)
+		{
+			ProcessNodeTransformation(pNode->GetChild(j));
+		}
+	}
+
+	void ProcessNodeAttributes(FbxNode* pNode, std::map<FbxMesh*, std::string> meshNames, std::map<FbxSurfaceMaterial*, int> materials)
+	{
 		// Process the node's attributes.
 		for(int i = 0; i < pNode->GetNodeAttributeCount(); i++)
 			ProcessAttribute(pNode, pNode->GetNodeAttributeByIndex(i), meshNames, materials);
@@ -1223,7 +1232,7 @@ public:
 		// Recursively process the children nodes.
 		for(int j = 0; j < pNode->GetChildCount(); j++)
 		{
-			ProcessNode(pNode->GetChild(j), meshNames, materials);
+			ProcessNodeAttributes(pNode->GetChild(j), meshNames, materials);
 		}
 	}
 
@@ -1927,7 +1936,8 @@ public:
 			}
 
 			// Process and add root entity
-			ProcessNode(scene->GetRootNode(), meshNames, materials);
+			ProcessNodeTransformation(scene->GetRootNode());
+			ProcessNodeAttributes(scene->GetRootNode(), meshNames, materials);
 
 			return modelData;
 		}
@@ -1939,7 +1949,7 @@ public:
 		return nullptr;
 	}
 
-	AnimationClip^ ConvertAnimation(String^ inputFilename, String^ vfsOutputFilename)
+	Dictionary<System::String^, AnimationClip^>^ ConvertAnimation(String^ inputFilename, String^ vfsOutputFilename)
 	{
 		try
 		{
@@ -1961,6 +1971,7 @@ public:
 		try
 		{
 			Initialize(inputFilename, vfsOutputFilename, ImportConfiguration::ImportSkeletonOnly());
+			ProcessNodeTransformation(scene->GetRootNode());
 
 			auto skeleton = gcnew Skeleton();
 			skeleton->Nodes = sceneMapping->Nodes;

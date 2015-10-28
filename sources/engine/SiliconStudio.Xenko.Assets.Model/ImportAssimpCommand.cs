@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -52,11 +53,12 @@ namespace SiliconStudio.Xenko.Assets.Model
             return sceneData;
         }
 
-        protected override AnimationClip LoadAnimation(ICommandContext commandContext, AssetManager assetManager)
+        protected override Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, AssetManager assetManager)
         {
             var meshConverter = this.CreateMeshConverter(commandContext);
             var sceneData = meshConverter.ConvertAnimation(SourcePath, Location);
-            return sceneData;
+            //return sceneData;
+            throw new NotImplementedException();
         }
 
         protected override Skeleton LoadSkeleton(ICommandContext commandContext, AssetManager assetManager)

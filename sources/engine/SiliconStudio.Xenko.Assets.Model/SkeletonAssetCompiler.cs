@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 
 namespace SiliconStudio.Xenko.Assets.Model
@@ -27,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             importModelCommand.SourcePath = assetSource;
             importModelCommand.Location = urlInStorage;
             importModelCommand.ExportType = "skeleton";
-            importModelCommand.PreservedNodes = asset.PreservedNodes;
+            importModelCommand.SkeletonNodesWithPreserveInfo = asset.NodesWithPreserveInfo;
 
             buildStep.Add(importModelCommand);
 

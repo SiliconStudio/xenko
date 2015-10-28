@@ -54,6 +54,7 @@
     <Compile Include="Animations\AnimationCurveEvaluatorDirectVector4Group.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedIntGroup.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedVector4Group.cs" />
+    <Compile Include="Animations\AnimationUpdater.cs" />
     <Compile Include="Engine\ActivableEntityComponent.cs" />
     <Compile Include="Engine\AsyncScript.cs" />
     <Compile Include="Animations\AnimationBlendOperation.cs" />
@@ -2184,7 +2185,6 @@
     <Compile Include="Rendering\ModelNodeDefinition.cs" />
     <Compile Include="Rendering\ModelNodeTransformation.cs" />
     <Compile Include="Rendering\EffectSystemExtensions.cs" />
-    <Compile Include="Rendering\MeshAnimationUpdater.cs" />
     <Compile Include="Rendering\RenderModelEffectSlotManager.cs" />
     <Compile Include="Rendering\ProfilingKeys.cs" />
     <Compile Include="Rendering\RendererExtensions.cs" />

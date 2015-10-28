@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Threading.Tasks;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
@@ -27,6 +27,11 @@ namespace SiliconStudio.Xenko.Assets.Model
             var extension = assetSource.GetFileExtension();
             var buildStep = new AssetBuildStep(AssetItem);
 
+            // Find skeleton asset, if any
+            AssetItem skeleton = null;
+            if (asset.Skeleton != null)
+                skeleton = AssetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
+
             var additiveAnimationAsset = asset as AdditiveAnimationAsset;
             if (additiveAnimationAsset != null)
             {
@@ -38,13 +43,13 @@ namespace SiliconStudio.Xenko.Assets.Model
                 // Import base and main animation
                 if (ImportFbxCommand.IsSupportingExtensions(extension))
                 {
-                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport});
-                    buildStep.Add(new ImportFbxCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
+                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport, SkeletonUrl = skeleton?.Location });
+                    buildStep.Add(new ImportFbxCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport, SkeletonUrl = skeleton?.Location });
                 }
                 else if (ImportAssimpCommand.IsSupportingExtensions(extension))
                 {
-                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
-                    buildStep.Add(new ImportAssimpCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
+                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = sourceUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport, SkeletonUrl = skeleton?.Location });
+                    buildStep.Add(new ImportAssimpCommand { SourcePath = baseAssetSource, Location = baseUrlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport, SkeletonUrl = skeleton?.Location });
                 }
                 // Wait for both import fbx commands to be completed
                 buildStep.Add(new WaitBuildStep());
@@ -56,9 +61,9 @@ namespace SiliconStudio.Xenko.Assets.Model
             {
                 // Import the main animation
                 if (ImportFbxCommand.IsSupportingExtensions(extension))
-                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
+                    buildStep.Add(new ImportFbxCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport, SkeletonUrl = skeleton?.Location });
                 else if (ImportAssimpCommand.IsSupportingExtensions(extension))
-                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport });
+                    buildStep.Add(new ImportAssimpCommand { SourcePath = assetSource, Location = urlInStorage, ExportType = "animation", AnimationRepeatMode = asset.RepeatMode, ScaleImport = asset.ScaleImport, SkeletonUrl = skeleton?.Location });
             }
 
             result.BuildSteps = buildStep;

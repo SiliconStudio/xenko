@@ -629,11 +629,11 @@ private:
 		auto nodeName = aiStringToString(nodeAnim->mNodeName);
 		
 		// The scales
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, String::Format("Transform.Scale[{0}]", nodeName), ticksPerSec, false);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, String::Format("Transform.Scaling[{0}]", nodeName), ticksPerSec, false);
 		// The rotation
 		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, String::Format("Transform.Rotation[{0}]", nodeName), ticksPerSec);
 		// The translation
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, String::Format("Transform.Position[{0}]", nodeName), ticksPerSec, true);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, String::Format("Transform.Translation[{0}]", nodeName), ticksPerSec, true);
 	}
 
 	AnimationClip^ ProcessAnimation(const aiScene* scene)
