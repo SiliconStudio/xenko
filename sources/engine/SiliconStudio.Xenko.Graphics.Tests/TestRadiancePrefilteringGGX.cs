@@ -64,6 +64,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             FrameGameSystem.Draw(DisplayNextMipmapLevel).TakeScreenshot();
             FrameGameSystem.Draw(DisplayNextMipmapLevel).TakeScreenshot();
+            FrameGameSystem.Draw(DisplayNextMipmapLevel).TakeScreenshot();
         }
 
         protected override async Task LoadContent()
@@ -107,6 +108,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             spriteEffect = EffectSystem.LoadEffect("SpriteEffect").WaitForResult();
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
+
+            GraphicsDevice.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
+            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Green);
 
             spriteBatch.Begin(SpriteSortMode.Texture, spriteEffect);
             spriteBatch.Draw(displayedViews[1], new RectangleF(0, size.Y, size.X, size.Y), Color.White);
@@ -155,11 +159,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-
             PrefilterCubeMap();
 
             RenderCubeMap();
+
+            base.Draw(gameTime);
         }
 
         private void DisplayPreviousMipmapLevel()

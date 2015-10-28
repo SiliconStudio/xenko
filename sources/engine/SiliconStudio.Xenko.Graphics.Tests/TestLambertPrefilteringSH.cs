@@ -74,9 +74,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             renderSHEffect.InputSH = lamberFilter.PrefilteredLambertianSH;
             renderSHEffect.SetOutput(outputCubemap);
             renderSHEffect.Draw();
-
-            //shouldPrefilter = false;
-            //displayedCubemap = outputCubemap;
         }
 
         protected override void RegisterTests()
@@ -92,6 +89,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 return;
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
+
+            GraphicsDevice.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
+            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Green);
             
             GraphicsDevice.Parameters.Set(CubemapSpriteKeys.ViewIndex, 1);
             spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             base.Update(gameTime);
 
             if (Input.IsKeyPressed(Keys.Space))
-                shouldPrefilter = true;
+                shouldPrefilter = !shouldPrefilter;
 
             if (Input.IsKeyPressed(Keys.I))
                 displayedCubemap = inputCubemap;
@@ -143,10 +143,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-
             PrefilterCubeMap();
             RenderCubeMap();
+
+            base.Draw(gameTime);
         }
 
         [Test]

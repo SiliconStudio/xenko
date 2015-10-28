@@ -77,6 +77,7 @@ RootAssets:
     - 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
     - 693f0d3d-b0ef-4cb8-bc84-0aa69efb3462:DynamicFonts/Meiryo14
     - 6e52ca68-ba84-4521-a20c-b780ea2831da:CubeMap
+    - 7e5ae8dc-6417-40b8-a3d6-4f019fd7cc28:HdrTexture
     - 804b77a2-792d-4113-a148-756d55aaa3b1:JpegImage
     - 83cbacc4-ae04-4a9b-94ef-4ecd49557287:StaticFonts/Calibri64
     - 857cdf3a-4784-4b56-8d62-e807c076381d:ImageTypes/bmpImage

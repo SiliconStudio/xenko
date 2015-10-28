@@ -65,8 +65,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
-            base.Draw(gameTime);
-
             GraphicsDevice.Clear(output, Color4.White);
             renderHammersley.ThreadGroupCounts = new Int3(samplesCount, 1, 1);
             renderHammersley.ThreadNumbers = new Int3(1);
@@ -75,6 +73,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             renderHammersley.Draw();
 
             GraphicsDevice.DrawTexture(output);
+
+            base.Draw(gameTime);
         }
 
         public static void Main()
