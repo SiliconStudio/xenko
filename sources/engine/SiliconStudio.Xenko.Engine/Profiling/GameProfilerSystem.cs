@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -45,17 +46,24 @@ namespace SiliconStudio.Xenko.Profiling
         private readonly Dictionary<ProfilingKey, GameProfiler> externalProfilers = new Dictionary<ProfilingKey, GameProfiler>(); 
         private readonly StringBuilder externalProfilersString = new StringBuilder();
 
-        private readonly List<KeyValuePair<ProfilingResult,ProfilingEvent>> microthreadEvents = new List<KeyValuePair<ProfilingResult, ProfilingEvent>>();
+        private readonly SortedDictionary<ProfilingResult, ProfilingEvent> microthreadEvents = new SortedDictionary<ProfilingResult, ProfilingEvent>(new ProfilingResult());
+        private readonly Dictionary<ProfilingResult, ProfilingEvent> normalEvents = new Dictionary<ProfilingResult, ProfilingEvent>();
 
-        struct ProfilingResult
+        struct ProfilingResult : IComparer<ProfilingResult>
         {
             public long AccumulatedTime;
             public long MinTime;
             public long MaxTime;
             public int Count;
+            public ProfilingEvent? Event;
+            public int Compare(ProfilingResult x, ProfilingResult y)
+            {
+                return Math.Sign(x.AccumulatedTime - y.AccumulatedTime);
+            }
         }
 
-        private readonly Dictionary<ProfilingKey, ProfilingResult> profilingResults = new Dictionary<ProfilingKey, ProfilingResult>(); 
+        private readonly List<ProfilingResult> profilingResults = new List<ProfilingResult>();
+        private readonly Dictionary<ProfilingKey, ProfilingResult> profilingResultsDictionary = new Dictionary<ProfilingKey, ProfilingResult>();
 
         public GameProfilingSystem(IServiceRegistry registry) : base(registry)
         {
@@ -69,8 +77,19 @@ namespace SiliconStudio.Xenko.Profiling
             gcCollectionsStringBase =   "Collections>   Gen 0: {0} Gen 1: {1} Gen 3: {2}";
         }
 
+        Stopwatch dumpTiming = Stopwatch.StartNew();
+
         public override void Update(GameTime gameTime)
         {
+            if (dumpTiming.ElapsedMilliseconds > 500)
+            {
+                dumpTiming.Restart();
+            }
+            else
+            {
+                return;
+            }
+
             //Advance any profiler that needs it
             gcProfiler.Tick();
 
@@ -79,13 +98,12 @@ namespace SiliconStudio.Xenko.Profiling
             var eventsCopy = Profiler.GetEvents();
             if(eventsCopy == null) return;
 
-            microthreadEvents.Clear();
-
             var elapsedTime = eventsCopy.Length > 0 ? eventsCopy[eventsCopy.Length - 1].TimeStamp - eventsCopy[0].TimeStamp : 0;
 
             //update strings that need update
             foreach (var e in eventsCopy)
             {
+                //gc profiling is a special case
                 if (e.Key == GcProfiling.GcMemoryKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
                 {
                     gcMemoryString.Clear();
@@ -103,7 +121,7 @@ namespace SiliconStudio.Xenko.Profiling
                 }
 
                 ProfilingResult profilingResult;
-                if (!profilingResults.TryGetValue(e.Key, out profilingResult))
+                if (!profilingResultsDictionary.TryGetValue(e.Key, out profilingResult))
                 {
                     profilingResult.MinTime = long.MaxValue;
                 }
@@ -115,112 +133,138 @@ namespace SiliconStudio.Xenko.Profiling
                         profilingResult.MinTime = e.ElapsedTime;
                     if (e.ElapsedTime > profilingResult.MaxTime)
                         profilingResult.MaxTime = e.ElapsedTime;
+                    profilingResult.Event = e;
                 }
                 else if (e.Type == ProfilingMessageType.Mark) // counter incremented only Mark!
                 {
                     profilingResult.Count++;
                 }
 
-                profilingResults[e.Key] = profilingResult;
+                profilingResultsDictionary[e.Key] = profilingResult;
 
                 var processed = false;
-                lock (externalProfilers)
-                {
-                    GameProfiler p;
-                    if (externalProfilers.TryGetValue(e.Key, out p))
-                    {
-                        if (p.LogAt != e.Type) continue;
-
-                        if (p.ValueDescs != null)
-                        {
-                            var values = new object[p.ValueDescs.Length];
-                            for (var index = 0; index < p.ValueDescs.Length; index++)
-                            {
-                                var profilerValueDesc = p.ValueDescs[index];
-                                if (profilerValueDesc == ProfilerValueDesc.None) break;
-
-                                ProfilingCustomValue? value;
-                                switch (index)
-                                {
-                                    case 0:
-                                        value = e.Custom0;
-                                        break;
-                                    case 1:
-                                        value = e.Custom1;
-                                        break;
-                                    case 2:
-                                        value = e.Custom2;
-                                        break;
-                                    case 3:
-                                        value = e.Custom3;
-                                        break;
-                                    default:
-                                        value = null;
-                                        break;
-                                }
-
-                                if (!value.HasValue) continue;
-
-                                switch (profilerValueDesc)
-                                {
-                                    case ProfilerValueDesc.Int:
-                                        values[index] = value.Value.IntValue;
-                                        break;
-                                    case ProfilerValueDesc.Float:
-                                        values[index] = value.Value.FloatValue;
-                                        break;
-                                    case ProfilerValueDesc.Long:
-                                        values[index] = value.Value.LongValue;
-                                        break;
-                                    case ProfilerValueDesc.Double:
-                                        values[index] = value.Value.DoubleValue;
-                                        break;
-                                    default:
-                                        throw new ArgumentOutOfRangeException();
-                                }
-
-                                externalProfilersString.AppendFormat(p.FormatString, values);
-                                externalProfilersString.AppendLine();
-                            }
-                        }
-                        else
-                        {
-                            externalProfilersString.Append(p.FormatString);
-                        }
-
-                        if (p.ReportTime)
-                        {
-                            AppendEvent(profilingResult, e, elapsedTime);
-                        }
-
-                        processed = true;
-                    }
-                }
+//                lock (externalProfilers)
+//                {
+//                    GameProfiler p;
+//                    if (externalProfilers.TryGetValue(e.Key, out p))
+//                    {
+//                        if (p.LogAt != e.Type) continue;
+//
+//                        if (p.ValueDescs != null)
+//                        {
+//                            var values = new object[p.ValueDescs.Length];
+//                            for (var index = 0; index < p.ValueDescs.Length; index++)
+//                            {
+//                                var profilerValueDesc = p.ValueDescs[index];
+//                                if (profilerValueDesc == ProfilerValueDesc.None) break;
+//
+//                                ProfilingCustomValue? value;
+//                                switch (index)
+//                                {
+//                                    case 0:
+//                                        value = e.Custom0;
+//                                        break;
+//                                    case 1:
+//                                        value = e.Custom1;
+//                                        break;
+//                                    case 2:
+//                                        value = e.Custom2;
+//                                        break;
+//                                    case 3:
+//                                        value = e.Custom3;
+//                                        break;
+//                                    default:
+//                                        value = null;
+//                                        break;
+//                                }
+//
+//                                if (!value.HasValue) continue;
+//
+//                                switch (profilerValueDesc)
+//                                {
+//                                    case ProfilerValueDesc.Int:
+//                                        values[index] = value.Value.IntValue;
+//                                        break;
+//                                    case ProfilerValueDesc.Float:
+//                                        values[index] = value.Value.FloatValue;
+//                                        break;
+//                                    case ProfilerValueDesc.Long:
+//                                        values[index] = value.Value.LongValue;
+//                                        break;
+//                                    case ProfilerValueDesc.Double:
+//                                        values[index] = value.Value.DoubleValue;
+//                                        break;
+//                                    default:
+//                                        throw new ArgumentOutOfRangeException();
+//                                }
+//
+//                                externalProfilersString.AppendFormat(p.FormatString, values);
+//                                externalProfilersString.AppendLine();
+//                            }
+//                        }
+//                        else
+//                        {
+//                            externalProfilersString.Append(p.FormatString);
+//                        }
+//
+//                        if (p.ReportTime)
+//                        {
+//                            AppendEvent(profilingResult, e, elapsedTime);
+//                        }
+//
+//                        processed = true;
+//                    }
+//                }
 
                 if (processed || e.Type != ProfilingMessageType.End) continue;
 
-                if (e.Key == MicroThread.ProfilingKey)
+//                if (e.Key == MicroThread.ProfilingKey)
+//                {
+//                    microthreadEvents[profilingResult] = e;
+//                }
+//                else
+//                {
+//                    normalEvents[profilingResult] = e;
+//                }
+            }
+
+            externalProfilersString.Clear();
+            profilingResults.Clear();
+
+            foreach (var profilingResult in profilingResultsDictionary)
+            {
+                if (profilingResult.Value.Event.HasValue)
                 {
-                    microthreadEvents.Add(new KeyValuePair<ProfilingResult, ProfilingEvent>(profilingResult, e));
-                }
-                else
-                {
-                    AppendEvent(profilingResult, e, elapsedTime);
+                    profilingResults.Add(profilingResult.Value);
                 }
             }
 
-            foreach (var microthreadEvent in microthreadEvents)
+            profilingResultsDictionary.Clear();
+
+            profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
+
+            foreach (var result in profilingResults)
             {
-                AppendEvent(microthreadEvent.Key, microthreadEvent.Value, elapsedTime);
-            }
+                AppendEvent(result, result.Event.Value, elapsedTime);
+            }          
+
+//            foreach (var normalEvent in normalEvents)
+//            {
+//                AppendEvent(normalEvent.Key, normalEvent.Value, elapsedTime);
+//            }
+//
+//            foreach (var microthreadEvent in microthreadEvents)
+//            {
+//                AppendEvent(microthreadEvent.Key, microthreadEvent.Value, elapsedTime);
+//            }
+//
+//            microthreadEvents.Clear();
+//            normalEvents.Clear();
         }
 
         private void AppendEvent(ProfilingResult profilingResult, ProfilingEvent e, double elapsedTime)
         {
-            profilingResults.Remove(e.Key);
-            externalProfilersString.AppendFormat("{0,-7:P1} | ", profilingResult.AccumulatedTime / elapsedTime);
-            Profiler.AppendTime(externalProfilersString, profilingResult.AccumulatedTime);
-
+            externalProfilersString.AppendFormat("{0,-7:P1}", profilingResult.AccumulatedTime / elapsedTime);
             externalProfilersString.Append(" |  ");
             Profiler.AppendTime(externalProfilersString, profilingResult.MinTime);
             externalProfilersString.Append(" |  ");
@@ -228,7 +272,7 @@ namespace SiliconStudio.Xenko.Profiling
             externalProfilersString.Append(" |  ");
             Profiler.AppendTime(externalProfilersString, profilingResult.MaxTime);
 
-            externalProfilersString.AppendFormat(" | {0:00000} | {1} ", profilingResult.Count, e.Key);
+            externalProfilersString.AppendFormat(" | {0} ", e.Key);
             if (!e.Text.IsNullOrEmpty()) externalProfilersString.AppendFormat(e.Text);
             externalProfilersString.AppendLine();
         }
@@ -253,8 +297,7 @@ namespace SiliconStudio.Xenko.Profiling
             spriteBatch.Begin();
             spriteBatch.DrawString(spriteFont, gcMemoryString, new Vector2(10, 10), TextColor);
             spriteBatch.DrawString(spriteFont, gcCollectionsString, new Vector2(10, 20), TextColor);
-            spriteBatch.DrawString(spriteFont, externalProfilersString, new Vector2(10, 30), TextColor);
-            externalProfilersString.Clear();
+            spriteBatch.DrawString(spriteFont, externalProfilersString, new Vector2(10, 30), TextColor);        
             spriteBatch.End();
         }
 

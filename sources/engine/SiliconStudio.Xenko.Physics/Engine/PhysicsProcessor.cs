@@ -450,16 +450,11 @@ namespace SiliconStudio.Xenko.Physics
                 {
                     ProfilingState = charactersProfilingState,
                     ValueDescs = new[] { ProfilerValueDesc.Int },
-                    FormatString = string.Intern("Number of characters: {0}"),
+                    FormatString = "Number of characters: {0}",
                     LogAt = ProfilingMessageType.End
                 });
                 simulation.AddProfilers(profiler);
             }
-
-
-            //setup debug device and debug shader
-            //var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
-            //Simulation.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
         }
 
         protected override void OnSystemRemove()
