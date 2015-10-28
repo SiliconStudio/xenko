@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteFont(string assetPrefix, string saveImageSuffix)
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
 
             this.assetPrefix = assetPrefix;
             this.saveImageSuffix = saveImageSuffix;

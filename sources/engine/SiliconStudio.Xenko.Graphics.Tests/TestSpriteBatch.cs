@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteBatch()
         {
-            CurrentVersion = 8;
+            CurrentVersion = 9;
         }
 
         protected override void RegisterTests()
