@@ -59,7 +59,8 @@
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <ItemGroup>
             <Reference Include="OpenTK">
-              <HintPath>$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>
