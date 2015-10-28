@@ -679,7 +679,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             public int Compare(int left, int right)
             {
-                return SpriteTextures[left].Id.CompareTo(SpriteTextures[right].Id);
+                return ReferenceEquals(SpriteTextures[left], SpriteTextures[right]) ? 0 : 1;
             }
         }
 
