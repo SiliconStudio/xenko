@@ -41,6 +41,7 @@ namespace SiliconStudio.Xenko.Engine
     public abstract class ScriptContext : ComponentBase, IScriptContext
     {
         private IGraphicsDeviceService graphicsDeviceService;
+        private Logger logger;
 
         protected ScriptContext()
         {
@@ -106,8 +107,6 @@ namespace SiliconStudio.Xenko.Engine
         protected override void Destroy()
         {
         }
-
-        static private Logger logger;
 
         [DataMemberIgnore]
         protected Logger Log
