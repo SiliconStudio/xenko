@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Games;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestSpriteBatch3D : TestGameBase
+    public class TestSpriteBatch3D : GraphicTestGameBase
     {
         private Sprite3DBatch batch;
         private Texture sphere;

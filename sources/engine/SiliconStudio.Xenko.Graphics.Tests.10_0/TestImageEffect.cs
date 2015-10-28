@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Input;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestImageEffect : TestGameBase
+    public class TestImageEffect : GraphicTestGameBase
     {
         private RenderContext drawEffectContext;
 
@@ -25,7 +25,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         public TestImageEffect()
         {
             CurrentVersion = 1;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
             GraphicsDeviceManager.PreferredBackBufferWidth = 760;
             GraphicsDeviceManager.PreferredBackBufferHeight = 1016;
         }

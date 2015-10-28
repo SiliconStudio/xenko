@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    public class TestSpriteFont : TestGameBase
+    public class TestSpriteFont : GraphicTestGameBase
     {
         private SpriteBatch spriteBatch;
         private SpriteFont arial13;

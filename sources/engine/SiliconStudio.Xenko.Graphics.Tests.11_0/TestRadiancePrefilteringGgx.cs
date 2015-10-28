@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    public class TestRadiancePrefilteringGGX : TestGameBase
+    public class TestRadiancePrefilteringGgx : GraphicTestGameBase
     {
         private SpriteBatch spriteBatch;
 
@@ -43,19 +43,17 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private bool filterAtEachFrame = true;
         private bool hasBeenFiltered;
 
-        public TestRadiancePrefilteringGGX() : this(false)
+        public TestRadiancePrefilteringGgx() : this(false)
         {
             
         }
 
-        public TestRadiancePrefilteringGGX(bool filterAtEachFrame)
+        public TestRadiancePrefilteringGgx(bool filterAtEachFrame)
         {
             CurrentVersion = 2;
             this.filterAtEachFrame = filterAtEachFrame;
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
         protected override void RegisterTests()
@@ -200,12 +198,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            RunGameTest(new TestRadiancePrefilteringGGX());
+            RunGameTest(new TestRadiancePrefilteringGgx());
         }
 
         public static void Main()
         {
-            using (var game = new TestRadiancePrefilteringGGX(true))
+            using (var game = new TestRadiancePrefilteringGgx(true))
                 game.Run();
         }
     }

@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     /// <summary>
     /// Test class for Hammersley sampling shader
     /// </summary>
-    public class TestHammersley : TestGameBase
+    public class TestHammersley : GraphicTestGameBase
     {
         private Texture output;
 
@@ -31,8 +31,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             GraphicsDeviceManager.PreferredBackBufferWidth = OutputSize;
             GraphicsDeviceManager.PreferredBackBufferHeight = OutputSize;
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
         protected override async Task LoadContent()

@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     [Description("Check Dynamic Font various")]
-    public class TestDynamicSpriteFontVarious : TestGameBase
+    public class TestDynamicSpriteFontVarious : GraphicTestGameBase
     {
         private SpriteFont msMincho10;
 

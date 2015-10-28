@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     /// <summary>
     /// The the pass 2 of lambertian prefiltering SH
     /// </summary>
-    public class TestLambertPrefilteringSHPass2 : GraphicsTestBase
+    public class TestLambertPrefilteringSHPass2 : GraphicTestGameBase
     {
         private const int Order = 2;
 
@@ -48,8 +48,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             this.assertResults = assertResults;
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
         protected override async Task LoadContent()

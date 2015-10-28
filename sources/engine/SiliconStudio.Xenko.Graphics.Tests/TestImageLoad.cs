@@ -12,7 +12,7 @@ using SiliconStudio.Xenko.Games;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestImageLoad : TestGameBase
+    public class TestImageLoad : GraphicTestGameBase
     {
         private SpriteBatch spriteBatch;
         private Texture jpg;

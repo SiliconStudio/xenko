@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    public class TestComputeShader : TestGameBase
+    public class TestComputeShader : GraphicTestGameBase
     {
         const int ReductionRatio = 4;
 
@@ -34,7 +34,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             CurrentVersion = 2;
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
         protected override async Task LoadContent()

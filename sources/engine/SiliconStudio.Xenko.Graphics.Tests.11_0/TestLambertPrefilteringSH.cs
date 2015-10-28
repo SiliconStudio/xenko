@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    public class TestLambertPrefilteringSH : TestGameBase
+    public class TestLambertPrefilteringSH : GraphicTestGameBase
     {
         private SpriteBatch spriteBatch;
 
@@ -41,8 +41,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             CurrentVersion = 2;
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
-            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
         }
 
         protected override async Task LoadContent()

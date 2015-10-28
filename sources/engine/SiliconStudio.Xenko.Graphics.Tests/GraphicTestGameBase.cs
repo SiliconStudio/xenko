@@ -1,29 +1,24 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.IO;
 using System.Threading.Tasks;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics.Regression;
 using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    public class TestGameBase : GraphicsTestBase
+    public class GraphicTestGameBase : GraphicsTestBase
     {
         public Texture UVTexture { get; private set; }
 
-        public TestGameBase()
+        public GraphicTestGameBase()
         {
-            // Enable profiling
-            Profiler.EnableAll();
-
             GraphicsDeviceManager.PreferredBackBufferWidth = 800;
             GraphicsDeviceManager.PreferredBackBufferHeight = 480;
-            GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.None;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0, GraphicsProfile.Level_9_1 };
+            GraphicsDeviceManager.PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt;
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 };
         }
 
         protected override async Task LoadContent()
@@ -41,19 +36,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             {
                 Exit();
             }
-        }
-
-        protected void SaveTexture(Texture texture, string filename)
-        {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            using (var image = texture.GetDataAsImage())
-            {
-                using (var resultFileStream = File.OpenWrite(filename))
-                {
-                    image.Save(resultFileStream, ImageFileType.Png);
-                }
-            }
-#endif
         }
     }
 }

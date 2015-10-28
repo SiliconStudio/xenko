@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -314,6 +315,19 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             var frameIndex = FrameIndex++;
 
             ImageTester.SendImage(new TestResultImage { CurrentVersion = currentVersion, Frame = frameIndex.ToString(), Image = image, TestName = testName });
+        }
+
+        protected void SaveTexture(Texture texture, string filename)
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            using (var image = texture.GetDataAsImage())
+            {
+                using (var resultFileStream = File.OpenWrite(filename))
+                {
+                    image.Save(resultFileStream, ImageFileType.Png);
+                }
+            }
+#endif
         }
 
         /// <summary>

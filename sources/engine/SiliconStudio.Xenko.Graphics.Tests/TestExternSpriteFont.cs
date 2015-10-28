@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     /// Test a sprite font imported from an external ttf file (not system font).
     /// </summary>
     [TestFixture]
-    public class TestExternSpriteFont : TestGameBase
+    public class TestExternSpriteFont : GraphicTestGameBase
     {
         private SpriteBatch spriteBatch;
         private SpriteFont testFont;
