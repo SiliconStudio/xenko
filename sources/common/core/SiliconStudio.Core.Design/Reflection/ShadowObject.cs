@@ -14,6 +14,19 @@ namespace SiliconStudio.Core.Reflection
         private static readonly ConditionalWeakTable<object, ShadowContainer> Shadows = new ConditionalWeakTable<object, ShadowContainer>();
 
         /// <summary>
+        /// Gets the <see cref="ShadowContainer"/> instance.
+        /// </summary>
+        /// <param name="instance">The live instance.</param>
+        /// <returns>The shadow instance or <c>null</c> if none</returns>
+        internal static ShadowContainer GetShadow(object instance)
+        {
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            ShadowContainer shadow;
+            Shadows.TryGetValue(instance, out shadow);
+            return shadow;
+        }
+
+        /// <summary>
         /// Copies all dynamic properties from an instance to another instance.
         /// </summary>
         /// <param name="fromInstance">The instance to copy the shadow attributes from</param>
