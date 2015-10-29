@@ -57,7 +57,7 @@ namespace SiliconStudio.CoreCLRBuilder
             foldersToCheck = new List<string>(10);
             options = new OptionSet {
                 "Copyright (C) 2015-2015 Silicon Studio Corporation. All Rights Reserved",
-                "Paradox Assembly Consistency Checker Tool - Version: "
+                "Xenko Assembly Consistency Checker Tool - Version: "
                 +
                 String.Format(
                     "{0}.{1}.{2}",
