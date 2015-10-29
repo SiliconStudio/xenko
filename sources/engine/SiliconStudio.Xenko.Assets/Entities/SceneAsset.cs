@@ -48,11 +48,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, 16, 17, typeof(NewElementLayoutUpgrader4))]
     [AssetUpgrader(XenkoConfig.PackageName, 17, 18, typeof(RemoveSceneEditorCameraSettings))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.18", "1.5.0-alpha01", typeof(ChangeSpriteColorTypeAndTriggerElementRemoved))]
-    [AssetUpgrader(20, 21, typeof(MoveSceneSettingsToSceneAsset))]
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.5.0-alpha02", typeof(MoveSceneSettingsToSceneAsset))]
     [Display(200, "Scene", "A scene")]
     public class SceneAsset : EntityAssetBase
     {
-        private const string CurrentVersion = "1.5.0-alpha01";
+        private const string CurrentVersion = "1.5.0-alpha02";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
 
@@ -622,7 +622,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         class MoveSceneSettingsToSceneAsset : AssetUpgraderBase
         {
-            protected override void UpgradeAsset(AssetMigrationContext context, int currentVersion, int targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
             {
                 // Move SceneSettings to SceneAsset outside the HierarchyData
                 var sceneSettings = asset.Hierarchy.SceneSettings;
