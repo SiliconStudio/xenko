@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Collections.Generic;
 using System.IO;
 
@@ -15,7 +16,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     public struct AssetCloner
     {
-        private readonly bool referencesAsNull;
+        private readonly AssetClonerFlags flags;
         private readonly object streamOrValueType;
 
         private readonly List<object> invariantObjects;
@@ -33,11 +34,10 @@ namespace SiliconStudio.Assets
         /// Initializes a new instance of the <see cref="AssetCloner" /> struct.
         /// </summary>
         /// <param name="value">The value to clone.</param>
-        /// <param name="keepOnlySealedOverride">if set to <c>true</c> to discard override information except sealed.</param>
-        /// <param name="referencesAsNull">if set to <c>true</c>, attached references will be cloned as <c>null</c>.</param>
-        private AssetCloner(object value, bool keepOnlySealedOverride = false, bool referencesAsNull = false)
+        /// <param name="flags">Cloning flags</param>
+        private AssetCloner(object value, AssetClonerFlags flags)
         {
-            this.referencesAsNull = referencesAsNull;
+            this.flags = flags;
             invariantObjects = null;
 
             // Clone only if value is not a value type
@@ -49,8 +49,9 @@ namespace SiliconStudio.Assets
                 var stream = new MemoryStream();
                 var writer = new BinarySerializationWriter(stream);
                 writer.Context.SerializerSelector = ClonerSelector;
-                var refFlag = referencesAsNull ? ContentSerializerContext.AttachedReferenceSerialization.AsNull
-                                               : ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion;
+                var refFlag = (flags & AssetClonerFlags.ReferenceAsNull) != 0
+                    ? ContentSerializerContext.AttachedReferenceSerialization.AsNull
+                    : ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion;
                 writer.Context.Set(InvariantObjectListProperty, invariantObjects);
                 writer.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
                 writer.SerializeExtended(value, ArchiveMode.Serialize);
@@ -80,8 +81,9 @@ namespace SiliconStudio.Assets
                 stream.Position = 0;
                 var reader = new BinarySerializationReader(stream);
                 reader.Context.SerializerSelector = ClonerSelector;
-                var refFlag = referencesAsNull ? ContentSerializerContext.AttachedReferenceSerialization.AsNull
-                                           : ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion;
+                var refFlag = (flags & AssetClonerFlags.ReferenceAsNull) != 0
+                    ? ContentSerializerContext.AttachedReferenceSerialization.AsNull
+                    : ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion;
                 reader.Context.Set(InvariantObjectListProperty, invariantObjects);
                 reader.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
                 object newObject = null;
@@ -95,7 +97,15 @@ namespace SiliconStudio.Assets
                     {
                         var innerObject = objRef.Key;
                         var newInnerObject = newObjectReferences[objRef.Value];
-                        ShadowObject.CopyDynamicProperties(innerObject, newInnerObject);
+                        // Copy only when objects are non-null
+                        if (innerObject != null && newInnerObject != null)
+                        {
+                            ShadowObject.CopyDynamicProperties(innerObject, newInnerObject);
+                            if ((flags & AssetClonerFlags.RemoveOverrides) != 0)
+                            {
+                                Override.RemoveFrom(newInnerObject);
+                            }
+                        }
                     }
                 }
 
@@ -109,16 +119,15 @@ namespace SiliconStudio.Assets
         /// Clones the specified asset using asset serialization.
         /// </summary>
         /// <param name="asset">The asset.</param>
-        /// <param name="keepOnlySealedOverride">if set to <c>true</c> to discard override information except sealed.</param>
-        /// <param name="referencesAsNull">if set to <c>true</c>, attached references will be cloned as <c>null</c>.</param>
+        /// <param name="flags">Flags used to control the cloning process</param>
         /// <returns>A clone of the asset.</returns>
-        public static object Clone(object asset, bool keepOnlySealedOverride = false, bool referencesAsNull = false)
+        public static object Clone(object asset, AssetClonerFlags flags = AssetClonerFlags.None)
         {
             if (asset == null)
             {
                 return null;
             }
-            var cloner = new AssetCloner(asset, keepOnlySealedOverride, referencesAsNull);
+            var cloner = new AssetCloner(asset, flags);
             return cloner.Clone();
         }
     }

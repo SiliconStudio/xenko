@@ -46,5 +46,30 @@ namespace SiliconStudio.Assets.Tests
             obj.SetOverride(memberDesc, OverrideType.Base);
             Assert.AreEqual(OverrideType.New, newInstance.GetOverride(memberDesc));
         }
+
+
+        /// <summary>
+        /// Test basic clone with remove overrides option
+        /// </summary>
+        [Test]
+        public void TestCloneAssetWithRemoveOverrides()
+        {
+            var obj = new TestAssetClonerObject
+            {
+                Name = "Test1",
+                SubObject = new TestAssetClonerObject() { Name = "Test2" }
+            };
+
+            var objDesc = TypeDescriptorFactory.Default.Find(typeof(TestAssetClonerObject));
+            var memberDesc = objDesc.Members.First(t => t.Name == "Name");
+            obj.SetOverride(memberDesc, OverrideType.New);
+            obj.SubObject.SetOverride(memberDesc, OverrideType.Sealed);
+
+            var newInstance = (TestAssetClonerObject)AssetCloner.Clone(obj, AssetClonerFlags.RemoveOverrides);
+
+            // Check that we are not overriding anything
+            Assert.AreEqual(OverrideType.Base, newInstance.GetOverride(memberDesc));
+            Assert.AreEqual(OverrideType.Base, newInstance.SubObject.GetOverride(memberDesc));
+        }
     }
 }
