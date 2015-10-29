@@ -62,7 +62,7 @@ namespace SiliconStudio.AssemblyProcessor
                 throw new InvalidOperationException("Missing mscorlib.dll from assembly");
 
             // Get or create module static constructor
-            var voidType = assembly.MainModule.Import(mscorlibAssembly.MainModule.GetTypeResolved(typeof(void).FullName));
+            var voidType = assembly.MainModule.TypeSystem.Void;
             var moduleClass = assembly.MainModule.Types.First(t => t.Name == "<Module>");
             var staticConstructor = moduleClass.GetStaticConstructor();
             if (staticConstructor == null)

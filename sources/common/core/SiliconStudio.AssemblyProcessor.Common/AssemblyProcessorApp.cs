@@ -235,12 +235,12 @@ namespace SiliconStudio.AssemblyProcessor
                             serializationAssemblyName += ", PublicKey=" + ByteArrayToString(assemblyDefinition.Name.PublicKey);
 
                         // Add [InteralsVisibleTo] attribute
-                        var internalsVisibleToAttributeCtor = assemblyDefinition.MainModule.Import(internalsVisibleToAttribute.GetConstructors().Single());
+                        var internalsVisibleToAttributeCtor = assemblyDefinition.MainModule.ImportReference(internalsVisibleToAttribute.GetConstructors().Single());
                         var internalsVisibleAttribute = new CustomAttribute(internalsVisibleToAttributeCtor)
                         {
                             ConstructorArguments =
                             {
-                                new CustomAttributeArgument(assemblyDefinition.MainModule.Import(stringType), serializationAssemblyName)
+                                new CustomAttributeArgument(assemblyDefinition.MainModule.ImportReference(stringType), serializationAssemblyName)
                             }
                         };
                         assemblyDefinition.CustomAttributes.Add(internalsVisibleAttribute);
@@ -282,9 +282,9 @@ namespace SiliconStudio.AssemblyProcessor
                     }
 
                     var attributeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof (Attribute).FullName);
-                    var attributeTypeRef = assemblyDefinition.MainModule.Import(attributeType);
-                    var attributeCtorRef = assemblyDefinition.MainModule.Import(attributeType.GetConstructors().Single(x => x.Parameters.Count == 0));
-                    var voidType = assemblyDefinition.MainModule.Import(mscorlibAssembly.MainModule.GetTypeResolved("System.Void"));
+                    var attributeTypeRef = assemblyDefinition.MainModule.ImportReference(attributeType);
+                    var attributeCtorRef = assemblyDefinition.MainModule.ImportReference(attributeType.GetConstructors().Single(x => x.Parameters.Count == 0));
+                    var voidType = assemblyDefinition.MainModule.TypeSystem.Void;
 
                     // Create custom attribute
                     var assemblyProcessedAttributeType = new TypeDefinition("SiliconStudio.Core", "AssemblyProcessedAttribute", TypeAttributes.BeforeFieldInit | TypeAttributes.AnsiClass | TypeAttributes.AutoClass | TypeAttributes.Public, attributeTypeRef);

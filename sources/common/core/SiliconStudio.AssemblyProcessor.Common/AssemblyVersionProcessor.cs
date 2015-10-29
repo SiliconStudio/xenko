@@ -21,7 +21,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             // Resolve mscorlib types
             var assemblyFileVersionAttributeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(AssemblyFileVersionAttribute).FullName);
-            var assemblyMethodConstructor = assembly.MainModule.Import(assemblyFileVersionAttributeType.Methods.FirstOrDefault(method => method.IsConstructor && method.Parameters.Count == 1));
+            var assemblyMethodConstructor = assembly.MainModule.ImportReference(assemblyFileVersionAttributeType.Methods.FirstOrDefault(method => method.IsConstructor && method.Parameters.Count == 1));
             var stringType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(string).FullName);
 
             // TODO: Git Commit SHA

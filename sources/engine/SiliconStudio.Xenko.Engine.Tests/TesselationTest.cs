@@ -171,14 +171,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             if (currentEntity != null)
             {
-                Scene.RemoveChild(currentEntity);
+                Scene.Entities.Remove(currentEntity);
                 currentEntity = null;
             }
 
             currentModelIndex = (currentModelIndex + offset + entities.Count) % entities.Count;
             currentEntity = entities[currentModelIndex];
 
-            Scene.AddChild(currentEntity);
+            Scene.Entities.Add(currentEntity);
 
             ChangeMaterial(0);
         }
