@@ -13,7 +13,7 @@
     <AssemblyName>SDL2-CS</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
-    <ParadoxBuildTags>*</ParadoxBuildTags>
+    <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
     <Compile Include="SDL2\src\SDL2.cs" />
