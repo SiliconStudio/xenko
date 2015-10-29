@@ -13,7 +13,6 @@ using SiliconStudio.Assets.Diagnostics;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Storage;
@@ -58,16 +57,6 @@ namespace SiliconStudio.Assets
     {
         private const int PackageFileVersion = 2;
 
-        private readonly PackageAssetCollection assets;
-
-        private readonly AssetItemCollection temporaryAssets;
-
-        private readonly List<PackageReference> localDependencies;
-
-        private readonly List<UDirectory> explicitFolders;
-
-        private readonly List<PackageLoadedAssembly> loadedAssemblies;
-
         private readonly List<UFile> filesToDelete = new List<UFile>();
 
         private PackageSession session;
@@ -75,7 +64,7 @@ namespace SiliconStudio.Assets
         private UFile packagePath;
         private UFile previousPackagePath;
         private bool isDirty;
-        private Lazy<PackageUserSettings> settings;
+        private readonly Lazy<PackageUserSettings> settings;
 
         /// <summary>
         /// The file extension used for <see cref="Package"/>.
@@ -94,16 +83,8 @@ namespace SiliconStudio.Assets
         /// </summary>
         public Package()
         {
-            localDependencies = new List<PackageReference>();
-            temporaryAssets = new AssetItemCollection();
-            assets = new PackageAssetCollection(this);
-            explicitFolders = new List<UDirectory>();
-            loadedAssemblies = new List<PackageLoadedAssembly>();
+            Assets = new PackageAssetCollection(this);
             Bundles = new BundleCollection(this);
-            Meta = new PackageMeta();
-            TemplateFolders = new List<TemplateFolder>();
-            Templates = new List<TemplateDescription>();
-            Profiles = new PackageProfileCollection();
             IsDirty = true;
             settings = new Lazy<PackageUserSettings>(() => new PackageUserSettings(this));
         }
@@ -120,7 +101,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The meta.</value>
         [DataMember(10)]
-        public PackageMeta Meta { get; set; }
+        public PackageMeta Meta { get; set; } = new PackageMeta();
 
         /// <summary>
         /// Gets the local package dependencies used by this package (only valid for local references). Global dependencies
@@ -128,32 +109,20 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The package local dependencies.</value>
         [DataMember(30)]
-        public List<PackageReference> LocalDependencies
-        {
-            get
-            {
-                return localDependencies;
-            }
-        }
+        public List<PackageReference> LocalDependencies { get; } = new List<PackageReference>();
 
         /// <summary>
         /// Gets the profiles.
         /// </summary>
         /// <value>The profiles.</value>
         [DataMember(50)]
-        public PackageProfileCollection Profiles { get; private set; }
+        public PackageProfileCollection Profiles { get; } = new PackageProfileCollection();
 
         /// <summary>
         /// Gets or sets the list of folders that are explicitly created but contains no assets.
         /// </summary>
         [DataMember(70)]
-        public List<UDirectory> ExplicitFolders
-        {
-            get
-            {
-                return explicitFolders;
-            }
-        }
+        public List<UDirectory> ExplicitFolders { get; } = new List<UDirectory>();
 
         /// <summary>
         /// Gets the bundles defined for this package.
@@ -167,7 +136,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The template folders.</value>
         [DataMember(90)]
-        public List<TemplateFolder> TemplateFolders { get; private set; }
+        public List<TemplateFolder> TemplateFolders { get; } = new List<TemplateFolder>();
 
         /// <summary>
         /// Asset references that needs to be compiled even if not directly or indirectly referenced (useful for explicit code references).
@@ -180,33 +149,21 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The templates.</value>
         [DataMemberIgnore]
-        public List<TemplateDescription> Templates { get; private set; }
-        
+        public List<TemplateDescription> Templates { get; } = new List<TemplateDescription>();
+
         /// <summary>
         /// Gets the assets stored in this package.
         /// </summary>
         /// <value>The assets.</value>
         [DataMemberIgnore]
-        public PackageAssetCollection Assets
-        {
-            get
-            {
-                return assets;
-            }
-        }
+        public PackageAssetCollection Assets { get; }
 
         /// <summary>
         /// Gets the temporary assets list loaded from disk before they are going into <see cref="Assets"/>.
         /// </summary>
         /// <value>The temporary assets.</value>
         [DataMemberIgnore]
-        public AssetItemCollection TemporaryAssets
-        {
-            get
-            {
-                return temporaryAssets;
-            }
-        }
+        public AssetItemCollection TemporaryAssets { get; } = new AssetItemCollection();
 
         /// <summary>
         /// Gets the path to the package file. May be null if the package was not loaded or saved.
@@ -251,13 +208,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The top directory.</value>
         [DataMemberIgnore]
-        public UDirectory RootDirectory
-        {
-            get
-            {
-                return FullPath != null ? FullPath.GetParent() : null;
-            }
-        }
+        public UDirectory RootDirectory => FullPath?.GetParent();
 
         /// <summary>
         /// Gets the session.
@@ -289,10 +240,7 @@ namespace SiliconStudio.Assets
         /// The package user settings.
         /// </value>
         [DataMemberIgnore]
-        public PackageUserSettings UserSettings
-        {
-            get { return settings.Value; }
-        }
+        public PackageUserSettings UserSettings => settings.Value;
 
         /// <summary>
         /// Gets the list of assemblies loaded by this package.
@@ -301,10 +249,7 @@ namespace SiliconStudio.Assets
         /// The loaded assemblies.
         /// </value>
         [DataMemberIgnore]
-        public List<PackageLoadedAssembly> LoadedAssemblies
-        {
-            get { return loadedAssemblies; }
-        }
+        public List<PackageLoadedAssembly> LoadedAssemblies { get; } = new List<PackageLoadedAssembly>();
 
         /// <summary>
         /// Adds an exiting project to this package.
@@ -325,9 +270,9 @@ namespace SiliconStudio.Assets
         /// <param name="logger">The logger.</param>
         public void AddExitingProject(UFile pathToMsproj, LoggerResult logger)
         {
-            if (pathToMsproj == null) throw new ArgumentNullException("pathToMsproj");
-            if (logger == null) throw new ArgumentNullException("logger");
-            if (!pathToMsproj.IsAbsolute) throw new ArgumentException("Expecting relative path", "pathToMsproj");
+            if (pathToMsproj == null) throw new ArgumentNullException(nameof(pathToMsproj));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+            if (!pathToMsproj.IsAbsolute) throw new ArgumentException(@"Expecting relative path", nameof(pathToMsproj));
 
             try
             {
@@ -447,8 +392,7 @@ namespace SiliconStudio.Assets
 
         internal void OnAssetDirtyChanged(Asset asset)
         {
-            Action<Asset> handler = AssetDirtyChanged;
-            if (handler != null) handler(asset);
+            AssetDirtyChanged?.Invoke(asset);
         }
 
         /// <summary>
@@ -475,7 +419,7 @@ namespace SiliconStudio.Assets
         /// Call <see cref="PackageSession.Save" /> instead.</remarks>
         public void Save(ILogger log)
         {
-            if (log == null) throw new ArgumentNullException("log");
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             if (FullPath == null)
             {
@@ -652,7 +596,7 @@ namespace SiliconStudio.Assets
         /// </exception>
         public static Guid GetPackageIdFromFile(string filePath)
         {
-            if (filePath == null) throw new ArgumentNullException("filePath");
+            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
             var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
             bool hasPackage = false;
@@ -673,7 +617,7 @@ namespace SiliconStudio.Assets
                     }
                 }
             }
-            throw new IOException(string.Format("File {0} doesn't appear to be a valid package", filePath));
+            throw new IOException($"File {filePath} doesn't appear to be a valid package");
         }
 
         /// <summary>
@@ -711,8 +655,8 @@ namespace SiliconStudio.Assets
         /// </exception>
         internal static Package LoadRaw(ILogger log, string filePath)
         {
-            if (log == null) throw new ArgumentNullException("log");
-            if (filePath == null) throw new ArgumentNullException("filePath");
+            if (log == null) throw new ArgumentNullException(nameof(log));
+            if (filePath == null) throw new ArgumentNullException(nameof(filePath));
 
             filePath = FileUtility.GetAbsolutePath(filePath);
 
@@ -882,7 +826,7 @@ namespace SiliconStudio.Assets
         /// Package RootDirectory [{0}] does not exist.ToFormat(RootDirectory)</exception>
         public void LoadTemporaryAssets(ILogger log, IList<PackageLoadingAssetFile> assetFiles = null, CancellationToken? cancelToken = null)
         {
-            if (log == null) throw new ArgumentNullException("log");
+            if (log == null) throw new ArgumentNullException(nameof(log));
 
             // If FullPath is null, then we can't load assets from disk, just return
             if (FullPath == null)
@@ -898,7 +842,7 @@ namespace SiliconStudio.Assets
             if (assetFiles == null)
                 assetFiles = ListAssetFiles(log, this, cancelToken);
 
-            var progressMessage = String.Format("Loading Assets from Package [{0}]", FullPath.GetFileNameWithExtension());
+            var progressMessage = $"Loading Assets from Package [{FullPath.GetFileNameWithExtension()}]";
 
             // Display this message at least once if the logger does not log progress (And it shouldn't in this case)
             var loggerResult = log as LoggerResult;
@@ -916,10 +860,7 @@ namespace SiliconStudio.Assets
             {
                 var assetFile = assetFiles[i];
                 // Update the loading progress
-                if (loggerResult != null)
-                {
-                    loggerResult.Progress(progressMessage, i, assetFiles.Count);
-                }
+                loggerResult?.Progress(progressMessage, i, assetFiles.Count);
 
                 var task = cancelToken.HasValue ?
                     System.Threading.Tasks.Task.Factory.StartNew(() => LoadAsset(context, assetFile, loggerResult), cancelToken.Value) : 
@@ -1078,8 +1019,8 @@ namespace SiliconStudio.Assets
 
         private void LoadAssemblyReferencesForPackage(ILogger log, PackageLoadParameters loadParameters)
         {
-            if (log == null) throw new ArgumentNullException("log");
-            if (loadParameters == null) throw new ArgumentNullException("loadParameters");
+            if (log == null) throw new ArgumentNullException(nameof(log));
+            if (loadParameters == null) throw new ArgumentNullException(nameof(loadParameters));
             var assemblyContainer = loadParameters.AssemblyContainer ?? AssemblyContainer.Default;
             foreach (var profile in Profiles)
             {
@@ -1087,7 +1028,7 @@ namespace SiliconStudio.Assets
                 {
                     // Check if already loaded
                     // TODO: More advanced cases: unload removed references, etc...
-                    if (loadedAssemblies.Any(x => x.ProjectReference == projectReference))
+                    if (LoadedAssemblies.Any(x => x.ProjectReference == projectReference))
                         continue;
 
                     string assemblyPath = null;
@@ -1104,7 +1045,7 @@ namespace SiliconStudio.Assets
                         }
 
                         var loadedAssembly = new PackageLoadedAssembly(projectReference, assemblyPath);
-                        loadedAssemblies.Add(loadedAssembly);
+                        LoadedAssemblies.Add(loadedAssembly);
 
                         if (!File.Exists(assemblyPath) || forwardingLogger.HasErrors)
                         {
@@ -1284,15 +1225,8 @@ namespace SiliconStudio.Assets
             var project = VSProjectHelper.LoadProject(realFullPath);
             var dir = new UDirectory(realFullPath.GetFullDirectory());
 
-            var nameSpaceProp = project.AllEvaluatedProperties.Where(x => x.Name == "RootNamespace").FirstOrDefault();
-            if (nameSpaceProp != null)
-            {
-                nameSpace = nameSpaceProp.EvaluatedValue;
-            }
-            else
-            {
-                nameSpace = string.Empty;
-            }
+            var nameSpaceProp = project.AllEvaluatedProperties.FirstOrDefault(x => x.Name == "RootNamespace");
+            nameSpace = nameSpaceProp?.EvaluatedValue ?? string.Empty;
 
             var result = project.Items.Where(x => (x.ItemType == "Compile" || x.ItemType == "None") && string.IsNullOrEmpty(x.GetMetadataValue("AutoGen")))
                 .Select(x => new UFile(x.EvaluatedInclude)).Where(x => AssetRegistry.IsProjectSourceCodeAssetFileExtension(x.GetFileExtension()))
