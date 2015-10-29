@@ -14,7 +14,6 @@ namespace SiliconStudio.Core
     {
         private static int globalCounterId;
         private string name;
-        private string fullName;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ComponentBase"/> class.
@@ -59,8 +58,6 @@ namespace SiliconStudio.Core
 
                 name = value;
 
-                fullName = $"{GetType().Name}: {name}";
-
                 OnNameChanged();
             }
         }
@@ -85,7 +82,7 @@ namespace SiliconStudio.Core
 
         public override string ToString()
         {
-            return fullName;
+            return $"{GetType().Name}: {name}";
         }
 
         protected override void OnAddReference()

@@ -69,7 +69,8 @@ namespace SiliconStudio.Xenko.Physics
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
         private static void RigidBodySetWorldTransform(PhysicsElementBase element, ref Matrix physicsTransform)
         {
-            element.Data.PhysicsComponent.Simulation.SimulationProfiler.ProfilingState.Mark();
+            element.Data.PhysicsComponent.Simulation.SimulationProfiler.Mark();
+            element.Data.PhysicsComponent.Simulation.UpdatedRigidbodies++;
 
             if (element.BoneIndex == -1)
             {
@@ -93,7 +94,8 @@ namespace SiliconStudio.Xenko.Physics
         //and Kinematic rigidbodies, called every simulation tick (if body not sleeping) to let the physics engine know where the kinematic body is.
         private static void RigidBodyGetWorldTransform(PhysicsElementBase element, out Matrix physicsTransform)
         {
-            element.Data.PhysicsComponent.Simulation.SimulationProfiler.ProfilingState.Mark();
+            element.Data.PhysicsComponent.Simulation.SimulationProfiler.Mark();
+            element.Data.PhysicsComponent.Simulation.UpdatedRigidbodies++;
 
             if (element.BoneIndex == -1)
             {
@@ -441,19 +443,6 @@ namespace SiliconStudio.Xenko.Physics
             if (gfxDevice != null)
             {
                 debugShapeRendering = new PhysicsDebugShapeRendering(gfxDevice);
-            }
-
-            var profiler = Services.GetSafeServiceAs<GameProfilingSystem>();
-            if (profiler != null)
-            {
-                profiler.AddProfiler(new GameProfiler
-                {
-                    ProfilingState = charactersProfilingState,
-                    ValueDescs = new[] { ProfilerValueDesc.Int },
-                    FormatString = "Number of characters: {0}",
-                    LogAt = ProfilingMessageType.End
-                });
-                simulation.AddProfilers(profiler);
             }
         }
 
