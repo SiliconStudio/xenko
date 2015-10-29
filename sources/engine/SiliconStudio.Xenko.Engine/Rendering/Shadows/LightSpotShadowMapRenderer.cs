@@ -83,7 +83,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
             // Update the shadow camera
             shadowCamera.ViewMatrix = Matrix.LookAtLH(position, target, upDirection); // View;;
-            shadowCamera.ProjectionMatrix = Matrix.OrthoOffCenterLH(-orthoSize, orthoSize, -orthoSize, orthoSize, 0.0f, spotLight.Range); // Projection
+            // TODO: Calculation of near and far is hardcoded/approximated. We should find a better way to calculate it.
+            shadowCamera.ProjectionMatrix = Matrix.PerspectiveFovLH(spotLight.AngleOuterInRadians, 1.0f, 0.01f, spotLight.Range * 2.0f); // Perspective Projection for spotlights
             shadowCamera.Update();
 
             var shadowMapRectangle = lightShadowMap.GetRectangle(0);

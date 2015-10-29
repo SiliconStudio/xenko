@@ -76,6 +76,7 @@ namespace SiliconStudio.Xenko.Graphics
             deviceRoot.HasRenderTargetFloat = SupportedExtensions.Contains("GL_EXT_color_buffer_float");
             deviceRoot.HasRenderTargetHalf = SupportedExtensions.Contains("GL_EXT_color_buffer_half_float");
             deviceRoot.HasVAO = isOpenGLES3 || SupportedExtensions.Contains("GL_OES_vertex_array_object");
+            deviceRoot.HasTextureRG = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_texture_rg");
 
             HasSRgb = isOpenGLES3 || SupportedExtensions.Contains("GL_EXT_sRGB");
 

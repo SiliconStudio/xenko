@@ -611,7 +611,7 @@ public:
 	}
 
 	// return a boolean indicating whether the built material is transparent or not
-	MaterialAsset^ ProcessMeshMaterialAsset(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping)
+	MaterialAsset^ ProcessMeshMaterialAsset(FbxSurfaceMaterial* lMaterial, std::map<std::string, size_t>& uvElementMapping)
 	{
 		auto uvEltMappingOverride = uvElementMapping;
 		auto textureMap = gcnew Dictionary<IntPtr, ComputeTextureColor^>();
@@ -934,7 +934,7 @@ public:
 		return false;
 	}
 
-	IComputeNode^ GenerateSurfaceTextureTree(FbxSurfaceMaterial* lMaterial, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, ComputeTextureColor^>^ textureMap,
+	IComputeNode^ GenerateSurfaceTextureTree(FbxSurfaceMaterial* lMaterial, std::map<std::string, size_t>& uvElementMapping, Dictionary<IntPtr, ComputeTextureColor^>^ textureMap,
 												std::map<std::string, int>& textureNameCount, char const* surfaceMaterial, char const* surfaceMaterialFactor,
 												SiliconStudio::Xenko::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
@@ -1135,7 +1135,7 @@ public:
 		return fileNameToUse;
 	}
 
-	ComputeTextureColor^ GenerateMaterialTextureNodeFBX(FbxFileTexture* lFileTexture, std::map<std::string, int>& uvElementMapping, Dictionary<IntPtr, ComputeTextureColor^>^ textureMap, std::map<std::string, int>& textureNameCount, SiliconStudio::Xenko::Assets::Materials::MaterialAsset^ finalMaterial)
+	ComputeTextureColor^ GenerateMaterialTextureNodeFBX(FbxFileTexture* lFileTexture, std::map<std::string, size_t>& uvElementMapping, Dictionary<IntPtr, ComputeTextureColor^>^ textureMap, std::map<std::string, int>& textureNameCount, SiliconStudio::Xenko::Assets::Materials::MaterialAsset^ finalMaterial)
 	{
 		auto texScale = lFileTexture->GetUVScaling();		
 		auto texturePath = FindFilePath(lFileTexture);
@@ -1510,14 +1510,14 @@ private:
 			auto materialName = std::string(lMaterial->GetName());
 			auto materialPart = std::string();
 
-			int materialNameSplitPosition = materialName.find('#');
+			size_t materialNameSplitPosition = materialName.find('#');
 			if (materialNameSplitPosition != std::string::npos)
 			{
 				materialPart = materialName.substr(materialNameSplitPosition + 1);
 				materialName = materialName.substr(0, materialNameSplitPosition);
 			}
 
-			materialNameSplitPosition = materialNameSplitPosition = materialName.find("__");
+			materialNameSplitPosition = materialName.find("__");
 			if (materialNameSplitPosition != std::string::npos)
 			{
 				materialPart = materialName.substr(materialNameSplitPosition + 2);
@@ -1618,7 +1618,7 @@ private:
 		}
 	}
 
-	MaterialInstantiation^ GetOrCreateMaterial(FbxSurfaceMaterial* lMaterial, List<String^>^ uvNames, List<MaterialInstantiation^>^ instances, std::map<std::string, int>& uvElements, std::map<FbxSurfaceMaterial*, std::string>& materialNames)
+	MaterialInstantiation^ GetOrCreateMaterial(FbxSurfaceMaterial* lMaterial, List<String^>^ uvNames, List<MaterialInstantiation^>^ instances, std::map<std::string, size_t>& uvElements, std::map<FbxSurfaceMaterial*, std::string>& materialNames)
 	{
 		for (int i = 0; i < instances->Count; ++i)
 		{
@@ -1720,7 +1720,7 @@ private:
 				if (lMaterialElement != NULL)
 				{
 					FbxSurfaceMaterial* lMaterial = pNode->GetMaterial(i);
-					std::map<std::string, int> uvElements;
+					std::map<std::string, size_t> uvElements;
 					auto uvNames = gcnew List<String^>();
 					for (int j = 0; j < pMesh->GetElementUVCount(); ++j)
 					{
@@ -1762,7 +1762,7 @@ private:
 		auto materials = gcnew Dictionary<String^, MaterialAsset^>();
 		for (int i = 0;  i < scene->GetMaterialCount(); i++)
 		{
-			std::map<std::string, int> dict;
+			std::map<std::string, size_t> dict;
 			auto lMaterial = scene->GetMaterial(i);
 			auto materialName = materialNames[lMaterial];
 			materials->Add(gcnew String(materialName.c_str()), ProcessMeshMaterialAsset(lMaterial, dict));

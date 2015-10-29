@@ -66,7 +66,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         void IDiffResolver.BeforeDiff(Asset baseAsset, Asset asset1, Asset asset2)
         {
-            Guid newId;
             var baseEntityAsset = (EntityAsset)baseAsset;
             var entityAsset1 = (EntityAsset)asset1;
             var entityAsset2 = (EntityAsset)asset2;

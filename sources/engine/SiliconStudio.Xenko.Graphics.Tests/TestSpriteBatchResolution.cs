@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Input;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestSpriteBatchResolution : TestGameBase
+    public class TestSpriteBatchResolution : GraphicTestGameBase
     {
         private SpriteFont staticFont;
         private SpriteFont dynamicFont;

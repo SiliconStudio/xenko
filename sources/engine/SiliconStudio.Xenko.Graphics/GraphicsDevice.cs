@@ -52,6 +52,11 @@ namespace SiliconStudio.Xenko.Graphics
         private ColorSpace colorSpace;
 
         /// <summary>
+        /// Gets the type of the platform that graphics device is using.
+        /// </summary>
+        public static GraphicsPlatform Platform => GraphicPlatform;
+
+        /// <summary>
         ///     Initializes a new instance of the <see cref="GraphicsDevice" /> class.
         /// </summary>
         /// <param name="adapter">The graphics adapter.</param>

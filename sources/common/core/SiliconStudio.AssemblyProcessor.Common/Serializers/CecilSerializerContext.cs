@@ -488,7 +488,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
                                 {
                                     // Import type so that it becomes local to the assembly
                                     // (otherwise SerializableTypeInfo.Local will be false and it won't be instantiated)
-                                    var importedType = Assembly.MainModule.Import(dependentType);
+                                    var importedType = Assembly.MainModule.ImportReference(dependentType);
                                     if (GenerateSerializer(importedType) == null)
                                     {
                                         throw new InvalidOperationException(string.Format("Could not find serializer for generic dependent type {0} when processing {1}", dependentType, dataType));

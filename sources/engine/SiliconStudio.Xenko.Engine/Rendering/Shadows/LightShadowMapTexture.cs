@@ -145,12 +145,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
         }
 
+        // Even if C# things Rectangle1, Rectangle2 and Rectangle3 are not used,
+        // they are indirectly in `GetRectangle' and `SetRectangle' through pointer
+        // arithmetics.
         private Rectangle Rectangle0;
-
         private Rectangle Rectangle1;
-
         private Rectangle Rectangle2;
-
         private Rectangle Rectangle3;
+
     }
 }

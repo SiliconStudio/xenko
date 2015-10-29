@@ -200,8 +200,8 @@
     <!-- Rewrite dependencies -->
     <ItemGroup>
       <CustomAdditionalCompileInputs Include="$(IntermediateOutputPath)XenkoGraphicsPlatform.cache" />
-      <Reference Condition="$([System.String]::new('%(Reference.HintPath)').Contains('$(SiliconStudioPlatformFullNameOriginal)'))">
-        <HintPath>$([System.String]::new('%(Reference.HintPath)').Replace('$(SiliconStudioPlatformFullNameOriginal)','$(SiliconStudioPlatformFullName)'))</HintPath>
+      <Reference Condition="$([System.String]::Copy('%(Reference.HintPath)').Contains('$(SiliconStudioPlatformFullNameOriginal)'))">
+        <HintPath>$([System.String]::Copy('%(Reference.HintPath)').Replace('$(SiliconStudioPlatformFullNameOriginal)','$(SiliconStudioPlatformFullName)'))</HintPath>
       </Reference>
     </ItemGroup>
   </Target>

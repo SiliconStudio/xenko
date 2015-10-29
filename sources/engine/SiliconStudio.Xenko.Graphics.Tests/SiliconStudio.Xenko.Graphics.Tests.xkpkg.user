@@ -1,27 +1,29 @@
 !SettingsFile
 Settings:
-    Package/Game/Effect/EffectCompilation: Local
-    Package/Scene/ActiveStream: Color Base
-    Package/Scene/Camera/FarClipPlane: 1000.0
-    Package/Scene/Camera/NearClipPlane: 0.1
-    Package/Scene/Camera/OrthographicSize: 10.0
-    Package/Scene/Camera/Projection: Perspective
-    Package/Scene/Camera/VerticalFieldOfView: 45.0
-    Package/Scene/CameraPreviewVisible: true
-    Package/Scene/CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
-    Package/Scene/CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
-    Package/Scene/ComponentGizmoSize: 1.0
-    Package/Scene/FixedSizeGizmos: false
-    Package/Scene/GridVisible: true
-    Package/Scene/HiddenGizmos:
-        - Physics
-        - Transform
-    Package/Scene/RenderMode: SingleStream
-    Package/Scene/RotationSnapActive: false
-    Package/Scene/RotationSnapValue: 22.5
-    Package/Scene/ScaleSnapActive: false
-    Package/Scene/ScaleSnapValue: 1.1
-    Package/Scene/SelectionMaskVisible: true
-    Package/Scene/TransformationGizmoSize: 1.0
-    Package/Scene/TranslationSnapActive: false
-    Package/Scene/TranslationSnapValue: 1.0
+    Package/SceneSettings:
+        b47e4609-0125-41bd-a26e-0fdf9184327e:
+            ActiveStream: Color Base
+            CamAspectRatio: 1.77777779
+            CamFarClipPlane: 1000.0
+            CamNearClipPlane: 0.1
+            CamOrthographicSize: 10.0
+            CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
+            CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
+            CamProjection: Perspective
+            CamVerticalFieldOfView: 45.0
+            CameraPreviewVisible: true
+            ComponentGizmoSize: 1.0
+            FixedSizeGizmos: false
+            GridVisible: true
+            HiddenGizmos:
+                - Physics
+                - Transform
+            RenderMode: SingleStream
+            RotationSnapActive: false
+            RotationSnapValue: 22.5
+            ScaleSnapActive: false
+            ScaleSnapValue: 1.1
+            SelectionMaskVisible: true
+            TransformationGizmoSize: 1.0
+            TranslationSnapActive: false
+            TranslationSnapValue: 1.0

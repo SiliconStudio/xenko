@@ -3,7 +3,7 @@
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             await base.LoadContent();
 
             var background = new Entity { new BackgroundComponent { Texture = Asset.Load<Texture>("XenkoBackground") } };
-            Scene.AddChild(background);
+            Scene.Entities.Add(background);
 
             button1 = new Button { Content = new TextBlock { Text = "text block button 1", Font = Asset.Load<SpriteFont>("CourierNew12"), SynchronousCharacterGeneration = true } };
             button1.SetCanvasRelativePosition(new Vector3(0.025f, 0.05f, 0f));
@@ -268,6 +268,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         [Test]
         public void RunMouseOversTest()
         {
+            RequirePlatform(PlatformType.Windows);
+
             RunGameTest(new MouseOverTest());
         }
 

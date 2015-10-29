@@ -683,7 +683,7 @@ private:
 		return animationClip;
 	}
 
-	ComputeTextureColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
+	ComputeTextureColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, size_t textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
 	{
 		// TODO: compare with FBX importer - see if there could be some conflict between texture names
 		auto textureValue = TextureLayerGenerator::GenerateMaterialTextureNode(vfsOutputPath, sourceTextureFile, textureUVSetIndex, textureUVscaling, wrapTextureU, wrapTextureV, Logger);
@@ -1067,7 +1067,7 @@ private:
 
 			auto itemPart = std::string();
 
-			int itemNameSplitPosition = itemName.find('#');
+			size_t itemNameSplitPosition = itemName.find('#');
 			if (itemNameSplitPosition != std::string::npos)
 			{
 				itemPart = itemName.substr(itemNameSplitPosition + 1);
@@ -1171,9 +1171,9 @@ private:
 		GetNodeNames(scene->mRootNode, baseNames, orderedNodes);
 
 		// Need to create the array of the nodes
-		int nodeCount = orderedNodes.size();
+		size_t nodeCount = orderedNodes.size();
 		aiNode** nodeArray = new aiNode*[nodeCount];
-		for (int i = 0; i < nodeCount; ++i)
+		for (size_t i = 0; i < nodeCount; ++i)
 			nodeArray[i] = orderedNodes[i];
 
 		GenerateUniqueNames(nodeNames, baseNames, nodeArray);

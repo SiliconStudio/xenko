@@ -18,7 +18,7 @@ namespace SiliconStudio.Assets.CompilerApp
 
                 return returnValue;
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 // Console.WriteLine("Unexpected exception in AssetCompiler: {0}", ex);
                 return 1;

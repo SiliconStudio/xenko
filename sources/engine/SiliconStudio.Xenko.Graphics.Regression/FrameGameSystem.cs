@@ -41,12 +41,12 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         #region Public properties
 
-        private bool allTestsCompleted = false;
-
         /// <summary>
         /// Flag stating that all the tests have been rendered.
         /// </summary>
         public bool AllTestsCompleted => frameCount > lastFrame;
+
+        public string TestName;
 
         /// <summary>
         /// Flag stating that a screenshot should be taken.
@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 {
                     if (method.Action != null)
                     {
-                        TestGameBase.TestGameLogger.Debug(@"Executing method in Draw/Update for frame " + frameCount + @": " + method.Action.GetMethodInfo().Name);
+                        GraphicsTestBase.TestGameLogger.Debug(@"Executing method in Draw/Update for frame " + frameCount + @": " + method.Action.GetMethodInfo().Name);
                         method.Action.Invoke();
                     }
                     methodsToRemove.Push(i);

@@ -18,7 +18,6 @@ using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
-    [ReferenceToEffects]
     public class TesselationTest : EngineTestBase
     {
         private List<Entity> entities = new List<Entity>();
@@ -172,14 +171,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             if (currentEntity != null)
             {
-                Scene.RemoveChild(currentEntity);
+                Scene.Entities.Remove(currentEntity);
                 currentEntity = null;
             }
 
             currentModelIndex = (currentModelIndex + offset + entities.Count) % entities.Count;
             currentEntity = entities[currentModelIndex];
 
-            Scene.AddChild(currentEntity);
+            Scene.Entities.Add(currentEntity);
 
             ChangeMaterial(0);
         }
@@ -208,8 +207,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void RunTestGame()
         {
-            if (Platform.Type == PlatformType.Windows) // this test requires profile 11.0
-                RunGameTest(new TesselationTest());
+            IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
+
+            RunGameTest(new TesselationTest());
         }
 
         static public void Main()

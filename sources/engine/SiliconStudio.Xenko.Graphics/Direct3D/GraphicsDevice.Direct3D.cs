@@ -23,6 +23,7 @@ namespace SiliconStudio.Xenko.Graphics
         private const int SimultaneousRenderTargetCount = SharpDX.Direct3D11.OutputMergerStage.SimultaneousRenderTargetCount;
         private const int StageCount = 6;
         private const int UnorderedAcccesViewCount = SharpDX.Direct3D11.ComputeShaderStage.UnorderedAccessViewSlotCount;
+        private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D11;
 
         private readonly Buffer[] constantBuffers = new Buffer[StageCount*ConstantBufferCount];
         private readonly SharpDX.Direct3D11.RenderTargetView[] currentRenderTargetViews = new SharpDX.Direct3D11.RenderTargetView[SimultaneousRenderTargetCount];
@@ -36,7 +37,6 @@ namespace SiliconStudio.Xenko.Graphics
         private SharpDX.Direct3D11.InputAssemblerStage inputAssembler;
         private SharpDX.Direct3D11.OutputMergerStage outputMerger;
 
-        private int actualRenderTargetViewCount;
         private SharpDX.Direct3D11.DeviceCreationFlags creationFlags;
         private EffectInputSignature currentEffectInputSignature;
         private SharpDX.Direct3D11.InputLayout currentInputLayout;
@@ -594,7 +594,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             for (int i = 0; i < currentRenderTargetViews.Length; i++)
                 currentRenderTargetViews[i] = null;
-            actualRenderTargetViewCount = 0;
             outputMerger.ResetTargets();
         }
 

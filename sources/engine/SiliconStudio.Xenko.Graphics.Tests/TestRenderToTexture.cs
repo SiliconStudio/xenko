@@ -13,7 +13,7 @@ using SiliconStudio.Xenko.Graphics.Internals;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    class TestRenderToTexture : TestGameBase
+    class TestRenderToTexture : GraphicTestGameBase
     {
         private Texture offlineTarget0;
         private Texture offlineTarget1;

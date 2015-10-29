@@ -797,7 +797,7 @@ namespace SiliconStudio.Xenko.Graphics
             // If depth == 1 (Texture, Texture or TextureCube), then depthStride is not used
             var boxDepthStride = this.Depth == 1 ? box.SlicePitch : textureDepthStride;
 
-            var isFlippedTexture = IsFlippedTexture();
+            var isFlippedTexture = IsFlipped();
 
             // The fast way: If same stride, we can directly copy the whole texture in one shot
             if (box.RowPitch == rowStride && boxDepthStride == textureDepthStride && !isFlippedTexture)
@@ -1087,6 +1087,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public Image GetDataAsImage()
         {
+            if (Usage == GraphicsResourceUsage.Staging)
+                return GetDataAsImage(this); // Directly if this is a staging resource
+
             using (var stagingTexture = ToStaging())
                 return GetDataAsImage(stagingTexture);
         }
@@ -1151,7 +1154,7 @@ namespace SiliconStudio.Xenko.Graphics
             return requestedLevel  == 0 ? maxMipMap : Math.Min(requestedLevel, maxMipMap);
         }
 
-        protected static DataBox GetDataBox<T>(PixelFormat format, int width, int height, int depth, T[] textureData, IntPtr fixedPointer) where T : struct
+        private static DataBox GetDataBox<T>(PixelFormat format, int width, int height, int depth, T[] textureData, IntPtr fixedPointer) where T : struct
         {
             // Check that the textureData size is correct
             if (textureData == null) throw new ArgumentNullException("textureData");

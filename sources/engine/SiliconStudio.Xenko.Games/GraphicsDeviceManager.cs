@@ -570,9 +570,17 @@ namespace SiliconStudio.Xenko.Games
                 {
                     game.Services.RemoveService(typeof(IGraphicsDeviceService));
                 }
+                if (game.Services.GetService(typeof(IGraphicsDeviceManager)) == this)
+                {
+                    game.Services.RemoveService(typeof(IGraphicsDeviceManager));
+                }
 
-                game.Window.ClientSizeChanged -= Window_ClientSizeChanged;
-                game.Window.OrientationChanged -= Window_OrientationChanged;
+                game.WindowCreated -= GameOnWindowCreated;
+                if(game.Window != null)
+                {
+                    game.Window.ClientSizeChanged -= Window_ClientSizeChanged;
+                    game.Window.OrientationChanged -= Window_OrientationChanged;
+                }
             }
 
             if (GraphicsDevice != null)
@@ -792,7 +800,7 @@ namespace SiliconStudio.Xenko.Games
                     });
         }
 
-        private bool IsPreferredProfileAvailable(GraphicsProfile[] preferredProfiles, out GraphicsProfile availableProfile)
+        protected virtual bool IsPreferredProfileAvailable(GraphicsProfile[] preferredProfiles, out GraphicsProfile availableProfile)
         {
             availableProfile = GraphicsProfile.Level_9_1;
 

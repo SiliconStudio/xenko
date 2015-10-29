@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Games;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestSprite : TestGameBase
+    public class TestSprite : GraphicTestGameBase
     {
         private SpriteSheet spriteUv;
         private SpriteSheet spriteSphere;

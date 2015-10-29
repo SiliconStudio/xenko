@@ -383,8 +383,8 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
             }
         }
 
-        private bool soundController0WentToStopState;
-        private bool soundController2WentToStopState;
+//        private bool soundController0WentToStopState;
+//        private bool soundController2WentToStopState;
 
         private void TestEmitterUpdateValuesAtfUpdate(Game game, int loopCount, int loopCountSum)
         {

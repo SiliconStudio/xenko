@@ -104,7 +104,7 @@ public:
 		return currentComposition;
 	}
 
-	static ComputeTextureColor^ GenerateMaterialTextureNode(String^ vfsOutputPath, String^ sourceTextureFile, int textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, Logger^ logger)
+	static ComputeTextureColor^ GenerateMaterialTextureNode(String^ vfsOutputPath, String^ sourceTextureFile, size_t textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, Logger^ logger)
 	{
 		auto textureFileName = Path::GetFileNameWithoutExtension(sourceTextureFile);
 		auto url = vfsOutputPath + "_" + textureFileName;

@@ -1,6 +1,6 @@
 !SpriteSheet
 Id: 90569fac-e17d-41a0-9fc0-e7521aa05300
-SerializedVersion: 2
+SerializedVersion: 3
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
@@ -14,13 +14,13 @@ Sprites:
         Name: Background
         TextureRegion: {X: 0, Y: 0, Width: 64, Height: 32}
         Center: {X: 0.0, Y: 0.0}
-        Borders: {X: 22.0, Y: 12.0, Z: 0.0, W: 0.0}
+        Borders: {X: 22.0, Y: 0.0, Z: 12.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: Foreground
         TextureRegion: {X: 7, Y: 35, Width: 45, Height: 26}
         Center: {X: 0.0, Y: 0.0}
-        Borders: {X: 14.0, Y: 7.0, Z: 0.0, W: 0.0}
+        Borders: {X: 14.0, Y: 0.0, Z: 7.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: Thumb
@@ -45,14 +45,14 @@ Sprites:
         TextureRegion: {X: 96, Y: 0, Width: 32, Height: 64}
         Orientation: Rotated90
         Center: {X: 0.0, Y: 0.0}
-        Borders: {X: 0.0, Y: 0.0, Z: 22.0, W: 12.0}
+        Borders: {X: 0.0, Y: 22.0, Z: 0.0, W: 12.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: ForegroundRotated
         TextureRegion: {X: 67, Y: 7, Width: 26, Height: 45}
         Orientation: Rotated90
         Center: {X: 0.0, Y: 0.0}
-        Borders: {X: 0.0, Y: 0.0, Z: 14.0, W: 7.0}
+        Borders: {X: 0.0, Y: 14.0, Z: 0.0, W: 7.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
     -   Source: ../../../data/tests/DebugSlider.png
         Name: ThumbRotated
