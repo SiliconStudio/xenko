@@ -37,7 +37,6 @@ namespace SiliconStudio.Xenko.Graphics
         private SharpDX.Direct3D11.InputAssemblerStage inputAssembler;
         private SharpDX.Direct3D11.OutputMergerStage outputMerger;
 
-        private int actualRenderTargetViewCount;
         private SharpDX.Direct3D11.DeviceCreationFlags creationFlags;
         private EffectInputSignature currentEffectInputSignature;
         private SharpDX.Direct3D11.InputLayout currentInputLayout;
@@ -595,7 +594,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             for (int i = 0; i < currentRenderTargetViews.Length; i++)
                 currentRenderTargetViews[i] = null;
-            actualRenderTargetViewCount = 0;
             outputMerger.ResetTargets();
         }
 

@@ -36,7 +36,6 @@ namespace SiliconStudio.Xenko.Rendering
         internal Action<EffectCompileRequest> EffectUsed;
 
         private readonly HashSet<string> recentlyModifiedShaders = new HashSet<string>();
-        private bool clearNextFrame = false;
 
         public IEffectCompiler Compiler { get { return compiler; } set { compiler = (EffectCompilerBase)value; } }
 

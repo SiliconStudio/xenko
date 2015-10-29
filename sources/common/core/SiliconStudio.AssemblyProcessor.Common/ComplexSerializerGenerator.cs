@@ -35,10 +35,6 @@ namespace SiliconStudio.AssemblyProcessor
 
             var syntaxTree = CSharpSyntaxTree.ParseText(serializerGeneratedCode);
 
-            // Add reference from source assembly
-            // Use a hash set because it seems including twice mscorlib (2.0 and 4.0) seems to be a problem.
-            var skipWindows = "Windows, Version=255.255.255.255, Culture=neutral, PublicKeyToken=null";
-
             var compilerOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary, allowUnsafe: true, assemblyIdentityComparer: DesktopAssemblyIdentityComparer.Default);
 
             // Sign the serialization assembly the same way the source was signed
@@ -174,20 +170,6 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             return merge.TargetAssemblyDefinition;
-        }
-
-        private static void TryAddReference(BaseAssemblyResolver assemblyResolver, HashSet<string> assemblyLocations, List<MetadataReference> metadataReferences, string referenceName)
-        {
-            if (assemblyLocations.Add(referenceName))
-            {
-                try
-                {
-                    metadataReferences.Add(CreateMetadataReference(assemblyResolver, assemblyResolver.Resolve(referenceName)));
-                }
-                catch (AssemblyResolutionException)
-                {
-                }
-            }
         }
 
         private static MetadataReference CreateMetadataReference(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly)

@@ -41,8 +41,6 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         #region Public properties
 
-        private bool allTestsCompleted = false;
-
         /// <summary>
         /// Flag stating that all the tests have been rendered.
         /// </summary>

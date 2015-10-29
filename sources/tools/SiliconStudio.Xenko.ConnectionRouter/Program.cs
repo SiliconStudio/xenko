@@ -15,8 +15,6 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 {
     partial class Program
     {
-        private static string IpOverUsbXenkoName = "XenkoRouterServer";
-
         private static bool ConsoleVisible = false;
 
         static int Main(string[] args)
