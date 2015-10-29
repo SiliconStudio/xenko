@@ -18,7 +18,7 @@ using SiliconStudio.Xenko.Games;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestScene : TestGameBase
+    public class TestScene : GraphicTestGameBase
     {
         private Entity cubeEntity;
 

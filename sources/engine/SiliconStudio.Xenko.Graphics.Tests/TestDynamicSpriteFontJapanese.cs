@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     [Description("Check Dynamic Font Japanese characters")]
-    public class TestDynamicSpriteFontJapanese : TestGameBase
+    public class TestDynamicSpriteFontJapanese : GraphicTestGameBase
     {
         private SpriteFont msMincho10;
         private SpriteFont arialMS;

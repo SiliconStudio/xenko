@@ -1,0 +1,16 @@
+!Texture
+Id: 7e5ae8dc-6417-40b8-a3d6-4f019fd7cc28
+SerializedVersion: 1
+Tags: []
+Source: ../../../data/tests/AtriumNight.dds
+ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
+Format: AsIs
+~Base:
+    Location: --import--
+    Asset: !Texture
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: 1
+        Tags: []
+        Source: 
+        ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
+        ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

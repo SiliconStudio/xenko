@@ -41,7 +41,7 @@ namespace SiliconStudio.Assets.Compiler
             {
                 inputStream.CopyTo(outputStream);
 
-                var objectURL = new ObjectUrl(UrlType.Internal, Location);
+                var objectURL = new ObjectUrl(UrlType.ContentLink, Location);
 
                 if (DisableCompression)
                     commandContext.AddTag(objectURL, DisableCompressionSymbol);
@@ -64,7 +64,7 @@ namespace SiliconStudio.Assets.Compiler
             return Task.FromResult(ResultStatus.Successful);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles()
+        protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
         {
             yield return new ObjectUrl(UrlType.File, SourcePath);
         }

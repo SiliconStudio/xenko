@@ -14,14 +14,19 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
         public PropertyChangedViewModelActionItem(string name, object container, IEnumerable<IDirtiableViewModel> dirtiables, string propertyName, object previousValue)
             : base(name, dirtiables)
         {
-            if (propertyName == null) throw new ArgumentNullException("propertyName");
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
             innerActionItem = new PropertyChangedActionItem(propertyName, container, previousValue);
         }
 
         /// <summary>
+        /// Gets the type of the property's container.
+        /// </summary>
+        public Type ContainerType => innerActionItem.ContainerType;
+
+        /// <summary>
         /// Gets the name of the property affected by the change.
         /// </summary>
-        public string PropertyName { get { return innerActionItem.PropertyName; } }
+        public string PropertyName => innerActionItem.PropertyName;
 
         /// <inheritdoc/>
         protected override void FreezeMembers()

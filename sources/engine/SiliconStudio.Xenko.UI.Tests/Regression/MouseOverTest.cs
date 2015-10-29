@@ -3,7 +3,7 @@
 using System.Threading.Tasks;
 
 using NUnit.Framework;
-
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
@@ -268,6 +268,8 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         [Test]
         public void RunMouseOversTest()
         {
+            RequirePlatform(PlatformType.Windows);
+
             RunGameTest(new MouseOverTest());
         }
 

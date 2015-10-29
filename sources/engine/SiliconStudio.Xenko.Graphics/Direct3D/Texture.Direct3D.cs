@@ -489,7 +489,7 @@ namespace SiliconStudio.Xenko.Graphics
             return sharpDXDataBoxes;
         }
 
-        private bool IsFlippedTexture()
+        private bool IsFlipped()
         {
             return false;
         }

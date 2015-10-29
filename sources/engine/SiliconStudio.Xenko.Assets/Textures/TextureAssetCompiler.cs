@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Textures
             {
             }
 
-            public override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFiles()
+            protected override System.Collections.Generic.IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
                 // TODO dependency not working
                 yield return new ObjectUrl(UrlType.File, AssetParameters.SourcePathFromDisk);

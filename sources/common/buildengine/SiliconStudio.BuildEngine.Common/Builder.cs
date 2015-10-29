@@ -19,6 +19,8 @@ using SiliconStudio.Core.IO;
 using System.Reflection;
 using SiliconStudio.Core.Extensions;
 
+using SiliconStudio.Core.Serialization;
+
 namespace SiliconStudio.BuildEngine
 {
     public class Builder : IDisposable
@@ -249,7 +251,8 @@ namespace SiliconStudio.BuildEngine
                     case UrlType.File:
                         hash = builderContext.InputHashes.ComputeFileHash(filePath);
                         break;
-                    case UrlType.Internal:
+                    case UrlType.ContentLink:
+                    case UrlType.Content:
                         if (!buildTransaction.TryGetValue(filePath, out hash))
                             Logger.Warning("Location " + filePath + " does not exist currently and is required to compute the current command hash. The build cache will not work for this command!");
                         break;
@@ -313,6 +316,9 @@ namespace SiliconStudio.BuildEngine
                 {
                     buildStep.Parent = instigator;
                 }
+
+                // Compute content dependencies before scheduling the build
+                GenerateDependencies(buildStep);
 
                 var executeContext = new ExecuteContext(this, builderContext, buildStep) { Variables = new Dictionary<string, string>(variables) };
                 //buildStep.ExpandStrings(executeContext);
@@ -414,6 +420,10 @@ namespace SiliconStudio.BuildEngine
                                 logType = LogMessageType.Error;
                                 logText = "BuildStep {0} failed.".ToFormat(buildStep.ToString());
                                 break;
+                            case ResultStatus.NotTriggeredPrerequisiteFailed:
+                                logType = LogMessageType.Error;
+                                logText = "BuildStep {0} failed of previous failed prerequisites.".ToFormat(buildStep.ToString());
+                                break;
                             case ResultStatus.Cancelled:
                                 logType = LogMessageType.Warning;
                                 logText = "BuildStep {0} cancelled.".ToFormat(buildStep.ToString());
@@ -499,12 +509,12 @@ namespace SiliconStudio.BuildEngine
             {
                 // Filter database Location
                 indexFile.AddValues(
-                    Root.OutputObjects.Where(x => x.Key.Type == UrlType.Internal)
+                    Root.OutputObjects.Where(x => x.Key.Type == UrlType.ContentLink)
                         .Select(x => new KeyValuePair<string, ObjectId>(x.Key.Path, x.Value.ObjectId)));
 
                 foreach (var x in Root.OutputObjects)
                 {
-                    if(x.Key.Type != UrlType.Internal)
+                    if(x.Key.Type != UrlType.ContentLink)
                         continue;
 
                     if (x.Value.Tags.Contains(DoNotCompressTag))
@@ -554,6 +564,7 @@ namespace SiliconStudio.BuildEngine
                         threadMonitor.Start();
                 }
 
+                // Schedule the build
                 ScheduleBuildStep(builderContext, null, Root, InitialVariables);
 
                 // Create threads
@@ -710,6 +721,119 @@ namespace SiliconStudio.BuildEngine
                 VirtualFileSystem.CreateDirectory(accumulatorPath);
 
                 accumulatorPath += "";
+            }
+        }
+
+        /// <summary>
+        /// Collects dependencies between <see cref="BuildStep.OutputLocation"/> and fill the <see cref="BuildStep.PrerequisiteSteps"/> accordingly.
+        /// </summary>
+        /// <param name="rootStep">The root BuildStep</param>
+        private void GenerateDependencies(BuildStep rootStep)
+        {
+            // TODO: Support proper incremental dependecies
+            if (rootStep.ProcessedDependencies)
+                return;
+
+            rootStep.ProcessedDependencies = true;
+
+            var contentBuildSteps = new Dictionary<string, KeyValuePair<BuildStep, HashSet<string>>>();
+            PrepareDependencyGraph(rootStep, contentBuildSteps);
+            ComputeDependencyGraph(contentBuildSteps);
+        }
+
+        /// <summary>
+        /// Collects dependencies between <see cref="BuildStep.OutputLocation"/> BuildStep. See remarks.
+        /// </summary>
+        /// <param name="step">The step to compute the dependencies for</param>
+        /// <param name="contentBuildSteps">A cache of content reference location to buildsteps </param>
+        /// <remarks>
+        /// Each BuildStep inheriting from <see cref="BuildStep.OutputLocation"/> is considered as a top-level dependency step that can have depedencies
+        /// on other top-level dependency. We are collecting all of them here.
+        /// </remarks>
+        private static void PrepareDependencyGraph(BuildStep step, Dictionary<string, KeyValuePair<BuildStep, HashSet<string>>> contentBuildSteps)
+        {
+            step.ProcessedDependencies = true;
+
+            var outputLocation = step.OutputLocation;
+            if (outputLocation != null)
+            {
+                var dependencies = new HashSet<string>();
+                if (!contentBuildSteps.ContainsKey(outputLocation))
+                {
+                    contentBuildSteps.Add(outputLocation, new KeyValuePair<BuildStep, HashSet<string>>(step, dependencies));
+                    CollectContentReferenceDependencies(step, dependencies);
+                }
+
+                // If we have a ContentReference, we don't need to iterate further
+                return;
+            }
+
+            // NOTE: We assume that only EnumerableBuildStep is the base class for sub-steps and that ContentReferencable BuildStep are accessible from them (not through dynamic build step)
+            var enumerateBuildStep = step as EnumerableBuildStep;
+            if (enumerateBuildStep?.Steps != null)
+            {
+                foreach (var subStep in enumerateBuildStep.Steps)
+                {
+                    PrepareDependencyGraph(subStep, contentBuildSteps);
+                }
+            }
+        }
+
+        private void ComputeDependencyGraph(Dictionary<string, KeyValuePair<BuildStep, HashSet<string>>> contentBuildSteps)
+        {
+            foreach(var item in contentBuildSteps)
+            {
+                var step = item.Value.Key;
+                var dependencies = item.Value.Value;
+                foreach (var dependency in dependencies)
+                {
+                    KeyValuePair<BuildStep, HashSet<string>> deps;
+                    if (contentBuildSteps.TryGetValue(dependency, out deps))
+                    {
+                        BuildStep.LinkBuildSteps(deps.Key, step);
+                    }
+                    else
+                    {
+                        // TODO: Either something is wrong, or it's because dependencies added afterwise (incremental) are not supported yet
+                        Logger.Error($"BuildStep [{step}] depends on [{dependency}] but nothing that generates it could be found (or maybe incremental dependencies need to be implemented)");
+                    }
+                }
+            }
+        }
+
+        private static void CollectContentReferenceDependencies(BuildStep step, HashSet<string> locations)
+        {
+            // For each CommandStep for the current build step, collects all dependencies to ContenrReference-BuildStep
+            foreach (var commandStep in CollectCommandSteps(step))
+            {
+                foreach (var inputFile in commandStep.Command.GetInputFiles())
+                {
+                    if (inputFile.Type == UrlType.Content)
+                    {
+                        locations.Add(inputFile.Path);
+                    }
+                }
+            }
+        }
+
+        private static IEnumerable<CommandBuildStep> CollectCommandSteps(BuildStep step)
+        {
+            if (step is CommandBuildStep)
+            {
+                yield return (CommandBuildStep)step;
+            }
+
+            // NOTE: We assume that only EnumerableBuildStep is the base class for sub-steps and that ContentReferencable BuildStep are accessible from them (not through dynamic build step)
+            var enumerateBuildStep = step as EnumerableBuildStep;
+            if (enumerateBuildStep?.Steps != null)
+            {
+                foreach (var subStep in enumerateBuildStep.Steps)
+                {
+                    foreach (var command in CollectCommandSteps(subStep))
+                    {
+                        yield return command;
+                    }
+                }
             }
         }
     }
