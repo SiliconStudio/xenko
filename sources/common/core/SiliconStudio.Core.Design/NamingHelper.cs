@@ -85,7 +85,7 @@ namespace SiliconStudio.Core
             if (existingNameFunc == null)
                 existingNameFunc = x => x.ToString();
 
-            return ComputeNewName(baseName, url => existingItems.Select(existingNameFunc).Any(x => x == url), namePattern);
+            return ComputeNewName(baseName, url => existingItems.Select(existingNameFunc).Any(x => string.Equals(x, url, StringComparison.InvariantCultureIgnoreCase)), namePattern);
         }
 
         /// <summary>

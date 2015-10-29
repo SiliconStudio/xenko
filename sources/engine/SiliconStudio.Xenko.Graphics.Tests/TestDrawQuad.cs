@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Games;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestDrawQuad : TestGameBase
+    public class TestDrawQuad : GraphicTestGameBase
     {
         private Texture offlineTarget;
         private bool firstSave;

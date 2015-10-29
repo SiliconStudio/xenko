@@ -7,25 +7,30 @@ namespace SiliconStudio.ActionStack
 {
     public class PropertyChangedActionItem : ActionItem
     {
-        private readonly string propertyName;
         private readonly bool nonPublic;
         private object container;
         private object previousValue;
 
         public PropertyChangedActionItem(string propertyName, object container, object previousValue, bool nonPublic = false)
         {
-            if (propertyName == null) throw new ArgumentNullException("propertyName");
-            if (container == null) throw new ArgumentNullException("container");
-            this.propertyName = propertyName;
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
+            if (container == null) throw new ArgumentNullException(nameof(container));
+            this.PropertyName = propertyName;
             this.container = container;
+            this.ContainerType = container.GetType();
             this.previousValue = previousValue;
             this.nonPublic = nonPublic;
         }
 
         /// <summary>
+        /// Gets the type of the property's container.
+        /// </summary>
+        public Type ContainerType { get; }
+
+        /// <summary>
         /// Gets the name of the property affected by the change.
         /// </summary>
-        public string PropertyName { get { return propertyName; } }
+        public string PropertyName { get; }
 
         /// <inheritdoc/>
         protected override void FreezeMembers()
@@ -38,8 +43,8 @@ namespace SiliconStudio.ActionStack
         protected override void UndoAction()
         {
             var flags = nonPublic ? BindingFlags.NonPublic | BindingFlags.Instance : BindingFlags.Public | BindingFlags.Instance;
-            PropertyInfo propertyInfo = container.GetType().GetProperty(propertyName, flags);
-            object value = previousValue;
+            var propertyInfo = ContainerType.GetProperty(PropertyName, flags);
+            var value = previousValue;
             previousValue = propertyInfo.GetValue(container);
             propertyInfo.SetValue(container, value);
         }

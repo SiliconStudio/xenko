@@ -3,19 +3,17 @@
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using System;
-using System.Collections.Generic;
 using Android.App;
 using Android.OS;
-using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Starter;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Starter;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
     [Activity]
     public class AndroidGameTestActivity : AndroidXenkoActivity
     {
-        public static Queue<GameBase> GamesToStart = new Queue<GameBase>();
+        public static Game GameToStart;
 
         public static event EventHandler<EventArgs> Destroyed;
 
@@ -23,12 +21,12 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             base.OnCreate(bundle);
 
-            lock (GamesToStart)
+            if (Game == null) // application can be restarted
             {
-                Game = (Game)GamesToStart.Dequeue();
+                Game = GameToStart;
+                Game.Exiting += Game_Exiting;
             }
 
-            Game.Exiting += Game_Exiting;
             Game.Run(GameContext);
         }
 
@@ -45,14 +43,12 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
         protected override void OnDestroy()
         {
-            if (Game != null)
-                Game.Dispose();
+            Game?.Dispose();
 
             base.OnDestroy();
 
             var handler = Destroyed;
-            if (handler != null)
-                handler(this, EventArgs.Empty);
+            handler?.Invoke(this, EventArgs.Empty);
         }
     }
 }

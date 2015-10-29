@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Graphics.Internals;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestTextureSampling : TestGameBase
+    public class TestTextureSampling : GraphicTestGameBase
     {
         struct Vertex
         {

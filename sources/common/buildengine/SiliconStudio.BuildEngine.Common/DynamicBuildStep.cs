@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace SiliconStudio.BuildEngine
 {
-    public class DynamicBuildStep : EnumerableBuildStep
+    public class DynamicBuildStep : BuildStep
     {
         private readonly IBuildStepProvider buildStepProvider;
 
@@ -35,6 +35,9 @@ namespace SiliconStudio.BuildEngine
         /// Gets or sets the maximum number of steps slots that are kept specifically for high priority steps (negative)
         /// </summary>
         public int MaxHighPriorityParallelSteps { get; set; }
+
+        /// <inheritdoc />
+        public override string Title => ToString();
 
         /// <summary>
         /// Notify the dynamic build step new work is available.
@@ -121,7 +124,7 @@ namespace SiliconStudio.BuildEngine
 
             // wait for completion of all its spawned and dependent steps
             // (probably instant most of the time, but it would be good to have a better ExecutedAsync to check that together as well)
-            await WaitCommands(new List<BuildStep> { completeBuildStep });
+            await EnumerableBuildStep.WaitCommands(new List<BuildStep> { completeBuildStep });
 
             // Remove from list of build step to wait
             buildStepsToWait.Remove(completeBuildStep);

@@ -23,6 +23,12 @@ namespace SiliconStudio.BuildEngine
 
         public Command Command { get; private set; }
 
+        /// <inheritdoc/>
+        public override string OutputLocation => Command.OutputLocation;
+
+        /// <inheritdoc/>
+        public override IEnumerable<KeyValuePair<ObjectUrl, ObjectId>> OutputObjectIds => Result.OutputObjects;
+
         /// <summary>
         /// Command Result, set only after step completion. Not thread safe, should not be modified
         /// </summary>
@@ -84,7 +90,8 @@ namespace SiliconStudio.BuildEngine
                                     executeContext.Logger.Error("Unable to delete file: " + outputObject.Key.Path);
                                 }
                                 break;
-                            case UrlType.Internal:
+                            case UrlType.ContentLink:
+                            case UrlType.Content:
                                 executeContext.ResultMap.Delete(outputObject.Value);
                                 break;
                         }
@@ -424,6 +431,18 @@ namespace SiliconStudio.BuildEngine
 
                     try
                     {
+                        // Merge results from prerequisites
+                        // TODO: This will prevent us from overwriting this asset with different content as it will result in a write conflict
+                        // At some point we _might_ want to get rid of WaitBuildStep/ListBuildStep system and write a fully stateless input/output-based system; probably need further discussions
+                        var assetIndexMap = AssetManager.FileProvider.AssetIndexMap;
+                        foreach (var prerequisiteStep in PrerequisiteSteps)
+                        {
+                            foreach (var output in prerequisiteStep.OutputObjectIds)
+                            {
+                                assetIndexMap[output.Key.Path] = output.Value;
+                            }
+                        }
+
                         status = await Command.DoCommand(commandContext);
                     }
                     catch (Exception ex)

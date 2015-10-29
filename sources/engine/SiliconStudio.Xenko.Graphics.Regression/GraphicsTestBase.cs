@@ -1,29 +1,32 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.IO;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
+
+using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
-    [TestFixture]
-    public abstract class GraphicsTestBase : TestGameBase
+    public abstract class GraphicsTestBase : Game
     {
-        #region Public properties
-
         public static bool ForceInteractiveMode;
 
-        public FrameGameSystem FrameGameSystem { get; private set; }
+        public static readonly Logger TestGameLogger = GlobalLogger.GetLogger("TestGameLogger");
+
+        public FrameGameSystem FrameGameSystem { get; }
 
         protected TestContext CurrentTestContext { get; set; }
-        
-        #endregion
 
-        #region Public members
+        public int StopOnFrameCount { get; set; }
 
         /// <summary>
         /// The current version of the test
@@ -38,45 +41,58 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         public int FrameIndex;
 
         private bool screenshotAutomationEnabled;
-
-        #endregion
-
-        #region Constructors
+        private BackBufferSizeMode backBufferSizeMode;
 
         protected GraphicsTestBase()
         {
+            // Override the default graphic device manager
+            GraphicsDeviceManager.Dispose();
+            GraphicsDeviceManager = new TestGraphicsDeviceManager(this)
+            {
+                PreferredBackBufferWidth = 800,
+                PreferredBackBufferHeight = 480,
+                PreferredDepthStencilFormat = PixelFormat.D24_UNorm_S8_UInt,
+                DeviceCreationFlags = DeviceCreationFlags.Debug,
+                PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1 }
+            };
+
+            // Enable profiling
+            //Profiler.EnableAll();
+            
             CurrentVersion = 0;
+            StopOnFrameCount = -1;
+            AutoLoadDefaultSettings = false;
 
             FrameGameSystem = new FrameGameSystem(Services);
             GameSystems.Add(FrameGameSystem);
 
+            // by default we want the same size for the back buffer on mobiles and windows.
+            BackBufferSizeMode = BackBufferSizeMode.FitToDesiredValues;
+
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             // get build number
             int buildNumber;
-            if (ImageTester.ImageTestResultConnection.BuildNumber <= 0 && Int32.TryParse(Environment.GetEnvironmentVariable("XENKO_BUILD_NUMBER"), out buildNumber))
+            if (ImageTester.ImageTestResultConnection.BuildNumber <= 0 && int.TryParse(Environment.GetEnvironmentVariable("XENKO_BUILD_NUMBER"), out buildNumber))
                 ImageTester.ImageTestResultConnection.BuildNumber = buildNumber;
 
             // get branch name
-            if (String.IsNullOrEmpty(ImageTester.ImageTestResultConnection.BranchName))
+            if (string.IsNullOrEmpty(ImageTester.ImageTestResultConnection.BranchName))
                 ImageTester.ImageTestResultConnection.BranchName = Environment.GetEnvironmentVariable("XENKO_BRANCH_NAME") ?? "";
 #endif
         }
-
-        #endregion
-
-        #region public methods
 
         /// <summary>
         /// Save the image locally or on the server.
         /// </summary>
         /// <param name="textureToSave">The texture to save.</param>
-        public void SaveImage(Texture textureToSave)
+        /// <param name="testName">The name of the test corresponding to the image to save</param>
+        public void SaveImage(Texture textureToSave, string testName = null)
         {
             if (textureToSave == null)
                 return;
 
             TestGameLogger.Info(@"Saving non null image");
-            var testName = CurrentTestContext != null ? CurrentTestContext.Test.FullName : null;
+            testName = testName ?? CurrentTestContext?.Test.FullName;
             TestGameLogger.Info(@"saving remotely.");
             using (var image = textureToSave.GetDataAsImage())
             {
@@ -95,10 +111,10 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         /// <summary>
         /// Save the image locally or on the server.
         /// </summary>
-        public void SaveBackBuffer()
+        public void SaveBackBuffer(string testName = null)
         {
             TestGameLogger.Info(@"Saving the backbuffer");
-            SaveImage(GraphicsDevice.BackBuffer);
+            SaveImage(GraphicsDevice.BackBuffer, testName);
         }
 
         /// <summary>
@@ -106,10 +122,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         /// </summary>
         public bool ScreenShotAutomationEnabled
         {
-            get
-            {
-                return screenshotAutomationEnabled;
-            }
+            get { return screenshotAutomationEnabled; }
             set
             {
                 FrameGameSystem.Visible = value;
@@ -117,11 +130,59 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 screenshotAutomationEnabled = value;
             }
         }
-
-        #endregion
-
-        #region Protected methods
         
+        public BackBufferSizeMode BackBufferSizeMode
+        {
+            get { return backBufferSizeMode; }
+            set
+            {
+                backBufferSizeMode = value;
+#if SILICONSTUDIO_PLATFORM_ANDROID
+                switch (backBufferSizeMode)
+                {
+                    case BackBufferSizeMode.FitToDesiredValues:
+                        SwapChainGraphicsPresenter.ProcessPresentationParametersOverride = FitPresentationParametersToDesiredValues;
+                        break;
+                    case BackBufferSizeMode.FitToWindowSize:
+                        SwapChainGraphicsPresenter.ProcessPresentationParametersOverride = FitPresentationParametersToWindowSize;
+                        break;
+                    case BackBufferSizeMode.FitToWindowRatio:
+                        SwapChainGraphicsPresenter.ProcessPresentationParametersOverride = FitPresentationParametersToWindowRatio;
+                        break;
+                    default:
+                        throw new ArgumentOutOfRangeException();
+                }
+#endif // TODO implement it other mobile platforms
+            }
+        }
+
+        private void FitPresentationParametersToDesiredValues(int windowWidth, int windowHeight, PresentationParameters parameters)
+        {
+            // nothing to do (default behavior)
+        }
+
+        private void FitPresentationParametersToWindowSize(int windowWidth, int windowHeight, PresentationParameters parameters)
+        {
+            parameters.BackBufferWidth = windowWidth;
+            parameters.BackBufferHeight = windowHeight;
+        }
+
+        private void FitPresentationParametersToWindowRatio(int windowWidth, int windowHeight, PresentationParameters parameters)
+        {
+            var panelRatio = (float)windowWidth / windowHeight;
+            var desiredWidth = parameters.BackBufferWidth;
+            var desiredHeight = parameters.BackBufferHeight;
+
+            if (panelRatio >= 1.0f) // Landscape => use height as base
+            {
+                parameters.BackBufferHeight = (int)(desiredWidth / panelRatio);
+            }
+            else // Portrait => use width as base
+            {
+                parameters.BackBufferWidth = (int)(desiredHeight * panelRatio);
+            }
+        }
+
         protected override async Task LoadContent()
         {
             await base.LoadContent();
@@ -144,6 +205,16 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             return Task.FromResult(true);
         }
 
+        protected override void Update(GameTime gameTime)
+        {
+            base.Update(gameTime);
+
+            if (gameTime.FrameCount == StopOnFrameCount)
+            {
+                Exit();
+            }
+        }
+
         /// <summary>
         /// Loop through all the tests and save the images.
         /// </summary>
@@ -158,19 +229,54 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (FrameGameSystem.AllTestsCompleted)
                 Exit();
             else if (FrameGameSystem.TakeSnapshot)
-                SaveBackBuffer();
+                SaveBackBuffer(FrameGameSystem.TestName);
         }
-        protected void RunDrawTest(Action<Game> action, bool takeSnapshot = false)
+
+        protected void RunDrawTest(Action<Game> action, GraphicsProfile? profileOverride = null, bool takeSnapshot = false)
         {
             // create the game instance
             var typeGame = GetType();
             var game = (GraphicsTestBase)Activator.CreateInstance(typeGame);
+            if (profileOverride.HasValue)
+                game.GraphicsDeviceManager.PreferredGraphicsProfile = new[] { profileOverride.Value };
 
             // register the tests.
             game.FrameGameSystem.IsUnityTestFeeding = true;
             game.FrameGameSystem.Draw(() => action(game));
             if (takeSnapshot)
                 game.FrameGameSystem.TakeScreenshot();
+
+            RunGameTest(game);
+        }
+
+        protected void RunDrawTest(Action<Game, RenderContext, RenderFrame> action, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
+        {
+            // create the game instance
+            var typeGame = GetType();
+            var game = (GraphicsTestBase)Activator.CreateInstance(typeGame);
+            if (profileOverride.HasValue)
+                game.GraphicsDeviceManager.PreferredGraphicsProfile = new[] { profileOverride.Value };
+
+            // register the tests.
+            game.FrameGameSystem.IsUnityTestFeeding = true;
+            game.FrameGameSystem.TestName = TestContext.CurrentContext.Test.FullName+testName;
+            if (takeSnapshot)
+                game.FrameGameSystem.TakeScreenshot();
+
+            // add the render callback
+            var graphicsCompositor = new SceneGraphicsCompositorLayers
+            {
+                Master =
+                {
+                    Renderers =
+                    {
+                        new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
+                        new SceneDelegateRenderer((context, frame) => action(game, context, frame)),
+                    }
+                }
+            };
+            var scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
+            game.SceneSystem.SceneInstance = new SceneInstance(Services, scene);
 
             RunGameTest(game);
         }
@@ -193,10 +299,6 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             if (game.ScreenShotAutomationEnabled)
                 Assert.IsTrue(ImageTester.RequestImageComparisonStatus(game.CurrentTestContext.Test.FullName), "The image comparison returned false.");
         }
-
-        #endregion
-
-        #region Private methods
         
         /// <summary>
         /// Send the data of the test to the server.
@@ -215,9 +317,18 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             ImageTester.SendImage(new TestResultImage { CurrentVersion = currentVersion, Frame = frameIndex.ToString(), Image = image, TestName = testName });
         }
 
-        #endregion
-
-        #region Helper structures and classes
+        protected void SaveTexture(Texture texture, string filename)
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            using (var image = texture.GetDataAsImage())
+            {
+                using (var resultFileStream = File.OpenWrite(filename))
+                {
+                    image.Save(resultFileStream, ImageFileType.Png);
+                }
+            }
+#endif
+        }
 
         /// <summary>
         /// A structure to store information about the connected test devices.
@@ -234,6 +345,40 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             }
         }
 
-        #endregion
+        /// <summary>
+        /// Ignore the test on the given platform
+        /// </summary>
+        public static void IgnorePlatform(PlatformType platform)
+        {
+            if(Platform.Type == platform)
+                Assert.Ignore("This test is not valid for the '{0}' platform. It has been ignored", platform);
+        }
+
+        /// <summary>
+        /// Ignore the test on any other platform than the provided one.
+        /// </summary>
+        public static void RequirePlatform(PlatformType platform)
+        {
+            if(Platform.Type != platform)
+                Assert.Ignore("This test requires the '{0}' platform. It has been ignored", platform);
+        }
+
+        /// <summary>
+        /// Ignore the test on the given graphic platform
+        /// </summary>
+        public static void IgnoreGraphicPlatform(GraphicsPlatform platform)
+        {
+            if (GraphicsDevice.Platform == platform)
+                Assert.Ignore("This test is not valid for the '{0}' graphic platform. It has been ignored", platform);
+        }
+
+        /// <summary>
+        /// Ignore the test on any other graphic platform than the provided one.
+        /// </summary>
+        public static void RequireGraphicPlatform(GraphicsPlatform platform)
+        {
+            if (GraphicsDevice.Platform != platform)
+                Assert.Ignore("This test requires the '{0}' platform. It has been ignored", platform);
+        }
     }
 }

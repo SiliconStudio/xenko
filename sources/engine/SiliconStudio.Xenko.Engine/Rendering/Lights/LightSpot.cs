@@ -28,7 +28,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             AngleOuter = 35.0f;
             Shadow = new LightStandardShadowMap()
             {
-                Size = LightShadowMapSize.Medium
+                Size = LightShadowMapSize.Medium,
+                BiasParameters =
+                {
+                    DepthBias = 0.001f,
+                }
             };
         }
 
@@ -68,6 +72,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         internal float LightAngleScale;
 
         [DataMemberIgnore]
+        internal float AngleOuterInRadians;
+
+        [DataMemberIgnore]
         internal float LightAngleOffset;
 
         internal float LightRadiusAtTarget;
@@ -78,12 +85,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             InvSquareRange = 1.0f / (range * range);
             var innerAngle = Math.Min(AngleInner, AngleOuter);
             var outerAngle = Math.Max(AngleInner, AngleOuter);
+            AngleOuterInRadians = MathUtil.DegreesToRadians(outerAngle);
             var cosInner = (float)Math.Cos(MathUtil.DegreesToRadians(innerAngle / 2));
-            var cosOuter = (float)Math.Cos(MathUtil.DegreesToRadians(outerAngle / 2));
+            var cosOuter = (float)Math.Cos(AngleOuterInRadians * 0.5f);
             LightAngleScale = 1.0f / Math.Max(0.001f, cosInner - cosOuter);
             LightAngleOffset = -cosOuter * LightAngleScale;
 
-            LightRadiusAtTarget = (float)Math.Abs(Range * Math.Sin(MathUtil.DegreesToRadians(outerAngle / 2.0f)));
+            LightRadiusAtTarget = (float)Math.Abs(Range * Math.Sin(AngleOuterInRadians * 0.5f));
 
             return true;
         }

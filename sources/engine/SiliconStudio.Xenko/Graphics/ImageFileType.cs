@@ -21,12 +21,10 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-using System;
-
 namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
-    /// Image file format used by <see cref="Image.Save(string,SiliconStudio.Xenko.Graphics.ImageFileType)"/>
+    /// Image file format used by <see cref="Image.Save"/>
     /// </summary>
     public enum ImageFileType
     {
@@ -88,7 +86,7 @@ namespace SiliconStudio.Xenko.Graphics
             switch (fileType)
             {
                 case ImageFileType.Xenko:
-                    return ".xkimage";
+                    return ".xkimg";
                 default:
                     return "." + fileType.ToString().ToLowerInvariant();
             }

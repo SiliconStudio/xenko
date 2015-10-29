@@ -6,8 +6,25 @@ namespace SiliconStudio.Core.Serialization.Assets
     public enum UrlType
     {
         None,
+
+        /// <summary>
+        /// The location is a file on the disk
+        /// </summary>
         File,
-        Internal,
+
+        /// <summary>
+        /// The location is a IContentReference just used as a link
+        /// </summary>
+        ContentLink,
+
+        /// <summary>
+        /// The location is a IContentReference and the content is used by the command
+        /// </summary>
+        Content,
+
+        /// <summary>
+        /// TODO: Is it something still used?
+        /// </summary>
         Virtual,
     }
 }

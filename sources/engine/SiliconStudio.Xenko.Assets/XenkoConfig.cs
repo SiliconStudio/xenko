@@ -17,6 +17,8 @@ namespace SiliconStudio.Xenko.Assets
     [DataContract("Xenko")]
     public sealed class XenkoConfig
     {
+        public const string PackageName = "Xenko";
+
         private const string XamariniOSBuild = @"MSBuild\Xamarin\iOS\Xamarin.iOS.CSharp.targets";
         private const string XamarinAndroidBuild = @"MSBuild\Xamarin\Android\Xamarin.Android.CSharp.targets";
 
@@ -33,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets
 
         public static PackageDependency GetLatestPackageDependency()
         {
-            return new PackageDependency("Xenko", new PackageVersionRange()
+            return new PackageDependency(PackageName, new PackageVersionRange()
                 {
                     MinVersion = LatestPackageVersion,
                     IsMinInclusive = true

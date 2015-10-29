@@ -23,6 +23,7 @@ namespace SiliconStudio.Xenko.Graphics
         private const int SimultaneousRenderTargetCount = SharpDX.Direct3D11.OutputMergerStage.SimultaneousRenderTargetCount;
         private const int StageCount = 6;
         private const int UnorderedAcccesViewCount = SharpDX.Direct3D11.ComputeShaderStage.UnorderedAccessViewSlotCount;
+        private const GraphicsPlatform GraphicPlatform = GraphicsPlatform.Direct3D11;
 
         private readonly Buffer[] constantBuffers = new Buffer[StageCount*ConstantBufferCount];
         private readonly SharpDX.Direct3D11.RenderTargetView[] currentRenderTargetViews = new SharpDX.Direct3D11.RenderTargetView[SimultaneousRenderTargetCount];

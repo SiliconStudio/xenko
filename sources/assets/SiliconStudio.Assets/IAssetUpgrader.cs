@@ -7,6 +7,6 @@ namespace SiliconStudio.Assets
 {
     public interface IAssetUpgrader
     {
-        void Upgrade(AssetMigrationContext context, int currentVersion, int targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile);
+        void Upgrade(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile);
     }
 }

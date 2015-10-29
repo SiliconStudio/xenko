@@ -548,7 +548,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             writer.SerializeExtended(this, ArchiveMode.Serialize);
         }
 
-        public override IEnumerable<ObjectUrl> GetInputFiles()
+        protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
         {
             yield return new ObjectUrl(UrlType.File, SourcePath);
         }

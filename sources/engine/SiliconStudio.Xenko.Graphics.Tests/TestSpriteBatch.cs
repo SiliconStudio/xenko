@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Games;
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
-    public class TestSpriteBatch : TestGameBase
+    public class TestSpriteBatch : GraphicTestGameBase
     {
         private SpriteBatch spriteBatch;
         private Texture sphere;
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteBatch()
         {
-            CurrentVersion = 8;
+            CurrentVersion = 9;
         }
 
         protected override void RegisterTests()

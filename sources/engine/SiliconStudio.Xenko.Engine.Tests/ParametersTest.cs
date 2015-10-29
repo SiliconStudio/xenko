@@ -122,78 +122,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(collection.Count, 1);
             Assert.AreEqual(collection.Get(paramV), new Vector3(2, 2, 2));
         }
-
-        /*[Test]
-        [Description("ParameterCollection basic test get set on an array of Vector4")]
-        public void TestBasicArrayValues()
-        {
-            //
-            // => Initialize, Set V = new Vector4[4] { (0,0,0,0), (1,1,1,1), (2,2,2,2), (3, 3, 3, 3) }
-            //
-            // --------------------
-            // |  V = Vector4[4]  | (Test)
-            // |                  |
-            // --------------------
-            var collection = new ParameterCollection("Test");
-            var paramV = new ParameterKey<Vector4>("View", 4);
-
-            collection.Set(paramV, new []
-                               {
-                                   new Vector4(0, 0, 0, 0), new Vector4(1, 1, 1, 1), new Vector4(2, 2, 2, 2),
-                                   new Vector4(3, 3, 3, 3)
-                               });
-
-            //
-            // => Gets V as a Matrix
-            //
-            Matrix matrixValueV;
-            collection.GetAs(paramV, out matrixValueV);
-
-            Assert.AreEqual(matrixValueV.Row1, new Vector4(0, 0, 0, 0));
-            Assert.AreEqual(matrixValueV.Row2, new Vector4(1, 1, 1, 1));
-            Assert.AreEqual(matrixValueV.Row3, new Vector4(2, 2, 2, 2));
-            Assert.AreEqual(matrixValueV.Row4, new Vector4(3, 3, 3, 3));
-
-            //
-            // => Gets single element at index 2 from V 
-            //
-            Assert.AreEqual(collection.Get(paramV, 2), new Vector4(2, 2, 2, 2));
-
-            //
-            // => Gets an array of elements from index 1 to 3 from V and write it to a vector of 5 elements at index 2
-            //
-            //  Vcopy = new Vector4[5]
-            //  Vcopy[2] = V[1]; Vcopy[3] = V[2]; Vcopy[4] = V[3];
-            //
-            var copyOf = new Vector4[5];
-            collection.Get(paramV, 1, copyOf, 2, 3);
-            Assert.AreEqual(copyOf[2], new Vector4(1, 1, 1, 1));
-            Assert.AreEqual(copyOf[3], new Vector4(2, 2, 2, 2));
-            Assert.AreEqual(copyOf[4], new Vector4(3, 3, 3, 3));
-
-            //
-            // => Sets a matrix by casting
-            //
-            matrixValueV.Column1 = new Vector4(3, 2, 1, 0);
-            collection.SetAs(paramV, matrixValueV);
-
-            copyOf = new Vector4[4];
-            collection.Get(paramV, copyOf );
-
-            Assert.AreEqual(copyOf[0], new Vector4(3, 0, 0, 0));
-            Assert.AreEqual(copyOf[1], new Vector4(2, 1, 1, 1));
-            Assert.AreEqual(copyOf[2], new Vector4(1, 2, 2, 2));
-            Assert.AreEqual(copyOf[3], new Vector4(0, 3, 3, 3));
-
-            //
-            // => Sets a single element at inedx1 from V
-            //
-            collection.Set(paramV, 1, new Vector4(0, 0, 0, 0));
-            Assert.AreEqual(collection.Get(paramV, 1), new Vector4(0, 0, 0, 0));
-
-            collection.Release();
-        }*/
-
+        
         [Test, Ignore]
         [Description("ParameterCollection dynamic, exception while setting a dynamic value that is referencing a value not present in the collection")]
         [ExpectedException(typeof(InvalidOperationException), ExpectedMessage = @"Value for dependency \[.*\] not found", MatchType = MessageMatch.Regex)]
@@ -1349,40 +1278,5 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             Assert.AreEqual(new Vector3(5, 5, 5), root2Collection.Get(paramVP));
         }
-
-        /*[Test]
-        public void TestValueUpdate()
-        {
-            var root1Collection = new ParameterCollection("Root1");
-            var root2Collection = new ParameterCollection("Root2");
-            root2Collection.AddSources(root1Collection);
-
-            var paramV = new ParameterKey<Vector3>("View");
-            var paramP = new ParameterKey<Vector3>("Proj");
-            var paramVP = new ParameterKey<Vector3>("ViewProj");
-
-            var eventCounter = 0;
-            var eventCounterV = 0;
-            var eventCounterVP = 0;
-
-            root2Collection.AddEvent(null, (v, o) => eventCounter++);
-            root2Collection.AddEvent(paramV, (v, o) => eventCounterV++);
-            root2Collection.AddEvent(paramVP, (v, o) => eventCounterVP++);
-
-            root1Collection.Set(paramV, new Vector3(2, 2, 2));
-            root2Collection.Set(paramP, new Vector3(3, 3, 3));
-            root1Collection.Set(paramVP, ParameterDynamicValue.New(paramV, paramP, (ref Vector3 paramVArg, ref Vector3 paramPArg, ref Vector3 output) => output = paramVArg + paramPArg));
-
-            Assert.AreEqual(3, eventCounter);
-            Assert.AreEqual(1, eventCounterV);
-            Assert.AreEqual(1, eventCounterVP);
-
-            root1Collection.Set(paramV, new Vector3(3, 3, 3));
-            root2Collection.Get(paramVP);
-
-            Assert.AreEqual(5, eventCounter);
-            Assert.AreEqual(2, eventCounterV);
-            Assert.AreEqual(2, eventCounterVP);
-        }*/
     }
 }

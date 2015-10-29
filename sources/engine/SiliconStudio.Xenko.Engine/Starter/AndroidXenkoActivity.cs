@@ -15,7 +15,6 @@ using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Games.Android;
-using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Starter
 {

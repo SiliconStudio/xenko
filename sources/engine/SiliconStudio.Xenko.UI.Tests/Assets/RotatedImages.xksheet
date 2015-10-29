@@ -1,6 +1,6 @@
 !SpriteSheet
 Id: 0d564cf9-3de7-4550-8bdd-ad29f7c57d36
-SerializedVersion: 2
+SerializedVersion: 3
 Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
@@ -15,7 +15,7 @@ Sprites:
         PixelsPerUnit: 1.0
         Center: {X: 32.0, Y: 48.0}
         CenterFromMiddle: false
-        Borders: {X: 75.0, Y: 40.0, Z: 15.0, W: 7.5}
+        Borders: {X: 75.0, Y: 15.0, Z: 40.0, W: 7.5}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
     -   Source: ../../../data/tests/TexturePacking/imageBorder.png
         Name: RNR
@@ -24,7 +24,7 @@ Sprites:
         Orientation: Rotated90
         Center: {X: 16.0, Y: 32.0}
         CenterFromMiddle: false
-        Borders: {X: 7.5, Y: 15.0, Z: 75.0, W: 40.0}
+        Borders: {X: 7.5, Y: 75.0, Z: 15.0, W: 40.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
     -   Source: ../../../data/tests/TexturePacking/imageBorder.png
         Name: NRR
@@ -32,7 +32,7 @@ Sprites:
         PixelsPerUnit: 1.0
         Center: {X: 16.0, Y: 32.0}
         CenterFromMiddle: false
-        Borders: {X: 7.5, Y: 15.0, Z: 75.0, W: 40.0}
+        Borders: {X: 7.5, Y: 75.0, Z: 15.0, W: 40.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
     -   Source: ../../../data/tests/TexturePacking/imageBorder.png
         Name: RR
@@ -41,5 +41,5 @@ Sprites:
         Orientation: Rotated90
         Center: {X: 32.0, Y: 48.0}
         CenterFromMiddle: false
-        Borders: {X: 75.0, Y: 40.0, Z: 15.0, W: 7.5}
+        Borders: {X: 75.0, Y: 15.0, Z: 40.0, W: 7.5}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}

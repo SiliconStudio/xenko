@@ -48,6 +48,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         /// </summary>
         public bool AllTestsCompleted => frameCount > lastFrame;
 
+        public string TestName;
+
         /// <summary>
         /// Flag stating that a screenshot should be taken.
         /// </summary>
@@ -218,7 +220,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 {
                     if (method.Action != null)
                     {
-                        TestGameBase.TestGameLogger.Debug(@"Executing method in Draw/Update for frame " + frameCount + @": " + method.Action.GetMethodInfo().Name);
+                        GraphicsTestBase.TestGameLogger.Debug(@"Executing method in Draw/Update for frame " + frameCount + @": " + method.Action.GetMethodInfo().Name);
                         method.Action.Invoke();
                     }
                     methodsToRemove.Push(i);

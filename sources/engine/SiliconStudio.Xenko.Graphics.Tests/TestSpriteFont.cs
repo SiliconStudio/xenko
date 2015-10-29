@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Threading.Tasks;
-using NUnit.Framework;
 
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
@@ -9,8 +8,7 @@ using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    [TestFixture]
-    public class TestSpriteFont : TestGameBase
+    public class TestSpriteFont : GraphicTestGameBase
     {
         private SpriteBatch spriteBatch;
         private SpriteFont arial13;
@@ -29,7 +27,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestSpriteFont(string assetPrefix, string saveImageSuffix)
         {
-            CurrentVersion = 3;
+            CurrentVersion = 4;
 
             this.assetPrefix = assetPrefix;
             this.saveImageSuffix = saveImageSuffix;

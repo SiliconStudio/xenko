@@ -62,7 +62,6 @@
     <Compile Include="Analysis\PackageAnalysis.cs" />
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
-    <Compile Include="Analysis\AttachedContentReference.cs" />
     <Compile Include="AssetCloner.cs" />
     <Compile Include="Analysis\AssetCollision.cs" />
     <Compile Include="AssetImport.cs" />
@@ -108,6 +107,7 @@
     <Compile Include="Diff\IDiffProxy.cs" />
     <Compile Include="Diff\IDiffResolver.cs" />
     <Compile Include="DirectoryHelper.cs" />
+    <Compile Include="EmptyAssetUpgrader.cs" />
     <Compile Include="FileVersionManager.cs" />
     <Compile Include="Compiler\AssetCommand.cs" />
     <Compile Include="Compiler\AssetCompiledArgs.cs" />
