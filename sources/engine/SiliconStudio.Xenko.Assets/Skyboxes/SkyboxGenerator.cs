@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
         public RenderContext DrawEffectContext { get; private set; }
 
-        public new void Dispose()
+        public void Dispose()
         {
             EffectSystem.Dispose();
             GraphicsDevice.Dispose();
