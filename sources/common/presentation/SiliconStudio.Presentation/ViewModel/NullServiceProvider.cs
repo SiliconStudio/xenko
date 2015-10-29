@@ -7,13 +7,13 @@ namespace SiliconStudio.Presentation.ViewModel
     /// </summary>
     internal class NullServiceProvider : IViewModelServiceProvider
     {
-			// We provide an empty `add' and `remove' to avoid a warning about unused events that we have
-			// to implement as they are part of the IViewModelServiceProvider definition.
+        // We provide an empty `add' and `remove' to avoid a warning about unused events that we have
+        // to implement as they are part of the IViewModelServiceProvider definition.
         /// <inheritdoc/>
         public event EventHandler<ServiceRegistrationEventArgs> ServiceRegistered { add { } remove { } }
 
-			// We provide an empty `add' and `remove' to avoid a warning about unused events that we have
-			// to implement as they are part of the IViewModelServiceProvider definition.
+        // We provide an empty `add' and `remove' to avoid a warning about unused events that we have
+        // to implement as they are part of the IViewModelServiceProvider definition.
         /// <inheritdoc/>
         public event EventHandler<ServiceRegistrationEventArgs> ServiceUnregistered { add { } remove { } }
 

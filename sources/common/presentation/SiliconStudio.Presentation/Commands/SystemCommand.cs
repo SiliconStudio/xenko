@@ -32,8 +32,8 @@ namespace SiliconStudio.Presentation.Commands
             execute(window);
         }
 
-			// We provide an empty `add' and `remove' to avoid a warning about unused events that we have
-			// to implement as they are part of the ICommand definition.
+        // We provide an empty `add' and `remove' to avoid a warning about unused events that we have
+        // to implement as they are part of the ICommand definition.
         public event EventHandler CanExecuteChanged { add { } remove { } }
     }
 }

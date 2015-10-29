@@ -34,8 +34,8 @@ namespace SiliconStudio.Xenko.Graphics
             GraphicsDevice = graphicsDevice;
         }
 
-			// We provide an empty `add' and `remove' to avoid a warning about unused events that we have
-			// to implement as they are part of the IGraphicsDeviceService definition.
+        // We provide an empty `add' and `remove' to avoid a warning about unused events that we have
+        // to implement as they are part of the IGraphicsDeviceService definition.
         public event EventHandler<EventArgs> DeviceCreated { add { } remove { } }
         public event EventHandler<EventArgs> DeviceDisposing { add { } remove { } }
         public event EventHandler<EventArgs> DeviceReset { add { } remove { } }
