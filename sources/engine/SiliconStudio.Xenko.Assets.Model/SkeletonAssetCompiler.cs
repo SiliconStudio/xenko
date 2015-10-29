@@ -21,13 +21,14 @@ namespace SiliconStudio.Xenko.Assets.Model
             var importModelCommand = ImportModelCommand.Create(extension);
             if (importModelCommand == null)
             {
-                result.Error("Unknown model file format for [{0}]", assetSource);
+                result.Error("No importer found for model extension '{0}. The model '{1}' can't be imported.", extension, assetSource);
                 return;
             }
 
             importModelCommand.SourcePath = assetSource;
             importModelCommand.Location = urlInStorage;
-            importModelCommand.ExportType = "skeleton";
+            importModelCommand.Mode = ImportModelCommand.ExportMode.Skeleton;
+            importModelCommand.ScaleImport = asset.ScaleImport;
             importModelCommand.SkeletonNodesWithPreserveInfo = asset.NodesWithPreserveInfo;
 
             buildStep.Add(importModelCommand);

@@ -20,6 +20,10 @@
     <Compile Include="ImportAssimpCommand.cs" />
     <Compile Include="ImportFbxCommand.cs" />
     <Compile Include="ImportModelCommand.cs" />
+    <Compile Include="ImportModelCommand.SkeletonMapping.cs" />
+    <Compile Include="ImportModelCommand.Model.cs" />
+    <Compile Include="ImportModelCommand.Skeleton.cs" />
+    <Compile Include="ImportModelCommand.Animation.cs" />
     <Compile Include="ModelAsset.cs" />
     <Compile Include="ModelAssetCompiler.cs" />
     <Compile Include="ModelAssetImporter.cs" />

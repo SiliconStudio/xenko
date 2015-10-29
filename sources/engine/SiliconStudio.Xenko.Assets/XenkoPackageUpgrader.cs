@@ -175,11 +175,11 @@ namespace SiliconStudio.Xenko.Assets
                         var nodes = modelAsset.DynamicRootNode.Nodes;
                         foreach (var node in nodes)
                         {
-                            // TODO: Using (bool)true write True in Yaml instead of true, this will need to be fixed
-                            node.Preserve = "true";
+                            node.Preserve = true;
                         }
 
                         skeletonAssetYaml.DynamicRootNode.Nodes = nodes;
+                        skeletonAssetYaml.DynamicRootNode.ScaleImport = modelAsset.DynamicRootNode.ScaleImport;
 
                         // Update model to point to this skeleton
                         modelAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));

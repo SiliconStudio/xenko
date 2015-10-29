@@ -439,7 +439,7 @@ namespace SiliconStudio {
 						curves[0] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto translationCurve = ProcessAnimationCurveVector<Vector3>(animationClip, "Transform.Translation", 3, curves, 0.005f);
+						auto translationCurve = ProcessAnimationCurveVector<Vector3>(animationClip, "Transform.Position", 3, curves, 0.005f);
 
 						curves[0] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
@@ -449,7 +449,7 @@ namespace SiliconStudio {
 						curves[0] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, "Transform.Scaling", 3, curves, 0.005f);
+						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, "Transform.Scale", 3, curves, 0.005f);
 
 						if (translationCurve != nullptr)
 						{

@@ -74,6 +74,19 @@ namespace SiliconStudio.Xenko.Animations
             Curves.Add(curve);
         }
 
+        public AnimationCurve GetCurve(string propertyName)
+        {
+            Channel channel;
+            if (!Channels.TryGetValue(propertyName, out channel))
+                return null;
+
+            // Optimized (should we throw exception?)
+            if (channel.CurveIndex == -1)
+                return null;
+
+            return Curves[channel.CurveIndex];
+        }
+
         /// <summary>
         /// Optimizes data from multiple curves to a single linear data stream.
         /// </summary>

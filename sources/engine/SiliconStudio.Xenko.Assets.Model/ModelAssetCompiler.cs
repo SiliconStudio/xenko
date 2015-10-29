@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             if (!EnsureSourceExists(result, asset, assetAbsolutePath))
                 return;
-        
+
             // Get absolute path of asset source on disk
             var assetDirectory = assetAbsolutePath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
@@ -36,44 +36,23 @@ namespace SiliconStudio.Xenko.Assets.Model
             if (asset.Skeleton != null)
                 skeleton = AssetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
 
-            if (ImportFbxCommand.IsSupportingExtensions(extension))
-            {
-                result.BuildSteps = new AssetBuildStep(AssetItem)
-                    {
-                        new ImportFbxCommand
-                            {
-                                SourcePath = assetSource,
-                                Location = urlInStorage,
-                                Allow32BitIndex = allow32BitIndex,
-                                AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
-                                Materials = asset.Materials,
-                                ScaleImport = asset.ScaleImport,
-                                SkeletonUrl = skeleton?.Location,
-                            }
-                    };
-            }
-            else if (ImportAssimpCommand.IsSupportingExtensions(extension))
-            {
-                result.BuildSteps = new AssetBuildStep(AssetItem)
-                    {
-                        new ImportAssimpCommand
-                            {
-                                SourcePath = assetSource,
-                                Location = urlInStorage,
-                                Allow32BitIndex = allow32BitIndex,
-                                AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
-                                Materials = asset.Materials,
-                                ScaleImport = asset.ScaleImport,
-                                SkeletonUrl = skeleton?.Location,
-                            }
-                    };
-            }
-            else
+            var importModelCommand = ImportModelCommand.Create(extension);
+            if (importModelCommand == null)
             {
                 result.Error("No importer found for model extension '{0}. The model '{1}' can't be imported.", extension, assetSource);
+                return;
             }
+
+            importModelCommand.Mode = ImportModelCommand.ExportMode.Model;
+            importModelCommand.SourcePath = assetSource;
+            importModelCommand.Location = urlInStorage;
+            importModelCommand.Allow32BitIndex = allow32BitIndex;
+            importModelCommand.AllowUnsignedBlendIndices = allowUnsignedBlendIndices;
+            importModelCommand.Materials = asset.Materials;
+            importModelCommand.ScaleImport = asset.ScaleImport;
+            importModelCommand.SkeletonUrl = skeleton?.Location;
+
+            result.BuildSteps = new AssetBuildStep(AssetItem) { importModelCommand };
         }
     }
-
-    
 }

@@ -99,9 +99,9 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     {
                         Matrix localMatrix;
                         TransformComponent.CreateMatrixTRS(
-                            ref modelAsset.Skeleton.Nodes[i].Transform.Translation,
+                            ref modelAsset.Skeleton.Nodes[i].Transform.Position,
                             ref modelAsset.Skeleton.Nodes[i].Transform.Rotation,
-                            ref modelAsset.Skeleton.Nodes[i].Transform.Scaling, out localMatrix);
+                            ref modelAsset.Skeleton.Nodes[i].Transform.Scale, out localMatrix);
 
                         Matrix worldMatrix;
                         if (modelAsset.Skeleton.Nodes[i].ParentIndex != -1)

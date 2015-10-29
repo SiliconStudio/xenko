@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         private static ModelNodeDefinition[] GetDefaultNodeDefinitions()
         {
-            return new[] { new ModelNodeDefinition { Name = "Root", ParentIndex = -1, Transform = { Scaling = Vector3.One }, Flags = ModelNodeFlags.Default } };
+            return new[] { new ModelNodeDefinition { Name = "Root", ParentIndex = -1, Transform = { Scale = Vector3.One }, Flags = ModelNodeFlags.Default } };
         }
 
         /// <summary>
@@ -128,8 +128,8 @@ namespace SiliconStudio.Xenko.Rendering
             // Compute LocalMatrix
             if ((node.Flags & ModelNodeFlags.EnableTransform) == ModelNodeFlags.EnableTransform)
             {
-                var scaling = node.Transform.Scaling;
-                TransformComponent.CreateMatrixTRS(ref node.Transform.Translation, ref node.Transform.Rotation, ref scaling, out node.LocalMatrix);
+                var scaling = node.Transform.Scale;
+                TransformComponent.CreateMatrixTRS(ref node.Transform.Position, ref node.Transform.Rotation, ref scaling, out node.LocalMatrix);
                 node.IsScalingNegative = scaling.X * scaling.Y * scaling.Z < 0.0f;
             }
 

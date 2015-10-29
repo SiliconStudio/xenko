@@ -57,13 +57,14 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             var meshConverter = this.CreateMeshConverter(commandContext);
             var sceneData = meshConverter.ConvertAnimation(SourcePath, Location);
-            //return sceneData;
-            throw new NotImplementedException();
+            return sceneData;
         }
 
         protected override Skeleton LoadSkeleton(ICommandContext commandContext, AssetManager assetManager)
         {
-            throw new NotImplementedException();
+            var meshConverter = this.CreateMeshConverter(commandContext);
+            var sceneData = meshConverter.ConvertSkeleton(SourcePath, Location);
+            return sceneData;
         }
 
         public override string ToString()

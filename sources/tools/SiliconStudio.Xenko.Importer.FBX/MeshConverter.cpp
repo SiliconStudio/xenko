@@ -1212,9 +1212,9 @@ public:
 		matrix.Decompose(scaling, rotation, translation);
 
 		// Setup the transform for this node
-		node->Transform.Translation = translation;
+		node->Transform.Position = translation;
 		node->Transform.Rotation = rotation;
-		node->Transform.Scaling = scaling;
+		node->Transform.Scale = scaling;
 
 		// Recursively process the children nodes.
 		for (int j = 0; j < pNode->GetChildCount(); j++)

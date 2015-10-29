@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -21,6 +22,23 @@ namespace SiliconStudio.Xenko.Assets.Model
         public const string FileExtension = ".xkskel";
 
         /// <summary>
+        /// Create an instance of <see cref="SkeletonAsset"/> with default values.
+        /// </summary>
+        public SkeletonAsset()
+        {
+            ScaleImport = 1.0f;
+        }
+
+        /// <summary>
+        /// Gets or sets the scale import.
+        /// </summary>
+        /// <value>The scale import.</value>
+        /// <userdoc>The scale applied when importing a model.</userdoc>
+        [DataMember(10)]
+        [DefaultValue(1.0f)]
+        public float ScaleImport { get; set; }
+
+        /// <summary>
         /// List that stores if a node should be preserved
         /// </summary>
         /// <userdoc>
@@ -29,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// Otherwise, all the meshes of model are merged and the node information is lost.
         /// Nodes should be preserved in order to be animated or linked to entities.
         /// </userdoc>
-        [DataMember(10), DiffMember(Diff3ChangeType.MergeFromAsset2)]
+        [DataMember(20), DiffMember(Diff3ChangeType.MergeFromAsset2)]
         public List<NodeInformation> Nodes { get; } = new List<NodeInformation>();
 
         protected override int InternalBuildOrder
