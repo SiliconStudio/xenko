@@ -479,7 +479,7 @@ namespace SiliconStudio {
 							if (camera->FieldOfViewY.GetCurve(animLayer))
 							{
 								curves[0] = camera->FieldOfViewY.GetCurve(animLayer);
-								auto FovAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
+								auto FovAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.VerticalFieldOfView", 1, curves, 0.01f);
 								ConvertDegreeToRadians(FovAnimChannel);
 
 								if (!exportedFromMaya)
@@ -490,20 +490,20 @@ namespace SiliconStudio {
 							if (camera->FocalLength.GetCurve(animLayer))
 							{
 								curves[0] = camera->FocalLength.GetCurve(animLayer);
-								auto flAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
+								auto flAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.VerticalFieldOfView", 1, curves, 0.01f);
 								ComputeFovFromFL(flAnimChannel, camera);
 							}
 
 							if (camera->NearPlane.GetCurve(animLayer))
 							{
 								curves[0] = camera->NearPlane.GetCurve(animLayer);
-								ProcessAnimationCurveVector<float>(animationClip, "Camera.NearPlane", 1, curves, 0.01f);
+								ProcessAnimationCurveVector<float>(animationClip, "Camera.NearClipPlane", 1, curves, 0.01f);
 							}
 
 							if (camera->FarPlane.GetCurve(animLayer))
 							{
 								curves[0] = camera->FarPlane.GetCurve(animLayer);
-								ProcessAnimationCurveVector<float>(animationClip, "Camera.FarPlane", 1, curves, 0.01f);
+								ProcessAnimationCurveVector<float>(animationClip, "Camera.FarClipPlane", 1, curves, 0.01f);
 							}
 						}
 

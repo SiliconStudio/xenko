@@ -37,6 +37,11 @@ namespace SiliconStudio.Xenko.Animations
         public AnimationRepeatMode RepeatMode { get; set; }
 
         /// <summary>
+        /// Gets or sets a boolean describing if root movement should be applied inside Skeleton (if false) or on TransformComponent (if true)
+        /// </summary>
+        public bool RootMotion { get; set; }
+
+        /// <summary>
         /// Gets the channels of this clip.
         /// </summary>
         /// <value>

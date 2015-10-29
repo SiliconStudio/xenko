@@ -153,8 +153,13 @@ namespace SiliconStudio.Xenko.Assets.Model
                         foreach (var channel in nodeAnimationClip.Channels)
                         {
                             var curve = nodeAnimationClip.Curves[channel.Value.CurveIndex];
-                            animationClip.AddCurve(
-                                $"[SiliconStudio.Xenko.Engine.ModelComponent,SiliconStudio.Xenko.Engine.Key].Skeleton.NodeTransformations[{skeletonMapping.SourceToTarget[nodeIndex]}]." + channel.Key, curve);
+
+                            // TODO: Root motion
+                            var channelName = channel.Key;
+                            if (channelName.StartsWith("Transform."))
+                            {
+                                animationClip.AddCurve($"[SiliconStudio.Xenko.Engine.ModelComponent,SiliconStudio.Xenko.Engine.Key].Skeleton.NodeTransformations[{skeletonMapping.SourceToTarget[nodeIndex]}]." + channelName, curve);
+                            }
                         }
 
                         // Take max of durations
@@ -165,7 +170,18 @@ namespace SiliconStudio.Xenko.Assets.Model
                 else
                 {
                     // No skeleton, map root node only
-                    throw new NotImplementedException();
+                    var rootNodeAnimationClip = animationClips[modelSkeleton.Nodes[0].Name];
+                    foreach (var channel in rootNodeAnimationClip.Channels)
+                    {
+                        var curve = rootNodeAnimationClip.Curves[channel.Value.CurveIndex];
+
+                        // Root motion
+                        var channelName = channel.Key;
+                        if (channelName.StartsWith("Transform."))
+                        {
+                            animationClip.AddCurve($"[SiliconStudio.Xenko.Engine.TransformComponent,SiliconStudio.Xenko.Engine.Key]." + channelName.Replace("Transform.", string.Empty), curve);
+                        }
+                    }
                 }
             }
 
