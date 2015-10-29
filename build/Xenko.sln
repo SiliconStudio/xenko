@@ -338,6 +338,7 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Launcher", "..\sources\install\SiliconStudio.Launcher\SiliconStudio.Launcher.csproj", "{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.CoreCLRBuilder", "..\sources\tools\SiliconStudio.CoreCLRBuilder\SiliconStudio.CoreCLRBuilder.csproj", "{85188363-84D8-45F8-A428-42D3301233CE}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests.Windows.csproj", "{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.10_0.Windows", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.Windows.csproj", "{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}"
