@@ -37,8 +37,7 @@
     <TargetFrameworkVersionToolLow>v4.5.1</TargetFrameworkVersionToolLow>
     <TargetFrameworkVersionTool>v4.5.2</TargetFrameworkVersionTool>
     <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
-    <XenkoSharpDXSdkBinDir Condition=" '$(SiliconStudioRuntime)' == '' ">$(XenkoSharpDXSdkDir)\Bin\Desktop</XenkoSharpDXSdkBinDir>
-    <XenkoSharpDXSdkBinDir Condition=" '$(SiliconStudioRuntime)' != '' ">$(XenkoSharpDXSdkDir)\Bin\Desktop-$(SiliconStudioRuntime)</XenkoSharpDXSdkBinDir>
+    <XenkoSharpDXSdkBinDir>$(XenkoSharpDXSdkDir)\Bin\Desktop</XenkoSharpDXSdkBinDir>
     <XenkoSharpDXAudioSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXAudioSdkBinDir>
     <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP;NET45</SiliconStudioPlatformDefines>
