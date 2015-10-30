@@ -141,9 +141,7 @@ namespace SiliconStudio.Xenko.Animations
                     animationComponent.CurrentFrameResult = associatedData.AnimationClipResult;
 
                     // Update animation data if we have a model component
-                    var modelViewHierarchy = associatedData.ModelComponent?.Skeleton;
-                    if (modelViewHierarchy != null)
-                        animationUpdater.Update(entity.Key, associatedData.AnimationClipResult);
+                    animationUpdater.Update(entity.Key, associatedData.AnimationClipResult);
                 }
 
                 // Update weight animation
