@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Animations
                 // Advance time for all playing animations with AutoPlay set to on
                 foreach (var playingAnimation in animationComponent.PlayingAnimations)
                 {
-                    if (playingAnimation.IsPlaying)
+                    if (playingAnimation.Enabled)
                     {
                         switch (playingAnimation.RepeatMode)
                         {
