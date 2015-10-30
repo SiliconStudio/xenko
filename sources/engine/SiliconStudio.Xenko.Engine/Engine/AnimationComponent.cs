@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Engine.Design;
@@ -151,6 +152,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>
         /// Active animations. Use this to customize startup animations.
         /// </userdoc>
+        [MemberCollection(CanReorderItems = true)]
         public TrackingCollection<PlayingAnimation> PlayingAnimations => playingAnimations;
 
         public override PropertyKey GetDefaultKey()
