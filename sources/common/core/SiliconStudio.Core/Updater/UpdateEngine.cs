@@ -424,6 +424,9 @@ namespace SiliconStudio.Core.Updater
             IntPtr currentPtr = UpdateEngineHelper.ObjectToPtr(currentObj);
 
             var operationCount = operations.Length;
+            if (operationCount == 0)
+                return;
+
             var operation = Interop.Pin(ref operations[0]);
             for (int index = 0; index < operationCount; index++)
             {
