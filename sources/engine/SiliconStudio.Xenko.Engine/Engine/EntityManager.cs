@@ -25,6 +25,8 @@ namespace SiliconStudio.Xenko.Engine
     {
         // TODO: Make this class threadsafe (current locks aren't sufficients)
 
+        public ExecutionMode ExecutionMode { get; protected set; } = ExecutionMode.Runtime;
+
         // List of all entities, with their respective processors
         private readonly TrackingDictionary<Entity, List<EntityProcessor>> entities;
 
@@ -424,7 +426,10 @@ namespace SiliconStudio.Xenko.Engine
                 {
                     continue;
                 }
-                RegisterProcessorType(processorType);
+
+                // Filter using ExecutionMode
+                if ((ExecutionMode & processorAttributeType.ExecutionMode) != ExecutionMode.None)
+                    RegisterProcessorType(processorType);
             }
         }
 

@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
             // safe guard for infinite recursion when setting component child scene on the scene that contains it.
             var scene = ContainingScene != component.Scene ? component.Scene : null;
-            component.SceneInstance = new SceneInstance(EntityManager.Services, scene, EntityManager.GetProcessor<ScriptProcessor>() != null);
+            component.SceneInstance = new SceneInstance(EntityManager.Services, scene, EntityManager.ExecutionMode);
         }
 
         protected override void OnEntityRemoved(Entity entity, ChildSceneComponent component)

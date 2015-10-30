@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </remarks>
     [DataContract("AnimationComponent")]
     [Display(20, "Animation", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentProcessor(typeof(AnimationProcessor))]
+    [DefaultEntityComponentProcessor(typeof(AnimationProcessor), ExecutionMode = ExecutionMode.Runtime)]
     public sealed class AnimationComponent : EntityComponent
     {
         private readonly Dictionary<string, AnimationClip> animations;
