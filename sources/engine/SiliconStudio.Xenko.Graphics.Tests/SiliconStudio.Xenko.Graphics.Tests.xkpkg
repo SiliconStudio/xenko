@@ -63,7 +63,6 @@ TemplateFolders: []
 RootAssets:
     - 05718a05-c688-4340-853a-e22ee854d9cf:DynamicFonts/ExternFont
     - 0dbf1792-c53a-41ea-9f98-ba65014c5277:DynamicFonts/CourierNew10
-    - 12fde36c-d5d6-4ead-b472-5d088d319b8c:BasicMaterial
     - 16e99f0d-a138-41e3-a424-9fcb5dcb1f81:ImageTypes/pngImage
     - 21069bb0-91b2-4570-be00-a70a1df67cb1:StaticFonts/TestBitmapFont
     - 215e8a1b-a56e-4103-b529-ddd1fbfaacce:DynamicFonts/Arial16
@@ -88,6 +87,7 @@ RootAssets:
     - 95518128-cbb7-4b55-bd38-d3232de12a34:ImageTypes/xkimgImage
     - 96066ad9-49e1-4fd0-9bac-6e192504573f:ImageTypes/jpgImage
     - 99bb5cc9-f931-4233-b71b-c57be97146d6:ImageTypes/debugImage
+    - a60c5fe7-6934-455f-bf6a-bd7abe1453d1:uv
     - a8c5497e-7dea-46ec-a818-5728f34f5cc5:StaticFonts/Arial16Bold
     - ac273d83-ded2-45b9-9789-37c5c5cd6c14:DynamicFonts/Arial16Bold
     - aed70788-54ce-4a84-bed9-c7f29bd71177:DynamicFonts/Calibri64
