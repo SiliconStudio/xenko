@@ -404,7 +404,7 @@ namespace SiliconStudio {
 						for (int i = 0; i < channel->KeyFrames->Count; ++i)
 						{
 							auto keyFrame = channel->KeyFrames[i];
-							keyFrame.Value = (float)FocalLengthToVerticalFov(pCamera->FilmHeight.Get(), keyFrame.Value);
+							keyFrame.Value = (float)(FocalLengthToVerticalFov(pCamera->FilmHeight.Get(), keyFrame.Value) * 180.0 / Math::PI);
 							channel->KeyFrames[i] = keyFrame;
 						}
 					}
@@ -480,10 +480,10 @@ namespace SiliconStudio {
 							{
 								curves[0] = camera->FieldOfViewY.GetCurve(animLayer);
 								auto FovAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.VerticalFieldOfView", 1, curves, 0.01f);
-								ConvertDegreeToRadians(FovAnimChannel);
 
-								if (!exportedFromMaya)
-									MultiplyChannel(FovAnimChannel, 0.6); // Random factor to match what we see in 3dsmax, need to check why!
+								// TODO: Check again Max
+								//if (!exportedFromMaya)
+								//	MultiplyChannel(FovAnimChannel, 0.6); // Random factor to match what we see in 3dsmax, need to check why!
 							}
 
 
