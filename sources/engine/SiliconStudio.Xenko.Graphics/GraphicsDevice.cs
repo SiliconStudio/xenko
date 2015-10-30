@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics.Internals;
@@ -14,6 +15,8 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class GraphicsDevice : ComponentBase
     {
+        static ProfilingKey GraphicsDeviceKey = new ProfilingKey("GraphicsDevice");
+
         public static readonly int ThreadCount = 1; //AppConfig.GetConfiguration<Config>("RenderSystem").ThreadCount;
 
         private const int MaxRenderTargetCount = 8;
@@ -50,6 +53,9 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly List<StateAndTargets> allocatedStates = new List<StateAndTargets>(10);
         private PrimitiveQuad primitiveQuad;
         private ColorSpace colorSpace;
+
+        private ProfilingState deviceProfilingState;
+        private uint frameTriangleCount, frameDrawCalls;
 
         /// <summary>
         /// Gets the type of the platform that graphics device is using.
