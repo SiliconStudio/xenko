@@ -59,6 +59,33 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         [DataMemberIgnore] public Dictionary<Guid, EntityBase> AssetBases = new Dictionary<Guid, EntityBase>();
 
+        public override Asset CreateChildAsset(string location)
+        {
+            var newAsset = (EntityAssetBase)base.CreateChildAsset(location);
+
+            // Process entities to create new ids for entities and base id
+            for (int i = 0; i < Hierarchy.Entities.Count; i++)
+            {
+                var oldEntityDesign = Hierarchy.Entities[i];
+                var newEntityDesign = newAsset.Hierarchy.Entities[i];
+                // Assign a new guid
+                newEntityDesign.Entity.Id = Guid.NewGuid();
+
+                // Store the baseid of the new version
+                newEntityDesign.Design.BaseId = oldEntityDesign.Entity.Id;
+
+                // If entity is root, update RootEntities
+                // TODO: might not be optimal if many root entities (should use dictionary and second pass on RootEntities)
+                int indexRoot = newAsset.Hierarchy.RootEntities.IndexOf(oldEntityDesign.Entity.Id);
+                if (indexRoot >= 0)
+                {
+                    newAsset.Hierarchy.RootEntities[indexRoot] = newEntityDesign.Entity.Id;
+                }
+            }
+
+            return newAsset;
+        }
+
         void IDiffResolver.BeforeDiff(Asset baseAsset, Asset asset1, Asset asset2)
         {
             Guid newId;

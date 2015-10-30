@@ -158,7 +158,7 @@ namespace SiliconStudio.Assets.Visitors
         {
             // Skip some properties that are not using when visiting
             if ((typeof(AssetImport).IsAssignableFrom(member.DeclaringType) && (member.Name == "ImporterId" || member.Name == "SourceHash"))
-                || typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == "~Base" || member.Name == "Id"))
+                || typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name.StartsWith("~Base") || member.Name == "Id"))
             {
                 return false;
             }
