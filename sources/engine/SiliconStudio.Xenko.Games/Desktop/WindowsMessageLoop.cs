@@ -20,19 +20,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Globalization;
 #if !SILICONSTUDIO_UI_SDL2
 using System.Windows.Forms;
+using SharpDX.Win32;
 #else
 using SiliconStudio.Xenko.Graphics.SDL;
 using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
 using SDL2;
 #endif
 using System.Runtime.InteropServices;
-
-using SharpDX.Win32;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -250,20 +249,6 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is application idle.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance is application idle; otherwise, <c>false</c>.
-        /// </value>
-        public static bool IsIdle
-        {
-            get
-            {
-                NativeMessage msg;
-                return (bool)(Win32Native.PeekMessage(out msg, IntPtr.Zero, 0, 0, 0) == 0);
-            }
-        }
    }
 }
 #endif

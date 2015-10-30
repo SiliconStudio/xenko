@@ -20,7 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_RUNTIME_CORECLR
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.IO;
 using System.Reflection;
@@ -32,14 +32,22 @@ namespace SiliconStudio.Xenko.Games
         public GamePlatformDesktop(GameBase game) : base(game)
         {
             IsBlockingRun = true;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+                // This is required by the Audio subsystem of SharpDX.
+            Win32Native.CoInitialize(IntPtr.Zero);
+#endif
         }
 
         public override string DefaultAppDirectory
         {
             get
             {
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                 var assemblyUri = new Uri(Assembly.GetEntryAssembly().CodeBase);
                 return Path.GetDirectoryName(assemblyUri.LocalPath);
+#else
+                return AppContext.BaseDirectory;
+#endif
             }
         }
 
@@ -47,10 +55,10 @@ namespace SiliconStudio.Xenko.Games
         {
             return new GameWindow[]
                 {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
-                    new GameWindowDesktop(),
-#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && !SILICONSTUDIO_UI_SDL2
                     new GameWindowOpenTK(),
+#else
+                    new GameWindowDesktop(),
 #endif
                 };
         }

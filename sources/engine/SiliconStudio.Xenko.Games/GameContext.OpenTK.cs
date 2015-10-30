@@ -20,7 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && !SILICONSTUDIO_UI_SDL2
 using System;
 using OpenTK;
 using OpenTK.Graphics;
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Games
                     // PC: 4.3 is commonly available (= compute shaders)
                     // MacOS X: 4.1 maximum
                     versionMajor = 4;
-                    versionMinor = 1;
+                    versionMinor = 3;
 #endif
                     Control = TryGameWindow(requestedWidth, requestedHeight, graphicMode, versionMajor, versionMinor, creationFlags);
                 }

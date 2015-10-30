@@ -49,7 +49,6 @@
     <Compile Include="Android\GamePlatformAndroid.cs" />
     <Compile Include="Android\GameWindowAndroid.cs" />
     <Compile Include="AssemblyDoc.cs" />
-    <Compile Include="Desktop\GamePlatformDesktopCoreCLR.cs" />
     <Compile Include="Desktop\GameForm.cs">
       <SubType>Form</SubType>
     </Compile>
