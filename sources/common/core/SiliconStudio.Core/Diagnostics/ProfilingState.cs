@@ -437,14 +437,20 @@ namespace SiliconStudio.Core.Diagnostics
             {
                 startTime = timeStamp;
             }
-            else if (profilingType == ProfilingMessageType.End)
+
+            //this actually stores the LAST text into beginText so to be able to add it at the end
+            if(profilingType != ProfilingMessageType.End && text != null)
             {
-                beginText = null;
+                beginText = text;
             }
 
             // Create profiler event
-            // TODO ideally we should make a copy of the attributes
-            var profilerEvent = new ProfilingEvent(profilingId, profilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes, value0, value1, value2, value3);
+            var profilerEvent = new ProfilingEvent(profilingId, profilingKey, profilingType, timeStamp, timeStamp - startTime, beginText ?? text, attributes, value0, value1, value2, value3);
+
+            if (profilingType == ProfilingMessageType.End)
+            {
+                beginText = null;
+            }
 
             // Send profiler event to Profiler
             Profiler.ProcessEvent(ref profilerEvent);

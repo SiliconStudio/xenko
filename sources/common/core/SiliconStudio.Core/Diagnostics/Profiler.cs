@@ -2,55 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Diagnostics;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Core.Diagnostics
 {
-    [StructLayout(LayoutKind.Explicit)]
-    public struct ProfilingCustomValue
-    {
-        [FieldOffset(0)]
-        public int IntValue;
-
-        [FieldOffset(0)]
-        public float FloatValue;
-
-        [FieldOffset(0)]
-        public long LongValue;
-
-        [FieldOffset(0)]
-        public double DoubleValue;
-
-        [FieldOffset(8)]
-        public Type ValueType;
-
-        public static implicit operator ProfilingCustomValue(int value)
-        {
-            return new ProfilingCustomValue { IntValue = value, ValueType = typeof(int) };
-        }
-
-        public static implicit operator ProfilingCustomValue(float value)
-        {
-            return new ProfilingCustomValue { FloatValue = value, ValueType = typeof(float) };
-        }
-
-        public static implicit operator ProfilingCustomValue(long value)
-        {
-            return new ProfilingCustomValue { LongValue = value, ValueType = typeof(long) };
-        }
-
-        public static implicit operator ProfilingCustomValue(double value)
-        {
-            return new ProfilingCustomValue { DoubleValue = value, ValueType = typeof(double) };
-        }
-    }
-
     /// <summary>
     /// Delegate called when a <see cref="ProfilingState"/> is disposed (end of profiling).
     /// </summary>
@@ -238,6 +196,47 @@ namespace SiliconStudio.Core.Diagnostics
         {
             var profiler = New(profilingKey);
             profiler.Begin(textFormat, textFormatArguments);
+            return profiler;
+        }
+
+        /// <summary>
+        /// Creates a profiler with the specified key. The returned object must be disposed at the end of the section
+        /// being profiled. See remarks.
+        /// </summary>
+        /// <param name="profilingKey">The profile key.</param>
+        /// <param name="textFormat">The text to format.</param>
+        /// <param name="value0"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
+        /// <param name="value3"></param>
+        /// <returns>A profiler state.</returns>
+        /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
+        /// <see cref="ProfilingState" /> returned object.</remarks>
+        public static ProfilingState Begin(ProfilingKey profilingKey, string textFormat, ProfilingCustomValue value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
+        {
+            var profiler = New(profilingKey);
+            if (value1.HasValue)
+            {
+                if (value2.HasValue)
+                {
+                    if (value3.HasValue)
+                    {
+                        profiler.Begin(textFormat, value0, value1.Value, value2.Value, value3.Value);
+                    }
+                    else
+                    {
+                        profiler.Begin(textFormat, value0, value1.Value, value2.Value);
+                    }
+                }
+                else
+                {
+                    profiler.Begin(textFormat, value0, value1.Value);
+                }
+            }
+            else
+            {
+                profiler.Begin(textFormat, value0);
+            }
             return profiler;
         }
 

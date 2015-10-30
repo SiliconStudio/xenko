@@ -6,9 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Diagnostics;
-using System.Collections.Concurrent;
-using System.Linq;
-using SiliconStudio.Xenko.Profiling;
 
 namespace SiliconStudio.Xenko.Physics
 {

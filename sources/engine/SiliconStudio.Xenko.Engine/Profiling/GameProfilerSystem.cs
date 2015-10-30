@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Text;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
@@ -27,9 +28,6 @@ namespace SiliconStudio.Xenko.Profiling
 
         private readonly StringBuilder profilersString = new StringBuilder();
 
-        private readonly SortedDictionary<ProfilingResult, ProfilingEvent> microthreadEvents = new SortedDictionary<ProfilingResult, ProfilingEvent>(new ProfilingResult());
-        private readonly Dictionary<ProfilingResult, ProfilingEvent> normalEvents = new Dictionary<ProfilingResult, ProfilingEvent>();
-
         struct ProfilingResult : IComparer<ProfilingResult>
         {
             public long AccumulatedTime;
@@ -45,6 +43,7 @@ namespace SiliconStudio.Xenko.Profiling
 
         private readonly List<ProfilingResult> profilingResults = new List<ProfilingResult>();
         private readonly Dictionary<ProfilingKey, ProfilingResult> profilingResultsDictionary = new Dictionary<ProfilingKey, ProfilingResult>();
+        private readonly Dictionary<string, ProfilingResult> scriptsProfilingResultsDictionary = new Dictionary<string, ProfilingResult>();
 
         public GameProfilingSystem(IServiceRegistry registry) : base(registry)
         {
@@ -122,7 +121,14 @@ namespace SiliconStudio.Xenko.Profiling
                     profilingResult.Count++;
                 }
 
-                profilingResultsDictionary[e.Key] = profilingResult;  
+                if (e.Key == MicroThread.ProfilingKey)
+                {
+                    scriptsProfilingResultsDictionary[e.Text] = profilingResult;
+                }
+                else
+                {
+                    profilingResultsDictionary[e.Key] = profilingResult;
+                }
             }
 
             profilersString.Clear();
@@ -130,13 +136,28 @@ namespace SiliconStudio.Xenko.Profiling
 
             foreach (var profilingResult in profilingResultsDictionary)
             {
-                if (profilingResult.Value.Event.HasValue)
-                {
-                    profilingResults.Add(profilingResult.Value);
-                }
+                if (!profilingResult.Value.Event.HasValue) continue;
+                profilingResults.Add(profilingResult.Value);
             }
 
             profilingResultsDictionary.Clear();
+
+            profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
+
+            foreach (var result in profilingResults)
+            {
+                AppendEvent(result, result.Event.Value, elapsedTime);
+            }
+
+            profilingResults.Clear();
+
+            foreach (var profilingResult in scriptsProfilingResultsDictionary)
+            {
+                if (!profilingResult.Value.Event.HasValue) continue;
+                profilingResults.Add(profilingResult.Value);
+            }
+
+            scriptsProfilingResultsDictionary.Clear();
 
             profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
 

@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
@@ -33,14 +32,12 @@ namespace SiliconStudio.Xenko.Physics
         private Simulation simulation;
 
         public static ProfilingKey CharactersProfilingKey = new ProfilingKey(Simulation.SimulationProfilingKey, "Characters");
-        private ProfilingState charactersProfilingState;
 
         private PhysicsDebugShapeRendering debugShapeRendering;
 
         public PhysicsProcessor()
             : base(PhysicsComponent.Key, TransformComponent.Key)
         {
-            charactersProfilingState = Profiler.New(CharactersProfilingKey);
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -459,7 +456,8 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void UpdateCharacters()
         {
-            charactersProfilingState.Begin();
+            var charactersProfilingState = Profiler.Begin(CharactersProfilingKey);
+            var activeCharacters = 0;
             //characters need manual updating
             foreach (var element in characters)
             {
@@ -478,12 +476,9 @@ namespace SiliconStudio.Xenko.Physics
                 }
 
                 charactersProfilingState.Mark();
-            charactersProfilingState.Begin();
-                if(!element.Collider.Enabled) continue;
-
-                charactersProfilingState.Mark();
+                activeCharacters++;
             }
-            charactersProfilingState.End();
+            charactersProfilingState.End("Active characters: {0}", activeCharacters);
         }
 
         public override void Draw(RenderContext context)
