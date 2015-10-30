@@ -75,6 +75,10 @@ Settings:
                 - Physics
                 - Transform
                 - Physics
+                - Transform
+                - Physics
+                - Transform
+                - Physics
                 - Physics
                 - Transform
             RenderMode: SingleStream
