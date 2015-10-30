@@ -249,11 +249,21 @@ namespace SiliconStudio.Xenko.Profiling
             spriteBatch.End();
         }
 
-        public void EnableProfiling()
+        public void EnableProfiling(params ProfilingKey[] keys)
         {
             Enabled = true;
             Visible = true;
-            Profiler.EnableAll();
+            if (keys.Length == 0)
+            {
+                Profiler.EnableAll();
+            }
+            else
+            {
+                foreach (var profilingKey in keys)
+                {
+                    Profiler.Enable(profilingKey);
+                }
+            }
             gcProfiler.Enable();
         }
 
