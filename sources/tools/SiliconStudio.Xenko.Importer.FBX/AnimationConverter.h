@@ -607,8 +607,79 @@ namespace SiliconStudio {
 
 					void SetPivotStateRecursive(FbxNode* pNode)
 					{
+						// From FbxNode.h
+						FbxVector4 lZero(0, 0, 0);
+						FbxVector4 lOne(1, 1, 1);
 						pNode->SetPivotState(FbxNode::eSourcePivot, FbxNode::ePivotActive);
 						pNode->SetPivotState(FbxNode::eDestinationPivot, FbxNode::ePivotActive);
+
+						EFbxRotationOrder lRotationOrder;
+						pNode->GetRotationOrder(FbxNode::eSourcePivot, lRotationOrder);
+						pNode->SetRotationOrder(FbxNode::eDestinationPivot, lRotationOrder);
+
+						//For cameras and lights (without targets) let's compensate the postrotation.
+						if (pNode->GetCamera() || pNode->GetLight())
+						{
+							if (!pNode->GetTarget())
+							{
+								FbxVector4 lRV(90, 0, 0);
+								if (pNode->GetCamera())
+									lRV.Set(0, 90, 0);
+
+								FbxVector4 prV = pNode->GetPostRotation(FbxNode::eSourcePivot);
+								FbxAMatrix lSourceR;
+								FbxAMatrix lR(lZero, lRV, lOne);
+								FbxVector4 res = prV;
+
+								// Rotation order don't affect post rotation, so just use the default XYZ order
+								FbxRotationOrder rOrder;
+								rOrder.V2M(lSourceR, res);
+
+								lR = lSourceR * lR;
+								rOrder.M2V(res, lR);
+								prV = res;
+								pNode->SetPostRotation(FbxNode::eSourcePivot, prV);
+								pNode->SetRotationActive(true);
+							}
+
+							// Point light do not need to be adjusted (since they radiate in all the directions).
+							if (pNode->GetLight() && pNode->GetLight()->LightType.Get() == FbxLight::ePoint)
+							{
+								pNode->SetPostRotation(FbxNode::eSourcePivot, FbxVector4(0, 0, 0, 0));
+							}
+						}
+						// apply Pre rotations only on bones / end of chains
+						if (pNode->GetNodeAttribute() && pNode->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton
+							|| (pNode->GetMarker() && pNode->GetMarker()->GetType() == FbxMarker::eEffectorFK)
+							|| (pNode->GetMarker() && pNode->GetMarker()->GetType() == FbxMarker::eEffectorIK))
+						{
+							if (pNode->GetRotationActive())
+							{
+								pNode->SetPreRotation(FbxNode::eDestinationPivot, pNode->GetPreRotation(FbxNode::eSourcePivot));
+							}
+
+							// No pivots on bones
+							pNode->SetRotationPivot(FbxNode::eDestinationPivot, lZero);
+							pNode->SetScalingPivot(FbxNode::eDestinationPivot, lZero);
+							pNode->SetRotationOffset(FbxNode::eDestinationPivot, lZero);
+							pNode->SetScalingOffset(FbxNode::eDestinationPivot, lZero);
+						}
+						else
+						{
+							// any other type: no pre-rotation support but...
+							pNode->SetPreRotation(FbxNode::eDestinationPivot, lZero);
+
+							// support for rotation and scaling pivots.
+							pNode->SetRotationPivot(FbxNode::eDestinationPivot, pNode->GetRotationPivot(FbxNode::eSourcePivot));
+							pNode->SetScalingPivot(FbxNode::eDestinationPivot, pNode->GetScalingPivot(FbxNode::eSourcePivot));
+							// Rotation and scaling offset are supported
+							pNode->SetRotationOffset(FbxNode::eDestinationPivot, pNode->GetRotationOffset(FbxNode::eSourcePivot));
+							pNode->SetScalingOffset(FbxNode::eDestinationPivot, pNode->GetScalingOffset(FbxNode::eSourcePivot));
+							//
+							// If we don't "support" scaling pivots, we can simply do:
+							// pNode->SetRotationPivot(FbxNode::eDestinationPivot, lZero);
+							// pNode->SetScalingPivot(FbxNode::eDestinationPivot, lZero);
+						}
 
 						for (int i = 0; i < pNode->GetChildCount(); ++i)
 						{
