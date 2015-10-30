@@ -35,6 +35,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         // Animation
         public AnimationRepeatMode AnimationRepeatMode { get; set; }
+        public bool AnimationRootMotion { get; set; }
 
         public static ImportModelCommand Create(string extension)
         {

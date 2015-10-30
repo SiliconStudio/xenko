@@ -56,6 +56,16 @@ namespace SiliconStudio.Xenko.Assets.Model
         public Skeleton Skeleton { get; set; }
 
         /// <summary>
+        /// Gets or sets a boolean describing if root movement should be applied inside Skeleton (if false and a skeleton exists) or on TransformComponent (if true)
+        /// </summary>
+        /// <userdoc>
+        /// When root motion is enabled, main motion will be applied to TransformComponent. If false, it will be applied inside the skeleton nodes.
+        /// Note that if there is no skeleton, it will always apply motion to TransformComponent.
+        /// </userdoc>
+        [DataMember(60)]
+        public bool RootMotion { get; set; }
+
+        /// <summary>
         /// Create an instance of <see cref="AnimationAsset"/> with default values.
         /// </summary>
         public AnimationAsset()

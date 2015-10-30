@@ -43,6 +43,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             sourceBuildStep.SourcePath = assetSource;
             sourceBuildStep.Location = urlInStorage;
             sourceBuildStep.AnimationRepeatMode = asset.RepeatMode;
+            sourceBuildStep.AnimationRootMotion = asset.RootMotion;
             sourceBuildStep.ScaleImport = asset.ScaleImport;
             sourceBuildStep.SkeletonUrl = skeleton?.Location;
 
@@ -68,6 +69,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                 baseBuildStep.SourcePath = baseAssetSource;
                 baseBuildStep.Location = baseUrlInStorage;
                 baseBuildStep.AnimationRepeatMode = asset.RepeatMode;
+                baseBuildStep.AnimationRootMotion = asset.RootMotion;
                 baseBuildStep.ScaleImport = asset.ScaleImport;
                 baseBuildStep.SkeletonUrl = skeleton?.Location;
 
