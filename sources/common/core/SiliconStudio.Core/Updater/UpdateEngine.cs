@@ -37,7 +37,9 @@ namespace SiliconStudio.Core.Updater
             public UpdateOperationType LeaveOperation;
             public int LeaveOffset;
 
-            public AnimationBuilderStackEntry(Type type, int startIndex, int endIndex)
+            public int OperationIndex;
+
+            public AnimationBuilderStackEntry(Type type, int startIndex, int endIndex, int operationIndex)
             {
                 Type = type;
                 StartIndex = startIndex;
@@ -48,6 +50,8 @@ namespace SiliconStudio.Core.Updater
                 Member = null;
                 LeaveOperation = UpdateOperationType.Invalid;
                 LeaveOffset = 0;
+
+                OperationIndex = operationIndex;
             }
         }
 
@@ -83,7 +87,7 @@ namespace SiliconStudio.Core.Updater
             state.UpdateOperations = new List<UpdateOperation>();
             state.StackPath = new List<AnimationBuilderStackEntry>
             {
-                new AnimationBuilderStackEntry(rootObjectType, 0, 0),
+                new AnimationBuilderStackEntry(rootObjectType, 0, 0, -1),
             };
 
             foreach (var animationPath in animationPaths)
@@ -201,7 +205,8 @@ namespace SiliconStudio.Core.Updater
                             }
 
                             // Push entry with new type
-                            state.StackPath.Add(new AnimationBuilderStackEntry(type, state.ParseElementStart, state.ParseElementEnd)
+                            // TODO: Should we actually perform an early castclass and skip if type is incorrect?
+                            state.StackPath.Add(new AnimationBuilderStackEntry(type, state.ParseElementStart, state.ParseElementEnd, -1)
                             {
                                 ObjectStartOffset = state.NewOffset,
                             });
@@ -281,6 +286,14 @@ namespace SiliconStudio.Core.Updater
 
                     // We execute a leave operation, previous stack will be restored
                     state.PreviousOffset = stackPathPart.LeaveOffset;
+                }
+
+                // Sets how many operations to skip in case the object we entered was null
+                if (stackPathPart.OperationIndex != -1)
+                {
+                    var updateOperation = state.UpdateOperations[stackPathPart.OperationIndex];
+                    updateOperation.SkipCountIfNull = state.UpdateOperations.Count - stackPathPart.OperationIndex - 1;
+                    state.UpdateOperations[stackPathPart.OperationIndex] = updateOperation;
                 }
             }
         }
@@ -363,6 +376,7 @@ namespace SiliconStudio.Core.Updater
                             Member = updatableProperty,
                             AdjustOffset = state.NewOffset - state.PreviousOffset,
                             DataOffset = temporaryObjectIndex,
+                            SkipCountIfNull = -1,
                         });
 
                         leaveOffset = state.NewOffset;
@@ -374,7 +388,7 @@ namespace SiliconStudio.Core.Updater
             // No need to add the last part of the path, as we rarely set and then enter (and if we do we need to reevaluate updated value anyway)
             if (state.ParseElementEnd < animationPath.Name.Length)
             {
-                state.StackPath.Add(new AnimationBuilderStackEntry(updatableMember.MemberType, state.ParseElementStart, state.ParseElementEnd)
+                state.StackPath.Add(new AnimationBuilderStackEntry(updatableMember.MemberType, state.ParseElementStart, state.ParseElementEnd, state.UpdateOperations.Count - 1)
                 {
                     Member = updatableMember,
                     LeaveOperation = leaveOperation,
@@ -400,6 +414,7 @@ namespace SiliconStudio.Core.Updater
 
             // Current object being processed
             object currentObj = target;
+            object nextObject;
 
             // This object needs to be pinned since we will have a pointer to its memory
             // Note that the stack don't need to have each of its object pinned since we store entries as object + offset
@@ -419,6 +434,14 @@ namespace SiliconStudio.Core.Updater
                 {
                     case UpdateOperationType.EnterObjectProperty:
                     {
+                        nextObject = ((UpdatableProperty)operation.Member).GetObject(currentPtr);
+                        if (nextObject == null && operation.SkipCountIfNull != -1)
+                        {
+                            index += operation.SkipCountIfNull;
+                            operation = Interop.AddPinned(operation, operation.SkipCountIfNull);
+                            break;
+                        }
+
                         // Compute offset and push to stack
                         stack.Push(new UpdateStackEntry
                         {
@@ -427,8 +450,9 @@ namespace SiliconStudio.Core.Updater
                         });
 
                         // Get object
-                        currentObj = ((UpdatableProperty)operation.Member).GetObject(currentPtr);
+                        currentObj = nextObject;
                         currentPtr = UpdateEngineHelper.ObjectToPtr(currentObj);
+
                         break;
                     }
                     case UpdateOperationType.EnterStructPropertyBase:
@@ -447,6 +471,14 @@ namespace SiliconStudio.Core.Updater
                     }
                     case UpdateOperationType.EnterObjectField:
                     {
+                        nextObject = ((UpdatableField)operation.Member).GetObject(currentPtr);
+                        if (nextObject == null && operation.SkipCountIfNull != -1)
+                        {
+                            index += operation.SkipCountIfNull;
+                            operation = Interop.AddPinned(operation, operation.SkipCountIfNull);
+                            break;
+                        }
+
                         // Compute offset and push to stack
                         stack.Push(new UpdateStackEntry
                         {
@@ -455,12 +487,20 @@ namespace SiliconStudio.Core.Updater
                         });
 
                         // Get object
-                        currentObj = ((UpdatableField)operation.Member).GetObject(currentPtr);
+                        currentObj = nextObject;
                         currentPtr = UpdateEngineHelper.ObjectToPtr(currentObj);
                         break;
                     }
                     case UpdateOperationType.EnterObjectCustom:
                     {
+                        nextObject = ((UpdatableCustomAccessor)operation.Member).GetObject(currentPtr);
+                        if (nextObject == null && operation.SkipCountIfNull != -1)
+                        {
+                            index += operation.SkipCountIfNull;
+                            operation = Interop.AddPinned(operation, operation.SkipCountIfNull);
+                            break;
+                        }
+
                         // Compute offset and push to stack
                         stack.Push(new UpdateStackEntry
                         {
@@ -469,7 +509,7 @@ namespace SiliconStudio.Core.Updater
                         });
 
                         // Get object
-                        currentObj = ((UpdatableCustomAccessor)operation.Member).GetObject(currentPtr);
+                        currentObj = nextObject;
                         currentPtr = UpdateEngineHelper.ObjectToPtr(currentObj);
                         break;
                     }

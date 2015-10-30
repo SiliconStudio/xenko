@@ -267,6 +267,52 @@ namespace SiliconStudio.Core.Tests
             Assert.That(test.TestClassArray[1].IntField, Is.EqualTo(456));
         }
 
+        [Test]
+        public void TestNullSkip()
+        {
+            var test = new TestClass { IntList = null, IntArray = null };
+
+            UpdateEngine.RegisterMemberResolver(new ArrayUpdateResolver<int>());
+            UpdateEngine.RegisterMemberResolver(new ListUpdateResolver<int>());
+            UpdateEngine.RegisterMemberResolver(new ArrayUpdateResolver<TestClass>());
+
+            // Combine many of the other tests in one, to easily test if switching from one member to another works well
+            var updateMemberInfo = new List<UpdateMemberInfo>
+            {
+                new UpdateMemberInfo("NonBlittableStructField.TestClassField.IntField", 0),
+                new UpdateMemberInfo("NonBlittableStructField.TestClassField.IntProperty", 0),
+                new UpdateMemberInfo("NonBlittableStructField.TestClassProperty.IntField", 0),
+                new UpdateMemberInfo("NonBlittableStructField.TestClassProperty.IntProperty", 0),
+                new UpdateMemberInfo("ObjectField.(SiliconStudio.Core.Tests.TestClass,SiliconStudio.Core.Tests).IntField", 0),
+                new UpdateMemberInfo("ObjectProperty.(SiliconStudio.Core.Tests.TestClass,SiliconStudio.Core.Tests).IntField", 0),
+                new UpdateMemberInfo("IntArray[0]", 0),
+                new UpdateMemberInfo("IntArray[2]", 0),
+                new UpdateMemberInfo("IntArray[3]", 0),
+                new UpdateMemberInfo("IntField", 0),
+                new UpdateMemberInfo("IntList[0]", 0),
+                new UpdateMemberInfo("IntList[2]", 0),
+                new UpdateMemberInfo("IntList[3]", 0),
+                new UpdateMemberInfo("TestClassArray[0].IntField", 0),
+                new UpdateMemberInfo("TestClassArray[1].IntField", 0),
+                new UpdateMemberInfo("IntProperty", 0),
+            };
+
+            var blittableData = new TestData[] { 123 };
+
+            // Just check that it doesn't crash and some set are properly done
+            RunUpdateEngine(test, updateMemberInfo, blittableData, null);
+
+            Assert.That(test.IntField, Is.EqualTo(123));
+            Assert.That(test.IntProperty, Is.EqualTo(123));
+
+            // Also try with null array
+            test.TestClassArray = null;
+            blittableData[0] = 456;
+            RunUpdateEngine(test, updateMemberInfo, blittableData, null);
+            Assert.That(test.IntField, Is.EqualTo(456));
+            Assert.That(test.IntProperty, Is.EqualTo(456));
+        }
+
         private static unsafe void RunUpdateEngine(TestClass test, List<UpdateMemberInfo> updateMemberInfo, TestData[] blittableData, UpdateObjectData[] objectData)
         {
             var compiledUpdate = UpdateEngine.Compile(test.GetType(), updateMemberInfo);

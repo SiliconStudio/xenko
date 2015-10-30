@@ -41,6 +41,11 @@ namespace SiliconStudio.Core
             throw new NotImplementedException();
         }
 
+        public static T AddPinned<T>(T source, int offset) where T : struct
+        {
+            throw new NotImplementedException();
+        }
+
         public static void Pin<T>(T data) where T : class
         {
             throw new NotImplementedException();

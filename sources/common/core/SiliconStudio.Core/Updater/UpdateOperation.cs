@@ -12,6 +12,9 @@ namespace SiliconStudio.Core.Updater
 
         // Note: It is either an offset (blittable struct) or an index into object array (reference types and non blittable struct)
         public int DataOffset;
+
+        // Number of operations to skip if this is null
+        public int SkipCountIfNull;
     
         public override string ToString()
         {
