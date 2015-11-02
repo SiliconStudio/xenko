@@ -539,7 +539,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void End()
         {
-            deviceProfilingState.End("Triangle count: {0} Draw calls {1}", frameTriangleCount, frameDrawCalls);
+            deviceProfilingState.End("Triangle count: {0} Draw calls: {1} Buffers mem: {2}M Textures mem: {3}M", frameTriangleCount, frameDrawCalls, BuffersMemory, TextureMemory);
         }
 
         /// <summary>
