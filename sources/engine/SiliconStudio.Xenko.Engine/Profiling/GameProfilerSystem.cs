@@ -35,6 +35,12 @@ namespace SiliconStudio.Xenko.Profiling
             public long MaxTime;
             public int Count;
             public ProfilingEvent? Event;
+
+            public ProfilingCustomValue? Custom0;
+            public ProfilingCustomValue? Custom1;
+            public ProfilingCustomValue? Custom2;
+            public ProfilingCustomValue? Custom3;
+
             public int Compare(ProfilingResult x, ProfilingResult y)
             {
                 return Math.Sign(x.AccumulatedTime - y.AccumulatedTime);
@@ -121,6 +127,23 @@ namespace SiliconStudio.Xenko.Profiling
                     profilingResult.Count++;
                 }
 
+                if (e.Custom0.HasValue)
+                {
+                    profilingResult.Custom0 = e.Custom0.Value;
+                }
+                if (e.Custom1.HasValue)
+                {
+                    profilingResult.Custom1 = e.Custom1.Value;
+                }
+                if (e.Custom2.HasValue)
+                {
+                    profilingResult.Custom2 = e.Custom2.Value;
+                }
+                if (e.Custom3.HasValue)
+                {
+                    profilingResult.Custom3 = e.Custom3.Value;
+                }
+
                 if (e.Key == MicroThread.ProfilingKey)
                 {
                     scriptsProfilingResultsDictionary[e.Text] = profilingResult;
@@ -128,7 +151,7 @@ namespace SiliconStudio.Xenko.Profiling
                 else
                 {
                     profilingResultsDictionary[e.Key] = profilingResult;
-                }
+                }  
             }
 
             profilersString.Clear();
@@ -187,21 +210,21 @@ namespace SiliconStudio.Xenko.Profiling
                 values[1] = defaultValue;
                 values[2] = defaultValue;
                 values[3] = defaultValue;
-                if (e.Custom0.HasValue && e.Custom0.Value.ValueType != null)
+                if (profilingResult.Custom0.HasValue && profilingResult.Custom0.Value.ValueType != null)
                 {
-                    FillValue(e.Custom0.Value, ref values[0]);
+                    FillValue(profilingResult.Custom0.Value, ref values[0]);
                 }
-                if (e.Custom1.HasValue && e.Custom1.Value.ValueType != null)
+                if (profilingResult.Custom1.HasValue && profilingResult.Custom1.Value.ValueType != null)
                 {
-                    FillValue(e.Custom1.Value, ref values[1]);
+                    FillValue(profilingResult.Custom1.Value, ref values[1]);
                 }
-                if (e.Custom2.HasValue && e.Custom2.Value.ValueType != null)
+                if (profilingResult.Custom2.HasValue && profilingResult.Custom2.Value.ValueType != null)
                 {
-                    FillValue(e.Custom2.Value, ref values[2]);
+                    FillValue(profilingResult.Custom2.Value, ref values[2]);
                 }
-                if (e.Custom3.HasValue && e.Custom3.Value.ValueType != null)
+                if (profilingResult.Custom3.HasValue && profilingResult.Custom3.Value.ValueType != null)
                 {
-                    FillValue(e.Custom3.Value, ref values[3]);
+                    FillValue(profilingResult.Custom3.Value, ref values[3]);
                 }
 
                 profilersString.AppendFormat(e.Text, values);
