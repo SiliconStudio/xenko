@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         None = 0,
         Runtime = 1,
         Editor = 2,
-        All = Runtime | Editor,
+        Thumbnail = 4,
+        All = Runtime | Editor | Thumbnail,
     }
 }
