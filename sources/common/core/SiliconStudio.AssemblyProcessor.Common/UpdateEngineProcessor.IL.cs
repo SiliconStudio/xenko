@@ -199,7 +199,6 @@ namespace SiliconStudio.AssemblyProcessor
                 // UpdatableProperty.GetObject
                 var getObject = RewriteBody(declaringType.Methods.First(x => x.Name == "GetObject"));
                 getObject.Emit(OpCodes.Ldarg, getObject.Body.Method.Parameters[0]);
-                getObject.Emit(OpCodes.Ldarg_0);
                 EmitGetCode(getObject, declaringType.GenericParameters[0]);
                 getObject.Emit(OpCodes.Ret);
 
@@ -208,7 +207,6 @@ namespace SiliconStudio.AssemblyProcessor
                 setObject.Emit(OpCodes.Ldarg, setObject.Body.Method.Parameters[0]);
                 EmitSetCodeBeforeValue(setObject, declaringType.GenericParameters[0]);
                 setObject.Emit(OpCodes.Ldarg, setObject.Body.Method.Parameters[1]);
-                setObject.Emit(OpCodes.Ldarg_0);
                 EmitSetCodeAfterValue(setObject, declaringType.GenericParameters[0]);
                 setObject.Emit(OpCodes.Ret);
 

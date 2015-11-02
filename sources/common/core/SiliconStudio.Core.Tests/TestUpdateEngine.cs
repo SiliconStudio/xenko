@@ -207,6 +207,33 @@ namespace SiliconStudio.Core.Tests
         }
 
         [Test]
+        public void TestTestClassList()
+        {
+            UpdateEngine.RegisterMemberResolver(new ListUpdateResolver<TestClass>());
+
+            var test = new TestClass();
+            var test2 = new TestClass();
+
+            var updateMemberInfo = new List<UpdateMemberInfo>
+            {
+                new UpdateMemberInfo("TestClassList[0]", 0),
+                new UpdateMemberInfo("TestClassList[0].IntField", 0),
+                new UpdateMemberInfo("TestClassList[1]", 1),
+                new UpdateMemberInfo("TestClassList[1].IntField", 8),
+            };
+
+            var blittableData = new TestData[] { 123, 456 };
+            var objectData = new[] { new UpdateObjectData(test), new UpdateObjectData(test2) };
+
+            RunUpdateEngine(test, updateMemberInfo, blittableData, objectData);
+
+            Assert.That(test.TestClassList[0], Is.EqualTo(test));
+            Assert.That(test.TestClassList[0].IntField, Is.EqualTo(123));
+            Assert.That(test.TestClassList[1], Is.EqualTo(test2));
+            Assert.That(test.TestClassList[1].IntField, Is.EqualTo(456));
+        }
+
+        [Test]
         public void TestManyProperties()
         {
             var test = new TestClass();
@@ -359,12 +386,14 @@ namespace SiliconStudio.Core.Tests
         public TestClass[] TestClassArray;
 
         public IList<int> IntList;
+        public IList<TestClass> TestClassList;
 
         public TestClass()
         {
             IntArray = new int[4];
             IntList = new List<int> { 0, 0, 0, 0 };
             TestClassArray = new TestClass[2];
+            TestClassList = new List<TestClass> { null, null };
         }
     }
 

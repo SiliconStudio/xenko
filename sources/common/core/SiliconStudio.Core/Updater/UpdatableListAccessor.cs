@@ -106,7 +106,6 @@ namespace SiliconStudio.Core.Updater
             throw new NotImplementedException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public override void SetObject(IntPtr obj, object data)
         {
 #if IL
