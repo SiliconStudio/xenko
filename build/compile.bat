@@ -19,10 +19,21 @@ set Project=Xenko.Direct3D.CoreCLR.sln
 %XXMSBUILD%  %_option% %Project%
 if %ERRORLEVEL% != 0 goto error
 
+set Project=Xenko.OpenGL.sln
+%XXMSBUILD%  %_option% %Project%
+if %ERRORLEVEL% != 0 goto error
+
+set Project=Xenko.OpenGL.CoreCLR.sln
+%XXMSBUILD%  %_option% %Project%
+if %ERRORLEVEL% != 0 goto error
+
+
+
 goto exit
 
 :error
 echo "Error while compiling project: " %Project%
+echo "Using command line" %XXMSBUILD% %_option% %Project%
 
 :exit
 
