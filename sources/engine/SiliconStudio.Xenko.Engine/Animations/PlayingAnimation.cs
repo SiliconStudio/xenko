@@ -24,8 +24,9 @@ namespace SiliconStudio.Xenko.Animations
         internal TaskCompletionSource<bool> endedTCS;
         internal bool attached; // Is it part of a AnimationComponent.PlayingAnimations collection?
 
-        internal PlayingAnimation(AnimationClip clip) : this()
+        internal PlayingAnimation(string name, AnimationClip clip) : this()
         {
+            Name = name;
             Clip = clip;
             RepeatMode = Clip.RepeatMode;
         }
@@ -46,7 +47,17 @@ namespace SiliconStudio.Xenko.Animations
         ///   <c>true</c> if animation is playing; otherwise, <c>false</c>.
         /// </value>
         [DefaultValue(true)]
+        [DataMember(10)]
         public bool Enabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets the name of this playing animation (optional).
+        /// </summary>
+        /// <userdoc>
+        /// The name of this playing animation (optional).
+        /// </userdoc>
+        [DataMember(20)]
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets or sets the animation clip to run
@@ -54,7 +65,7 @@ namespace SiliconStudio.Xenko.Animations
         /// <userdoc>
         /// The clip being played.
         /// </userdoc>
-        [DataMember(10)]
+        [DataMember(30)]
         public AnimationClip Clip { get; set; }
 
         /// <summary>
@@ -63,7 +74,7 @@ namespace SiliconStudio.Xenko.Animations
         /// <value>
         /// The repeat mode.
         /// </value>
-        [DataMember(20)]
+        [DataMember(40)]
         public AnimationRepeatMode RepeatMode { get; set; }
 
         /// <summary>
@@ -72,7 +83,7 @@ namespace SiliconStudio.Xenko.Animations
         /// <value>
         /// The blend operation.
         /// </value>
-        [DataMember(30)]
+        [DataMember(50)]
         public AnimationBlendOperation BlendOperation { get; set; }
 
         /// <summary>
@@ -81,7 +92,7 @@ namespace SiliconStudio.Xenko.Animations
         /// <userdoc>
         /// The current time when playing the animation.
         /// </userdoc>
-        [DataMember(40)]
+        [DataMember(60)]
         public TimeSpan CurrentTime { get; set; }
 
         /// <summary>
@@ -90,7 +101,7 @@ namespace SiliconStudio.Xenko.Animations
         /// <userdoc>
         /// The playback speed factor.
         /// </userdoc>
-        [DataMember(50)]
+        [DataMember(70)]
         [DefaultValue(1.0f)]
         public float TimeFactor { get; set; }
 
@@ -100,7 +111,7 @@ namespace SiliconStudio.Xenko.Animations
         /// <value>
         /// The animation weight.
         /// </value>
-        [DataMember(60)]
+        [DataMember(80)]
         [DefaultValue(1.0f)]
         public float Weight { get; set; }
 
