@@ -21,8 +21,6 @@ namespace SiliconStudio.BuildEngine.Tests
 
         public static string BuildPath => Path.Combine(PlatformFolders.ApplicationBinaryDirectory, Assembly.GetEntryAssembly() == null? TestContext.CurrentContext.Test.Name: "data/"+Assembly.GetEntryAssembly().GetName().Name);
 
-        private static StringBuilder logCollecter;
-
         public static Logger CleanContext()
         {
             // delete previous build data

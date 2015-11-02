@@ -51,7 +51,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestMultipleRenderTargets</StartupObject>
+    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestImageLoad</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">

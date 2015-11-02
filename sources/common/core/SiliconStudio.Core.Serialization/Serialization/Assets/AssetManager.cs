@@ -420,8 +420,6 @@ namespace SiliconStudio.Core.Serialization.Assets
                 if (stream == null)
                     return null;
 
-                Type headerObjType = null;
-
                 // Read header
                 var streamReader = new BinarySerializationReader(stream);
                 return ChunkHeader.Read(streamReader);

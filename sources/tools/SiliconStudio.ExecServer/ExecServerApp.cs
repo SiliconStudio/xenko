@@ -152,7 +152,7 @@ namespace SiliconStudio.ExecServer
                         CloseService(service);
                     }
                 }
-                catch (EndpointNotFoundException ex)
+                catch (EndpointNotFoundException)
                 {
                     CloseService(service);
 
@@ -170,7 +170,7 @@ namespace SiliconStudio.ExecServer
                         //Console.WriteLine("Closing client");
                         client.Close();
                     }
-                    catch (Exception ex)
+                    catch (Exception)
                     {
                         //Console.WriteLine("Exception while closing {0}", client);
                     }
@@ -207,7 +207,7 @@ namespace SiliconStudio.ExecServer
                 clientChannel.Dispose();
                 //Console.WriteLine("ExecServer - Close connection - Client channel state: {0}", clientChannel.State);
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 //Console.WriteLine("Exception while closing connection {0}", ex);
             }

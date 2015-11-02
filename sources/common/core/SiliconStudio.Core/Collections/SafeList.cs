@@ -19,11 +19,11 @@ namespace SiliconStudio.Core.Collections
         /// Initializes a new instance of the <see cref="SafeList{T}"/> class.
         /// </summary>
         public SafeList()
-            : base(Constraint, true, ExceptionError)
+            : base(NonNullConstraint, true, ExceptionError)
         {
         }
 
-        private static bool Constraint(ConstrainedList<T> constrainedList, T arg2)
+        private static bool NonNullConstraint(ConstrainedList<T> constrainedList, T arg2)
         {
             return arg2 != null;
         }

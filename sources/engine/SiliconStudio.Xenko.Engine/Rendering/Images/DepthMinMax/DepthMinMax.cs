@@ -38,29 +38,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             var input = GetSafeInput(0);
 
-            // TODO: Check that input is power of two
-            // input.Size.Width 
-
             Texture fromTexture = input;
             Texture downTexture = null;
-            var nextSize = input.Size;
+            var nextSize = Math.Max(MathUtil.NextPowerOfTwo(input.Size.Width), MathUtil.NextPowerOfTwo(input.Size.Height));
             bool isFirstPass = true;
-            while (nextSize.Width > 3 && nextSize.Height > 3)
+            while (nextSize > 1)
             {
-                var previousSize = nextSize;
-                nextSize = nextSize.Down2();
-
-                // If the next half size of the texture is not an exact *2, make it 1 pixel larger to avoid loosing pixels min/max.
-                if ((nextSize.Width * 2) < previousSize.Width)
-                {
-                    nextSize.Width += 1;
-                }
-                if ((nextSize.Height * 2) < previousSize.Height)
-                {
-                    nextSize.Height += 1;
-                }
-
-                downTexture = NewScopedRenderTarget2D(nextSize.Width, nextSize.Height, PixelFormat.R32G32_Float, 1);
+                nextSize = nextSize / 2;
+                downTexture = NewScopedRenderTarget2D(nextSize, nextSize, PixelFormat.R32G32_Float, 1);
 
                 var effect = isFirstPass ? effectFirstPass : effectNotFirstPass;
                 effect.Parameters.Set(DepthMinMaxShaderKeys.TextureMap, fromTexture);
