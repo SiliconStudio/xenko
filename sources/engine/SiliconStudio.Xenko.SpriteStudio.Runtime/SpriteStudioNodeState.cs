@@ -17,9 +17,9 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         public Matrix ModelTransform;
 
-        public bool HFlipped;
+        public int HFlipped;
 
-        public bool VFlipped;
+        public int VFlipped;
 
         public Vector2 Position;
 
@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         public float Transparency;
 
-        public bool Hide;
+        public int Hide;
 
         public int SpriteId;
 
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         internal void UpdateTransformation()
         {
             var unit = Sprite?.PixelsPerUnit ?? DefaultPixelsPerUnit;
-            var scale = Matrix.Scaling(HFlipped ? -Scale.X : Scale.X, VFlipped ? -Scale.Y : Scale.Y, 1.0f);
+            var scale = Matrix.Scaling(HFlipped != 0 ? -Scale.X : Scale.X, VFlipped != 0 ? -Scale.Y : Scale.Y, 1.0f);
             var rot = Matrix.RotationZ(RotationZ);
             var pos = Matrix.Translation(Position.X / unit.X, Position.Y / unit.Y, 0.0f);
             LocalTransform = scale*rot*pos;

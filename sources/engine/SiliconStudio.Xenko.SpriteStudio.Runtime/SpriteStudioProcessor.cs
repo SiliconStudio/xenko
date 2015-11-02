@@ -68,12 +68,10 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             //check if the sheet name dictionary has already been populated
             if (spriteStudioComponent.Sheet.Sprites == null)
             {
-                spriteStudioComponent.Sheet.Sprites = new Dictionary<int, Sprite>();
-                var index = 0;
-                foreach (var sprite in spriteStudioComponent.Sheet.SpriteSheet.Sprites)
+                spriteStudioComponent.Sheet.Sprites = new Sprite[spriteStudioComponent.Sheet.SpriteSheet.Sprites.Count];
+                for (int i = 0; i < spriteStudioComponent.Sheet.SpriteSheet.Sprites.Count; i++)
                 {
-                    spriteStudioComponent.Sheet.Sprites.Add(index, sprite);
-                    index++;
+                    spriteStudioComponent.Sheet.Sprites[i] = spriteStudioComponent.Sheet.SpriteSheet.Sprites[i];
                 }
             }
 
@@ -96,8 +94,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     BlendFactor = node.BaseState.BlendFactor
                 };
 
-                Sprite sprite;
-                nodeState.Sprite = spriteStudioComponent.Sheet.Sprites.TryGetValue(nodeState.SpriteId, out sprite) ? sprite : null;
+                nodeState.Sprite = nodeState.SpriteId != -1 ? spriteStudioComponent.Sheet.Sprites[nodeState.SpriteId] : null;
 
                 spriteStudioComponent.Nodes.Add(nodeState);
             }
@@ -133,7 +130,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             //    node.CurrentXyPrioAngle = node.BaseNode.BaseXyPrioAngle;
             //}
 
-            var animComp = data.AnimationComponent;
+            /*var animComp = data.AnimationComponent;
             if (animComp != null && animComp.PlayingAnimations.Count > 0 && animComp.CurrentFrameResult != null)
             {
                 fixed (byte* bytes = animComp.CurrentFrameResult.Data)
@@ -196,8 +193,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                             {
                                 var spriteIndex = valueInt;
                                 node.SpriteId = spriteIndex;
-                                Sprite sprite;
-                                node.Sprite = data.SpriteStudioComponent.Sheet.Sprites.TryGetValue(spriteIndex, out sprite) ? sprite : null;
+                                node.Sprite = spriteIndex != -1 ? data.SpriteStudioComponent.Sheet.Sprites[spriteIndex] : null;
                             }
                             else if (channel.PropertyName.StartsWith("colb"))
                             {
@@ -214,7 +210,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                         }
                     }
                 }
-            }
+            }*/
         }
 
         private static void SortNodes(Data data, IEnumerable<SpriteStudioNodeState> nodes)

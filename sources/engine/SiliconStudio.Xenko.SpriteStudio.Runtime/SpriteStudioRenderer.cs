@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
                 foreach (var node in spriteState.SpriteStudioComponent.SortedNodes)
                 {
-                    if (node.Sprite?.Texture == null || node.Sprite.Region.Width <= 0 || node.Sprite.Region.Height <= 0f || node.Hide) continue;
+                    if (node.Sprite?.Texture == null || node.Sprite.Region.Width <= 0 || node.Sprite.Region.Height <= 0f || node.Hide != 0) continue;
 
                     // Update the sprite batch
 

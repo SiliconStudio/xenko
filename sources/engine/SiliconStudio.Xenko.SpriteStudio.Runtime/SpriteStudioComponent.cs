@@ -4,6 +4,9 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Core.Reflection;
 using System.Reflection;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.SpriteStudio.Runtime;
 
 namespace SiliconStudio.Xenko.Engine
@@ -12,6 +15,7 @@ namespace SiliconStudio.Xenko.Engine
     [Display(99, "Sprite Studio", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(SpriteStudioProcessor))]
     [DefaultEntityComponentRenderer(typeof(SpriteStudioRenderer))]
+    [DataSerializerGlobal(null, typeof(List<SpriteStudioNodeState>))]
     public class SpriteStudioComponent : EntityComponent
     {
         public static PropertyKey<SpriteStudioComponent> Key = new PropertyKey<SpriteStudioComponent>("Key", typeof(SpriteStudioComponent));

@@ -103,12 +103,17 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     sheet.Sprites.Add(sprite);
                 }
 
+                var nodeMapping = nodes.Select((x, i) => new { Name = x.Name, Index = i }).ToDictionary(x => x.Name, x => x.Index);
+
                 //fill up some basic data for our model using the first animation in the array
                 var anim = anims[0];
                 foreach (var data in anim.NodesData)
                 {
-                    var node = nodes.FirstOrDefault(x => x.Name == data.Key);
-                    if (node == null) continue;
+                    int nodeIndex;
+                    if (!nodeMapping.TryGetValue(data.Key, out nodeIndex))
+                        continue;
+
+                    var node = nodes[nodeIndex];
 
                     foreach (var pair in data.Value.Data)
                     {
@@ -139,13 +144,13 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                                 node.BaseState.Transparency = float.Parse(value, CultureInfo.InvariantCulture);
                                 break;
                             case "HIDE":
-                                node.BaseState.Hide = int.Parse(value, CultureInfo.InvariantCulture) > 0;
+                                node.BaseState.Hide = int.Parse(value, CultureInfo.InvariantCulture);
                                 break;
                             case "FLPH":
-                                node.BaseState.HFlipped = int.Parse(value, CultureInfo.InvariantCulture) > 0;
+                                node.BaseState.HFlipped = int.Parse(value, CultureInfo.InvariantCulture);
                                 break;
                             case "FLPV":
-                                node.BaseState.VFlipped = int.Parse(value, CultureInfo.InvariantCulture) > 0;
+                                node.BaseState.VFlipped = int.Parse(value, CultureInfo.InvariantCulture);
                                 break;
                             case "CELL":
                                 node.BaseState.SpriteId = int.Parse(value, CultureInfo.InvariantCulture);
