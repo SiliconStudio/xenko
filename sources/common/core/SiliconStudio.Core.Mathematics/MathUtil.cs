@@ -467,13 +467,23 @@ namespace SiliconStudio.Core.Mathematics
         }
 
         /// <summary>
-        /// Get the next power of two for a size.
+        /// Get the next power of two of an integer.
         /// </summary>
-        /// <param name="size">The size.</param>
+        /// <param name="x">The size.</param>
         /// <returns>System.Int32.</returns>
-        public static int NextPowerOfTwo(int size)
+        /// <remarks>https://graphics.stanford.edu/~seander/bithacks.html#RoundUpPowerOf2</remarks>
+        public static int NextPowerOfTwo(int x)
         {
-            return 1 << (int)Math.Ceiling(Math.Log(size, 2));
+            if (x < 0)
+                return 0;
+
+            x--;
+            x |= x >> 1;
+            x |= x >> 2;
+            x |= x >> 4;
+            x |= x >> 8;
+            x |= x >> 16;
+            return x + 1;
         }
 
         /// <summary>
