@@ -13,6 +13,9 @@ namespace SiliconStudio.Xenko.Assets.Model
 {
     public partial class ImportModelCommand
     {
+        public string SkeletonUrl { get; set; }
+        public List<KeyValuePair<string, bool>> SkeletonNodesWithPreserveInfo { get; set; }
+
         private object ExportSkeleton(ICommandContext commandContext, AssetManager assetManager)
         {
             var skeleton = LoadSkeleton(commandContext, assetManager);

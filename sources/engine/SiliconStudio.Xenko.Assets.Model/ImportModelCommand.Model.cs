@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Extensions;
@@ -17,6 +18,13 @@ namespace SiliconStudio.Xenko.Assets.Model
 {
     public partial class ImportModelCommand
     {
+        public float ScaleImport { get; set; }
+        public bool Allow32BitIndex { get; set; }
+        public bool AllowUnsignedBlendIndices { get; set; }
+        public List<ModelMaterial> Materials { get; set; }
+        public string EffectName { get; set; }
+        public bool TessellationAEN { get; set; }
+
         private object ExportModel(ICommandContext commandContext, AssetManager assetManager)
         {
             // Read from model file

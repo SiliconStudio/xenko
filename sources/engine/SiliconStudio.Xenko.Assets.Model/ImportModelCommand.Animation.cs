@@ -18,6 +18,9 @@ namespace SiliconStudio.Xenko.Assets.Model
 {
     public partial class ImportModelCommand
     {
+        public AnimationRepeatMode AnimationRepeatMode { get; set; }
+        public bool AnimationRootMotion { get; set; }
+
         private unsafe object ExportAnimation(ICommandContext commandContext, AssetManager assetManager)
         {
             // Read from model file

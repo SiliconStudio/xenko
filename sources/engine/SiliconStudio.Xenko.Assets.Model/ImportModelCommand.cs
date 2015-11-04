@@ -17,25 +17,9 @@ namespace SiliconStudio.Xenko.Assets.Model
 {
     public abstract partial class ImportModelCommand : SingleFileImportCommand
     {
-        private static int spawnedFbxCommands;
+        private static int spawnedCommands;
 
         public ExportMode Mode { get; set; }
-
-        // Model
-        public float ScaleImport { get; set; }
-        public bool Allow32BitIndex { get; set; }
-        public bool AllowUnsignedBlendIndices { get; set; }
-        public List<ModelMaterial> Materials { get; set; }
-        public string EffectName { get; set; }
-        public bool TessellationAEN { get; set; }
-
-        // Skeleton
-        public string SkeletonUrl { get; set; }
-        public List<KeyValuePair<string, bool>> SkeletonNodesWithPreserveInfo { get; set; }
-
-        // Animation
-        public AnimationRepeatMode AnimationRepeatMode { get; set; }
-        public bool AnimationRootMotion { get; set; }
 
         public static ImportModelCommand Create(string extension)
         {
@@ -66,9 +50,9 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             var assetManager = new AssetManager();
 
-            while (Interlocked.Increment(ref spawnedFbxCommands) >= 2)
+            while (Interlocked.Increment(ref spawnedCommands) >= 2)
             {
-                Interlocked.Decrement(ref spawnedFbxCommands);
+                Interlocked.Decrement(ref spawnedCommands);
                 await Task.Delay(1, CancellationToken);
             }
 
@@ -106,7 +90,7 @@ namespace SiliconStudio.Xenko.Assets.Model
             }
             finally
             {
-                Interlocked.Decrement(ref spawnedFbxCommands);
+                Interlocked.Decrement(ref spawnedCommands);
             }
         }
 
