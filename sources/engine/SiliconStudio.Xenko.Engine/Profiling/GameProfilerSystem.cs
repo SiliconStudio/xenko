@@ -3,11 +3,14 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.MicroThreading;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using Color = SiliconStudio.Core.Mathematics.Color;
@@ -62,11 +65,6 @@ namespace SiliconStudio.Xenko.Profiling
             gcCollectionsStringBase =   "Collections>   Gen 0: {0} Gen 1: {1} Gen 3: {2}";
 
             
-        }
-
-        protected override void LoadContent()
-        {
-            Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
         }
 
         readonly Stopwatch dumpTiming = Stopwatch.StartNew();
@@ -270,6 +268,11 @@ namespace SiliconStudio.Xenko.Profiling
                 spriteBatch = new SpriteBatch(Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice);
             }
 
+            if (Font == null)
+            {
+                Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
+            }
+            
             spriteBatch.Begin();
             spriteBatch.DrawString(Font, gcMemoryString, new Vector2(10, 10), TextColor);
             spriteBatch.DrawString(Font, gcCollectionsString, new Vector2(10, 20), TextColor);
