@@ -18,6 +18,13 @@ namespace SiliconStudio.Core
             Pointer = Utilities.AllocateMemory(finalSize);
         }
 
+        public UnmanagedArray(int length, IntPtr unmanagedDataPtr)
+        {
+            this.Length = length;
+            sizeOfT = Utilities.SizeOf<T>();
+            Pointer = unmanagedDataPtr;
+        }
+
         public void Dispose()
         {
             Utilities.FreeMemory(Pointer);
