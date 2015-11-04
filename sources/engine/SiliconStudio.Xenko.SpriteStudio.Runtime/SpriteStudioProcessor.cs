@@ -126,6 +126,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             return rootNode;
         }
 
+        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
+        // Enumerables are Evil
         private static unsafe void UpdateNodes(List<SpriteStudioNodeState> nodes, Data data)
         {
             var animComp = data.AnimationComponent;
@@ -213,6 +215,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             }
         }
 
+        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
+        // Enumerables are Evil
         private static void SortNodes(Data data, List<SpriteStudioNodeState> nodes)
         {
             data.SpriteStudioComponent.SortedNodes.Clear();

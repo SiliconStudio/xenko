@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -206,54 +207,41 @@ namespace SiliconStudio.Xenko.Profiling
             profilersString.Append(" |  ");
             Profiler.AppendTime(profilersString, profilingResult.MaxTime);
 
-            profilersString.AppendFormat(" | {0} ", e.Key);
-            if (!e.Text.IsNullOrEmpty())
+            profilersString.Append(" | ");
+            profilersString.Append(e.Key);
+            profilersString.Append(" ");
+            // ReSharper disable once ReplaceWithStringIsNullOrEmpty
+            // This was creating memory allocation (GetEnumerable())
+            if (e.Text != null && e.Text != "")
             {
-                var values = new object[4];
-                values[0] = defaultValue;
-                values[1] = defaultValue;
-                values[2] = defaultValue;
-                values[3] = defaultValue;
-                if (profilingResult.Custom0.HasValue && profilingResult.Custom0.Value.ValueType != null)
-                {
-                    FillValue(profilingResult.Custom0.Value, ref values[0]);
-                }
-                if (profilingResult.Custom1.HasValue && profilingResult.Custom1.Value.ValueType != null)
-                {
-                    FillValue(profilingResult.Custom1.Value, ref values[1]);
-                }
-                if (profilingResult.Custom2.HasValue && profilingResult.Custom2.Value.ValueType != null)
-                {
-                    FillValue(profilingResult.Custom2.Value, ref values[2]);
-                }
-                if (profilingResult.Custom3.HasValue && profilingResult.Custom3.Value.ValueType != null)
-                {
-                    FillValue(profilingResult.Custom3.Value, ref values[3]);
-                }
-
-                profilersString.AppendFormat(e.Text, values);
+                profilersString.AppendFormat(e.Text, GetValue(profilingResult.Custom0), GetValue(profilingResult.Custom1), GetValue(profilingResult.Custom2), GetValue(profilingResult.Custom3));
             }
-            profilersString.AppendLine();
+
+            profilersString.Append("\n");
         }
 
-        public void FillValue(ProfilingCustomValue value, ref object boxed)
+        public string GetValue(ProfilingCustomValue? value)
         {
-            if (value.ValueType == typeof(int))
+            if (!value.HasValue) return "";
+
+            if (value.Value.ValueType == typeof(int))
             {
-                boxed = value.IntValue;
+                return value.Value.IntValue.ToString();
             }
-            else if (value.ValueType == typeof(float))
+            if (value.Value.ValueType == typeof(float))
             {
-                boxed = value.FloatValue;
+                return value.Value.FloatValue.ToString(CultureInfo.InvariantCulture);
             }
-            else if (value.ValueType == typeof(long))
+            if (value.Value.ValueType == typeof(long))
             {
-                boxed = value.LongValue;
+                return value.Value.LongValue.ToString();
             }
-            else if (value.ValueType == typeof(double))
+            if (value.Value.ValueType == typeof(double))
             {
-                boxed = value.DoubleValue;
+                return value.Value.DoubleValue.ToString(CultureInfo.InvariantCulture);
             }
+
+            return "";
         }
 
         protected override void Destroy()
