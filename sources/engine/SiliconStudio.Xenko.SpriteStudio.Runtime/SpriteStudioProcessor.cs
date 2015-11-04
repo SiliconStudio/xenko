@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             return rootNode;
         }
 
-        private static unsafe void UpdateNodes(IEnumerable<SpriteStudioNodeState> nodes, Data data)
+        private static unsafe void UpdateNodes(List<SpriteStudioNodeState> nodes, Data data)
         {
             var animComp = data.AnimationComponent;
             if (animComp != null && animComp.PlayingAnimations.Count > 0 && animComp.CurrentFrameResult != null)
@@ -213,7 +213,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             }
         }
 
-        private static void SortNodes(Data data, IEnumerable<SpriteStudioNodeState> nodes)
+        private static void SortNodes(Data data, List<SpriteStudioNodeState> nodes)
         {
             data.SpriteStudioComponent.SortedNodes.Clear();
             data.SpriteStudioComponent.SortedNodes.AddRange(nodes.OrderBy(x => x.Priority));
