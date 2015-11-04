@@ -29,7 +29,7 @@ Example of use:
   <!--
   Package Xenko to a nupkg
   -->
-  <Target Name="Package" DependsOnTarget="GitLinkPdb">
+  <Target Name="Package" DependsOnTargets="GitLinkPdb">
     <ItemGroup>
         <FilesToDeletePackage Include="$(MSBuildThisFileDirectory)Xenko*.nupkg"/>
     </ItemGroup>    
@@ -169,6 +169,6 @@ Example of use:
     <PackageGetVersionTask File="$(XenkoPackage)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
     </PackageGetVersionTask>
-    <Exec Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/paradox -s releases/$(XenkoPackageVersion)"/>
+    <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/paradox -s releases/$(XenkoPackageVersion)" />
   </Target>
 </Project>
