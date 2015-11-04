@@ -2,9 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.Xenko.Assets.Tasks
 {
     public class PackageArchiveTask : Task
     {
