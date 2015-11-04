@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Reflection;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
 
@@ -20,6 +21,9 @@ namespace SiliconStudio.Xenko.Assets.Tasks
             var builder = new NuGet.PackageBuilder();
             builder.Populate(meta);
 
+            var currentAssemblyLocation = Assembly.GetExecutingAssembly().Location;
+            var mainPlatformDirectory = Path.GetFileName(Path.GetDirectoryName(currentAssemblyLocation));
+
             // TODO this is not working 
             // We are excluding everything that is in a folder that starts with a dot (ie. .shadow, .vs)
             var files = new List<NuGet.ManifestFile>()
@@ -36,6 +40,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     NewFile(@"Bin\**\*.usrdoc", "Bin", @"Bin\**\.*\**\*.usrdoc"),
                     NewFile(@"Bin\**\*.winmd", "Bin", @"Bin\**\.*\**\*.winmd"),
                     NewFile(@"Targets\*.targets", "Targets"),
+                    NewFile($@"Bin\{mainPlatformDirectory}\SiliconStudio.*.pdb", $@"Bin\{mainPlatformDirectory}", @"Bin\**\SiliconStudio.Xenko.Importer*.pdb;Bin\**\SiliconStudio.Assets.Editor.pdb;Bin\**\SiliconStudio.Xenko.Assets.Presentation.pdb;Bin\**\SiliconStudio.Xenko.GameStudio*.pdb;Bin\**\SiliconStudio.Xenko.Assimp.Translation.pdb"),
                 };
 
             // Handle Assets
