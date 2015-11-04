@@ -180,32 +180,12 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="text"></param>
         /// <param name="value0">Can be int, float, long or double</param>
-        public void Begin(string text, ProfilingCustomValue value0)
-        {
-            EmitEvent(ProfilingMessageType.Begin, text, value0, null, null, null);
-        }
-
-        /// <summary>
-        /// Emits a Begin event with the specified formatted text.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="value0">Can be int, float, long or double</param>
-        /// <param name="value1">Can be int, float, long or double</param>
-        public void Begin(string text, ProfilingCustomValue value0, ProfilingCustomValue value1)
-        {
-            EmitEvent(ProfilingMessageType.Begin, text, value0, value1, null, null);
-        }
-
-        /// <summary>
-        /// Emits a Begin event with the specified formatted text.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="value0">Can be int, float, long or double</param>
         /// <param name="value1">Can be int, float, long or double</param>
         /// <param name="value2">Can be int, float, long or double</param>
-        public void Begin(string text, ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2)
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void Begin(string text, ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
         {
-            EmitEvent(ProfilingMessageType.Begin, text, value0, value1, value2, null);
+            EmitEvent(ProfilingMessageType.Begin, text, value0, value1, value2, value3);
         }
 
         /// <summary>
@@ -216,9 +196,9 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="value1">Can be int, float, long or double</param>
         /// <param name="value2">Can be int, float, long or double</param>
         /// <param name="value3">Can be int, float, long or double</param>
-        public void Begin(string text, ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2, ProfilingCustomValue value3)
+        public void Begin(ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
         {
-            EmitEvent(ProfilingMessageType.Begin, text, value0, value1, value2, value3);
+            EmitEvent(ProfilingMessageType.Begin, null, value0, value1, value2, value3);
         }
 
         /// <summary>
@@ -253,32 +233,12 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="text"></param>
         /// <param name="value0">Can be int, float, long or double</param>
-        public void Mark(string text, ProfilingCustomValue value0)
-        {
-            EmitEvent(ProfilingMessageType.Mark, text, value0, null, null, null);
-        }
-
-        /// <summary>
-        /// Emits a Mark profiling event with the specified text.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="value0">Can be int, float, long or double</param>
-        /// <param name="value1">Can be int, float, long or double</param>
-        public void Mark(string text, ProfilingCustomValue value0, ProfilingCustomValue value1)
-        {
-            EmitEvent(ProfilingMessageType.Mark, text, value0, value1, null, null);
-        }
-
-        /// <summary>
-        /// Emits a Mark profiling event with the specified text.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="value0">Can be int, float, long or double</param>
         /// <param name="value1">Can be int, float, long or double</param>
         /// <param name="value2">Can be int, float, long or double</param>
-        public void Mark(string text, ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2)
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void Mark(string text, ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
         {
-            EmitEvent(ProfilingMessageType.Mark, text, value0, value1, value2, null);
+            EmitEvent(ProfilingMessageType.Mark, text, value0, value1, value2, value3);
         }
 
         /// <summary>
@@ -289,9 +249,9 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="value1">Can be int, float, long or double</param>
         /// <param name="value2">Can be int, float, long or double</param>
         /// <param name="value3">Can be int, float, long or double</param>
-        public void Mark(string text, ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2, ProfilingCustomValue value3)
+        public void Mark(ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
         {
-            EmitEvent(ProfilingMessageType.Mark, text, value0, value1, value2, value3);
+            EmitEvent(ProfilingMessageType.Mark, null, value0, value1, value2, value3);
         }
 
         /// <summary>
@@ -326,32 +286,12 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="text"></param>
         /// <param name="value0">Can be int, float, long or double</param>
-        public void End(string text, ProfilingCustomValue value0)
-        {
-            EmitEvent(ProfilingMessageType.End, text, value0, null, null, null);
-        }
-
-        /// <summary>
-        /// Emits a End profiling event with the specified custom value.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="value0">Can be int, float, long or double</param>
-        /// <param name="value1">Can be int, float, long or double</param>
-        public void End(string text, ProfilingCustomValue value0, ProfilingCustomValue value1)
-        {
-            EmitEvent(ProfilingMessageType.End, text, value0, value1, null, null);
-        }
-
-        /// <summary>
-        /// Emits a End profiling event with the specified custom value.
-        /// </summary>
-        /// <param name="text"></param>
-        /// <param name="value0">Can be int, float, long or double</param>
         /// <param name="value1">Can be int, float, long or double</param>
         /// <param name="value2">Can be int, float, long or double</param>
-        public void End(string text, ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2)
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void End(string text, ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
         {
-            EmitEvent(ProfilingMessageType.End, text, value0, value1, value2, null);
+            EmitEvent(ProfilingMessageType.End, text, value0, value1, value2, value3);
         }
 
         /// <summary>
@@ -362,9 +302,9 @@ namespace SiliconStudio.Core.Diagnostics
         /// <param name="value1">Can be int, float, long or double</param>
         /// <param name="value2">Can be int, float, long or double</param>
         /// <param name="value3">Can be int, float, long or double</param>
-        public void End(string text, ProfilingCustomValue value0, ProfilingCustomValue value1, ProfilingCustomValue value2, ProfilingCustomValue value3)
+        public void End(ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
         {
-            EmitEvent(ProfilingMessageType.End, text, value0, value1, value2, value3);
+            EmitEvent(ProfilingMessageType.End, null, value0, value1, value2, value3);
         }
 
         private void EmitEvent(ProfilingMessageType profilingType, string text = null)

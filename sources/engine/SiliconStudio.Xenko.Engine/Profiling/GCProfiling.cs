@@ -21,11 +21,11 @@ namespace SiliconStudio.Xenko.Profiling
             gen0Count = GC.CollectionCount(0);
             gen1Count = GC.CollectionCount(1);
             gen2Count = GC.CollectionCount(2);
-            collectionCountState.Begin(null, gen0Count, gen1Count, gen2Count);
+            collectionCountState.Begin(gen0Count, gen1Count, gen2Count);
 
             gcMemoryState = Profiler.New(GcMemoryKey);
             memoryPeak = lastFrameMemory = GC.GetTotalMemory(false);
-            gcMemoryState.Begin(null, lastFrameMemory, lastFrameMemory, memoryPeak);
+            gcMemoryState.Begin(lastFrameMemory, lastFrameMemory, memoryPeak);
         }
 
         public void Tick()
@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Profiling
             var diff = totalMem - lastFrameMemory;
             if (Math.Abs(diff) > 0)
             {
-                gcMemoryState.Mark(null, totalMem, diff, memoryPeak);
+                gcMemoryState.Mark(totalMem, diff, memoryPeak);
                 lastFrameMemory = totalMem;
             }
 
@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Profiling
                 gen0Count = gen0;
                 gen1Count = gen1;
                 gen2Count = gen2;
-                collectionCountState.Mark(null, gen0Count, gen1Count, gen2Count);
+                collectionCountState.Mark(gen0Count, gen1Count, gen2Count);
             }
         }
 
@@ -58,13 +58,13 @@ namespace SiliconStudio.Xenko.Profiling
             //memory
             var totalMem = GC.GetTotalMemory(false);
             memoryPeak = Math.Max(totalMem, memoryPeak);
-            gcMemoryState.End(null, totalMem, totalMem - lastFrameMemory, memoryPeak);
+            gcMemoryState.End(totalMem, totalMem - lastFrameMemory, memoryPeak);
 
             //gens count
             gen0Count = GC.CollectionCount(0);
             gen1Count = GC.CollectionCount(1);
             gen2Count = GC.CollectionCount(2);
-            collectionCountState.End(null, gen0Count, gen1Count, gen2Count);
+            collectionCountState.End(gen0Count, gen1Count, gen2Count);
         }
 
         public void Enable()

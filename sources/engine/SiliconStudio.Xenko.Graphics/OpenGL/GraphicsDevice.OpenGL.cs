@@ -312,10 +312,6 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (contextBeginCounter == 1)
                 graphicsContext.MakeCurrent(windowInfo);
-
-            deviceProfilingState = Profiler.Begin(GraphicsDeviceKey);
-            frameTriangleCount = 0;
-            frameDrawCalls = 0;
         }
 
         public void BeginProfile(Color profileColor, string name)
@@ -823,8 +819,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             GL.DrawArrays(primitiveType.ToOpenGL(), startVertex, vertexCount);
 
-            frameTriangleCount += (uint)vertexCount;
-            frameDrawCalls++;
+            FrameTriangleCount += (uint)vertexCount;
+            FrameDrawCalls++;
         }
 
         public void DrawAuto(PrimitiveType primitiveType)
@@ -837,7 +833,7 @@ namespace SiliconStudio.Xenko.Graphics
             //GL.DrawArraysIndirect(primitiveType.ToOpenGL(), (IntPtr)0);
             throw new NotImplementedException();
 
-            frameDrawCalls++;
+            FrameDrawCalls++;
         }
 
         /// <summary>
@@ -862,8 +858,8 @@ namespace SiliconStudio.Xenko.Graphics
             GL.DrawElementsBaseVertex(primitiveType.ToOpenGL(), indexCount, drawElementsType, indexBufferOffset + (startIndexLocation * indexElementSize), baseVertexLocation);
 #endif
 
-            frameDrawCalls++;
-            frameTriangleCount += (uint)indexCount;
+            FrameDrawCalls++;
+            FrameTriangleCount += (uint)indexCount;
         }
 
         /// <summary>
@@ -887,8 +883,8 @@ namespace SiliconStudio.Xenko.Graphics
             GL.DrawElementsInstancedBaseVertex(primitiveType.ToOpenGL(), indexCountPerInstance, DrawElementsType.UnsignedInt, (IntPtr)(startIndexLocation * indexElementSize), instanceCount, baseVertexLocation);
 #endif
 
-            frameDrawCalls++;
-            frameTriangleCount += (uint)(indexCountPerInstance * instanceCount);
+            FrameDrawCalls++;
+            FrameTriangleCount += (uint)(indexCountPerInstance * instanceCount);
         }
 
         /// <summary>
@@ -908,7 +904,7 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
             PreDraw();
 
-            frameDrawCalls++;
+            FrameDrawCalls++;
         }
 
         /// <summary>
@@ -934,8 +930,8 @@ namespace SiliconStudio.Xenko.Graphics
             GL.DrawArraysInstanced(primitiveType.ToOpenGL(), startVertexLocation, vertexCountPerInstance, instanceCount);
 #endif
 
-            frameDrawCalls++;
-            frameTriangleCount += (uint)(vertexCountPerInstance * instanceCount);
+            FrameDrawCalls++;
+            FrameTriangleCount += (uint)(vertexCountPerInstance * instanceCount);
         }
 
         /// <summary>
@@ -965,7 +961,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.BindBuffer(BufferTarget.DrawIndirectBuffer, 0);
 #endif
 
-            frameDrawCalls++;
+            FrameDrawCalls++;
         }
 
         public void EnableProfile(bool enabledFlag)
@@ -1010,8 +1006,6 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 throw new Exception("End context was called more than Begin");
             }
-
-            deviceProfilingState.End("Triangle count: {0} Draw calls: {1} Buffers mem: {2}M Textures mem: {3}M", frameTriangleCount, frameDrawCalls, BuffersMemory, TextureMemory);
         }
 
         internal void EnsureContextActive()

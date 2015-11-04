@@ -24,7 +24,6 @@ namespace SiliconStudio.Xenko.Profiling
         private readonly string gcCollectionsStringBase;
 
         private SpriteBatch spriteBatch;
-        private SpriteFont spriteFont;
 
         private readonly StringBuilder profilersString = new StringBuilder();
 
@@ -61,6 +60,13 @@ namespace SiliconStudio.Xenko.Profiling
 
             gcMemoryStringBase =        "Memory>        Total: {0} Peak: {1} Last allocations: {2}";
             gcCollectionsStringBase =   "Collections>   Gen 0: {0} Gen 1: {1} Gen 3: {2}";
+
+            
+        }
+
+        protected override void LoadContent()
+        {
+            Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
         }
 
         readonly Stopwatch dumpTiming = Stopwatch.StartNew();
@@ -262,13 +268,12 @@ namespace SiliconStudio.Xenko.Profiling
             if (spriteBatch == null)
             {
                 spriteBatch = new SpriteBatch(Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice);
-                spriteFont = Asset.Load<SpriteFont>("XenkoDefaultFont");
             }
 
             spriteBatch.Begin();
-            spriteBatch.DrawString(spriteFont, gcMemoryString, new Vector2(10, 10), TextColor);
-            spriteBatch.DrawString(spriteFont, gcCollectionsString, new Vector2(10, 20), TextColor);
-            spriteBatch.DrawString(spriteFont, profilersString, new Vector2(10, 30), TextColor);        
+            spriteBatch.DrawString(Font, gcMemoryString, new Vector2(10, 10), TextColor);
+            spriteBatch.DrawString(Font, gcCollectionsString, new Vector2(10, 20), TextColor);
+            spriteBatch.DrawString(Font, profilersString, new Vector2(10, 30), TextColor);        
             spriteBatch.End();
         }
 
@@ -299,5 +304,7 @@ namespace SiliconStudio.Xenko.Profiling
         }
 
         public Color4 TextColor { get; set; } = Color.LightGreen;
+
+        public SpriteFont Font { get; set; }
     }
 }

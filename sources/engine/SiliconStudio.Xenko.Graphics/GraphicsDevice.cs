@@ -15,8 +15,6 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class GraphicsDevice : ComponentBase
     {
-        static readonly ProfilingKey GraphicsDeviceKey = new ProfilingKey("GraphicsDevice");
-
         public static readonly int ThreadCount = 1; //AppConfig.GetConfiguration<Config>("RenderSystem").ThreadCount;
 
         private const int MaxRenderTargetCount = 8;
@@ -54,9 +52,8 @@ namespace SiliconStudio.Xenko.Graphics
         private PrimitiveQuad primitiveQuad;
         private ColorSpace colorSpace;
 
-        private ProfilingState deviceProfilingState;
-        private uint frameTriangleCount, frameDrawCalls;
-        internal float BuffersMemory, TextureMemory;
+        public uint FrameTriangleCount, FrameDrawCalls;
+        public float BuffersMemory, TextureMemory;
 
         /// <summary>
         /// Gets the type of the platform that graphics device is using.
