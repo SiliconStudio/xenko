@@ -22,14 +22,19 @@ namespace SiliconStudio.Xenko.Profiling
     {
         private readonly GcProfiling gcProfiler;
 
-        private readonly StringBuilder gcMemoryString = new StringBuilder();
+        private readonly StringBuilder gcMemoryStringBuilder = new StringBuilder();
+        private string gcMemoryString = "";
         private readonly string gcMemoryStringBase;
-        private readonly StringBuilder gcCollectionsString = new StringBuilder();
+        private readonly StringBuilder gcCollectionsStringBuilder = new StringBuilder();
+        private string gcCollectionsString = "";
         private readonly string gcCollectionsStringBase;
 
         private SpriteBatch spriteBatch;
 
-        private readonly StringBuilder profilersString = new StringBuilder();
+        private readonly StringBuilder profilersStringBuilder = new StringBuilder();
+        private string profilersString = "";
+
+        object stringLock = new object();
 
         struct ProfilingResult : IComparer<ProfilingResult>
         {
@@ -70,6 +75,8 @@ namespace SiliconStudio.Xenko.Profiling
 
         readonly Stopwatch dumpTiming = Stopwatch.StartNew();
 
+        private Task stringBuilderTask;
+
         public override void Update(GameTime gameTime)
         {
             if (dumpTiming.ElapsedMilliseconds > 500)
@@ -81,143 +88,154 @@ namespace SiliconStudio.Xenko.Profiling
                 return;
             }
 
-            //Advance any profiler that needs it
-            gcProfiler.Tick();
+            if(stringBuilderTask != null && !stringBuilderTask.IsCompleted) return;
 
-            //Copy events from profiler ( this will also clean up the profiler )
-            //todo do we really need this copy?
-            var eventsCopy = Profiler.GetEvents();
-            if(eventsCopy == null) return;
-
-            var elapsedTime = eventsCopy.Length > 0 ? eventsCopy[eventsCopy.Length - 1].TimeStamp - eventsCopy[0].TimeStamp : 0;
-
-            //update strings that need update
-            foreach (var e in eventsCopy)
+            stringBuilderTask = new Task(() =>
             {
-                //gc profiling is a special case
-                if (e.Key == GcProfiling.GcMemoryKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
+                //Advance any profiler that needs it
+                gcProfiler.Tick();
+
+                //Copy events from profiler ( this will also clean up the profiler )
+                //todo do we really need this copy?
+                var eventsCopy = Profiler.GetEvents();
+                if (eventsCopy == null) return;
+
+                var elapsedTime = eventsCopy.Length > 0 ? eventsCopy[eventsCopy.Length - 1].TimeStamp - eventsCopy[0].TimeStamp : 0;
+
+                //update strings that need update
+                foreach (var e in eventsCopy)
                 {
-                    gcMemoryString.Clear();
-                    gcMemoryString.AppendFormat(gcMemoryStringBase, e.Custom0.Value.LongValue, e.Custom2.Value.LongValue, e.Custom1.Value.LongValue);
-                    gcCollectionsString.AppendLine();
-                    continue;
+                    //gc profiling is a special case
+                    if (e.Key == GcProfiling.GcMemoryKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
+                    {
+                        gcMemoryStringBuilder.Clear();
+                        gcMemoryStringBuilder.AppendFormat(gcMemoryStringBase, e.Custom0.Value.LongValue, e.Custom2.Value.LongValue, e.Custom1.Value.LongValue);
+                        gcCollectionsStringBuilder.AppendLine();
+                        continue;
+                    }
+
+                    if (e.Key == GcProfiling.GcCollectionCountKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
+                    {
+                        gcCollectionsStringBuilder.Clear();
+                        gcCollectionsStringBuilder.AppendFormat(gcCollectionsStringBase, e.Custom0.Value.IntValue, e.Custom1.Value.IntValue, e.Custom2.Value.IntValue);
+                        gcCollectionsStringBuilder.AppendLine();
+                        continue;
+                    }
+
+                    ProfilingResult profilingResult;
+                    if (!profilingResultsDictionary.TryGetValue(e.Key, out profilingResult))
+                    {
+                        profilingResult.MinTime = long.MaxValue;
+                    }
+
+                    if (e.Type == ProfilingMessageType.End)
+                    {
+                        profilingResult.AccumulatedTime += e.ElapsedTime;
+                        if (e.ElapsedTime < profilingResult.MinTime)
+                            profilingResult.MinTime = e.ElapsedTime;
+                        if (e.ElapsedTime > profilingResult.MaxTime)
+                            profilingResult.MaxTime = e.ElapsedTime;
+
+                        profilingResult.Event = e;
+                    }
+                    else if (e.Type == ProfilingMessageType.Mark) // counter incremented only Mark!
+                    {
+                        profilingResult.Count++;
+                    }
+
+                    if (e.Custom0.HasValue)
+                    {
+                        profilingResult.Custom0 = e.Custom0.Value;
+                    }
+                    if (e.Custom1.HasValue)
+                    {
+                        profilingResult.Custom1 = e.Custom1.Value;
+                    }
+                    if (e.Custom2.HasValue)
+                    {
+                        profilingResult.Custom2 = e.Custom2.Value;
+                    }
+                    if (e.Custom3.HasValue)
+                    {
+                        profilingResult.Custom3 = e.Custom3.Value;
+                    }
+
+                    if (e.Key == MicroThread.ProfilingKey)
+                    {
+                        scriptsProfilingResultsDictionary[e.Text] = profilingResult;
+                    }
+                    else
+                    {
+                        profilingResultsDictionary[e.Key] = profilingResult;
+                    }
                 }
 
-                if (e.Key == GcProfiling.GcCollectionCountKey && e.Custom0.HasValue && e.Custom1.HasValue && e.Custom2.HasValue)
+                profilersStringBuilder.Clear();
+                profilingResults.Clear();
+
+                foreach (var profilingResult in profilingResultsDictionary)
                 {
-                    gcCollectionsString.Clear();
-                    gcCollectionsString.AppendFormat(gcCollectionsStringBase, e.Custom0.Value.IntValue, e.Custom1.Value.IntValue, e.Custom2.Value.IntValue);
-                    gcCollectionsString.AppendLine();
-                    continue;
+                    if (!profilingResult.Value.Event.HasValue) continue;
+                    profilingResults.Add(profilingResult.Value);
                 }
 
-                ProfilingResult profilingResult;
-                if (!profilingResultsDictionary.TryGetValue(e.Key, out profilingResult))
+                profilingResultsDictionary.Clear();
+
+                profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
+
+                foreach (var result in profilingResults)
                 {
-                    profilingResult.MinTime = long.MaxValue;
+                    AppendEvent(result, result.Event.Value, elapsedTime);
                 }
 
-                if (e.Type == ProfilingMessageType.End)
-                {
-                    profilingResult.AccumulatedTime += e.ElapsedTime;
-                    if (e.ElapsedTime < profilingResult.MinTime)
-                        profilingResult.MinTime = e.ElapsedTime;
-                    if (e.ElapsedTime > profilingResult.MaxTime)
-                        profilingResult.MaxTime = e.ElapsedTime;
+                profilingResults.Clear();
 
-                    profilingResult.Event = e;
-                }
-                else if (e.Type == ProfilingMessageType.Mark) // counter incremented only Mark!
+                foreach (var profilingResult in scriptsProfilingResultsDictionary)
                 {
-                    profilingResult.Count++;
+                    if (!profilingResult.Value.Event.HasValue) continue;
+                    profilingResults.Add(profilingResult.Value);
                 }
 
-                if (e.Custom0.HasValue)
+                scriptsProfilingResultsDictionary.Clear();
+
+                profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
+
+                foreach (var result in profilingResults)
                 {
-                    profilingResult.Custom0 = e.Custom0.Value;
-                }
-                if (e.Custom1.HasValue)
-                {
-                    profilingResult.Custom1 = e.Custom1.Value;
-                }
-                if (e.Custom2.HasValue)
-                {
-                    profilingResult.Custom2 = e.Custom2.Value;
-                }
-                if (e.Custom3.HasValue)
-                {
-                    profilingResult.Custom3 = e.Custom3.Value;
+                    AppendEvent(result, result.Event.Value, elapsedTime);
                 }
 
-                if (e.Key == MicroThread.ProfilingKey)
+                lock (stringLock)
                 {
-                    scriptsProfilingResultsDictionary[e.Text] = profilingResult;
+                    gcCollectionsString = gcCollectionsStringBuilder.ToString();
+                    gcMemoryString = gcMemoryStringBuilder.ToString();
+                    profilersString = profilersStringBuilder.ToString();
                 }
-                else
-                {
-                    profilingResultsDictionary[e.Key] = profilingResult;
-                }  
-            }
-
-            profilersString.Clear();
-            profilingResults.Clear();
-
-            foreach (var profilingResult in profilingResultsDictionary)
-            {
-                if (!profilingResult.Value.Event.HasValue) continue;
-                profilingResults.Add(profilingResult.Value);
-            }
-
-            profilingResultsDictionary.Clear();
-
-            profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
-
-            foreach (var result in profilingResults)
-            {
-                AppendEvent(result, result.Event.Value, elapsedTime);
-            }
-
-            profilingResults.Clear();
-
-            foreach (var profilingResult in scriptsProfilingResultsDictionary)
-            {
-                if (!profilingResult.Value.Event.HasValue) continue;
-                profilingResults.Add(profilingResult.Value);
-            }
-
-            scriptsProfilingResultsDictionary.Clear();
-
-            profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
-
-            foreach (var result in profilingResults)
-            {
-                AppendEvent(result, result.Event.Value, elapsedTime);
-            }
+            });
+            stringBuilderTask.Start();
         }
-
-        private string defaultValue = "";
 
         private void AppendEvent(ProfilingResult profilingResult, ProfilingEvent e, double elapsedTime)
         {
-            profilersString.AppendFormat("{0,-7:P1}", profilingResult.AccumulatedTime / elapsedTime);
-            profilersString.Append(" |  ");
-            Profiler.AppendTime(profilersString, profilingResult.MinTime);
-            profilersString.Append(" |  ");
-            Profiler.AppendTime(profilersString, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
-            profilersString.Append(" |  ");
-            Profiler.AppendTime(profilersString, profilingResult.MaxTime);
+            profilersStringBuilder.AppendFormat("{0,-7:P1}", profilingResult.AccumulatedTime / elapsedTime);
+            profilersStringBuilder.Append(" |  ");
+            Profiler.AppendTime(profilersStringBuilder, profilingResult.MinTime);
+            profilersStringBuilder.Append(" |  ");
+            Profiler.AppendTime(profilersStringBuilder, profilingResult.Count != 0 ? profilingResult.AccumulatedTime / profilingResult.Count : 0);
+            profilersStringBuilder.Append(" |  ");
+            Profiler.AppendTime(profilersStringBuilder, profilingResult.MaxTime);
 
-            profilersString.Append(" | ");
-            profilersString.Append(e.Key);
-            profilersString.Append(" ");
+            profilersStringBuilder.Append(" | ");
+            profilersStringBuilder.Append(e.Key);
+            profilersStringBuilder.Append(" ");
             // ReSharper disable once ReplaceWithStringIsNullOrEmpty
             // This was creating memory allocation (GetEnumerable())
             if (e.Text != null && e.Text != "")
             {
-                profilersString.AppendFormat(e.Text, GetValue(profilingResult.Custom0), GetValue(profilingResult.Custom1), GetValue(profilingResult.Custom2), GetValue(profilingResult.Custom3));
+                profilersStringBuilder.AppendFormat(e.Text, GetValue(profilingResult.Custom0), GetValue(profilingResult.Custom1), GetValue(profilingResult.Custom2), GetValue(profilingResult.Custom3));
             }
 
-            profilersString.Append("\n");
+            profilersStringBuilder.Append("\n");
         }
 
         public string GetValue(ProfilingCustomValue? value)
@@ -260,11 +278,14 @@ namespace SiliconStudio.Xenko.Profiling
             {
                 Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
             }
-            
+
             spriteBatch.Begin();
-            spriteBatch.DrawString(Font, gcMemoryString, new Vector2(10, 10), TextColor);
-            spriteBatch.DrawString(Font, gcCollectionsString, new Vector2(10, 20), TextColor);
-            spriteBatch.DrawString(Font, profilersString, new Vector2(10, 30), TextColor);        
+            lock (stringLock)
+            {                
+                spriteBatch.DrawString(Font, gcMemoryString, new Vector2(10, 10), TextColor);
+                spriteBatch.DrawString(Font, gcCollectionsString, new Vector2(10, 20), TextColor);
+                spriteBatch.DrawString(Font, profilersString, new Vector2(10, 30), TextColor);               
+            }
             spriteBatch.End();
         }
 
