@@ -3,11 +3,12 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.Xenko.Assets.Tasks
 {
-    public sealed class PackageArchive
+    internal sealed class PackageArchive
     {
         public static void Build(Package package, string outputDirectory = null)
         {

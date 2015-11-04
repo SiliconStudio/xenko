@@ -62,7 +62,6 @@
     <Compile Include="TestBase.cs" />
     <Compile Include="TestDependencyManager.cs" />
     <Compile Include="TestFileVersionManager.cs" />
-    <Compile Include="TestPackageArchive.cs" />
     <Compile Include="TestPackageStore.cs" />
     <Compile Include="TestSerializing.TestMyAssetObject.cs" />
     <Compile Include="TestSerializing.cs" />
