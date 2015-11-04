@@ -128,11 +128,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         private static unsafe void UpdateNodes(IEnumerable<SpriteStudioNodeState> nodes, Data data)
         {
-            //foreach (var node in nodes)
-            //{
-            //    node.CurrentXyPrioAngle = node.BaseNode.BaseXyPrioAngle;
-            //}
-
             var animComp = data.AnimationComponent;
             if (animComp != null && animComp.PlayingAnimations.Count > 0 && animComp.CurrentFrameResult != null)
             {
@@ -142,9 +137,10 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     {
                         //Process animations
                         var results = animComp.CurrentFrameResult;
-                        var channels = results.Channels.Where(x => x.NodeName == node.BaseNode.Name);
-                        foreach (var channel in channels)
+                        foreach (var channel in results.Channels)
                         {
+                            if(channel.NodeName != node.BaseNode.Name) continue;
+
                             var structureData = (float*)(bytes + channel.Offset);
                             if(structureData == null) continue;
                             if (structureData[0] == 0.0f) continue;
@@ -219,12 +215,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         private static void SortNodes(Data data, IEnumerable<SpriteStudioNodeState> nodes)
         {
-//            data.SpriteStudioComponent.SortedNodes.Sort((x, y) =>
-//            {
-//                if (x.Priority > y.Priority) return -1;
-//                return x.Priority == y.Priority ? 0 : 1;
-//            });
-            data.SpriteStudioComponent.SortedNodes = nodes.OrderBy(x => x.Priority).ToList();
+            data.SpriteStudioComponent.SortedNodes.Clear();
+            data.SpriteStudioComponent.SortedNodes.AddRange(nodes.OrderBy(x => x.Priority));
         }
 
         public override void Draw(RenderContext context)
