@@ -373,15 +373,15 @@ namespace SiliconStudio.Core.Diagnostics
             var accumulatedTimeSpan = new TimeSpan((accumulatedTime * 10000000) / Stopwatch.Frequency);
             if (accumulatedTimeSpan > new TimeSpan(0, 0, 1, 0))
             {
-                builder.AppendFormat("{0:##0.000}m ", accumulatedTimeSpan.TotalMinutes);
+                builder.AppendFormat("{0:000.000}m ", accumulatedTimeSpan.TotalMinutes);
             }
             else if (accumulatedTimeSpan > new TimeSpan(0, 0, 0, 0, 1000))
             {
-                builder.AppendFormat("{0:##0.000}s ", accumulatedTimeSpan.TotalSeconds);
+                builder.AppendFormat("{0:000.000}s ", accumulatedTimeSpan.TotalSeconds);
             }
             else
             {
-                builder.AppendFormat("{0:##0.000}ms", accumulatedTimeSpan.TotalMilliseconds);
+                builder.AppendFormat("{0:000.000}ms", accumulatedTimeSpan.TotalMilliseconds);
             }
         }
     }

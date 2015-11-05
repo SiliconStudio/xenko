@@ -48,7 +48,6 @@ namespace SiliconStudio.Xenko.Games
         private readonly int[] lastUpdateCount;
         private readonly float updateCountAverageSlowLimit;
         private readonly GamePlatform gamePlatform;
-        private ProfilingState profilingDraw;
         private TimeSpan singleFrameUpdateTime;
         private IGraphicsDeviceService graphicsDeviceService;
         protected IGraphicsDeviceManager graphicsDeviceManager;
@@ -910,30 +909,20 @@ namespace SiliconStudio.Xenko.Games
 
             try
             {
-                // Initialized
-                if (!profilingDraw.IsInitialized)
-                {
-                    profilingDraw = Profiler.Begin(GameProfilingKeys.GameDrawFPS);
-                }
-
-                // Update profiling data
-                profilingDraw.CheckIfEnabled();
-
                 if (!isExiting && GameSystems.IsFirstUpdateDone && !Window.IsMinimized)
                 {
                     drawTime.Update(totalDrawTime, lastFrameElapsedGameTime, singleFrameUpdateTime, drawRunningSlowly, true);
 
-                    if (drawTime.FramePerSecondUpdated)
-                    {
-                        // TODO: store some GameTime information as attributes in the Profiling using  profilingDraw.SetAttribute(..)
-                        profilingDraw.Mark("Frame = {0}, Update = {1:0.000}ms, Draw = {2:0.000}ms, FPS = {3:0.00}", drawTime.FrameCount, updateTime.TimePerFrame.TotalMilliseconds, drawTime.TimePerFrame.TotalMilliseconds, drawTime.FramePerSecond);
-                    }
-
+                    var profilingDraw = Profiler.Begin(GameProfilingKeys.GameDrawFPS);
                     var profiler = Profiler.Begin(GameProfilingKeys.GameDraw);
+
                     GraphicsDevice.FrameTriangleCount = 0;
                     GraphicsDevice.FrameDrawCalls = 0;
+
                     Draw(drawTime);
+
                     profiler.End("Triangle count: {0} Draw calls: {1} Buffers mem: {2}M Textures mem: {3}M", GraphicsDevice.FrameTriangleCount, GraphicsDevice.FrameDrawCalls, GraphicsDevice.BuffersMemory, GraphicsDevice.TextureMemory);
+                    profilingDraw.End("Frame = {0}, Update = {1:0.000}ms, Draw = {2:0.000}ms, FPS = {3:0.00}", drawTime.FrameCount, updateTime.TimePerFrame.TotalMilliseconds, drawTime.TimePerFrame.TotalMilliseconds, drawTime.FramePerSecond);
                 }
             }
             finally
