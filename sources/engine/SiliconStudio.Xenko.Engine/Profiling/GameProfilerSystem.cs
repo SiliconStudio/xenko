@@ -2,16 +2,12 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.MicroThreading;
-using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using Color = SiliconStudio.Core.Mathematics.Color;
@@ -34,7 +30,7 @@ namespace SiliconStudio.Xenko.Profiling
         private readonly StringBuilder profilersStringBuilder = new StringBuilder();
         private string profilersString = "";
 
-        object stringLock = new object();
+        readonly object stringLock = new object();
 
         struct ProfilingResult : IComparer<ProfilingResult>
         {
@@ -68,9 +64,7 @@ namespace SiliconStudio.Xenko.Profiling
             gcProfiler = new GcProfiling();        
 
             gcMemoryStringBase =        "Memory>        Total: {0} Peak: {1} Last allocations: {2}";
-            gcCollectionsStringBase =   "Collections>   Gen 0: {0} Gen 1: {1} Gen 3: {2}";
-
-            
+            gcCollectionsStringBase =   "Collections>   Gen 0: {0} Gen 1: {1} Gen 3: {2}"; 
         }
 
         readonly Stopwatch dumpTiming = Stopwatch.StartNew();
@@ -131,6 +125,7 @@ namespace SiliconStudio.Xenko.Profiling
                     if (e.Type == ProfilingMessageType.End)
                     {
                         profilingResult.AccumulatedTime += e.ElapsedTime;
+
                         if (e.ElapsedTime < profilingResult.MinTime)
                             profilingResult.MinTime = e.ElapsedTime;
                         if (e.ElapsedTime > profilingResult.MaxTime)
@@ -264,6 +259,14 @@ namespace SiliconStudio.Xenko.Profiling
 
         protected override void Destroy()
         {
+            Enabled = false;
+            Visible = false;
+
+            if (stringBuilderTask != null && !stringBuilderTask.IsCompleted)
+            {
+                stringBuilderTask.Wait();
+            }
+
             gcProfiler.Dispose();
         }
 
@@ -289,21 +292,34 @@ namespace SiliconStudio.Xenko.Profiling
             spriteBatch.End();
         }
 
-        public void EnableProfiling(params ProfilingKey[] keys)
+        public void EnableProfiling(bool excludeKeys = false, params ProfilingKey[] keys)
         {
             Enabled = true;
             Visible = true;
+
             if (keys.Length == 0)
             {
                 Profiler.EnableAll();
             }
             else
             {
-                foreach (var profilingKey in keys)
+                if (excludeKeys)
                 {
-                    Profiler.Enable(profilingKey);
+                    Profiler.EnableAll();
+                    foreach (var profilingKey in keys)
+                    {
+                        Profiler.Disable(profilingKey);
+                    }
                 }
+                else
+                {
+                    foreach (var profilingKey in keys)
+                    {
+                        Profiler.Enable(profilingKey);
+                    }
+                }              
             }
+
             gcProfiler.Enable();
         }
 
@@ -311,6 +327,7 @@ namespace SiliconStudio.Xenko.Profiling
         {
             Enabled = false;
             Visible = false;
+
             Profiler.DisableAll();
             gcProfiler.Disable();
         }

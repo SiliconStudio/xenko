@@ -220,7 +220,11 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         private static void SortNodes(Data data, List<SpriteStudioNodeState> nodes)
         {
             data.SpriteStudioComponent.SortedNodes.Clear();
-            data.SpriteStudioComponent.SortedNodes.AddRange(nodes.OrderBy(x => x.Priority));
+            var sortedNodes = nodes.OrderBy(x => x.Priority);
+            foreach (var node in sortedNodes)
+            {
+                data.SpriteStudioComponent.SortedNodes.Add(node);
+            }
         }
 
         public override void Draw(RenderContext context)
