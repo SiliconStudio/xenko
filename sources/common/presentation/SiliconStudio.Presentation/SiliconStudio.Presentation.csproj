@@ -261,6 +261,9 @@
     <Compile Include="View\TemplateProviderBase.cs" />
     <Compile Include="View\TemplateProviderComparerBase.cs" />
     <Compile Include="View\TemplateProviderSelector.cs" />
+    <Compile Include="Windows\DialogButtonInfo.cs" />
+    <Compile Include="Windows\MessageBox.cs" />
+    <Compile Include="Windows\MessageDialogBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\ExpressionDark\Theme.xaml">
