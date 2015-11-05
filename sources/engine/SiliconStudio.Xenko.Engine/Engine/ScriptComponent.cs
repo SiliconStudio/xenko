@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Engine
     /// Script component.
     /// </summary>
     [DataContract("ScriptComponent")]
-    [Display(10, "Scripts", Expand = ExpandRule.Once)]
+    [Display(1000, "Scripts", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(ScriptProcessor), ExecutionMode = ExecutionMode.Runtime)]
     public sealed class ScriptComponent : EntityComponent
     {
