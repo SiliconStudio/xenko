@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Profiling
                         profilingResult.Custom3 = e.Custom3.Value;
                     }
 
-                    if (e.Key == MicroThread.ProfilingKey)
+                    if (e.Key == MicroThreadProfilingKeys.ProfilingKey)
                     {
                         scriptsProfilingResultsDictionary[e.Text] = profilingResult;
                     }

@@ -31,8 +31,6 @@ namespace SiliconStudio.Xenko.Physics
         private Bullet2PhysicsSystem physicsSystem;
         private Simulation simulation;
 
-        public static ProfilingKey CharactersProfilingKey = new ProfilingKey(Simulation.SimulationProfilingKey, "Characters");
-
         private PhysicsDebugShapeRendering debugShapeRendering;
 
         public PhysicsProcessor()
@@ -456,7 +454,7 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void UpdateCharacters()
         {
-            var charactersProfilingState = Profiler.Begin(CharactersProfilingKey);
+            var charactersProfilingState = Profiler.Begin(PhysicsProfilingKeys.CharactersProfilingKey);
             var activeCharacters = 0;
             //characters need manual updating
             foreach (var element in characters)

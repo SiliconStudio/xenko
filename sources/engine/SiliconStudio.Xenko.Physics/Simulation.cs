@@ -25,10 +25,6 @@ namespace SiliconStudio.Xenko.Physics
 
         private readonly bool canCcd;
 
-        public static ProfilingKey SimulationProfilingKey = new ProfilingKey("Physics.Simulation");
-
-        public static ProfilingKey ContactsProfilingKey = new ProfilingKey("Physics.Contacts");
-
         public bool ContinuousCollisionDetection
         {
             get
@@ -147,7 +143,7 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void ProcessContacts()
         {
-            var contactsProfiler = Profiler.Begin(ContactsProfilingKey);
+            var contactsProfiler = Profiler.Begin(PhysicsProfilingKeys.ContactsProfilingKey);
 
             processedPairsFastCache.Clear();
             var numManifolds = collisionWorld.Dispatcher.NumManifolds;
@@ -1157,7 +1153,7 @@ namespace SiliconStudio.Xenko.Physics
 
             OnSimulationBegin(simulationArgs);
 
-            SimulationProfiler = Profiler.Begin(SimulationProfilingKey);
+            SimulationProfiler = Profiler.Begin(PhysicsProfilingKeys.SimulationProfilingKey);
 
             if (discreteDynamicsWorld != null) discreteDynamicsWorld.StepSimulation(deltaTime, MaxSubSteps, FixedTimeStep);
             else collisionWorld.PerformDiscreteCollisionDetection();
