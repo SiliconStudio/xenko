@@ -3,7 +3,9 @@
 
 using System;
 using System.Runtime.InteropServices;
+using System.Security;
 using System.Text;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics.Internals;
@@ -15,6 +17,11 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class SpriteBatch : BatchBase<SpriteBatch.SpriteDrawInfo>
     {
+        static SpriteBatch()
+        {
+            NativeLibrary.PreloadLibrary("SiliconStudio.Xenko.Native.dll");
+        }
+
         private static readonly Vector2[] CornerOffsets = { Vector2.Zero, Vector2.UnitX, Vector2.One, Vector2.UnitY };
         private static Vector2 vector2Zero = Vector2.Zero;
         private static RectangleF? nullRectangle;
@@ -579,44 +586,52 @@ namespace SiliconStudio.Xenko.Graphics
             Draw(texture, ref elementInfo);
         }
 
+        [DllImport("SiliconStudio.Xenko.Native.dll", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+        private static extern void UpdateBufferValuesFromElementInfoNative(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
+
         protected override unsafe void UpdateBufferValuesFromElementInfo(ref ElementInfo elementInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset)
         {
-            var vertex = (VertexPositionColorTextureSwizzle*)vertexPtr;
             fixed (SpriteDrawInfo* drawInfo = &elementInfo.DrawInfo)
             {
-                var deltaX = 1f / drawInfo->TextureSize.X;
-                var deltaY = 1f / drawInfo->TextureSize.Y;
-
-                var rotation = Math.Abs(drawInfo->Rotation) > MathUtil.ZeroTolerance ? new Vector2((float)Math.Cos(drawInfo->Rotation), (float)Math.Sin(drawInfo->Rotation)) : Vector2.UnitX;
-
-                // Center scale down to the size of the source texture 
-                var origin = drawInfo->Origin;
-                origin.X /= Math.Max(MathUtil.ZeroTolerance, drawInfo->Source.Width);
-                origin.Y /= Math.Max(MathUtil.ZeroTolerance, drawInfo->Source.Height);
-
-                for (int j = 0; j < 4; j++)
-                {
-                    // Gets the corner and take into account the Flip mode.
-                    var corner = CornerOffsets[j];
-                    // Calculate position on destination
-                    var position = new Vector2((corner.X - origin.X) * drawInfo->Destination.Width, (corner.Y - origin.Y) * drawInfo->Destination.Height);
-
-                    // Apply rotation and destination offset
-                    vertex->Position.X = drawInfo->Destination.X + (position.X * rotation.X) - (position.Y * rotation.Y);
-                    vertex->Position.Y = drawInfo->Destination.Y + (position.X * rotation.Y) + (position.Y * rotation.X);
-                    vertex->Position.Z = drawInfo->Depth;
-                    vertex->Position.W = 1f;
-                    vertex->Color = drawInfo->Color;
-
-                    corner = CornerOffsets[((j ^ (int)drawInfo->SpriteEffects) + (int)drawInfo->Orientation) % 4];
-                    vertex->TextureCoordinate.X = (drawInfo->Source.X + corner.X * drawInfo->Source.Width) * deltaX;
-                    vertex->TextureCoordinate.Y = (drawInfo->Source.Y + corner.Y * drawInfo->Source.Height) * deltaY;
-
-                    vertex->Swizzle = (int)drawInfo->Swizzle;
-
-                    vertex++;
-                }
+                UpdateBufferValuesFromElementInfoNative(new IntPtr(drawInfo), vertexPtr, indexPtr, vertexOffset);
             }
+
+//            var vertex = (VertexPositionColorTextureSwizzle*)vertexPtr;
+//            fixed (SpriteDrawInfo* drawInfo = &elementInfo.DrawInfo)
+//            {
+//                var deltaX = 1f / drawInfo->TextureSize.X;
+//                var deltaY = 1f / drawInfo->TextureSize.Y;
+//
+//                var rotation = Math.Abs(drawInfo->Rotation) > MathUtil.ZeroTolerance ? new Vector2((float)Math.Cos(drawInfo->Rotation), (float)Math.Sin(drawInfo->Rotation)) : Vector2.UnitX;
+//
+//                // Center scale down to the size of the source texture 
+//                var origin = drawInfo->Origin;
+//                origin.X /= Math.Max(MathUtil.ZeroTolerance, drawInfo->Source.Width);
+//                origin.Y /= Math.Max(MathUtil.ZeroTolerance, drawInfo->Source.Height);
+//
+//                for (int j = 0; j < 4; j++)
+//                {
+//                    // Gets the corner and take into account the Flip mode.
+//                    var corner = CornerOffsets[j];
+//                    // Calculate position on destination
+//                    var position = new Vector2((corner.X - origin.X) * drawInfo->Destination.Width, (corner.Y - origin.Y) * drawInfo->Destination.Height);
+//
+//                    // Apply rotation and destination offset
+//                    vertex->Position.X = drawInfo->Destination.X + (position.X * rotation.X) - (position.Y * rotation.Y);
+//                    vertex->Position.Y = drawInfo->Destination.Y + (position.X * rotation.Y) + (position.Y * rotation.X);
+//                    vertex->Position.Z = drawInfo->Depth;
+//                    vertex->Position.W = 1f;
+//                    vertex->Color = drawInfo->Color;
+//
+//                    corner = CornerOffsets[((j ^ (int)drawInfo->SpriteEffects) + (int)drawInfo->Orientation) % 4];
+//                    vertex->TextureCoordinate.X = (drawInfo->Source.X + corner.X * drawInfo->Source.Width) * deltaX;
+//                    vertex->TextureCoordinate.Y = (drawInfo->Source.Y + corner.Y * drawInfo->Source.Height) * deltaY;
+//
+//                    vertex->Swizzle = (int)drawInfo->Swizzle;
+//
+//                    vertex++;
+//                }
+//            }
         }
 
         protected override void PrepareForRendering()
