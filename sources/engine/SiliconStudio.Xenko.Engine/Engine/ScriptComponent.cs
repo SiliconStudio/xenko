@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Engine
     /// Script component.
     /// </summary>
     [DataContract("ScriptComponent")]
-    [Display(10, "Scripts", Expand = ExpandRule.Once)]
+    [Display(1000, "Scripts", Expand = ExpandRule.Once)]
     public sealed class ScriptComponent : EntityComponent
     {
         public static PropertyKey<ScriptComponent> Key = new PropertyKey<ScriptComponent>("Key", typeof(ScriptComponent));

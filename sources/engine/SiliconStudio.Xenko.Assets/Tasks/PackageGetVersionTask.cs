@@ -2,11 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 
-namespace SiliconStudio.Assets
+namespace SiliconStudio.Xenko.Assets.Tasks
 {
-    public class PackageArchiveTask : Task
+    public class PackageGetVersionTask : Task
     {
         /// <summary>
         /// Gets or sets the file.
@@ -15,11 +16,11 @@ namespace SiliconStudio.Assets
         [Required]
         public ITaskItem File { get; set; }
 
-        public string SpecialVersion { get; set; }
+        [Output]
+        public string Version { get; set; }
 
         public override bool Execute()
         {
-
             var result = new LoggerResult();
             var package = Package.Load(result, File.ItemSpec, new PackageLoadParameters()
                 {
@@ -50,16 +51,7 @@ namespace SiliconStudio.Assets
                 return false;
             }
 
-            // Override version with task SpecialVersion (if specified by user)
-            if (!string.IsNullOrEmpty(SpecialVersion))
-            {
-                package.Meta.Version = new PackageVersion(package.Meta.Version.Version, SpecialVersion);
-            }
-
-            Log.LogMessage(MessageImportance.High, "Packaging [{0}] version [{1}]", package.Meta.Name, package.Meta.Version);
-
-            // Build the package
-            PackageArchive.Build(package);
+            Version = package.Meta.Version.ToString();
             return true;
         }
     }

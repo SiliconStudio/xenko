@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a <see cref="Skybox"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("SkyboxComponent")]
-    [Display(115, "Skybox", Expand = ExpandRule.Once)]  // More important than lights, as usually the Skybox is associated with a light
+    [Display(11500, "Skybox", Expand = ExpandRule.Once)]  // More important than lights, as usually the Skybox is associated with a light
     [DefaultEntityComponentRenderer(typeof(SkyboxComponentRenderer), -100)]
     [DefaultEntityComponentProcessor(typeof(SkyboxProcessor))]
     public sealed class SkyboxComponent : ActivableEntityComponent

@@ -294,21 +294,21 @@ namespace SiliconStudio.Assets
             }
         }
 
-        internal static PackageMeta FromNuGet(NuGet.IPackageMetadata metadata)
+        public static PackageMeta FromNuGet(NuGet.IPackageMetadata metadata)
         {
             var packageMeta = new PackageMeta();
             packageMeta.InitializeFrom(metadata);
             return packageMeta;
         }
 
-        internal NuGet.Manifest ToNugetManifest()
+        public NuGet.Manifest ToNugetManifest()
         {
             var manifestMeta = new NuGet.ManifestMetadata();
             ToNugetManifest(manifestMeta);
             return new NuGet.Manifest() { Metadata = manifestMeta };
         }
 
-        internal void ToNugetManifest(NuGet.ManifestMetadata manifestMeta)
+        public void ToNugetManifest(NuGet.ManifestMetadata manifestMeta)
         {
             manifestMeta.Id = this.Name;
             manifestMeta.Version = this.Version.ToString();
