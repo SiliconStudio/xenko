@@ -8,16 +8,21 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Updater;
 
 namespace SiliconStudio.Xenko.Animations
 {
     [DataContract(Inherited = true)]
-    public class AnimationData
+    public abstract class AnimationData
     {
         public const int AnimationSortedValueBlock = 4096;
 
         public int AnimationSortedValueCount { get; set; }
         public string[] TargetKeys { get; set; }
+
+        public abstract Type ElementType { get; }
+        internal abstract AnimationCurveEvaluatorOptimizedGroup CreateEvaluator();
     }
 
     public class AnimationData<T> : AnimationData
@@ -29,15 +34,16 @@ namespace SiliconStudio.Xenko.Animations
         {
             get { return AnimationSortedValueCount == 0 ? TimeSpan.FromSeconds(1) : AnimationSortedValues[(AnimationSortedValueCount - 1) / AnimationSortedValueBlock][(AnimationSortedValueCount - 1) % AnimationSortedValueBlock].Value.Time; }
         }
-        
-        public static AnimationData<T> FromAnimationChannels(IDictionary<string, AnimationCurve<T>> animationChannelsByName)
+
+        public override Type ElementType => typeof(T);
+
+        public static AnimationData<T> FromAnimationChannels(IList<KeyValuePair<string, AnimationCurve<T>>> animationChannelsWithName)
         {
             var result = new AnimationData<T>();
 
             // Build target object and target properties lists
-            var animationChannelsKeyValuePair = animationChannelsByName.ToList();
-            var animationChannels = animationChannelsKeyValuePair.Select(x => x.Value).ToList();
-            result.TargetKeys = animationChannelsKeyValuePair.Select(x => x.Key).ToArray();
+            var animationChannels = animationChannelsWithName.Select(x => x.Value).ToList();
+            result.TargetKeys = animationChannelsWithName.Select(x => x.Key).ToArray();
 
             // Complexity _might_ be better by inserting directly in order instead of sorting later.
             var animationValues = new List<AnimationKeyValuePair<T>>[animationChannels.Count];
@@ -111,6 +117,11 @@ namespace SiliconStudio.Xenko.Animations
             }
 
             return result;
+        }
+
+        internal override AnimationCurveEvaluatorOptimizedGroup CreateEvaluator()
+        {
+            return AnimationCurveEvaluatorOptimizedGroup.Create<T>();
         }
     }
 

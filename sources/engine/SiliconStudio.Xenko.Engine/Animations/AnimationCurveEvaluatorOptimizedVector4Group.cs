@@ -3,7 +3,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public class AnimationCurveEvaluatorOptimizedVector4Group : AnimationCurveEvaluatorOptimizedGroup<Vector4>
+    public class AnimationCurveEvaluatorOptimizedVector4Group : AnimationCurveEvaluatorOptimizedBlittableGroupBase<Vector4>
     {
         protected unsafe override void ProcessChannel(ref Channel channel, CompressedTimeSpan currentTime, IntPtr location, float factor)
         {

@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Xenko.Animations;
 
@@ -90,14 +90,16 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             clip.Optimize();
 
+            var optimizedCurvesFloat = (AnimationData<float>)clip.OptimizedAnimationDatas.First();
+
             //we should have 3 frames at this point. the last one will be added by the optimization process...
-            Assert.That(clip.OptimizedCurvesFloat.AnimationSortedValueCount, Is.EqualTo(1));
+            Assert.That(optimizedCurvesFloat.AnimationSortedValueCount, Is.EqualTo(1));
             //And 2 initial frames            
-            Assert.That(clip.OptimizedCurvesFloat.AnimationInitialValues[0].Value1, Is.EqualTo(frame0));
-            Assert.That(clip.OptimizedCurvesFloat.AnimationInitialValues[0].Value2, Is.EqualTo(frame1));
-            Assert.That(clip.OptimizedCurvesFloat.AnimationSortedValues.Length, Is.EqualTo(1));
-            Assert.That(clip.OptimizedCurvesFloat.AnimationSortedValues[0].Length, Is.EqualTo(1));
-            Assert.That(clip.OptimizedCurvesFloat.AnimationSortedValues[0][0].Value, Is.EqualTo(frame1));
+            Assert.That(optimizedCurvesFloat.AnimationInitialValues[0].Value1, Is.EqualTo(frame0));
+            Assert.That(optimizedCurvesFloat.AnimationInitialValues[0].Value2, Is.EqualTo(frame1));
+            Assert.That(optimizedCurvesFloat.AnimationSortedValues.Length, Is.EqualTo(1));
+            Assert.That(optimizedCurvesFloat.AnimationSortedValues[0].Length, Is.EqualTo(1));
+            Assert.That(optimizedCurvesFloat.AnimationSortedValues[0][0].Value, Is.EqualTo(frame1));
         }
     }
 }
