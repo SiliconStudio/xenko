@@ -24,7 +24,11 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if !SILICONSTUDIO_UI_SDL2
 using System.Windows.Forms;
+#else
+using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
+#endif
 #endif
 using SharpDX;
 using SharpDX.DXGI;

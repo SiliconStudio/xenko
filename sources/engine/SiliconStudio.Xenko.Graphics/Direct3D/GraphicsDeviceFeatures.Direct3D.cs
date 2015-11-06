@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Graphics
             // Set back the real GraphicsProfile that is used
             Profile = GraphicsProfileHelper.FromFeatureLevel(nativeDevice.FeatureLevel);
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL2
             IsProfiled = PixHelper.IsCurrentlyProfiled;
 #else
             IsProfiled = false;

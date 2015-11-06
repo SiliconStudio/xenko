@@ -32,6 +32,10 @@ namespace SiliconStudio.Xenko.Games
         public GamePlatformDesktop(GameBase game) : base(game)
         {
             IsBlockingRun = true;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+                // This is required by the Audio subsystem of SharpDX.
+            Win32Native.CoInitialize(IntPtr.Zero);
+#endif
         }
 
         public override string DefaultAppDirectory
@@ -47,10 +51,10 @@ namespace SiliconStudio.Xenko.Games
         {
             return new GameWindow[]
                 {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
-                    new GameWindowDesktop(),
-#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && !SILICONSTUDIO_UI_SDL2
                     new GameWindowOpenTK(),
+#else
+                    new GameWindowDesktop(),
 #endif
                 };
         }

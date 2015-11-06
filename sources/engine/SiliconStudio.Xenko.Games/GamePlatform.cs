@@ -50,14 +50,16 @@ namespace SiliconStudio.Xenko.Games
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return new GamePlatformWindowsRuntime(game);
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-            return new GamePlatformOpenTK(game);
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             return new GamePlatformAndroid(game);
 #elif SILICONSTUDIO_PLATFORM_IOS
             return new GamePlatformiOS(game);
 #else
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && !SILICONSTUDIO_UI_SDL2
+            return new GamePlatformOpenTK(game);
+#else
             return new GamePlatformDesktop(game);
+#endif
 #endif
         }
 

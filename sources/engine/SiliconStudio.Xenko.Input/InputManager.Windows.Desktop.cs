@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Runtime.InteropServices;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL2
 using System;
 using System.Diagnostics;
 using System.Windows;
@@ -156,11 +156,11 @@ namespace SiliconStudio.Xenko.Input
             else
             {
                 EnsureMapKeys();
-                defaultWndProc = Win32Native.GetWindowLong(new HandleRef(this, uiControl.Handle), Win32Native.WindowLongType.WndProc);
+                defaultWndProc = Win32Native.GetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc);
                 // This is needed to prevent garbage collection of the delegate.
                 inputWndProc = WndProc;
                 var inputWndProcPtr = Marshal.GetFunctionPointerForDelegate(inputWndProc);
-                Win32Native.SetWindowLong(new HandleRef(this, uiControl.Handle), Win32Native.WindowLongType.WndProc, inputWndProcPtr);
+                Win32Native.SetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc, inputWndProcPtr);
             }
             uiControl.GotFocus += (_, e) => OnUiControlGotFocus();
             uiControl.LostFocus += (_, e) => OnUiControlLostFocus();

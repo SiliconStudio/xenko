@@ -18,6 +18,10 @@
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -70,6 +74,7 @@
     <Compile Include="InputManager.cs" />
     <Compile Include="InputManager.iOS.cs" />
     <Compile Include="InputManager.OpenTK.cs" />
+    <Compile Include="InputManager.SDL.cs" />
     <Compile Include="InputManager.Windows.Desktop.cs" />
     <Compile Include="InputManager.Windows.DirectInput.cs" />
     <Compile Include="InputManager.Windows.RawInput.Keyboard.cs" />

@@ -18,6 +18,10 @@
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -43,9 +47,7 @@
     <Compile Include="Android\GamePlatformAndroid.cs" />
     <Compile Include="Android\GameWindowAndroid.cs" />
     <Compile Include="AssemblyDoc.cs" />
-    <Compile Include="Desktop\GameForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Desktop\GameForm.cs" />
     <Compile Include="Desktop\WindowsMessageLoop.cs" />
     <Compile Include="Desktop\Win32Native.cs" />
     <Compile Include="GameContext.Android.cs" />
@@ -53,6 +55,7 @@
     <Compile Include="GameContext.iOS.cs" />
     <Compile Include="Desktop\GamePlatformDesktop.cs" />
     <Compile Include="Desktop\GameWindowDesktop.cs" />
+    <Compile Include="SDL\GameForm.SDL.cs" />
     <Compile Include="GameProfilingKeys.cs" />
     <Compile Include="GameSystemState.cs" />
     <Compile Include="GameUnhandledExceptionEventArgs.cs" />
@@ -137,10 +140,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Desktop\Win32Native.DirectX.cs" />
-    <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'"/>
+    <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'" />
   </ItemGroup>
   <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' And '$(XenkoGraphicsApi)' == 'OpenGLES' ">
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
       <ItemGroup>
         <Content Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>

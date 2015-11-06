@@ -1,4 +1,5 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -21,16 +22,25 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_UI_SDL2 || !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL)
 using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Threading;
-using System.Windows.Forms;
-
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+#if !SILICONSTUDIO_UI_SDL2
+using System.Drawing;
+using System.Windows.Forms;
+using System.Threading;
 using Point = System.Drawing.Point;
+using Form = System.Windows.Forms.Form;
+using Size = System.Drawing.Size;
+#else
+using Point = SiliconStudio.Xenko.Graphics.SDL.Point;
+using SiliconStudio.Xenko.Graphics.SDL;
+using Form = SiliconStudio.Xenko.Graphics.SDL.Window;
+using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
+using Size = SiliconStudio.Xenko.Graphics.SDL.Size;
+#endif
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -84,7 +94,9 @@ namespace SiliconStudio.Xenko.Games
                 Visible = false;
 
                 if (form != null)
+                {
                     form.SendToBack();
+                }
             }
             else
             {
@@ -169,7 +181,7 @@ namespace SiliconStudio.Xenko.Games
 
             windowHandle = new WindowHandle(AppContextType.Desktop, Control);
 
-            Control.ClientSize = new System.Drawing.Size(width, height);
+            Control.ClientSize = new Size(width, height);
 
             Control.MouseEnter += GameWindowForm_MouseEnter;
             Control.MouseLeave += GameWindowForm_MouseLeave;
@@ -211,11 +223,7 @@ namespace SiliconStudio.Xenko.Games
                     {
                         if (Exiting)
                         {
-                            if (Control != null)
-                            {
-                                Control.Dispose();
-                                Control = null;
-                            }
+                            Destroy();
                             return;
                         }
 
@@ -397,7 +405,6 @@ namespace SiliconStudio.Xenko.Games
                 {
                     return form.WindowState == FormWindowState.Minimized;
                 }
-
                 // Check for non-form control
                 return false;
             }

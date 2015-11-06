@@ -20,13 +20,18 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_UI_SDL2 || !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL)
 using System;
 using System.Globalization;
+#if !SILICONSTUDIO_UI_SDL2
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-
 using SharpDX.Win32;
+#else
+using SiliconStudio.Xenko.Graphics.SDL;
+using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
+using SDL2;
+#endif
+using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -135,6 +140,7 @@ namespace SiliconStudio.Xenko.Games
 
             if(isControlAlive)
             {
+#if !SILICONSTUDIO_UI_SDL2
                 if(UseApplicationDoEvents)
                 {
                     // Revert back to Application.DoEvents in order to support Application.AddMessageFilter
@@ -144,8 +150,6 @@ namespace SiliconStudio.Xenko.Games
                 }
                 else
                 {
-                    var gameForm = Control as GameForm;
-
                     var localHandle = controlHandle;
                     if (localHandle != IntPtr.Zero)
                     {
@@ -173,7 +177,6 @@ namespace SiliconStudio.Xenko.Games
                             //{
                             //    continue;
                             //}
-
                             if (!Application.FilterMessage(ref message))
                             {
                                 Win32Native.TranslateMessage(ref msg);
@@ -182,6 +185,13 @@ namespace SiliconStudio.Xenko.Games
                         }
                     }
                 }
+#else
+                SDL.SDL_Event e;
+                while (SDL.SDL_PollEvent(out e) != 0)
+                {
+                    Application.ProcessEvent(e);
+                }
+#endif
             }
 
             return isControlAlive || switchControl;
@@ -205,6 +215,7 @@ namespace SiliconStudio.Xenko.Games
         /// </summary>
         public delegate void RenderCallback();
 
+#if !SILICONSTUDIO_UI_SDL2
         /// <summary>
         /// Runs the specified main loop in the specified context.
         /// </summary>
@@ -212,6 +223,7 @@ namespace SiliconStudio.Xenko.Games
         {
             Run(context.MainForm, renderCallback);
         }
+#endif
 
         /// <summary>
         /// Runs the specified main loop for the specified windows form.
@@ -237,20 +249,6 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        /// <summary>
-        /// Gets a value indicating whether this instance is application idle.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance is application idle; otherwise, <c>false</c>.
-        /// </value>
-        public static bool IsIdle
-        {
-            get
-            {
-                NativeMessage msg;
-                return (bool)(Win32Native.PeekMessage(out msg, IntPtr.Zero, 0, 0, 0) == 0);
-            }
-        }
    }
 }
 #endif
