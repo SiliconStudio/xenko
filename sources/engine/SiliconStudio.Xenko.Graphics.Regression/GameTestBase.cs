@@ -232,7 +232,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 SaveBackBuffer(FrameGameSystem.TestName);
         }
 
-        protected void RunDrawTest(Action<Game> action, GraphicsProfile? profileOverride = null, bool takeSnapshot = false)
+        protected void PerformTest(Action<Game> action, GraphicsProfile? profileOverride = null, bool takeSnapshot = false)
         {
             // create the game instance
             var typeGame = GetType();
@@ -249,7 +249,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             RunGameTest(game);
         }
 
-        protected void RunDrawTest(Action<Game, RenderContext, RenderFrame> action, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
+        protected void PerformDrawTest(Action<Game, RenderContext, RenderFrame> action, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
         {
             // create the game instance
             var typeGame = GetType();

@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void SpriteFromTextureTests()
         {
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 var provider = new SpriteFromTexture();
                 Assert.AreEqual(1, provider.SpritesCount);

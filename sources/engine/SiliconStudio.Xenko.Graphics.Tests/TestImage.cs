@@ -205,7 +205,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         intermediateFormat == ImageFileType.Tga || sourceFormat == ImageFileType.Tga) // TODO remove this when Load/Save methods are implemented for those types.
                         continue;
 
-                    RunDrawTest(
+                    PerformTest(
                         game =>
                         {
                             ProcessFiles(game, sourceFormat, intermediateFormat);
@@ -220,7 +220,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var sourceFormat = ImageFileType.Png;
             var intermediateFormat = ImageFileType.Png;
 
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     // Load an image from a file and dispose it.
