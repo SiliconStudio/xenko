@@ -16,7 +16,7 @@ using SiliconStudio.Xenko.Rendering.Composers;
 
 namespace SiliconStudio.Xenko.Graphics.Regression
 {
-    public abstract class GraphicsTestBase : Game
+    public abstract class GameTestBase : Game
     {
         public static bool ForceInteractiveMode;
 
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         private bool screenshotAutomationEnabled;
         private BackBufferSizeMode backBufferSizeMode;
 
-        protected GraphicsTestBase()
+        protected GameTestBase()
         {
             // Override the default graphic device manager
             GraphicsDeviceManager.Dispose();
@@ -236,7 +236,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             // create the game instance
             var typeGame = GetType();
-            var game = (GraphicsTestBase)Activator.CreateInstance(typeGame);
+            var game = (GameTestBase)Activator.CreateInstance(typeGame);
             if (profileOverride.HasValue)
                 game.GraphicsDeviceManager.PreferredGraphicsProfile = new[] { profileOverride.Value };
 
@@ -253,7 +253,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
             // create the game instance
             var typeGame = GetType();
-            var game = (GraphicsTestBase)Activator.CreateInstance(typeGame);
+            var game = (GameTestBase)Activator.CreateInstance(typeGame);
             if (profileOverride.HasValue)
                 game.GraphicsDeviceManager.PreferredGraphicsProfile = new[] { profileOverride.Value };
 
@@ -288,7 +288,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         {
         }
 
-        protected static void RunGameTest(GraphicsTestBase game)
+        protected static void RunGameTest(GameTestBase game)
         {
             game.CurrentTestContext = TestContext.CurrentContext;
 

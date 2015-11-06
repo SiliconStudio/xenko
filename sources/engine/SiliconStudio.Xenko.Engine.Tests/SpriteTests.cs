@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
     /// <summary>
     /// Test class for <see cref="Sprite"/>
     /// </summary>
-    public class SpriteTests : GraphicsTestBase
+    public class SpriteTests : GameTestBase
     {
         private const string DefaultName = "toto";
 

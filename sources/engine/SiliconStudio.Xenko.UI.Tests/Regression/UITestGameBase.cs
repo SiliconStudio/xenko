@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
     /// <summary>
     /// A base class for rendering tests
     /// </summary>
-    public class UITestGameBase : GraphicsTestBase
+    public class UITestGameBase : GameTestBase
     {
         protected readonly Logger Logger = GlobalLogger.GetLogger("Test Game");
         

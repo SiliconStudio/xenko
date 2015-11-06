@@ -14,7 +14,7 @@ using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
-    class AdvancedInputTest : GraphicsTestBase
+    class AdvancedInputTest : GameTestBase
     {
         private SpriteBatch spriteBatch;
 

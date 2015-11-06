@@ -138,7 +138,7 @@
     <Compile Include="BlockingBufferedStream.cs" />
     <Compile Include="FrameGameSystem.cs" />
     <Compile Include="GameTester.cs" />
-    <Compile Include="GraphicsTestBase.cs" />
+    <Compile Include="GameTestBase.cs" />
     <Compile Include="ImageTester.NotRuntime.cs" />
     <Compile Include="ImageTester.cs" />
     <Compile Include="iOSDeviceType.cs" />

@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
     /// <summary>
     /// Tests for automatic alpha detection in textures and sprite sheets
     /// </summary>
-    public class AutoAlphaTests : GraphicsTestBase
+    public class AutoAlphaTests : GameTestBase
     {
         private static readonly Dictionary<Tuple<PlatformType, AlphaFormat>, PixelFormat> PlaformAndAlphaToPixelFormats = new Dictionary<Tuple<PlatformType, AlphaFormat>, PixelFormat>
         {

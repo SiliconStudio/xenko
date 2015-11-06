@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     [Description("Check Texture")]
-    public class TestTexture : GraphicsTestBase
+    public class TestTexture : GameTestBase
     {
         public TestTexture()
         {

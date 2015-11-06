@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
-    public class SpriteProviderTests : GraphicsTestBase
+    public class SpriteProviderTests : GameTestBase
     {
         [Test]
         public void SpriteFromSheetTests()

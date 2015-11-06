@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
     /// <summary>
     /// Base class for engine tests.
     /// </summary>
-    public class EngineTestBase : GraphicsTestBase
+    public class EngineTestBase : GameTestBase
     {
         protected Scene Scene;
         protected Entity Camera = new Entity { new CameraComponent() };

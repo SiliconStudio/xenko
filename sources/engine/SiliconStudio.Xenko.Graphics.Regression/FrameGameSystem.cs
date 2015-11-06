@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 {
                     if (method.Action != null)
                     {
-                        GraphicsTestBase.TestGameLogger.Debug(@"Executing method in Draw/Update for frame " + frameCount + @": " + method.Action.GetMethodInfo().Name);
+                        GameTestBase.TestGameLogger.Debug(@"Executing method in Draw/Update for frame " + frameCount + @": " + method.Action.GetMethodInfo().Name);
                         method.Action.Invoke();
                     }
                     methodsToRemove.Push(i);

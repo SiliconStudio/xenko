@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.UnitTesting.UI {
             
             var runMode = new Section("Run Mode");
             var interactiveCheckBox = new CheckboxElement("Enable Interactive Mode");
-            interactiveCheckBox.Tapped += () => GraphicsTestBase.ForceInteractiveMode = interactiveCheckBox.Value;
+            interactiveCheckBox.Tapped += () => GameTestBase.ForceInteractiveMode = interactiveCheckBox.Value;
             runMode.Add(interactiveCheckBox);
             menu.Add(runMode);
 

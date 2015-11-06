@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     /// </summary>
     [TestFixture]
     [Description("Tests for Graphics.Image")]
-    public class TestImage : GraphicsTestBase
+    public class TestImage : GameTestBase
     {
         /// <summary>
         /// Tests Image 1D.

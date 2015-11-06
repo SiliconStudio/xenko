@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
-    class EntitySerializerTest : GraphicsTestBase
+    class EntitySerializerTest : GameTestBase
     {
         [Test]
         public void TestSaveAndLoadEntities()
