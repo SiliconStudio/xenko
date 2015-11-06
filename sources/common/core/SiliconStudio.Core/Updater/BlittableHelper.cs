@@ -1,27 +1,48 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
 // TODO: We should switch to something determined at compile time with assembly processor?
 namespace SiliconStudio.Core.Updater
 {
-    public static class BlittableHelper
+    internal static class BlittableHelper
     {
+        private static Dictionary<Type, bool> BlittableTypesCache = new Dictionary<Type, bool>();
+
+        // TODO: Performance: precompute this in AssemblyProcessor
         public static bool IsBlittable(Type type)
         {
-            try
+            lock (BlittableTypesCache)
             {
-                // Class test
-                if (!type.GetTypeInfo().IsValueType)
-                    return false;
+                bool blittable;
+                try
+                {
+                    // Check cache
+                    if (BlittableTypesCache.TryGetValue(type, out blittable))
+                        return blittable;
 
-                // Non-blittable types cannot allocate pinned handle
-                GCHandle.Alloc(Activator.CreateInstance(type), GCHandleType.Pinned).Free();
-                return true;
+                    // Class test
+                    if (!type.GetTypeInfo().IsValueType)
+                    {
+                        blittable = false;
+                    }
+                    else
+                    {
+                        // Non-blittable types cannot allocate pinned handle
+                        GCHandle.Alloc(Activator.CreateInstance(type), GCHandleType.Pinned).Free();
+                        blittable = true;
+                    }
+                }
+                catch
+                {
+                    blittable = false;
+                }
+
+                // Register it for next time
+                BlittableTypesCache[type] = blittable;
+                return blittable;
             }
-            catch { }
-
-            return false;
         }
     }
 }
