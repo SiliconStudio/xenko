@@ -11,6 +11,6 @@ namespace SiliconStudio.Xenko.UI
     {
         public static readonly ProfilingKey UI = new ProfilingKey("UI");
 
-        public static readonly ProfilingKey TouchEventsUpdate = new ProfilingKey(UI, "TouchEvents", ProfilingKeyFlags.Log);
+        public static readonly ProfilingKey TouchEventsUpdate = new ProfilingKey(UI, "TouchEvents");
     }
 }
