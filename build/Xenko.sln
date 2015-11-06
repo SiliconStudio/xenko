@@ -340,6 +340,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.11_0.Windows", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.11_0\SiliconStudio.Xenko.Graphics.Tests.11_0.Windows.csproj", "{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}"
 EndProject
+Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.Markdown.Xaml", "..\sources\common\presentation\SiliconStudio.Markdown.Xaml\SiliconStudio.Markdown.Xaml.shproj", "{CABE730E-D3EB-4D75-8D26-3456D8B36193}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
@@ -347,6 +349,8 @@ Global
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
+		..\sources\common\presentation\SiliconStudio.Markdown.Xaml\SiliconStudio.Markdown.Xaml.projitems*{cabe730e-d3eb-4d75-8d26-3456d8b36193}*SharedItemsImports = 13
+		..\sources\common\presentation\SiliconStudio.Markdown.Xaml\SiliconStudio.Markdown.Xaml.projitems*{47afcc2e-e9f0-47d6-9d75-9e646546a92b}*SharedItemsImports = 4
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{950badd0-ad5a-4f58-87ec-4adaecbea89b}*SharedItemsImports = 13
 	EndGlobalSection
@@ -2225,5 +2229,6 @@ Global
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC} = {4C142567-C42B-40F5-B092-798882190209}
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9} = {4C142567-C42B-40F5-B092-798882190209}
 		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7} = {4C142567-C42B-40F5-B092-798882190209}
+		{CABE730E-D3EB-4D75-8D26-3456D8B36193} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
 	EndGlobalSection
 EndGlobal

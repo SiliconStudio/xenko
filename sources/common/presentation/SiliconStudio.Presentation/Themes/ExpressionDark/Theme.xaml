@@ -234,7 +234,8 @@
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <ctrl:MessageControl Content="{Binding}" />
+          <FlowDocumentScrollViewer Document="{Binding Converter={cvt:TextToFlowDocumentConverter}}"
+                                    HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" />
         </DataTemplate>
       </Setter.Value>
     </Setter>

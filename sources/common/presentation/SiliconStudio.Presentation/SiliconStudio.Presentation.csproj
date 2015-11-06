@@ -128,6 +128,7 @@
     <Compile Include="ValueConverters\MaxNum.cs" />
     <Compile Include="ValueConverters\MinNum.cs" />
     <Compile Include="ValueConverters\MultiplyMultiConverter.cs" />
+    <Compile Include="ValueConverters\TextToFlowDocumentConverter.cs" />
     <Compile Include="ViewModel\ActionStack\AnonymousViewModelActionItem.cs" />
     <Compile Include="ViewModel\IViewModelServiceProvider.cs" />
     <Compile Include="ViewModel\NullServiceProvider.cs" />
@@ -317,6 +318,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\gear--pencil.png" />
   </ItemGroup>
+  <Import Project="..\SiliconStudio.Markdown.Xaml\SiliconStudio.Markdown.Xaml.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
