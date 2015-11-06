@@ -28,6 +28,6 @@ namespace SiliconStudio.Xenko.Engine
         public List<SpriteStudioNodeState> Nodes { get; } = new List<SpriteStudioNodeState>();
 
         [DataMemberIgnore]
-        internal List<SpriteStudioNodeState> SortedNodes { get; set; }
+        internal List<SpriteStudioNodeState> SortedNodes { get; } = new List<SpriteStudioNodeState>();
     }
 }

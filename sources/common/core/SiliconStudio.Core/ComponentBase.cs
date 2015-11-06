@@ -30,6 +30,7 @@ namespace SiliconStudio.Core
         protected ComponentBase(string name)
         {
             Name = name ?? GetType().Name;
+
             Id = Interlocked.Increment(ref globalCounterId);
 
             // Track this component
@@ -56,6 +57,7 @@ namespace SiliconStudio.Core
                 if (value == name) return;
 
                 name = value;
+
                 OnNameChanged();
             }
         }
@@ -80,7 +82,7 @@ namespace SiliconStudio.Core
 
         public override string ToString()
         {
-            return string.Format("{0}: {1}", this.GetType().Name, Name);
+            return $"{GetType().Name}: {name}";
         }
 
         protected override void OnAddReference()
