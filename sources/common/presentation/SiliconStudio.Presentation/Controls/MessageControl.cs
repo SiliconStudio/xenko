@@ -7,6 +7,8 @@ using System.Windows.Documents;
 
 namespace SiliconStudio.Presentation.Controls
 {
+    using Markdown = Markdown.Xaml.Markdown;
+
     [TemplatePart(Name = MessageContainerPartName, Type = typeof(FlowDocumentScrollViewer))]
     public class MessageControl : ContentControl
     {
@@ -19,6 +21,8 @@ namespace SiliconStudio.Presentation.Controls
         /// The container in which the message is displayed.
         /// </summary>
         private FlowDocumentScrollViewer messageContainer;
+
+        private readonly Lazy<Markdown> markdown = new Lazy<Markdown>(() => new Markdown());
 
         static MessageControl()
         {
@@ -48,22 +52,17 @@ namespace SiliconStudio.Presentation.Controls
         {
             if (messageContainer != null)
             {
-                var paragraph = ProcessMessage();
-                messageContainer.Document = new FlowDocument(paragraph)
-                {
-                    IsHyphenationEnabled = true,
-                    // better layout rendering, but use more CPU
-                    IsOptimalParagraphEnabled = true,
-                };
+                messageContainer.Document = ProcessMessage();
             }
         }
 
-        private Paragraph ProcessMessage()
+        private FlowDocument ProcessMessage()
         {
-            var paragraph = new Paragraph();
-            // TODO: support mardown text
-            paragraph.Inlines.Add(Content?.ToString() ?? "Nothing to display");
-            return paragraph;
+            var text = Content?.ToString() ?? "*Nothing to display*";
+
+            var document = markdown.Value.Transform(text);
+
+            return document;
         }
     }
 }

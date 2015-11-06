@@ -227,15 +227,16 @@
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="MinHeight" Value="120" />
     <Setter Property="MinWidth" Value="320" />
+    <!-- FIXME: add behavior to keep aspect ratio -->
     <Setter Property="MaxHeight" Value="768" />
     <Setter Property="MaxWidth" Value="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
-    <Setter Property="ResizeMode" Value="NoResize" />
     <Setter Property="SizeToContent" Value="WidthAndHeight" />
+    <!-- end FIXME -->
+    <Setter Property="ResizeMode" Value="NoResize" />
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <FlowDocumentScrollViewer Document="{Binding Converter={cvt:TextToFlowDocumentConverter}}"
-                                    HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" />
+          <ctrl:MessageControl Content="{Binding}" />
         </DataTemplate>
       </Setter.Value>
     </Setter>
