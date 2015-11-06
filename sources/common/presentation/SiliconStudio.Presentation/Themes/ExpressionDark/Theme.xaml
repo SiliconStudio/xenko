@@ -210,40 +210,44 @@
               </ItemsControl.ItemTemplate>
             </ItemsControl>
             <!--  CONTENT  -->
-            <ContentPresenter Content="{Binding Content, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}">
-              <ContentPresenter.Resources>
-                <DataTemplate x:Key="DefaultMessageTemplate">
-                  <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center"
-                             Text="{Binding}" TextWrapping="Wrap" TextTrimming="CharacterEllipsis" />
-                </DataTemplate>
-              </ContentPresenter.Resources>
-              <ContentPresenter.ContentTemplate>
-                <Binding Path="MessageTemplate" RelativeSource="{RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}"
-                         FallbackValue="{StaticResource DefaultMessageTemplate}" TargetNullValue="{StaticResource DefaultMessageTemplate}"/>
-              </ContentPresenter.ContentTemplate>
-            </ContentPresenter>
+            <ContentPresenter Content="{Binding}"
+                              ContentTemplate="{Binding MessageTemplate, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
+                              ContentTemplateSelector="{Binding MessageTemplateSelector, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
+                              Cursor="{Binding Cursor, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
+                              Margin="{Binding Padding, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
+                              HorizontalAlignment="{Binding HorizontalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
+                              VerticalAlignment="{Binding VerticalContentAlignment, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"/>
           </DockPanel>
         </DataTemplate>
       </Setter.Value>
     </Setter>
   </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
+    <Setter Property="HorizontalContentAlignment" Value="Center" />
+    <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="MinHeight" Value="120" />
     <Setter Property="MinWidth" Value="320" />
-    <Setter Property="MaxHeight" Value="600" />
-    <Setter Property="MaxWidth" Value="800" />
+    <Setter Property="MaxHeight" Value="768" />
+    <Setter Property="MaxWidth" Value="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
     <Setter Property="ResizeMode" Value="NoResize" />
     <Setter Property="SizeToContent" Value="WidthAndHeight" />
-    <!-- TODO: specific template with MessageBox image, etc. -->
-    <!--<Setter Property="MessageTemplate">
+    <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <ScrollViewer HorizontalScrollBarVisibility="Disabled" VerticalScrollBarVisibility="Auto">
-            <TextBlock Text="{Binding}" />
-          </ScrollViewer>
+          <ctrl:MessageControl Content="{Binding}" />
         </DataTemplate>
       </Setter.Value>
-    </Setter>-->
+    </Setter>
+  </Style>
+  <Style TargetType="{x:Type ctrl:MessageControl}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:MessageControl}">
+          <FlowDocumentScrollViewer x:Name="PART_MessageContainer"
+                                    HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" />
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
   </Style>
 
   <Style TargetType="TextBlock">

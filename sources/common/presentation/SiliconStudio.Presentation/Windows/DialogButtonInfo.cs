@@ -9,10 +9,20 @@ namespace SiliconStudio.Presentation.Windows
     /// </summary>
     public sealed class DialogButtonInfo : ViewModelBase
     {
+        private object content;
         private bool isCancel;
         private bool isDefault;
         private int result;
-        private object content;
+
+        /// <summary>
+        /// The content of this button.
+        /// </summary>
+        /// <seealso cref="System.Windows.Controls.Button.Content"/>
+        public object Content
+        {
+            get { return content; }
+            set { SetValue(ref content, value); }
+        }
 
         /// <summary>
         /// Specifies whether or not this button is the cancel button.
@@ -40,16 +50,6 @@ namespace SiliconStudio.Presentation.Windows
         {
             get { return result; }
             set { SetValue(ref result, value); }
-        }
-
-        /// <summary>
-        /// The content of this button.
-        /// </summary>
-        /// <seealso cref="System.Windows.Controls.Button.Content"/>
-        public object Content
-        {
-            get { return content; }
-            set { SetValue(ref content, value); }
         }
     }
 }

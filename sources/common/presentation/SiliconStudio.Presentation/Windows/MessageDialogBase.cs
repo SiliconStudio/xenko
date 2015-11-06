@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 
 namespace SiliconStudio.Presentation.Windows
@@ -25,8 +26,17 @@ namespace SiliconStudio.Presentation.Windows
         public static readonly DependencyProperty ButtonsSourceProperty =
             DependencyProperty.Register("ButtonsSource", typeof(IEnumerable<DialogButtonInfo>), typeof(MessageDialogBase));
 
+        /// <summary>
+        /// Identifies the <see cref="MessageTemplate"/> dependency property.
+        /// </summary>
         public static readonly DependencyProperty MessageTemplateProperty =
             DependencyProperty.Register("MessageTemplate", typeof(DataTemplate), typeof(MessageDialogBase));
+
+        /// <summary>
+        /// Identifies the <see cref="MessageTemplateSelector"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty MessageTemplateSelectorProperty =
+            DependencyProperty.Register("MessageTemplateSelector", typeof(DataTemplateSelector), typeof(MessageDialogBase));
 
         /// <summary>
         /// Identifies the <see cref="Result"/> dependency property.
@@ -50,6 +60,12 @@ namespace SiliconStudio.Presentation.Windows
         {
             get { return (DataTemplate)GetValue(MessageTemplateProperty); }
             set { SetValue(MessageTemplateProperty, value); }
+        }
+
+        public DataTemplateSelector MessageTemplateSelector
+        {
+            get { return (DataTemplateSelector)GetValue(MessageTemplateSelectorProperty); }
+            set { SetValue(MessageTemplateSelectorProperty, value); }
         }
 
         public int Result

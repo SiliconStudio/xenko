@@ -60,6 +60,7 @@
     <Compile Include="Collections\ObservableSet.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
     <Compile Include="Controls\FilteringComboBoxSort.cs" />
+    <Compile Include="Controls\MessageControl.cs" />
     <Compile Include="Controls\TreeViewElementFinder.cs" />
     <Compile Include="Controls\TreeView.cs" />
     <Compile Include="Controls\TreeViewItem.cs" />
