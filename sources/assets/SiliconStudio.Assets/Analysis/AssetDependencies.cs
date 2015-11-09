@@ -29,6 +29,7 @@ namespace SiliconStudio.Assets.Analysis
         private Dictionary<Guid, AssetLink> parents;
         private Dictionary<Guid, AssetLink> children;
         private Dictionary<Guid, AssetLink> missingChildren;
+        private Dictionary<Guid, AssetInner> inners;
 
         public AssetDependencies(AssetItem assetItem)
         {
@@ -52,6 +53,10 @@ namespace SiliconStudio.Assets.Analysis
             // Copy missing refs
             foreach (var child in set.BrokenLinksOut)
                 AddBrokenLinkOut(child.Element, child.Type);
+
+            // Copy inners
+            foreach (var inner in set.Inners)
+                AddInner(inner);
         }
 
         public Guid Id
@@ -113,12 +118,31 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
+        /// Gets the inner assets.
+        /// </summary>
+        public IEnumerable<AssetInner> Inners
+        {
+            get
+            {
+                if (inners == null)
+                {
+                    yield break;
+                }
+                foreach (var inner in inners)
+                {
+                    yield return inner.Value;
+                }
+            }
+        }
+
+        /// <summary>
         /// Resets this instance and clear all dependencies (including missing)
         /// </summary>
         public void Reset(bool keepParents)
         {
             missingChildren = null;
             children = null;
+            inners = null;
 
             if (!keepParents) 
                 parents = null;
@@ -158,6 +182,36 @@ namespace SiliconStudio.Assets.Analysis
         public void AddLinkIn(AssetItem fromItem, ContentLinkType contentLinkType, bool cloneAssetItem)
         {
             AddLink(ref parents, new AssetLink(fromItem, contentLinkType), cloneAssetItem);
+        }
+
+        /// <summary>
+        /// Adds an inner asset
+        /// </summary>
+        /// <param name="inner">An inner asset.</param>
+        public void AddInner(AssetInner inner)
+        {
+            if (inners == null)
+            {
+                inners = new Dictionary<Guid, AssetInner>();
+            }
+            inners[inner.Id] = inner;
+        }
+
+        /// <summary>
+        /// Tries to get an inner asset from its identifier.
+        /// </summary>
+        /// <param name="id">Identifier of the inner asset.</param>
+        /// <param name="inner">Returned inner asset if this method returns <c>true</c></param>
+        /// <returns><c>true</c> if the inner asset with the specified identifier exist; otherwise <c>false</c></returns>
+        public bool TryGetAssetInner(Guid id, out AssetInner inner)
+        {
+
+            if (inners == null)
+            {
+                inner = default(AssetInner);
+                return false;
+            }
+            return inners.TryGetValue(id, out inner);
         }
 
         /// <summary>

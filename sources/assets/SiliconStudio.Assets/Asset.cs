@@ -8,6 +8,53 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Assets
 {
     /// <summary>
+    /// An inner asset.
+    /// </summary>
+    public struct AssetInner
+    {
+        /// <summary>
+        /// Initializes a new instance of <see cref="AssetInner"/> without a base.
+        /// </summary>
+        /// <param name="id">The asset identifier</param>
+        public AssetInner(Guid id) : this()
+        {
+            Id = id;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="AssetInner"/> with a base.
+        /// </summary>
+        /// <param name="id">The asset identifier</param>
+        /// <param name="baseId">The base asset identifier</param>
+        public AssetInner(Guid id, Guid? baseId)
+        {
+            Id = id;
+            BaseId = baseId;
+        }
+
+        /// <summary>
+        /// Asset identifier.
+        /// </summary>
+        public readonly Guid Id;
+
+        /// <summary>
+        /// Base asset identifier.
+        /// </summary>
+        public readonly Guid? BaseId;
+    }
+
+    /// <summary>
+    /// A container for inner assets.
+    /// </summary>
+    public interface IAssetInnerContainer
+    {
+        /// <summary>
+        /// Collects the inner assets.
+        /// </summary>
+        IEnumerable<AssetInner> CollectInners();
+    }
+
+    /// <summary>
     /// Base class for Asset.
     /// </summary>
     [DataContract(Inherited = true)]
@@ -112,6 +159,11 @@ namespace SiliconStudio.Assets
         [Browsable(false)]
         public TagCollection Tags { get; private set; }
 
+        /// <summary>
+        /// Creates an asset that inherits from this asset.
+        /// </summary>
+        /// <param name="location">The location of this asset.</param>
+        /// <returns>An asset that inherits this asset instance</returns>
         public virtual Asset CreateChildAsset(string location)
         {
             if (location == null) throw new ArgumentNullException(nameof(location));

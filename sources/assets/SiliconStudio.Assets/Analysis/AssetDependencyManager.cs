@@ -492,9 +492,20 @@ namespace SiliconStudio.Assets.Analysis
             var itemsToAnalyze = new Queue<AssetItem>();
             var referenceCollector = new DependenciesCollector();
 
+            // Reset the dependencies/inners.
             result.Reset(keepParents);
 
             var assetItem = result.Item;
+
+            // Collect inner assets.
+            var container = assetItem.Asset as IAssetInnerContainer;
+            if (container != null)
+            {
+                foreach (var inner in container.CollectInners())
+                {
+                    result.AddInner(inner);
+                }
+            }
 
             // marked as processed to not add it again
             addedReferences.Add(assetItem.Id);
@@ -787,6 +798,12 @@ namespace SiliconStudio.Assets.Analysis
                 // Track asset import paths
                 UpdateAssetImportPathsTracked(dependencies.Item, true);
 
+                // Remove previous inner assets registered
+                foreach (var previousInner in dependencies.Inners)
+                {
+                    Dependencies.Remove(previousInner.Id);
+                }
+
                 // Remove previous missing dependencies
                 RemoveMissingDependencies(dependencies);
 
@@ -802,6 +819,12 @@ namespace SiliconStudio.Assets.Analysis
 
                 // Recalculate [Out] dependencies
                 CollectDynamicOutReferences(dependencies, FindAssetFromDependencyOrSession, false, true);
+
+                // Add Inner assets
+                foreach (var inner in dependencies.Inners)
+                {
+                    Dependencies[inner.Id] = dependencies;
+                }
 
                 // Add [In] dependencies to new children
                 foreach (var assetLink in dependencies.LinksOut)
