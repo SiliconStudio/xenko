@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {
-    public class GraphicTestGameBase : GraphicsTestBase
+    public class GraphicTestGameBase : GameTestBase
     {
         public Texture UVTexture { get; private set; }
 
