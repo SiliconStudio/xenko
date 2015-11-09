@@ -1060,6 +1060,15 @@ namespace SiliconStudio.Assets
             var sourceCodeAsset = asset as SourceCodeAsset;
             if (sourceCodeAsset != null)
             {
+                // Keep text in memory if package upgrading produced custom content
+                if (assetContent != null)
+                {
+                    using (var reader = new StreamReader(new MemoryStream(assetContent)))
+                    {
+                        sourceCodeAsset.Text = reader.ReadToEnd();
+                    }
+                }
+
                 // Use an id generated from the location instead of the default id
                 sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
                 sourceCodeAsset.AbsoluteSourceLocation = assetFullPath;
