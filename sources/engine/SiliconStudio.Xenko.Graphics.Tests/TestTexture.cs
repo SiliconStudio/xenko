@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 {
     [TestFixture]
     [Description("Check Texture")]
-    public class TestTexture : GraphicsTestBase
+    public class TestTexture : GameTestBase
     {
         public TestTexture()
         {
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestTexture1D()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     // Check texture creation with an array of data, with usage default to later allow SetData
@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     var device = game.GraphicsDevice;
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         [Test]
         public void TestTexture2D()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     var device = game.GraphicsDevice;
@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     var device = game.GraphicsDevice;
@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     var device = game.GraphicsDevice;
@@ -211,7 +211,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     var device = game.GraphicsDevice;
@@ -235,7 +235,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     var device = game.GraphicsDevice;
@@ -274,7 +274,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     var device = game.GraphicsDevice;
@@ -313,7 +313,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             IgnoreGraphicPlatform(GraphicsPlatform.OpenGLES);
 
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     var device = game.GraphicsDevice;
@@ -357,7 +357,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     sourceFormat == ImageFileType.Tiff)) // TODO remove when the tiff format is supported on android.
                     continue; 
 
-                RunDrawTest(
+                PerformTest(
                     game =>
                     {
                         var intermediateFormat = ImageFileType.Xenko;
@@ -419,7 +419,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 if (Platform.Type == PlatformType.Android && sourceFormat == ImageFileType.Tiff)// TODO remove this when Load/Save methods are implemented for this type.
                     return;
 
-                RunDrawTest(
+                PerformDrawTest(
                     (game, context, frame) =>
                     {
                         var device = game.GraphicsDevice;
@@ -471,7 +471,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var testArray = profile >= GraphicsProfile.Level_10_0 && GraphicsDevice.Platform == GraphicsPlatform.Direct3D11; // TODO modify this when when supported on openGL
             var mipmaps = GraphicsDevice.Platform == GraphicsPlatform.Direct3D11 ? 3 : 1; // TODO remove this limitation when GetData is fixed on OpenGl ES for mipmap levels other than 0
             
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     const int width = 16;
@@ -502,7 +502,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var testArray = profile >= GraphicsProfile.Level_10_0 && GraphicsDevice.Platform == GraphicsPlatform.Direct3D11; // TODO modify this when when supported on openGL
             var mipmaps = GraphicsDevice.Platform == GraphicsPlatform.Direct3D11 ? 3 : 1; // TODO remove this limitation when GetData is fixed on OpenGl ES for mipmap levels other than 0
 
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     const int width = 16;

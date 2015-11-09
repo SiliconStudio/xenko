@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
     /// <summary>
     /// Tests for automatic alpha detection in textures and sprite sheets
     /// </summary>
-    public class AutoAlphaTests : GraphicsTestBase
+    public class AutoAlphaTests : GameTestBase
     {
         private static readonly Dictionary<Tuple<PlatformType, AlphaFormat>, PixelFormat> PlaformAndAlphaToPixelFormats = new Dictionary<Tuple<PlatformType, AlphaFormat>, PixelFormat>
         {
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [TestCase]
         public void TextureAlphaFormatTests()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     CheckTextureFormat(game, "JpegNone", AlphaFormat.None);
@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [TestCase]
         public void TextureAutoAlphaResultNoneTests()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     CheckTextureFormat(game, "JpegAuto", AlphaFormat.None);
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [TestCase]
         public void TextureAutoAlphaResultMaskTests()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     CheckTextureFormat(game, "PngMask", AlphaFormat.Mask);
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [TestCase]
         public void TextureAutoAlphaResultInterpolatedTests()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     CheckTextureFormat(game, "PngInterpolated", AlphaFormat.Interpolated);
@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [TestCase]
         public void SpritesSheetNoAlphaTests()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     CheckSpriteTransparencies(game, "SheetNoAlpha", AlphaFormat.None);
@@ -150,7 +150,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [TestCase]
         public void SpritesSheetMaskAlphaTests()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     CheckSpriteTransparencies(game, "SheetMaskAlpha", AlphaFormat.Mask);
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [TestCase]
         public void SpritesSheetExplicitAlphaTests()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     CheckSpriteTransparencies(game, "SheetExplicitAlpha", AlphaFormat.Explicit);
@@ -174,7 +174,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [TestCase]
         public void SpritesSheetInterpolatedAlphaTests()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     CheckSpriteTransparencies(game, "SheetInterpolatedAlpha", AlphaFormat.Interpolated);
@@ -186,7 +186,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [TestCase]
         public void SpritesSheetAutoAlphaTests()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     CheckSpriteTransparencies(game, "SheetAutoNoAlpha", AlphaFormat.None);
@@ -202,7 +202,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [TestCase]
         public void SpritesSheetColorTransparency()
         {
-            RunDrawTest(
+            PerformTest(
                 game =>
                 {
                     CheckSpriteTransparencies(game, "SheetColorNoAlpha", AlphaFormat.None);
