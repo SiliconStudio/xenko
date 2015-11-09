@@ -23,7 +23,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics.Internals;
@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The structure containing all the information required to batch one element.
         /// </summary>
+        [StructLayout(LayoutKind.Sequential)]
         protected struct ElementInfo
         {
             /// <summary>

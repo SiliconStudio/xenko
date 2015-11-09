@@ -51,7 +51,7 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestMultipleRenderTargets</StartupObject>
+    <StartupObject>SiliconStudio.Xenko.Graphics.Tests.TestImageLoad</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
@@ -142,18 +142,6 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Assets\MultipleRenderTargetsEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultipleRenderTargetsEffect.xkfx</DependentUpon>
-    </Compile>
-    <Compile Include="Assets\MultipleRenderTargetsEffectShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>MultipleRenderTargetsEffectShader.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Assets\CustomEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -215,7 +203,6 @@
     <Compile Include="TestExternSpriteFont.cs" />
     <Compile Include="TestFontManager.cs" />
     <Compile Include="TestImageLoad.cs" />
-    <Compile Include="TestMultipleRenderTargets.cs" />
     <Compile Include="TestScene.cs" />
     <Compile Include="TestSprite.cs" />
     <Compile Include="TestSpriteBatch3D.cs" />
@@ -236,14 +223,6 @@
     <Compile Include="TestTexture.cs" />
     <Compile Include="TestGraphicsApiCheck.cs" />
     <Compile Include="TestTextureSampling.cs" />
-    <None Include="Assets\MultipleRenderTargetsEffect.xkfx">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MultipleRenderTargetsEffect.cs</LastGenOutput>
-    </None>
-    <None Include="Assets\MultipleRenderTargetsEffectShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>MultipleRenderTargetsEffectShader.cs</LastGenOutput>
-    </None>
     <None Include="Assets\CustomEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>CustomEffect.cs</LastGenOutput>

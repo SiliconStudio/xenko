@@ -11,8 +11,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
     // TODO: Move it to Assets? Or Core/Core.Design?
     public class ConvertedDescriptor : MemberDescriptorBase
     {
-        private Type type;
-        private bool hasSet;
         private object value;
 
         public override Type Type

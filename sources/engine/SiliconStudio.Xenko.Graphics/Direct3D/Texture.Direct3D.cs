@@ -119,12 +119,14 @@ namespace SiliconStudio.Xenko.Graphics
                         NativeDeviceChild = new Texture3D(GraphicsDevice.NativeDevice, ConvertToNativeDescription3D(), ConvertDataBoxes(dataBoxes));
                         break;
                 }
+
+                GraphicsDevice.TextureMemory += (Depth*DepthStride) / (float)0x100000;
             }
 
             NativeShaderResourceView = GetShaderResourceView(ViewType, ArraySlice, MipLevel);
             NativeUnorderedAccessView = GetUnorderedAccessView(ViewType, ArraySlice, MipLevel);
             NativeRenderTargetView = GetRenderTargetView(ViewType, ArraySlice, MipLevel);
-            NativeDepthStencilView = GetDepthStencilView(out HasStencil);
+            NativeDepthStencilView = GetDepthStencilView(out HasStencil);           
         }
 
         protected override void DestroyImpl()
@@ -133,6 +135,10 @@ namespace SiliconStudio.Xenko.Graphics
             if (ParentTexture != null)
             {
                 NativeDeviceChild = null;
+            }
+            else if(GraphicsDevice != null)
+            {
+                GraphicsDevice.TextureMemory -= (Depth*DepthStride) / (float)0x100000;
             }
 
             ReleaseComObject(ref renderTargetView);
@@ -159,6 +165,11 @@ namespace SiliconStudio.Xenko.Graphics
                     || Usage == GraphicsResourceUsage.Default)
                 && !IsRenderTarget && !IsDepthStencil)
                 return;
+
+            if (ParentTexture == null && GraphicsDevice != null)
+            {
+                GraphicsDevice.TextureMemory -= (Depth * DepthStride)/(float)0x100000;
+            }
 
             InitializeFromImpl();
         }

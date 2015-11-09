@@ -42,7 +42,6 @@ namespace SiliconStudio.AssemblyProcessor
         private AssemblyDefinition mscorlibAssembly;
         private readonly List<TypeDefinition> classToRemoveList = new List<TypeDefinition>();
         private AssemblyDefinition assembly;
-        private TypeReference voidType;
         private TypeReference voidPointerType;
         private TypeReference intType;
         
@@ -58,9 +57,8 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             // Import void* and int32 from assembly using mscorlib specific version (2.0 or 4.0 depending on assembly)
-            voidType = mscorlibAssembly.MainModule.GetTypeResolved("System.Void");
-            voidPointerType = new PointerType(assembly.MainModule.Import(voidType));
-            intType = assembly.MainModule.Import(mscorlibAssembly.MainModule.GetTypeResolved("System.Int32"));
+            voidPointerType = new PointerType(assembly.MainModule.TypeSystem.Void);
+            intType = assembly.MainModule.TypeSystem.Int32;
 
             // Remove CompilationRelaxationsAttribute
             if (context.Platform == PlatformType.WindowsStore || context.Platform == PlatformType.WindowsPhone)

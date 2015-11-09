@@ -9,12 +9,12 @@ using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
-    class EntitySerializerTest : GraphicsTestBase
+    class EntitySerializerTest : GameTestBase
     {
         [Test]
         public void TestSaveAndLoadEntities()
         {
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 var entity = new Entity { Transform = { Position = new Vector3(100.0f, 0.0f, 0.0f) } };
                 game.Asset.Save("EntityAssets/Entity", entity);

@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
-    public class SpriteProviderTests : GraphicsTestBase
+    public class SpriteProviderTests : GameTestBase
     {
         [Test]
         public void SpriteFromSheetTests()
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void SpriteFromTextureTests()
         {
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 var provider = new SpriteFromTexture();
                 Assert.AreEqual(1, provider.SpritesCount);

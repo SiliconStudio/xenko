@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
     /// <summary>
     /// Base class for engine tests.
     /// </summary>
-    public class EngineTestBase : GraphicsTestBase
+    public class EngineTestBase : GameTestBase
     {
         protected Scene Scene;
         protected Entity Camera = new Entity { new CameraComponent() };
@@ -59,10 +59,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
             };
 
             Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
-            Scene.AddChild(Camera);
+            Scene.Entities.Add(Camera);
 
             var ambientLight = new Entity { new LightComponent { Type = new LightAmbient { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 } };
-            Scene.AddChild(ambientLight);
+            Scene.Entities.Add(ambientLight);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
         }

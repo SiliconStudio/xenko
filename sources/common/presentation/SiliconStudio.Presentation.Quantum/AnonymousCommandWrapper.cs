@@ -16,7 +16,6 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly CombineMode combineMode;
         private readonly Func<object, bool, UndoToken> redo;
         private readonly Action<object, UndoToken> undo;
-        private bool isRunning;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AnonymousCommandWrapper"/> class.

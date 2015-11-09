@@ -60,6 +60,7 @@ namespace SiliconStudio.Core
                 if (value == name) return;
 
                 name = value;
+
                 OnNameChanged();
             }
         }
@@ -84,7 +85,7 @@ namespace SiliconStudio.Core
 
         public override string ToString()
         {
-            return string.Format("{0}: {1}", this.GetType().Name, Name);
+            return $"{GetType().Name}: {name}";
         }
 
         protected override void OnAddReference()

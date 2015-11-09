@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a light to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("LightComponent")]
-    [Display(120, "Light", Expand = ExpandRule.Once)]
+    [Display(12000, "Light", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
     [DefaultEntityComponentProcessor(typeof(LightProcessor))]
     public sealed class LightComponent : ActivableEntityComponent

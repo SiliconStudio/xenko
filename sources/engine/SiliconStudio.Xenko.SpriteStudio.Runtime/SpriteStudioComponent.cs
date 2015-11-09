@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.SpriteStudio.Runtime;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("SpriteStudioComponent")]
-    [Display(99, "Sprite Studio", Expand = ExpandRule.Once)]
+    [Display(9900, "Sprite Studio", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(SpriteStudioProcessor))]
     [DefaultEntityComponentRenderer(typeof(SpriteStudioRenderer))]
     public class SpriteStudioComponent : EntityComponent
@@ -28,6 +28,6 @@ namespace SiliconStudio.Xenko.Engine
         public List<SpriteStudioNodeState> Nodes { get; } = new List<SpriteStudioNodeState>();
 
         [DataMemberIgnore]
-        internal List<SpriteStudioNodeState> SortedNodes { get; set; }
+        internal List<SpriteStudioNodeState> SortedNodes { get; } = new List<SpriteStudioNodeState>();
     }
 }

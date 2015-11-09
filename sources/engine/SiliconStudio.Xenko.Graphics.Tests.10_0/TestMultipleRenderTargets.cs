@@ -36,7 +36,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             CurrentVersion = 4;
             this.rotateModel = rotateModel;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new [] { GraphicsProfile.Level_10_0, }; // TODO remove that when Multiple render targeting is fixed for profile 9_1.
         }
 
         protected override void RegisterTests()
@@ -94,9 +93,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             var ambientLight = new Entity("Ambient Light") { new LightComponent { Type = new LightAmbient(), Intensity = 1f } };
 
-            scene.AddChild(teapot);
-            scene.AddChild(mainCamera);
-            scene.AddChild(ambientLight);
+            scene.Entities.Add(teapot);
+            scene.Entities.Add(mainCamera);
+            scene.Entities.Add(ambientLight);
 
             // Add a custom script
             if (rotateModel)

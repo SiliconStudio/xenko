@@ -63,6 +63,11 @@ namespace SiliconStudio.Xenko.Graphics
 
             Recreate(dataPointer);
 
+            if (GraphicsDevice != null)
+            {
+                GraphicsDevice.BuffersMemory += SizeInBytes/(float)0x100000;
+            }
+
             return this;
         }
 
@@ -142,6 +147,11 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             resourceId = 0;
+
+            if (GraphicsDevice != null)
+            {
+                GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
+            }
 
             base.Destroy();
         }

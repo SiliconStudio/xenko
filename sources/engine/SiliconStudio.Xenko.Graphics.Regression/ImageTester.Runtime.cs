@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
                     // Header
                     binaryWriter.Write((int)ImageServerMessageType.SendImage);
-                    GraphicsTestBase.TestGameLogger.Info(@"Sending image information...");
+                    GameTestBase.TestGameLogger.Info(@"Sending image information...");
                     testResultImage.Write(binaryWriter);
 
                     var dataWriter = new DataWriter(imageComparisonServer.OutputStream);

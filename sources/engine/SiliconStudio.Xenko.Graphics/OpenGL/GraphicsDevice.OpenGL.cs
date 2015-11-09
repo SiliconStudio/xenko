@@ -11,6 +11,7 @@ using System.Threading;
 using OpenTK.Graphics;
 using OpenTK.Platform;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Shaders;
@@ -817,6 +818,9 @@ namespace SiliconStudio.Xenko.Graphics
             PreDraw();
 
             GL.DrawArrays(primitiveType.ToOpenGL(), startVertex, vertexCount);
+
+            FrameTriangleCount += (uint)vertexCount;
+            FrameDrawCalls++;
         }
 
         public void DrawAuto(PrimitiveType primitiveType)
@@ -828,6 +832,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             //GL.DrawArraysIndirect(primitiveType.ToOpenGL(), (IntPtr)0);
             throw new NotImplementedException();
+
+            FrameDrawCalls++;
         }
 
         /// <summary>
@@ -851,6 +857,9 @@ namespace SiliconStudio.Xenko.Graphics
 #else
             GL.DrawElementsBaseVertex(primitiveType.ToOpenGL(), indexCount, drawElementsType, indexBufferOffset + (startIndexLocation * indexElementSize), baseVertexLocation);
 #endif
+
+            FrameDrawCalls++;
+            FrameTriangleCount += (uint)indexCount;
         }
 
         /// <summary>
@@ -873,6 +882,9 @@ namespace SiliconStudio.Xenko.Graphics
 #else
             GL.DrawElementsInstancedBaseVertex(primitiveType.ToOpenGL(), indexCountPerInstance, DrawElementsType.UnsignedInt, (IntPtr)(startIndexLocation * indexElementSize), instanceCount, baseVertexLocation);
 #endif
+
+            FrameDrawCalls++;
+            FrameTriangleCount += (uint)(indexCountPerInstance * instanceCount);
         }
 
         /// <summary>
@@ -891,6 +903,8 @@ namespace SiliconStudio.Xenko.Graphics
             EnsureContextActive();
 #endif
             PreDraw();
+
+            FrameDrawCalls++;
         }
 
         /// <summary>
@@ -915,6 +929,9 @@ namespace SiliconStudio.Xenko.Graphics
 #else
             GL.DrawArraysInstanced(primitiveType.ToOpenGL(), startVertexLocation, vertexCountPerInstance, instanceCount);
 #endif
+
+            FrameDrawCalls++;
+            FrameTriangleCount += (uint)(vertexCountPerInstance * instanceCount);
         }
 
         /// <summary>
@@ -943,6 +960,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             GL.BindBuffer(BufferTarget.DrawIndirectBuffer, 0);
 #endif
+
+            FrameDrawCalls++;
         }
 
         public void EnableProfile(bool enabledFlag)

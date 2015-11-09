@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Text;
 using System.Threading;
 using SiliconStudio.Core.Collections;
@@ -201,6 +200,47 @@ namespace SiliconStudio.Core.Diagnostics
         }
 
         /// <summary>
+        /// Creates a profiler with the specified key. The returned object must be disposed at the end of the section
+        /// being profiled. See remarks.
+        /// </summary>
+        /// <param name="profilingKey">The profile key.</param>
+        /// <param name="textFormat">The text to format.</param>
+        /// <param name="value0"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
+        /// <param name="value3"></param>
+        /// <returns>A profiler state.</returns>
+        /// <remarks>It is recommended to call this method with <c>using (var profile = Profiler.Profile(...))</c> in order to make sure that the Dispose() method will be called on the
+        /// <see cref="ProfilingState" /> returned object.</remarks>
+        public static ProfilingState Begin(ProfilingKey profilingKey, string textFormat, ProfilingCustomValue value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
+        {
+            var profiler = New(profilingKey);
+            if (value1.HasValue)
+            {
+                if (value2.HasValue)
+                {
+                    if (value3.HasValue)
+                    {
+                        profiler.Begin(textFormat, value0, value1.Value, value2.Value, value3.Value);
+                    }
+                    else
+                    {
+                        profiler.Begin(textFormat, value0, value1.Value, value2.Value);
+                    }
+                }
+                else
+                {
+                    profiler.Begin(textFormat, value0, value1.Value);
+                }
+            }
+            else
+            {
+                profiler.Begin(textFormat, value0);
+            }
+            return profiler;
+        }
+
+        /// <summary>
         /// Resets the id counter to zero and disable all registered profiles.
         /// </summary>
         public static void Reset()
@@ -229,6 +269,21 @@ namespace SiliconStudio.Core.Diagnostics
             public long MinTime;
             public long MaxTime;
             public int Count;
+        }
+
+        public static ProfilingEvent[] GetEvents()
+        {
+            lock (Locker)
+            {
+                if (events.Count == 0) return null;
+
+                var res = events.ToArray();
+
+                events.Clear();
+                eventsByKey.Clear();
+
+                return res;
+            }
         }
 
         public static string ReportEvents()
@@ -313,7 +368,7 @@ namespace SiliconStudio.Core.Diagnostics
             }
         }
 
-        private static void AppendTime(StringBuilder builder, long accumulatedTime)
+        public static void AppendTime(StringBuilder builder, long accumulatedTime)
         {
             var accumulatedTimeSpan = new TimeSpan((accumulatedTime * 10000000) / Stopwatch.Frequency);
             if (accumulatedTimeSpan > new TimeSpan(0, 0, 1, 0))

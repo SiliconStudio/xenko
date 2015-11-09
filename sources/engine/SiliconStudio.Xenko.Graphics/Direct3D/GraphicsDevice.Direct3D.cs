@@ -11,6 +11,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Shaders;
 using SharpDX.Mathematics.Interop;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -37,7 +38,6 @@ namespace SiliconStudio.Xenko.Graphics
         private SharpDX.Direct3D11.InputAssemblerStage inputAssembler;
         private SharpDX.Direct3D11.OutputMergerStage outputMerger;
 
-        private int actualRenderTargetViewCount;
         private SharpDX.Direct3D11.DeviceCreationFlags creationFlags;
         private EffectInputSignature currentEffectInputSignature;
         private SharpDX.Direct3D11.InputLayout currentInputLayout;
@@ -175,6 +175,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void Begin()
         {
+            FrameTriangleCount = 0;
+            FrameDrawCalls = 0;
         }
 
         /// <summary>
@@ -413,6 +415,9 @@ namespace SiliconStudio.Xenko.Graphics
             PrepareDraw(primitiveType);
             
             NativeDeviceContext.Draw(vertexCount, startVertexLocation);
+
+            FrameTriangleCount += (uint)vertexCount;
+            FrameDrawCalls++;
         }
 
         /// <summary>
@@ -424,6 +429,8 @@ namespace SiliconStudio.Xenko.Graphics
             PrepareDraw(primitiveType);
 
             NativeDeviceContext.DrawAuto();
+
+            FrameDrawCalls++;
         }
 
         /// <summary>
@@ -438,6 +445,9 @@ namespace SiliconStudio.Xenko.Graphics
             PrepareDraw(primitiveType);
 
             NativeDeviceContext.DrawIndexed(indexCount, startIndexLocation, baseVertexLocation);
+
+            FrameDrawCalls++;
+            FrameTriangleCount += (uint)indexCount;
         }
 
         /// <summary>
@@ -454,6 +464,9 @@ namespace SiliconStudio.Xenko.Graphics
             PrepareDraw(primitiveType);
 
             NativeDeviceContext.DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+
+            FrameDrawCalls++;
+            FrameTriangleCount += (uint)(indexCountPerInstance * instanceCount);
         }
 
         /// <summary>
@@ -469,6 +482,8 @@ namespace SiliconStudio.Xenko.Graphics
             PrepareDraw(primitiveType);
 
             NativeDeviceContext.DrawIndexedInstancedIndirect(argumentsBuffer.NativeBuffer, alignedByteOffsetForArgs);
+
+            FrameDrawCalls++;
         }
 
         /// <summary>
@@ -484,6 +499,9 @@ namespace SiliconStudio.Xenko.Graphics
             PrepareDraw(primitiveType);
 
             NativeDeviceContext.DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
+
+            FrameDrawCalls++;
+            FrameTriangleCount += (uint)(vertexCountPerInstance * instanceCount);
         }
 
         /// <summary>
@@ -499,6 +517,8 @@ namespace SiliconStudio.Xenko.Graphics
             PrepareDraw(primitiveType);
 
             NativeDeviceContext.DrawIndexedInstancedIndirect(argumentsBuffer.NativeBuffer, alignedByteOffsetForArgs);
+
+            FrameDrawCalls++;
         }
 
         /// <summary>
@@ -595,7 +615,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             for (int i = 0; i < currentRenderTargetViews.Length; i++)
                 currentRenderTargetViews[i] = null;
-            actualRenderTargetViewCount = 0;
             outputMerger.ResetTargets();
         }
 
