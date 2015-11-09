@@ -79,6 +79,20 @@ namespace SiliconStudio.Xenko.Assets
                     if (legacyAsset.AssetFile.AssetContent == null)
                         legacyAsset.AssetFile.AssetContent = File.ReadAllBytes(legacyAsset.AssetFile.FilePath);
 
+                    // Change legacy namespaces and default effect names in all shader source files
+                    // TODO: Use syntax analysis? What about shaders referenced in other assets?
+                    if (legacyAsset.NewExtension == ".xksl" || legacyAsset.NewExtension == ".xkfx" || legacyAsset.NewExtension == ".xkeffectlog")
+                    {
+                        var sourceText = System.Text.Encoding.UTF8.GetString(legacyAsset.AssetFile.AssetContent);
+                        var newSourceText = sourceText.Replace("Paradox", "Xenko");
+
+                        if (newSourceText != sourceText)
+                        {
+                            legacyAsset.AssetFile.AssetContent = System.Text.Encoding.UTF8.GetBytes(newSourceText);
+                        }
+                    }
+
+                    // Create asset copy with new extension
                     ChangeFileExtension(assetFiles, legacyAsset.AssetFile, legacyAsset.NewExtension);
                 }
 
