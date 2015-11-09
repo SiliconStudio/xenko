@@ -60,7 +60,6 @@
     <Compile Include="Collections\ObservableSet.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
     <Compile Include="Controls\FilteringComboBoxSort.cs" />
-    <Compile Include="Controls\MessageControl.cs" />
     <Compile Include="Controls\TreeViewElementFinder.cs" />
     <Compile Include="Controls\TreeView.cs" />
     <Compile Include="Controls\TreeViewItem.cs" />
@@ -128,7 +127,6 @@
     <Compile Include="ValueConverters\MaxNum.cs" />
     <Compile Include="ValueConverters\MinNum.cs" />
     <Compile Include="ValueConverters\MultiplyMultiConverter.cs" />
-    <Compile Include="ValueConverters\TextToFlowDocumentConverter.cs" />
     <Compile Include="ViewModel\ActionStack\AnonymousViewModelActionItem.cs" />
     <Compile Include="ViewModel\IViewModelServiceProvider.cs" />
     <Compile Include="ViewModel\NullServiceProvider.cs" />
@@ -263,9 +261,6 @@
     <Compile Include="View\TemplateProviderBase.cs" />
     <Compile Include="View\TemplateProviderComparerBase.cs" />
     <Compile Include="View\TemplateProviderSelector.cs" />
-    <Compile Include="Windows\DialogButtonInfo.cs" />
-    <Compile Include="Windows\MessageBox.cs" />
-    <Compile Include="Windows\MessageDialogBase.cs" />
   </ItemGroup>
   <ItemGroup>
     <Page Include="Themes\ExpressionDark\Theme.xaml">
@@ -318,7 +313,6 @@
   <ItemGroup>
     <Resource Include="Resources\Images\gear--pencil.png" />
   </ItemGroup>
-  <Import Project="..\SiliconStudio.Markdown.Xaml\SiliconStudio.Markdown.Xaml.projitems" Label="Shared" />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

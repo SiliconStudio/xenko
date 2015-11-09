@@ -16,7 +16,7 @@ namespace SiliconStudio.Presentation.Dialogs
 
         public DialogService(Dispatcher dispatcher, Window parentWindow)
         {
-            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
+            if (dispatcher == null) throw new ArgumentNullException("dispatcher");
             this.dispatcher = dispatcher;
             ParentWindow = parentWindow;
         }
@@ -41,7 +41,13 @@ namespace SiliconStudio.Presentation.Dialogs
         public MessageBoxResult ShowMessageBox(string message, string caption, MessageBoxButton button, MessageBoxImage image)
         {
             var parentWindow = ParentWindow;
-            return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, button, image));
+            return dispatcher.Invoke(() =>
+            {
+                if (parentWindow != null)
+                    return (MessageBoxResult)MessageBox.Show(parentWindow, message, caption, (System.Windows.MessageBoxButton)button, (System.Windows.MessageBoxImage)image);
+
+                return (MessageBoxResult)MessageBox.Show(message, caption, (System.Windows.MessageBoxButton)button, (System.Windows.MessageBoxImage)image);
+            });
         }
 
         public void CloseCurrentWindow(bool? dialogResult = null)
