@@ -1463,10 +1463,9 @@ namespace SiliconStudio.Assets.Analysis
                 Visit(item.Asset);
                 
                 // composition inheritances
-                var assetComposer = item.Asset as IAssetComposer;
-                if (assetComposer != null)
+                if (item.Asset.BaseInners != null)
                 {
-                    foreach (var compositionBase in assetComposer.GetCompositionBases())
+                    foreach (var compositionBase in item.Asset.BaseInners)
                         dependencies.AddBrokenLinkOut(compositionBase, ContentLinkType.CompositionInheritance);
                 }
 
@@ -1498,6 +1497,17 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     base.VisitObject(obj, descriptor, visitMembers);
                 }
+            }
+
+            public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
+            {
+                // Don't visit base inners as they are visited at the top level.
+                if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == "~BaseInners"))
+                {
+                    return;
+                }
+
+                base.VisitObjectMember(container, containerDescriptor, member, value);
             }
         }
 

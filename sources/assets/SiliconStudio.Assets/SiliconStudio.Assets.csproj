@@ -58,7 +58,6 @@
     <Compile Include="Analysis\CommonAnalysis.cs" />
     <Compile Include="Analysis\IContentLink.cs" />
     <Compile Include="Analysis\ContentLinkType.cs" />
-    <Compile Include="Analysis\IAssetComposer.cs" />
     <Compile Include="Analysis\PackageAnalysis.cs" />
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />

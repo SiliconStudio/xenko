@@ -522,8 +522,8 @@ namespace SiliconStudio.Assets.Tests
 
             assets[1].Base = new AssetBase(assets[0]);
             assets[2].Base = new AssetBase(assets[1]);
-            assets[3].CompositionBases.Add(CreateAssetReference(assetItems[1]));
-            assets[1].CompositionBases.Add(CreateAssetReference(assetItems[4]));
+            assets[3].BaseInners = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
+            assets[1].BaseInners = new List<AssetBase>() { new AssetBase(assetItems[4].Location, assetItems[4].Asset) };
             assets[5].Reference = CreateAssetReference(assetItems[1]);
             assets[1].Reference = CreateAssetReference(assetItems[6]);
 
@@ -536,12 +536,12 @@ namespace SiliconStudio.Assets.Tests
 
                 Assert.AreEqual(3, dependencies.LinksIn.Count());
                 Assert.AreEqual(ContentLinkType.Inheritance | ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[2]).Type);
-                Assert.AreEqual(ContentLinkType.CompositionInheritance | ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[3]).Type);
+                Assert.AreEqual(ContentLinkType.CompositionInheritance, dependencies.GetLinkIn(assetItems[3]).Type);
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[5]).Type);
 
                 Assert.AreEqual(3, dependencies.LinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Inheritance | ContentLinkType.Reference, dependencies.GetLinkOut(assetItems[0]).Type);
-                Assert.AreEqual(ContentLinkType.CompositionInheritance | ContentLinkType.Reference, dependencies.GetLinkOut(assetItems[4]).Type);
+                Assert.AreEqual(ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[4]).Type);
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkOut(assetItems[6]).Type);
                 
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -560,7 +560,7 @@ namespace SiliconStudio.Assets.Tests
 
                 Assert.AreEqual(3, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Inheritance | ContentLinkType.Reference, dependencies.GetBrokenLinkOut(assetItems[0].Id).Type);
-                Assert.AreEqual(ContentLinkType.CompositionInheritance | ContentLinkType.Reference, dependencies.GetBrokenLinkOut(assetItems[4].Id).Type);
+                Assert.AreEqual(ContentLinkType.CompositionInheritance, dependencies.GetBrokenLinkOut(assetItems[4].Id).Type);
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetBrokenLinkOut(assetItems[6].Id).Type);
             }
         }
@@ -640,8 +640,8 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkOut(assetItems[0]).Type);
-                
-                assets[1].CompositionBases.Add(CreateAssetReference(assetItems[0]));
+
+                assets[1].BaseInners = new List<AssetBase> { new AssetBase(assetItems[0].Location, assetItems[0].Asset) };
                 assetItems[1].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -650,7 +650,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetLinkOut(assetItems[0]).Type);
                 
-                assets[2].CompositionBases.Add(CreateAssetReference(assetItems[1]));
+                assets[2].BaseInners = new List<AssetBase> { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
                 assetItems[2].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -707,7 +707,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[2].CompositionBases.Clear();
+                assets[2].BaseInners = null;
                 assetItems[2].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -716,7 +716,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[1].CompositionBases.Clear();
+                assets[1].BaseInners = null;
                 assetItems[1].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -789,9 +789,9 @@ namespace SiliconStudio.Assets.Tests
             assets[8].Base = new AssetBase(assets[1]);
             assets[1].Reference = CreateAssetReference(assetItems[5]);
             assets[4].Reference = CreateAssetReference(assetItems[1]);
-            assets[1].CompositionBases.Add(CreateAssetReference(assetItems[7]));
-            assets[2].CompositionBases.Add(CreateAssetReference(assetItems[1]));
-            assets[6].CompositionBases.Add(CreateAssetReference(assetItems[1]));
+            assets[1].BaseInners = new List<AssetBase>() { new AssetBase(assetItems[7].Location, assetItems[7].Asset) };
+            assets[2].BaseInners = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
+            assets[6].BaseInners = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
 
             // Create a session with this project
             using (var session = new PackageSession(project))

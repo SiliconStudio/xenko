@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Tests
 {
     [DataContract("!AssetObjectTest")]
     [AssetDescription(FileExtension)]
-    public class AssetObjectTest : Asset, IEquatable<AssetObjectTest>, IAssetComposer
+    public class AssetObjectTest : Asset, IEquatable<AssetObjectTest>
     {
         public const string FileExtension = ".xktest";
 
@@ -21,9 +21,6 @@ namespace SiliconStudio.Assets.Tests
 
         [DefaultValue(null)]
         public AssetReference<AssetObjectTest> Reference { get; set; }
-
-        [DefaultValue(null)]
-        public List<AssetReference<AssetObjectTest>> CompositionBases = new List<AssetReference<AssetObjectTest>>();
 
         [DefaultValue(null)]
         public UFile RawAsset { get; set; }
@@ -52,11 +49,6 @@ namespace SiliconStudio.Assets.Tests
                 hashCode = (hashCode * 397) ^ (RawAsset != null ? RawAsset.GetHashCode() : 0);
                 return hashCode;
             }
-        }
-
-        public IEnumerable<IContentReference> GetCompositionBases()
-        {
-            return CompositionBases;
         }
 
         public static bool operator ==(AssetObjectTest left, AssetObjectTest right)
