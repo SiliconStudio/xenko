@@ -184,11 +184,14 @@ namespace SiliconStudio.Xenko.Assets
         private async Task UpgradeProject(MSBuildWorkspace workspace, UFile projectPath)
         {
             // Upgrade .csproj file
+            // TODO: Use parsed file?
             var fileContents = File.ReadAllText(projectPath);
-            var newFileContents = fileContents.Replace(".pdxpkg", ".xkpkg");
+
+            // Rename referenced to the package, shaders and effects
+            var newFileContents = fileContents.Replace(".pdx", ".xk");
+
+            // Rename variables
             newFileContents = newFileContents.Replace("Paradox", "Xenko");
-            //fileContents = fileContents.Replace("$(SiliconStudioParadoxDir)", "$(SiliconStudioXenkoDir)");
-            //fileContents = fileContents.Replace("$(EnsureSiliconStudioParadoxInstalled)", "$(EnsureSiliconStudioXenkoInstalled)");
 
             if (newFileContents != fileContents)
             {
