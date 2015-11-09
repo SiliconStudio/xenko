@@ -1,4 +1,4 @@
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     public struct UpdateObjectData
     {

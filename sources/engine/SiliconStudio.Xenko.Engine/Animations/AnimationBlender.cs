@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Updater;
+using SiliconStudio.Xenko.Updater;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Animations

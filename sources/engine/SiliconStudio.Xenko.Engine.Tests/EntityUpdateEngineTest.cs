@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using SiliconStudio.Core.Updater;
+using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {

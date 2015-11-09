@@ -178,7 +178,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             // Non instantiable type? (object, interfaces, abstract classes)
             // Serializer can be null since they will be inherited anyway (handled through MemberSerializer)
             var resolvedType = type.Resolve();
-            if (resolvedType.IsAbstract || resolvedType.IsAbstract || resolvedType.FullName == typeof(object).FullName)
+            if (resolvedType.IsAbstract || resolvedType.IsInterface || resolvedType.FullName == typeof(object).FullName)
             {
                 AddSerializableType(type, serializableTypeInfo = new SerializableTypeInfo(null, true), profile);
                 return serializableTypeInfo;
@@ -202,17 +202,19 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
             // Process members
             foreach (var serializableItem in ComplexClassSerializerGenerator.GetSerializableItems(type, true))
             {
-                var resolvedType = serializableItem.Type.Resolve();
                 // Check that all closed types have a proper serializer
                 if (serializableItem.Attributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberCustomSerializerAttribute")
-                    || (resolvedType != null && resolvedType.IsInterface)
                     || serializableItem.Type.ContainsGenericParameter())
                     continue;
+
+                var resolvedType = serializableItem.Type.Resolve();
+                var isInterface = resolvedType != null && resolvedType.IsInterface;
 
                 if (GenerateSerializer(serializableItem.Type, profile: profile) == null)
                 {
                     ComplexClassSerializerGenerator.IgnoreMember(serializableItem.MemberInfo);
-                    log.Log(new LogMessage(log.Module, LogMessageType.Warning, string.Format("Member {0} does not have a valid serializer. Add [DataMemberIgnore], turn the member non-public, or add a [DataContract] to it's type.", serializableItem.MemberInfo)));
+                    if (!isInterface)
+                        log.Log(new LogMessage(log.Module, LogMessageType.Warning, string.Format("Member {0} does not have a valid serializer. Add [DataMemberIgnore], turn the member non-public, or add a [DataContract] to it's type.", serializableItem.MemberInfo)));
                 }
             }
         }

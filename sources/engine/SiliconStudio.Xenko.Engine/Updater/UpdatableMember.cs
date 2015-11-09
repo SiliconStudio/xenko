@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     /// <summary>
     /// Describes how to access an object member so that it can be updated by the <see cref="UpdateEngine"/>.

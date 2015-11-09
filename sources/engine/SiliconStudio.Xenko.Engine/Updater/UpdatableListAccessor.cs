@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Runtime.CompilerServices;
 
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     abstract class UpdatableListAccessor : UpdatableCustomAccessor
     {
@@ -40,7 +40,7 @@ namespace SiliconStudio.Core.Updater
             dup
             ldarg obj
             ldarg.0
-            ldfld int32 SiliconStudio.Core.Updater.UpdatableListAccessor::Index
+            ldfld int32 SiliconStudio.Xenko.Updater.UpdatableListAccessor::Index
             callvirt instance !T class [mscorlib]System.Collections.Generic.IList`1<!T>::get_Item(int32)
             stobj !T
             ret
@@ -55,7 +55,7 @@ namespace SiliconStudio.Core.Updater
             ldarg data
             ldarg obj
             ldarg.0
-            ldfld int32 SiliconStudio.Core.Updater.UpdatableListAccessor::Index
+            ldfld int32 SiliconStudio.Xenko.Updater.UpdatableListAccessor::Index
             callvirt instance !T class [mscorlib]System.Collections.Generic.IList`1<!T>::get_Item(int32)
             stobj !T
             ret
@@ -69,7 +69,7 @@ namespace SiliconStudio.Core.Updater
             // Note: IL is injected by UpdateEngineProcessor
             ldarg obj
             ldarg.0
-            ldfld int32 SiliconStudio.Core.Updater.UpdatableListAccessor::Index
+            ldfld int32 SiliconStudio.Xenko.Updater.UpdatableListAccessor::Index
             ldarg data
             unbox.any !T
             callvirt instance void class [mscorlib]System.Collections.Generic.IList`1<!T>::set_Item(int32, !0)
@@ -84,7 +84,7 @@ namespace SiliconStudio.Core.Updater
             // Note: IL is injected by UpdateEngineProcessor
             ldarg obj
             ldarg.0
-            ldfld int32 SiliconStudio.Core.Updater.UpdatableListAccessor::Index
+            ldfld int32 SiliconStudio.Xenko.Updater.UpdatableListAccessor::Index
             ldarg data
             ldobj !T
             callvirt instance void class [mscorlib]System.Collections.Generic.IList`1<!T>::set_Item(int32, !0)
@@ -99,7 +99,7 @@ namespace SiliconStudio.Core.Updater
             // Use method to set testI
             ldarg obj
             ldarg.0
-            ldfld int32 SiliconStudio.Core.Updater.UpdatableListAccessor::Index
+            ldfld int32 SiliconStudio.Xenko.Updater.UpdatableListAccessor::Index
             callvirt instance !T class [mscorlib]System.Collections.Generic.IList`1<!T>::get_Item(int32)
             ret
 #endif
@@ -112,7 +112,7 @@ namespace SiliconStudio.Core.Updater
             // Note: IL is injected by UpdateEngineProcessor
             ldarg obj
             ldarg.0
-            ldfld int32 SiliconStudio.Core.Updater.UpdatableListAccessor::Index
+            ldfld int32 SiliconStudio.Xenko.Updater.UpdatableListAccessor::Index
             ldarg data
             callvirt instance void class [mscorlib]System.Collections.Generic.IList`1<!T>::set_Item(int32, !0)
             ret

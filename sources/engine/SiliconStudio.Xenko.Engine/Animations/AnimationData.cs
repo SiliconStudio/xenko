@@ -9,7 +9,8 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Updater;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Animations
 {
@@ -25,6 +26,20 @@ namespace SiliconStudio.Xenko.Animations
         internal abstract AnimationCurveEvaluatorOptimizedGroup CreateEvaluator();
     }
 
+    [DataSerializerGlobal(null, typeof(AnimationData<float>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<double>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Vector2>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Vector3>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Vector4>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<int>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<uint>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<long>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<ulong>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Int2>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Int3>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Int4>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Quaternion>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<object>))]
     public class AnimationData<T> : AnimationData
     {
         public AnimationInitialValues<T>[] AnimationInitialValues { get; set; }
@@ -136,10 +151,6 @@ namespace SiliconStudio.Xenko.Animations
     [StructLayout(LayoutKind.Sequential)]
     public struct AnimationKeyValuePair<T>
     {
-        // 4 highest bit specifies format:
-        // - 0: float
-        // - 1: Vector3
-        // - 2: Quaternion
         public int ChannelIndex;
         public CompressedTimeSpan RequiredTime;
         public KeyFrameData<T> Value;

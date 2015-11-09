@@ -1,6 +1,6 @@
 using System;
 
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     public abstract class UpdateMemberResolver
     {

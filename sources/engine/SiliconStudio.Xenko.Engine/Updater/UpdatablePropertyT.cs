@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     public class UpdatableProperty<T> : UpdatableProperty
     {
@@ -30,7 +30,7 @@ namespace SiliconStudio.Core.Updater
             dup
             ldarg obj
             ldarg.0
-            ldfld native int class SiliconStudio.Core.Updater.UpdatableProperty::Getter
+            ldfld native int class SiliconStudio.Xenko.Updater.UpdatableProperty::Getter
             calli instance !T()
             stobj !T
             ret
@@ -44,7 +44,7 @@ namespace SiliconStudio.Core.Updater
             ldarg data
             ldarg obj
             ldarg.0
-            ldfld native int class SiliconStudio.Core.Updater.UpdatableProperty::Getter
+            ldfld native int class SiliconStudio.Xenko.Updater.UpdatableProperty::Getter
             calli instance !T()
             stobj !T
             ret
@@ -59,7 +59,7 @@ namespace SiliconStudio.Core.Updater
             ldarg data
             unbox.any !T
             ldarg.0
-            ldfld native int class SiliconStudio.Core.Updater.UpdatableProperty::Setter
+            ldfld native int class SiliconStudio.Xenko.Updater.UpdatableProperty::Setter
             calli instance void(!T)
             ret
 #endif
@@ -73,7 +73,7 @@ namespace SiliconStudio.Core.Updater
             ldarg data
             ldobj !T
             ldarg.0
-            ldfld native int class SiliconStudio.Core.Updater.UpdatableProperty::Setter
+            ldfld native int class SiliconStudio.Xenko.Updater.UpdatableProperty::Setter
             calli instance void(!T)
             ret
 #endif

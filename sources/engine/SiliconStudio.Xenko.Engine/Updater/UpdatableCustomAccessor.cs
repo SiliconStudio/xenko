@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Reflection;
 
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     /// <summary>
     /// Provide a custom implementation to access a member by the <see cref="UpdateEngine"/>.

@@ -5,10 +5,12 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using SiliconStudio.AssemblyProcessor.Serializers;
+using SiliconStudio.Core.Serialization;
 using FieldAttributes = Mono.Cecil.FieldAttributes;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
@@ -17,24 +19,50 @@ namespace SiliconStudio.AssemblyProcessor
 {
     internal partial class UpdateEngineProcessor : ICecilSerializerProcessor
     {
-        private ModuleDefinition siliconStudioCoreModule;
-
-        private TypeDefinition updatableFieldGenericType;
         private MethodDefinition updatableFieldGenericCtor;
+        private MethodDefinition updatableListUpdateResolverGenericCtor;
+        private MethodDefinition updatableArrayUpdateResolverGenericCtor;
 
-        private TypeDefinition updatablePropertyGenericType;
         private MethodDefinition updatablePropertyGenericCtor;
 
         private MethodReference updateEngineRegisterMemberMethod;
+        private MethodReference updateEngineRegisterMemberResolverMethod;
 
         private MethodReference getTypeFromHandleMethod;
 
+        private TypeDefinition animationDataType;
+
         public void ProcessSerializers(CecilSerializerContext context)
         {
+            var references = new HashSet<AssemblyDefinition>();
+            EnumerateReferences(references, context.Assembly);
+
             // Generate IL for SiliconStudio.Core
-            if (context.Assembly.Name.Name == "SiliconStudio.Core")
+            if (context.Assembly.Name.Name == "SiliconStudio.Xenko.Engine")
             {
-                ProcessCoreAssembly(context);
+                ProcessXenkoEngineAssembly(context);
+            }
+
+            // Only process assemblies depending on Xenko.Engine
+            if (!references.Any(x => x.Name.Name == "SiliconStudio.Xenko.Engine"))
+            {
+                // Make sure Xenko.Engine.Serializers can access everything internally
+                var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(context.Assembly);
+                var internalsVisibleToAttribute = mscorlibAssembly.MainModule.GetTypeResolved(typeof(InternalsVisibleToAttribute).FullName);
+                var serializationAssemblyName = "SiliconStudio.Xenko.Engine.Serializers";
+
+                // Add [InteralsVisibleTo] attribute
+                var internalsVisibleToAttributeCtor = context.Assembly.MainModule.ImportReference(internalsVisibleToAttribute.GetConstructors().Single());
+                var internalsVisibleAttribute = new CustomAttribute(internalsVisibleToAttributeCtor)
+                {
+                    ConstructorArguments =
+                            {
+                                new CustomAttributeArgument(context.Assembly.MainModule.ImportReference(context.Assembly.MainModule.TypeSystem.String), serializationAssemblyName)
+                            }
+                };
+                context.Assembly.CustomAttributes.Add(internalsVisibleAttribute);
+
+                return;
             }
 
             // Get or create method
@@ -46,15 +74,29 @@ namespace SiliconStudio.AssemblyProcessor
             var siliconStudioCoreAssembly = context.Assembly.Name.Name == "SiliconStudio.Core"
                     ? context.Assembly
                     : context.Assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Core");
-            siliconStudioCoreModule = siliconStudioCoreAssembly.MainModule;
+            var siliconStudioCoreModule = siliconStudioCoreAssembly.MainModule;
 
-            updatableFieldGenericType = siliconStudioCoreModule.GetType("SiliconStudio.Core.Updater.UpdatableField`1");
+            var siliconStudioXenkoEngineAssembly = context.Assembly.Name.Name == "SiliconStudio.Xenko.Engine"
+                    ? context.Assembly
+                    : context.Assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Xenko.Engine");
+            var siliconStudioXenkoEngineModule = siliconStudioXenkoEngineAssembly.MainModule;
+
+            animationDataType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Animations.AnimationData`1");
+
+            var updatableFieldGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdatableField`1");
             updatableFieldGenericCtor = updatableFieldGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
 
-            updatablePropertyGenericType = siliconStudioCoreModule.GetType("SiliconStudio.Core.Updater.UpdatableProperty`1");
+            var updatablePropertyGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdatableProperty`1");
             updatablePropertyGenericCtor = updatablePropertyGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
 
-            updateEngineRegisterMemberMethod = context.Assembly.MainModule.ImportReference(siliconStudioCoreModule.GetType("SiliconStudio.Core.Updater.UpdateEngine").Methods.First(x => x.Name == "RegisterMember"));
+            var updatableListUpdateResolverGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.ListUpdateResolver`1");
+            updatableListUpdateResolverGenericCtor = updatableListUpdateResolverGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
+
+            var updatableArrayUpdateResolverGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.ArrayUpdateResolver`1");
+            updatableArrayUpdateResolverGenericCtor = updatableArrayUpdateResolverGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
+
+            updateEngineRegisterMemberMethod = context.Assembly.MainModule.ImportReference(siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngine").Methods.First(x => x.Name == "RegisterMember"));
+            updateEngineRegisterMemberResolverMethod = context.Assembly.MainModule.ImportReference(siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngine").Methods.First(x => x.Name == "RegisterMemberResolver"));
 
             var typeType = CecilExtensions.FindCorlibAssembly(context.Assembly).MainModule.GetTypeResolved(typeof(Type).FullName);
             getTypeFromHandleMethod = context.Assembly.MainModule.Import(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));
@@ -64,45 +106,81 @@ namespace SiliconStudio.AssemblyProcessor
             mainPrepareMethod.CustomAttributes.Add(new CustomAttribute(context.Assembly.MainModule.ImportReference(moduleInitializerAttribute.GetConstructors().Single(x => !x.IsStatic))));
 
             // Emit serialization code for all the types we care about
-            foreach (var serializableType in context.ComplexTypes.Select(x => x.Key))
+            foreach (var serializableType in context.SerializableTypesProfiles.SelectMany(x => x.Value.SerializableTypes))
             {
+                // Special case: when processing Xenko.Engine assembly, we automatically add dependent assemblies types too
+                if (!serializableType.Value.Local && siliconStudioXenkoEngineAssembly != context.Assembly)
+                    continue;
+
+                var typeDefinition = serializableType.Key as TypeDefinition;
+                if (typeDefinition == null)
+                    continue;
+
                 try
                 {
-                    ProcessType(context, serializableType, mainPrepareMethod);
+                    ProcessType(context, typeDefinition, mainPrepareMethod);
                 }
                 catch (Exception e)
                 {
-                    throw new InvalidOperationException(string.Format("Error when generating update engine code for {0}", serializableType), e);
+                    throw new InvalidOperationException(string.Format("Error when generating update engine code for {0}", typeDefinition), e);
                 }
             }
 
             // Force generic instantiations
             var il = mainPrepareMethod.Body.GetILProcessor();
-            foreach (var serializableType in context.SerializableTypesProfiles.SelectMany(x => x.Value.SerializableTypes.Where(y => y.Value.Local)).Select(x => x.Key).Distinct().OfType<GenericInstanceType>())
+            foreach (var serializableType in context.SerializableTypesProfiles.SelectMany(x => x.Value.SerializableTypes).ToArray())
             {
-                // Try to find if original method definition was generated
-                var typeDefinition = serializableType.Resolve();
-
-                var updateMethod = GetOrCreateUpdateType(typeDefinition.Module.Assembly, false)?.Methods.FirstOrDefault(x => x.Name == ComputeUpdateMethodName(typeDefinition));
-
-                // If nothing was found in main assembly, also look in SiliconStudio.Core assembly, just in case (it might defines some shared/corlib types -- currently not the case)
-                if (updateMethod == null)
-                {
-                    var coreSerializationAssembly = context.Assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Core");
-                    if (coreSerializationAssembly != null)
-                    {
-                        updateMethod = GetOrCreateUpdateType(coreSerializationAssembly, false)?.Methods.FirstOrDefault(x => x.Name == ComputeUpdateMethodName(typeDefinition));
-                    }
-                }
-
-                if (updateMethod == null)
+                // Special case: when processing Xenko.Engine assembly, we automatically add dependent assemblies types too
+                if (!serializableType.Value.Local && siliconStudioXenkoEngineAssembly != context.Assembly)
                     continue;
 
-                // Emit call to update engine setup method with generic arguments of current type
-                il.Emit(OpCodes.Call, context.Assembly.MainModule.ImportReference(updateMethod)
-                    .MakeGenericMethod(serializableType.GenericArguments
-                        .Select(context.Assembly.MainModule.ImportReference)
-                        .Select(CecilExtensions.FixupValueType).ToArray()));
+                // Make sure AnimationData<T> is serializable
+                //if (serializableType.Value.Mode == DataSerializerGenericMode.None)
+                //    context.GenerateSerializer(context.Assembly.MainModule.ImportReference(animationDataType).MakeGenericType(context.Assembly.MainModule.ImportReference(serializableType.Key)));
+
+                // Try to find if original method definition was generated
+                var typeDefinition = serializableType.Key.Resolve();
+
+                // If using List<T>, register this type in UpdateEngine
+                var listInterfaceType = typeDefinition.Interfaces.OfType<GenericInstanceType>().FirstOrDefault(x => x.ElementType.FullName == typeof(IList<>).FullName);
+                if (listInterfaceType != null)
+                {
+                    //call Updater.UpdateEngine.RegisterMemberResolver(new Updater.ListUpdateResolver<T>());
+                    var elementType = ResolveGenericsVisitor.Process(serializableType.Key, listInterfaceType.GenericArguments[0]);
+                    il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatableListUpdateResolverGenericCtor).MakeGeneric(context.Assembly.MainModule.ImportReference(elementType).FixupValueType()));
+                    il.Emit(OpCodes.Call, updateEngineRegisterMemberResolverMethod);
+                }
+
+                // Same for arrays
+                var arrayType = serializableType.Key as ArrayType;
+                if (arrayType != null)
+                {
+                    //call Updater.UpdateEngine.RegisterMemberResolver(new Updater.ArrayUpdateResolver<T>());
+                    var elementType = ResolveGenericsVisitor.Process(serializableType.Key, arrayType.ElementType);
+                    il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatableArrayUpdateResolverGenericCtor).MakeGeneric(context.Assembly.MainModule.ImportReference(elementType).FixupValueType()));
+                    il.Emit(OpCodes.Call, updateEngineRegisterMemberResolverMethod);
+                }
+
+                var genericInstanceType = serializableType.Key as GenericInstanceType;
+                if (genericInstanceType == null)
+                {
+                    var updateMethod = GetOrCreateUpdateType(typeDefinition.Module.Assembly, false)?.Methods.FirstOrDefault(x => x.Name == ComputeUpdateMethodName(typeDefinition));
+
+                    // If nothing was found in main assembly, also look in SiliconStudio.Core assembly, just in case (it might defines some shared/corlib types -- currently not the case)
+                    if (updateMethod == null)
+                    {
+                        updateMethod = GetOrCreateUpdateType(siliconStudioXenkoEngineAssembly, false)?.Methods.FirstOrDefault(x => x.Name == ComputeUpdateMethodName(typeDefinition));
+                    }
+
+                    if (updateMethod != null)
+                    {
+                        // Emit call to update engine setup method with generic arguments of current type
+                        il.Emit(OpCodes.Call, context.Assembly.MainModule.ImportReference(updateMethod)
+                            .MakeGenericMethod(genericInstanceType.GenericArguments
+                                .Select(context.Assembly.MainModule.ImportReference)
+                                .Select(CecilExtensions.FixupValueType).ToArray()));
+                    }
+                }
             }
 
             il.Emit(OpCodes.Ret);
@@ -182,8 +260,8 @@ namespace SiliconStudio.AssemblyProcessor
                 il.Emit(OpCodes.Sub);
                 il.Emit(OpCodes.Conv_I4);
 
-                var fieldType = replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(field.FieldType) : field.FieldType;
-                il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatableFieldGenericCtor).MakeGeneric(context.Assembly.MainModule.ImportReference(fieldType)));
+                var fieldType = context.Assembly.MainModule.ImportReference(replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(field.FieldType) : field.FieldType).FixupValueType();
+                il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatableFieldGenericCtor).MakeGeneric(fieldType));
                 il.Emit(OpCodes.Call, updateEngineRegisterMemberMethod);
             }
 
@@ -214,8 +292,8 @@ namespace SiliconStudio.AssemblyProcessor
                     il.Emit(OpCodes.Conv_I);
                 }
 
-                var propertyType = replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(property.PropertyType) : property.PropertyType;
-                il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatablePropertyGenericCtor).MakeGeneric(context.Assembly.MainModule.ImportReference(propertyType)));
+                var propertyType = context.Assembly.MainModule.ImportReference(replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(property.PropertyType) : property.PropertyType).FixupValueType();
+                il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatablePropertyGenericCtor).MakeGeneric(propertyType));
                 il.Emit(OpCodes.Call, updateEngineRegisterMemberMethod);
             }
 
@@ -256,6 +334,33 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             return updateEngineType;
+        }
+
+        private static void EnumerateReferences(HashSet<AssemblyDefinition> assemblies, AssemblyDefinition assembly)
+        {
+            // Already processed?
+            if (!assemblies.Add(assembly))
+                return;
+
+            // Let's recurse over referenced assemblies
+            foreach (var referencedAssemblyName in assembly.MainModule.AssemblyReferences.ToArray())
+            {
+                // Avoid processing system assemblies
+                // TODO: Scan what is actually in framework folders
+                if (referencedAssemblyName.Name == "mscorlib" || referencedAssemblyName.Name.StartsWith("System")
+                    || referencedAssemblyName.FullName.Contains("PublicKeyToken=31bf3856ad364e35")) // Signed with Microsoft public key (likely part of system libraries)
+                    continue;
+
+                try
+                {
+                    var referencedAssembly = assembly.MainModule.AssemblyResolver.Resolve(referencedAssemblyName);
+
+                    EnumerateReferences(assemblies, referencedAssembly);
+                }
+                catch (AssemblyResolutionException)
+                {
+                }
+            }
         }
     }
 };

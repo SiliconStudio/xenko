@@ -4,7 +4,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 
 // TODO: We should switch to something determined at compile time with assembly processor?
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     internal static class BlittableHelper
     {

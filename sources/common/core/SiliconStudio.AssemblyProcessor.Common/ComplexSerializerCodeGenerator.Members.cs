@@ -86,10 +86,11 @@ namespace SiliconStudio.AssemblyProcessor
             // Generate serializers for PropertyKey and ParameterKey
             processors.Add(new PropertyKeySerializerProcessor());
 
+            // Update Engine (with AnimationData<T>)
+            processors.Add(new UpdateEngineProcessor());
+
             // Profile serializers
             processors.Add(new ProfileSerializerProcessor());
-
-            processors.Add(new UpdateEngineProcessor());
 
             // Apply each processor
             foreach (var processor in processors)

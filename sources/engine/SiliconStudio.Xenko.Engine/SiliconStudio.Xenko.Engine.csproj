@@ -2281,6 +2281,24 @@
     </Compile>
     <Compile Include="Rendering\Shaders\TransformationKeys.cs" />
     <Compile Include="Engine\SyncScript.cs" />
+    <Compile Include="Updater\ArrayUpdateResolver.cs" />
+    <Compile Include="Updater\BlittableHelper.cs" />
+    <Compile Include="Updater\CompiledUpdate.cs" />
+    <Compile Include="Updater\ListUpdateResolver.cs" />
+    <Compile Include="Updater\UpdatableCustomAccessor.cs" />
+    <Compile Include="Updater\UpdatableField.cs" />
+    <Compile Include="Updater\UpdatableFieldT.cs" />
+    <Compile Include="Updater\UpdatableListAccessor.cs" />
+    <Compile Include="Updater\UpdatableMember.cs" />
+    <Compile Include="Updater\UpdatableProperty.cs" />
+    <Compile Include="Updater\UpdatablePropertyT.cs" />
+    <Compile Include="Updater\UpdateEngine.cs" />
+    <Compile Include="Updater\UpdateEngineHelper.cs" />
+    <Compile Include="Updater\UpdateMemberInfo.cs" />
+    <Compile Include="Updater\UpdateMemberResolver.cs" />
+    <Compile Include="Updater\UpdateObjectData.cs" />
+    <Compile Include="Updater\UpdateOperation.cs" />
+    <Compile Include="Updater\UpdateOperationType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Starter\XenkoApplicationDelegate.iOS.cs" />

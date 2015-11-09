@@ -1,7 +1,7 @@
 using System;
 using System.Globalization;
 
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     public class ArrayUpdateResolver<T> : UpdateMemberResolver
     {

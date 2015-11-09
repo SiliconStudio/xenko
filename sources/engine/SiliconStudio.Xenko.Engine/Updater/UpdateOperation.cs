@@ -1,4 +1,4 @@
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     struct UpdateOperation
     {

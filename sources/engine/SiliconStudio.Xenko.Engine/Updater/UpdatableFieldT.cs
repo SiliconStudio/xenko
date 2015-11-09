@@ -1,6 +1,7 @@
 ﻿using System;
+using SiliconStudio.Core;
 
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     public class UpdatableField<T> : UpdatableField
     {

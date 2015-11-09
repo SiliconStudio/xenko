@@ -4,9 +4,10 @@
 using System;
 using System.Collections.Generic;
 using NUnit.Framework;
-using SiliconStudio.Core.Updater;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Updater;
 
-namespace SiliconStudio.Core.Tests
+namespace SiliconStudio.Xenko.Engine.Tests
 {
     [TestFixture]
     public class TestUpdateEngine
@@ -96,8 +97,8 @@ namespace SiliconStudio.Core.Tests
 
             var updateMemberInfo = new List<UpdateMemberInfo>
             {
-                new UpdateMemberInfo("ObjectField.(SiliconStudio.Core.Tests.TestClass,SiliconStudio.Core.Tests).IntField", 0),
-                new UpdateMemberInfo("ObjectProperty.(SiliconStudio.Core.Tests.TestClass,SiliconStudio.Core.Tests).IntField", 8),
+                new UpdateMemberInfo("ObjectField.(SiliconStudio.Xenko.Engine.Tests.TestClass,SiliconStudio.Xenko.Engine.Tests).IntField", 0),
+                new UpdateMemberInfo("ObjectProperty.(SiliconStudio.Xenko.Engine.Tests.TestClass,SiliconStudio.Xenko.Engine.Tests).IntField", 8),
             };
 
             var blittableData = new TestData[] { 123, 456 };
@@ -310,8 +311,8 @@ namespace SiliconStudio.Core.Tests
                 new UpdateMemberInfo("NonBlittableStructField.TestClassField.IntProperty", 0),
                 new UpdateMemberInfo("NonBlittableStructField.TestClassProperty.IntField", 0),
                 new UpdateMemberInfo("NonBlittableStructField.TestClassProperty.IntProperty", 0),
-                new UpdateMemberInfo("ObjectField.(SiliconStudio.Core.Tests.TestClass,SiliconStudio.Core.Tests).IntField", 0),
-                new UpdateMemberInfo("ObjectProperty.(SiliconStudio.Core.Tests.TestClass,SiliconStudio.Core.Tests).IntField", 0),
+                new UpdateMemberInfo("ObjectField.(SiliconStudio.Xenko.Engine.Tests.TestClass,SiliconStudio.Xenko.Engine.Tests).IntField", 0),
+                new UpdateMemberInfo("ObjectProperty.(SiliconStudio.Xenko.Engine.Tests.TestClass,SiliconStudio.Xenko.Engine.Tests).IntField", 0),
                 new UpdateMemberInfo("IntArray[0]", 0),
                 new UpdateMemberInfo("IntArray[2]", 0),
                 new UpdateMemberInfo("IntArray[3]", 0),

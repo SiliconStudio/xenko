@@ -2,7 +2,7 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     /// <summary>
     /// Shared class between <see cref="UpdatableProperty"/> and <see cref="UpdatableCustomAccessor"/>.
@@ -30,7 +30,7 @@ namespace SiliconStudio.Core.Updater
             // Note: IL is injected by UpdateEngineProcessor
             ldarg obj
             ldarg.0
-            ldfld native int class SiliconStudio.Core.Updater.UpdatableProperty::Getter
+            ldfld native int class SiliconStudio.Xenko.Updater.UpdatableProperty::Getter
             calli instance object()
             ret
 #endif
@@ -45,7 +45,7 @@ namespace SiliconStudio.Core.Updater
             ldarg obj
             ldarg data
             ldarg.0
-            ldfld native int class SiliconStudio.Core.Updater.UpdatableProperty::Setter
+            ldfld native int class SiliconStudio.Xenko.Updater.UpdatableProperty::Setter
             calli instance void(object)
             ret
 #endif

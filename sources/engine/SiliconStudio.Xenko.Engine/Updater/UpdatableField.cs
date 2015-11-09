@@ -4,8 +4,9 @@
 using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+using SiliconStudio.Core;
 
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     public abstract class UpdatableField : UpdatableMember
     {

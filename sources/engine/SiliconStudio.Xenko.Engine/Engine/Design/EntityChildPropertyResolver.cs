@@ -4,7 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Core.Updater;
+using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Engine.Design
 {

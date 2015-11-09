@@ -4,9 +4,10 @@ using System.Globalization;
 using System.Linq;
 using System.Reflection;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 
-namespace SiliconStudio.Core.Updater
+namespace SiliconStudio.Xenko.Updater
 {
     public static unsafe class UpdateEngine
     {

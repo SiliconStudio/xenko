@@ -13,7 +13,7 @@ namespace SiliconStudio.AssemblyProcessor
 {
     internal partial class UpdateEngineProcessor
     {
-        private void ProcessCoreAssembly(CecilSerializerContext context)
+        private void ProcessXenkoEngineAssembly(CecilSerializerContext context)
         {
             var assembly = context.Assembly;
 
@@ -26,7 +26,7 @@ namespace SiliconStudio.AssemblyProcessor
 
         private static void GenerateUpdateEngineHelperCode(AssemblyDefinition assembly)
         {
-            var updateEngineHelperType = assembly.MainModule.GetType("SiliconStudio.Core.Updater.UpdateEngineHelper");
+            var updateEngineHelperType = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngineHelper");
 
             // UpdateEngineHelper.ObjectToPtr
             var objectToPtr = RewriteBody(updateEngineHelperType.Methods.First(x => x.Name == "ObjectToPtr"));
@@ -42,8 +42,8 @@ namespace SiliconStudio.AssemblyProcessor
 
         private static void GenerateUpdatableFieldCode(AssemblyDefinition assembly)
         {
-            var updatableFieldType = assembly.MainModule.GetType("SiliconStudio.Core.Updater.UpdatableField");
-            var updatableFieldGenericType = assembly.MainModule.GetType("SiliconStudio.Core.Updater.UpdatableField`1");
+            var updatableFieldType = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdatableField");
+            var updatableFieldGenericType = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdatableField`1");
 
             // UpdatableField.GetObject
             var getObject = RewriteBody(updatableFieldType.Methods.First(x => x.Name == "GetObject"));
@@ -143,8 +143,8 @@ namespace SiliconStudio.AssemblyProcessor
             public UpdatablePropertyCodeGenerator(AssemblyDefinition assembly) : base(assembly)
             {
                 // GetObject/SetObject are on the non-generic implementation
-                declaringTypeForObjectMethods = assembly.MainModule.GetType("SiliconStudio.Core.Updater.UpdatableProperty");
-                declaringType = assembly.MainModule.GetType("SiliconStudio.Core.Updater.UpdatableProperty`1");
+                declaringTypeForObjectMethods = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdatableProperty");
+                declaringType = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdatableProperty`1");
 
                 updatablePropertyGetter = declaringTypeForObjectMethods.Fields.First(x => x.Name == "Getter");
                 updatablePropertySetter = declaringTypeForObjectMethods.Fields.First(x => x.Name == "Setter");
@@ -222,8 +222,8 @@ namespace SiliconStudio.AssemblyProcessor
 
             public UpdatableListCodeGenerator(AssemblyDefinition assembly) : base(assembly)
             {
-                declaringType = assembly.MainModule.GetType("SiliconStudio.Core.Updater.UpdatableListAccessor`1");
-                indexField = assembly.MainModule.GetType("SiliconStudio.Core.Updater.UpdatableListAccessor").Fields.First(x => x.Name == "Index");
+                declaringType = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdatableListAccessor`1");
+                indexField = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdatableListAccessor").Fields.First(x => x.Name == "Index");
 
                 // TODO: Update to new method to resolve collection assembly
                 var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(assembly);

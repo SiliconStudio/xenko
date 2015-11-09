@@ -231,20 +231,9 @@ namespace SiliconStudio.AssemblyProcessor
         /// </summary>
         /// <param name="typeReference"></param>
         /// <returns></returns>
-        public static TypeReference FixupValueType(TypeReference typeReference)
+        public static TypeReference FixupValueType(this TypeReference typeReference)
         {
-            // Make sure IsValueType are properly set from resolved type (not encoded in CustomAttributes, but we depend on a valid value for some of the serializer/update engine codegen)
-            switch (typeReference.MetadataType)
-            {
-                case MetadataType.Class:
-                case MetadataType.GenericInstance:
-                    var typeDefinition = typeReference.Resolve();
-                    if (typeDefinition.IsValueType && !typeReference.IsValueType)
-                        typeReference.IsValueType = typeDefinition.IsValueType;
-                    break;
-            }
-
-            return typeReference;
+            return FixupValueTypeVisitor.Default.VisitDynamic(typeReference);
         }
 
         private static void SetGenericParameters(TypeReference result, IEnumerable<GenericParameter> genericParameters)
