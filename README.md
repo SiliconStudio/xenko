@@ -16,31 +16,31 @@ This is the source code for Paradox Game Engine (http://paradox3d.net/).
 ## Documentation
 
 * [Build Instructions](doc/GettingStarted.md)
-* [API Reference](http://doc.paradox3d.net/html/index.htm?page=api)
+* [API Reference](http://doc.paradox3d.net/1.3/?page=api)
 * [Confluence documentation](http://doc.paradox3d.net/)
 * [Release Notes](doc/ReleaseNotes/ReleaseNotes.1.3.md)
 
 ## Assemblies
 
-[Assembly diagram](http://doc.paradox3d.net/html/index.htm?page=Assemblies+diagrams)
+[Assembly diagram](http://doc.paradox3d.net/1.3/?page=Assemblies+diagrams)
 
-* [__SiliconStudio.Paradox.Graphics__](http://doc.paradox3d.net/html/index.htm?page=Graphics):
+* [__SiliconStudio.Paradox.Graphics__](http://doc.paradox3d.net/1.3/?page=Graphics):
    Platform-indepdenent D3D11-like rendering API. Implementations for Direct3D 11 (with feature levels 9.1 and 10), OpenGL 4 and OpenGL ES 2.0.
 * __SiliconStudio.Paradox.Games__:
    Windows and game loop management.
-* [__SiliconStudio.Paradox.Input__](http://doc.paradox3d.net/html/index.htm?page=Input):
+* [__SiliconStudio.Paradox.Input__](http://doc.paradox3d.net/1.3/?page=Input):
    Input management, including keyboard, joystick, mouse, touch, gestures.
 * __SiliconStudio.Paradox.Engine__:
    Effect system, entity system, particle system, high-level audio engine, etc...
-* [__SiliconStudio.Paradox.UI__](http://doc.paradox3d.net/html/index.htm?page=UI):
+* [__SiliconStudio.Paradox.UI__](http://doc.paradox3d.net/1.3/?page=UI):
    In-game UI library, similar to WPF (including many UI Controls).
-* [__SiliconStudio.Paradox.Shaders__](http://doc.paradox3d.net/html/index.htm?page=Shading+Language):
+* [__SiliconStudio.Paradox.Shaders__](http://doc.paradox3d.net/1.3/?page=Shading+Language):
    Paradox shader language, including many new language constructs to make shader programming much more easy/modular.
-* [__SiliconStudio.Paradox.Audio__](http://doc.paradox3d.net/html/index.htm?page=Audio):
+* [__SiliconStudio.Paradox.Audio__](http://doc.paradox3d.net/1.3/?page=Audio):
    Low-level audio engine.
 * __SiliconStudio.Assets__:
    Modular asset project management and pipeline system.
-* [__SiliconStudio.Paradox.GameStudio__](http://doc.paradox3d.net/html/index.htm?page=Game+Studio):
+* [__SiliconStudio.Paradox.GameStudio__](http://doc.paradox3d.net/1.3/?page=Game+Studio):
    Asset editor for Paradox. Allow asset browsing and editing, and Paradox Asset project editing.
    
 We currently do not provide sources for:
