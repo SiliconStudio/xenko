@@ -1,0 +1,64 @@
+using SiliconStudio.Core.Mathematics;
+using System;
+
+namespace SiliconStudio.Xenko.Input.Extensions
+{
+    public struct SimulatedKeyPress : IDisposable
+    {
+        internal Keys Key;
+        internal InputManager InputManager;
+
+        public void Dispose()
+        {
+            lock (InputManager.KeyboardInputEvents)
+            {
+                InputManager.KeyboardInputEvents.Add(new InputManagerBase.KeyboardInputEvent { Key = Key, Type = InputManagerBase.InputEventType.Up });
+            }
+        }
+    }
+
+    public struct SimulatedTap : IDisposable
+    {
+        internal Vector2 Coords;
+        internal InputManager InputManager;
+
+        public void Dispose()
+        {
+            InputManager.InjectPointerEvent(new PointerEvent(0, Coords, Vector2.Zero, TimeSpan.Zero, PointerState.Up, PointerType.Touch, true));
+        }
+    }
+
+    public static class InputManagerExtensions
+    {
+        public static SimulatedKeyPress SimulateKeyPress(this InputManager iputManager, Keys key)
+        {
+            lock (iputManager.KeyboardInputEvents)
+            {
+                iputManager.KeyboardInputEvents.Add(new InputManagerBase.KeyboardInputEvent { Key = key, Type = InputManagerBase.InputEventType.Down });
+            }
+            return new SimulatedKeyPress { InputManager = iputManager, Key = key };
+        }
+
+        public static void SimulateKeyDown(this InputManager iputManager, Keys key)
+        {
+            lock (iputManager.KeyboardInputEvents)
+            {
+                iputManager.KeyboardInputEvents.Add(new InputManagerBase.KeyboardInputEvent { Key = key, Type = InputManagerBase.InputEventType.Down });
+            }
+        }
+
+        public static void SimulateKeyUp(this InputManager iputManager, Keys key)
+        {
+            lock (iputManager.KeyboardInputEvents)
+            {
+                iputManager.KeyboardInputEvents.Add(new InputManagerBase.KeyboardInputEvent { Key = key, Type = InputManagerBase.InputEventType.Up });
+            }
+        }
+
+        public static SimulatedTap SimulateTap(this InputManager iputManager, Vector2 coords)
+        {
+            iputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
+            return new SimulatedTap { Coords = coords, InputManager = iputManager };
+        }
+    }
+}
