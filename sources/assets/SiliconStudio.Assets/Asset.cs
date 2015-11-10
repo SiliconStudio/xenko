@@ -10,6 +10,7 @@ namespace SiliconStudio.Assets
     /// <summary>
     /// An inner asset.
     /// </summary>
+    [DataContract("AssetInner")]
     public struct AssetInner
     {
         /// <summary>
@@ -35,12 +36,12 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Asset identifier.
         /// </summary>
-        public readonly Guid Id;
+        public Guid Id { get; internal set; }
 
         /// <summary>
         /// Base asset identifier.
         /// </summary>
-        public readonly Guid? BaseId;
+        public Guid? BaseId { get; internal set; }
     }
 
     /// <summary>
