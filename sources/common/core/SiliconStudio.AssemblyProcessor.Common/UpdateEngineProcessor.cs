@@ -229,7 +229,7 @@ namespace SiliconStudio.AssemblyProcessor
             var emptyObjectField = updateMainMethod.DeclaringType.Fields.FirstOrDefault(x => x.Name == "emptyObject");
 
             // Note: forcing fields and properties to be processed in all cases
-            foreach (var serializableItem in ComplexClassSerializerGenerator.GetSerializableItems(type, true, ComplexTypeSerializerFlags.SerializePublicFields | ComplexTypeSerializerFlags.SerializePublicProperties))
+            foreach (var serializableItem in ComplexClassSerializerGenerator.GetSerializableItems(type, true, ComplexTypeSerializerFlags.SerializePublicFields | ComplexTypeSerializerFlags.SerializePublicProperties | ComplexTypeSerializerFlags.Updatable))
             {
                 var fieldReference = serializableItem.MemberInfo as FieldReference;
                 if (fieldReference != null)

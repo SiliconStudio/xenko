@@ -2284,6 +2284,7 @@
     <Compile Include="Updater\ArrayUpdateResolver.cs" />
     <Compile Include="Updater\BlittableHelper.cs" />
     <Compile Include="Updater\CompiledUpdate.cs" />
+    <Compile Include="Updater\DataMemberUpdatableAttribute.cs" />
     <Compile Include="Updater\ListUpdateResolver.cs" />
     <Compile Include="Updater\UpdatableCustomAccessor.cs" />
     <Compile Include="Updater\UpdatableField.cs" />

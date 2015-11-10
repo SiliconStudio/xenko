@@ -9,5 +9,10 @@ namespace SiliconStudio.AssemblyProcessor
     {
         SerializePublicFields = 1,
         SerializePublicProperties = 2,
+
+        /// <summary>
+        /// If the member has DataMemberIgnore and DataMemberUpdatable, it will be included
+        /// </summary>
+        Updatable = 4,
     }
 }

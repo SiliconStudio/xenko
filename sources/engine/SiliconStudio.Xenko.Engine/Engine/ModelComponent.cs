@@ -8,6 +8,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -82,7 +83,8 @@ namespace SiliconStudio.Xenko.Engine
             get { return materials; }
         }
 
-        [DataMemberIgnore]
+        [DataMemberIgnore, DataMemberUpdatable]
+        [DataMember]
         public SkeletonUpdater Skeleton
         {
             get

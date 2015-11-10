@@ -252,8 +252,7 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 foreach (var field in fields)
                 {
-                    if (field.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberIgnoreAttribute"))
-                        continue;
+                    if (IsMemberIgnored(field.CustomAttributes, flags)) continue;
                     var attributes = field.CustomAttributes;
                     var fixedAttribute = field.CustomAttributes.FirstOrDefault(x => x.AttributeType.FullName == typeof(FixedBufferAttribute).FullName);
                     var assignBack = !field.IsInitOnly;
@@ -273,8 +272,7 @@ namespace SiliconStudio.AssemblyProcessor
                     // Ignore properties with indexer
                     if (property.GetMethod.Parameters.Count > 0)
                         continue;
-                    if (property.CustomAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberIgnoreAttribute"))
-                        continue;
+                    if (IsMemberIgnored(property.CustomAttributes, flags)) continue;
                     var attributes = property.CustomAttributes;
                     var assignBack = property.SetMethod != null && (property.SetMethod.IsPublic || property.SetMethod.IsAssembly);
 
@@ -285,6 +283,19 @@ namespace SiliconStudio.AssemblyProcessor
                     yield return new SerializableItem { MemberInfo = property, Type = property.PropertyType, Name = property.Name, Attributes = attributes, AssignBack = assignBack, NeedReference = !type.IsClass || type.IsValueType };
                 }
             }
+        }
+
+        private static bool IsMemberIgnored(ICollection<CustomAttribute> customAttributes, ComplexTypeSerializerFlags flags)
+        {
+            // Check for DataMemberIgnore
+            if (customAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Core.DataMemberIgnoreAttribute"))
+            {
+                // Still allow members with DataMemberUpdatable if we are running UpdateEngineProcessor
+                if (!((flags & ComplexTypeSerializerFlags.Updatable) != 0
+                      && customAttributes.Any(x => x.AttributeType.FullName == "SiliconStudio.Xenko.Updater.DataMemberUpdatableAttribute")))
+                    return true;
+            }
+            return false;
         }
 
         private static bool IsReadOnlyTypeSerializable(TypeReference type)
