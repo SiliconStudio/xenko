@@ -228,81 +228,81 @@ namespace SiliconStudio.AssemblyProcessor
             var il = updateCurrentMethod.Body.GetILProcessor();
             var emptyObjectField = updateMainMethod.DeclaringType.Fields.FirstOrDefault(x => x.Name == "emptyObject");
 
-            foreach (var field in typeDefinition.Fields)
+            // Note: forcing fields and properties to be processed in all cases
+            foreach (var serializableItem in ComplexClassSerializerGenerator.GetSerializableItems(type, true, ComplexTypeSerializerFlags.SerializePublicFields | ComplexTypeSerializerFlags.SerializePublicProperties))
             {
-                // Only public non-static non-generic fields
-                if (field.IsStatic || !field.IsPublic)
-                    continue;
-
-                var fieldReference = context.Assembly.MainModule.ImportReference(field.MakeGeneric(updateCurrentMethod.GenericParameters.ToArray()));
-
-                // First time it is needed, let's create empty object: var emptyObject = new object();
-                if (emptyObjectField == null)
+                var fieldReference = serializableItem.MemberInfo as FieldReference;
+                if (fieldReference != null)
                 {
-                    emptyObjectField = new FieldDefinition("emptyObject", FieldAttributes.Static | FieldAttributes.Private, context.Assembly.MainModule.TypeSystem.Object);
+                    var field = fieldReference.Resolve();
 
-                    // Create static ctor that will initialize this object
-                    var staticConstructor = new MethodDefinition(".cctor",
-                                            MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
-                                            context.Assembly.MainModule.TypeSystem.Void);
-                    var staticConstructorIL = staticConstructor.Body.GetILProcessor();
-                    staticConstructorIL.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(emptyObjectField.FieldType.Resolve().GetConstructors().Single(x => !x.IsStatic && !x.HasParameters)));
-                    staticConstructorIL.Emit(OpCodes.Stsfld, emptyObjectField);
-                    staticConstructorIL.Emit(OpCodes.Ret);
+                    // First time it is needed, let's create empty object: var emptyObject = new object();
+                    if (emptyObjectField == null)
+                    {
+                        emptyObjectField = new FieldDefinition("emptyObject", FieldAttributes.Static | FieldAttributes.Private, context.Assembly.MainModule.TypeSystem.Object);
 
-                    updateMainMethod.DeclaringType.Fields.Add(emptyObjectField);
-                    updateMainMethod.DeclaringType.Methods.Add(staticConstructor);
-                }
+                        // Create static ctor that will initialize this object
+                        var staticConstructor = new MethodDefinition(".cctor",
+                                                MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+                                                context.Assembly.MainModule.TypeSystem.Void);
+                        var staticConstructorIL = staticConstructor.Body.GetILProcessor();
+                        staticConstructorIL.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(emptyObjectField.FieldType.Resolve().GetConstructors().Single(x => !x.IsStatic && !x.HasParameters)));
+                        staticConstructorIL.Emit(OpCodes.Stsfld, emptyObjectField);
+                        staticConstructorIL.Emit(OpCodes.Ret);
 
-                il.Emit(OpCodes.Ldtoken, type);
-                il.Emit(OpCodes.Call, getTypeFromHandleMethod);
-                il.Emit(OpCodes.Ldstr, field.Name);
+                        updateMainMethod.DeclaringType.Fields.Add(emptyObjectField);
+                        updateMainMethod.DeclaringType.Methods.Add(staticConstructor);
+                    }
 
-                il.Emit(OpCodes.Ldsfld, emptyObjectField);
-                il.Emit(OpCodes.Ldflda, fieldReference);
-                il.Emit(OpCodes.Ldsfld, emptyObjectField);
-                il.Emit(OpCodes.Conv_I);
-                il.Emit(OpCodes.Sub);
-                il.Emit(OpCodes.Conv_I4);
+                    il.Emit(OpCodes.Ldtoken, type);
+                    il.Emit(OpCodes.Call, getTypeFromHandleMethod);
+                    il.Emit(OpCodes.Ldstr, field.Name);
 
-                var fieldType = context.Assembly.MainModule.ImportReference(replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(field.FieldType) : field.FieldType).FixupValueType();
-                il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatableFieldGenericCtor).MakeGeneric(fieldType));
-                il.Emit(OpCodes.Call, updateEngineRegisterMemberMethod);
-            }
-
-            foreach (var property in typeDefinition.Properties)
-            {
-                // Only non-static properties with public accessor and no indexers
-                if (property.GetMethod == null || !property.GetMethod.IsPublic || property.GetMethod.IsStatic || property.HasParameters)
-                    continue;
-
-                var propertyGetMethod = context.Assembly.MainModule.ImportReference(property.GetMethod).MakeGeneric(updateCurrentMethod.GenericParameters.ToArray());
-
-                il.Emit(OpCodes.Ldtoken, type);
-                il.Emit(OpCodes.Call, getTypeFromHandleMethod);
-                il.Emit(OpCodes.Ldstr, property.Name);
-
-                il.Emit(OpCodes.Ldftn, propertyGetMethod);
-
-                // Only get setter if it exists and it's public
-                if (property.SetMethod != null && property.SetMethod.IsPublic)
-                {
-                    var propertySetMethod = context.Assembly.MainModule.ImportReference(property.SetMethod).MakeGeneric(updateCurrentMethod.GenericParameters.ToArray());
-                    il.Emit(OpCodes.Ldftn, propertySetMethod);
-                }
-                else
-                {
-                    // 0 (native int)
-                    il.Emit(OpCodes.Ldc_I4_0);
+                    il.Emit(OpCodes.Ldsfld, emptyObjectField);
+                    il.Emit(OpCodes.Ldflda, context.Assembly.MainModule.ImportReference(fieldReference));
+                    il.Emit(OpCodes.Ldsfld, emptyObjectField);
                     il.Emit(OpCodes.Conv_I);
+                    il.Emit(OpCodes.Sub);
+                    il.Emit(OpCodes.Conv_I4);
+
+                    var fieldType = context.Assembly.MainModule.ImportReference(replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(field.FieldType) : field.FieldType).FixupValueType();
+                    il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatableFieldGenericCtor).MakeGeneric(fieldType));
+                    il.Emit(OpCodes.Call, updateEngineRegisterMemberMethod);
                 }
 
-                var propertyType = context.Assembly.MainModule.ImportReference(replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(property.PropertyType) : property.PropertyType).FixupValueType();
+                var propertyReference = serializableItem.MemberInfo as PropertyReference;
+                if (propertyReference != null)
+                {
+                    var property = propertyReference.Resolve();
 
-                var updatablePropertyInflatedCtor = GetOrCreateUpdatablePropertyCtor(context.Assembly, propertyType);
+                    var propertyGetMethod = context.Assembly.MainModule.ImportReference(property.GetMethod).MakeGeneric(updateCurrentMethod.GenericParameters.ToArray());
 
-                il.Emit(OpCodes.Newobj, updatablePropertyInflatedCtor);
-                il.Emit(OpCodes.Call, updateEngineRegisterMemberMethod);
+                    il.Emit(OpCodes.Ldtoken, type);
+                    il.Emit(OpCodes.Call, getTypeFromHandleMethod);
+                    il.Emit(OpCodes.Ldstr, property.Name);
+
+                    il.Emit(OpCodes.Ldftn, propertyGetMethod);
+
+                    // Only get setter if it exists and it's public
+                    if (property.SetMethod != null && property.SetMethod.IsPublic)
+                    {
+                        var propertySetMethod = context.Assembly.MainModule.ImportReference(property.SetMethod).MakeGeneric(updateCurrentMethod.GenericParameters.ToArray());
+                        il.Emit(OpCodes.Ldftn, propertySetMethod);
+                    }
+                    else
+                    {
+                        // 0 (native int)
+                        il.Emit(OpCodes.Ldc_I4_0);
+                        il.Emit(OpCodes.Conv_I);
+                    }
+
+                    var propertyType = context.Assembly.MainModule.ImportReference(replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(property.PropertyType) : property.PropertyType).FixupValueType();
+
+                    var updatablePropertyInflatedCtor = GetOrCreateUpdatablePropertyCtor(context.Assembly, propertyType);
+
+                    il.Emit(OpCodes.Newobj, updatablePropertyInflatedCtor);
+                    il.Emit(OpCodes.Call, updateEngineRegisterMemberMethod);
+                }
             }
 
             if (updateCurrentMethod != updateMainMethod)

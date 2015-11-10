@@ -176,9 +176,9 @@ namespace SiliconStudio.AssemblyProcessor
             ignoredMembers.Add(memberInfo);
         }
 
-        public static IEnumerable<SerializableItem> GetSerializableItems(TypeReference type, bool serializeFields)
+        public static IEnumerable<SerializableItem> GetSerializableItems(TypeReference type, bool serializeFields, ComplexTypeSerializerFlags? flagsOverride = null)
         {
-            foreach (var serializableItemOriginal in GetSerializableItems(type.Resolve(), serializeFields))
+            foreach (var serializableItemOriginal in GetSerializableItems(type.Resolve(), serializeFields, flagsOverride))
             {
                 var serializableItem = serializableItemOriginal;
 
@@ -192,7 +192,7 @@ namespace SiliconStudio.AssemblyProcessor
             }
         }
 
-        public static IEnumerable<SerializableItem> GetSerializableItems(TypeDefinition type, bool serializeFields)
+        public static IEnumerable<SerializableItem> GetSerializableItems(TypeDefinition type, bool serializeFields, ComplexTypeSerializerFlags? flagsOverride = null)
         {
             ComplexTypeSerializerFlags flags;
 
@@ -239,7 +239,9 @@ namespace SiliconStudio.AssemblyProcessor
                 properties.Add(property);
             }
 
-            if (type.IsClass && !type.IsValueType)
+            if (flagsOverride.HasValue)
+                flags = flagsOverride.Value;
+            else if (type.IsClass && !type.IsValueType)
                 flags = ComplexTypeSerializerFlags.SerializePublicFields | ComplexTypeSerializerFlags.SerializePublicProperties;
             else if (type.Fields.Any(x => x.IsPublic && !x.IsStatic))
                 flags = ComplexTypeSerializerFlags.SerializePublicFields;
