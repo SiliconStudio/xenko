@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     }
 
     [DataContract()]
-    public abstract class EntityAssetBase : Asset, IDiffResolver, IAssetInnerContainer
+    public abstract class EntityAssetBase : Asset, IDiffResolver, IAssetPartContainer
     {
         protected EntityAssetBase()
         {
@@ -117,11 +117,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
             EntityAnalysis.RemapEntitiesId(entityAsset2.Hierarchy, idRemapping);
         }
 
-        public IEnumerable<AssetInner> CollectInners()
+        public IEnumerable<AssetPart> CollectParts()
         {
             foreach (var entityDesign in Hierarchy.Entities)
             {
-                yield return new AssetInner(entityDesign.Entity.Id, entityDesign.Design.BaseId);
+                yield return new AssetPart(entityDesign.Entity.Id, entityDesign.Design.BaseId);
             }
         }
     }

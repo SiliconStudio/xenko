@@ -8,54 +8,6 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Assets
 {
     /// <summary>
-    /// An inner asset.
-    /// </summary>
-    [DataContract("AssetInner")]
-    public struct AssetInner
-    {
-        /// <summary>
-        /// Initializes a new instance of <see cref="AssetInner"/> without a base.
-        /// </summary>
-        /// <param name="id">The asset identifier</param>
-        public AssetInner(Guid id) : this()
-        {
-            Id = id;
-        }
-
-        /// <summary>
-        /// Initializes a new instance of <see cref="AssetInner"/> with a base.
-        /// </summary>
-        /// <param name="id">The asset identifier</param>
-        /// <param name="baseId">The base asset identifier</param>
-        public AssetInner(Guid id, Guid? baseId)
-        {
-            Id = id;
-            BaseId = baseId;
-        }
-
-        /// <summary>
-        /// Asset identifier.
-        /// </summary>
-        public Guid Id { get; internal set; }
-
-        /// <summary>
-        /// Base asset identifier.
-        /// </summary>
-        public Guid? BaseId { get; internal set; }
-    }
-
-    /// <summary>
-    /// A container for inner assets.
-    /// </summary>
-    public interface IAssetInnerContainer
-    {
-        /// <summary>
-        /// Collects the inner assets.
-        /// </summary>
-        IEnumerable<AssetInner> CollectInners();
-    }
-
-    /// <summary>
     /// Base class for Asset.
     /// </summary>
     [DataContract(Inherited = true)]
@@ -133,12 +85,12 @@ namespace SiliconStudio.Assets
         public AssetBase Base { get; set; }
 
         /// <summary>
-        /// Gets or sets the base for inner assets.
+        /// Gets or sets the base for part assets.
         /// </summary>
-        /// <value>The inner asset.</value>
-        [DataMember("~BaseInners"), DefaultValue(null)]
+        /// <value>The part assets.</value>
+        [DataMember("~BaseParts"), DefaultValue(null)]
         [Browsable(false)]
-        public List<AssetBase> BaseInners { get; set; }
+        public List<AssetBase> BaseParts { get; set; }
 
         /// <summary>
         /// Gets or sets the build order for this asset.
@@ -174,7 +126,7 @@ namespace SiliconStudio.Assets
 
             // Remove the base
             assetBase.Base = null;
-            assetBase.BaseInners = null;
+            assetBase.BaseParts = null;
 
             // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
             var newAsset = (Asset)AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);

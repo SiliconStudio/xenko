@@ -29,7 +29,7 @@ namespace SiliconStudio.Assets.Analysis
         private Dictionary<Guid, AssetLink> parents;
         private Dictionary<Guid, AssetLink> children;
         private Dictionary<Guid, AssetLink> missingChildren;
-        private Dictionary<Guid, AssetInner> inners;
+        private Dictionary<Guid, AssetPart> parts;
 
         public AssetDependencies(AssetItem assetItem)
         {
@@ -54,9 +54,9 @@ namespace SiliconStudio.Assets.Analysis
             foreach (var child in set.BrokenLinksOut)
                 AddBrokenLinkOut(child.Element, child.Type);
 
-            // Copy inners
-            foreach (var inner in set.Inners)
-                AddInner(inner);
+            // Copy parts
+            foreach (var part in set.Parts)
+                AddPart(part);
         }
 
         public Guid Id
@@ -118,19 +118,19 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Gets the inner assets.
+        /// Gets the part assets.
         /// </summary>
-        public IEnumerable<AssetInner> Inners
+        public IEnumerable<AssetPart> Parts
         {
             get
             {
-                if (inners == null)
+                if (parts == null)
                 {
                     yield break;
                 }
-                foreach (var inner in inners)
+                foreach (var part in parts)
                 {
-                    yield return inner.Value;
+                    yield return part.Value;
                 }
             }
         }
@@ -142,7 +142,7 @@ namespace SiliconStudio.Assets.Analysis
         {
             missingChildren = null;
             children = null;
-            inners = null;
+            parts = null;
 
             if (!keepParents) 
                 parents = null;
@@ -185,33 +185,33 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Adds an inner asset
+        /// Adds an part asset
         /// </summary>
-        /// <param name="inner">An inner asset.</param>
-        public void AddInner(AssetInner inner)
+        /// <param name="part">An part asset.</param>
+        public void AddPart(AssetPart part)
         {
-            if (inners == null)
+            if (parts == null)
             {
-                inners = new Dictionary<Guid, AssetInner>();
+                parts = new Dictionary<Guid, AssetPart>();
             }
-            inners[inner.Id] = inner;
+            parts[part.Id] = part;
         }
 
         /// <summary>
-        /// Tries to get an inner asset from its identifier.
+        /// Tries to get an part asset from its identifier.
         /// </summary>
-        /// <param name="id">Identifier of the inner asset.</param>
-        /// <param name="inner">Returned inner asset if this method returns <c>true</c></param>
-        /// <returns><c>true</c> if the inner asset with the specified identifier exist; otherwise <c>false</c></returns>
-        public bool TryGetAssetInner(Guid id, out AssetInner inner)
+        /// <param name="id">Identifier of the part asset.</param>
+        /// <param name="part">Returned part asset if this method returns <c>true</c></param>
+        /// <returns><c>true</c> if the part asset with the specified identifier exist; otherwise <c>false</c></returns>
+        public bool TryGetAssetPart(Guid id, out AssetPart part)
         {
 
-            if (inners == null)
+            if (parts == null)
             {
-                inner = default(AssetInner);
+                part = default(AssetPart);
                 return false;
             }
-            return inners.TryGetValue(id, out inner);
+            return parts.TryGetValue(id, out part);
         }
 
         /// <summary>

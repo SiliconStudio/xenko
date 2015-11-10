@@ -62,22 +62,22 @@ namespace SiliconStudio.Assets.Tests
         }
     }
 
-    [DataContract("!AssetWithInners")]
+    [DataContract("!AssetWithParts")]
     [AssetDescription(FileExtension)]
-    public class AssetWithInners : Asset, IAssetInnerContainer
+    public class AssetWithParts : Asset, IAssetPartContainer
     {
         public const string FileExtension = ".xkinner";
 
-        public AssetWithInners()
+        public AssetWithParts()
         {
-            Inners = new List<AssetInner>();
+            Inners = new List<AssetPart>();
         }
 
         public string Name { get; set; }
 
-        public List<AssetInner> Inners { get; set; }
+        public List<AssetPart> Inners { get; set; }
 
-        public IEnumerable<AssetInner> CollectInners()
+        public IEnumerable<AssetPart> CollectParts()
         {
             return Inners;
         }

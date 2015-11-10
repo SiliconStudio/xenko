@@ -522,8 +522,8 @@ namespace SiliconStudio.Assets.Tests
 
             assets[1].Base = new AssetBase(assets[0]);
             assets[2].Base = new AssetBase(assets[1]);
-            assets[3].BaseInners = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
-            assets[1].BaseInners = new List<AssetBase>() { new AssetBase(assetItems[4].Location, assetItems[4].Asset) };
+            assets[3].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
+            assets[1].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[4].Location, assetItems[4].Asset) };
             assets[5].Reference = CreateAssetReference(assetItems[1]);
             assets[1].Reference = CreateAssetReference(assetItems[6]);
 
@@ -641,7 +641,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[1].BaseInners = new List<AssetBase> { new AssetBase(assetItems[0].Location, assetItems[0].Asset) };
+                assets[1].BaseParts = new List<AssetBase> { new AssetBase(assetItems[0].Location, assetItems[0].Asset) };
                 assetItems[1].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -650,7 +650,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetLinkOut(assetItems[0]).Type);
                 
-                assets[2].BaseInners = new List<AssetBase> { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
+                assets[2].BaseParts = new List<AssetBase> { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
                 assetItems[2].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -707,7 +707,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[2].BaseInners = null;
+                assets[2].BaseParts = null;
                 assetItems[2].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -716,7 +716,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[1].BaseInners = null;
+                assets[1].BaseParts = null;
                 assetItems[1].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -789,9 +789,9 @@ namespace SiliconStudio.Assets.Tests
             assets[8].Base = new AssetBase(assets[1]);
             assets[1].Reference = CreateAssetReference(assetItems[5]);
             assets[4].Reference = CreateAssetReference(assetItems[1]);
-            assets[1].BaseInners = new List<AssetBase>() { new AssetBase(assetItems[7].Location, assetItems[7].Asset) };
-            assets[2].BaseInners = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
-            assets[6].BaseInners = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
+            assets[1].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[7].Location, assetItems[7].Asset) };
+            assets[2].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
+            assets[6].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
 
             // Create a session with this project
             using (var session = new PackageSession(project))
@@ -857,17 +857,17 @@ namespace SiliconStudio.Assets.Tests
 
 
         [Test]
-        public void TestAssetInner()
+        public void TestAssetPart()
         {
             var project = new Package();
-            var assets = new List<AssetWithInners>();
+            var assets = new List<AssetWithParts>();
             var assetItems = new List<AssetItem>();
             for (int i = 0; i < 2; ++i)
             {
-                assets.Add(new AssetWithInners() { Inners =
+                assets.Add(new AssetWithParts() { Inners =
                 {
-                        new AssetInner(Guid.NewGuid()),
-                        new AssetInner(Guid.NewGuid())
+                        new AssetPart(Guid.NewGuid()),
+                        new AssetPart(Guid.NewGuid())
                 }
                 });
                 assetItems.Add(new AssetItem("asset-" + i, assets[i]));
@@ -878,7 +878,7 @@ namespace SiliconStudio.Assets.Tests
             {
                 var dependencyManager = session.DependencyManager;
 
-                // Check that inner asset is accessible from the dependency manager
+                // Check that part asset is accessible from the dependency manager
 
                 var innerAssetId = assets[0].Inners[0].Id;
                 var dependencySet = dependencyManager.FindDependencySet(innerAssetId);
@@ -886,17 +886,17 @@ namespace SiliconStudio.Assets.Tests
 
                 // Check that dependencies are the same than container asset.
                 var containerDependencySet = dependencyManager.FindDependencySet(assets[0].Id);
-                Assert.AreEqual(containerDependencySet.Id, dependencySet.Id, "DependencySet must be the same for inner and container");
+                Assert.AreEqual(containerDependencySet.Id, dependencySet.Id, "DependencySet must be the same for part and container");
 
                 // Check that inners are all there
-                Assert.AreEqual(2, dependencySet.Inners.Count());
+                Assert.AreEqual(2, dependencySet.Parts.Count());
 
-                // Check that inner asset is correctly stored into the dependencies
-                AssetInner inner;
-                Assert.IsTrue(dependencySet.TryGetAssetInner(innerAssetId, out inner));
-                Assert.AreEqual(assets[0].Inners[0].Id, inner.Id);
+                // Check that part asset is correctly stored into the dependencies
+                AssetPart part;
+                Assert.IsTrue(dependencySet.TryGetAssetPart(innerAssetId, out part));
+                Assert.AreEqual(assets[0].Inners[0].Id, part.Id);
 
-                // Remove inner asset
+                // Remove part asset
                 assets[0].Inners.Clear();
                 assetItems[0].IsDirty = true;
 
