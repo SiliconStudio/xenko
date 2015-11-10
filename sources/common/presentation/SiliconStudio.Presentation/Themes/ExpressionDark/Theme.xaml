@@ -4,7 +4,6 @@
 // Please see http://go.microsoft.com/fwlink/?LinkID=131993 for details.
 // All other rights reserved.
 -->
-
 <ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
@@ -17,9 +16,7 @@
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:commands="clr-namespace:SiliconStudio.Presentation.Controls.Commands"
                     xmlns:wnd="clr-namespace:SiliconStudio.Presentation.Windows"
-                    mc:Ignorable="d"
-                    >
-
+                    mc:Ignorable="d">
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../generic.xaml"/>
   </ResourceDictionary.MergedDictionaries>
@@ -236,16 +233,17 @@
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <ctrl:MessageControl Content="{Binding}" />
+          <ctrl:MarkdownTextBlock Text="{Binding}" />
         </DataTemplate>
       </Setter.Value>
     </Setter>
   </Style>
-  <Style TargetType="{x:Type ctrl:MessageControl}">
+  <Style TargetType="{x:Type ctrl:MarkdownTextBlock}">
     <Setter Property="Template">
       <Setter.Value>
-        <ControlTemplate TargetType="{x:Type ctrl:MessageControl}">
+        <ControlTemplate TargetType="{x:Type ctrl:MarkdownTextBlock}">
           <FlowDocumentScrollViewer x:Name="PART_MessageContainer"
+                                    Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"
                                     HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" />
         </ControlTemplate>
       </Setter.Value>

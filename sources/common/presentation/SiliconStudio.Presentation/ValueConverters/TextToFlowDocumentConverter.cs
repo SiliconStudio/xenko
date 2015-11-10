@@ -5,8 +5,6 @@ using System.Windows.Documents;
 
 namespace SiliconStudio.Presentation.ValueConverters
 {
-    using Markdown = Markdown.Xaml.Markdown;
-
     [ValueConversion(typeof(string), typeof(FlowDocument))]
     public class TextToFlowDocumentConverter : OneWayValueConverter<TextToFlowDocumentConverter>
     {
