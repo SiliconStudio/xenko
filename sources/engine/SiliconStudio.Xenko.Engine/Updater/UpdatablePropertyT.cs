@@ -4,13 +4,6 @@ namespace SiliconStudio.Xenko.Updater
 {
     public class UpdatableProperty<T> : UpdatableProperty
     {
-        public static Func<UpdatableMember> StaticCreateMemberElement;
-
-        public override UpdatableMember CreateMemberElement()
-        {
-            return StaticCreateMemberElement();
-        }
-
         public UpdatableProperty(IntPtr getter, IntPtr setter)
         {
             Getter = getter;

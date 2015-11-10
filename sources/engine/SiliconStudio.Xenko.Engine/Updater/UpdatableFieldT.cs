@@ -5,13 +5,6 @@ namespace SiliconStudio.Xenko.Updater
 {
     public class UpdatableField<T> : UpdatableField
     {
-        public static Func<UpdatableMember> StaticCreateMemberElement;
-
-        public override UpdatableMember CreateMemberElement()
-        {
-            return StaticCreateMemberElement();
-        }
-
         public UpdatableField(int offset)
         {
             Offset = offset;

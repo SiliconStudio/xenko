@@ -8,13 +8,5 @@ namespace SiliconStudio.Xenko.Updater
     public abstract class UpdatableMember
     {
         public abstract Type MemberType { get; }
-
-        /// <summary>
-        /// For arrays, gets the element field.
-        /// </summary>
-        public virtual UpdatableMember CreateMemberElement()
-        {
-            throw new NotSupportedException();
-        }
     }
 }

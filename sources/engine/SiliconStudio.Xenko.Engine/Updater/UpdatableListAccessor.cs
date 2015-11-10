@@ -15,15 +15,8 @@ namespace SiliconStudio.Xenko.Updater
 
     class UpdatableListAccessor<T> : UpdatableListAccessor
     {
-        public static Func<UpdatableMember> StaticCreateMemberElement;
-
         public UpdatableListAccessor(int index) : base(index)
         {
-        }
-
-        public override UpdatableMember CreateMemberElement()
-        {
-            return StaticCreateMemberElement();
         }
 
         public override Type MemberType
