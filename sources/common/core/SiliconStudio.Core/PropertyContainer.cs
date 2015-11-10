@@ -251,7 +251,9 @@ namespace SiliconStudio.Core
         public void CopyTo(ref PropertyContainer destination)
         {
             foreach (var keyValuePair in this)
-                destination.SetObject(keyValuePair.Key, keyValuePair.Value);
+            {
+                destination.SetObject(keyValuePair.Key, keyValuePair.Key.IsValueType ? ((ValueHolder)keyValuePair.Value).ObjectValue : keyValuePair.Value);
+            }
         }
 
         /// <summary>
