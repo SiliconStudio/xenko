@@ -1,5 +1,6 @@
-using System;
 using SiliconStudio.Core.Mathematics;
+using System;
+using System.Diagnostics;
 
 namespace SiliconStudio.Xenko.Input.SimulatorExtensions
 {
@@ -24,7 +25,7 @@ namespace SiliconStudio.Xenko.Input.SimulatorExtensions
 
         public void Dispose()
         {
-            InputManager.PointerEvents.Add(new PointerEvent(1, Coords, Vector2.Zero, TimeSpan.Zero, PointerState.Up, PointerType.Touch, true));
+            InputManager.InjectPointerEvent(new PointerEvent(0, Coords, Vector2.Zero, TimeSpan.Zero, PointerState.Up, PointerType.Touch, true));
         }
     }
 
@@ -39,9 +40,25 @@ namespace SiliconStudio.Xenko.Input.SimulatorExtensions
             return new SimulatedKeyPress { InputManager = b, Key = key };
         }
 
+        public static void SimulateKeyDown(this InputManager b, Keys key)
+        {
+            lock (b.KeyboardInputEvents)
+            {
+                b.KeyboardInputEvents.Add(new InputManagerBase.KeyboardInputEvent { Key = key, Type = InputManagerBase.InputEventType.Down });
+            }
+        }
+
+        public static void SimulateKeyUp(this InputManager b, Keys key)
+        {
+            lock (b.KeyboardInputEvents)
+            {
+                b.KeyboardInputEvents.Add(new InputManagerBase.KeyboardInputEvent { Key = key, Type = InputManagerBase.InputEventType.Up });
+            }
+        }
+
         public static SimulatedTap SimulateTap(this InputManager b, Vector2 coords)
         {
-            b.PointerEvents.Add(new PointerEvent(1, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
+            b.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
             return new SimulatedTap { Coords = coords, InputManager = b };
         }
     }
