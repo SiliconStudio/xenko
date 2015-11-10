@@ -860,11 +860,11 @@ namespace SiliconStudio.Assets.Tests
         public void TestAssetPart()
         {
             var project = new Package();
-            var assets = new List<AssetWithParts>();
+            var assets = new List<TestAssetWithParts>();
             var assetItems = new List<AssetItem>();
             for (int i = 0; i < 2; ++i)
             {
-                assets.Add(new AssetWithParts() { Inners =
+                assets.Add(new TestAssetWithParts() { Parts =
                 {
                         new AssetPart(Guid.NewGuid()),
                         new AssetPart(Guid.NewGuid())
@@ -880,7 +880,7 @@ namespace SiliconStudio.Assets.Tests
 
                 // Check that part asset is accessible from the dependency manager
 
-                var innerAssetId = assets[0].Inners[0].Id;
+                var innerAssetId = assets[0].Parts[0].Id;
                 var dependencySet = dependencyManager.FindDependencySet(innerAssetId);
                 Assert.NotNull(dependencySet);
 
@@ -894,10 +894,10 @@ namespace SiliconStudio.Assets.Tests
                 // Check that part asset is correctly stored into the dependencies
                 AssetPart part;
                 Assert.IsTrue(dependencySet.TryGetAssetPart(innerAssetId, out part));
-                Assert.AreEqual(assets[0].Inners[0].Id, part.Id);
+                Assert.AreEqual(assets[0].Parts[0].Id, part.Id);
 
                 // Remove part asset
-                assets[0].Inners.Clear();
+                assets[0].Parts.Clear();
                 assetItems[0].IsDirty = true;
 
                 Assert.Null(dependencyManager.FindDependencySet(innerAssetId));

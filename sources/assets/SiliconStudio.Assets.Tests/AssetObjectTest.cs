@@ -62,24 +62,40 @@ namespace SiliconStudio.Assets.Tests
         }
     }
 
-    [DataContract("!AssetWithParts")]
+    [DataContract("!TestAssetWithParts")]
     [AssetDescription(FileExtension)]
-    public class AssetWithParts : Asset, IAssetPartContainer
+    public class TestAssetWithParts : Asset, IAssetPartContainer
     {
-        public const string FileExtension = ".xkinner";
+        public const string FileExtension = ".xkpart";
 
-        public AssetWithParts()
+        public TestAssetWithParts()
         {
-            Inners = new List<AssetPart>();
+            Parts = new List<AssetPart>();
         }
 
         public string Name { get; set; }
 
-        public List<AssetPart> Inners { get; set; }
+        public List<AssetPart> Parts { get; set; }
 
         public IEnumerable<AssetPart> CollectParts()
         {
-            return Inners;
+            return Parts;
+        }
+
+        public override Asset CreateChildAsset(string location)
+        {
+            var asset = (TestAssetWithParts)base.CreateChildAsset(location);
+
+            // Create asset with new base
+            for (int i = 0; i < asset.Parts.Count; i++)
+            {
+                var part = asset.Parts[i];
+                part.BaseId = part.Id;
+                part.Id = Guid.NewGuid();
+                asset.Parts[i] = part;
+            }
+
+            return asset;
         }
     }
     
