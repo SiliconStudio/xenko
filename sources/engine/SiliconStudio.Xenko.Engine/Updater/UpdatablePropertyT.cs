@@ -5,9 +5,8 @@ namespace SiliconStudio.Xenko.Updater
     public class UpdatableProperty<T> : UpdatableProperty
     {
         public UpdatableProperty(IntPtr getter, IntPtr setter)
+            : base(getter, setter)
         {
-            Getter = getter;
-            Setter = setter;
         }
 
         public override Type MemberType

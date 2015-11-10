@@ -9,8 +9,14 @@ namespace SiliconStudio.Xenko.Updater
     /// </summary>
     public abstract class UpdatableProperty : UpdatablePropertyBase
     {
-        public IntPtr Getter;
-        public IntPtr Setter;
+        public readonly IntPtr Getter;
+        public readonly IntPtr Setter;
+
+        protected UpdatableProperty(IntPtr getter, IntPtr setter)
+        {
+            Getter = getter;
+            Setter = setter;
+        }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object GetObject(IntPtr obj)
