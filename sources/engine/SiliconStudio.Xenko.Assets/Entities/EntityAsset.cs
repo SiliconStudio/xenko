@@ -57,7 +57,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <summary>
         /// The various <see cref="EntityAsset"/> that are instantiated in this one.
         /// </summary>
-        [DataMemberIgnore] public Dictionary<Guid, EntityBase> AssetBases = new Dictionary<Guid, EntityBase>();
+        [DataMemberIgnore]
+        [Obsolete]
+        public Dictionary<Guid, EntityBase> AssetBases = new Dictionary<Guid, EntityBase>();
 
         public override Asset CreateChildAsset(string location)
         {
@@ -123,6 +125,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 yield return new AssetPart(entityDesign.Entity.Id, entityDesign.Design.BaseId);
             }
+        }
+
+        public bool ContainsPart(Guid id)
+        {
+            return Hierarchy.Entities.ContainsKey(id);
         }
     }
 

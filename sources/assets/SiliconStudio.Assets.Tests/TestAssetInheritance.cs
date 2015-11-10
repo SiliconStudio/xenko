@@ -12,7 +12,6 @@ namespace SiliconStudio.Assets.Tests
     [TestFixture]
     public class TestAssetInheritance
     {
-
         [Test]
         public void TestWithOverrides()
         {

@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
+using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
@@ -80,6 +80,11 @@ namespace SiliconStudio.Assets.Tests
         public IEnumerable<AssetPart> CollectParts()
         {
             return Parts;
+        }
+
+        public bool ContainsPart(Guid id)
+        {
+            return Parts.Any(t => t.Id == id);
         }
 
         public override Asset CreateChildAsset(string location)
