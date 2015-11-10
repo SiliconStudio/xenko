@@ -1,12 +1,10 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Input.SimulatorExtensions;
+using SiliconStudio.Xenko.Input.Extensions;
 
 namespace SiliconStudio.Xenko.Testing
 {
