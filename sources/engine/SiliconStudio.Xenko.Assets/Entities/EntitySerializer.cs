@@ -189,7 +189,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             if (typeof(EntityAssetBase).IsAssignableFrom(objectContext.Descriptor.Type))
             {
                 // Level 1 is EntityAssetBase, Level 2 is EntityHierarchyData, Level 3 is Entity, Level 4 is EntityComponent
-                recursionMaxExpectedDepth = 5;
+                recursionMaxExpectedDepth = 4;
             }
             else
             {
