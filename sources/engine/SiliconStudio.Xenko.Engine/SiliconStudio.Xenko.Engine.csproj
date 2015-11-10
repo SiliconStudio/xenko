@@ -2292,6 +2292,7 @@
     <Compile Include="Updater\UpdatableMember.cs" />
     <Compile Include="Updater\UpdatableProperty.cs" />
     <Compile Include="Updater\UpdatablePropertyBase.cs" />
+    <Compile Include="Updater\UpdatablePropertyObject.cs" />
     <Compile Include="Updater\UpdatablePropertyT.cs" />
     <Compile Include="Updater\UpdateEngine.cs" />
     <Compile Include="Updater\UpdateEngineHelper.cs" />

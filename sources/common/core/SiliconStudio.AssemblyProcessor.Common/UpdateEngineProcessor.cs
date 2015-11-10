@@ -23,7 +23,9 @@ namespace SiliconStudio.AssemblyProcessor
         private MethodDefinition updatableListUpdateResolverGenericCtor;
         private MethodDefinition updatableArrayUpdateResolverGenericCtor;
 
+        private TypeDefinition updatablePropertyGenericType;
         private MethodDefinition updatablePropertyGenericCtor;
+        private MethodDefinition updatablePropertyObjectGenericCtor;
 
         private MethodReference updateEngineRegisterMemberMethod;
         private MethodReference updateEngineRegisterMemberResolverMethod;
@@ -86,8 +88,11 @@ namespace SiliconStudio.AssemblyProcessor
             var updatableFieldGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdatableField`1");
             updatableFieldGenericCtor = updatableFieldGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
 
-            var updatablePropertyGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdatableProperty`1");
+            updatablePropertyGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdatableProperty`1");
             updatablePropertyGenericCtor = updatablePropertyGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
+
+            var updatablePropertyObjectGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdatablePropertyObject`1");
+            updatablePropertyObjectGenericCtor = updatablePropertyObjectGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
 
             var updatableListUpdateResolverGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.ListUpdateResolver`1");
             updatableListUpdateResolverGenericCtor = updatableListUpdateResolverGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
@@ -166,7 +171,7 @@ namespace SiliconStudio.AssemblyProcessor
                 {
                     var updateMethod = GetOrCreateUpdateType(typeDefinition.Module.Assembly, false)?.Methods.FirstOrDefault(x => x.Name == ComputeUpdateMethodName(typeDefinition));
 
-                    // If nothing was found in main assembly, also look in SiliconStudio.Core assembly, just in case (it might defines some shared/corlib types -- currently not the case)
+                    // If nothing was found in main assembly, also look in SiliconStudio.Xenko.Engine assembly, just in case (it might defines some shared/corlib types -- currently not the case)
                     if (updateMethod == null)
                     {
                         updateMethod = GetOrCreateUpdateType(siliconStudioXenkoEngineAssembly, false)?.Methods.FirstOrDefault(x => x.Name == ComputeUpdateMethodName(typeDefinition));
@@ -293,7 +298,10 @@ namespace SiliconStudio.AssemblyProcessor
                 }
 
                 var propertyType = context.Assembly.MainModule.ImportReference(replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(property.PropertyType) : property.PropertyType).FixupValueType();
-                il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatablePropertyGenericCtor).MakeGeneric(propertyType));
+
+                var updatablePropertyInflatedCtor = GetOrCreateUpdatablePropertyCtor(context.Assembly, propertyType);
+
+                il.Emit(OpCodes.Newobj, updatablePropertyInflatedCtor);
                 il.Emit(OpCodes.Call, updateEngineRegisterMemberMethod);
             }
 
@@ -314,12 +322,18 @@ namespace SiliconStudio.AssemblyProcessor
 
         private static string ComputeUpdateMethodName(TypeDefinition typeDefinition)
         {
+            var typeName = ComputeTypeName(typeDefinition);
+
+            return string.Format("UpdateGeneric_{0}", typeName);
+        }
+
+        private static string ComputeTypeName(TypeDefinition typeDefinition)
+        {
             var typeName = typeDefinition.FullName.Replace(".", "_");
             var typeNameGenericPart = typeName.IndexOf("`");
             if (typeNameGenericPart != -1)
                 typeName = typeName.Substring(0, typeNameGenericPart);
-
-            return string.Format("UpdateGeneric_{0}", typeName);
+            return typeName;
         }
 
         private static TypeDefinition GetOrCreateUpdateType(AssemblyDefinition assembly, bool createIfNotExists)
@@ -334,6 +348,41 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             return updateEngineType;
+        }
+
+        public MethodReference GetOrCreateUpdatablePropertyCtor(AssemblyDefinition assembly, TypeReference propertyType)
+        {
+            if (propertyType.Resolve().IsValueType)
+            {
+#if true
+                // Temporary code until Xamarin fixes bugs with generics calli
+                // For now, we simply create one class per type T instead of using UpdatableProperty<T>
+                // Later, we should only use UpdatableProperty<T> for everything
+                var updateEngineType = GetOrCreateUpdateType(assembly, true);
+                var updatablePropertyInflatedTypeName = $"UpdatableProperty_{propertyType.ConvertCSharp().Replace('.', '_').Replace("[]", "Array")}";
+                var updatablePropertyInflatedType = updateEngineType.NestedTypes.FirstOrDefault(x => x.Name == updatablePropertyInflatedTypeName);
+                if (updatablePropertyInflatedType == null)
+                {
+                    var genericMapping = new Dictionary<TypeReference, TypeReference>();
+                    genericMapping.Add(updatablePropertyGenericType.GenericParameters[0], propertyType);
+
+                    updatablePropertyInflatedType = new TypeDefinition(string.Empty, updatablePropertyInflatedTypeName, TypeAttributes.NestedPrivate | TypeAttributes.AutoClass | TypeAttributes.AnsiClass);
+                    updateEngineType.NestedTypes.Add(updatablePropertyInflatedType);
+
+                    CecilExtensions.InflateGenericType(updatablePropertyGenericType, updatablePropertyInflatedType, propertyType);
+                }
+
+                var updatablePropertyCtor = updatablePropertyInflatedType.Methods.First(x => x.IsConstructor && !x.IsStatic);
+
+                return assembly.MainModule.ImportReference(updatablePropertyCtor);
+#else
+                return assembly.MainModule.ImportReference(updatablePropertyGenericCtor).MakeGeneric(propertyType);
+#endif
+            }
+            else
+            {
+                return assembly.MainModule.ImportReference(updatablePropertyObjectGenericCtor).MakeGeneric(propertyType);
+            }
         }
 
         private static void EnumerateReferences(HashSet<AssemblyDefinition> assemblies, AssemblyDefinition assembly)

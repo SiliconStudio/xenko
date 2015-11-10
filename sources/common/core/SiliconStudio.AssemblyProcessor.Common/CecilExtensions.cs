@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Mono.Cecil;
+using Mono.Cecil.Cil;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 
@@ -517,6 +518,169 @@ namespace SiliconStudio.AssemblyProcessor
             const string newTypeEnding = "4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089";
             result = result.Replace(oldTypeEnding, newTypeEnding, start, end);
 #endif
+        }
+
+        public static void AddRange<T>(this ICollection<T> list, IEnumerable<T> items)
+        {
+            var l = list as List<T>;
+            if (l != null)
+            {
+                l.AddRange(items);
+            }
+            else
+            {
+                foreach (var item in items)
+                {
+                    list.Add(item);
+                }
+            }
+        }
+
+        public static void InflateGenericType(TypeDefinition genericType, TypeDefinition inflatedType, params TypeReference[] genericTypes)
+        {
+            // Base type
+            var genericMapping = new Dictionary<TypeReference, TypeReference>();
+            for (int i = 0; i < genericTypes.Length; ++i)
+            {
+                genericMapping.Add(genericType.GenericParameters[i], genericTypes[i]);
+            }
+
+            var resolveGenericsVisitor = new ResolveGenericsVisitor(genericMapping);
+            inflatedType.BaseType = inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(genericType.BaseType));
+
+            // Some stuff are not handled yet
+            if (genericType.HasNestedTypes)
+            {
+                throw new NotImplementedException();
+            }
+
+            foreach (var field in genericType.Fields)
+            {
+                var clonedField = new FieldDefinition(field.Name, field.Attributes, inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(field.FieldType)));
+                inflatedType.Fields.Add(clonedField);
+            }
+
+            foreach (var property in genericType.Properties)
+            {
+                if (property.HasParameters)
+                    throw new NotImplementedException();
+
+                var clonedProperty = new PropertyDefinition(property.Name, property.Attributes, inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(property.PropertyType)))
+                {
+                    HasThis = property.HasThis,
+                    GetMethod = property.GetMethod != null ? InflateMethod(inflatedType, property.GetMethod, resolveGenericsVisitor) : null,
+                    SetMethod = property.SetMethod != null ? InflateMethod(inflatedType, property.GetMethod, resolveGenericsVisitor) : null,
+                };
+
+                inflatedType.Properties.Add(clonedProperty);
+            }
+
+            // Clone methods
+            foreach (var method in genericType.Methods)
+            {
+                var clonedMethod = InflateMethod(inflatedType, method, resolveGenericsVisitor);
+                inflatedType.Methods.Add(clonedMethod);
+            }
+        }
+
+        private static MethodDefinition InflateMethod(TypeDefinition inflatedType, MethodDefinition method, ResolveGenericsVisitor resolveGenericsVisitor)
+        {
+            var clonedMethod = new MethodDefinition(method.Name, method.Attributes, inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(method.ReturnType)));
+            clonedMethod.Parameters.AddRange(
+                method.Parameters.Select(x => new ParameterDefinition(x.Name, x.Attributes, inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(x.ParameterType)))));
+
+            if (method.Body != null)
+            {
+                clonedMethod.Body.Variables.AddRange(
+                    method.Body.Variables.Select(x => new VariableDefinition(x.Name, inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(x.VariableType)))));
+
+                var mappedInstructions = new Dictionary<Instruction, Instruction>();
+                foreach (var instruction in method.Body.Instructions)
+                {
+                    // Create nop instructions to start with (if we use actual opcode, it would do an operand check)
+                    var mappedInstruction = Instruction.Create(OpCodes.Nop);
+                    mappedInstruction.OpCode = instruction.OpCode;
+                    mappedInstruction.Operand = instruction.Operand;
+                    mappedInstructions[instruction] = mappedInstruction;
+                }
+
+                foreach (var instruction in method.Body.Instructions)
+                {
+                    // Fix operand
+                    var mappedInstruction = mappedInstructions[instruction];
+                    if (mappedInstruction.Operand is Instruction)
+                    {
+                        mappedInstruction.Operand = mappedInstructions[(Instruction)instruction.Operand];
+                    }
+                    else if (mappedInstruction.Operand is ParameterDefinition)
+                    {
+                        var parameterIndex = method.Parameters.IndexOf((ParameterDefinition)instruction.Operand);
+                        mappedInstruction.Operand = clonedMethod.Parameters[parameterIndex];
+                    }
+                    else if (mappedInstruction.Operand is VariableDefinition)
+                    {
+                        var variableIndex = method.Body.Variables.IndexOf((VariableDefinition)instruction.Operand);
+                        mappedInstruction.Operand = clonedMethod.Body.Variables[variableIndex];
+                    }
+                    else if (mappedInstruction.Operand is TypeReference)
+                    {
+                        var newTypeReference = resolveGenericsVisitor.VisitDynamic((TypeReference)mappedInstruction.Operand);
+                        newTypeReference = inflatedType.Module.ImportReference(newTypeReference);
+                        mappedInstruction.Operand = newTypeReference;
+                    }
+                    else if (mappedInstruction.Operand is FieldReference)
+                    {
+                        var fieldReference = (FieldReference)mappedInstruction.Operand;
+                        var newFieldReference = new FieldReference(fieldReference.Name,
+                            inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(fieldReference.FieldType)),
+                            inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(fieldReference.DeclaringType)));
+                        mappedInstruction.Operand = newFieldReference;
+                    }
+                    else if (mappedInstruction.Operand is MethodReference)
+                    {
+                        var methodReference = (MethodReference)mappedInstruction.Operand;
+                        var newMethodReference = new MethodReference(methodReference.Name,
+                            inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(methodReference.ReturnType)),
+                            inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(methodReference.DeclaringType)))
+                        {
+                            HasThis = methodReference.HasThis,
+                            ExplicitThis = methodReference.ExplicitThis,
+                            CallingConvention = methodReference.CallingConvention,
+                        };
+
+                        foreach (var parameter in methodReference.Parameters)
+                            newMethodReference.Parameters.Add(new ParameterDefinition(inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(parameter.ParameterType))));
+
+                        if (methodReference.HasGenericParameters)
+                            throw new NotImplementedException();
+
+                        mappedInstruction.Operand = newMethodReference;
+                    }
+                    else if (mappedInstruction.Operand is Mono.Cecil.CallSite)
+                    {
+                        var callSite = (Mono.Cecil.CallSite)mappedInstruction.Operand;
+                        var newCallSite = new Mono.Cecil.CallSite(inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(callSite.ReturnType)))
+                        {
+                            HasThis = callSite.HasThis,
+                            ExplicitThis = callSite.ExplicitThis,
+                            CallingConvention = callSite.CallingConvention,
+                        };
+
+                        foreach (var parameter in callSite.Parameters)
+                            newCallSite.Parameters.Add(new ParameterDefinition(inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(parameter.ParameterType))));
+
+                        mappedInstruction.Operand = newCallSite;
+                    }
+                    else if (mappedInstruction.Operand is Instruction[])
+                    {
+                        // Not used in UpdatableProperty<T>
+                        throw new NotImplementedException();
+                    }
+                }
+
+                clonedMethod.Body.Instructions.AddRange(method.Body.Instructions.Select(x => mappedInstructions[x]));
+            }
+            return clonedMethod;
         }
     }
 }
