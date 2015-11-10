@@ -855,6 +855,55 @@ namespace SiliconStudio.Assets.Tests
             }
         }
 
+
+        [Test]
+        public void TestAssetInner()
+        {
+            var project = new Package();
+            var assets = new List<AssetWithInners>();
+            var assetItems = new List<AssetItem>();
+            for (int i = 0; i < 2; ++i)
+            {
+                assets.Add(new AssetWithInners() { Inners =
+                {
+                        new AssetInner(Guid.NewGuid()),
+                        new AssetInner(Guid.NewGuid())
+                }
+                });
+                assetItems.Add(new AssetItem("asset-" + i, assets[i]));
+                project.Assets.Add(assetItems[i]);
+            }
+
+            using (var session = new PackageSession(project))
+            {
+                var dependencyManager = session.DependencyManager;
+
+                // Check that inner asset is accessible from the dependency manager
+
+                var innerAssetId = assets[0].Inners[0].Id;
+                var dependencySet = dependencyManager.FindDependencySet(innerAssetId);
+                Assert.NotNull(dependencySet);
+
+                // Check that dependencies are the same than container asset.
+                var containerDependencySet = dependencyManager.FindDependencySet(assets[0].Id);
+                Assert.AreEqual(containerDependencySet.Id, dependencySet.Id, "DependencySet must be the same for inner and container");
+
+                // Check that inners are all there
+                Assert.AreEqual(2, dependencySet.Inners.Count());
+
+                // Check that inner asset is correctly stored into the dependencies
+                AssetInner inner;
+                Assert.IsTrue(dependencySet.TryGetAssetInner(innerAssetId, out inner));
+                Assert.AreEqual(assets[0].Inners[0].Id, inner.Id);
+
+                // Remove inner asset
+                assets[0].Inners.Clear();
+                assetItems[0].IsDirty = true;
+
+                Assert.Null(dependencyManager.FindDependencySet(innerAssetId));
+            }
+        }
+
         [Test, Ignore]
         public void TestTrackingPackageWithAssetsAndSave()
         {

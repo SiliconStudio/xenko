@@ -62,6 +62,27 @@ namespace SiliconStudio.Assets.Tests
         }
     }
 
+    [DataContract("!AssetWithInners")]
+    [AssetDescription(FileExtension)]
+    public class AssetWithInners : Asset, IAssetInnerContainer
+    {
+        public const string FileExtension = ".xkinner";
+
+        public AssetWithInners()
+        {
+            Inners = new List<AssetInner>();
+        }
+
+        public string Name { get; set; }
+
+        public List<AssetInner> Inners { get; set; }
+
+        public IEnumerable<AssetInner> CollectInners()
+        {
+            return Inners;
+        }
+    }
+    
     [DataContract("!AssetImportObjectTest")]
     [AssetDescription(".xkimptest")]
     public class AssetImportObjectTest : AssetImport
