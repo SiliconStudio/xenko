@@ -8,6 +8,9 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Updater
 {
+    /// <summary>
+    /// Defines how to set and get values from a field for the <see cref="UpdateEngine"/>.
+    /// </summary>
     public abstract class UpdatableField : UpdatableMember
     {
         public int Offset;
