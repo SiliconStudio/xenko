@@ -16,6 +16,7 @@
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
                     xmlns:commands="clr-namespace:SiliconStudio.Presentation.Controls.Commands"
                     xmlns:wnd="clr-namespace:SiliconStudio.Presentation.Windows"
+                    xmlns:local="clr-namespace:SiliconStudio.Presentation"
                     mc:Ignorable="d">
   <ResourceDictionary.MergedDictionaries>
     <ResourceDictionary Source="../generic.xaml"/>
@@ -219,12 +220,41 @@
       </Setter.Value>
     </Setter>
   </Style>
+  <local:XamlMarkdown x:Key="DefaultMarkdown">
+    <local:XamlMarkdown.DocumentStyle>
+      <Style TargetType="{x:Type FlowDocument}">
+        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+        <Setter Property="TextAlignment" Value="Left" />
+      </Style>
+    </local:XamlMarkdown.DocumentStyle>
+    <local:XamlMarkdown.Heading1Style>
+      <Style TargetType="{x:Type Paragraph}">
+        <Setter Property="FontSize" Value="42" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+      </Style>
+    </local:XamlMarkdown.Heading1Style>
+    <local:XamlMarkdown.Heading2Style>
+      <Style TargetType="{x:Type Paragraph}">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="Bold" />
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+      </Style>
+    </local:XamlMarkdown.Heading2Style>
+    <local:XamlMarkdown.Heading3Style>
+      <Style TargetType="{x:Type Paragraph}">
+        <Setter Property="FontSize" Value="20" />
+        <Setter Property="FontWeight" Value="Light" />
+        <Setter Property="Foreground" Value="WhiteSmoke" />
+      </Style>
+    </local:XamlMarkdown.Heading3Style>
+  </local:XamlMarkdown>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="MinHeight" Value="120" />
     <Setter Property="MinWidth" Value="320" />
-    <!-- FIXME: add behavior to keep aspect ratio -->
+    <!-- FIXME: create and add behavior to keep aspect ratio (and also screen resolution independent) -->
     <Setter Property="MaxHeight" Value="768" />
     <Setter Property="MaxWidth" Value="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
     <Setter Property="SizeToContent" Value="WidthAndHeight" />
@@ -239,11 +269,11 @@
     </Setter>
   </Style>
   <Style TargetType="{x:Type ctrl:MarkdownTextBlock}">
+    <Setter Property="Markdown" Value="{StaticResource DefaultMarkdown}" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ctrl:MarkdownTextBlock}">
           <FlowDocumentScrollViewer x:Name="PART_MessageContainer"
-                                    Background="{TemplateBinding Background}" Foreground="{TemplateBinding Foreground}"
                                     HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" />
         </ControlTemplate>
       </Setter.Value>
