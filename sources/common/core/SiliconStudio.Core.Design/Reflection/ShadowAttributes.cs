@@ -34,6 +34,14 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
+        public ShadowAttributes Clone()
+        {
+            // Shallow clone, assuming that attributes values are vauetypes.
+            var newShadowAttributes = new ShadowAttributes(Container, Key);
+            Attributes.CopyTo(ref newShadowAttributes.Attributes);
+            return newShadowAttributes;
+        }
+
         public bool HasAttribute(PropertyKey key)
         {
             return Attributes.ContainsKey(key);

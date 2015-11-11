@@ -280,21 +280,7 @@ namespace SiliconStudio.Assets
         /// <returns>A new asset inheriting the values of this asset.</returns>
         public Asset CreateChildAsset()
         {
-            // Clone this asset
-            var assetBase = (Asset)AssetCloner.Clone(Asset);
-
-            // Remove the base
-            assetBase.Base = null;
-
-            // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
-            var newAsset = (Asset)AssetCloner.Clone(assetBase, true);
-
-            // Sets a new identifier for this asset
-            newAsset.Id = Guid.NewGuid();
-
-            // Create the base of this asset
-            newAsset.Base = new AssetBase(Location, assetBase);
-            return newAsset;
+            return Asset.CreateChildAsset(Location);
         }
 
         /// <summary>
