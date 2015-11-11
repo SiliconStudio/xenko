@@ -16,14 +16,14 @@ namespace SiliconStudio.Presentation.Controls
         private const string MessageContainerPartName = "PART_MessageContainer";
 
         public static readonly DependencyProperty MarkdownProperty =
-            DependencyProperty.Register("Markdown", typeof(Markdown), typeof(MarkdownTextBlock));
+            DependencyProperty.Register("Markdown", typeof(XamlMarkdown), typeof(MarkdownTextBlock));
 
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(MarkdownTextBlock), new PropertyMetadata(TextChanged));
 
-        public Markdown Markdown
+        public XamlMarkdown Markdown
         {
-            get { return (Markdown)GetValue(MarkdownProperty); }
+            get { return (XamlMarkdown)GetValue(MarkdownProperty); }
             set { SetValue(MarkdownProperty, value); }
         }
 
@@ -41,7 +41,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Default markdown used if none is supplied.
         /// </summary>
-        private readonly Lazy<Markdown> defaultMarkdown = new Lazy<Markdown>(() => new Markdown());
+        private readonly Lazy<XamlMarkdown> defaultMarkdown = new Lazy<XamlMarkdown>(() => new XamlMarkdown());
 
         static MarkdownTextBlock()
         {
