@@ -31,8 +31,6 @@ namespace SiliconStudio.Xenko.SamplesTestServer
         {
         }
 
-        Stopwatch watch = new Stopwatch();
-
         protected override async void HandleClient(SimpleSocket clientSocket, string url)
         {
             await AcceptConnection(clientSocket);
@@ -84,9 +82,8 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                     else
                     {
                         process.GameSocket = socketMessageLayer;
-                        process.TesterSocket.Send(new StatusMessageRequest { Error = false, Message = "Start" }).Wait();
-
                         testerToGame[process.TesterSocket] = process.GameSocket;
+                        process.TesterSocket.Send(new StatusMessageRequest { Error = false, Message = "Start" }).Wait();
                     }
                 }
             });
