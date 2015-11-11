@@ -85,6 +85,14 @@ namespace SiliconStudio.Assets
         public AssetBase Base { get; set; }
 
         /// <summary>
+        /// Gets or sets the base for part assets.
+        /// </summary>
+        /// <value>The part assets.</value>
+        [DataMember("~BaseParts"), DefaultValue(null)]
+        [Browsable(false)]
+        public List<AssetBase> BaseParts { get; set; }
+
+        /// <summary>
         /// Gets or sets the build order for this asset.
         /// </summary>
         /// <value>The build order.</value>
@@ -103,6 +111,33 @@ namespace SiliconStudio.Assets
         [DataMember(-900)]
         [Browsable(false)]
         public TagCollection Tags { get; private set; }
+
+        /// <summary>
+        /// Creates an asset that inherits from this asset.
+        /// </summary>
+        /// <param name="location">The location of this asset.</param>
+        /// <returns>An asset that inherits this asset instance</returns>
+        public virtual Asset CreateChildAsset(string location)
+        {
+            if (location == null) throw new ArgumentNullException(nameof(location));
+
+            // Clone this asset
+            var assetBase = (Asset)AssetCloner.Clone(this);
+
+            // Remove the base
+            assetBase.Base = null;
+            assetBase.BaseParts = null;
+
+            // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
+            var newAsset = (Asset)AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);
+
+            // Sets a new identifier for this asset
+            newAsset.Id = Guid.NewGuid();
+
+            // Create the base of this asset
+            newAsset.Base = new AssetBase(location, assetBase);
+            return newAsset;
+        }
 
         /// <summary>
         /// Sets the defaults values for this instance

@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 var assetManager = new AssetManager();
 
-                var scene = new Scene(AssetParameters.Hierarchy.SceneSettings);
+                var scene = new Scene(AssetParameters.SceneSettings);
                 foreach (var rootEntity in AssetParameters.Hierarchy.RootEntities)
                 {
                     scene.Entities.Add(AssetParameters.Hierarchy.Entities[rootEntity].Entity);
