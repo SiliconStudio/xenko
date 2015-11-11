@@ -39,12 +39,6 @@ namespace SiliconStudio.AssemblyProcessor
             var references = new HashSet<AssemblyDefinition>();
             EnumerateReferences(references, context.Assembly);
 
-            // Generate IL for SiliconStudio.Core
-            if (context.Assembly.Name.Name == "SiliconStudio.Xenko.Engine")
-            {
-                ProcessXenkoEngineAssembly(context);
-            }
-
             // Only process assemblies depending on Xenko.Engine
             if (!references.Any(x => x.Name.Name == "SiliconStudio.Xenko.Engine"))
             {
@@ -82,6 +76,19 @@ namespace SiliconStudio.AssemblyProcessor
                     ? context.Assembly
                     : context.Assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Xenko.Engine");
             var siliconStudioXenkoEngineModule = siliconStudioXenkoEngineAssembly.MainModule;
+
+            // Generate IL for SiliconStudio.Core
+            if (context.Assembly.Name.Name == "SiliconStudio.Xenko.Engine")
+            {
+                ProcessXenkoEngineAssembly(context);
+            }
+            else
+            {
+#if true || SILICONSTUDIO_XENKO_XAMARIN_CALLI_BUG
+                // We still process UpdatableProperty<T> since we had to revert it back when writing back Xenko.Engine (otherwise it crashes at AOT on iOS)
+                new UpdatablePropertyCodeGenerator(siliconStudioXenkoEngineAssembly).GenerateUpdatablePropertyCode();
+#endif
+            }
 
             animationDataType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Animations.AnimationData`1");
 
@@ -189,6 +196,17 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             il.Emit(OpCodes.Ret);
+
+#if true || SILICONSTUDIO_XENKO_XAMARIN_CALLI_BUG
+            // Due to Xamarin iOS AOT limitation, we can't keep this type around because it fails compilation
+            if (context.Assembly.Name.Name == "SiliconStudio.Xenko.Engine")
+            {
+                NotImplementedBody(updatablePropertyGenericType.Methods.First(x => x.Name == "GetStructAndUnbox"));
+                NotImplementedBody(updatablePropertyGenericType.Methods.First(x => x.Name == "GetBlittable"));
+                NotImplementedBody(updatablePropertyGenericType.Methods.First(x => x.Name == "SetStruct"));
+                NotImplementedBody(updatablePropertyGenericType.Methods.First(x => x.Name == "SetBlittable"));
+            }
+#endif
         }
 
         public void ProcessType(CecilSerializerContext context, TypeReference type, MethodDefinition updateMainMethod)
@@ -354,7 +372,7 @@ namespace SiliconStudio.AssemblyProcessor
         {
             if (propertyType.Resolve().IsValueType)
             {
-#if true
+#if true || SILICONSTUDIO_XENKO_XAMARIN_CALLI_BUG
                 // Temporary code until Xamarin fixes bugs with generics calli
                 // For now, we simply create one class per type T instead of using UpdatableProperty<T>
                 // Later, we should only use UpdatableProperty<T> for everything

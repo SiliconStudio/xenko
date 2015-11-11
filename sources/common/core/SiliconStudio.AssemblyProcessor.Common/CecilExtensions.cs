@@ -69,6 +69,13 @@ namespace SiliconStudio.AssemblyProcessor
             foreach (var parameter in self.Parameters)
                 reference.Parameters.Add(new ParameterDefinition(parameter.ParameterType));
 
+            CopyGenericParameters(self, reference);
+
+            return reference;
+        }
+
+        private static void CopyGenericParameters(MethodReference self, MethodReference reference)
+        {
             foreach (var genericParameter in self.GenericParameters)
             {
                 var genericParameterCopy = new GenericParameter(genericParameter.Name, reference)
@@ -79,8 +86,6 @@ namespace SiliconStudio.AssemblyProcessor
                 foreach (var constraint in genericParameter.Constraints)
                     genericParameterCopy.Constraints.Add(constraint);
             }
-
-            return reference;
         }
 
         public static MethodReference MakeGenericMethod(this MethodReference self, params TypeReference[] arguments)
@@ -186,6 +191,18 @@ namespace SiliconStudio.AssemblyProcessor
             if (elementType != type.ElementType || rank != type.Rank)
             {
                 var result = new ArrayType(elementType, rank);
+                if (type.HasGenericParameters)
+                    SetGenericParameters(result, type.GenericParameters);
+                return result;
+            }
+            return type;
+        }
+
+        public static PointerType ChangePointerType(this PointerType type, TypeReference elementType)
+        {
+            if (elementType != type.ElementType)
+            {
+                var result = new PointerType(elementType);
                 if (type.HasGenericParameters)
                     SetGenericParameters(result, type.GenericParameters);
                 return result;
@@ -639,6 +656,14 @@ namespace SiliconStudio.AssemblyProcessor
                     else if (mappedInstruction.Operand is MethodReference)
                     {
                         var methodReference = (MethodReference)mappedInstruction.Operand;
+
+                        var genericInstanceMethod = methodReference as GenericInstanceMethod;
+                        if (genericInstanceMethod != null)
+                        {
+                            methodReference = genericInstanceMethod.ElementMethod;
+                        }
+
+                        methodReference = methodReference.GetElementMethod();
                         var newMethodReference = new MethodReference(methodReference.Name,
                             inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(methodReference.ReturnType)),
                             inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(methodReference.DeclaringType)))
@@ -652,7 +677,14 @@ namespace SiliconStudio.AssemblyProcessor
                             newMethodReference.Parameters.Add(new ParameterDefinition(inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(parameter.ParameterType))));
 
                         if (methodReference.HasGenericParameters)
-                            throw new NotImplementedException();
+                        {
+                            CopyGenericParameters(methodReference, newMethodReference);
+                        }
+
+                        if (genericInstanceMethod != null)
+                        {
+                            newMethodReference = newMethodReference.MakeGenericMethod(genericInstanceMethod.GenericArguments.Select(x => inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(x))).ToArray());
+                        }
 
                         mappedInstruction.Operand = newMethodReference;
                     }

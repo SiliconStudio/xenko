@@ -51,6 +51,10 @@ namespace SiliconStudio.AssemblyProcessor
             if (genericParameter != null)
                 return Visit(genericParameter);
 
+            var pointerType = type as PointerType;
+            if (pointerType != null)
+                return Visit(pointerType);
+
             if (type.GetType() != typeof(TypeReference) && type.GetType() != typeof(TypeDefinition))
                 throw new NotSupportedException();
 
@@ -60,6 +64,12 @@ namespace SiliconStudio.AssemblyProcessor
         public virtual TypeReference Visit(GenericParameter type)
         {
             return type;
+        }
+
+        public virtual TypeReference Visit(PointerType type)
+        {
+            type = type.ChangePointerType(VisitDynamic(type.ElementType));
+            return type.ChangeGenericParameters(VisitDynamicList(type.GenericParameters));
         }
 
         public virtual TypeReference Visit(TypeReference type)

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Updater;
@@ -35,7 +36,7 @@ namespace SiliconStudio.Xenko.Engine.Design
             // TODO: Temporary hack to get static field of the requested type/property name
             // Need to have access to DataContract name<=>type mapping in the runtime (only accessible in SiliconStudio.Core.Design now)
             var type = AssemblyRegistry.GetType(indexerName.Substring(0, dotIndex));
-            var field = type.GetField(indexerName.Substring(dotIndex + 1));
+            var field = type.GetRuntimeField(indexerName.Substring(dotIndex + 1));
 
             return new EntityComponentPropertyAccessor((PropertyKey)field.GetValue(null));
         }

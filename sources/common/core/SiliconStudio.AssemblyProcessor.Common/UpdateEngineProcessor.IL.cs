@@ -36,8 +36,20 @@ namespace SiliconStudio.AssemblyProcessor
 
             // UpdateEngineHelper.PtrToObject
             var ptrToObject = RewriteBody(updateEngineHelperType.Methods.First(x => x.Name == "PtrToObject"));
+            ptrToObject.Body.Variables.Add(new VariableDefinition("convObj", assembly.MainModule.TypeSystem.Object));
             ptrToObject.Emit(OpCodes.Ldarg, ptrToObject.Body.Method.Parameters[0]);
+
+            // Somehow Xamarin forces us to do a roundtrip to an object
+            ptrToObject.Emit(OpCodes.Stloc_0);
+            ptrToObject.Emit(OpCodes.Ldloc_0);
+
             ptrToObject.Emit(OpCodes.Ret);
+
+            // UpdateEngineHelper.Unbox
+            var unbox = RewriteBody(updateEngineHelperType.Methods.First(x => x.Name == "Unbox"));
+            unbox.Emit(OpCodes.Ldarg, unbox.Body.Method.Parameters[0]);
+            unbox.Emit(OpCodes.Unbox, unbox.Body.Method.GenericParameters[0]);
+            unbox.Emit(OpCodes.Ret);
         }
 
         private static void GenerateUpdatableFieldCode(AssemblyDefinition assembly)
@@ -73,6 +85,20 @@ namespace SiliconStudio.AssemblyProcessor
             return method.Body.GetILProcessor();
         }
 
+        private static ILProcessor NotImplementedBody(MethodDefinition method)
+        {
+            var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(method.Module.Assembly);
+            var notImplementedExceptionType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(NotImplementedException).FullName);
+
+            method.Body = new MethodBody(method);
+            var il = method.Body.GetILProcessor();
+            il.Emit(OpCodes.Nop);
+            il.Emit(OpCodes.Newobj, method.Module.ImportReference(notImplementedExceptionType.GetConstructors().Single(x => !x.IsStatic && !x.HasParameters)));
+            il.Emit(OpCodes.Throw);
+
+            return il;
+        }
+
         /// <summary>
         /// Helper class to generate code for UpdatablePropertyBase (since they usually have lot of similar code).
         /// </summary>
@@ -96,10 +122,13 @@ namespace SiliconStudio.AssemblyProcessor
 
             public virtual void GenerateUpdatablePropertyCode()
             {
+                var updateEngineHelperType = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngineHelper");
+                var unbox = updateEngineHelperType.Methods.First(x => x.Name == "Unbox");
+
                 // UpdatableProperty.GetStructAndUnbox
                 var getStructAndUnbox = RewriteBody(declaringType.Methods.First(x => x.Name == "GetStructAndUnbox"));
                 getStructAndUnbox.Emit(OpCodes.Ldarg, getStructAndUnbox.Body.Method.Parameters[1]);
-                getStructAndUnbox.Emit(OpCodes.Unbox, declaringType.GenericParameters[0]);
+                getStructAndUnbox.Emit(OpCodes.Call, assembly.MainModule.ImportReference(unbox).MakeGenericMethod(declaringType.GenericParameters[0]));
                 getStructAndUnbox.Emit(OpCodes.Dup);
                 getStructAndUnbox.Emit(OpCodes.Ldarg, getStructAndUnbox.Body.Method.Parameters[0]);
                 EmitGetCode(getStructAndUnbox, declaringType.GenericParameters[0]);

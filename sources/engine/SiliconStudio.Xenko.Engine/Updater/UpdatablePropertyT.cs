@@ -2,7 +2,7 @@
 
 namespace SiliconStudio.Xenko.Updater
 {
-    public class UpdatableProperty<T> : UpdatableProperty
+    class UpdatableProperty<T> : UpdatableProperty where T : struct
     {
         public UpdatableProperty(IntPtr getter, IntPtr setter)
             : base(getter, setter)
@@ -18,7 +18,9 @@ namespace SiliconStudio.Xenko.Updater
         {
 #if IL
             ldarg data
-            unbox !T
+            // TEMP XAMARIN AOT FIX -- not sure why we can't use inline directly here
+            // unbox !T
+            call native int SiliconStudio.Xenko.Updater.UpdateEngineHelper::Unbox<!T>(object)
             dup
             ldarg obj
             ldarg.0
