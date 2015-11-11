@@ -15,13 +15,13 @@ namespace SiliconStudio.Assets
         /// Gets or sets the absolute project (csproj) location of this asset on the disk.
         /// </summary>
         /// <value>The absolute source location.</value>
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public string AbsoluteProjectLocation { get; set; }
 
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public string ProjectInclude { get; set; }
 
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public string ProjectName { get; set; }
     }
 }

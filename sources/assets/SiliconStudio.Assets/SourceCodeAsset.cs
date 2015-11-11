@@ -27,7 +27,7 @@ namespace SiliconStudio.Assets
         /// Gets or sets the absolute source location of this asset on the disk.
         /// </summary>
         /// <value>The absolute source location.</value>
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public string AbsoluteSourceLocation { get; set; }
 
         /// <summary>

@@ -50,7 +50,7 @@ namespace SiliconStudio.Assets
         /// <value>The identifier.</value>
         /// <exception cref="System.InvalidOperationException">Cannot change an Asset Object Id once it is locked</exception>
         [DataMember(-2000)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public Guid Id
         {
             get
@@ -72,7 +72,7 @@ namespace SiliconStudio.Assets
         /// <value>The version.</value>
         [DataMember(-1000, DataMemberMode.Assign)]
         [DataStyle(DataStyle.Compact)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         [DefaultValue(null)]
         public Dictionary<string, PackageVersion> SerializedVersion { get; set; }
 
@@ -81,7 +81,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The base.</value>
         [DataMember("~Base"), DefaultValue(null)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public AssetBase Base { get; set; }
 
         /// <summary>
@@ -89,7 +89,7 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <value>The part assets.</value>
         [DataMember("~BaseParts"), DefaultValue(null)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public List<AssetBase> BaseParts { get; set; }
 
         /// <summary>
@@ -98,7 +98,7 @@ namespace SiliconStudio.Assets
         /// <value>The build order.</value>
         [DataMember(-980)]
         [DefaultValue(0)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         [Obsolete]
         public int BuildOrder { get; set; }
 
@@ -109,7 +109,7 @@ namespace SiliconStudio.Assets
         /// The tags for this asset.
         /// </value>
         [DataMember(-900)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public TagCollection Tags { get; private set; }
 
         /// <summary>

@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Assets
         /// Gets or sets the game settings per profiles.
         /// </summary>
         [DataMember(90)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         [DefaultValue(null)]
         public Dictionary<string, IGameSettingsProfile> Profiles { get; set; }
 

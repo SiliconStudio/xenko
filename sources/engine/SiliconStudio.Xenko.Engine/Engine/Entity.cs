@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Engine
             Group = EntityGroup.Group0;
         }
 
-        [DataMember(-10), Browsable(false)]
+        [DataMember(-10), Display(Browsable = false)]
         public override Guid Id
         {
             get { return base.Id; }

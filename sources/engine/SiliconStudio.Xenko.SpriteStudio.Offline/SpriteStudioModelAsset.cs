@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
     public class SpriteStudioModelAsset : AssetImportTracked
     {
         [DataMember(1)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public List<string> NodeNames { get; set; } = new List<string>();
 
         [DataMemberIgnore]
