@@ -5,6 +5,7 @@ using System;
 using System.Reflection;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Engine.Design
@@ -29,13 +30,18 @@ namespace SiliconStudio.Xenko.Engine.Design
 
         public override UpdatableMember ResolveIndexer(string indexerName)
         {
+            // Note: we currently only support component with data contract aliases
             var dotIndex = indexerName.LastIndexOf('.');
             if (dotIndex == -1)
                 return null;
 
             // TODO: Temporary hack to get static field of the requested type/property name
             // Need to have access to DataContract name<=>type mapping in the runtime (only accessible in SiliconStudio.Core.Design now)
-            var type = AssemblyRegistry.GetType(indexerName.Substring(0, dotIndex));
+            var typeName = indexerName.Substring(0, dotIndex);
+            var type = DataSerializerFactory.GetTypeFromAlias(typeName);
+            if (type == null)
+                throw new InvalidOperationException($"Can't find a type with alias {typeName}; did you properly set a DataContractAttribute with this alias?");
+
             var field = type.GetRuntimeField(indexerName.Substring(dotIndex + 1));
 
             return new EntityComponentPropertyAccessor((PropertyKey)field.GetValue(null));

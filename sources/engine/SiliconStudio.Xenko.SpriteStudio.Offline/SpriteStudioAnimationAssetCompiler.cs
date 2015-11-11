@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     var data = pair.Value;
                     if (data.Data.Count == 0) continue;
 
-                    var keyPrefix = $"[SiliconStudio.Xenko.Engine.SpriteStudioComponent,SiliconStudio.Xenko.SpriteStudio.Runtime.Key].Nodes[{nodeIndex}]";
+                    var keyPrefix = $"[SpriteStudioComponent.Key].Nodes[{nodeIndex}]";
 
                     if (data.Data.ContainsKey("POSX"))
                     {

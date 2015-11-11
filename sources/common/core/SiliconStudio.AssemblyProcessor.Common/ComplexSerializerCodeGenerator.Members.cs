@@ -92,6 +92,9 @@ namespace SiliconStudio.AssemblyProcessor
             // Profile serializers
             processors.Add(new ProfileSerializerProcessor());
 
+            // Data contract aliases
+            processors.Add(new DataContractAliasProcessor());
+
             // Apply each processor
             foreach (var processor in processors)
                 processor.ProcessSerializers(cecilSerializerContext);

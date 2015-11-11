@@ -164,15 +164,19 @@ namespace SiliconStudio.AssemblyProcessor
 
                 processors.Add(new AssemblyVersionProcessor());
 
-                if (SerializationAssembly)
-                {
-                    processors.Add(new SerializationProcessor(SignKeyFile, References, MemoryReferences, log));
-                }
-
                 if (DocumentationFile != null)
                 {
                     processors.Add(new GenerateUserDocumentationProcessor(DocumentationFile));
                 }
+
+                var roslynExtraCodeProcessor = new RoslynExtraCodeProcessor(SignKeyFile, References, MemoryReferences, log);
+
+                if (SerializationAssembly)
+                {
+                    processors.Add(new SerializationProcessor(roslynExtraCodeProcessor.SourceCodes.Add));
+                }
+
+                processors.Add(roslynExtraCodeProcessor);
 
                 if (ModuleInitializer)
                 {
@@ -262,7 +266,7 @@ namespace SiliconStudio.AssemblyProcessor
                     }
                 }
 
-                var assemblyProcessorContext = new AssemblyProcessorContext(assemblyResolver, assemblyDefinition, Platform);
+                var assemblyProcessorContext = new AssemblyProcessorContext(assemblyResolver, assemblyDefinition, Platform, log);
 
                 foreach (var processor in processors)
                     modified = processor.Process(assemblyProcessorContext) || modified;

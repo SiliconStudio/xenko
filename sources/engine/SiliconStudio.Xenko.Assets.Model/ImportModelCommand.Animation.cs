@@ -52,14 +52,14 @@ namespace SiliconStudio.Xenko.Assets.Model
                             var channelName = channel.Key;
                             if (channelName.StartsWith("Transform."))
                             {
-                                animationClip.AddCurve($"[SiliconStudio.Xenko.Engine.TransformComponent,SiliconStudio.Xenko.Engine.Key]." + channelName.Replace("Transform.", string.Empty), curve);
+                                animationClip.AddCurve($"[TransformComponent.Key]." + channelName.Replace("Transform.", string.Empty), curve);
                             }
 
                             // Also apply Camera curves
                             // TODO: Add some other curves?
                             if (channelName.StartsWith("Camera."))
                             {
-                                animationClip.AddCurve($"[SiliconStudio.Xenko.Engine.CameraComponent,SiliconStudio.Xenko.Engine.Key]." + channelName.Replace("Camera.", string.Empty), curve);
+                                animationClip.AddCurve($"[CameraComponent.Key]." + channelName.Replace("Camera.", string.Empty), curve);
                             }
                         }
 
@@ -202,7 +202,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                             var channelName = channel.Key;
                             if (channelName.StartsWith("Transform."))
                             {
-                                animationClip.AddCurve($"[SiliconStudio.Xenko.Engine.ModelComponent,SiliconStudio.Xenko.Engine.Key].Skeleton.NodeTransformations[{skeletonMapping.SourceToTarget[nodeIndex]}]." + channelName, curve);
+                                animationClip.AddCurve($"[ModelComponent.Key].Skeleton.NodeTransformations[{skeletonMapping.SourceToTarget[nodeIndex]}]." + channelName, curve);
                             }
                         }
 

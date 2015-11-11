@@ -25,8 +25,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             var compiledUpdate = UpdateEngine.Compile(typeof(Entity), new List<UpdateMemberInfo>
             {
-                new UpdateMemberInfo("[SiliconStudio.Xenko.Engine.ModelComponent,SiliconStudio.Xenko.Engine.Key]", 0),
-                new UpdateMemberInfo("child1[SiliconStudio.Xenko.Engine.LightComponent,SiliconStudio.Xenko.Engine.Key].Intensity", 0),
+                new UpdateMemberInfo("[ModelComponent.Key]", 0),
+                new UpdateMemberInfo("child1[LightComponent.Key].Intensity", 0),
             });
 
             var testData = new TestData[] { 32.0f };

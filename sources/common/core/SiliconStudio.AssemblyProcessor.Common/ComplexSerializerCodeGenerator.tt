@@ -47,6 +47,11 @@ namespace SiliconStudio.DataSerializers
         {
 			var assemblySerializers = new AssemblySerializers(typeof(<#=assemblySerializerFactoryClassName#>).GetTypeInfo().Assembly);
 
+			// Register data contract aliases
+<# foreach (var alias in cecilSerializerContext.DataContractAliases) { #>
+			assemblySerializers.DataContractAliases.Add(new KeyValuePair<string, Type>(@"<#= alias.Key #>", typeof(<#= alias.Value.ConvertCSharp(true) #>)));
+<# } #>
+
 <# foreach (var referencedAssemblySerializerFactoryType in referencedAssemblySerializerFactoryTypes) { #>
 			assemblySerializers.Modules.Add(typeof(<#=referencedAssemblySerializerFactoryType.ConvertCSharp()#>).GetTypeInfo().Module);
 <# } #>

@@ -38,6 +38,8 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
 
         public AssemblyDefinition SiliconStudioCoreAssembly { get; private set; }
 
+        public Dictionary<string, TypeDefinition> DataContractAliases { get; } = new Dictionary<string, TypeDefinition>();
+
         /// <summary>
         /// Gets the list of serializable type grouped by profile.
         /// </summary>
