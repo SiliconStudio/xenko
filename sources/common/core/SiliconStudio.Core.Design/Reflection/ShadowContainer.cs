@@ -26,6 +26,24 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
+        public ShadowContainer Clone()
+        {
+            if (attachedAttributesPerKey == null)
+            {
+                return null;
+            }
+
+            var container = new ShadowContainer();
+            
+            container.attachedAttributesPerKey = new Dictionary<object, ShadowAttributes>();
+            foreach (var keyValue in attachedAttributesPerKey)
+            {
+                container.attachedAttributesPerKey.Add(keyValue.Key, keyValue.Value.Clone());
+            }
+
+            return container;
+        }
+
         public bool Contains(object memberKey)
         {
             if (memberKey == null) throw new ArgumentNullException("memberKey");

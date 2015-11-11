@@ -51,12 +51,21 @@ namespace SiliconStudio.Xenko.Graphics
             if (nativeDescription.Usage != ResourceUsage.Staging)
                 this.InitializeViews();
 
+            if (GraphicsDevice != null)
+            {
+                GraphicsDevice.BuffersMemory += SizeInBytes/(float)0x100000;
+            }
+
             return this;
         }
 
         /// <inheritdoc/>
         protected internal override void OnDestroyed()
         {
+            if (GraphicsDevice != null)
+            {
+                GraphicsDevice.BuffersMemory -= SizeInBytes/(float)0x100000;
+            }
             base.OnDestroyed();
             DestroyImpl();
         }

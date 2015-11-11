@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
     /// <summary>
     /// The base class for all the audio games.
     /// </summary>
-    public class AudioTestGame : GraphicsTestBase
+    public class AudioTestGame : GameTestBase
     {
     }
 }

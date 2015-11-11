@@ -174,7 +174,33 @@ namespace SiliconStudio.Core.Diagnostics
         {
             EmitEvent(ProfilingMessageType.Begin, textFormat, textFormatArguments);
         }
-        
+
+        /// <summary>
+        /// Emits a Begin event with the specified formatted text.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void Begin(string text, ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
+        {
+            EmitEvent(ProfilingMessageType.Begin, text, value0, value1, value2, value3);
+        }
+
+        /// <summary>
+        /// Emits a Begin event with the specified formatted text.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void Begin(ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
+        {
+            EmitEvent(ProfilingMessageType.Begin, null, value0, value1, value2, value3);
+        }
+
         /// <summary>
         /// Emits a Mark event.
         /// </summary>
@@ -203,6 +229,32 @@ namespace SiliconStudio.Core.Diagnostics
         }
 
         /// <summary>
+        /// Emits a Mark profiling event with the specified text.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void Mark(string text, ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
+        {
+            EmitEvent(ProfilingMessageType.Mark, text, value0, value1, value2, value3);
+        }
+
+        /// <summary>
+        /// Emits a Mark profiling event with the specified text.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void Mark(ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
+        {
+            EmitEvent(ProfilingMessageType.Mark, null, value0, value1, value2, value3);
+        }
+
+        /// <summary>
         /// Emits a End profiling event.
         /// </summary>
         public void End()
@@ -228,7 +280,33 @@ namespace SiliconStudio.Core.Diagnostics
         {
             EmitEvent(ProfilingMessageType.End, textFormat, textFormatArguments);
         }
-        
+
+        /// <summary>
+        /// Emits a End profiling event with the specified custom value.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void End(string text, ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
+        {
+            EmitEvent(ProfilingMessageType.End, text, value0, value1, value2, value3);
+        }
+
+        /// <summary>
+        /// Emits a End profiling event with the specified custom value.
+        /// </summary>
+        /// <param name="text"></param>
+        /// <param name="value0">Can be int, float, long or double</param>
+        /// <param name="value1">Can be int, float, long or double</param>
+        /// <param name="value2">Can be int, float, long or double</param>
+        /// <param name="value3">Can be int, float, long or double</param>
+        public void End(ProfilingCustomValue? value0, ProfilingCustomValue? value1 = null, ProfilingCustomValue? value2 = null, ProfilingCustomValue? value3 = null)
+        {
+            EmitEvent(ProfilingMessageType.End, null, value0, value1, value2, value3);
+        }
+
         private void EmitEvent(ProfilingMessageType profilingType, string text = null)
         {
             // Perform a Mark event only if the profiling is running
@@ -283,6 +361,36 @@ namespace SiliconStudio.Core.Diagnostics
             // Create profiler event
             // TODO ideally we should make a copy of the attributes
             var profilerEvent = new ProfilingEvent(profilingId, profilingKey, profilingType, timeStamp, timeStamp - startTime, text, attributes);
+
+            // Send profiler event to Profiler
+            Profiler.ProcessEvent(ref profilerEvent);
+        }
+
+        private void EmitEvent(ProfilingMessageType profilingType, string text, ProfilingCustomValue? value0, ProfilingCustomValue? value1, ProfilingCustomValue? value2, ProfilingCustomValue? value3)
+        {
+            // Perform a Mark event only if the profiling is running
+            if (!isEnabled) return;
+
+            var timeStamp = Stopwatch.GetTimestamp();
+
+            if (profilingType == ProfilingMessageType.Begin)
+            {
+                startTime = timeStamp;
+            }
+
+            //this actually stores the LAST text into beginText so to be able to add it at the end
+            if(profilingType != ProfilingMessageType.End && text != null)
+            {
+                beginText = text;
+            }
+
+            // Create profiler event
+            var profilerEvent = new ProfilingEvent(profilingId, profilingKey, profilingType, timeStamp, timeStamp - startTime, beginText ?? text, attributes, value0, value1, value2, value3);
+
+            if (profilingType == ProfilingMessageType.End)
+            {
+                beginText = null;
+            }
 
             // Send profiler event to Profiler
             Profiler.ProcessEvent(ref profilerEvent);

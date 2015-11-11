@@ -56,7 +56,7 @@ namespace Android.NUnitLite.UI {
 
             var runMode = new Section("Run Mode");
             var interactiveCheckBox = new CheckboxElement("Enable Interactive Mode");
-            interactiveCheckBox.ValueChanged += (sender , args) => GraphicsTestBase.ForceInteractiveMode = interactiveCheckBox.Value;
+            interactiveCheckBox.ValueChanged += (sender , args) => GameTestBase.ForceInteractiveMode = interactiveCheckBox.Value;
             runMode.Add(interactiveCheckBox);
             menu.Add(runMode);
 

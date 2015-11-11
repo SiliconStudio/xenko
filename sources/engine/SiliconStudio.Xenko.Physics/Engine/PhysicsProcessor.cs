@@ -31,15 +31,11 @@ namespace SiliconStudio.Xenko.Physics
         private Bullet2PhysicsSystem physicsSystem;
         private Simulation simulation;
 
-        public static ProfilingKey CharactersProfilingKey = new ProfilingKey(Simulation.SimulationProfilingKey, "Characters");
-        private ProfilingState charactersProfilingState;
-
         private PhysicsDebugShapeRendering debugShapeRendering;
 
         public PhysicsProcessor()
             : base(PhysicsComponent.Key, TransformComponent.Key)
         {
-            charactersProfilingState = Profiler.New(CharactersProfilingKey);
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -68,6 +64,9 @@ namespace SiliconStudio.Xenko.Physics
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
         private static void RigidBodySetWorldTransform(PhysicsElementBase element, ref Matrix physicsTransform)
         {
+            element.Data.PhysicsComponent.Simulation.SimulationProfiler.Mark();
+            element.Data.PhysicsComponent.Simulation.UpdatedRigidbodies++;
+
             if (element.BoneIndex == -1)
             {
                 element.UpdateTransformationComponent(ref physicsTransform);
@@ -90,6 +89,9 @@ namespace SiliconStudio.Xenko.Physics
         //and Kinematic rigidbodies, called every simulation tick (if body not sleeping) to let the physics engine know where the kinematic body is.
         private static void RigidBodyGetWorldTransform(PhysicsElementBase element, out Matrix physicsTransform)
         {
+            element.Data.PhysicsComponent.Simulation.SimulationProfiler.Mark();
+            element.Data.PhysicsComponent.Simulation.UpdatedRigidbodies++;
+
             if (element.BoneIndex == -1)
             {
                 element.DerivePhysicsTransformation(out physicsTransform);
@@ -432,14 +434,11 @@ namespace SiliconStudio.Xenko.Physics
 
             simulation = physicsSystem.Create(this);
 
-            if (Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice != null)
+            var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice;
+            if (gfxDevice != null)
             {
-                debugShapeRendering = new PhysicsDebugShapeRendering(Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice);
+                debugShapeRendering = new PhysicsDebugShapeRendering(gfxDevice);
             }
-
-            //setup debug device and debug shader
-            //var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
-            //Simulation.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
         }
 
         protected override void OnSystemRemove()
@@ -455,7 +454,8 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void UpdateCharacters()
         {
-            charactersProfilingState.Begin();
+            var charactersProfilingState = Profiler.Begin(PhysicsProfilingKeys.CharactersProfilingKey);
+            var activeCharacters = 0;
             //characters need manual updating
             foreach (var element in characters)
             {
@@ -474,12 +474,9 @@ namespace SiliconStudio.Xenko.Physics
                 }
 
                 charactersProfilingState.Mark();
-            charactersProfilingState.Begin();
-                if(!element.Collider.Enabled) continue;
-
-                charactersProfilingState.Mark();
+                activeCharacters++;
             }
-            charactersProfilingState.End();
+            charactersProfilingState.End("Active characters: {0}", activeCharacters);
         }
 
         public override void Draw(RenderContext context)

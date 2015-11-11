@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 if (processor.Enabled)
                 {
-                    using (Profiler.Begin(processor.UpdateProfilingKey))
+                    using (Profiler.Begin(processor.UpdateProfilingKey, "Entities: {0}", enabledEntities.Count))
                     {
                         processor.Update(gameTime);
                     }

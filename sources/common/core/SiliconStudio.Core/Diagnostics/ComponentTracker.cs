@@ -23,7 +23,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         public static readonly bool EnableEvents = false;
 
-        private static readonly Dictionary<long, ComponentReference> ObjectReferences = new Dictionary<long, ComponentReference>();
+        private static readonly Dictionary<Guid, ComponentReference> ObjectReferences = new Dictionary<Guid, ComponentReference>();
       
         /// <summary>
         /// Tracks the specified component object.
@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         /// <param name="id">The id of the component</param>
         /// <returns>A component reference</returns>
-        public static ComponentReference Find(long id)
+        public static ComponentReference Find(Guid id)
         {
             lock (ObjectReferences)
             {

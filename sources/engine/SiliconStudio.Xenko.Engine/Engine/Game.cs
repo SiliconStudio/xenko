@@ -17,6 +17,7 @@ using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Fonts;
 using SiliconStudio.Xenko.Rendering.Sprites;
@@ -81,6 +82,11 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <value>The sprite animation system.</value>
         public SpriteAnimationSystem SpriteAnimation { get; private set; }
+
+        /// <summary>
+        /// Gets the game profiler system
+        /// </summary>
+        public GameProfilingSystem ProfilerSystem { get; private set; }
 
         /// <summary>
         /// Gets the font system.
@@ -168,6 +174,7 @@ namespace SiliconStudio.Xenko.Engine
             UI = new UISystem(Services);
             gameFontSystem = new GameFontSystem(Services);
             SpriteAnimation = new SpriteAnimationSystem(Services);
+            ProfilerSystem = new GameProfilingSystem(Services);
 
             // ---------------------------------------------------------
             // Add common GameSystems - Adding order is important 
@@ -199,6 +206,8 @@ namespace SiliconStudio.Xenko.Engine
 
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
+
+            GameSystems.Add(ProfilerSystem);
 
             AutoLoadDefaultSettings = true;
         }

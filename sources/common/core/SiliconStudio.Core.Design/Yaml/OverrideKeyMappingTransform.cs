@@ -15,7 +15,6 @@ namespace SiliconStudio.Core.Yaml
     internal class OverrideKeyMappingTransform : DefaultObjectSerializerBackend
     {
         private readonly ITypeDescriptorFactory typeDescriptorFactory;
-        private readonly bool keepOnlySealedOverrides;
         private ITypeDescriptor cachedDescriptor;
 
         private const char PostFixSealed = '!';
@@ -26,12 +25,10 @@ namespace SiliconStudio.Core.Yaml
 
         private const string PostFixNewSealedAlt = "!*";
 
-
-        public OverrideKeyMappingTransform(ITypeDescriptorFactory typeDescriptorFactory, bool keepOnlySealedOverrides)
+        public OverrideKeyMappingTransform(ITypeDescriptorFactory typeDescriptorFactory)
         {
             if (typeDescriptorFactory == null) throw new ArgumentNullException("typeDescriptorFactory");
             this.typeDescriptorFactory = typeDescriptorFactory;
-            this.keepOnlySealedOverrides = keepOnlySealedOverrides;
         }
 
         public override void WriteMemberName(ref ObjectContext objectContext, SharpYaml.Serialization.IMemberDescriptor member, string memberName)
@@ -50,7 +47,7 @@ namespace SiliconStudio.Core.Yaml
                 if (customDescriptor != null)
                 {
                     var overrideType = objectContext.Instance.GetOverride(customDescriptor);
-                    if (!keepOnlySealedOverrides && (overrideType & OverrideType.New) != 0)
+                    if ((overrideType & OverrideType.New) != 0)
                     {
                         memberName += PostFixNew;
                     }
@@ -86,12 +83,6 @@ namespace SiliconStudio.Core.Yaml
 
                 if (overrideType != OverrideType.Base)
                 {
-                    // With keepOnlySealedOverrides, we can serialize only Base or Base+Sealed
-                    if (keepOnlySealedOverrides && overrideType.IsSealed())
-                    {
-                        overrideType = OverrideType.Base | OverrideType.Sealed;
-                    }
-
                     var objectType = objectContext.Instance.GetType();
                     if (cachedDescriptor == null || cachedDescriptor.Type != objectType)
                     {

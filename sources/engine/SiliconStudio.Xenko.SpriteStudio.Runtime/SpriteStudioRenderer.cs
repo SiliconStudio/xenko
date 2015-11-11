@@ -182,7 +182,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     if (isPicking)
                     {
                         // TODO move this code corresponding to picking out of the runtime code.
-                        color4 = new Color4(spriteState.SpriteStudioComponent.Id);
+                        color4 = new Color4(spriteState.SpriteStudioComponent.Id.ToRuntimeId());
                     }
                     else
                     {
