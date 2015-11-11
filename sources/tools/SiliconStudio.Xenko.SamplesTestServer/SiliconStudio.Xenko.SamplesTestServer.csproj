@@ -49,6 +49,10 @@
       <Project>{84deb606-77ed-49cd-9aed-d2b13c1f5a1e}</Project>
       <Name>SiliconStudio.Xenko.Input</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Testing\SiliconStudio.Xenko.Testing.csproj">
+      <Project>{b84ecb15-5e3f-4bd1-ab87-333bae9b70f9}</Project>
+      <Name>SiliconStudio.Xenko.Testing</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
       <Name>SiliconStudio.Xenko</Name>

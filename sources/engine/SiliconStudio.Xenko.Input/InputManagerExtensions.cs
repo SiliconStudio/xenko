@@ -28,6 +28,8 @@ namespace SiliconStudio.Xenko.Input.Extensions
         }
     }
 
+    //todo very much WIP, I will change the way these method are exposed
+
     public static class InputManagerExtensions
     {
         public static SimulatedKeyPress SimulateKeyPress(this InputManager iputManager, Keys key)
@@ -55,10 +57,20 @@ namespace SiliconStudio.Xenko.Input.Extensions
             }
         }
 
-        public static SimulatedTap SimulateTap(this InputManager iputManager, Vector2 coords)
+        public static void SimulateTapDown(this InputManager inputManager, Vector2 coords)
         {
-            iputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
-            return new SimulatedTap { Coords = coords, InputManager = iputManager };
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
+        }
+
+        public static void SimulateTapUp(this InputManager inputManager, Vector2 coords)
+        {
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Up, PointerType.Touch, true));
+        }
+
+        public static SimulatedTap SimulateTap(this InputManager inputManager, Vector2 coords)
+        {
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
+            return new SimulatedTap { Coords = coords, InputManager = inputManager };
         }
     }
 }

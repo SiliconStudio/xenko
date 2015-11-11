@@ -2281,7 +2281,6 @@
     </Compile>
     <Compile Include="Rendering\Shaders\TransformationKeys.cs" />
     <Compile Include="Engine\SyncScript.cs" />
-    <Compile Include="Testing\TestClient.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Starter\XenkoApplicationDelegate.iOS.cs" />

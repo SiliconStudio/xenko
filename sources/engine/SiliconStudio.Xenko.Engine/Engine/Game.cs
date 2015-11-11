@@ -21,7 +21,6 @@ using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Fonts;
 using SiliconStudio.Xenko.Rendering.Sprites;
-using SiliconStudio.Xenko.Testing;
 using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Engine
@@ -36,7 +35,7 @@ namespace SiliconStudio.Xenko.Engine
         private readonly LogListener logListener;
         private GameSettings gameSettings; // for easy transfer from PrepareContext to Initialize
 
-        private TestClient testClient;
+        public static Game CurrentGame;
 
         /// <summary>
         /// Gets the graphics device manager.
@@ -213,6 +212,8 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(ProfilerSystem);
 
             AutoLoadDefaultSettings = true;
+
+            CurrentGame = this;
         }
 
         protected override void Destroy()
