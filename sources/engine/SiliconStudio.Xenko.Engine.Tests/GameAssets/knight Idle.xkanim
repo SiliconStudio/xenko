@@ -1,0 +1,18 @@
+!Animation
+Id: 08b936e5-d0eb-4f02-9304-b8b7819086fe
+SerializedVersion: {Xenko: 1.5.0-alpha02}
+Tags: []
+Source: ../../../data/tests/knight/scenes/he00_normal_idle.fbx
+RepeatMode: LoopInfinite
+Skeleton: 167cca61-5761-4cc3-b27b-f080a31e4f43:knight Skeleton
+RootMotion: false
+~Base:
+    Location: --import--
+    Asset: !Animation
+        Id: 00000000-0000-0000-0000-000000000000
+        SerializedVersion: {Xenko: 1.5.0-alpha02}
+        Tags: []
+        ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
+        RepeatMode: LoopInfinite
+        Skeleton: null
+        RootMotion: false

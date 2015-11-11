@@ -1,6 +1,6 @@
 !Texture
 Id: 39070e2f-ef25-4600-86f8-309c7081b6bb
-SerializedVersion: 1
+SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Source: ../../../data/tests/Sphere.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
@@ -11,7 +11,7 @@ GenerateMipmaps: false
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 1
+        SerializedVersion: {Xenko: 1.4.0-beta}
         Tags: []
         Source: 
         ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558

@@ -1,6 +1,6 @@
 !Package
 Id: c6c57562-42df-42ad-be2d-8d5889211366
-SerializedVersion: 2
+SerializedVersion: {Assets: 0.0.2}
 Tags: []
 Meta:
     Name: SiliconStudio.Xenko.Engine.Tests
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.4.0-beta
+            Version: 1.5.0-alpha02
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -62,6 +62,8 @@ Bundles: []
 TemplateFolders: []
 RootAssets:
     - 02de8aa1-8ec5-46aa-b596-598f223bdb06:BallSprite2
+    - 06662a6f-f415-43a9-8076-64c6e706754b:knight Run
+    - 08b936e5-d0eb-4f02-9304-b8b7819086fe:knight Idle
     - 170d7900-50c3-46c0-ab61-fd86a5377c76:RotationSheet
     - 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
     - 39070e2f-ef25-4600-86f8-309c7081b6bb:Sphere1

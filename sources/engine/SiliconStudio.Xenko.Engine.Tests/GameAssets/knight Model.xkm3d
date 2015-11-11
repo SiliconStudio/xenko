@@ -1,6 +1,6 @@
 !Model
 Id: 53b953af-1d02-459e-a96f-b40805964d59
-SerializedVersion: 2
+SerializedVersion: {Xenko: 1.5.0-alpha02}
 BuildOrder: 500
 Tags: []
 Source: ../../../data/tests/knight/scenes/knight.fbx
@@ -15,84 +15,12 @@ Materials:
     -   Name: c100_chr_ch00_Knight_SWORD1
         MaterialInstance:
             Material: 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
-Nodes:
-    - {Name: RootNode, Depth: 0, Preserve: false}
-    - {Name: root, Depth: 1, Preserve: false}
-    - {Name: jointroot_000, Depth: 2, Preserve: false}
-    - {Name: CenterRoot, Depth: 3, Preserve: false}
-    - {Name: LeftHip, Depth: 4, Preserve: false}
-    - {Name: LeftKnee, Depth: 5, Preserve: false}
-    - {Name: LeftFoot, Depth: 6, Preserve: false}
-    - {Name: LeftMiddleToe, Depth: 7, Preserve: false}
-    - {Name: RightHip, Depth: 4, Preserve: false}
-    - {Name: RightKnee, Depth: 5, Preserve: false}
-    - {Name: RightFoot, Depth: 6, Preserve: false}
-    - {Name: RightMiddleToe, Depth: 7, Preserve: false}
-    - {Name: CenterSpineA, Depth: 4, Preserve: false}
-    - {Name: CenterSpineB, Depth: 5, Preserve: false}
-    - {Name: CenterNeck, Depth: 6, Preserve: false}
-    - {Name: CenterHead, Depth: 7, Preserve: false}
-    - {Name: RightCollar, Depth: 6, Preserve: false}
-    - {Name: RightShoulder, Depth: 7, Preserve: false}
-    - {Name: RightElbow, Depth: 8, Preserve: false}
-    - {Name: RightHand, Depth: 9, Preserve: false}
-    - {Name: RightThumbA, Depth: 10, Preserve: false}
-    - {Name: RightThumbB, Depth: 11, Preserve: false}
-    - {Name: RightThumbC, Depth: 12, Preserve: false}
-    - {Name: RightIndexFingerA, Depth: 10, Preserve: false}
-    - {Name: RightIndexFingerB, Depth: 11, Preserve: false}
-    - {Name: RightIndexFingerC, Depth: 12, Preserve: false}
-    - {Name: RightMiddleFingerA, Depth: 10, Preserve: false}
-    - {Name: RightMiddleFingerB, Depth: 11, Preserve: false}
-    - {Name: RightMiddleFingerC, Depth: 12, Preserve: false}
-    - {Name: RightRingFingerA, Depth: 10, Preserve: false}
-    - {Name: RightRingFingerB, Depth: 11, Preserve: false}
-    - {Name: RightRingFingerC, Depth: 12, Preserve: false}
-    - {Name: RightPinkyFingerA, Depth: 10, Preserve: false}
-    - {Name: RightPinkyFingerB, Depth: 11, Preserve: false}
-    - {Name: RightPinkyFingerC, Depth: 12, Preserve: false}
-    - {Name: LeftCollar, Depth: 6, Preserve: false}
-    - {Name: LeftShoulder, Depth: 7, Preserve: false}
-    - {Name: LeftElbow, Depth: 8, Preserve: false}
-    - {Name: LeftHand, Depth: 9, Preserve: false}
-    - {Name: LeftThumbA, Depth: 10, Preserve: false}
-    - {Name: LeftThumbB, Depth: 11, Preserve: false}
-    - {Name: LeftThumbC, Depth: 12, Preserve: false}
-    - {Name: LeftIndexFingerA, Depth: 10, Preserve: false}
-    - {Name: LeftIndexFingerB, Depth: 11, Preserve: false}
-    - {Name: LeftIndexFingerC, Depth: 12, Preserve: false}
-    - {Name: LeftMiddleFingerA, Depth: 10, Preserve: false}
-    - {Name: LeftMiddleFingerB, Depth: 11, Preserve: false}
-    - {Name: LeftMiddleFingerC, Depth: 12, Preserve: false}
-    - {Name: LeftRingFingerA, Depth: 10, Preserve: false}
-    - {Name: LeftRingFingerB, Depth: 11, Preserve: false}
-    - {Name: LeftRingFingerC, Depth: 12, Preserve: false}
-    - {Name: LeftPinkyFingerA, Depth: 10, Preserve: false}
-    - {Name: LeftPinkyFingerB, Depth: 11, Preserve: false}
-    - {Name: LeftPinkyFingerC, Depth: 12, Preserve: false}
-    - {Name: FrontCloth_01, Depth: 4, Preserve: false}
-    - {Name: FrontCloth_02, Depth: 5, Preserve: false}
-    - {Name: RearCloth_01, Depth: 4, Preserve: false}
-    - {Name: RearCloth_02, Depth: 5, Preserve: false}
-    - {Name: weapon, Depth: 2, Preserve: false}
-    - {Name: rot_y, Depth: 2, Preserve: false}
-    - {Name: parts, Depth: 1, Preserve: false}
-    - {Name: ch00_Knight_Body, Depth: 2, Preserve: false}
-    - {Name: ch00_Knight_LEG, Depth: 2, Preserve: false}
-    - {Name: ch00_Knight_Belt, Depth: 2, Preserve: false}
-    - {Name: ch00_Knight_HelMet, Depth: 2, Preserve: false}
-    - {Name: ch00_Knight_SWORD, Depth: 2, Preserve: false}
-    - {Name: ch00_Knight_UpperArm_L, Depth: 2, Preserve: false}
-    - {Name: ch00_Knight_UpperArm_R, Depth: 2, Preserve: false}
-    - {Name: light_group, Depth: 1, Preserve: false}
-    - {Name: ch00_Knight_directionalLight1, Depth: 2, Preserve: false}
-    - {Name: ch00_Knight_directionalLight2, Depth: 2, Preserve: false}
-    - {Name: ch00_Knight_ambientLight1, Depth: 2, Preserve: false}
+Skeleton: 167cca61-5761-4cc3-b27b-f080a31e4f43:knight Skeleton
 ~Base:
     Location: --import--
     Asset: !Model
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 2
+        SerializedVersion: {Xenko: 1.5.0-alpha02}
         BuildOrder: 500
         Tags: []
         Source: 
@@ -107,76 +35,4 @@ Nodes:
             -   Name: c100_chr_ch00_Knight_SWORD1
                 MaterialInstance:
                     Material: 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
-        Nodes:
-            - {Name: RootNode, Depth: 0, Preserve: false}
-            - {Name: root, Depth: 1, Preserve: false}
-            - {Name: jointroot_000, Depth: 2, Preserve: false}
-            - {Name: CenterRoot, Depth: 3, Preserve: false}
-            - {Name: LeftHip, Depth: 4, Preserve: false}
-            - {Name: LeftKnee, Depth: 5, Preserve: false}
-            - {Name: LeftFoot, Depth: 6, Preserve: false}
-            - {Name: LeftMiddleToe, Depth: 7, Preserve: false}
-            - {Name: RightHip, Depth: 4, Preserve: false}
-            - {Name: RightKnee, Depth: 5, Preserve: false}
-            - {Name: RightFoot, Depth: 6, Preserve: false}
-            - {Name: RightMiddleToe, Depth: 7, Preserve: false}
-            - {Name: CenterSpineA, Depth: 4, Preserve: false}
-            - {Name: CenterSpineB, Depth: 5, Preserve: false}
-            - {Name: CenterNeck, Depth: 6, Preserve: false}
-            - {Name: CenterHead, Depth: 7, Preserve: false}
-            - {Name: RightCollar, Depth: 6, Preserve: false}
-            - {Name: RightShoulder, Depth: 7, Preserve: false}
-            - {Name: RightElbow, Depth: 8, Preserve: false}
-            - {Name: RightHand, Depth: 9, Preserve: false}
-            - {Name: RightThumbA, Depth: 10, Preserve: false}
-            - {Name: RightThumbB, Depth: 11, Preserve: false}
-            - {Name: RightThumbC, Depth: 12, Preserve: false}
-            - {Name: RightIndexFingerA, Depth: 10, Preserve: false}
-            - {Name: RightIndexFingerB, Depth: 11, Preserve: false}
-            - {Name: RightIndexFingerC, Depth: 12, Preserve: false}
-            - {Name: RightMiddleFingerA, Depth: 10, Preserve: false}
-            - {Name: RightMiddleFingerB, Depth: 11, Preserve: false}
-            - {Name: RightMiddleFingerC, Depth: 12, Preserve: false}
-            - {Name: RightRingFingerA, Depth: 10, Preserve: false}
-            - {Name: RightRingFingerB, Depth: 11, Preserve: false}
-            - {Name: RightRingFingerC, Depth: 12, Preserve: false}
-            - {Name: RightPinkyFingerA, Depth: 10, Preserve: false}
-            - {Name: RightPinkyFingerB, Depth: 11, Preserve: false}
-            - {Name: RightPinkyFingerC, Depth: 12, Preserve: false}
-            - {Name: LeftCollar, Depth: 6, Preserve: false}
-            - {Name: LeftShoulder, Depth: 7, Preserve: false}
-            - {Name: LeftElbow, Depth: 8, Preserve: false}
-            - {Name: LeftHand, Depth: 9, Preserve: false}
-            - {Name: LeftThumbA, Depth: 10, Preserve: false}
-            - {Name: LeftThumbB, Depth: 11, Preserve: false}
-            - {Name: LeftThumbC, Depth: 12, Preserve: false}
-            - {Name: LeftIndexFingerA, Depth: 10, Preserve: false}
-            - {Name: LeftIndexFingerB, Depth: 11, Preserve: false}
-            - {Name: LeftIndexFingerC, Depth: 12, Preserve: false}
-            - {Name: LeftMiddleFingerA, Depth: 10, Preserve: false}
-            - {Name: LeftMiddleFingerB, Depth: 11, Preserve: false}
-            - {Name: LeftMiddleFingerC, Depth: 12, Preserve: false}
-            - {Name: LeftRingFingerA, Depth: 10, Preserve: false}
-            - {Name: LeftRingFingerB, Depth: 11, Preserve: false}
-            - {Name: LeftRingFingerC, Depth: 12, Preserve: false}
-            - {Name: LeftPinkyFingerA, Depth: 10, Preserve: false}
-            - {Name: LeftPinkyFingerB, Depth: 11, Preserve: false}
-            - {Name: LeftPinkyFingerC, Depth: 12, Preserve: false}
-            - {Name: FrontCloth_01, Depth: 4, Preserve: false}
-            - {Name: FrontCloth_02, Depth: 5, Preserve: false}
-            - {Name: RearCloth_01, Depth: 4, Preserve: false}
-            - {Name: RearCloth_02, Depth: 5, Preserve: false}
-            - {Name: weapon, Depth: 2, Preserve: false}
-            - {Name: rot_y, Depth: 2, Preserve: false}
-            - {Name: parts, Depth: 1, Preserve: false}
-            - {Name: ch00_Knight_Body, Depth: 2, Preserve: false}
-            - {Name: ch00_Knight_LEG, Depth: 2, Preserve: false}
-            - {Name: ch00_Knight_Belt, Depth: 2, Preserve: false}
-            - {Name: ch00_Knight_HelMet, Depth: 2, Preserve: false}
-            - {Name: ch00_Knight_SWORD, Depth: 2, Preserve: false}
-            - {Name: ch00_Knight_UpperArm_L, Depth: 2, Preserve: false}
-            - {Name: ch00_Knight_UpperArm_R, Depth: 2, Preserve: false}
-            - {Name: light_group, Depth: 1, Preserve: false}
-            - {Name: ch00_Knight_directionalLight1, Depth: 2, Preserve: false}
-            - {Name: ch00_Knight_directionalLight2, Depth: 2, Preserve: false}
-            - {Name: ch00_Knight_ambientLight1, Depth: 2, Preserve: false}
+        Skeleton: null

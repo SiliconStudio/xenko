@@ -1,6 +1,6 @@
 !MaterialAsset
 Id: cc7836ee-28a3-4a94-bf68-f24516109ef5
-SerializedVersion: 1
+SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Attributes:
     Tessellation: !MaterialTessellationFlatFeature

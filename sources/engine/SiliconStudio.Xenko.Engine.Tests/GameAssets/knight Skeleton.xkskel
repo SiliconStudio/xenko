@@ -1,0 +1,79 @@
+!Skeleton
+Id: 167cca61-5761-4cc3-b27b-f080a31e4f43
+Tags: []
+Source: ../../../data/tests/knight/scenes/knight.fbx
+SourceHash: b0dc28bd79ba6cd2fed575b8855b52fc
+ScaleImport: 0.0
+Nodes:
+    - {Name: RootNode, Depth: 0}
+    - {Name: root, Depth: 1}
+    - {Name: jointroot_000, Depth: 2}
+    - {Name: CenterRoot, Depth: 3}
+    - {Name: LeftHip, Depth: 4}
+    - {Name: LeftKnee, Depth: 5}
+    - {Name: LeftFoot, Depth: 6}
+    - {Name: LeftMiddleToe, Depth: 7}
+    - {Name: RightHip, Depth: 4}
+    - {Name: RightKnee, Depth: 5}
+    - {Name: RightFoot, Depth: 6}
+    - {Name: RightMiddleToe, Depth: 7}
+    - {Name: CenterSpineA, Depth: 4}
+    - {Name: CenterSpineB, Depth: 5}
+    - {Name: CenterNeck, Depth: 6}
+    - {Name: CenterHead, Depth: 7}
+    - {Name: RightCollar, Depth: 6}
+    - {Name: RightShoulder, Depth: 7}
+    - {Name: RightElbow, Depth: 8}
+    - {Name: RightHand, Depth: 9}
+    - {Name: RightThumbA, Depth: 10}
+    - {Name: RightThumbB, Depth: 11}
+    - {Name: RightThumbC, Depth: 12}
+    - {Name: RightIndexFingerA, Depth: 10}
+    - {Name: RightIndexFingerB, Depth: 11}
+    - {Name: RightIndexFingerC, Depth: 12}
+    - {Name: RightMiddleFingerA, Depth: 10}
+    - {Name: RightMiddleFingerB, Depth: 11}
+    - {Name: RightMiddleFingerC, Depth: 12}
+    - {Name: RightRingFingerA, Depth: 10}
+    - {Name: RightRingFingerB, Depth: 11}
+    - {Name: RightRingFingerC, Depth: 12}
+    - {Name: RightPinkyFingerA, Depth: 10}
+    - {Name: RightPinkyFingerB, Depth: 11}
+    - {Name: RightPinkyFingerC, Depth: 12}
+    - {Name: LeftCollar, Depth: 6}
+    - {Name: LeftShoulder, Depth: 7}
+    - {Name: LeftElbow, Depth: 8}
+    - {Name: LeftHand, Depth: 9}
+    - {Name: LeftThumbA, Depth: 10}
+    - {Name: LeftThumbB, Depth: 11}
+    - {Name: LeftThumbC, Depth: 12}
+    - {Name: LeftIndexFingerA, Depth: 10}
+    - {Name: LeftIndexFingerB, Depth: 11}
+    - {Name: LeftIndexFingerC, Depth: 12}
+    - {Name: LeftMiddleFingerA, Depth: 10}
+    - {Name: LeftMiddleFingerB, Depth: 11}
+    - {Name: LeftMiddleFingerC, Depth: 12}
+    - {Name: LeftRingFingerA, Depth: 10}
+    - {Name: LeftRingFingerB, Depth: 11}
+    - {Name: LeftRingFingerC, Depth: 12}
+    - {Name: LeftPinkyFingerA, Depth: 10}
+    - {Name: LeftPinkyFingerB, Depth: 11}
+    - {Name: LeftPinkyFingerC, Depth: 12}
+    - {Name: FrontCloth_01, Depth: 4}
+    - {Name: FrontCloth_02, Depth: 5}
+    - {Name: RearCloth_01, Depth: 4}
+    - {Name: RearCloth_02, Depth: 5}
+    - {Name: weapon, Depth: 2}
+    - {Name: rot_y, Depth: 2}
+    - {Name: parts, Depth: 1}
+    - {Name: ch00_Knight_Body, Depth: 2}
+    - {Name: ch00_Knight_LEG, Depth: 2}
+    - {Name: ch00_Knight_Belt, Depth: 2}
+    - {Name: ch00_Knight_HelMet, Depth: 2}
+    - {Name: ch00_Knight_SWORD, Depth: 2}
+    - {Name: ch00_Knight_UpperArm_L, Depth: 2}
+    - {Name: ch00_Knight_UpperArm_R, Depth: 2}
+    - {Name: light_group, Depth: 1}
+    - {Name: ch00_Knight_directionalLight1, Depth: 2}
+    - {Name: ch00_Knight_directionalLight2, Depth: 2}
+    - {Name: ch00_Knight_ambientLight1, Depth: 2}
