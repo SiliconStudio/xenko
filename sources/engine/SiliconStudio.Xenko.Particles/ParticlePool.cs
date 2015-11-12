@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Particles
@@ -12,7 +13,52 @@ namespace SiliconStudio.Xenko.Particles
 
     public class ParticlePool : IDisposable, IEnumerable
     {
+        public enum PoolFieldsPolicy
+        {
+            /// <summary>
+            /// The particle pool is initialized as an Array of Structs
+            /// Each particle is a struct and they are organized as an array with length equal to the pool's capacity
+            /// </summary>
+            AoS,
+
+            /// <summary>
+            /// The particle pool is initialized as na Struct of Arrays
+            /// Each particle field is a separate array with length equal to the pool's capacity
+            /// The particle is not a contained struct anymore, but just an index to its data in the array.
+            /// </summary>
+            SoA
+        }
+
+        public enum PoolListPolicy
+        {
+            /// <summary>
+            /// New particles are allocated from the next free index which loops when it reaches the end of the list.
+            /// The pool doesn't care about dead particles - they don't move and get overwritten by new particles.
+            /// </summary>
+            Ring,
+
+            /// <summary>
+            /// New particles are allocated at the top of the stack. Dead particles are swapped out with the top particle.
+            /// The stack stays small but order of the particles gets scrambled.
+            /// </summary>
+            Stack,
+
+            /// <summary>
+            /// NOT IMPLEMENTED YET
+            /// Same as stack but the order of the particles is kept the same.
+            /// </summary>
+            OrderedStack,
+
+            /// <summary>
+            /// NOT IMPLEMENTED YET
+            /// Same as stack, but resized dynamically to fit more or less particles
+            /// </summary>
+            DynamicStack            
+        }
+
         private bool disposed = false;
+        private readonly PoolFieldsPolicy poolFieldsPolicy;
+        private readonly PoolListPolicy poolListPolicy;
 
         public IntPtr ParticleData { get; private set; } = IntPtr.Zero;
 
@@ -20,8 +66,25 @@ namespace SiliconStudio.Xenko.Particles
 
         public int ParticleSize { get; private set; } = 0;
 
-        public ParticlePool(int size, int capacity)
+        private int nextFreeIndex;
+
+        public ParticlePool(int size, int capacity, PoolFieldsPolicy poolFieldsPolicy = PoolFieldsPolicy.AoS, PoolListPolicy poolListPolicy = PoolListPolicy.Ring)
         {
+            if (poolFieldsPolicy == PoolFieldsPolicy.SoA)
+            {
+                throw new NotImplementedException();
+            }
+
+            if (poolListPolicy == PoolListPolicy.OrderedStack || poolListPolicy == PoolListPolicy.DynamicStack)
+            {
+                throw new NotImplementedException();
+            }
+
+            this.poolFieldsPolicy = poolFieldsPolicy;
+            this.poolListPolicy = poolListPolicy;
+
+            nextFreeIndex = 0;
+
             RelocatePool(size, capacity, (pool, newPool) => {});
         }
 
@@ -80,6 +143,61 @@ namespace SiliconStudio.Xenko.Particles
             disposed = true;
         }
 
+        private void CopyParticleData(int dst, int src)
+        {
+            // TODO Copy data
+            
+        }
+
+        private Particle FromIndex(int idx)
+        {
+            return new Particle(ParticleData + idx * ParticleSize);
+        }
+
+        /// <summary>
+        /// Add a new particle to the pool. Doesn't worry about initialization.
+        /// </summary>
+        /// <returns></returns>
+        public Particle AddParticle()
+        {
+            if (nextFreeIndex == ParticleCapacity)
+            {
+                if (poolListPolicy == PoolListPolicy.Ring)
+                {
+                    nextFreeIndex = 0;
+                }
+                else if (poolListPolicy == PoolListPolicy.DynamicStack)
+                {
+                    throw new NotImplementedException();                  
+                }
+                else
+                {
+                    return new Particle(IntPtr.Zero);
+                }
+            }
+
+            return FromIndex(nextFreeIndex++);
+        }
+
+        private void RemoveCurrent(ref Particle particle, ref int oldIndex, ref int indexMax)
+        {
+            if (poolListPolicy != PoolListPolicy.Ring)
+            {
+                // Next free index shouldn't be 0 because we are removing a particle
+                Debug.Assert(nextFreeIndex > 0);
+
+                // Update the top index since the list is shorter now
+                indexMax = --nextFreeIndex;
+                if (indexMax != oldIndex)
+                    CopyParticleData(oldIndex, indexMax);
+
+                particle = FromIndex(indexMax);        
+
+                // Subract 1 from the old index to position the cursor of the enumerator to the previous particle
+                oldIndex--;
+            }
+        }
+
         IEnumerator IEnumerable.GetEnumerator()
         {
             return (IEnumerator)GetEnumerator();
@@ -87,8 +205,9 @@ namespace SiliconStudio.Xenko.Particles
 
         public Enumerator GetEnumerator()
         {
-            // TODO Differennt impl for Ring and List
-            return new Enumerator(this);
+            return (poolListPolicy == PoolListPolicy.Ring) ? 
+                new Enumerator(this) :
+                new Enumerator(this, 0, nextFreeIndex - 1);
         }
 
         public struct Enumerator : IEnumerator<Particle>
@@ -99,7 +218,9 @@ namespace SiliconStudio.Xenko.Particles
             private readonly ParticlePool particlePool;
             private readonly int particleSize;
             private readonly int indexFrom;
-            private readonly int indexTo;
+
+            // indexTo can change if particles are removed during iteration
+            private int indexTo;
 
             /// <summary>
             /// Creates an enumarator which iterates over all particles (living and dead) in the particle pool.
@@ -150,6 +271,20 @@ namespace SiliconStudio.Xenko.Particles
                 var hasNext = (index <= indexTo && index >= indexFrom);
                 particlePtr = (hasNext) ? particlePool.ParticleData + index * particleSize : IntPtr.Zero;
                 return hasNext;
+            }
+
+            /// <summary>
+            /// Removes the current particle. A reference to the particle is required so that the addressing can be updated and
+            /// prevent illegal access.
+            /// </summary>
+            /// <param name="particle"></param>
+            public void RemoveCurrent(ref Particle particle)
+            {
+                // Cannot remove particle which is not current
+                if (particle != Current)
+                    return;
+
+                particlePool.RemoveCurrent(ref particle, ref index, ref indexTo);
             }
 
             /// <inheritdoc />
