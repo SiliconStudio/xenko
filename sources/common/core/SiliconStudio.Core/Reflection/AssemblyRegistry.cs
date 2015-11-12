@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -40,6 +41,11 @@ namespace SiliconStudio.Core.Reflection
             {
                 return new HashSet<Assembly>(MapAssemblyToCategories.Keys);
             }
+        }
+
+        public static Type GetTypeFromAlias(string alias)
+        {
+            DataSerializerFactory.GetTypeFromAlias(alias);
         }
 
         /// <summary>

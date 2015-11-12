@@ -107,7 +107,7 @@ namespace SiliconStudio.Core.Serialization
             }
         }
 
-        public static Type GetTypeFromAlias(string alias)
+        internal static Type GetTypeFromAlias(string alias)
         {
             lock (Lock)
             {
