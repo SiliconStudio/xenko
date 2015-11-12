@@ -39,15 +39,18 @@ namespace SiliconStudio.Xenko.Animations
             clip.Freeze();
 
             // If there are optimized curve data, instantiate (first time) and initialize appropriate evaluators
-            foreach (var optimizedData in clip.OptimizedAnimationDatas)
+            if (clip.OptimizedAnimationDatas != null)
             {
-                var optimizedEvaluatorGroup = curveEvaluatorGroups.OfType<AnimationCurveEvaluatorOptimizedGroup>().FirstOrDefault(x => x.ElementType == optimizedData.ElementType);
-                if (optimizedEvaluatorGroup == null)
+                foreach (var optimizedData in clip.OptimizedAnimationDatas)
                 {
-                    optimizedEvaluatorGroup = optimizedData.CreateEvaluator();
-                    curveEvaluatorGroups.Add(optimizedEvaluatorGroup);
+                    var optimizedEvaluatorGroup = curveEvaluatorGroups.OfType<AnimationCurveEvaluatorOptimizedGroup>().FirstOrDefault(x => x.ElementType == optimizedData.ElementType);
+                    if (optimizedEvaluatorGroup == null)
+                    {
+                        optimizedEvaluatorGroup = optimizedData.CreateEvaluator();
+                        curveEvaluatorGroups.Add(optimizedEvaluatorGroup);
+                    }
+                    optimizedEvaluatorGroup.Initialize(optimizedData);
                 }
-                optimizedEvaluatorGroup.Initialize(optimizedData);
             }
 
             // Add already existing channels
