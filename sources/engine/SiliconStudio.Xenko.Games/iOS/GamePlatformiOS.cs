@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using SiliconStudio.Xenko.Graphics;
+using UIKit;
 
 namespace SiliconStudio.Xenko.Games
 {

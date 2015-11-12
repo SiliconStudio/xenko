@@ -9,6 +9,7 @@ using OpenGLES;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.OpenGL;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
+using UIKit;
 
 namespace SiliconStudio.Xenko.Games
 {
