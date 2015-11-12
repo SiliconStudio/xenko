@@ -1,5 +1,4 @@
-﻿using System.Diagnostics;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 

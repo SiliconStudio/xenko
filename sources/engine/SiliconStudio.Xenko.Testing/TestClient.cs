@@ -16,6 +16,7 @@ namespace SiliconStudio.Xenko.Testing
     {
         protected void SaveTexture(Texture texture, string filename)
         {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             using (var image = texture.GetDataAsImage())
             {
                 using (var resultFileStream = File.OpenWrite(filename))
@@ -23,6 +24,7 @@ namespace SiliconStudio.Xenko.Testing
                     image.Save(resultFileStream, ImageFileType.Png);
                 }
             }
+#endif
         }
 
         public async Task StartClient(Game game)
@@ -69,7 +71,9 @@ namespace SiliconStudio.Xenko.Testing
 
             Task.Run(() => socketMessageLayer.MessageLoop());
 
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             await socketMessageLayer.Send(new TestRegistrationRequest { Cmd = AppDomain.CurrentDomain.FriendlyName, Tester = false, Platform = (int)PlatformType.Windows });
+#endif
         }
 
         private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>(); 
