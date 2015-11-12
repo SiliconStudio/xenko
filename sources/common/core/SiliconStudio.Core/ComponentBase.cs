@@ -39,7 +39,7 @@ namespace SiliconStudio.Core
         /// <summary>
         /// Gets a unique identifier attached to this object.
         /// </summary>
-        [DataMemberIgnore, Browsable(false)] // By default don't store it, unless derived class are overriding this member
+        [DataMemberIgnore, Display(Browsable = false)] // By default don't store it, unless derived class are overriding this member
         public virtual Guid Id { get; set; }
 
         /// <summary>

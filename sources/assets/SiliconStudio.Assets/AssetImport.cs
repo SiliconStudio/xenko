@@ -46,7 +46,7 @@ namespace SiliconStudio.Assets
         /// <value>The id of the importer.</value>
         [DataMember(-40)]
         [DefaultValue(null)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public Guid? ImporterId { get; set; }
         
         internal AssetImport GetRootBase()

@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
         public AnimationRepeatMode RepeatMode { get; set; } = AnimationRepeatMode.LoopInfinite;
 
         [DataMember(2)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         [DiffMember(Weight = 100)] // Because AnimationName is like a key, we use a high weight in order to match asset more accurately
         public string AnimationName;
 
