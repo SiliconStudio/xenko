@@ -76,11 +76,6 @@ namespace SiliconStudio.Xenko.Particles
 
         public ParticlePool(int size, int capacity, FieldsPolicy fieldsPolicy = FieldsPolicy.AoS, ListPolicy listPolicy = ListPolicy.Ring)
         {
-            if (fieldsPolicy == FieldsPolicy.SoA)
-            {
-                throw new NotImplementedException();
-            }
-
             if (listPolicy == ListPolicy.OrderedStack || listPolicy == ListPolicy.DynamicStack)
             {
                 throw new NotImplementedException();
@@ -228,13 +223,25 @@ namespace SiliconStudio.Xenko.Particles
             CopyParticlePoolDelegate emptyCopy = (pool, newPool) => { };
             RelocatePool(newParticleSize, ParticleCapacity, emptyCopy);
 
-            // TODO AoS vs SoA
-            int fieldOffset = 0;
-            foreach (var desc in fieldDescriptions)
+            if (fieldsPolicy == FieldsPolicy.SoA)
             {
-                int fieldSize = fields[desc].FieldSize;
-                fields[desc] = new ParticleField(fieldSize, ParticleData + fieldOffset, ParticleSize);
-                fieldOffset += fieldSize;
+                int fieldOffset = 0;
+                foreach (var desc in fieldDescriptions)
+                {
+                    int fieldSize = fields[desc].FieldSize;
+                    fields[desc] = new ParticleField(fieldSize, ParticleData + fieldOffset * ParticleCapacity, fieldSize);
+                    fieldOffset += fieldSize;
+                }
+            }
+            else
+            {
+                int fieldOffset = 0;
+                foreach (var desc in fieldDescriptions)
+                {
+                    int fieldSize = fields[desc].FieldSize;
+                    fields[desc] = new ParticleField(fieldSize, ParticleData + fieldOffset, ParticleSize);
+                    fieldOffset += fieldSize;
+                }
             }
 
             return fields[fieldDesc];
