@@ -203,14 +203,15 @@ namespace SiliconStudio.Xenko.Assets
                     assetFiles.Add(skeletonAsset);
                 }
 
-                // Update animation to point to skeleton
+                // Update animation to point to skeleton, and set preview default model
                 foreach (var animToModelEntry in animToModelMapping)
                 {
                     var animationAsset = animToModelEntry.Key;
                     var modelAsset = animToModelEntry.Value;
 
                     var skeletonAsset = modelToSkeletonMapping[modelAsset];
-                    animationAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
+                    animationAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
+                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference<Asset>(Guid.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
                 }
 
                 // Remove Nodes from models

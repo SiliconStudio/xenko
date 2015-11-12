@@ -66,6 +66,15 @@ namespace SiliconStudio.Xenko.Assets.Model
         public bool RootMotion { get; set; }
 
         /// <summary>
+        /// Gets or sets the preview model
+        /// </summary>
+        /// <userdoc>
+        /// Choose a model to preview with.
+        /// </userdoc>
+        [DataMember(100)]
+        public Rendering.Model PreviewModel { get; set; }
+
+        /// <summary>
         /// Create an instance of <see cref="AnimationAsset"/> with default values.
         /// </summary>
         public AnimationAsset()
