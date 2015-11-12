@@ -48,6 +48,7 @@
     <Compile Include="ParticleFields.cs" />
     <Compile Include="ParticlePool.cs" />
     <Compile Include="ParticleSystem.cs" />
+    <Compile Include="ParticleUtilities.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
