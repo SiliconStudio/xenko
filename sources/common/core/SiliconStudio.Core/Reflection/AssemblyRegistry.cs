@@ -43,9 +43,17 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
+        /// <summary>
+        /// Gets a type from its <see cref="DataContractAttribute.Alias"/> or <see cref="DataAliasAttribute.Name"/>.
+        /// </summary>
+        /// <param name="alias"></param>
+        /// <returns></returns>
         public static Type GetTypeFromAlias(string alias)
         {
-            DataSerializerFactory.GetTypeFromAlias(alias);
+            // TODO: At some point we might want to reorganize AssemblyRegistry and DataSerializerFactory
+            // I am not sure the list of assemblies matches between those two (some assemblies are probably not registered in AssemblyRegistry),
+            // so the semantic of GetTypeFromAlias (which include all assemblies) might be different than GetType.
+            return DataSerializerFactory.GetTypeFromAlias(alias);
         }
 
         /// <summary>
