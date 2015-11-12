@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Games
             return new GameContextWindowsRuntime(null);
 #endif
 #if SILICONSTUDIO_PLATFORM_ANDROID
-            return new GameContextAndroid(null);
+            return new GameContextAndroid(null, null);
 #endif
 #if SILICONSTUDIO_PLATFORM_IOS
             return new GameContextiOS(null, null, null, 0, 0);
