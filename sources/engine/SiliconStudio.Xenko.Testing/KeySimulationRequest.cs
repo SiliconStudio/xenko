@@ -1,4 +1,3 @@
-using System.Security.Policy;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Input;
