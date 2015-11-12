@@ -35,14 +35,6 @@ namespace SiliconStudio.Core
 
         private static readonly Dictionary<MemberInfo, DisplayAttribute> RegisteredDisplayAttributes = new Dictionary<MemberInfo, DisplayAttribute>();
 
-        private readonly int? order;
-
-        private readonly string name;
-
-        private readonly string category;
-
-        private readonly string description;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="DisplayAttribute"/> class.
         /// </summary>
@@ -53,7 +45,7 @@ namespace SiliconStudio.Core
         public DisplayAttribute(int order, string name = null, string description = null, string category = null)
             : this(name, description, category)
         {
-            this.order = order;
+            Order = order;
         }
 
         /// <summary>
@@ -64,63 +56,44 @@ namespace SiliconStudio.Core
         /// <param name="category">A value that is used to group fields in the UI..</param>
         public DisplayAttribute(string name = null, string description = null, string category = null)
         {
-            this.name = name;
-            this.category = category;
-            this.description = description;
+            Name = name;
+            Category = category;
+            Description = description;
         }
 
         /// <summary>
         /// Gets the order weight of the column.
         /// </summary>
         /// <value>The order.</value>
-        public int? Order
-        {
-            get
-            {
-                return order;
-            }
-        }
+        public int? Order { get; }
 
         /// <summary>
         /// Gets a value that is used for display in the UI.
         /// </summary>
         /// <value>The name.</value>
-        public string Name
-        {
-            get
-            {
-                return name;
-            }
-        }
+        public string Name { get; }
 
         /// <summary>
         /// Gets a value that is used to group fields in the UI.
         /// </summary>
         /// <value>The category.</value>
-        public string Category
-        {
-            get
-            {
-                return category;
-            }
-        }
+        public string Category { get; }
 
         /// <summary>
         /// Gets a value that is used to display a description in the UI.
         /// </summary>
         /// <value>The description.</value>
-        public string Description
-        {
-            get
-            {
-                return description;
-            }
-        }
+        public string Description { get; }
 
         /// <summary>
         /// Gets or sets whether to expand the control representing the associated object in the UI.
         /// </summary>
         public ExpandRule Expand { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether the related member is browsable when its class is exposed in the UI. 
+        /// </summary>
+        public bool Browsable { get; set; } = true;
 
         /// <summary>
         /// Gets the display attribute attached to the specified member info.
@@ -130,13 +103,13 @@ namespace SiliconStudio.Core
         /// <exception cref="System.ArgumentNullException">memberInfo</exception>
         public static DisplayAttribute GetDisplay(MemberInfo memberInfo)
         {
-            if (memberInfo == null) throw new ArgumentNullException("memberInfo");
+            if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
             lock (RegisteredDisplayAttributes)
             {
                 DisplayAttribute value;
                 if (!RegisteredDisplayAttributes.TryGetValue(memberInfo, out value))
                 {
-                    value = memberInfo.GetCustomAttribute<DisplayAttribute>() ?? new DisplayAttribute(memberInfo.Name, string.Format("Description of {0}", memberInfo.Name));
+                    value = memberInfo.GetCustomAttribute<DisplayAttribute>() ?? new DisplayAttribute(memberInfo.Name, $"Description of {memberInfo.Name}");
                     RegisteredDisplayAttributes.Add(memberInfo, value);
                 }
                 return value;
