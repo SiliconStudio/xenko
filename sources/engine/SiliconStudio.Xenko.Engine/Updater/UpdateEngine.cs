@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Updater
 {
@@ -199,7 +200,8 @@ namespace SiliconStudio.Xenko.Updater
                             // Include the indexer close
                             state.ParseElementEnd++;
 
-                            var type = AssemblyRegistry.GetType(typeName);
+                            // Try to resolve using alias first, then full assembly registry using assembly qualified name
+                            var type = DataSerializerFactory.GetTypeFromAlias(typeName) ?? AssemblyRegistry.GetType(typeName);
                             if (type == null)
                             {
                                 throw new InvalidOperationException($"Could not resolve type {typeName}");
