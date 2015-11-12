@@ -58,6 +58,7 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// Default Rendering Form on windows desktop.
     /// </summary>
+    [DesignerCategory("Code")]
     public class GameForm : Form
     {
         private const int SIZE_RESTORED = 0;
