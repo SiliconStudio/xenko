@@ -186,7 +186,7 @@ namespace SiliconStudio.Xenko.Games
             return windowContext.ContextType == AppContextType.WindowsRuntime;
         }
 
-        internal override void Initialize(GameContext<SwapChainPanel> windowContext)
+        protected override void Initialize(GameContext<SwapChainPanel> windowContext)
         {
             Debug.Assert(windowContext is GameContextWindowsRuntime, "By design only one descendant of GameContext<SwapChainPanel>");
             var winContext = (GameContextWindowsRuntime)windowContext;
