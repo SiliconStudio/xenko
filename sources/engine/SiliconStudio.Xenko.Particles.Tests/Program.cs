@@ -58,32 +58,27 @@ namespace SiliconStudio.Xenko.Particles.Tests
             Debug.Assert(condition, $"Assert failed in {callingFilePath} at line[{callerLine}]: {message}");
         }
 
-        private static ParticleFieldAccessor<T> AddField<T>(ref int totalOffset) where T : struct
+        private static ParticleFieldAccessor<T> AddField<T>(IntPtr poolPtr, int size) where T : struct
         {
-            var fieldAccessor = new ParticleFieldAccessor<T>(totalOffset);
-
-            var fieldSize = Utilities.SizeOf<T>();
-
-            totalOffset += fieldSize;
-
-            return fieldAccessor;
+            return new ParticleFieldAccessor<T>(poolPtr, size);
         }
 
         private static void TestParticles()
         {
-            // Create several random fields and try to access them
-            var totalOffset = 0;
-            var positionField = AddField<Vector3>(ref totalOffset);
-            var lifetimeField = AddField<float>(ref totalOffset);
-            var velocityField = AddField<Vector3>(ref totalOffset);
-            var sizeField = AddField<float>(ref totalOffset);
-
             var particleCount = 10000;
-            var poolPtr = Utilities.AllocateMemory(totalOffset * particleCount);
+            var particleSize = 32;
+            var poolPtr = Utilities.AllocateMemory(particleSize * particleCount);
+
+            // Create several random fields and try to access them
+            var positionField = AddField<Vector3>(poolPtr + 4 * 0, particleSize);
+            var lifetimeField = AddField<float>  (poolPtr + 4 * 3, particleSize);
+            var velocityField = AddField<Vector3>(poolPtr + 4 * 4, particleSize);
+            var sizeField     = AddField<float>  (poolPtr + 4 * 7, particleSize);
+
 
             for (var i = 0; i < particleCount; i++)
             {
-                var particle = new Particle(poolPtr + i * totalOffset);
+                var particle = new Particle(i);
 
                 particle.Set(positionField, new Vector3(0, i, 0));
                 particle.Set(lifetimeField, i);
@@ -93,7 +88,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
             for (var i = 0; i < particleCount; i++)
             {
-                var particle = new Particle(poolPtr + i * totalOffset);
+                var particle = new Particle(i);
 
                 Assert(particle.Get(positionField).Equals(new Vector3(0, i, 0)), $"Position.Y does not equal {i}");
                 Assert(Math.Abs(particle.Get(lifetimeField) - i) <= MathUtil.ZeroTolerance, $"Remaining lifetime does not equal {i}");
@@ -111,12 +106,19 @@ namespace SiliconStudio.Xenko.Particles.Tests
         /// </summary>
         private static void TestPool(ParticlePool.ListPolicy listPolicy, ParticlePool.FieldsPolicy fieldsPolicy)
         {
-            var particleCount = 10000;
+            const int particleCount = 10000;
             var particlePool = new ParticlePool(0, particleCount, fieldsPolicy, listPolicy);
-            var positionField = particlePool.GetOrCreateField(ParticleFields.Position);
-            var lifetimeField = particlePool.GetOrCreateField(ParticleFields.RemainingLife);
-            var velocityField = particlePool.GetOrCreateField(ParticleFields.Velocity);
-            var sizeField     = particlePool.GetOrCreateField(ParticleFields.Size);
+
+            const bool forceCreation = true;
+            particlePool.FieldExists(ParticleFields.Position     , forceCreation);
+            particlePool.FieldExists(ParticleFields.RemainingLife, forceCreation);
+            particlePool.FieldExists(ParticleFields.Velocity     , forceCreation);
+            particlePool.FieldExists(ParticleFields.Size         , forceCreation);
+
+            var positionField = particlePool.GetField(ParticleFields.Position);
+            var lifetimeField = particlePool.GetField(ParticleFields.RemainingLife);
+            var velocityField = particlePool.GetField(ParticleFields.Velocity);
+            var sizeField     = particlePool.GetField(ParticleFields.Size);
 
             for (int idx = 0; idx < particleCount; idx++)
             {

@@ -8,13 +8,25 @@ namespace SiliconStudio.Xenko.Particles
 {
     public struct  Particle
     {
-        public readonly IntPtr Pointer;
+        public readonly int Index;
 
-        public Particle(IntPtr pointer)
+        /// <summary>
+        /// Creates a new <see cref="Particle"/>
+        /// </summary>
+        /// <param name="index"></param>
+        public Particle(int index)
         {
-            Pointer = pointer;
+            Index = index;
         }
 
+        /// <summary>
+        /// Creates an invalid <see cref="Particle"/>. Accessing the invalid <see cref="Particle"/> is not resticted by the engine, so the user has to restrict it.
+        /// </summary>
+        /// <returns></returns>
+        static public Particle Invalid()
+        {
+            return new Particle(int.MaxValue);
+        }
         #region Accessors
 
 
@@ -27,7 +39,7 @@ namespace SiliconStudio.Xenko.Particles
         public T Get<T>(ParticleFieldAccessor accessor) where T : struct
         {
         //    return ParticleUtilities.ToStruct<T>(Pointer + accessor);
-              return Utilities.Read<T>(Pointer + accessor);
+              return Utilities.Read<T>(accessor[Index]);
         }
 
         /// <summary>
@@ -39,7 +51,7 @@ namespace SiliconStudio.Xenko.Particles
         public T Get<T>(ParticleFieldAccessor<T> accessor) where T : struct
         {
         //    return ParticleUtilities.ToStruct<T>(Pointer + accessor);
-            return Utilities.Read<T>(Pointer + accessor);
+            return Utilities.Read<T>(accessor[Index]);
         }
 
         /// <summary>
@@ -51,7 +63,7 @@ namespace SiliconStudio.Xenko.Particles
         public void Set<T>(ParticleFieldAccessor<T> accessor, ref T value) where T : struct
         {
         //    ParticleUtilities.ToPtr(value, Pointer + accessor);
-            Utilities.Write(Pointer + accessor, ref value);
+            Utilities.Write(accessor[Index], ref value);
         }
 
         /// <summary>
@@ -63,19 +75,26 @@ namespace SiliconStudio.Xenko.Particles
         public void Set<T>(ParticleFieldAccessor<T> accessor, T value) where T : struct
         {
         //    ParticleUtilities.ToPtr(value, Pointer + accessor);
-            Utilities.Write(Pointer + accessor, ref value);
+            Utilities.Write(accessor[Index], ref value);
         }
 
         #endregion
 
-        public IntPtr this[ParticleFieldAccessor accessor]
-        {
-            get { return Pointer + accessor; }
-        }
+        public IntPtr this[ParticleFieldAccessor accessor] => accessor[Index];
 
-        public static implicit operator IntPtr(Particle particle) => particle.Pointer;
+        /// <summary>
+        /// Casts the index of the <see cref="Particle"/> as int
+        /// </summary>
+        /// <param name="particle"></param>
+        public static implicit operator int(Particle particle) => particle.Index;
 
-        public static bool operator ==(Particle particleA, Particle particleB) => (particleA.Pointer == particleB.Pointer);
-        public static bool operator !=(Particle particleA, Particle particleB) => (particleA.Pointer != particleB.Pointer);
+        /// <summary>
+        /// Since particles are only indices, the comparison is only meaningful if it's done within the same particle pool
+        /// </summary>
+        /// <param name="particleLeft">Left side particle to compare</param>
+        /// <param name="particleRight">Right side particle to compare</param>
+        /// <returns></returns>
+        public static bool operator ==(Particle particleLeft, Particle particleRight) => (particleLeft.Index == particleRight.Index);
+        public static bool operator !=(Particle particleLeft, Particle particleRight) => (particleLeft.Index != particleRight.Index);
     }
 }
