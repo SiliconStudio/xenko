@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Testing
             {
                 while (true)
                 {
-                    if (Game.CurrentGame != null) //todo is there a better way to do this??
+                    if (Game.CurrentGame != null && Game.CurrentGame.IsRunning) //todo is there a better way to do this??
                     {
                         TestClient = new TestClient(Game.CurrentGame.Services);
                         await TestClient.StartClient(Game.CurrentGame);
