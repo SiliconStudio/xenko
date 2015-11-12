@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles
 
     public class ParticlePool : IDisposable, IEnumerable
     {
-        public enum PoolFieldsPolicy
+        public enum FieldsPolicy
         {
             /// <summary>
             /// The particle pool is initialized as an Array of Structs
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Particles
             SoA
         }
 
-        public enum PoolListPolicy
+        public enum ListPolicy
         {
             /// <summary>
             /// New particles are allocated from the next free index which loops when it reaches the end of the list.
@@ -57,8 +57,8 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         private bool disposed = false;
-        private readonly PoolFieldsPolicy poolFieldsPolicy;
-        private readonly PoolListPolicy poolListPolicy;
+        private readonly FieldsPolicy fieldsPolicy;
+        private readonly ListPolicy listPolicy;
 
         public IntPtr ParticleData { get; private set; } = IntPtr.Zero;
 
@@ -66,22 +66,26 @@ namespace SiliconStudio.Xenko.Particles
 
         public int ParticleSize { get; private set; } = 0;
 
+        /// <summary>
+        /// For ring implementations, the index just increases, looping when it reaches max count.
+        /// For stack implementations, the index points to the top of the stack and can reach 0 when there are no living particles.
+        /// </summary>
         private int nextFreeIndex;
 
-        public ParticlePool(int size, int capacity, PoolFieldsPolicy poolFieldsPolicy = PoolFieldsPolicy.AoS, PoolListPolicy poolListPolicy = PoolListPolicy.Ring)
+        public ParticlePool(int size, int capacity, FieldsPolicy fieldsPolicy = FieldsPolicy.AoS, ListPolicy listPolicy = ListPolicy.Ring)
         {
-            if (poolFieldsPolicy == PoolFieldsPolicy.SoA)
+            if (fieldsPolicy == FieldsPolicy.SoA)
             {
                 throw new NotImplementedException();
             }
 
-            if (poolListPolicy == PoolListPolicy.OrderedStack || poolListPolicy == PoolListPolicy.DynamicStack)
+            if (listPolicy == ListPolicy.OrderedStack || listPolicy == ListPolicy.DynamicStack)
             {
                 throw new NotImplementedException();
             }
 
-            this.poolFieldsPolicy = poolFieldsPolicy;
-            this.poolListPolicy = poolListPolicy;
+            this.fieldsPolicy = fieldsPolicy;
+            this.listPolicy = listPolicy;
 
             nextFreeIndex = 0;
 
@@ -145,7 +149,7 @@ namespace SiliconStudio.Xenko.Particles
 
         private void CopyParticleData(int dst, int src)
         {
-            // TODO Copy data
+            // TODO Copy data - will depend on fields policy
             
         }
 
@@ -162,11 +166,11 @@ namespace SiliconStudio.Xenko.Particles
         {
             if (nextFreeIndex == ParticleCapacity)
             {
-                if (poolListPolicy == PoolListPolicy.Ring)
+                if (listPolicy == ListPolicy.Ring)
                 {
                     nextFreeIndex = 0;
                 }
-                else if (poolListPolicy == PoolListPolicy.DynamicStack)
+                else if (listPolicy == ListPolicy.DynamicStack)
                 {
                     throw new NotImplementedException();                  
                 }
@@ -181,7 +185,7 @@ namespace SiliconStudio.Xenko.Particles
 
         private void RemoveCurrent(ref Particle particle, ref int oldIndex, ref int indexMax)
         {
-            if (poolListPolicy != PoolListPolicy.Ring)
+            if (listPolicy != ListPolicy.Ring)
             {
                 // Next free index shouldn't be 0 because we are removing a particle
                 Debug.Assert(nextFreeIndex > 0);
@@ -198,6 +202,57 @@ namespace SiliconStudio.Xenko.Particles
             }
         }
 
+        #region Fields
+        private const int DefaultMaxFielsPerPool = 8;
+        private readonly Dictionary<ParticleFieldDescription, ParticleField> fields = new Dictionary<ParticleFieldDescription, ParticleField>(DefaultMaxFielsPerPool);
+
+        internal ParticleField AddField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
+        {
+            ParticleField existingField;
+            if (fields.TryGetValue(fieldDesc, out existingField))
+                return existingField;
+
+            var newFieldSize = ParticleUtilities.AlignedSize(Utilities.SizeOf<T>(), 4);
+
+            var newParticleSize = ParticleSize + newFieldSize;
+
+            var field = new ParticleField() { Offset = ParticleSize, Size = newFieldSize };
+
+            fields.Add(fieldDesc, field);
+
+            // TODO Proper particle relocation
+            CopyParticlePoolDelegate emptyCopy = (pool, newPool) => { };
+            RelocatePool(newParticleSize, ParticleCapacity, emptyCopy);
+
+            return field;
+        }
+
+        // TODO internal RemoveField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
+        //  - will have to be handled by the emitter to ensure a field still in use is not removed
+
+        public ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
+        {
+            ParticleField field;
+            if (!fields.TryGetValue(fieldDesc, out field))
+            {
+                return new ParticleFieldAccessor<T>(-1);
+            }
+            return new ParticleFieldAccessor<T>(field);
+        }
+
+        public ParticleFieldAccessor<T> GetOrCreateField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
+        {
+            ParticleField field;
+            if (!fields.TryGetValue(fieldDesc, out field))
+            {
+                field = AddField(fieldDesc);
+            }
+
+            return new ParticleFieldAccessor<T>(field);
+        }
+        #endregion
+
+        #region Enumerator
         IEnumerator IEnumerable.GetEnumerator()
         {
             return (IEnumerator)GetEnumerator();
@@ -205,7 +260,7 @@ namespace SiliconStudio.Xenko.Particles
 
         public Enumerator GetEnumerator()
         {
-            return (poolListPolicy == PoolListPolicy.Ring) ? 
+            return (listPolicy == ListPolicy.Ring) ? 
                 new Enumerator(this) :
                 new Enumerator(this, 0, nextFreeIndex - 1);
         }
@@ -299,5 +354,8 @@ namespace SiliconStudio.Xenko.Particles
                 get { return new Particle(particlePtr);}
             }
         }
+        #endregion
+
+
     }
 }
