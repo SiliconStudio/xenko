@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Testing
         [ModuleInitializer]
         public static void Initialize()
         {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             if (System.AppDomain.CurrentDomain.FriendlyName.StartsWith("SiliconStudio.Assets.CompilerApp")) return;
             Task.Run(async () =>
             {
@@ -25,6 +26,7 @@ namespace SiliconStudio.Xenko.Testing
                     await Task.Delay(500);
                 }
             });
+#endif
         }
     }
 }
