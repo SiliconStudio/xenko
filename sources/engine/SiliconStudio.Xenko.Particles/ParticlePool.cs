@@ -5,7 +5,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Xenko.Particles
 {
@@ -155,7 +157,7 @@ namespace SiliconStudio.Xenko.Particles
 
         private Particle FromIndex(int idx)
         {
-            return new Particle(ParticleData + idx * ParticleSize);
+            return new Particle(idx);
         }
 
         /// <summary>
@@ -176,7 +178,7 @@ namespace SiliconStudio.Xenko.Particles
                 }
                 else
                 {
-                    return new Particle(IntPtr.Zero);
+                    return Particle.Invalid();
                 }
             }
 
@@ -205,7 +207,8 @@ namespace SiliconStudio.Xenko.Particles
         #region Fields
         private const int DefaultMaxFielsPerPool = 8;
         private readonly Dictionary<ParticleFieldDescription, ParticleField> fields = new Dictionary<ParticleFieldDescription, ParticleField>(DefaultMaxFielsPerPool);
-
+        private readonly List<ParticleFieldDescription> fieldDescriptions = new List<ParticleFieldDescription>(DefaultMaxFielsPerPool);
+         
         internal ParticleField AddField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
         {
             ParticleField existingField;
@@ -216,39 +219,73 @@ namespace SiliconStudio.Xenko.Particles
 
             var newParticleSize = ParticleSize + newFieldSize;
 
-            var field = new ParticleField() { Offset = ParticleSize, Size = newFieldSize };
+            var newField = new ParticleField(newFieldSize, IntPtr.Zero, 0);
+            fieldDescriptions.Add(fieldDesc);
 
-            fields.Add(fieldDesc, field);
+            fields.Add(fieldDesc, newField);
 
             // TODO Proper particle relocation
             CopyParticlePoolDelegate emptyCopy = (pool, newPool) => { };
             RelocatePool(newParticleSize, ParticleCapacity, emptyCopy);
 
-            return field;
+            // TODO AoS vs SoA
+            int fieldOffset = 0;
+            foreach (var desc in fieldDescriptions)
+            {
+                int fieldSize = fields[desc].FieldSize;
+                fields[desc] = new ParticleField(fieldSize, ParticleData + fieldOffset, ParticleSize);
+                fieldOffset += fieldSize;
+            }
+
+            return fields[fieldDesc];
         }
 
         // TODO internal RemoveField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
         //  - will have to be handled by the emitter to ensure a field still in use is not removed
 
+        /// <summary>
+        /// Unsafe method for getting a <see cref="ParticleFieldAccessor"/>.
+        /// If the field doesn't exist an invalid accessor is returned to the user.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="fieldDesc"></param>
+        /// <returns></returns>
         public ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
         {
             ParticleField field;
-            if (!fields.TryGetValue(fieldDesc, out field))
-            {
-                return new ParticleFieldAccessor<T>(-1);
-            }
-            return new ParticleFieldAccessor<T>(field);
+            if (fields.TryGetValue(fieldDesc, out field))
+                return new ParticleFieldAccessor<T>(field);
+
+            return new ParticleFieldAccessor<T>(IntPtr.Zero, 0);
         }
 
-        public ParticleFieldAccessor<T> GetOrCreateField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
+        public bool TryGetField<T>(ParticleFieldDescription<T> fieldDesc, out ParticleFieldAccessor<T> accessor) where T : struct
         {
             ParticleField field;
             if (!fields.TryGetValue(fieldDesc, out field))
             {
-                field = AddField(fieldDesc);
+                accessor = new ParticleFieldAccessor<T>(IntPtr.Zero, 0);
+                return false;
             }
 
-            return new ParticleFieldAccessor<T>(field);
+            accessor = new ParticleFieldAccessor<T>(field);
+            return true;
+        }
+
+        public bool FieldExists<T>(ParticleFieldDescription<T> fieldDesc, bool forceCreate = false) where T : struct
+        {
+            ParticleField field;
+            if (fields.TryGetValue(fieldDesc, out field))
+                return true;
+
+            if (!forceCreate)
+                return false;
+
+            if (fields.Count >= DefaultMaxFielsPerPool)
+                return false;
+
+            AddField(fieldDesc);
+            return true;
         }
         #endregion
 
@@ -267,7 +304,6 @@ namespace SiliconStudio.Xenko.Particles
 
         public struct Enumerator : IEnumerator<Particle>
         {
-            private IntPtr particlePtr;
             private int index;
 
             private readonly ParticlePool particlePool;
@@ -285,7 +321,6 @@ namespace SiliconStudio.Xenko.Particles
             {
                 this.particlePool = particlePool;
                 particleSize = particlePool.ParticleSize;
-                particlePtr = IntPtr.Zero;
                 indexFrom = 0;
                 indexTo = particlePool.ParticleCapacity - 1;
                 index = indexFrom - 1;
@@ -301,7 +336,6 @@ namespace SiliconStudio.Xenko.Particles
             {
                 this.particlePool = particlePool;
                 particleSize = particlePool.ParticleSize;
-                particlePtr = IntPtr.Zero;
                 indexFrom = Math.Max(0, Math.Min(idxFrom, idxTo));
                 indexTo = Math.Min(particlePool.ParticleCapacity - 1, Math.Max(idxFrom, idxTo));
                 index = indexFrom - 1;
@@ -316,7 +350,6 @@ namespace SiliconStudio.Xenko.Particles
             public void Reset()
             {
                 index = indexFrom - 1;
-                particlePtr = IntPtr.Zero;
             }
            
             /// <inheritdoc />
@@ -324,7 +357,6 @@ namespace SiliconStudio.Xenko.Particles
             {
                 ++index;
                 var hasNext = (index <= indexTo && index >= indexFrom);
-                particlePtr = (hasNext) ? particlePool.ParticleData + index * particleSize : IntPtr.Zero;
                 return hasNext;
             }
 
@@ -343,16 +375,10 @@ namespace SiliconStudio.Xenko.Particles
             }
 
             /// <inheritdoc />
-            object IEnumerator.Current
-            {
-                get { return new Particle(particlePtr); }
-            } 
+            object IEnumerator.Current => new Particle(index);
 
             /// <inheritdoc />
-            public Particle Current
-            {
-                get { return new Particle(particlePtr);}
-            }
+            public Particle Current => new Particle(index);
         }
         #endregion
 
