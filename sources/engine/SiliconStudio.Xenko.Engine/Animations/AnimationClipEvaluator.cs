@@ -83,11 +83,19 @@ namespace SiliconStudio.Xenko.Animations
                     // For now, objects are not supported, so treat everything as a blittable struct.
                     var channel = Channels.Items[index];
 
-                    // TODO: Support for objects
-                    var structureStart = (float*)(structures + channel.Offset);
+                    if (channel.BlendType == AnimationBlender.BlendType.Object)
+                    {
+                        // Non-blittable (note: 0.0f representation is 0 and that's what UpdateEngine checks against)
+                        result.Objects[channel.Offset].Condition = *(int*)&channel.Factor;
+                    }
+                    else
+                    {
+                        // Blittable
+                        var structureStart = (float*)(structures + channel.Offset);
 
-                    // Write a float specifying channel factor (1 if exists, 0 if doesn't exist)
-                    *structureStart = channel.Factor;
+                        // Write a float specifying channel factor (1 if exists, 0 if doesn't exist)
+                        *structureStart = channel.Factor;
+                    }
                 }
 
                 // Update values
@@ -123,6 +131,12 @@ namespace SiliconStudio.Xenko.Animations
 
             if (itemFound)
             {
+                var offset = channel.Offset;
+
+                // Object uses array indices, but blittable types are placed after a float that specify if it should be copied
+                if (channel.BlendType != AnimationBlender.BlendType.Object)
+                    offset += sizeof(float);
+
                 if (clipChannel.CurveIndex != -1)
                 {
                     curve = clip.Curves[clipChannel.CurveIndex];
@@ -136,23 +150,24 @@ namespace SiliconStudio.Xenko.Animations
                         curveEvaluatorGroups.Add(curveEvaluatorGroup);
                     }
 
-                    curveEvaluatorGroup.AddChannel(curve, channel.Offset + sizeof(float));
+                    curveEvaluatorGroup.AddChannel(curve, offset);
                 }
                 else
                 {
                     // TODO: Optimize this search?
                     var curveEvaluatorGroup = curveEvaluatorGroups.OfType<AnimationCurveEvaluatorOptimizedGroup>().First(x => x.ElementType == clipChannel.ElementType);
 
-                    curveEvaluatorGroup.SetChannelOffset(channel.PropertyName, channel.Offset + sizeof(float));
+                    curveEvaluatorGroup.SetChannelOffset(channel.PropertyName, offset);
                 }
             }
 
-            Channels.Add(new EvaluatorChannel { Offset = channel.Offset, Curve = curve, Factor = itemFound ? 1.0f : 0.0f });
+            Channels.Add(new EvaluatorChannel { Offset = channel.Offset, BlendType = channel.BlendType, Curve = curve, Factor = itemFound ? 1.0f : 0.0f });
         }
 
         internal struct EvaluatorChannel
         {
             public int Offset;
+            public AnimationBlender.BlendType BlendType;
             public AnimationCurve Curve;
             public float Factor;
         }

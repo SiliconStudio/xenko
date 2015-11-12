@@ -8,7 +8,7 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Animations
 {
     /// <summary>
-    /// Applies animation from a <see cref="AnimationClip"/> to a <see cref="SkeletonUpdater"/>.
+    /// Applies animation from a <see cref="AnimationClip"/> to a <see cref="Rendering.SkeletonUpdater"/>.
     /// </summary>
     public class AnimationUpdater
     {
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Animations
             // Copy results to node hierarchy
             fixed (byte* structures = result.Data)
             {
-                UpdateEngine.Run(entity, compiledUpdate, (IntPtr)structures, null);
+                UpdateEngine.Run(entity, compiledUpdate, (IntPtr)structures, result.Objects);
             }
         }
 

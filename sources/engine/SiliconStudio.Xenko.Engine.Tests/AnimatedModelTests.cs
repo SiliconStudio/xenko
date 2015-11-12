@@ -22,6 +22,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
     public class AnimatedModelTests : EngineTestBase
     {
         private Entity knight;
+        private AnimationClip megalodonClip;
+        private AnimationClip knightOptimizedClip;
         private TestCamera camera;
 
         public AnimatedModelTests()
@@ -34,13 +36,20 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             await base.LoadContent();
 
-            knight = new Entity { new ModelComponent { Model = Asset.Load<Model>("knight Model") } };
-            knight.Transform.RotationEulerXYZ = new Vector3(-MathUtil.Pi / 2, MathUtil.Pi / 4, 0);
-            knight.Transform.Position = new Vector3(0, -50f, 20f);
-            knight.Transform.Scale = new Vector3(60.0f);
+            var knightModel = Asset.Load<Model>("knight Model");
+            knight = new Entity { new ModelComponent { Model = knightModel } };
+            knight.Transform.Position = new Vector3(0, 0f, 0f);
             var animationComponent = knight.GetOrCreate<AnimationComponent>();
             animationComponent.Animations.Add("Run", Asset.Load<AnimationClip>("knight Run"));
             animationComponent.Animations.Add("Idle", Asset.Load<AnimationClip>("knight Idle"));
+
+            // We will test both non-optimized and optimized clips
+            megalodonClip = CreateModelChangeAnimation(new ProceduralModelDescriptor(new CubeProceduralModel { Size = Vector3.One, MaterialInstance = { Material = knightModel.Materials[0].Material } }).GenerateModel(Services));
+            knightOptimizedClip = CreateModelChangeAnimation(Asset.Load<Model>("knight Model"));
+            knightOptimizedClip.Optimize();
+
+            animationComponent.Animations.Add("ChangeModel1", megalodonClip);
+            animationComponent.Animations.Add("ChangeModel2", knightOptimizedClip);
 
             Scene.Entities.Add(knight);
 
@@ -51,8 +60,18 @@ namespace SiliconStudio.Xenko.Engine.Tests
             LightingKeys.EnableFixedAmbientLight(GraphicsDevice.Parameters, true);
             GraphicsDevice.Parameters.Set(EnvironmentLightKeys.GetParameterKey(LightSimpleAmbientKeys.AmbientLight, 0), (Color3)Color.White);
 
-            camera.Position = new Vector3(25, 45, 80);
+            camera.Position = new Vector3(6.0f, 2.5f, 1.5f);
             camera.SetTarget(knight, true);
+        }
+
+        private AnimationClip CreateModelChangeAnimation(Model model)
+        {
+            var changeMegalodonAnimClip = new AnimationClip();
+            var modelCurve = new AnimationCurve<object>();
+            modelCurve.KeyFrames.Add(new KeyFrameData<object>(CompressedTimeSpan.Zero, model));
+            changeMegalodonAnimClip.AddCurve("[ModelComponent.Key].Model", modelCurve);
+
+            return changeMegalodonAnimClip;
         }
 
         protected override void RegisterTests()
@@ -80,6 +99,19 @@ namespace SiliconStudio.Xenko.Engine.Tests
             {
                 // Blend with Idle (both weighted 1.0f)
                 var playingAnimation = knight.Get<AnimationComponent>().Blend("Idle", 1.0f, TimeSpan.Zero);
+                playingAnimation.Enabled = false;
+            }).TakeScreenshot();
+
+            FrameGameSystem.Draw(() =>
+            {
+                // Update the model itself
+                knight.Get<AnimationComponent>().Play("ChangeModel1");
+            }).TakeScreenshot();
+
+            FrameGameSystem.Draw(() =>
+            {
+                // Update the model itself (blend it at 2 vs 1 to force it to be active directly)
+                var playingAnimation = knight.Get<AnimationComponent>().Blend("ChangeModel2", 2.0f, TimeSpan.Zero);
                 playingAnimation.Enabled = false;
             }).TakeScreenshot();
         }
