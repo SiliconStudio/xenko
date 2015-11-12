@@ -27,8 +27,9 @@ using Matrix = SiliconStudio.Core.Mathematics.Matrix;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    public partial class InputManagerWinRT : InputManager
     {
+
         private const uint DesiredSensorUpdateIntervalMs = (uint)(1f/DesiredSensorUpdateRate*1000f);
 
         // mapping between WinRT keys and toolkit keys
@@ -41,7 +42,7 @@ namespace SiliconStudio.Xenko.Input
         // TODO: Support for MultiTouchEnabled on Windows Runtime
         public override bool MultiTouchEnabled { get { return true; } set { } }
 
-        static InputManager()
+        static InputManagerWinRT()
         {
             mapKeys = new Dictionary<VirtualKey, Keys>();
             // this dictionary was built from Desktop version (VirtualKey are compatible with WinForms keys)
@@ -224,7 +225,7 @@ namespace SiliconStudio.Xenko.Input
             AddKeys(WinFormsKeys.OemClear, Keys.OemClear);
         }
 
-        public InputManager(IServiceRegistry registry) : base(registry)
+        public InputManagerWinRT(IServiceRegistry registry) : base(registry)
         {
             HasKeyboard = true;
             HasPointer = true;

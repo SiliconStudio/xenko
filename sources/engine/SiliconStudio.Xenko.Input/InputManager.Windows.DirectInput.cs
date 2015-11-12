@@ -1,6 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_RUNTIME_CORECLR
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL2 && !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 
 using System;
 using System.Collections.Generic;
@@ -12,12 +12,12 @@ using SharpDX.DirectInput;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    public partial class InputManagerBase
     {
         /// <summary>
         /// Internal GamePad factory handling DirectInput gamepads.
         /// </summary>
-        private class DirectInputGamePadFactory : GamePadFactory
+        internal class DirectInputGamePadFactory : GamePadFactory
         {
             private readonly DirectInput directInput;
 
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         private class DirectInputGamePad : GamePad
         {
-            #region Constants and Fields
+#region Constants and Fields
 
             private readonly GamePadKey key;
 
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Input
 
             private JoystickState joystickState;
 
-            #endregion
+#endregion
 
             public DirectInputGamePad(DirectInput directInput, GamePadKey key) : base(key)
             {

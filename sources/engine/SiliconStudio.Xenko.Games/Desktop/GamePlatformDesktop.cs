@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -51,11 +51,14 @@ namespace SiliconStudio.Xenko.Games
         {
             return new GameWindow[]
                 {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && !SILICONSTUDIO_UI_SDL2
+#if !SILICONSTUDIO_UI_SDL2
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
                     new GameWindowOpenTK(),
-#else
+#endif
                     new GameWindowDesktop(),
 #endif
+                    // SDL is always available on Windows
+                    new GameWindowDesktopSDL(),
                 };
         }
     }

@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Games
         public GameWindowRenderer(IServiceRegistry registry, GameContext gameContext = null)
             : base(registry)
         {
-            GameContext = gameContext ?? new GameContext();
+            GameContext = gameContext ?? GameContextFactory.NewGameContext();
         }
 
         /// <summary>

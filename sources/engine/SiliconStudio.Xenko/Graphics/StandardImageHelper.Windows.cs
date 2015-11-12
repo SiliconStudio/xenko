@@ -5,9 +5,8 @@ using System;
 #if !SILICONSTUDIO_UI_SDL2
 using System.Drawing;
 using System.Drawing.Imaging;
-#else
-using SDL2;
 #endif
+using SDL2;
 using System.IO;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;

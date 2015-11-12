@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -55,11 +55,8 @@ namespace SiliconStudio.Xenko.Games
 #elif SILICONSTUDIO_PLATFORM_IOS
             return new GamePlatformiOS(game);
 #else
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && !SILICONSTUDIO_UI_SDL2
-            return new GamePlatformOpenTK(game);
-#else
+            // Here we cover all Desktop variants: OpenTK, SDL, Winforms,...
             return new GamePlatformDesktop(game);
-#endif
 #endif
         }
 
@@ -93,7 +90,7 @@ namespace SiliconStudio.Xenko.Games
 
         public virtual GameWindow CreateWindow(GameContext gameContext)
         {
-            gameContext = gameContext ?? new GameContext();
+            gameContext = gameContext ?? GameContextFactory.NewGameContext();
 
             var windows = GetSupportedGameWindows();
 
@@ -117,7 +114,6 @@ namespace SiliconStudio.Xenko.Games
             gameWindow = CreateWindow(gameContext);
 
             // Register on Activated 
-            gameWindow.GameContext = gameContext;
             gameWindow.Activated += OnActivated;
             gameWindow.Deactivated += OnDeactivated;
             gameWindow.InitCallback = OnInitCallback;
@@ -387,5 +383,14 @@ namespace SiliconStudio.Xenko.Games
             Resume = null;
             Suspend = null;
         }
+    }
+
+    internal abstract class GamePlatform<TK> : GamePlatform
+    {
+
+        protected GamePlatform(GameBase game) : base(game)
+        {
+        }
+
     }
 }

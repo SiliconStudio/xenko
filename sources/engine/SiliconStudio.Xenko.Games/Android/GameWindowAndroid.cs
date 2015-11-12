@@ -17,9 +17,9 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowAndroid : GameWindow
+    internal class GameWindowAndroid : GameWindow<AndroidGameView>
     {
-        private AndroidXenkoGameView xenkoGameForm;
+        private AndroidGameView xenkoGameForm;
         private WindowHandle nativeWindow;
         
         public override WindowHandle NativeWindow
@@ -50,11 +50,9 @@ namespace SiliconStudio.Xenko.Games
             return gameContext.ContextType == AppContextType.Android;
         }
 
-        internal override void Initialize(GameContext gameContext)
+        protected override void Initialize(GameContext<AndroidGameView> gameContext)
         {
-            GameContext = gameContext;
-
-            xenkoGameForm = (AndroidXenkoGameView)gameContext.Control;
+            xenkoGameForm = gameContext.Control;
             nativeWindow = new WindowHandle(AppContextType.Android, xenkoGameForm);
 
             xenkoGameForm.Load += gameForm_Resume;

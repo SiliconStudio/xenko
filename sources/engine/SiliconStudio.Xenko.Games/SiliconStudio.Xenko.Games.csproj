@@ -47,14 +47,17 @@
     <Compile Include="Android\GamePlatformAndroid.cs" />
     <Compile Include="Android\GameWindowAndroid.cs" />
     <Compile Include="AssemblyDoc.cs" />
-    <Compile Include="Desktop\GameForm.cs" />
+	<Compile Include="Desktop\GameForm.cs"/>
     <Compile Include="Desktop\WindowsMessageLoop.cs" />
     <Compile Include="Desktop\Win32Native.cs" />
     <Compile Include="GameContext.Android.cs" />
     <Compile Include="GameContext.OpenTK.cs" />
+    <Compile Include="GameContext.SDL.cs" />
     <Compile Include="GameContext.iOS.cs" />
     <Compile Include="Desktop\GamePlatformDesktop.cs" />
     <Compile Include="Desktop\GameWindowDesktop.cs" />
+    <Compile Include="GameContext.Windows.cs" />
+    <Compile Include="GameContextFactory.cs" />
     <Compile Include="SDL\GameForm.SDL.cs" />
     <Compile Include="GameProfilingKeys.cs" />
     <Compile Include="GameSystemState.cs" />
@@ -70,7 +73,6 @@
     <Compile Include="GameContext.cs" />
     <Compile Include="GameContext.Desktop.cs" />
     <Compile Include="GameContext.WindowsRuntime.cs" />
-    <Compile Include="GameContext.WindowsRuntime.SwapChainPanel.cs" />
     <Compile Include="GameGraphicsParameters.cs" />
     <Compile Include="GamePlatform.cs" />
     <Compile Include="GameState.cs" />
@@ -91,6 +93,8 @@
     <Compile Include="IUpdateable.cs" />
     <Compile Include="LaunchParameters.cs" />
     <Compile Include="NamespaceDoc.cs" />
+    <Compile Include="SDL\GameWindowDestopSDL.cs" />
+    <Compile Include="SDL\WindowsMessageLoopSDL.cs" />
     <Compile Include="XenkoGameController.iOS.cs" />
     <Compile Include="PreparingDeviceSettingsEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -139,7 +143,6 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Desktop\Win32Native.DirectX.cs" />
     <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'" />
   </ItemGroup>
   <Choose>

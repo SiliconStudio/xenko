@@ -22,34 +22,28 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL2
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Diagnostics;
-using SiliconStudio.Core.Mathematics;
+using SDL2;
 using SiliconStudio.Xenko.Graphics;
-using System.Drawing;
-using System.Windows.Forms;
-using System.Threading;
-using Point = System.Drawing.Point;
-using Form = System.Windows.Forms.Form;
-using Size = System.Drawing.Size;
+using SiliconStudio.Xenko.Graphics.SDL;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowDesktop : GameWindow<Control>
+    internal class GameWindowDesktopSDL : GameWindow<Window>
     {
         private bool isMouseVisible;
 
         private bool isMouseCurrentlyHidden;
 
-        public Control Control;
+        private Window window;
 
         private WindowHandle windowHandle;
 
-        private Form form;
 
         private bool isFullScreenMaximized;
         private FormBorderStyle savedFormBorderStyle;
@@ -60,7 +54,7 @@ namespace SiliconStudio.Xenko.Games
         private bool allowUserResizing;
         private bool isBorderLess;
 
-        internal GameWindowDesktop()
+        internal GameWindowDesktopSDL()
         {
         }
 
@@ -74,9 +68,9 @@ namespace SiliconStudio.Xenko.Games
 
         public override void BeginScreenDeviceChange(bool willBeFullScreen)
         {
-            if (willBeFullScreen && !isFullScreenMaximized && form != null)
+            if (willBeFullScreen && !isFullScreenMaximized && window != null)
             {
-                savedFormBorderStyle = form.FormBorderStyle;
+                savedFormBorderStyle = window.FormBorderStyle;
             }
 
             if (willBeFullScreen != isFullScreenMaximized)
@@ -85,9 +79,9 @@ namespace SiliconStudio.Xenko.Games
                 oldVisible = Visible;
                 Visible = false;
 
-                if (form != null)
+                if (window != null)
                 {
-                    form.SendToBack();
+                    window.SendToBack();
                 }
             }
             else
@@ -95,10 +89,10 @@ namespace SiliconStudio.Xenko.Games
                 deviceChangeChangedVisible = false;
             }
 
-            if (!willBeFullScreen && isFullScreenMaximized && form != null)
+            if (!willBeFullScreen && isFullScreenMaximized && window != null)
             {
-                form.TopMost = false;
-                form.FormBorderStyle = savedFormBorderStyle;
+                window.TopMost = false;
+                window.FormBorderStyle = savedFormBorderStyle;
             }
 
             deviceChangeWillBeFullScreen = willBeFullScreen;
@@ -115,9 +109,9 @@ namespace SiliconStudio.Xenko.Games
             }
             else if (isFullScreenMaximized)
             {
-                if (form != null)
+                if (window != null)
                 {
-                    form.BringToFront();
+                    window.BringToFront();
                 }
                 isFullScreenMaximized = false;
             }
@@ -127,13 +121,13 @@ namespace SiliconStudio.Xenko.Games
             if (deviceChangeChangedVisible)
                 Visible = oldVisible;
 
-            if (form != null)
+            if (window != null)
             {
-                form.ClientSize = new Size(clientWidth, clientHeight);
+                window.ClientSize = new Size(clientWidth, clientHeight);
             }
 
             // Notifies the GameForm about the fullscreen state
-            var gameForm = form as GameForm;
+            var gameForm = window as GameFormSdl;
             if (gameForm != null)
             {
                 gameForm.IsFullScreen = isFullScreenMaximized;
@@ -149,36 +143,32 @@ namespace SiliconStudio.Xenko.Games
 
         internal override bool CanHandle(GameContext gameContext)
         {
-            return gameContext.ContextType == AppContextType.Desktop;
+            return (gameContext.ContextType == AppContextType.DesktopSDL) || (gameContext.ContextType == AppContextType.Desktop);
         }
 
-        protected override void Initialize(GameContext<Control> gameContext)
+        protected override void Initialize(GameContext<Window> gameContext)
         {
-            var desktopContext = (GameContextWinforms)gameContext;
-            Control = desktopContext.Control;
-
             // Setup the initial size of the window
             var width = gameContext.RequestedWidth;
             if (width == 0)
             {
-                width = Control is Form ? GraphicsDeviceManager.DefaultBackBufferWidth : Control.ClientSize.Width;
+                width = window.ClientSize.Width;
             }
 
             var height = gameContext.RequestedHeight;
             if (height == 0)
             {
-                height = Control is Form ? GraphicsDeviceManager.DefaultBackBufferHeight : Control.ClientSize.Height;
+                height = window.ClientSize.Height;
             }
 
-            windowHandle = new WindowHandle(AppContextType.Desktop, Control);
+            windowHandle = new WindowHandle(AppContextType.Desktop, window);
 
-            Control.ClientSize = new Size(width, height);
+            window.ClientSize = new Size(width, height);
 
-            Control.MouseEnter += GameWindowForm_MouseEnter;
-            Control.MouseLeave += GameWindowForm_MouseLeave;
+            window.MouseEnterActions +=WindowOnMouseEnterActions;   
+            window.MouseLeaveActions += WindowOnMouseLeaveActions;
 
-            form = Control as Form;
-            var gameForm = Control as GameForm;
+            var gameForm = window as GameFormSdl;
             if (gameForm != null)
             {
                 //gameForm.AppActivated += OnActivated;
@@ -187,7 +177,7 @@ namespace SiliconStudio.Xenko.Games
             }
             else
             {
-                Control.Resize += OnClientSizeChanged;
+                window.ResizeEndActions += WindowOnResizeEndActions;
             }
         }
 
@@ -199,41 +189,31 @@ namespace SiliconStudio.Xenko.Games
             // Initialize the init callback
             InitCallback();
 
-            Debug.Assert(GameContext is GameContextWinforms, "There is only one possible descendant of GameContext<Control>.");
-            var context = (GameContextWinforms) GameContext;
-            if (context.IsUserManagingRun)
+            var runCallback = new WindowsMessageLoopSDL.RenderCallback(RunCallback);
+            // Run the rendering loop
+            try
             {
-                context.RunCallback = RunCallback;
-                context.ExitCallback = ExitCallback;
-            }
-            else
-            {
-                var runCallback = new WindowsMessageLoop.RenderCallback(RunCallback);
-                // Run the rendering loop
-                try
+                WindowsMessageLoopSDL.Run(window, () =>
                 {
-                    WindowsMessageLoop.Run(Control, () =>
+                    if (Exiting)
                     {
-                        if (Exiting)
-                        {
-                            Destroy();
-                            return;
-                        }
-
-                        runCallback();
-                    });
-                }
-                finally
-                {
-                    if (ExitCallback != null)
-                    {
-                        ExitCallback();
+                        Destroy();
+                        return;
                     }
+
+                    runCallback();
+                });
+            }
+            finally
+            {
+                if (ExitCallback != null)
+                {
+                    ExitCallback();
                 }
             }
         }
 
-        private void GameWindowForm_MouseEnter(object sender, System.EventArgs e)
+        private void WindowOnMouseEnterActions(SDL.SDL_WindowEvent sdlWindowEvent)
         {
             if (!isMouseVisible && !isMouseCurrentlyHidden)
             {
@@ -242,13 +222,18 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        private void GameWindowForm_MouseLeave(object sender, System.EventArgs e)
+        private void WindowOnMouseLeaveActions(SDL.SDL_WindowEvent sdlWindowEvent)
         {
             if (isMouseCurrentlyHidden)
             {
                 Cursor.Show();
                 isMouseCurrentlyHidden = false;
             }
+        }
+
+        private void WindowOnResizeEndActions(SDL.SDL_WindowEvent sdlWindowEvent)
+        {
+            OnClientSizeChanged(window, EventArgs.Empty);
         }
 
         public override bool IsMouseVisible
@@ -287,27 +272,27 @@ namespace SiliconStudio.Xenko.Games
         {
             get
             {
-                return Control.Visible;
+                return window.Visible;
             }
             set
             {
-                Control.Visible = value;
+                window.Visible = value;
             }
         }
 
-        public override Int2 Position
+        public override Core.Mathematics.Int2 Position
         {
             get
             {
-                if (Control == null)
+                if (window == null)
                     return base.Position;
 
-                return new Int2(Control.Location.X, Control.Location.Y);
+                return new Core.Mathematics.Int2(window.Location.X, window.Location.Y);
             }
             set
             {
-                if (Control != null)
-                    Control.Location = new Point(value.X, value.Y);
+                if (window != null)
+                    window.Location = new Point(value.X, value.Y);
 
                 base.Position = value;
             }
@@ -315,15 +300,15 @@ namespace SiliconStudio.Xenko.Games
 
         protected override void SetTitle(string title)
         {
-            if (form != null)
+            if (window != null)
             {
-                form.Text = title;
+                window.Text = title;
             }
         }
 
         internal override void Resize(int width, int height)
         {
-            Control.ClientSize = new Size(width, height);
+            window.ClientSize = new Size(width, height);
         }
 
         public override bool AllowUserResizing
@@ -334,7 +319,7 @@ namespace SiliconStudio.Xenko.Games
             }
             set
             {
-                if (form != null)
+                if (window != null)
                 {
                     allowUserResizing = value;
                     UpdateFormBorder();
@@ -360,15 +345,15 @@ namespace SiliconStudio.Xenko.Games
 
         private void UpdateFormBorder()
         {
-            if (form != null)
+            if (window != null)
             {
-                form.MaximizeBox = allowUserResizing;
-                form.FormBorderStyle = isFullScreenMaximized || isBorderLess ? FormBorderStyle.None : allowUserResizing ? FormBorderStyle.Sizable : FormBorderStyle.FixedSingle;
+                window.MaximizeBox = allowUserResizing;
+                window.FormBorderStyle = isFullScreenMaximized || isBorderLess ? FormBorderStyle.None : allowUserResizing ? FormBorderStyle.Sizable : FormBorderStyle.FixedSingle;
 
                 if (isFullScreenMaximized)
                 {
-                    form.TopMost = true;
-                    form.BringToFront();
+                    window.TopMost = true;
+                    window.BringToFront();
                 }
             }
         }
@@ -378,7 +363,7 @@ namespace SiliconStudio.Xenko.Games
             get
             {
                 // Ensure width and height are at least 1 to avoid divisions by 0
-                return new SiliconStudio.Core.Mathematics.Rectangle(0, 0, Math.Max(Control.ClientSize.Width, 1), Math.Max(Control.ClientSize.Height, 1));
+                return new SiliconStudio.Core.Mathematics.Rectangle(0, 0, Math.Max(window.ClientSize.Width, 1), Math.Max(window.ClientSize.Height, 1));
             }
         }
 
@@ -394,21 +379,21 @@ namespace SiliconStudio.Xenko.Games
         {
             get
             {
-                if (form != null)
+                if (window != null)
                 {
-                    return form.WindowState == FormWindowState.Minimized;
+                    return window.WindowState == FormWindowState.Minimized;
                 }
-                // Check for non-form control
+                // Check for non-window control
                 return false;
             }
         }
 
         protected override void Destroy()
         {
-            if (Control != null)
+            if (window != null)
             {
-                Control.Dispose();
-                Control = null;
+                window.Dispose();
+                window = null;
             }
 
             base.Destroy();

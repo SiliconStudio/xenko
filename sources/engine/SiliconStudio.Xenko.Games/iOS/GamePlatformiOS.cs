@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Games
 {
-    internal class GamePlatformiOS : GamePlatform, IGraphicsDeviceFactory
+    internal class GamePlatformiOS : GamePlatform<UIWindow>, IGraphicsDeviceFactory
     {
         public GamePlatformiOS(GameBase game) : base(game)
         {

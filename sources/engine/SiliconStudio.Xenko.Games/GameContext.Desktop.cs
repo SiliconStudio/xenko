@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -20,65 +20,30 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (!SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL || SILICONSTUDIO_UI_SDL2)
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL2
 using System;
-#if !SILICONSTUDIO_UI_SDL2
 using System.Windows.Forms;
-#else
-using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
-using Form = SiliconStudio.Xenko.Graphics.SDL.Window;
-#endif
-using SiliconStudio.Xenko.Games.Resources;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
     /// </summary>
-    public partial class GameContext 
+    public class GameContextWinforms : GameContextWindows<Control>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameContext" /> class with a default <see cref="GameForm"/>.
-        /// </summary>
-        public GameContext() : this((Control)null)
+        /// <inheritDoc/>
+        /// <param name="isUserManagingRun">Is user managing event processing of <paramref name="control"/>?</param>
+        public GameContextWinforms(Control control, int requestedWidth = 0, int requestedHeight = 0, bool isUserManagingRun = false)
+            : base(control ?? CreateForm(), requestedWidth, requestedHeight)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameContext" /> class.
-        /// </summary>
-        /// <param name="control">The control.</param>
-        /// <param name="isUserManagingRun">if set to <c>true</c>, the user will have to manage the rendering loop by calling <see cref="Run"/>.</param>
-        public GameContext(Control control, bool isUserManagingRun)
-        {
-            Control = control ?? CreateForm();
+            ContextType = AppContextType.Desktop;
             IsUserManagingRun = isUserManagingRun;
-            ContextType = AppContextType.Desktop;
         }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameContext" /> class.
-        /// </summary>
-        /// <param name="control">The control.</param>
-        /// <param name="requestedWidth">Width of the requested.</param>
-        /// <param name="requestedHeight">Height of the requested.</param>
-        public GameContext(Control control, int requestedWidth = 0, int requestedHeight = 0)
-        {
-            Control = control ?? CreateForm();
-            RequestedWidth = requestedWidth;
-            RequestedHeight = requestedHeight;
-            ContextType = AppContextType.Desktop;
-        }
-
-        /// <summary>
-        /// The control used as a GameWindow context (either an instance of <see cref="System.Windows.Forms.Control"/> or <see cref="System.Windows.Controls.Control"/>.
-        /// </summary>
-        public readonly object Control;
 
         /// <summary>
         /// The is running delegate
         /// </summary>
-        public readonly bool IsUserManagingRun;
+        public bool IsUserManagingRun { get; protected set; }
 
         /// <summary>
         /// Gets the run loop to be called when <see cref="IsUserManagingRun"/> is true.
@@ -92,19 +57,14 @@ namespace SiliconStudio.Xenko.Games
         /// <value>The run loop.</value>
         public Action ExitCallback { get; internal set; }
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Control"/> to <see cref="GameContext"/>.
-        /// </summary>
-        /// <param name="control">The control.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator GameContext(Control control)
-        {
-            return new GameContext(control);
-        }
-
         private static Form CreateForm()
         {
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             return new GameForm();
+#else
+            // Not Reachable.
+            return null;
+#endif
         }
     }
 }

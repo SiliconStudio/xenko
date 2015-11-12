@@ -14,16 +14,15 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    public class InputManageriOS: InputManager<UIWindow>
     {
-        private UIWindow window;
         private iPhoneOSGameView view;
         private CMMotionManager motionManager;
         private CLLocationManager locationManager;
         private bool locationManagerActivated;
         private float firstNorthValue = float.NegativeInfinity;
 
-        public InputManager(IServiceRegistry registry) : base(registry)
+        public InputManageriOS(IServiceRegistry registry) : base(registry)
         {
             HasKeyboard = true;
             HasMouse = false;
@@ -35,12 +34,12 @@ namespace SiliconStudio.Xenko.Input
             base.Initialize();
 
             view = Game.Context.GameView;
-            window = Game.Context.MainWindow;
+            Control = Game.Context.MainWindow;
 
             var gameController = Game.Context.GameViewController;
 
-            window.UserInteractionEnabled = true;
-            window.MultipleTouchEnabled = true;
+            Control.UserInteractionEnabled = true;
+            Control.MultipleTouchEnabled = true;
             gameController.TouchesBeganDelegate += (touchesSet, _) => HandleTouches(touchesSet);
             gameController.TouchesMovedDelegate += (touchesSet, _) => HandleTouches(touchesSet);
             gameController.TouchesEndedDelegate += (touchesSet, _) => HandleTouches(touchesSet);

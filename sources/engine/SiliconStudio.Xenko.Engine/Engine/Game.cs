@@ -167,7 +167,7 @@ namespace SiliconStudio.Xenko.Engine
                 GlobalLogger.GlobalMessageLogged += logListener;
 
             // Create and register all core services
-            Input = new InputManager(Services);
+            Input = InputManagerFactory.NewInputManager(Services, GameContextFactory.NewGameContext());
             Script = new ScriptSystem(Services);
             SceneSystem = new SceneSystem(Services);
             Audio = new AudioSystem(Services);

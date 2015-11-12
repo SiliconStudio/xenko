@@ -20,14 +20,13 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL2
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Globalization;
-using System.Windows.Forms;
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-using SharpDX.Win32;
-#endif
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.SDL;
 using System.Runtime.InteropServices;
+using SDL2;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -36,7 +35,7 @@ namespace SiliconStudio.Xenko.Games
     /// RenderLoop provides a rendering loop infrastructure. See remarks for usage. 
     /// </summary>
     /// <remarks>
-    /// Use static <see cref="Run(System.Windows.Forms.Control,SharpDX.Windows.RenderLoop.RenderCallback)"/>  
+    /// Use static <see cref="Run(System.Windows.Forms.Control,WindowsMessageLoop.RenderCallback)"/>  
     /// method to directly use a renderloop with a render callback or use your own loop:
     /// <code>
     /// control.Show();
@@ -50,22 +49,22 @@ namespace SiliconStudio.Xenko.Games
     /// </code>
     /// Note that the main control can be changed at anytime inside the loop.
     /// </remarks>
-    internal class WindowsMessageLoop : IDisposable
+    internal class WindowsMessageLoopSDL : IDisposable
     {
         private IntPtr controlHandle;
-        private Control control;
+        private Window control;
         private bool isControlAlive;
         private bool switchControl;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsMessageLoop"/> class.
         /// </summary>
-        public WindowsMessageLoop() {}
+        public WindowsMessageLoopSDL() {}
 
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsMessageLoop"/> class.
         /// </summary>
-        public WindowsMessageLoop(Control control)
+        public WindowsMessageLoopSDL(Window control)
         {
             Control = control;
         }
@@ -75,7 +74,7 @@ namespace SiliconStudio.Xenko.Games
         /// </summary>
         /// <value>The control.</value>
         /// <exception cref="System.InvalidOperationException">Control is already disposed</exception>
-        public Control Control
+        public Window Control
         {
             get
             {
@@ -136,49 +135,10 @@ namespace SiliconStudio.Xenko.Games
 
             if(isControlAlive)
             {
-                if(UseApplicationDoEvents)
+                SDL.SDL_Event e;
+                while (SDL.SDL_PollEvent(out e) != 0)
                 {
-                    // Revert back to Application.DoEvents in order to support Application.AddMessageFilter
-                    // Seems that DoEvents is compatible with Mono unlike Application.Run that was not running
-                    // correctly.
-                    Application.DoEvents();
-                }
-                else
-                {
-                    var localHandle = controlHandle;
-                    if (localHandle != IntPtr.Zero)
-                    {
-                        // Previous code not compatible with Application.AddMessageFilter but faster then DoEvents
-                        Win32Native.NativeMessage msg;
-                        while (Win32Native.PeekMessage(out msg, IntPtr.Zero, 0, 0, 0) != 0)
-                        {
-                            if (Win32Native.GetMessage(out msg, IntPtr.Zero, 0, 0) == -1)
-                            {
-                                throw new InvalidOperationException(String.Format(CultureInfo.InvariantCulture,
-                                    "An error happened in rendering loop while processing windows messages. Error: {0}",
-                                    Marshal.GetLastWin32Error()));
-                            }
-
-                            // NCDESTROY event?
-                            if (msg.msg == 130)
-                            {
-                                isControlAlive = false;
-                            }
-
-                            var message = new Message() { HWnd = msg.handle, LParam = msg.lParam, Msg = (int)msg.msg, WParam = msg.wParam };
-
-                            // Skip special message
-                            //if (gameForm != null && message.HWnd == gameForm.Handle && gameForm.FilterWindowsKeys(ref message))
-                            //{
-                            //    continue;
-                            //}
-                            if (!Application.FilterMessage(ref message))
-                            {
-                                Win32Native.TranslateMessage(ref msg);
-                                Win32Native.DispatchMessage(ref msg);
-                            }
-                        }
-                    }
+                    Application.ProcessEvent(e);
                 }
             }
 
@@ -204,14 +164,6 @@ namespace SiliconStudio.Xenko.Games
         public delegate void RenderCallback();
 
         /// <summary>
-        /// Runs the specified main loop in the specified context.
-        /// </summary>
-        public static void Run(ApplicationContext context, RenderCallback renderCallback)
-        {
-            Run(context.MainForm, renderCallback);
-        }
-
-        /// <summary>
         /// Runs the specified main loop for the specified windows form.
         /// </summary>
         /// <param name="form">The form.</param>
@@ -220,13 +172,13 @@ namespace SiliconStudio.Xenko.Games
         /// <exception cref="System.ArgumentNullException">form
         /// or
         /// renderCallback</exception>
-        public static void Run(Control form, RenderCallback renderCallback, bool useApplicationDoEvents = false)
+        public static void Run(Window form, RenderCallback renderCallback, bool useApplicationDoEvents = false)
         {
             if(form == null) throw new ArgumentNullException("form");
             if(renderCallback == null) throw new ArgumentNullException("renderCallback");
 
             form.Show();
-            using (var renderLoop = new WindowsMessageLoop(form) { UseApplicationDoEvents = useApplicationDoEvents })
+            using (var renderLoop = new WindowsMessageLoopSDL(form) { UseApplicationDoEvents = useApplicationDoEvents })
             {
                 while(renderLoop.NextFrame())
                 {
@@ -234,6 +186,7 @@ namespace SiliconStudio.Xenko.Games
                 }
             }
         }
+
    }
 }
 #endif

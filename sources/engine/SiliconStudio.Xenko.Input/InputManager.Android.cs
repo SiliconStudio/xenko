@@ -13,11 +13,10 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    public partial class InputManagerAndroid : InputManager<AndroidGameView>
     {
         private const int SensorDesiredUpdateDelay = (int)(1 / DesiredSensorUpdateRate * 1000f);
 
-        private AndroidGameView gameView;
         private SensorManager sensorManager;
         private Sensor androidAccelerometer;
         private Sensor androidGyroscope;
@@ -34,7 +33,7 @@ namespace SiliconStudio.Xenko.Input
         private readonly float[] rotationMatrixArray = new float[9];
         private bool androidRotationVectorEnabled;
 
-        public InputManager(IServiceRegistry registry) : base(registry)
+        public InputManagerAndroid(IServiceRegistry registry) : base(registry)
         {
             HasKeyboard = true;
             HasMouse = false;
@@ -46,10 +45,10 @@ namespace SiliconStudio.Xenko.Input
             base.Initialize();
 
             var viewListener = new ViewListener(this);
-            gameView = Game.Context.Control;
-            gameView.SetOnTouchListener(viewListener);
-            gameView.SetOnKeyListener(viewListener);
-            gameView.Resize += GameViewOnResize;
+            Control = Game.Context.Control;
+            Control.SetOnTouchListener(viewListener);
+            Control.SetOnKeyListener(viewListener);
+            Control.Resize += GameViewOnResize;
 
             GameViewOnResize(null, EventArgs.Empty);
 
@@ -248,8 +247,8 @@ namespace SiliconStudio.Xenko.Input
 
         private void GameViewOnResize(object sender, EventArgs eventArgs)
         {
-            ControlWidth = gameView.Size.Width;
-            ControlHeight = gameView.Size.Height;
+            ControlWidth = Control.Size.Width;
+            ControlHeight = Control.Size.Height;
         }
 
         private bool OnTouch(MotionEvent e)
