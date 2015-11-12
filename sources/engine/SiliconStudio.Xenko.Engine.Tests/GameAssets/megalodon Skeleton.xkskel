@@ -1,9 +1,0 @@
-!Skeleton
-Id: ec4232eb-fbb1-4509-af23-799ef0e4e463
-Tags: []
-Source: ../../../data/tests/megalodon/megalodon.FBX
-SourceHash: c46fb7e8913041451a102b3eca8f90df
-ScaleImport: 0.0
-Nodes:
-    - {Name: RootNode, Depth: 0}
-    - {Name: Shark_01SG1, Depth: 1}

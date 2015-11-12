@@ -1,6 +1,6 @@
 !Texture
 Id: a60c5fe7-6934-455f-bf6a-bd7abe1453d1
-SerializedVersion: 1
+SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Source: ../../../data/tests/uv.dds
 ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
@@ -10,7 +10,8 @@ Format: Color32Bits
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 1
+        SerializedVersion: {Xenko: 1.4.0-beta}
         Tags: []
+        Source: 
         ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
         ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

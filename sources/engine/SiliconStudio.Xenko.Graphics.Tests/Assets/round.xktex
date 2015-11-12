@@ -1,6 +1,6 @@
 !Texture
 Id: 8b1bd7d0-3dfa-4b62-89c7-2d9751f4f086
-SerializedVersion: 1
+SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Source: ../../../data/tests/round.bmp
 ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
@@ -9,7 +9,7 @@ ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 1
+        SerializedVersion: {Xenko: 1.4.0-beta}
         Tags: []
         Source: 
         ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

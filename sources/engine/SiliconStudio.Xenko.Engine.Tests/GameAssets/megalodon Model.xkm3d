@@ -9,7 +9,7 @@ Materials:
     -   Name: 01-Default
         MaterialInstance:
             Material: 39f244ad-8360-48db-8074-d0d3cade8289:01-Default
-Skeleton: ec4232eb-fbb1-4509-af23-799ef0e4e463:megalodon Skeleton
+Skeleton: null
 ~Base:
     Location: --import--
     Asset: !Model

@@ -1,6 +1,6 @@
 !Model
 Id: 66dbdb13-bb8f-448a-86f9-a787fe3e0c3b
-SerializedVersion: 2
+SerializedVersion: {Xenko: 1.5.0-alpha02}
 Tags: []
 Source: ../../../data/tests/cube/cube.fbx
 SourceHash: 2471e6b1be7106f3e68cf790e9306164
@@ -8,20 +8,17 @@ Materials:
     -   Name: lambert1
         MaterialInstance:
             Material: f177cf39-affc-4ed8-92ed-896dba446453:lambert1
-Nodes:
-    - {Name: RootNode, Depth: 0, Preserve: false}
-    - {Name: pCube1, Depth: 1, Preserve: false}
+Skeleton: null
 ~Base:
     Location: --import--
     Asset: !Model
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 2
+        SerializedVersion: {Xenko: 1.5.0-alpha02}
         Tags: []
+        Source: 
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Materials:
             -   Name: lambert1
                 MaterialInstance:
                     Material: f177cf39-affc-4ed8-92ed-896dba446453:lambert1
-        Nodes:
-            - {Name: RootNode, Depth: 0, Preserve: false}
-            - {Name: pCube1, Depth: 1, Preserve: false}
+        Skeleton: null

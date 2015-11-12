@@ -1,6 +1,6 @@
 !Texture
 Id: 0f6f5a81-cd3c-4935-9dcb-127adfd7c35c
-SerializedVersion: 1
+SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Source: ../../../data/tests/ImageButtonPressed.dds
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
@@ -8,7 +8,7 @@ ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 1
+        SerializedVersion: {Xenko: 1.4.0-beta}
         Tags: []
         Source: 
         ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
