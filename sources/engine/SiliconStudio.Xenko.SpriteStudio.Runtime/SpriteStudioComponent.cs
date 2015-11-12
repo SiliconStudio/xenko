@@ -8,6 +8,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.SpriteStudio.Runtime;
+using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -28,7 +29,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(1)]
         public SpriteStudioSheet Sheet { get; set; }
 
-        [DataMemberIgnore]
+        [DataMemberIgnore, DataMemberUpdatable]
         public List<SpriteStudioNodeState> Nodes { get; } = new List<SpriteStudioNodeState>();
 
         [DataMemberIgnore]
