@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
         /// </summary>
         private static void TestPool(ParticlePool.ListPolicy listPolicy, ParticlePool.FieldsPolicy fieldsPolicy)
         {
-            const int particleCount = 100000;
+            const int particleCount = 10000;
             var particlePool = new ParticlePool(0, particleCount, fieldsPolicy, listPolicy);
 
             const bool forceCreation = true;
