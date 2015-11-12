@@ -522,8 +522,8 @@ namespace SiliconStudio.Assets.Tests
 
             assets[1].Base = new AssetBase(assets[0]);
             assets[2].Base = new AssetBase(assets[1]);
-            assets[3].CompositionBases.Add(CreateAssetReference(assetItems[1]));
-            assets[1].CompositionBases.Add(CreateAssetReference(assetItems[4]));
+            assets[3].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
+            assets[1].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[4].Location, assetItems[4].Asset) };
             assets[5].Reference = CreateAssetReference(assetItems[1]);
             assets[1].Reference = CreateAssetReference(assetItems[6]);
 
@@ -536,12 +536,12 @@ namespace SiliconStudio.Assets.Tests
 
                 Assert.AreEqual(3, dependencies.LinksIn.Count());
                 Assert.AreEqual(ContentLinkType.Inheritance | ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[2]).Type);
-                Assert.AreEqual(ContentLinkType.CompositionInheritance | ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[3]).Type);
+                Assert.AreEqual(ContentLinkType.CompositionInheritance, dependencies.GetLinkIn(assetItems[3]).Type);
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[5]).Type);
 
                 Assert.AreEqual(3, dependencies.LinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Inheritance | ContentLinkType.Reference, dependencies.GetLinkOut(assetItems[0]).Type);
-                Assert.AreEqual(ContentLinkType.CompositionInheritance | ContentLinkType.Reference, dependencies.GetLinkOut(assetItems[4]).Type);
+                Assert.AreEqual(ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[4]).Type);
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkOut(assetItems[6]).Type);
                 
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
@@ -560,7 +560,7 @@ namespace SiliconStudio.Assets.Tests
 
                 Assert.AreEqual(3, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Inheritance | ContentLinkType.Reference, dependencies.GetBrokenLinkOut(assetItems[0].Id).Type);
-                Assert.AreEqual(ContentLinkType.CompositionInheritance | ContentLinkType.Reference, dependencies.GetBrokenLinkOut(assetItems[4].Id).Type);
+                Assert.AreEqual(ContentLinkType.CompositionInheritance, dependencies.GetBrokenLinkOut(assetItems[4].Id).Type);
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetBrokenLinkOut(assetItems[6].Id).Type);
             }
         }
@@ -640,8 +640,8 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(0, dependencies.BrokenLinksOut.Count());
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkOut(assetItems[0]).Type);
-                
-                assets[1].CompositionBases.Add(CreateAssetReference(assetItems[0]));
+
+                assets[1].BaseParts = new List<AssetBase> { new AssetBase(assetItems[0].Location, assetItems[0].Asset) };
                 assetItems[1].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -650,7 +650,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetLinkOut(assetItems[0]).Type);
                 
-                assets[2].CompositionBases.Add(CreateAssetReference(assetItems[1]));
+                assets[2].BaseParts = new List<AssetBase> { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
                 assetItems[2].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -707,7 +707,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[2].CompositionBases.Clear();
+                assets[2].BaseParts = null;
                 assetItems[2].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -716,7 +716,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.CompositionInheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[1].CompositionBases.Clear();
+                assets[1].BaseParts = null;
                 assetItems[1].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -789,9 +789,9 @@ namespace SiliconStudio.Assets.Tests
             assets[8].Base = new AssetBase(assets[1]);
             assets[1].Reference = CreateAssetReference(assetItems[5]);
             assets[4].Reference = CreateAssetReference(assetItems[1]);
-            assets[1].CompositionBases.Add(CreateAssetReference(assetItems[7]));
-            assets[2].CompositionBases.Add(CreateAssetReference(assetItems[1]));
-            assets[6].CompositionBases.Add(CreateAssetReference(assetItems[1]));
+            assets[1].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[7].Location, assetItems[7].Asset) };
+            assets[2].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
+            assets[6].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
 
             // Create a session with this project
             using (var session = new PackageSession(project))
@@ -852,6 +852,55 @@ namespace SiliconStudio.Assets.Tests
                 var dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 var asset0 = dependencies.GetLinkOut(assetItems[0]);
                 Assert.AreEqual(assets[0].RawAsset, ((AssetObjectTest)asset0.Item.Asset).RawAsset);
+            }
+        }
+
+
+        [Test]
+        public void TestAssetPart()
+        {
+            var project = new Package();
+            var assets = new List<TestAssetWithParts>();
+            var assetItems = new List<AssetItem>();
+            for (int i = 0; i < 2; ++i)
+            {
+                assets.Add(new TestAssetWithParts() { Parts =
+                {
+                        new AssetPart(Guid.NewGuid()),
+                        new AssetPart(Guid.NewGuid())
+                }
+                });
+                assetItems.Add(new AssetItem("asset-" + i, assets[i]));
+                project.Assets.Add(assetItems[i]);
+            }
+
+            using (var session = new PackageSession(project))
+            {
+                var dependencyManager = session.DependencyManager;
+
+                // Check that part asset is accessible from the dependency manager
+
+                var innerAssetId = assets[0].Parts[0].Id;
+                var dependencySet = dependencyManager.FindDependencySet(innerAssetId);
+                Assert.NotNull(dependencySet);
+
+                // Check that dependencies are the same than container asset.
+                var containerDependencySet = dependencyManager.FindDependencySet(assets[0].Id);
+                Assert.AreEqual(containerDependencySet.Id, dependencySet.Id, "DependencySet must be the same for part and container");
+
+                // Check that inners are all there
+                Assert.AreEqual(2, dependencySet.Parts.Count());
+
+                // Check that part asset is correctly stored into the dependencies
+                AssetPart part;
+                Assert.IsTrue(dependencySet.TryGetAssetPart(innerAssetId, out part));
+                Assert.AreEqual(assets[0].Parts[0].Id, part.Id);
+
+                // Remove part asset
+                assets[0].Parts.Clear();
+                assetItems[0].IsDirty = true;
+
+                Assert.Null(dependencyManager.FindDependencySet(innerAssetId));
             }
         }
 

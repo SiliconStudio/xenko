@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// A delegate renderer.
     /// </summary>
     [DataContract("SceneDelegateRenderer")]
-    [Browsable(false)] // This type is not browsable from the editor
+    [Display(Browsable = false)] // This type is not browsable from the editor
     public class SceneDelegateRenderer : SceneRendererViewportBase
     {
         private readonly Action<RenderContext, RenderFrame> drawAction;

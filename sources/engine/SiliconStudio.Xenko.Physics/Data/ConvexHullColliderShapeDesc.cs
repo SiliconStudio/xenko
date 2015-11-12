@@ -18,14 +18,14 @@ namespace SiliconStudio.Xenko.Physics
     {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
-        [Browsable(false)]
+        [Display(Browsable = false)]
 #endif
         [DataMember(10)]
         public List<List<List<Vector3>>> ConvexHulls; // Multiple meshes -> Multiple Hulls -> Hull points
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 
-        [Browsable(false)]
+        [Display(Browsable = false)]
 #endif
         [DataMember(20)]
         public List<List<List<uint>>> ConvexHullsIndices; // Multiple meshes -> Multiple Hulls -> Hull tris
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Physics
         /// If this is checked the following parameters are totally ignored, as only a simple convex hull of the whole model will be generated.
         /// </userdoc>
         [DataMember(40)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public bool SimpleWrap = true;
 
         /// <userdoc>
@@ -53,49 +53,49 @@ namespace SiliconStudio.Xenko.Physics
         /// Control how many sub convex hulls will be created, more depth will result in a more complex decomposition.
         /// </userdoc>
         [DataMember(50)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public int Depth = 10;
 
         /// <userdoc>
         /// How many position samples to internally compute clipping planes ( the higher the more complex ).
         /// </userdoc>
         [DataMember(60)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public int PosSampling = 10;
 
         /// <userdoc>
         /// How many angle samples to internally compute clipping planes ( the higher the more complex ), nested with position samples, for each position sample it will compute the amount defined here.
         /// </userdoc>
         [DataMember(70)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public int AngleSampling = 10;
 
         /// <userdoc>
         /// If higher then 0 the computation will try to further improve the shape position sampling (this will slow down the process).
         /// </userdoc>
         [DataMember(80)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public int PosRefine = 5;
 
         /// <userdoc>
         /// If higher then 0 the computation will try to further improve the shape angle sampling (this will slow down the process).
         /// </userdoc>
         [DataMember(90)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public int AngleRefine = 5;
 
         /// <userdoc>
         /// Applied to the concavity during crippling plane approximation.
         /// </userdoc>
         [DataMember(100)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public float Alpha = 0.01f;
 
         /// <userdoc>
         /// Threshold of concavity, rising this will make the shape simpler.
         /// </userdoc>
         [DataMember(110)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public float Threshold = 0.01f;
 
         public int CompareTo(object obj)

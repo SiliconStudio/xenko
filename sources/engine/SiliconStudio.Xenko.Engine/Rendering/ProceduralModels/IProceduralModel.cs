@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
         /// <summary>
         /// Gets the collection of material instances used by this <see cref="IProceduralModel"/>/
         /// </summary>
-        [Browsable(false)]
+        [Display(Browsable = false)]
         IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get; }
     }
 }
