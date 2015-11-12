@@ -74,5 +74,8 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         public static implicit operator IntPtr(Particle particle) => particle.Pointer;
+
+        public static bool operator ==(Particle particleA, Particle particleB) => (particleA.Pointer == particleB.Pointer);
+        public static bool operator !=(Particle particleA, Particle particleB) => (particleA.Pointer != particleB.Pointer);
     }
 }
