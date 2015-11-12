@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Scripts
 
     [DataContract("ScriptSourceFileAsset")]
     [AssetDescription(Extension, AlwaysMarkAsRoot = true)]
-    [Display(95, "Script Source Code", "A C# source code file")]
+    [Display(95, "Script Source Code")]
     public sealed class ScriptSourceFileAsset : ProjectSourceCodeAsset
     {
         public const string Extension = ".cs";

@@ -40,10 +40,9 @@ namespace SiliconStudio.Core
         /// </summary>
         /// <param name="order">The order weight of the column.</param>
         /// <param name="name">A value that is used for display in the UI..</param>
-        /// <param name="description">A value that is used to display a description in the UI..</param>
         /// <param name="category">A value that is used to group fields in the UI..</param>
-        public DisplayAttribute(int order, string name = null, string description = null, string category = null)
-            : this(name, description, category)
+        public DisplayAttribute(int order, string name = null, string category = null)
+            : this(name, category)
         {
             Order = order;
         }
@@ -52,13 +51,11 @@ namespace SiliconStudio.Core
         /// Initializes a new instance of the <see cref="DisplayAttribute"/> class.
         /// </summary>
         /// <param name="name">A value that is used for display in the UI..</param>
-        /// <param name="description">A value that is used to display a description in the UI.</param>
         /// <param name="category">A value that is used to group fields in the UI..</param>
-        public DisplayAttribute(string name = null, string description = null, string category = null)
+        public DisplayAttribute(string name = null, string category = null)
         {
             Name = name;
             Category = category;
-            Description = description;
         }
 
         /// <summary>
@@ -80,12 +77,6 @@ namespace SiliconStudio.Core
         public string Category { get; }
 
         /// <summary>
-        /// Gets a value that is used to display a description in the UI.
-        /// </summary>
-        /// <value>The description.</value>
-        public string Description { get; }
-
-        /// <summary>
         /// Gets or sets whether to expand the control representing the associated object in the UI.
         /// </summary>
         public ExpandRule Expand { get; set; }
@@ -101,6 +92,7 @@ namespace SiliconStudio.Core
         /// <param name="memberInfo">Member type (Property, Field or Type).</param>
         /// <returns>DisplayAttribute.</returns>
         /// <exception cref="System.ArgumentNullException">memberInfo</exception>
+        [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
         public static DisplayAttribute GetDisplay(MemberInfo memberInfo)
         {
             if (memberInfo == null) throw new ArgumentNullException(nameof(memberInfo));
@@ -109,13 +101,14 @@ namespace SiliconStudio.Core
                 DisplayAttribute value;
                 if (!RegisteredDisplayAttributes.TryGetValue(memberInfo, out value))
                 {
-                    value = memberInfo.GetCustomAttribute<DisplayAttribute>() ?? new DisplayAttribute(memberInfo.Name, $"Description of {memberInfo.Name}");
+                    value = memberInfo.GetCustomAttribute<DisplayAttribute>() ?? new DisplayAttribute(memberInfo.Name);
                     RegisteredDisplayAttributes.Add(memberInfo, value);
                 }
                 return value;
             }
         }
 
+        [Obsolete("Display attribute should be retrieved via an AttributeRegistry.")]
         public static int? GetOrder(MemberInfo memberInfo)
         {
             var display = GetDisplay(memberInfo);

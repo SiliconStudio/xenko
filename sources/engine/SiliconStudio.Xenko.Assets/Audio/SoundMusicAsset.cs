@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
     [AssetDescription(FileExtension)]
     [ObjectFactory(typeof(SoundMusicFactory))]
     [AssetCompiler(typeof(SoundAssetCompiler))]
-    [Display(125, "Sound Music", "A music track")]
+    [Display(125, "Sound Music")]
     public class SoundMusicAsset : SoundAsset
     {
         private class SoundMusicFactory : IObjectFactory

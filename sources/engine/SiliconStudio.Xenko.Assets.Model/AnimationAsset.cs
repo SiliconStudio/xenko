@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Model
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(AnimationAssetCompiler))]
     [ObjectFactory(typeof(AnimationFactory))]
-    [Display(180, "Animation", "A skeletal animation")]
+    [Display(180, "Animation")]
     public class AnimationAsset : AssetImport
     {
         /// <summary>

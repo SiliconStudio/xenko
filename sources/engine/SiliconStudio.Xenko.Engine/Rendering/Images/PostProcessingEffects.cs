@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// <value>The antialiasing.</value>
         /// <userdoc>Performs anti-aliasing filtering on the image. This smoothes the jagged edges of models.</userdoc>
         [DataMember(70)]
-        [Display("Type", null, "Antialiasing")]
+        [Display("Type", "Antialiasing")]
         public IScreenSpaceAntiAliasingEffect Antialiasing
         {
             get
