@@ -187,6 +187,7 @@ namespace SiliconStudio.Core.Serialization
                 // Rebuild serializer list
                 // TODO: For now, we simply reregister all assemblies one-by-one, but it can easily be improved if it proves to be unefficient (for now it shouldn't happen often so probably not a big deal)
                 DataSerializersPerProfile.Clear();
+                dataContractAliasMapping.Clear();
 
                 foreach (var assemblySerializer in AssemblySerializers)
                 {
@@ -211,7 +212,7 @@ namespace SiliconStudio.Core.Serialization
             {
                 try
                 {
-                    // TODO: Warning, exception or override if collision? (currently exception, easiest since we can remove them without worry when unloading assembly)
+                    // TODO: Warning, exception or override if collision? (currently exception)
                     dataContractAliasMapping.Add(dataContractAliasEntry.Key, dataContractAliasEntry.Value);
                 }
                 catch (Exception)
