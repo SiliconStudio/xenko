@@ -46,7 +46,6 @@ namespace SiliconStudio.Core
                     var bptr = (byte*)Pointer.ToPointer();
                     bptr += index*sizeOfT;                   
                     Interop.Read<T>(bptr, ref res);
-                    
                 }
 
                 return res;

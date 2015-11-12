@@ -45,34 +45,38 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
                 if (request.Tester)
                 {
-                    if (request.Platform == (int)PlatformType.Windows)
-                    {                        
-                        Process process = null;
-                        try
+                    switch (request.Platform)
+                    {
+                        case (int)PlatformType.Windows:
                         {
-                            var start = new ProcessStartInfo
+                            Process process = null;
+                            try
                             {
-                                WorkingDirectory = Path.GetDirectoryName(request.Cmd),
-                                FileName = filename
-                            };
-                            process = Process.Start(start);
-                        }
-                        catch (Exception ex)
-                        {
-                            socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = ex.Message }).Wait();
-                        }              
-                        
-                        if (process == null)
-                        {
-                            socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game process." }).Wait();
-                        }
-                        else
-                        {
-                            processes[filename] = new TestProcess { Process = process, TesterSocket = socketMessageLayer, Filename = filename };
+                                var start = new ProcessStartInfo
+                                {
+                                    WorkingDirectory = Path.GetDirectoryName(request.Cmd),
+                                    FileName = filename
+                                };
+                                process = Process.Start(start);
+                            }
+                            catch (Exception ex)
+                            {
+                                socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = ex.Message }).Wait();
+                            }
+
+                            if (process == null)
+                            {
+                                socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game process." }).Wait();
+                            }
+                            else
+                            {
+                                processes[filename] = new TestProcess { Process = process, TesterSocket = socketMessageLayer, Filename = filename };
+                            }
+                            break;
                         }
                     }
                 }
-                else
+                else //Game process
                 {
                     TestProcess process;
                     if (!processes.TryGetValue(request.Cmd, out process))

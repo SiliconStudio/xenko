@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
     <RootNamespace>SiliconStudio.Xenko.Graphics.Tests</RootNamespace>
-    <AssemblyName>SiliconStudioXenkoGraphicsTests110</AssemblyName>
+    <AssemblyName>SiliconStudio.Xenko.Graphics.Tests.11-0</AssemblyName>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
