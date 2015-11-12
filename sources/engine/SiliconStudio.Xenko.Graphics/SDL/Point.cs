@@ -1,7 +1,6 @@
 // Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_UI_SDL2
 namespace SiliconStudio.Xenko.Graphics.SDL
 {
     /// <summary>
@@ -80,4 +79,3 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 #endregion
     }
 }
-#endif
