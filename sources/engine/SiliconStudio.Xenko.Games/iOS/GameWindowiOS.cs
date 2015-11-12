@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Games
             return gameContext.ContextType == AppContextType.iOS;
         }
 
-        internal override void Initialize(GameContext<UIWindow> gameContext)
+        protected override void Initialize(GameContext<UIWindow> gameContext)
         {
             var context = (GameContextiOS) gameContext;
             gameForm = Context.GameView;
