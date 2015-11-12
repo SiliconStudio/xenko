@@ -112,24 +112,29 @@ namespace SiliconStudio.Xenko.Assets.Model
             foreach (var meshesByNode in meshesByNodes)
             {
                 // This logic to detect similar material is kept from old code; this should be reviewed/improved at some point
-                foreach (var meshesWithSameMaterial in meshesByNode.GroupBy(x => x,
-                    new AnonymousEqualityComparer<Mesh>((x, y) => ArrayExtensions.ArraysEqual(x.Skinning?.Bones, y.Skinning?.Bones) && CompareParameters(model, x, y) && CompareShadowOptions(model, x, y), x => 0)).ToList())
+                foreach (var meshesPerDrawCall in meshesByNode.GroupBy(x => x,
+                    new AnonymousEqualityComparer<Mesh>((x, y) =>
+                    x.MaterialIndex == y.MaterialIndex // Same material
+                    && ArrayExtensions.ArraysEqual(x.Skinning?.Bones, y.Skinning?.Bones) // Same bones
+                    && CompareParameters(model, x, y) // Same parameters
+                    && CompareShadowOptions(model, x, y), // Same shadow parameters
+                    x => 0)).ToList())
                 {
-                    if (meshesWithSameMaterial.Count() == 1)
+                    if (meshesPerDrawCall.Count() == 1)
                     {
                         // Nothing to group, skip to next entry
                         continue;
                     }
 
                     // Remove old meshes
-                    foreach (var mesh in meshesWithSameMaterial)
+                    foreach (var mesh in meshesPerDrawCall)
                     {
                         model.Meshes.Remove(mesh);
                     }
 
                     // Add new combined mesh(es)
-                    var baseMesh = meshesWithSameMaterial.First();
-                    var newMeshList = meshesWithSameMaterial.Select(x => x.Draw).ToList().GroupDrawData(Allow32BitIndex);
+                    var baseMesh = meshesPerDrawCall.First();
+                    var newMeshList = meshesPerDrawCall.Select(x => x.Draw).ToList().GroupDrawData(Allow32BitIndex);
 
                     foreach (var generatedMesh in newMeshList)
                     {
