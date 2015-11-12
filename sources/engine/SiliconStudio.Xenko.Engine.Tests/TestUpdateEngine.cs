@@ -158,6 +158,30 @@ namespace SiliconStudio.Xenko.Engine.Tests
         }
 
         [Test]
+        public void TestBlittableStruct()
+        {
+            var test = new TestClass();
+
+            var updateMemberInfo = new List<UpdateMemberInfo>
+            {
+                new UpdateMemberInfo("BlittableStructField.IntField", 0),
+                new UpdateMemberInfo("BlittableStructField.IntProperty", 8),
+                new UpdateMemberInfo("BlittableStructProperty.IntField", 0),
+                new UpdateMemberInfo("BlittableStructProperty.IntProperty", 8),
+            };
+
+            var blittableData = new TestData[] { 123, 456 };
+            var objectData = new UpdateObjectData[0];
+
+            RunUpdateEngine(test, updateMemberInfo, blittableData, objectData);
+
+            Assert.That(test.BlittableStructField.IntField, Is.EqualTo(123));
+            Assert.That(test.BlittableStructField.IntProperty, Is.EqualTo(456));
+            Assert.That(test.BlittableStructProperty.IntField, Is.EqualTo(123));
+            Assert.That(test.BlittableStructProperty.IntProperty, Is.EqualTo(456));
+        }
+
+        [Test]
         public void TestNonBlittableStruct()
         {
             var test = new TestClass();
@@ -371,6 +395,13 @@ namespace SiliconStudio.Xenko.Engine.Tests
     }
 
     [DataContract]
+    public struct BlittableStruct
+    {
+        public int IntField;
+        public int IntProperty { get; set; }
+    }
+
+    [DataContract]
     public class TestClass
     {
         public int IntField;
@@ -378,6 +409,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
         public object ObjectField;
         public object ObjectProperty { get; set; }
+
+        public BlittableStruct BlittableStructField;
+        public BlittableStruct BlittableStructProperty { get; set; }
 
         public NonBlittableStruct NonBlittableStructField;
         public NonBlittableStruct NonBlittableStructProperty { get; set; }
