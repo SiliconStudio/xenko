@@ -1,6 +1,5 @@
-﻿// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_UI_SDL2
 using System;
 
 namespace SiliconStudio.Xenko.Graphics.SDL
@@ -81,12 +80,11 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         }
 
         /// <summary>
-        /// Get or set the mouse position on screen.
+        /// Get the mouse position on screen.
         /// </summary>
-        public Point MousePosition
+        public static Point MousePosition
         {
             get { return Application.MousePosition; }
-            set { Application.MousePosition = value; }
         }
 
         /// <summary>
@@ -110,11 +108,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// </summary>
         public void Show()
         {
-            if (!_hasBeenShownOnce)
-            {
-                _hasBeenShownOnce = true;
-                HandleCreated?.Invoke(this, EventArgs.Empty);
-            }
             SDL.SDL_ShowWindow(SdlHandle);
         }
 
@@ -338,14 +331,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         public event WindowEventDelegate FocusLostActions;
 
         /// <summary>
-        /// Those event handlers are for backward compatibility with Windows forms.
-        /// </summary>
-        public event EventHandler MouseEnter;
-        public event EventHandler MouseLeave;
-        public event EventHandler Resize;
-        public event EventHandler HandleCreated;
-      
-        /// <summary>
         /// Process events for the current window
         /// </summary>
         public virtual void ProcessEvent(SDL.SDL_Event e)
@@ -394,7 +379,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 
                         case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_RESIZED:
                             ResizeEndActions?.Invoke(e.window);
-                            Resize?.Invoke(this, EventArgs.Empty);
                             break;
 
                         case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_CLOSE:
@@ -422,12 +406,10 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                             break;
 
                         case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_ENTER:
-                            MouseEnter?.Invoke(this, EventArgs.Empty);
                             MouseEnterActions?.Invoke(e.window);
                             break;
 
                         case SDL.SDL_WindowEventID.SDL_WINDOWEVENT_LEAVE:
-                            MouseLeave?.Invoke(this, EventArgs.Empty);
                             MouseLeaveActions?.Invoke(e.window);
                             break;
 
@@ -514,7 +496,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// Flag to know if the window has been shown once already. Used by `Show' to figure when to call the actions from <see cref="HandleCreated"/>.
         /// </summary>
         private bool _hasBeenShownOnce;
+
 #endregion
     }
 }
-#endif
