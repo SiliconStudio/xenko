@@ -40,6 +40,24 @@ namespace SiliconStudio.Xenko.Particles.Tests
             var timeTestPool2 = watch.Elapsed.TotalMilliseconds;
             System.Console.Out.WriteLine($"{timeTestPool2:0000.000} ms to run TestPool/Stack+AoS");
 
+
+
+            watch.Restart();
+            for (int i = 0; i < numberOfTests; i++)
+            {
+                TestPool(listPolicy: ParticlePool.ListPolicy.Ring, fieldsPolicy: ParticlePool.FieldsPolicy.SoA);
+            }
+            var timeTestPool3 = watch.Elapsed.TotalMilliseconds;
+            System.Console.Out.WriteLine($"{timeTestPool3:0000.000} ms to run TestPool/Ring+SoA");
+
+            watch.Restart();
+            for (int i = 0; i < numberOfTests; i++)
+            {
+                TestPool(listPolicy: ParticlePool.ListPolicy.Stack, fieldsPolicy: ParticlePool.FieldsPolicy.SoA);
+            }
+            var timeTestPool4 = watch.Elapsed.TotalMilliseconds;
+            System.Console.Out.WriteLine($"{timeTestPool4:0000.000} ms to run TestPool/Stack+SoA");
+
             System.Console.ReadLine();
 
             // TODO AoS pool vs SoA pool testing
@@ -106,7 +124,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
         /// </summary>
         private static void TestPool(ParticlePool.ListPolicy listPolicy, ParticlePool.FieldsPolicy fieldsPolicy)
         {
-            const int particleCount = 10000;
+            const int particleCount = 100000;
             var particlePool = new ParticlePool(0, particleCount, fieldsPolicy, listPolicy);
 
             const bool forceCreation = true;
@@ -126,11 +144,13 @@ namespace SiliconStudio.Xenko.Particles.Tests
             }
 
             var i = 0;
+            var vecToSet = new Vector3(0, 0, 0);
             foreach (var particle in particlePool)
             {
-                particle.Set(positionField, new Vector3(0, i, 0));
+                vecToSet.Y = i;
+                particle.Set(positionField, vecToSet);
                 particle.Set(lifetimeField, i);
-                particle.Set(velocityField, new Vector3(0, i, 0));
+                particle.Set(velocityField, vecToSet);
                 particle.Set(sizeField, i);
                 i++;
             }
@@ -157,38 +177,48 @@ namespace SiliconStudio.Xenko.Particles.Tests
             i = 0;
             foreach (var particle in particlePool)
             {
-                Assert(particle.Get(positionField).Equals(new Vector3(0, i, 0) + particle.Get(velocityField) * dt), "Particle's position is different!");
+                vecToSet.Y = i;
+                Assert(particle.Get(positionField).Equals(vecToSet + particle.Get(velocityField) * dt), "Particle's position is different!");
                 Assert(Math.Abs(particle.Get(lifetimeField) - i - 1) <= MathUtil.ZeroTolerance, "Particle's lifetime is different!");
                 i++;
             }
 
+            var testVec = new Vector3(0, 1, 0);
             // Perf test - many mundane operations at once
             foreach (var particle in particlePool)
             {
-                particle.Set(lifetimeField, particle.Get(sizeField));
-                particle.Set(positionField, particle.Get(velocityField));
-                particle.Set(sizeField, particle.Get(lifetimeField));
-                particle.Set(velocityField, particle.Get(positionField));
+                particle.Set(velocityField, particle.Get(velocityField) + testVec);
+                particle.Set(velocityField, particle.Get(velocityField) + testVec);
+                particle.Set(velocityField, particle.Get(velocityField) + testVec);
+                particle.Set(velocityField, particle.Get(velocityField) + testVec);
+                particle.Set(velocityField, particle.Get(velocityField) + testVec);
+            }
 
-                particle.Set(lifetimeField, particle.Get(sizeField));
-                particle.Set(positionField, particle.Get(velocityField));
-                particle.Set(sizeField, particle.Get(lifetimeField));
-                particle.Set(velocityField, particle.Get(positionField));
+            foreach (var particle in particlePool)
+            {
+                particle.Set(sizeField, particle.Get(sizeField) + 1);
+                particle.Set(sizeField, particle.Get(sizeField) + 1);
+                particle.Set(sizeField, particle.Get(sizeField) + 1);
+                particle.Set(sizeField, particle.Get(sizeField) + 1);
+                particle.Set(sizeField, particle.Get(sizeField) + 1);
+            }
 
-                particle.Set(lifetimeField, particle.Get(sizeField));
-                particle.Set(positionField, particle.Get(velocityField));
-                particle.Set(sizeField, particle.Get(lifetimeField));
-                particle.Set(velocityField, particle.Get(positionField));
+            foreach (var particle in particlePool)
+            {
+                particle.Set(positionField, particle.Get(positionField) + testVec);
+                particle.Set(positionField, particle.Get(positionField) + testVec);
+                particle.Set(positionField, particle.Get(positionField) + testVec);
+                particle.Set(positionField, particle.Get(positionField) + testVec);
+                particle.Set(positionField, particle.Get(positionField) + testVec);
+            }
 
-                particle.Set(lifetimeField, particle.Get(sizeField));
-                particle.Set(positionField, particle.Get(velocityField));
-                particle.Set(sizeField, particle.Get(lifetimeField));
-                particle.Set(velocityField, particle.Get(positionField));
-
-                particle.Set(lifetimeField, particle.Get(sizeField));
-                particle.Set(positionField, particle.Get(velocityField));
-                particle.Set(sizeField, particle.Get(lifetimeField));
-                particle.Set(velocityField, particle.Get(positionField));
+            foreach (var particle in particlePool)
+            {
+                particle.Set(lifetimeField, particle.Get(lifetimeField) + 1);
+                particle.Set(lifetimeField, particle.Get(lifetimeField) + 1);
+                particle.Set(lifetimeField, particle.Get(lifetimeField) + 1);
+                particle.Set(lifetimeField, particle.Get(lifetimeField) + 1);
+                particle.Set(lifetimeField, particle.Get(lifetimeField) + 1);
             }
 
             i = 0;
