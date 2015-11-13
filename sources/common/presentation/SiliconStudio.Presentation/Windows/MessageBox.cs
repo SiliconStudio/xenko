@@ -1,8 +1,9 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
 using System.Windows;
+using System.Windows.Media;
 
 namespace SiliconStudio.Presentation.Windows
 {
@@ -14,6 +15,18 @@ namespace SiliconStudio.Presentation.Windows
     {
         private MessageBox()
         {
+        }
+
+        /// <summary>
+        /// Identifies the <see cref="Image"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ImageProperty =
+            DependencyProperty.Register("Image", typeof(ImageSource), typeof(MessageBox));
+
+        public ImageSource Image
+        {
+            get { return (ImageSource)GetValue(ImageProperty); }
+            set { SetValue(ImageProperty, value); }
         }
 
         /// <summary>
@@ -77,7 +90,6 @@ namespace SiliconStudio.Presentation.Windows
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
         public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton button, MessageBoxImage image)
         {
-            // TODO: image
             IEnumerable<DialogButtonInfo> buttons;
             switch (button)
             {
@@ -101,15 +113,44 @@ namespace SiliconStudio.Presentation.Windows
                 default:
                     throw new ArgumentOutOfRangeException(nameof(button), button, null);
             }
+            string imageKey;
+            switch (image)
+            {
+                case MessageBoxImage.None:
+                    imageKey = null;
+                    break;
+
+                case MessageBoxImage.Error:
+                    imageKey = "ImageErrorDialog";
+                    break;
+
+                case MessageBoxImage.Question:
+                    imageKey = "ImageQuestionDialog";
+                    break;
+
+                case MessageBoxImage.Warning:
+                    imageKey = "ImageWarningDialog";
+                    break;
+
+                case MessageBoxImage.Information:
+                    imageKey = "ImageInformationDialog";
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(image), image, null);
+            }
             var messageBox = new MessageBox
             {
                 Owner = owner,
-                WindowStartupLocation =
-                    owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen,
+                WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen,
                 Title = caption,
                 Content = message,
                 ButtonsSource = buttons,
             };
+            if (imageKey != null)
+            {
+                var bitmap = (ImageSource)messageBox.TryFindResource(imageKey);
+                messageBox.Image = bitmap;
+            }
             return (MessageBoxResult)messageBox.ShowInternal();
         }
     }

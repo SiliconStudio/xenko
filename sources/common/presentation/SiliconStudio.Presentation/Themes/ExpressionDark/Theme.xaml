@@ -140,6 +140,10 @@
   <BitmapImage x:Key="ImageMinimizeWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/minimize_window.png" />
   <BitmapImage x:Key="ImageRestoreWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/restore_window.png" />
   <BitmapImage x:Key="ImageAdvancedEditionVector" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/gear--pencil.png" />
+  <BitmapImage x:Key="ImageErrorDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/error-48.png" />
+  <BitmapImage x:Key="ImageInformationDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/info-48.png" />
+  <BitmapImage x:Key="ImageQuestionDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/question-48.png" />
+  <BitmapImage x:Key="ImageWarningDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/warning-48.png" />
 
   <!--  WINDOWS  -->
   <Style TargetType="Window" x:Key="WindowChromeStyle">
@@ -269,7 +273,7 @@
     <Setter Property="VerticalContentAlignment" Value="Center" />
     <Setter Property="MinHeight" Value="120" />
     <Setter Property="MinWidth" Value="320" />
-    <!-- FIXME: create and add behavior to keep aspect ratio (and also screen resolution independent) -->
+    <!-- begin FIXME: create and add behavior to keep aspect ratio (and also screen resolution independent) -->
     <Setter Property="MaxHeight" Value="768" />
     <Setter Property="MaxWidth" Value="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
     <Setter Property="SizeToContent" Value="WidthAndHeight" />
@@ -278,7 +282,13 @@
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
-          <ctrl:MarkdownTextBlock Text="{Binding}" />
+          <DockPanel LastChildFill="True">
+            <Image DockPanel.Dock="Left" Source="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}}"
+                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="4" RenderOptions.BitmapScalingMode="HighQuality"
+                   Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelHeight}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelWidth}"
+                   Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
+            <ctrl:MarkdownTextBlock Text="{Binding}" />
+          </DockPanel>
         </DataTemplate>
       </Setter.Value>
     </Setter>
@@ -288,7 +298,7 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ctrl:MarkdownTextBlock}">
-          <FlowDocumentScrollViewer x:Name="PART_MessageContainer"
+          <FlowDocumentScrollViewer x:Name="PART_MessageContainer" Padding="2,0"
                                     HorizontalScrollBarVisibility="Hidden" VerticalScrollBarVisibility="Auto" />
         </ControlTemplate>
       </Setter.Value>
