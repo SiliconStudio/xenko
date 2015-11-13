@@ -55,10 +55,10 @@ namespace SiliconStudio.Xenko.Games
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
                     new GameWindowOpenTK(),
 #endif
-                    new GameWindowDesktop(),
+                    new GameWindowWinforms(),
 #endif
                     // SDL is always available on Windows
-                    new GameWindowDesktopSDL(),
+                    new GameWindowSdl(),
                 };
         }
     }

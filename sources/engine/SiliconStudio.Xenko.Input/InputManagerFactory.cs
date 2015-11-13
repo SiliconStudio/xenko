@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Input
                     return new InputManagerSDL(registry);
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
                 case AppContextType.WindowsRuntime:
-                    return new InputManagerWinRT(registry);
+                    return new InputManagerWindowsRuntime(registry);
 #endif
 #else
 #if SILICONSTUDIO_PLATFORM_ANDROID

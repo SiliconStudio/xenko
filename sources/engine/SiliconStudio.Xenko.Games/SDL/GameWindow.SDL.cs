@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowDesktopSDL : GameWindow<Window>
+    internal class GameWindowSdl : GameWindow<Window>
     {
         private bool isMouseVisible;
 
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Games
         private bool allowUserResizing;
         private bool isBorderLess;
 
-        internal GameWindowDesktopSDL()
+        internal GameWindowSdl()
         {
         }
 

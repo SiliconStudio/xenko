@@ -3,7 +3,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManagerWinRT
+    public partial class InputManagerWindowsRuntime
     {
         enum WinFormsKeys
         {

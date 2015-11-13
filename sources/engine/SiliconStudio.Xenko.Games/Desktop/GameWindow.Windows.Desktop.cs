@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowDesktop : GameWindow<Control>
+    internal class GameWindowWinforms : GameWindow<Control>
     {
         private bool isMouseVisible;
 
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Games
         private bool allowUserResizing;
         private bool isBorderLess;
 
-        internal GameWindowDesktop()
+        internal GameWindowWinforms()
         {
         }
 
