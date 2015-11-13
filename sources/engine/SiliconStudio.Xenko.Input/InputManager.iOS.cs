@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Input
         {
             var context = (GameContextiOS) gameContext;
             view = context.Control;
-            var window = context.window;
+            var window = context.Window;
 
             var gameController = context.GameViewController;
 
