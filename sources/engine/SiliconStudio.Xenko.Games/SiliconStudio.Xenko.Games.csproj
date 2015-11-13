@@ -48,8 +48,8 @@
     <Compile Include="Android\GameWindow.Android.cs" />
     <Compile Include="AssemblyDoc.cs" />
     <Compile Include="Desktop\GameForm.cs" />
-    <Compile Include="Desktop\GamePlatformDesktop.cs" />
-    <Compile Include="Desktop\GameWindowDesktop.cs" />
+    <Compile Include="Desktop\GamePlatform.Windows.cs" />
+    <Compile Include="Desktop\GameWindow.Windows.Desktop.cs" />
     <Compile Include="Desktop\Win32Native.cs" />
     <Compile Include="Desktop\WindowsMessageLoop.cs" />
     <Compile Include="GameBase.cs" />
@@ -91,7 +91,7 @@
     <Compile Include="OpenTK\GameWindow.Windows.OpenTK.cs" />
     <Compile Include="PreparingDeviceSettingsEventArgs.cs" />
     <Compile Include="SDL\GameForm.SDL.cs" />
-    <Compile Include="SDL\GameWindowDestopSDL.cs" />
+    <Compile Include="SDL\GameWindow.SDL.cs" />
     <Compile Include="SDL\WindowsMessageLoopSDL.cs" />
     <Compile Include="Time\AbsoluteStopwatch.cs" />
     <Compile Include="Time\ITimedValue.cs" />
