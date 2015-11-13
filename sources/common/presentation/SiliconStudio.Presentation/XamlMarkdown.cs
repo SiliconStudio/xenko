@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -37,23 +38,62 @@ using System.Windows.Shapes;
 
 namespace SiliconStudio.Presentation
 {
-    public class XamlMarkdown : DependencyObject
+    public sealed class XamlMarkdown : DependencyObject
     {
         /// <summary>
         /// maximum nested depth of [] and () supported by the transform; implementation detail
         /// </summary>
         private const int NestDepth = 6;
-
         /// <summary>
         /// Tabs are automatically converted to spaces as part of the transform  
         /// this constant determines how "wide" those tabs become in spaces  
         /// </summary>
         private const int TabWidth = 4;
-
         private const string MarkerUl = @"[*+-]";
         private const string MarkerOl = @"\d+[.]";
-
         private int listLevel;
+
+        private Style codeStyle;
+        private Style documentStyle;
+        private Style heading1Style;
+        private Style heading2Style;
+        private Style heading3Style;
+        private Style heading4Style;
+
+        public XamlMarkdown()
+        {
+            HyperlinkCommand = NavigationCommands.GoToPage;
+        }
+
+        /// <summary>
+        /// Resource Key for the CodeStyle.
+        /// </summary>
+        public static ComponentResourceKey CodeStyleKey { get; } = new ComponentResourceKey(typeof(XamlMarkdown), nameof(CodeStyleKey));
+
+        /// <summary>
+        /// Resource Key for the DocumentStyle.
+        /// </summary>
+        public static ComponentResourceKey DocumentStyleKey { get; } = new ComponentResourceKey(typeof(XamlMarkdown), nameof(DocumentStyleKey));
+
+        /// <summary>
+        /// Resource Key for the Heading1Style.
+        /// </summary>
+        public static ComponentResourceKey Heading1StyleKey { get; } = new ComponentResourceKey(typeof(XamlMarkdown), nameof(Heading1StyleKey));
+
+        /// <summary>
+        /// Resource Key for the Heading2Style.
+        /// </summary>
+        public static ComponentResourceKey Heading2StyleKey { get; } = new ComponentResourceKey(typeof(XamlMarkdown), nameof(Heading2StyleKey));
+
+        /// <summary>
+        /// Resource Key for the Heading3Style.
+        /// </summary>
+        public static ComponentResourceKey Heading3StyleKey { get; } = new ComponentResourceKey(typeof(XamlMarkdown), nameof(Heading3StyleKey));
+
+        /// <summary>
+        /// Resource Key for the Heading4Style.
+        /// </summary>
+        public static ComponentResourceKey Heading4StyleKey { get; } = new ComponentResourceKey(typeof(XamlMarkdown), nameof(Heading4StyleKey));
 
         /// <summary>
         /// when true, bold and italic require non-word characters on either side  
@@ -64,71 +104,17 @@ namespace SiliconStudio.Presentation
 
         public ICommand HyperlinkCommand { get; set; }
 
-        public Style DocumentStyle
-        {
-            get { return (Style)GetValue(DocumentStyleProperty); }
-            set { SetValue(DocumentStyleProperty, value); }
-        }
+        private Style CodeStyle => codeStyle ?? (codeStyle = (Style)Application.Current.FindResource(CodeStyleKey));
 
-        // Using a DependencyProperty as the backing store for DocumentStyle.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty DocumentStyleProperty =
-            DependencyProperty.Register("DocumentStyle", typeof(Style), typeof(XamlMarkdown), new PropertyMetadata(null));
+        private Style DocumentStyle => documentStyle ?? (documentStyle = (Style)Application.Current.FindResource(DocumentStyleKey));
 
-        public Style Heading1Style
-        {
-            get { return (Style)GetValue(Heading1StyleProperty); }
-            set { SetValue(Heading1StyleProperty, value); }
-        }
+        private Style Heading1Style => heading1Style ?? (heading1Style = (Style)Application.Current.FindResource(Heading1StyleKey));
 
-        // Using a DependencyProperty as the backing store for Heading1Style.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty Heading1StyleProperty =
-            DependencyProperty.Register("Heading1Style", typeof(Style), typeof(XamlMarkdown), new PropertyMetadata(null));
+        private Style Heading2Style => heading2Style ?? (heading2Style = (Style)Application.Current.FindResource(Heading2StyleKey));
 
-        public Style Heading2Style
-        {
-            get { return (Style)GetValue(Heading2StyleProperty); }
-            set { SetValue(Heading2StyleProperty, value); }
-        }
+        private Style Heading3Style => heading3Style ?? (heading3Style = (Style)Application.Current.FindResource(Heading3StyleKey));
 
-        // Using a DependencyProperty as the backing store for Heading2Style.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty Heading2StyleProperty =
-            DependencyProperty.Register("Heading2Style", typeof(Style), typeof(XamlMarkdown), new PropertyMetadata(null));
-
-        public Style Heading3Style
-        {
-            get { return (Style)GetValue(Heading3StyleProperty); }
-            set { SetValue(Heading3StyleProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Heading3Style.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty Heading3StyleProperty =
-            DependencyProperty.Register("Heading3Style", typeof(Style), typeof(XamlMarkdown), new PropertyMetadata(null));
-
-        public Style Heading4Style
-        {
-            get { return (Style)GetValue(Heading4StyleProperty); }
-            set { SetValue(Heading4StyleProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for Heading4Style.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty Heading4StyleProperty =
-            DependencyProperty.Register("Heading4Style", typeof(Style), typeof(XamlMarkdown), new PropertyMetadata(null));
-
-        public Style CodeStyle
-        {
-            get { return (Style)GetValue(CodeStyleProperty); }
-            set { SetValue(CodeStyleProperty, value); }
-        }
-
-        // Using a DependencyProperty as the backing store for CodeStyle.  This enables animation, styling, binding, etc...
-        public static readonly DependencyProperty CodeStyleProperty =
-            DependencyProperty.Register("CodeStyle", typeof(Style), typeof(XamlMarkdown), new PropertyMetadata(null));
-
-        
-        public XamlMarkdown()
-        {
-            HyperlinkCommand = NavigationCommands.GoToPage;
-        }
+        private Style Heading4Style => heading4Style ?? (heading4Style = (Style)Application.Current.FindResource(Heading4StyleKey));
 
         public FlowDocument Transform(string text)
         {

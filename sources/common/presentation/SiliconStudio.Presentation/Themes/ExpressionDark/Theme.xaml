@@ -239,35 +239,25 @@
       </Setter.Value>
     </Setter>
   </Style>
-  <local:XamlMarkdown x:Key="DefaultMarkdown">
-    <local:XamlMarkdown.DocumentStyle>
-      <Style TargetType="{x:Type FlowDocument}">
-        <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
-        <Setter Property="TextAlignment" Value="Left" />
-      </Style>
-    </local:XamlMarkdown.DocumentStyle>
-    <local:XamlMarkdown.Heading1Style>
-      <Style TargetType="{x:Type Paragraph}">
-        <Setter Property="FontSize" Value="42" />
-        <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="Foreground" Value="WhiteSmoke" />
-      </Style>
-    </local:XamlMarkdown.Heading1Style>
-    <local:XamlMarkdown.Heading2Style>
-      <Style TargetType="{x:Type Paragraph}">
-        <Setter Property="FontSize" Value="20" />
-        <Setter Property="FontWeight" Value="Bold" />
-        <Setter Property="Foreground" Value="WhiteSmoke" />
-      </Style>
-    </local:XamlMarkdown.Heading2Style>
-    <local:XamlMarkdown.Heading3Style>
-      <Style TargetType="{x:Type Paragraph}">
-        <Setter Property="FontSize" Value="20" />
-        <Setter Property="FontWeight" Value="Light" />
-        <Setter Property="Foreground" Value="WhiteSmoke" />
-      </Style>
-    </local:XamlMarkdown.Heading3Style>
-  </local:XamlMarkdown>
+  <Style TargetType="{x:Type FlowDocument}" x:Key="{x:Static local:XamlMarkdown.DocumentStyleKey}">
+    <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
+    <Setter Property="TextAlignment" Value="Left" />
+  </Style>
+  <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading1StyleKey}">
+    <Setter Property="FontSize" Value="42" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="WhiteSmoke" />
+  </Style>
+  <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading2StyleKey}">
+    <Setter Property="FontSize" Value="20" />
+    <Setter Property="FontWeight" Value="Bold" />
+    <Setter Property="Foreground" Value="WhiteSmoke" />
+  </Style>
+  <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading3StyleKey}">
+    <Setter Property="FontSize" Value="20" />
+    <Setter Property="FontWeight" Value="Light" />
+    <Setter Property="Foreground" Value="WhiteSmoke" />
+  </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
@@ -294,7 +284,6 @@
     </Setter>
   </Style>
   <Style TargetType="{x:Type ctrl:MarkdownTextBlock}">
-    <Setter Property="Markdown" Value="{StaticResource DefaultMarkdown}" />
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ctrl:MarkdownTextBlock}">
