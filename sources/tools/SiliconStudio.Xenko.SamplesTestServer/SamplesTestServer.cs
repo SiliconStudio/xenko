@@ -7,8 +7,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Security;
 using System.Threading.Tasks;
-using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
 {
@@ -28,6 +28,17 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
         public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
+        }
+
+        private static SecureString MakeSecureString(string text)
+        {
+            SecureString secure = new SecureString();
+            foreach (char c in text)
+            {
+                secure.AppendChar(c);
+            }
+
+            return secure;
         }
 
         protected override async void HandleClient(SimpleSocket clientSocket, string url)
@@ -59,6 +70,8 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                     };
                                     start.EnvironmentVariables["SiliconStudioXenkoDir"] = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
                                     start.UseShellExecute = false;
+                                    start.UserName = "xenko"; //todo this is kinda hard coded
+                                    start.Password = MakeSecureString(Environment.GetEnvironmentVariable("xenkoPassword"));
 
                                     debugInfo = "Starting process " + start.FileName + " with path " + start.WorkingDirectory;
                                     socketMessageLayer.Send(new LogRequest { Message = debugInfo }).Wait();
@@ -76,6 +89,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 else
                                 {
                                     processes[filename] = new TestProcess { Process = process, TesterSocket = socketMessageLayer, Filename = filename };
+                                    socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
                                 break;
                             }
