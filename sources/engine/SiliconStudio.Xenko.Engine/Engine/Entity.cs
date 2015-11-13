@@ -72,13 +72,6 @@ namespace SiliconStudio.Xenko.Engine
             Group = EntityGroup.Group0;
         }
 
-        [DataMember(-10), Browsable(false)]
-        public override Guid Id
-        {
-            get { return base.Id; }
-            set { base.Id = value; }
-        }
-
         [DataMember(0)] // Name is serialized
         public override string Name
         {

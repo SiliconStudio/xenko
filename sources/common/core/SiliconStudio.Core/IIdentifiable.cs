@@ -1,18 +1,17 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+using System;
 
 namespace SiliconStudio.Core
 {
     /// <summary>
-    /// Base interface for all components.
+    /// Base interface for all identifiable instances.
     /// </summary>
-    public interface IComponent : IReferencable, IIdentifiable
+    public interface IIdentifiable
     {
         /// <summary>
-        /// Gets the name of this component.
+        /// Gets the id of this instance
         /// </summary>
-        /// <value>The name.</value>
-        string Name { get; }
+        Guid Id { get; }
     }
 }
-

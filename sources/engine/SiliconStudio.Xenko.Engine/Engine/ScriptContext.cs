@@ -70,13 +70,6 @@ namespace SiliconStudio.Xenko.Engine
             SpriteAnimation = Services.GetSafeServiceAs<SpriteAnimationSystem>();
         }
 
-        [DataMember(-10), Browsable(false)]
-        public override Guid Id
-        {
-            get { return base.Id; }
-            set { base.Id = value; }
-        }
-
         [DataMemberIgnore]
         public AudioSystem Audio { get; private set; }
 
