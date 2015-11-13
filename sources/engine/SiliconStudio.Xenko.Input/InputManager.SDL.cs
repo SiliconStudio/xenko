@@ -13,7 +13,7 @@ using SDL2;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class InputManagerSDL: InputManagerWindows<Window>
+    internal class InputManagerSDL: InputManagerWindows<Window>
     {
 
         public InputManagerSDL(IServiceRegistry registry) : base(registry)

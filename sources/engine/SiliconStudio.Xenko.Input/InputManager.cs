@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input
         }
     }
 
-    public abstract class InputManager<TK> : InputManager
+    internal abstract class InputManager<TK> : InputManager
     {
         protected InputManager(IServiceRegistry registry) : base(registry)
         {

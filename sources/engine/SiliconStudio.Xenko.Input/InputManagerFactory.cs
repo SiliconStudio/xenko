@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Input
         /// Create the appropriate instance of InputManager depending on the platform and context associated to <paramref name="registry"/>.
         /// </summary>
         /// <param name="registry"></param>
+        /// <param name="context">Associated context. Cannot be null.</param>
         /// <returns></returns>
         public static InputManager NewInputManager(IServiceRegistry registry, GameContext context)
         {

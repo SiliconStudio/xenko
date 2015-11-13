@@ -27,7 +27,7 @@ using Matrix = SiliconStudio.Core.Mathematics.Matrix;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManagerWindowsRuntime : InputManager
+    internal partial class InputManagerWindowsRuntime : InputManager
     {
 
         private const uint DesiredSensorUpdateIntervalMs = (uint)(1f/DesiredSensorUpdateRate*1000f);

@@ -12,7 +12,7 @@ using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class InputManagerOpenTK : InputManagerWindows<OpenTK.GameWindow>
+    internal class InputManagerOpenTK : InputManagerWindows<OpenTK.GameWindow>
     {
         private GameWindow gameWindow;
 

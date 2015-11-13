@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public abstract class InputManagerWindows<TK> : InputManager<TK>
+    internal abstract class InputManagerWindows<TK> : InputManager<TK>
     {
         protected InputManagerWindows(IServiceRegistry registry) : base(registry)
         {

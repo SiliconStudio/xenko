@@ -15,7 +15,7 @@ using WinFormsKeys = System.Windows.Forms.Keys;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class InputManagerWpf : InputManagerWindows<Window>
+    internal class InputManagerWpf : InputManagerWindows<Window>
     {
         public InputManagerWpf(IServiceRegistry registry) : base(registry)
         {

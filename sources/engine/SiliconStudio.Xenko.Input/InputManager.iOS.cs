@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class InputManageriOS: InputManager<iPhoneOSGameView>
+    internal class InputManageriOS: InputManager<iPhoneOSGameView>
     {
         private iPhoneOSGameView view;
         private CMMotionManager motionManager;
