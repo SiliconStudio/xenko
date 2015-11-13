@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 catch (Exception ex)
                                 {
-                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = ex.Message }).Wait();
+                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Launch exception: " + ex.Message }).Wait();
                                 }
 
                                 if (process == null)
