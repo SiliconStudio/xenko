@@ -17,7 +17,7 @@ namespace SiliconStudio.Presentation.ViewModel
 {
     /// <summary>
     /// This class is an implementation of the <see cref="DispatcherViewModel"/> class that supports undo/redo of property and collection changes.
-    /// It requires an <see cref="ITransactionalActionStack"/> and can be linked to one or several <see cref="IDirtiableViewModel"/> objects.
+    /// It requires an <see cref="ITransactionalActionStack"/> and can be linked to one or several <see cref="IDirtiable"/> objects.
     /// The dirtiable objects will have their dirty flag updated accordingly to the state of the action stack.
     /// </summary>
     /// <remarks>
@@ -43,10 +43,10 @@ namespace SiliconStudio.Presentation.ViewModel
         }
         
         /// <summary>
-        /// Gets the list of <see cref="IDirtiableViewModel"/> objects linked to this view model. 
+        /// Gets the list of <see cref="IDirtiable"/> objects linked to this view model. 
         /// </summary>
         /// <remarks>Dirtiable objects will have their dirty flag updated when a change occurs or when the action stack is notified that modifications have been saved.</remarks>
-        public abstract IEnumerable<IDirtiableViewModel> Dirtiables { get; }
+        public abstract IEnumerable<IDirtiable> Dirtiables { get; }
 
         /// <summary>
         /// Gets the transactional action stack used by this view model.
@@ -355,25 +355,25 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="ViewModelActionItem"/> corresponding to the action of modifying a property of this view model.
+        /// Creates an instance of <see cref="DirtiableActionItem"/> corresponding to the action of modifying a property of this view model.
         /// </summary>
         /// <param name="displayName">The display name of the action.</param>
         /// <param name="propertyName">The name of the modified property.</param>
         /// <param name="preEditValue">The value of the property before the modification.</param>
-        /// <returns>A new instance of the <see cref="ViewModelActionItem"/> class.</returns>
-        protected virtual ViewModelActionItem CreatePropertyChangeActionItem(string displayName, string propertyName, object preEditValue)
+        /// <returns>A new instance of the <see cref="DirtiableActionItem"/> class.</returns>
+        protected virtual DirtiableActionItem CreatePropertyChangeActionItem(string displayName, string propertyName, object preEditValue)
         {
             return new PropertyChangedViewModelActionItem(displayName, this, Dirtiables, propertyName, preEditValue);
         }
 
         /// <summary>
-        /// Creates an instance of <see cref="ViewModelActionItem"/> corresponding to the action of modifying an observable collection of this view model.
+        /// Creates an instance of <see cref="DirtiableActionItem"/> corresponding to the action of modifying an observable collection of this view model.
         /// </summary>
         /// <param name="displayName">The display name of the action.</param>
         /// <param name="list">The collection that has been modified.</param>
         /// <param name="args">A <see cref="NotifyCollectionChangedEventArgs"/> object containing the information of the change.</param>
-        /// <returns>A new instance of the <see cref="ViewModelActionItem"/> class.</returns>
-        protected virtual ViewModelActionItem CreateCollectionChangeActionItem(string displayName, IList list, NotifyCollectionChangedEventArgs args)
+        /// <returns>A new instance of the <see cref="DirtiableActionItem"/> class.</returns>
+        protected virtual DirtiableActionItem CreateCollectionChangeActionItem(string displayName, IList list, NotifyCollectionChangedEventArgs args)
         {
             return new CollectionChangedViewModelActionItem(displayName, Dirtiables, list, args, Dispatcher);
         }

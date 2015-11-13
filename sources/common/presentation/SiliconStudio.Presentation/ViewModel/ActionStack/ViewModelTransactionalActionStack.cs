@@ -11,7 +11,7 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
 {
     public class ViewModelTransactionalActionStack : TransactionalActionStack
     {
-        private readonly List<ViewModelActionItem> discardedActionItems = new List<ViewModelActionItem>();
+        private readonly List<DirtiableActionItem> discardedActionItems = new List<DirtiableActionItem>();
 
         public ViewModelTransactionalActionStack(int capacity, IViewModelServiceProvider serviceProvider)
             : base(capacity)
@@ -43,7 +43,7 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
             var savePoint = base.CreateSavePoint(markActionsAsSaved);
             if (markActionsAsSaved)
             {
-                var dirtiables = new HashSet<IDirtiableViewModel>();
+                var dirtiables = new HashSet<IDirtiable>();
                 foreach (var viewModelActionItem in EnumerateViewModelActionItems(discardedActionItems))
                 {
                     var viewModelActionItemCopy = viewModelActionItem;
@@ -74,11 +74,11 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
             base.OnActionItemsDiscarded(e);
         }
 
-        private static IEnumerable<ViewModelActionItem> EnumerateViewModelActionItems(IEnumerable<IActionItem> actionItems)
+        private static IEnumerable<DirtiableActionItem> EnumerateViewModelActionItems(IEnumerable<IActionItem> actionItems)
         {
             foreach (var actionItem in actionItems)
             {
-                var viewModelActionItem = actionItem as ViewModelActionItem;
+                var viewModelActionItem = actionItem as DirtiableActionItem;
                 if (viewModelActionItem != null)
                 {
                     yield return viewModelActionItem;
@@ -96,7 +96,7 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
 
         private static void RegisterActionItemsRecursively(IEnumerable<IActionItem> actionItems)
         {
-            var dirtiables = new HashSet<IDirtiableViewModel>();
+            var dirtiables = new HashSet<IDirtiable>();
             foreach (var viewModelActionItem in EnumerateViewModelActionItems(actionItems))
             {
                 var viewModelActionItemCopy = viewModelActionItem;
@@ -115,7 +115,7 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
 
         private void DiscardActionItemsRecursively(IEnumerable<IActionItem> actionItems, ActionItemDiscardType discardType)
         {
-            var dirtiables = new HashSet<IDirtiableViewModel>();
+            var dirtiables = new HashSet<IDirtiable>();
             foreach (var viewModelActionItem in EnumerateViewModelActionItems(actionItems))
             {
                 if (discardType == ActionItemDiscardType.Swallowed)

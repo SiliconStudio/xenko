@@ -8,13 +8,13 @@ using SiliconStudio.Presentation.ViewModel.ActionStack;
 
 namespace SiliconStudio.Presentation.Commands
 {
-    public class CommandActionItem : ViewModelActionItem
+    public class CommandActionItem : DirtiableActionItem
     {
         private CancellableCommand command;
         private object parameter;
         private UndoToken undoToken;
 
-        public CommandActionItem(CancellableCommand command, object parameter, UndoToken undoToken, IEnumerable<IDirtiableViewModel> dirtiables)
+        public CommandActionItem(CancellableCommand command, object parameter, UndoToken undoToken, IEnumerable<IDirtiable> dirtiables)
             : base("Executing " + command.Name, dirtiables)
         {
             this.command = command;

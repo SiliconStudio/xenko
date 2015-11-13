@@ -2,13 +2,14 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.ActionStack;
 
 namespace SiliconStudio.Presentation.ViewModel.ActionStack
 {
     /// <summary>
-    /// An implementation of the <see cref="ViewModelActionItem"/> that uses delegate for undo and redo.
+    /// An implementation of the <see cref="DirtiableActionItem"/> that uses delegate for undo and redo.
     /// </summary>
-    public class AnonymousViewModelActionItem : ViewModelActionItem
+    public class AnonymousViewModelActionItem : DirtiableActionItem
     {
         private readonly Action undo;
         private readonly Action redo;
@@ -20,11 +21,11 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
         /// <param name="dirtiables">The dirtiable objects associated to this action item.</param>
         /// <param name="undo">The <see cref="Action"/> to invoke on undo.</param>
         /// <param name="redo">The <see cref="Action"/> to invoke on redo.</param>
-        public AnonymousViewModelActionItem(string name, IEnumerable<IDirtiableViewModel> dirtiables, Action undo, Action redo)
+        public AnonymousViewModelActionItem(string name, IEnumerable<IDirtiable> dirtiables, Action undo, Action redo)
             : base(name, dirtiables)
         {
-            if (undo == null) throw new ArgumentNullException("undo");
-            if (redo == null) throw new ArgumentNullException("redo");
+            if (undo == null) throw new ArgumentNullException(nameof(undo));
+            if (redo == null) throw new ArgumentNullException(nameof(redo));
             this.undo = undo;
             this.redo = redo;
         }

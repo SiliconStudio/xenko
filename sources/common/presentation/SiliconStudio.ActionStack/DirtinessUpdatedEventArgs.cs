@@ -1,8 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 
-namespace SiliconStudio.Presentation.ViewModel
+namespace SiliconStudio.ActionStack
 {
     public class DirtinessUpdatedEventArgs : EventArgs
     {
@@ -12,10 +13,10 @@ namespace SiliconStudio.Presentation.ViewModel
             NewValue = newValue;
         }
 
-        public bool OldValue { get; private set; }
+        public bool OldValue { get; }
 
-        public bool NewValue { get; private set; }
+        public bool NewValue { get; }
 
-        public bool HasChanged { get { return OldValue != NewValue; } }
+        public bool HasChanged => OldValue != NewValue;
     }
 }

@@ -19,8 +19,8 @@ namespace SiliconStudio.Presentation.Commands
         /// Initializes a new instance of the <see cref="CancellableCommand"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IActionStack"/> to use for this view model.</param>
-        /// <param name="dirtiables">The <see cref="IDirtiableViewModel"/> instances associated to this command.</param>
-        protected CancellableCommand(IViewModelServiceProvider serviceProvider, IEnumerable<IDirtiableViewModel> dirtiables)
+        /// <param name="dirtiables">The <see cref="IDirtiable"/> instances associated to this command.</param>
+        protected CancellableCommand(IViewModelServiceProvider serviceProvider, IEnumerable<IDirtiable> dirtiables)
             : base(serviceProvider)
         {
             this.serviceProvider = serviceProvider;
@@ -32,7 +32,7 @@ namespace SiliconStudio.Presentation.Commands
         /// </summary>
         public abstract string Name { get; }
 
-        protected IEnumerable<IDirtiableViewModel> Dirtiables { get; private set; }
+        protected IEnumerable<IDirtiable> Dirtiables { get; private set; }
 
         /// <summary>
         /// Choose whether transaction is discarded (true) or ended (false) during <see cref="ExecuteCommand"/>.

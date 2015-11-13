@@ -244,10 +244,8 @@
     <Compile Include="ViewModel\ActionStack\ActionItemViewModel.cs" />
     <Compile Include="ViewModel\ActionStack\CollectionChangedViewModelActionItem.cs" />
     <Compile Include="ViewModel\DirtiableEditableViewModel.cs" />
-    <Compile Include="ViewModel\DirtinessUpdatedEventArgs.cs" />
     <Compile Include="ViewModel\DispatcherViewModel.cs" />
     <Compile Include="ViewModel\EditableViewModel.cs" />
-    <Compile Include="ViewModel\IDirtiableViewModel.cs" />
     <Compile Include="Services\IDispatcherService.cs" />
     <Compile Include="ViewModel\LoggerResultViewModel.cs" />
     <Compile Include="ViewModel\LoggerViewModel.cs" />
@@ -256,7 +254,6 @@
     <Compile Include="ValueConverters\VisibleOrCollapsed.cs" />
     <Compile Include="ValueConverters\VisibleOrHidden.cs" />
     <Compile Include="ValueConverters\InvertBool.cs" />
-    <Compile Include="ViewModel\ActionStack\ViewModelActionItem.cs" />
     <Compile Include="ViewModel\ViewModelBase.cs" />
     <Compile Include="View\DispatcherService.cs" />
     <Compile Include="View\ITemplateProvider.cs" />

@@ -30,7 +30,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected readonly ObservableViewModelService Service;
         protected readonly ObservableViewModelIdentifier Identifier;
 
-        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModel owner, ModelNodePath nodePath, IEnumerable<IDirtiableViewModel> dirtiables)
+        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModel owner, ModelNodePath nodePath, IEnumerable<IDirtiable> dirtiables)
             : base(serviceProvider, dirtiables)
         {
             if (nodeCommand == null) throw new ArgumentNullException(nameof(nodeCommand));

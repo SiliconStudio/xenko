@@ -10,25 +10,25 @@ using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.ViewModel.ActionStack
 {
-    public class CollectionChangedViewModelActionItem : ViewModelActionItem
+    public class CollectionChangedViewModelActionItem : DirtiableActionItem
     {
         private readonly CollectionChangedActionItem innerActionItem;
         private IDispatcherService dispatcher;
 
-        private CollectionChangedViewModelActionItem(string name, IEnumerable<IDirtiableViewModel> dirtiables, IDispatcherService dispatcher)
+        private CollectionChangedViewModelActionItem(string name, IEnumerable<IDirtiable> dirtiables, IDispatcherService dispatcher)
             : base(name, dirtiables)
         {
             if (dispatcher == null) throw new ArgumentNullException("dispatcher");
             this.dispatcher = dispatcher;
         }
 
-        public CollectionChangedViewModelActionItem(string name, IEnumerable<IDirtiableViewModel> dirtiables, IList list, NotifyCollectionChangedAction actionToUndo, IReadOnlyCollection<object> items, int index, IDispatcherService dispatcher)
+        public CollectionChangedViewModelActionItem(string name, IEnumerable<IDirtiable> dirtiables, IList list, NotifyCollectionChangedAction actionToUndo, IReadOnlyCollection<object> items, int index, IDispatcherService dispatcher)
             : this(name, dirtiables, dispatcher)
         {
             innerActionItem = new CollectionChangedActionItem(list, actionToUndo, items, index);
         }
 
-        public CollectionChangedViewModelActionItem(string name, IEnumerable<IDirtiableViewModel> dirtiables, IList list, NotifyCollectionChangedEventArgs args, IDispatcherService dispatcher)
+        public CollectionChangedViewModelActionItem(string name, IEnumerable<IDirtiable> dirtiables, IList list, NotifyCollectionChangedEventArgs args, IDispatcherService dispatcher)
             : this(name, dirtiables, dispatcher)
         {
             innerActionItem = new CollectionChangedActionItem(list, args);
