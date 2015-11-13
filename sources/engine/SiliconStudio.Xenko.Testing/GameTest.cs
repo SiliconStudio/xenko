@@ -1,3 +1,4 @@
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Threading;
 using System.Threading.Tasks;
@@ -100,3 +101,4 @@ namespace SiliconStudio.Xenko.Testing
         }
     }
 }
+#endif
