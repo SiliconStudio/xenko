@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Games
             return new GamePlatformiOS(game);
 #else
             // Here we cover all Desktop variants: OpenTK, SDL, Winforms,...
-            return new GamePlatformDesktop(game);
+            return new GamePlatformWindows(game);
 #endif
         }
 
