@@ -56,14 +56,6 @@ namespace SiliconStudio.Quantum
         public IReadOnlyCollection<INodeCommand> Commands => commands;
 
         /// <summary>
-        /// Gets the flags.
-        /// </summary>
-        /// <value>
-        /// The flags.
-        /// </value>
-        public ModelNodeFlags Flags { get; set; }
-
-        /// <summary>
         /// Add a child to this node. The node must not have been sealed yet.
         /// </summary>
         /// <param name="child">The child node to add.</param>

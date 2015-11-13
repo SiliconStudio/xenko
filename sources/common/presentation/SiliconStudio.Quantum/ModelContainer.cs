@@ -190,7 +190,7 @@ namespace SiliconStudio.Quantum
 
             var result = (ModelNode)NodeBuilder.Build(referencer, rootObject, type, guid);
 
-            if (result != null && (result.Flags & ModelNodeFlags.DoNotCache) == 0)
+            if (result != null)
             {
                 // Register reference objects
                 modelsByGuid.Add(result.Guid, result);
