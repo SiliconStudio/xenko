@@ -28,6 +28,7 @@
     <Compile Include="TapSimulationRequest.cs" />
     <Compile Include="TestClient.cs" />
     <Compile Include="TestEndedRequest.cs" />
+    <Compile Include="GameTest.cs" />
     <Compile Include="TestRegistrationRequest.cs" />
   </ItemGroup>
   <ItemGroup>
