@@ -10,10 +10,10 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Particles
 {
-    public delegate void CopyParticlePoolDelegate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize);
-
     public class ParticlePool : IDisposable, IEnumerable
     {
+        public delegate void CopyParticlePoolDelegate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize);
+
         public enum ListPolicy
         {
             /// <summary>
@@ -35,10 +35,23 @@ namespace SiliconStudio.Xenko.Particles
         private bool disposed;
         private readonly ListPolicy listPolicy;
 
+        /// <summary>
+        /// ParticleData is where the memory block (particle pool) actually resides.
+        /// Its size equals <see cref="ParticleSize"/> * <see cref="ParticleCapacity"/>
+        /// </summary>
         public IntPtr ParticleData { get; private set; } = IntPtr.Zero;
 
+        /// <summary>
+        /// The maximum allowed number of particles in this <see cref="ParticlePool"/>.
+        /// Use <see cref="SetCapacity"/> if you need to change it.
+        /// </summary>
         public int ParticleCapacity { get; private set; }
 
+        /// <summary>
+        /// Set a different capacity (maximum <see cref="Particle"/> count for this pool)
+        /// Whenever possible, existing particles will be copied and continue simulation
+        /// </summary>
+        /// <param name="newCapacity">New maximum capacity</param>
         public void SetCapacity(int newCapacity)
         {
             if (newCapacity < 0)
@@ -47,6 +60,14 @@ namespace SiliconStudio.Xenko.Particles
             RelocatePool(ParticleSize, newCapacity, CapacityChangedRelocate);
         }
 
+        /// <summary>
+        /// Returns the size of a single particle.
+#if PARTICLES_SOA
+        /// The size of the <see cref="Particle"/> equals the sum of all fields' strides.
+#else
+        /// The size of the <see cref="Particle"/> equals the pool's stride.
+#endif
+        /// </summary>
         public int ParticleSize { get; private set; }
 
         /// <summary>
@@ -54,6 +75,12 @@ namespace SiliconStudio.Xenko.Particles
         /// For stack implementations, the index points to the top of the stack and can reach 0 when there are no living particles.
         /// </summary>
         private int nextFreeIndex;
+
+        /// <summary>
+        /// <see cref="NextFreeIndex"/> points to the next index ready for allocation, between 0 and <see cref="ParticleCapacity"/> - 1.
+        /// In case of stack list the <see cref="NextFreeIndex"/> equals the number of living particles in the pool.
+        /// </summary>
+        public int NextFreeIndex => nextFreeIndex;
 
         public ParticlePool(int size, int capacity, ListPolicy listPolicy = ListPolicy.Ring)
         {
@@ -88,6 +115,9 @@ namespace SiliconStudio.Xenko.Particles
             ParticleSize = newSize;
         }
 
+        /// <summary>
+        /// Clears all fields, but keeps the particle capacity the same.
+        /// </summary>
         public void Reset()
         {
             fields.Clear();
@@ -167,7 +197,7 @@ namespace SiliconStudio.Xenko.Particles
             if (nextFreeIndex != ParticleCapacity)
                 return FromIndex(nextFreeIndex++);
 
-            if (listPolicy != ListPolicy.Ring)
+            if (listPolicy != ListPolicy.Ring || ParticleCapacity == 0)
                 return Particle.Invalid();
 
             nextFreeIndex = 0;
@@ -200,6 +230,7 @@ namespace SiliconStudio.Xenko.Particles
 #if PARTICLES_SOA
         private readonly List<ParticleFieldDescription> fieldDescriptions = new List<ParticleFieldDescription>(DefaultMaxFielsPerPool);
 #endif
+
         internal ParticleField AddField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
         {
             ParticleField existingField;
@@ -281,6 +312,7 @@ namespace SiliconStudio.Xenko.Particles
             var oldOffset = 0;
             var newOffset = 0;
 
+            // Fields haven't changed so we can iterate them. In case of Add/Remove fields you shouldn't use this
             foreach (var field in fields.Values)
             {                
                 var copySize = Math.Min(oldCapacity, newCapacity) * field.Stride;
