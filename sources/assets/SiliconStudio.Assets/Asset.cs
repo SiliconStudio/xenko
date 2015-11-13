@@ -11,7 +11,7 @@ namespace SiliconStudio.Assets
     /// Base class for Asset.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class Asset
+    public abstract class Asset : IIdentifiable
     {
         private Guid id;
 

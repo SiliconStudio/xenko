@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.Engine.Design
     /// Contains design data used by an <see cref="Entity"/>
     /// </summary>
     [DataContract("EntityDesignData")]
+    [NonIdentifitable]
     public class EntityDesignData
     {
         /// <summary>
@@ -36,6 +37,7 @@ namespace SiliconStudio.Xenko.Engine.Design
     /// Associate an <see cref="Entity"/> with <see cref="EntityDesignData"/>.
     /// </summary>
     [DataContract("EntityDesign")]
+    [NonIdentifitable]
     public class EntityDesign
     {
         /// <summary>
