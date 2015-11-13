@@ -65,6 +65,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             if (gameContext == null)
             {
+                Debug.Assert(game.Context is GameContextiOS, "There is only one possible descendant of GameContext for iOS.");
                 gameContext = (GameContextiOS)game.Context;
                 gameContext.Control.AddSubview(overlayView);
 

@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowiOS : GameWindow<iPhoneOSGameView>
+    internal class GameWindowiOS : GameWindow<iOSWindow>
     {
         private bool hasBeenInitialized;
         private iPhoneOSGameView gameForm;
@@ -50,9 +50,9 @@ namespace SiliconStudio.Xenko.Games
             return gameContext.ContextType == AppContextType.iOS;
         }
 
-        protected override void Initialize(GameContext<iPhoneOSGameView> gameContext)
+        protected override void Initialize(GameContext<iOSWindow> gameContext)
         {
-            gameForm = gameContext.Control;
+            gameForm = gameContext.Control.GameView;
             nativeWindow = new WindowHandle(AppContextType.iOS, gameForm);
 
             gameForm.Load += gameForm_Load;

@@ -83,6 +83,7 @@
     <Compile Include="IGameSystemBase.cs" />
     <Compile Include="IGraphicsDeviceFactory.cs" />
     <Compile Include="IGraphicsDeviceManager.cs" />
+    <Compile Include="iOS\iOSWindow.cs" />
     <Compile Include="IUpdateable.cs" />
     <Compile Include="LaunchParameters.cs" />
     <Compile Include="ListBoundExtensions.cs" />

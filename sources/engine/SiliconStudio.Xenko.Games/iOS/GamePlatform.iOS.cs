@@ -5,12 +5,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
-using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Games
 {
-    internal class GamePlatformiOS : GamePlatform<iPhoneOSGameView>, IGraphicsDeviceFactory
+    internal class GamePlatformiOS : GamePlatform<iOSWindow>, IGraphicsDeviceFactory
     {
         public GamePlatformiOS(GameBase game) : base(game)
         {
