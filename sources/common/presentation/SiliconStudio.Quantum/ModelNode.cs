@@ -94,7 +94,7 @@ namespace SiliconStudio.Quantum
         public void RemoveCommand(INodeCommand command)
         {
             if (isSealed)
-                throw new InvalidOperationException("Unable to add a child to a ModelNode that has been sealed");
+                throw new InvalidOperationException("Unable to remove a command from a ModelNode that has been sealed");
 
             commands.Remove(command);
         }

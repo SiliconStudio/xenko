@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.ActionStack;
-using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
@@ -34,8 +33,8 @@ namespace SiliconStudio.Presentation.Quantum
         public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModel owner, ModelNodePath nodePath, IEnumerable<IDirtiableViewModel> dirtiables)
             : base(serviceProvider, dirtiables)
         {
-            if (nodeCommand == null) throw new ArgumentNullException("nodeCommand");
-            if (owner == null) throw new ArgumentNullException("owner");
+            if (nodeCommand == null) throw new ArgumentNullException(nameof(nodeCommand));
+            if (owner == null) throw new ArgumentNullException(nameof(owner));
             NodePath = nodePath;
             // Note: the owner should not be stored in the command because we want it to be garbage collectable
             Identifier = owner.Identifier;
@@ -45,13 +44,13 @@ namespace SiliconStudio.Presentation.Quantum
             ObservableNodePath = observableNodePath;
         }
 
-        public override string Name { get { return NodeCommand.Name; } }
+        public override string Name => NodeCommand.Name;
 
-        public override CombineMode CombineMode { get { return NodeCommand.CombineMode; } }
+        public override CombineMode CombineMode => NodeCommand.CombineMode;
 
         public virtual CancellableCommand AdditionalCommand { get; set; }
         
-        public INodeCommand NodeCommand { get; private set; }
+        public INodeCommand NodeCommand { get; }
 
         protected override UndoToken Redo(object parameter, bool creatingActionItem)
         {
@@ -87,10 +86,7 @@ namespace SiliconStudio.Presentation.Quantum
             modelNode.SetValue(newValue, index);
             Refresh(modelNode, index);
 
-            if (AdditionalCommand != null)
-            {
-                AdditionalCommand.UndoCommand(null, modelNodeToken.AdditionalToken);
-            }
+            AdditionalCommand?.UndoCommand(null, modelNodeToken.AdditionalToken);
         }
 
         /// <summary>
@@ -101,7 +97,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="index">The index at which the actual value to update is stored.</param>
         protected virtual void Refresh(IModelNode modelNode, object index)
         {
-            if (modelNode == null) throw new ArgumentNullException("modelNode");
+            if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
 
             var observableNode = Service.ResolveObservableNode(Identifier, ObservableNodePath) as ObservableModelNode;
             // No node matches this model node
