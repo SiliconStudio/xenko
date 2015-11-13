@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Input
             switch (context.ContextType)
             {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-#if !SILICONSTUDIO_UI_SDL2
+#if !SILICONSTUDIO_UI_SDL_ONLY
                 case AppContextType.Desktop:
                 case AppContextType.DesktopWpf:
                     return new InputManagerWinforms(registry);

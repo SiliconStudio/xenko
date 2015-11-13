@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Games
     #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             return new GameContextOpenTk(null);
     #else
-        #if SILICONSTUDIO_UI_SDL2
+        #if SILICONSTUDIO_UI_SDL_ONLY
             return new GameContextSdl(null);
         #else
             // In theory we could choose between GameContextWinforms and GameContextSdl,

@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Games
         {
             return new GameWindow[]
                 {
-#if !SILICONSTUDIO_UI_SDL2
+#if !SILICONSTUDIO_UI_SDL_ONLY
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
                     new GameWindowOpenTK(),
 #endif

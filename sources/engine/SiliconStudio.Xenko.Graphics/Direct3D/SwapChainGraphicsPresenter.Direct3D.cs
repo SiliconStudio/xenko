@@ -24,7 +24,7 @@
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-#if !SILICONSTUDIO_UI_SDL2
+#if !SILICONSTUDIO_UI_SDL_ONLY
 using System.Windows.Forms;
 #else
 using Control = SiliconStudio.Xenko.Graphics.SDL.Window;

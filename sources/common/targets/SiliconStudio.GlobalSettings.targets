@@ -130,8 +130,8 @@
   <!-- 
     Settings SiliconStudioUI specific
   -->
-  <PropertyGroup Condition=" '$(SiliconStudioUI)' == 'SDL2' ">
-    <SiliconStudioUIDefines>SILICONSTUDIO_UI_SDL2</SiliconStudioUIDefines>
+  <PropertyGroup Condition=" '$(SiliconStudioUI)' == 'SDL' ">
+    <SiliconStudioUIDefines>SILICONSTUDIO_UI_SDL_ONLY</SiliconStudioUIDefines>
   </PropertyGroup>
  
   <!-- 

@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_RUNTIME_CORECLR
 using System;
-#if !SILICONSTUDIO_UI_SDL2
+#if !SILICONSTUDIO_UI_SDL_ONLY
 using System.Drawing;
 using System.Drawing.Imaging;
 #endif
@@ -14,7 +14,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Graphics
 {
 
-#if SILICONSTUDIO_UI_SDL2
+#if SILICONSTUDIO_UI_SDL_ONLY
     public sealed class ImageFormat
     {
         // Format IDs
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         public unsafe static Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
-#if !SILICONSTUDIO_UI_SDL2
+#if !SILICONSTUDIO_UI_SDL_ONLY
             using (var memoryStream = new UnmanagedMemoryStream((byte*)pSource, size))
             using (var bitmap = (Bitmap)System.Drawing.Image.FromStream(memoryStream))
             {
@@ -169,7 +169,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static void SaveFromMemory(PixelBuffer[] pixelBuffers, int count, ImageDescription description, Stream imageStream, ImageFormat imageFormat)
         {
-#if !SILICONSTUDIO_UI_SDL2
+#if !SILICONSTUDIO_UI_SDL_ONLY
             using (var bitmap = new Bitmap(description.Width, description.Height))
             {
                 var sourceArea = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
