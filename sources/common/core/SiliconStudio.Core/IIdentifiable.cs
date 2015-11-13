@@ -12,6 +12,14 @@ namespace SiliconStudio.Core
         /// <summary>
         /// Gets the id of this instance
         /// </summary>
-        Guid Id { get; }
+        Guid Id { get; set; }
+    }
+
+    /// <summary>
+    /// Tag a class that should have attached identifier.
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class NonIdentifitableAttribute : Attribute
+    {
     }
 }

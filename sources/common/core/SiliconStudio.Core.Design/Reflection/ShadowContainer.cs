@@ -10,9 +10,56 @@ namespace SiliconStudio.Core.Reflection
     {
         private static readonly IEnumerable<ShadowAttributes> EmptyAttributes = Enumerable.Empty<ShadowAttributes>();
         private Dictionary<object, ShadowAttributes> attachedAttributesPerKey;
+        private Guid? id;
+        private readonly bool isIdentifiable;
 
-        public ShadowContainer()
+        public ShadowContainer(Type type)
         {
+            isIdentifiable = IdentifiableHelper.IsIdentifiable(type);
+        }
+
+        public Guid GetId(object instance)
+        {
+            // If the object is not identifiable, early exit
+            if (!isIdentifiable)
+            {
+                return Guid.Empty;
+            }
+
+            // Don't use  local id if the object is already identifiable
+            var @component = instance as IIdentifiable;
+            if (@component != null)
+            {
+                return @component.Id;
+            }
+
+            // If we don't have yet an id, create one.
+            if (!id.HasValue)
+            {
+                id = Guid.NewGuid();
+            }
+
+            return id.Value;
+        }
+
+        public void SetId(object instance, Guid id)
+        {
+            // If the object is not identifiable, early exit
+            if (!isIdentifiable)
+            {
+                return;
+            }
+
+            // If the object instance is already identifiable, store id into it directly
+            var @component = instance as IIdentifiable;
+            if (@component != null)
+            {
+                @component.Id = id;
+            }
+            else
+            {
+                this.id = id;
+            }
         }
 
         public IEnumerable<ShadowAttributes> Members
@@ -26,16 +73,21 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        public ShadowContainer Clone()
+        public ShadowContainer Clone(object toInstance)
         {
             if (attachedAttributesPerKey == null)
             {
                 return null;
             }
 
-            var container = new ShadowContainer();
-            
-            container.attachedAttributesPerKey = new Dictionary<object, ShadowAttributes>();
+            var container = new ShadowContainer(toInstance.GetType()) { attachedAttributesPerKey = new Dictionary<object, ShadowAttributes>() };
+
+            // Copy only Id if it is declared as local and it is an identifiable type
+            if (isIdentifiable && id.HasValue)
+            {
+                container.id = id;
+            }
+
             foreach (var keyValue in attachedAttributesPerKey)
             {
                 container.attachedAttributesPerKey.Add(keyValue.Key, keyValue.Value.Clone());
