@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Particles
         protected ParticleFieldDescription(string name)
         {
             this.name = name;
-            this.hashCode = name.GetHashCode();
+            hashCode = name.GetHashCode();
         }
     }
 

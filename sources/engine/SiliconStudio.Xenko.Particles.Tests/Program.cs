@@ -4,7 +4,6 @@
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Tests
@@ -15,6 +14,14 @@ namespace SiliconStudio.Xenko.Particles.Tests
         static readonly Stopwatch WatchParticles = new Stopwatch();
 
         private delegate void RunTestDelegate(int count);
+
+        const int particleCount = 50000;
+#if DEBUG
+        const int numberOfTests = 1;
+#else
+        const int numberOfTests = 30;
+#endif
+        static readonly ParticlePool particlePool = new ParticlePool(0, particleCount, ParticlePool.ListPolicy.Stack);
 
         static void RunTest(RunTestDelegate test, int particleCount, int times)
         {
@@ -29,8 +36,18 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
         static void Main(string[] args)
         {
-            const int particleCount = 50000;
-            const int numberOfTests = 30;
+
+            const bool forceCreation = true;
+            particlePool.FieldExists(ParticleFields.Position, forceCreation);
+            particlePool.FieldExists(ParticleFields.RemainingLife, forceCreation);
+            particlePool.FieldExists(ParticleFields.Velocity, forceCreation);
+            particlePool.FieldExists(ParticleFields.Size, forceCreation);
+
+            for (var idx = 0; idx < particleCount; idx++)
+            {
+                particlePool.AddParticle();
+            }
+
 #if DEBUG
             System.Console.Out.WriteLine($"This test is DEBUG so it's slow");
             System.Console.Out.WriteLine($"Its purpose is to ASSERT the particle engine works properly");
@@ -67,6 +84,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
             System.Console.ReadLine();
 
+            
         }
 
         private static void Assert(bool condition, string message, [CallerFilePath] string callingFilePath = "", [CallerLineNumber] int callerLine = 0)
@@ -86,23 +104,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
         /// </summary>
         private unsafe static void TestPool(int particleCount, ParticlePool.ListPolicy listPolicy)
         {
-            var particlePool = new ParticlePool(0, particleCount, listPolicy);
-
-            const bool forceCreation = true;
-            particlePool.FieldExists(ParticleFields.Position     , forceCreation);
-            particlePool.FieldExists(ParticleFields.RemainingLife, forceCreation);
-            particlePool.FieldExists(ParticleFields.Velocity     , forceCreation);
-            particlePool.FieldExists(ParticleFields.Size         , forceCreation);
-
             var positionField = particlePool.GetField(ParticleFields.Position);
             var lifetimeField = particlePool.GetField(ParticleFields.RemainingLife);
             var velocityField = particlePool.GetField(ParticleFields.Velocity);
             var sizeField     = particlePool.GetField(ParticleFields.Size);
-
-            for (int idx = 0; idx < particleCount; idx++)
-            {
-                particlePool.AddParticle();
-            }
 
             var i = 0;
             var vecToSet = new Vector3(0, 0, 0);
@@ -202,23 +207,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
         private static void TestSetGet(int particleCount, ParticlePool.ListPolicy listPolicy)
         {
-            var particlePool = new ParticlePool(0, particleCount, listPolicy);
-
-            const bool forceCreation = true;
-            particlePool.FieldExists(ParticleFields.Position, forceCreation);
-            particlePool.FieldExists(ParticleFields.RemainingLife, forceCreation);
-            particlePool.FieldExists(ParticleFields.Velocity, forceCreation);
-            particlePool.FieldExists(ParticleFields.Size, forceCreation);
-
             var positionField = particlePool.GetField(ParticleFields.Position);
             var lifetimeField = particlePool.GetField(ParticleFields.RemainingLife);
             var velocityField = particlePool.GetField(ParticleFields.Velocity);
             var sizeField = particlePool.GetField(ParticleFields.Size);
-
-            for (int idx = 0; idx < particleCount; idx++)
-            {
-                particlePool.AddParticle();
-            }
 
             var i = 0;
             var vecToSet = new Vector3(0, 0, 0);

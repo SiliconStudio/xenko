@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Particles
         internal ParticleFieldAccessor(ParticleField field)
         {
             offset = field.Offset;
-            unitSize = field.Size;
+            unitSize = field.Stride;
         }
 
         public ParticleFieldAccessor(IntPtr offset, int unitSize)
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Particles
         internal ParticleFieldAccessor(ParticleField field)
         {
             offset = field.Offset;
-            unitSize = field.Size;
+            unitSize = field.Stride;
         }
 
         public ParticleFieldAccessor(IntPtr offset, int unitSize)
