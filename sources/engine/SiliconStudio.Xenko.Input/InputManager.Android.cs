@@ -7,9 +7,10 @@ using System;
 using Android.Views;
 using Android.Content;
 using Android.Hardware;
-using OpenTK.Platform.Android;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Games.Android;
 
 namespace SiliconStudio.Xenko.Input
 {
@@ -40,12 +41,10 @@ namespace SiliconStudio.Xenko.Input
             HasPointer = true;
         }
 
-        public override void Initialize()
+        public override void Initialize(GameContext<AndroidXenkoGameView> gameContext)
         {
-            base.Initialize();
-
             var viewListener = new ViewListener(this);
-            Control = Game.Context.Control;
+            Control = gameContext.Control;
             Control.SetOnTouchListener(viewListener);
             Control.SetOnKeyListener(viewListener);
             Control.Resize += GameViewOnResize;
@@ -373,9 +372,9 @@ namespace SiliconStudio.Xenko.Input
 
         class ViewListener : Java.Lang.Object, View.IOnTouchListener, View.IOnKeyListener
         {
-            private readonly InputManager inputManager;
+            private readonly InputManagerAndroid inputManager;
 
-            public ViewListener(InputManager inputManager)
+            public ViewListener(InputManagerAndroid inputManager)
             {
                 this.inputManager = inputManager;
             }
