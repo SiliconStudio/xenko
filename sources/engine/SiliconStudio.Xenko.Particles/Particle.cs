@@ -8,12 +8,9 @@ namespace SiliconStudio.Xenko.Particles
 {
     public struct  Particle
     {
+#if PARTICLES_SOA
         public readonly int Index;
 
-        /// <summary>
-        /// Creates a new <see cref="Particle"/>
-        /// </summary>
-        /// <param name="index"></param>
         public Particle(int index)
         {
             Index = index;
@@ -27,6 +24,24 @@ namespace SiliconStudio.Xenko.Particles
         {
             return new Particle(int.MaxValue);
         }
+#else
+        public readonly IntPtr Pointer;
+
+        public Particle(IntPtr pointer)
+        {
+            Pointer = pointer;
+        }
+
+        /// <summary>
+        /// Creates an invalid <see cref="Particle"/>. Accessing the invalid <see cref="Particle"/> is not resticted by the engine, so the user has to restrict it.
+        /// </summary>
+        /// <returns></returns>
+        static public Particle Invalid()
+        {
+            return new Particle(IntPtr.Zero);
+        }
+#endif
+
         #region Accessors
 
 
@@ -38,8 +53,11 @@ namespace SiliconStudio.Xenko.Particles
         /// <returns>The field value.</returns>
         public T Get<T>(ParticleFieldAccessor accessor) where T : struct
         {
-        //    return ParticleUtilities.ToStruct<T>(Pointer + accessor);
-              return Utilities.Read<T>(accessor[Index]);
+#if PARTICLES_SOA
+            return Utilities.Read<T>(accessor[Index]);
+#else
+            return Utilities.Read<T>(Pointer + accessor);
+#endif
         }
 
         /// <summary>
@@ -50,7 +68,11 @@ namespace SiliconStudio.Xenko.Particles
         /// <returns>The field value.</returns>
         public T Get<T>(ParticleFieldAccessor<T> accessor) where T : struct
         {
+#if PARTICLES_SOA
             return Utilities.Read<T>(accessor[Index]);
+#else
+            return Utilities.Read<T>(Pointer + accessor);
+#endif
         }
 
         /// <summary>
@@ -61,7 +83,11 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="value">The value to set</param>
         public void Set<T>(ParticleFieldAccessor<T> accessor, ref T value) where T : struct
         {
+#if PARTICLES_SOA
             Utilities.Write(accessor[Index], ref value);
+#else
+            Utilities.Write(Pointer + accessor, ref value);
+#endif
         }
 
         /// <summary>
@@ -72,19 +98,26 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="value">The value to set</param>
         public void Set<T>(ParticleFieldAccessor<T> accessor, T value) where T : struct
         {
+#if PARTICLES_SOA
             Utilities.Write(accessor[Index], ref value);
+#else
+            Utilities.Write(Pointer + accessor, ref value);
+#endif
         }
 
         #endregion
 
+#if PARTICLES_SOA
         public IntPtr this[ParticleFieldAccessor accessor] => accessor[Index];
 
-        /// <summary>
-        /// Casts the index of the <see cref="Particle"/> as int
-        /// </summary>
-        /// <param name="particle"></param>
         public static implicit operator int(Particle particle) => particle.Index;
+#else
+        public static implicit operator IntPtr(Particle particle) => particle.Pointer;
 
+        public IntPtr this[ParticleFieldAccessor accessor] => Pointer + accessor;
+#endif
+
+#if PARTICLES_SOA
         /// <summary>
         /// Since particles are only indices, the comparison is only meaningful if it's done within the same particle pool
         /// </summary>
@@ -93,5 +126,16 @@ namespace SiliconStudio.Xenko.Particles
         /// <returns></returns>
         public static bool operator ==(Particle particleLeft, Particle particleRight) => (particleLeft.Index == particleRight.Index);
         public static bool operator !=(Particle particleLeft, Particle particleRight) => (particleLeft.Index != particleRight.Index);
+#else
+        /// <summary>
+        /// Checks if the two particles point to the same pointer.
+        /// </summary>
+        /// <param name="particleLeft">Left side particle to compare</param>
+        /// <param name="particleRight">Right side particle to compare</param>
+        /// <returns></returns>
+        public static bool operator ==(Particle particleLeft, Particle particleRight) => (particleLeft.Pointer == particleRight.Pointer);
+        public static bool operator !=(Particle particleLeft, Particle particleRight) => (particleLeft.Pointer != particleRight.Pointer);
+
+#endif
     }
 }

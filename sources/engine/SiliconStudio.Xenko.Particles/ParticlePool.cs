@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 
@@ -15,22 +16,6 @@ namespace SiliconStudio.Xenko.Particles
 
     public class ParticlePool : IDisposable, IEnumerable
     {
-        public enum FieldsPolicy
-        {
-            /// <summary>
-            /// The particle pool is initialized as an Array of Structs
-            /// Each particle is a struct and they are organized as an array with length equal to the pool's capacity
-            /// </summary>
-            AoS,
-
-            /// <summary>
-            /// The particle pool is initialized as na Struct of Arrays
-            /// Each particle field is a separate array with length equal to the pool's capacity
-            /// The particle is not a contained struct anymore, but just an index to its data in the array.
-            /// </summary>
-            SoA
-        }
-
         public enum ListPolicy
         {
             /// <summary>
@@ -59,7 +44,6 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         private bool disposed = false;
-        private readonly FieldsPolicy fieldsPolicy;
         private readonly ListPolicy listPolicy;
 
         public IntPtr ParticleData { get; private set; } = IntPtr.Zero;
@@ -74,14 +58,13 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         private int nextFreeIndex;
 
-        public ParticlePool(int size, int capacity, FieldsPolicy fieldsPolicy = FieldsPolicy.AoS, ListPolicy listPolicy = ListPolicy.Ring)
+        public ParticlePool(int size, int capacity, ListPolicy listPolicy = ListPolicy.Ring)
         {
             if (listPolicy == ListPolicy.OrderedStack || listPolicy == ListPolicy.DynamicStack)
             {
                 throw new NotImplementedException();
             }
 
-            this.fieldsPolicy = fieldsPolicy;
             this.listPolicy = listPolicy;
 
             nextFreeIndex = 0;
@@ -150,9 +133,14 @@ namespace SiliconStudio.Xenko.Particles
             
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Particle FromIndex(int idx)
         {
+#if PARTICLES_SOA
             return new Particle(idx);
+#else
+            return new Particle(ParticleData + idx * ParticleSize);
+#endif
         }
 
         /// <summary>
@@ -199,11 +187,12 @@ namespace SiliconStudio.Xenko.Particles
             }
         }
 
-        #region Fields
+#region Fields
         private const int DefaultMaxFielsPerPool = 8;
         private readonly Dictionary<ParticleFieldDescription, ParticleField> fields = new Dictionary<ParticleFieldDescription, ParticleField>(DefaultMaxFielsPerPool);
+#if PARTICLES_SOA
         private readonly List<ParticleFieldDescription> fieldDescriptions = new List<ParticleFieldDescription>(DefaultMaxFielsPerPool);
-         
+#endif 
         internal ParticleField AddField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
         {
             ParticleField existingField;
@@ -214,16 +203,19 @@ namespace SiliconStudio.Xenko.Particles
 
             var newParticleSize = ParticleSize + newFieldSize;
 
+#if PARTICLES_SOA
             var newField = new ParticleField(newFieldSize, IntPtr.Zero, 0);
             fieldDescriptions.Add(fieldDesc);
-
+#else
+            var newField = new ParticleField() { Offset = ParticleSize, Size = newFieldSize };
+#endif
             fields.Add(fieldDesc, newField);
 
             // TODO Proper particle relocation
             CopyParticlePoolDelegate emptyCopy = (pool, newPool) => { };
             RelocatePool(newParticleSize, ParticleCapacity, emptyCopy);
 
-            if (fieldsPolicy == FieldsPolicy.SoA)
+#if PARTICLES_SOA
             {
                 int fieldOffset = 0;
                 foreach (var desc in fieldDescriptions)
@@ -233,17 +225,7 @@ namespace SiliconStudio.Xenko.Particles
                     fieldOffset += fieldSize;
                 }
             }
-            else
-            {
-                int fieldOffset = 0;
-                foreach (var desc in fieldDescriptions)
-                {
-                    int fieldSize = fields[desc].FieldSize;
-                    fields[desc] = new ParticleField(fieldSize, ParticleData + fieldOffset, ParticleSize);
-                    fieldOffset += fieldSize;
-                }
-            }
-
+#endif            
             return fields[fieldDesc];
         }
 
@@ -263,7 +245,7 @@ namespace SiliconStudio.Xenko.Particles
             if (fields.TryGetValue(fieldDesc, out field))
                 return new ParticleFieldAccessor<T>(field);
 
-            return new ParticleFieldAccessor<T>(IntPtr.Zero, 0);
+            return ParticleFieldAccessor<T>.Invalid();
         }
 
         public bool TryGetField<T>(ParticleFieldDescription<T> fieldDesc, out ParticleFieldAccessor<T> accessor) where T : struct
@@ -271,7 +253,7 @@ namespace SiliconStudio.Xenko.Particles
             ParticleField field;
             if (!fields.TryGetValue(fieldDesc, out field))
             {
-                accessor = new ParticleFieldAccessor<T>(IntPtr.Zero, 0);
+                accessor = ParticleFieldAccessor<T>.Invalid();
                 return false;
             }
 
@@ -294,9 +276,9 @@ namespace SiliconStudio.Xenko.Particles
             AddField(fieldDesc);
             return true;
         }
-        #endregion
+#endregion
 
-        #region Enumerator
+#region Enumerator
         IEnumerator IEnumerable.GetEnumerator()
         {
             return (IEnumerator)GetEnumerator();
@@ -311,6 +293,10 @@ namespace SiliconStudio.Xenko.Particles
 
         public struct Enumerator : IEnumerator<Particle>
         {
+#if PARTICLES_SOA
+#else
+            private IntPtr particlePtr;
+#endif
             private int index;
 
             private readonly ParticlePool particlePool;
@@ -328,6 +314,10 @@ namespace SiliconStudio.Xenko.Particles
             {
                 this.particlePool = particlePool;
                 particleSize = particlePool.ParticleSize;
+#if PARTICLES_SOA
+#else
+                particlePtr = IntPtr.Zero;
+#endif
                 indexFrom = 0;
                 indexTo = particlePool.ParticleCapacity - 1;
                 index = indexFrom - 1;
@@ -343,6 +333,10 @@ namespace SiliconStudio.Xenko.Particles
             {
                 this.particlePool = particlePool;
                 particleSize = particlePool.ParticleSize;
+#if PARTICLES_SOA
+#else
+                particlePtr = IntPtr.Zero;
+#endif
                 indexFrom = Math.Max(0, Math.Min(idxFrom, idxTo));
                 indexTo = Math.Min(particlePool.ParticleCapacity - 1, Math.Max(idxFrom, idxTo));
                 index = indexFrom - 1;
@@ -357,13 +351,21 @@ namespace SiliconStudio.Xenko.Particles
             public void Reset()
             {
                 index = indexFrom - 1;
+#if PARTICLES_SOA
+#else
+                particlePtr = IntPtr.Zero;
+#endif
             }
-           
+
             /// <inheritdoc />
             public bool MoveNext()
             {
                 ++index;
                 var hasNext = (index <= indexTo && index >= indexFrom);
+#if PARTICLES_SOA
+#else
+                particlePtr = (hasNext) ? particlePool.ParticleData + index * particleSize : IntPtr.Zero;
+#endif
                 return hasNext;
             }
 
@@ -381,13 +383,23 @@ namespace SiliconStudio.Xenko.Particles
                 particlePool.RemoveCurrent(ref particle, ref index, ref indexTo);
             }
 
+#if PARTICLES_SOA
             /// <inheritdoc />
             object IEnumerator.Current => new Particle(index);
 
             /// <inheritdoc />
             public Particle Current => new Particle(index);
+#else
+            /// <inheritdoc />
+            object IEnumerator.Current => new Particle(particlePtr);
+
+            /// <inheritdoc />
+            public Particle Current => new Particle(particlePtr);
+
+#endif
+
         }
-        #endregion
+#endregion
 
 
     }
