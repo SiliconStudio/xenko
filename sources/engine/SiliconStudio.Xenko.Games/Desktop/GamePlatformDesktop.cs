@@ -27,9 +27,9 @@ using System.Reflection;
 
 namespace SiliconStudio.Xenko.Games
 {
-    internal class GamePlatformDesktop : GamePlatform
+    internal class GamePlatformWindows : GamePlatform
     {
-        public GamePlatformDesktop(GameBase game) : base(game)
+        public GamePlatformWindows(GameBase game) : base(game)
         {
             IsBlockingRun = true;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D

@@ -9,24 +9,10 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Games
 {
-    internal class GamePlatformOpenTK : GamePlatform, IGraphicsDeviceFactory
+    internal class GamePlatformOpenTK : GamePlatformWindows, IGraphicsDeviceFactory
     {
         public GamePlatformOpenTK(GameBase game) : base(game)
         {
-        }
-
-        public override string DefaultAppDirectory
-        {
-            get
-            {
-                var assemblyUri = new Uri(Assembly.GetEntryAssembly().CodeBase);
-                return Path.GetDirectoryName(assemblyUri.LocalPath);
-            }
-        }
-
-        internal override GameWindow[] GetSupportedGameWindows()
-        {
-            return new GameWindow[] { new GameWindowOpenTK() };
         }
 
         public virtual void DeviceChanged(GraphicsDevice currentDevice, GraphicsDeviceInformation deviceInformation)
