@@ -34,9 +34,242 @@ namespace SiliconStudio.Xenko.Particles.Tests
             System.Console.Out.WriteLine($"{timeUmnArray:0000.000} ms to run {test.Method.Name}");
         }
 
+        static unsafe void ChangePoolFields()
+        {
+            var testCount = 10;
+            var pool = new ParticlePool(0, testCount, ParticlePool.ListPolicy.Stack);
+            for (var idx = 0; idx < testCount; idx++)
+            {
+                pool.AddParticle();
+            }
+
+            var testPos = new Vector3(1, 2, 3);
+            var testVel = new Vector3(5, 6, 7);
+
+            const bool forceCreation = true;
+            pool.FieldExists(ParticleFields.Position, forceCreation);
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+
+                foreach (var particle in pool)
+                {
+                    *((Vector3*)particle[positionField]) = testPos;
+                }
+            }
+
+            pool.FieldExists(ParticleFields.RemainingLife, forceCreation);
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    Assert(*((Vector3*)particle[positionField]) == testPos, $"Position is not {testPos}!");
+
+                    *((float*)particle[lifetimeField]) = 5;
+
+                    i++;
+                }
+
+                Assert(i == 10, $"Count is not 10!");
+            }
+
+            pool.FieldExists(ParticleFields.Velocity, forceCreation);
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+                var velocityField = pool.GetField(ParticleFields.Velocity);
+                var sizeField = pool.GetField(ParticleFields.Size);
+
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    Assert(*((Vector3*)particle[positionField]) == testPos, $"Position is not {testPos}!");
+
+                    Assert(Math.Abs(*((float*)particle[lifetimeField]) - 5) <= MathUtil.ZeroTolerance, $"Lifetime is not 5!");
+
+                    *((Vector3*)particle[velocityField]) = testVel;
+
+                    i++;
+                }
+
+                Assert(i == 10, $"Count is not 10!");
+            }
+
+            pool.FieldExists(ParticleFields.Size, forceCreation);
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+                var velocityField = pool.GetField(ParticleFields.Velocity);
+                var sizeField = pool.GetField(ParticleFields.Size);
+
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    Assert(*((Vector3*)particle[positionField]) == testPos, $"Position is not {testPos}!");
+
+                    Assert(Math.Abs(*((float*)particle[lifetimeField]) - 5) <= MathUtil.ZeroTolerance, $"Lifetime is not 5!");
+
+                    Assert(*((Vector3*)particle[velocityField]) == testVel, $"Velocity is not {testVel}!");
+
+                    *((float*)particle[sizeField]) = 4;
+
+                    i++;
+                }
+
+                Assert(i == 10, $"Count is not 10!");
+            }
+        
+            pool.SetCapacity(20);
+
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+                var velocityField = pool.GetField(ParticleFields.Velocity);
+                var sizeField = pool.GetField(ParticleFields.Size);
+
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    Assert(*((Vector3*)particle[positionField]) == testPos, $"Position is not {testPos}!");
+
+                    Assert(Math.Abs(*((float*)particle[lifetimeField]) - 5) <= MathUtil.ZeroTolerance, $"Lifetime is not 5!");
+
+                    Assert(*((Vector3*)particle[velocityField]) == testVel, $"Velocity is not {testVel}!");
+
+                    Assert(Math.Abs(*((float*)particle[sizeField]) - 4) <= MathUtil.ZeroTolerance, $"Size is not 4!");
+
+                    i++;
+                }
+
+                Assert(i == 10, $"Count is not 10!");
+            }
+
+            pool.SetCapacity(5);
+
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+                var velocityField = pool.GetField(ParticleFields.Velocity);
+                var sizeField = pool.GetField(ParticleFields.Size);
+
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    Assert(*((Vector3*)particle[positionField]) == testPos, $"Position is not {testPos}!");
+
+                    Assert(Math.Abs(*((float*)particle[lifetimeField]) - 5) <= MathUtil.ZeroTolerance, $"Lifetime is not 5!");
+
+                    Assert(*((Vector3*)particle[velocityField]) == testVel, $"Velocity is not {testVel}!");
+
+                    Assert(Math.Abs(*((float*)particle[sizeField]) - 4) <= MathUtil.ZeroTolerance, $"Size is not 4!");
+
+                    i++;
+                }
+
+                Assert(i == 5, $"Count is not 5!");
+            }
+        }
+
+        static unsafe void ChangePoolCapacity()
+        {
+            var testCount = 10;
+            var pool = new ParticlePool(0, testCount, ParticlePool.ListPolicy.Stack);
+            const bool forceCreation = true;
+            pool.FieldExists(ParticleFields.Position, forceCreation);
+            pool.FieldExists(ParticleFields.RemainingLife, forceCreation);
+            pool.FieldExists(ParticleFields.Velocity, forceCreation);
+            pool.FieldExists(ParticleFields.Size, forceCreation);
+
+            for (var idx = 0; idx < testCount; idx++)
+            {
+                pool.AddParticle();
+            }
+
+            var testPos = new Vector3(1, 2, 3);
+            var testVel = new Vector3(5, 6, 7);
+
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+                var velocityField = pool.GetField(ParticleFields.Velocity);
+                var sizeField     = pool.GetField(ParticleFields.Size);
+
+                foreach (var particle in pool)
+                {
+                    *((Vector3*)particle[positionField]) = testPos;
+
+                    *((float*)particle[lifetimeField]) = 5;
+
+                    *((Vector3*)particle[velocityField]) = testVel;
+
+                    *((float*)particle[sizeField]) = 4;
+                }
+            }
+
+            pool.SetCapacity(20);
+            
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+                var velocityField = pool.GetField(ParticleFields.Velocity);
+                var sizeField     = pool.GetField(ParticleFields.Size);
+
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    Assert(*((Vector3*)particle[positionField]) == testPos, $"Position is not {testPos}!");
+
+                    Assert(Math.Abs(*((float*)particle[lifetimeField]) - 5) <= MathUtil.ZeroTolerance, $"Lifetime is not 5!");
+
+                    Assert(*((Vector3*)particle[velocityField]) == testVel, $"Velocity is not {testVel}!");
+
+                    Assert(Math.Abs(*((float*)particle[sizeField]) - 4) <= MathUtil.ZeroTolerance, $"Size is not 4!");
+
+                    i++;
+                }
+
+                Assert(i == 10, $"Count is not 10!");
+            }
+
+            pool.SetCapacity(5);
+
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+                var velocityField = pool.GetField(ParticleFields.Velocity);
+                var sizeField = pool.GetField(ParticleFields.Size);
+
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    Assert(*((Vector3*)particle[positionField]) == testPos, $"Position is not {testPos}!");
+
+                    Assert(Math.Abs(*((float*)particle[lifetimeField]) - 5) <= MathUtil.ZeroTolerance, $"Lifetime is not 5!");
+
+                    Assert(*((Vector3*)particle[velocityField]) == testVel, $"Velocity is not {testVel}!");
+
+                    Assert(Math.Abs(*((float*)particle[sizeField]) - 4) <= MathUtil.ZeroTolerance, $"Size is not 4!");
+
+                    i++;
+                }
+
+                Assert(i == 5, $"Count is not 5!");
+            }
+        }
+
         static void Main(string[] args)
         {
-
             const bool forceCreation = true;
             particlePool.FieldExists(ParticleFields.Position, forceCreation);
             particlePool.FieldExists(ParticleFields.RemainingLife, forceCreation);
@@ -72,9 +305,11 @@ namespace SiliconStudio.Xenko.Particles.Tests
             System.Console.Out.WriteLine($"Ground truth speed");
             RunTest(GroundTruth, particleCount, numberOfTests);
 
-            // Later - test Emitter updates
+            ChangePoolCapacity();
 
-            // Later - test adding/removing fields
+            ChangePoolFields();
+
+            // Later - test Emitter updates
 
             // Later - test adding/removing modules
 
