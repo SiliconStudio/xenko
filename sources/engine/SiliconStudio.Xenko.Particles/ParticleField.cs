@@ -7,6 +7,7 @@ namespace SiliconStudio.Xenko.Particles
 {
     internal struct ParticleField
     {
+#if PARTICLES_SOA
         /// <summary>
         /// Offset of the field from the particle pool's head
         /// </summary>
@@ -28,5 +29,16 @@ namespace SiliconStudio.Xenko.Particles
             Size = totalUnitSize;
             FieldSize = fieldSize;
         }
+#else
+        /// <summary>
+        /// Offset of the field from the particle's position
+        /// </summary>
+        public int Offset;
+
+        /// <summary>
+        /// Size of the field
+        /// </summary>
+        public int Size;
+#endif
     }
 }

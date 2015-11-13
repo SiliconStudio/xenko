@@ -12,6 +12,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
     class Program
     {
         static readonly Stopwatch Watch = new Stopwatch();
+        static readonly Stopwatch WatchParticles = new Stopwatch();
 
         private delegate void RunTestDelegate(int count);
 
@@ -39,24 +40,20 @@ namespace SiliconStudio.Xenko.Particles.Tests
 #endif
 
             System.Console.Out.WriteLine();
-            System.Console.Out.WriteLine($"Testing the fields");
-            RunTest(TestParticles, particleCount, numberOfTests);
-
-            System.Console.Out.WriteLine();
             System.Console.Out.WriteLine($"Testing the ParticlePool");
-            RunTest(TestPoolAsRing, particleCount, numberOfTests);
-
+            WatchParticles.Restart();
             RunTest(TestPoolAsStack, particleCount, numberOfTests);
 
-            RunTest(TestAccessAsRing, particleCount, numberOfTests);
+            RunTest(TestPoolAsRing, particleCount, numberOfTests);
+            var totalMSecs = WatchParticles.Elapsed.TotalMilliseconds;
 
             RunTest(TestAccessAsStack, particleCount, numberOfTests);
+
+            RunTest(TestAccessAsRing, particleCount, numberOfTests);
 
             System.Console.Out.WriteLine();
             System.Console.Out.WriteLine($"Ground truth speed");
             RunTest(GroundTruth, particleCount, numberOfTests);
-
-            // TODO AoS pool vs SoA pool testing
 
             // Later - test Emitter updates
 
@@ -66,6 +63,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
             // Much later - test draw calls
 
+            System.Console.Out.WriteLine($"We can have {(particleCount * numberOfTests * 2)/ totalMSecs} particles on this system with update time <= 1ms on one thread");
+
             System.Console.ReadLine();
 
         }
@@ -74,71 +73,20 @@ namespace SiliconStudio.Xenko.Particles.Tests
         {
             Debug.Assert(condition, $"Assert failed in {callingFilePath} at line[{callerLine}]: {message}");
         }
+    
 
-        private static ParticleFieldAccessor<T> AddField<T>(IntPtr poolPtr, int size) where T : struct
-        {
-            return new ParticleFieldAccessor<T>(poolPtr, size);
-        }
-
-        private unsafe static void TestParticles(int particleCount)
-        {
-            var particleSize = 32;
-            var poolPtr = Utilities.AllocateMemory(particleSize * particleCount);
-
-            // Create several random fields and try to access them
-            var positionField = AddField<Vector3>(poolPtr + 4 * 0, particleSize);
-            var lifetimeField = AddField<float>  (poolPtr + 4 * 3, particleSize);
-            var velocityField = AddField<Vector3>(poolPtr + 4 * 4, particleSize);
-            var sizeField     = AddField<float>  (poolPtr + 4 * 7, particleSize);
-
-
-            for (var i = 0; i < particleCount; i++)
-            {
-                var particle = new Particle(i);
-
-                var pos = (Vector3*)particle[positionField];
-                pos->X = 0;
-                pos->Y = i;
-                pos->Z = 0;
-
-                *((float*) particle[lifetimeField]) = i;
-
-                var vel = (Vector3*)particle[velocityField];
-                vel->X = 0;
-                vel->Y = i;
-                vel->Z = 0;
-
-                *((float*)particle[sizeField]) = i;
-            }
-
-#if DEBUG
-            for (var i = 0; i < particleCount; i++)
-            {
-                var particle = new Particle(i);
-
-                Assert(particle.Get(positionField).Equals(new Vector3(0, i, 0)), $"Position.Y does not equal {i}");
-                Assert(Math.Abs(particle.Get(lifetimeField) - i) <= MathUtil.ZeroTolerance, $"Remaining lifetime does not equal {i}");
-                Assert(particle.Get(velocityField).Equals(new Vector3(0, i, 0)), $"Velocity.Y does not equal {i}");
-                Assert(Math.Abs(particle.Get(sizeField) - i) <= MathUtil.ZeroTolerance, $"Size does not equal {i}");
-            }
-#endif
-
-            Utilities.FreeMemory(poolPtr);
-        }
-
-        private static void TestPoolAsRing(int particleCount) => TestPool(particleCount, ParticlePool.ListPolicy.Ring, ParticlePool.FieldsPolicy.AoS);
-        private static void TestPoolAsStack(int particleCount) => TestPool(particleCount, ParticlePool.ListPolicy.Stack, ParticlePool.FieldsPolicy.AoS);
-
-        private static void TestAccessAsRing(int particleCount) => TestSetGet(particleCount, ParticlePool.ListPolicy.Ring, ParticlePool.FieldsPolicy.AoS);
-        private static void TestAccessAsStack(int particleCount) => TestSetGet(particleCount, ParticlePool.ListPolicy.Stack, ParticlePool.FieldsPolicy.AoS);
+        private static void TestPoolAsRing(int particleCount) => TestPool(particleCount, ParticlePool.ListPolicy.Ring);
+        private static void TestPoolAsStack(int particleCount) => TestPool(particleCount, ParticlePool.ListPolicy.Stack);
+        private static void TestAccessAsRing(int particleCount) => TestSetGet(particleCount, ParticlePool.ListPolicy.Ring);
+        private static void TestAccessAsStack(int particleCount) => TestSetGet(particleCount, ParticlePool.ListPolicy.Stack);
 
         /// <summary>
         /// This test simulates how an Emitter would access and update the particles.
         /// Some numbers are fixed, like particle total count and field offsets.
         /// </summary>
-        private unsafe static void TestPool(int particleCount, ParticlePool.ListPolicy listPolicy, ParticlePool.FieldsPolicy fieldsPolicy)
+        private unsafe static void TestPool(int particleCount, ParticlePool.ListPolicy listPolicy)
         {
-            var particlePool = new ParticlePool(0, particleCount, fieldsPolicy, listPolicy);
+            var particlePool = new ParticlePool(0, particleCount, listPolicy);
 
             const bool forceCreation = true;
             particlePool.FieldExists(ParticleFields.Position     , forceCreation);
@@ -252,9 +200,9 @@ namespace SiliconStudio.Xenko.Particles.Tests
             }            
         }
 
-        private unsafe static void TestSetGet(int particleCount, ParticlePool.ListPolicy listPolicy, ParticlePool.FieldsPolicy fieldsPolicy)
+        private static void TestSetGet(int particleCount, ParticlePool.ListPolicy listPolicy)
         {
-            var particlePool = new ParticlePool(0, particleCount, fieldsPolicy, listPolicy);
+            var particlePool = new ParticlePool(0, particleCount, listPolicy);
 
             const bool forceCreation = true;
             particlePool.FieldExists(ParticleFields.Position, forceCreation);
