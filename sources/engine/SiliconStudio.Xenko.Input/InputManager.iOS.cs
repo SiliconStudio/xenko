@@ -29,14 +29,13 @@ namespace SiliconStudio.Xenko.Input
             HasPointer = true;
         }
 
-        public override void Initialize()
+        public override void Initialize(GameContext<UIWindow> gameContext)
         {
-            base.Initialize();
+            var context = (GameContextiOS) gameContext;
+            view = context.GameView;
+            Control = context.Control;
 
-            view = Game.Context.GameView;
-            Control = Game.Context.MainWindow;
-
-            var gameController = Game.Context.GameViewController;
+            var gameController = context.GameViewController;
 
             Control.UserInteractionEnabled = true;
             Control.MultipleTouchEnabled = true;
@@ -264,8 +263,8 @@ namespace SiliconStudio.Xenko.Input
 
         public override bool MultiTouchEnabled
         {
-            get { return Game.Context.GameView.MultipleTouchEnabled; } 
-            set { Game.Context.GameView.MultipleTouchEnabled = value; }
+            get { return view.MultipleTouchEnabled; }
+            set { view.MultipleTouchEnabled = value; }
         }
     }
 }
