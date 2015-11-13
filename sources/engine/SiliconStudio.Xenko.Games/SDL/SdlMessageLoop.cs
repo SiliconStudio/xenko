@@ -1,31 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-//
-// Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
-// 
-// Permission is hereby granted, free of charge, to any person obtaining a copy
-// of this software and associated documentation files (the "Software"), to deal
-// in the Software without restriction, including without limitation the rights
-// to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-// copies of the Software, and to permit persons to whom the Software is
-// furnished to do so, subject to the following conditions:
-// 
-// The above copyright notice and this permission notice shall be included in
-// all copies or substantial portions of the Software.
-// 
-// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-// IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-// FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-// AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-// LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
-// THE SOFTWARE.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
-using System.Globalization;
-using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.SDL;
-using System.Runtime.InteropServices;
 using SDL2;
 
 namespace SiliconStudio.Xenko.Games
@@ -35,7 +12,7 @@ namespace SiliconStudio.Xenko.Games
     /// RenderLoop provides a rendering loop infrastructure. See remarks for usage. 
     /// </summary>
     /// <remarks>
-    /// Use static <see cref="Run(System.Windows.Forms.Control,WindowsMessageLoop.RenderCallback)"/>  
+    /// Use static <see cref="Run(Window,RenderCallback)"/>  
     /// method to directly use a renderloop with a render callback or use your own loop:
     /// <code>
     /// control.Show();
@@ -49,9 +26,8 @@ namespace SiliconStudio.Xenko.Games
     /// </code>
     /// Note that the main control can be changed at anytime inside the loop.
     /// </remarks>
-    internal class WindowsMessageLoopSDL : IDisposable
+    internal class SdlMessageLoop : IDisposable
     {
-        private IntPtr controlHandle;
         private Window control;
         private bool isControlAlive;
         private bool switchControl;
@@ -59,12 +35,7 @@ namespace SiliconStudio.Xenko.Games
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsMessageLoop"/> class.
         /// </summary>
-        public WindowsMessageLoopSDL() {}
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="WindowsMessageLoop"/> class.
-        /// </summary>
-        public WindowsMessageLoopSDL(Window control)
+        public SdlMessageLoop(Window control)
         {
             Control = control;
         }
@@ -89,7 +60,6 @@ namespace SiliconStudio.Xenko.Games
                 {
                     isControlAlive = false;
                     control.Disposed -= ControlDisposed;
-                    controlHandle = IntPtr.Zero;
                 }
 
                 if (value != null && value.IsDisposed)
@@ -101,14 +71,6 @@ namespace SiliconStudio.Xenko.Games
                 switchControl = true;
             }
         }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the render loop should use the default <see cref="Application.DoEvents"/> instead of a custom window message loop lightweight for GC. Default is false.
-        /// </summary>
-        /// <value><c>true</c> if the render loop should use the default <see cref="Application.DoEvents"/> instead of a custom window message loop (default false); otherwise, <c>false</c>.</value>
-        /// <remarks>By default, RenderLoop is using a custom window message loop that is more lightweight than <see cref="Application.DoEvents" /> to process windows event message. 
-        /// Set this parameter to true to use the default <see cref="Application.DoEvents"/>.</remarks>
-        public bool UseApplicationDoEvents { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether [allow windowss keys].
@@ -127,7 +89,6 @@ namespace SiliconStudio.Xenko.Games
             // TODO this is not completely thread-safe. We should use a lock to handle this correctly
             if (switchControl && control != null)
             {
-                controlHandle = control.Handle;
                 control.Disposed += ControlDisposed;
                 isControlAlive = true;
                 switchControl = false;
@@ -168,17 +129,16 @@ namespace SiliconStudio.Xenko.Games
         /// </summary>
         /// <param name="form">The form.</param>
         /// <param name="renderCallback">The rendering callback.</param>
-        /// <param name="useApplicationDoEvents">if set to <c>true</c> indicating whether the render loop should use the default <see cref="Application.DoEvents"/> instead of a custom window message loop lightweight for GC. Default is false.</param>
         /// <exception cref="System.ArgumentNullException">form
         /// or
         /// renderCallback</exception>
-        public static void Run(Window form, RenderCallback renderCallback, bool useApplicationDoEvents = false)
+        public static void Run(Window form, RenderCallback renderCallback)
         {
-            if(form == null) throw new ArgumentNullException("form");
-            if(renderCallback == null) throw new ArgumentNullException("renderCallback");
+            if(form == null) throw new ArgumentNullException(nameof(form));
+            if(renderCallback == null) throw new ArgumentNullException(nameof(renderCallback));
 
             form.Show();
-            using (var renderLoop = new WindowsMessageLoopSDL(form) { UseApplicationDoEvents = useApplicationDoEvents })
+            using (var renderLoop = new SdlMessageLoop(form))
             {
                 while(renderLoop.NextFrame())
                 {

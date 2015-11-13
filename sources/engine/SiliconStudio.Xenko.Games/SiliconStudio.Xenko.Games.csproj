@@ -92,7 +92,7 @@
     <Compile Include="PreparingDeviceSettingsEventArgs.cs" />
     <Compile Include="SDL\GameForm.SDL.cs" />
     <Compile Include="SDL\GameWindow.SDL.cs" />
-    <Compile Include="SDL\WindowsMessageLoopSDL.cs" />
+    <Compile Include="SDL\SdlMessageLoop.cs" />
     <Compile Include="Time\AbsoluteStopwatch.cs" />
     <Compile Include="Time\ITimedValue.cs" />
     <Compile Include="Time\TimerTick.cs" />

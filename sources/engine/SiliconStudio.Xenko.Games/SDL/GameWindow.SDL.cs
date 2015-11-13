@@ -189,11 +189,11 @@ namespace SiliconStudio.Xenko.Games
             // Initialize the init callback
             InitCallback();
 
-            var runCallback = new WindowsMessageLoopSDL.RenderCallback(RunCallback);
+            var runCallback = new SdlMessageLoop.RenderCallback(RunCallback);
             // Run the rendering loop
             try
             {
-                WindowsMessageLoopSDL.Run(window, () =>
+                SdlMessageLoop.Run(window, () =>
                 {
                     if (Exiting)
                     {
