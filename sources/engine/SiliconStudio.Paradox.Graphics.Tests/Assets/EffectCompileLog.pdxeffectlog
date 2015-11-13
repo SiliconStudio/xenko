@@ -1,8 +1,0 @@
----
-!EffectCompileRequest
-EffectName: CustomEffect.CustomSubEffect
-UsedParameters:
-    CompilerParameters.DebugKey: true
-    CompilerParameters.GraphicsPlatformKey: Direct3D11
-    CompilerParameters.GraphicsProfileKey: Level_11_0
-    CustomShader.SwitchEffectLevel: 0.0
