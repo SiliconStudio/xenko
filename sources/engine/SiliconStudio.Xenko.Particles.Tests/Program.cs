@@ -11,54 +11,50 @@ namespace SiliconStudio.Xenko.Particles.Tests
 {
     class Program
     {
+        static readonly Stopwatch Watch = new Stopwatch();
+
+        private delegate void RunTestDelegate(int count);
+
+        static void RunTest(RunTestDelegate test, int particleCount, int times)
+        {
+            Watch.Restart();
+            for (var i = 0; i < times; i++)
+            {
+                test(particleCount);
+            }
+            var timeUmnArray = Watch.Elapsed.TotalMilliseconds;
+            System.Console.Out.WriteLine($"{timeUmnArray:0000.000} ms to run {test.Method.Name}");
+        }
+
         static void Main(string[] args)
         {
-            Stopwatch watch = new Stopwatch();
+            const int particleCount = 50000;
             const int numberOfTests = 30;
+#if DEBUG
+            System.Console.Out.WriteLine($"This test is DEBUG so it's slow");
+            System.Console.Out.WriteLine($"Its purpose is to ASSERT the particle engine works properly");
+#else
+            System.Console.Out.WriteLine($"This test id RELEASE so it skips assertion");
+            System.Console.Out.WriteLine($"Its purpose is to MEASURE how fast the particle engine works");
+#endif
 
-            watch.Restart();
-            for (int i = 0; i < numberOfTests; i++)
-            {
-                TestParticles();
-            }
-            var timeTestParticles = watch.Elapsed.TotalMilliseconds;
-            System.Console.Out.WriteLine($"{timeTestParticles:0000.000} ms to run TestParticles");
+            System.Console.Out.WriteLine();
+            System.Console.Out.WriteLine($"Testing the fields");
+            RunTest(TestParticles, particleCount, numberOfTests);
 
-            watch.Restart();
-            for (int i = 0; i < numberOfTests; i++)
-            {
-                TestPool(listPolicy: ParticlePool.ListPolicy.Ring, fieldsPolicy: ParticlePool.FieldsPolicy.AoS);
-            }
-            var timeTestPool1 = watch.Elapsed.TotalMilliseconds;
-            System.Console.Out.WriteLine($"{timeTestPool1:0000.000} ms to run TestPool/Ring+AoS");
+            System.Console.Out.WriteLine();
+            System.Console.Out.WriteLine($"Testing the ParticlePool");
+            RunTest(TestPoolAsRing, particleCount, numberOfTests);
 
-            watch.Restart();
-            for (int i = 0; i < numberOfTests; i++)
-            {
-                TestPool(listPolicy: ParticlePool.ListPolicy.Stack, fieldsPolicy: ParticlePool.FieldsPolicy.AoS);
-            }
-            var timeTestPool2 = watch.Elapsed.TotalMilliseconds;
-            System.Console.Out.WriteLine($"{timeTestPool2:0000.000} ms to run TestPool/Stack+AoS");
+            RunTest(TestPoolAsStack, particleCount, numberOfTests);
 
+            RunTest(TestAccessAsRing, particleCount, numberOfTests);
 
+            RunTest(TestAccessAsStack, particleCount, numberOfTests);
 
-            watch.Restart();
-            for (int i = 0; i < numberOfTests; i++)
-            {
-                TestPool(listPolicy: ParticlePool.ListPolicy.Ring, fieldsPolicy: ParticlePool.FieldsPolicy.SoA);
-            }
-            var timeTestPool3 = watch.Elapsed.TotalMilliseconds;
-            System.Console.Out.WriteLine($"{timeTestPool3:0000.000} ms to run TestPool/Ring+SoA");
-
-            watch.Restart();
-            for (int i = 0; i < numberOfTests; i++)
-            {
-                TestPool(listPolicy: ParticlePool.ListPolicy.Stack, fieldsPolicy: ParticlePool.FieldsPolicy.SoA);
-            }
-            var timeTestPool4 = watch.Elapsed.TotalMilliseconds;
-            System.Console.Out.WriteLine($"{timeTestPool4:0000.000} ms to run TestPool/Stack+SoA");
-
-            System.Console.ReadLine();
+            System.Console.Out.WriteLine();
+            System.Console.Out.WriteLine($"Ground truth speed");
+            RunTest(GroundTruth, particleCount, numberOfTests);
 
             // TODO AoS pool vs SoA pool testing
 
@@ -69,6 +65,9 @@ namespace SiliconStudio.Xenko.Particles.Tests
             // Later - test adding/removing modules
 
             // Much later - test draw calls
+
+            System.Console.ReadLine();
+
         }
 
         private static void Assert(bool condition, string message, [CallerFilePath] string callingFilePath = "", [CallerLineNumber] int callerLine = 0)
@@ -81,9 +80,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
             return new ParticleFieldAccessor<T>(poolPtr, size);
         }
 
-        private static void TestParticles()
+        private unsafe static void TestParticles(int particleCount)
         {
-            var particleCount = 10000;
             var particleSize = 32;
             var poolPtr = Utilities.AllocateMemory(particleSize * particleCount);
 
@@ -98,12 +96,22 @@ namespace SiliconStudio.Xenko.Particles.Tests
             {
                 var particle = new Particle(i);
 
-                particle.Set(positionField, new Vector3(0, i, 0));
-                particle.Set(lifetimeField, i);
-                particle.Set(velocityField, new Vector3(0, i, 0));
-                particle.Set(sizeField, i);
+                var pos = (Vector3*)particle[positionField];
+                pos->X = 0;
+                pos->Y = i;
+                pos->Z = 0;
+
+                *((float*) particle[lifetimeField]) = i;
+
+                var vel = (Vector3*)particle[velocityField];
+                vel->X = 0;
+                vel->Y = i;
+                vel->Z = 0;
+
+                *((float*)particle[sizeField]) = i;
             }
 
+#if DEBUG
             for (var i = 0; i < particleCount; i++)
             {
                 var particle = new Particle(i);
@@ -113,18 +121,23 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 Assert(particle.Get(velocityField).Equals(new Vector3(0, i, 0)), $"Velocity.Y does not equal {i}");
                 Assert(Math.Abs(particle.Get(sizeField) - i) <= MathUtil.ZeroTolerance, $"Size does not equal {i}");
             }
+#endif
 
             Utilities.FreeMemory(poolPtr);
         }
 
-        
+        private static void TestPoolAsRing(int particleCount) => TestPool(particleCount, ParticlePool.ListPolicy.Ring, ParticlePool.FieldsPolicy.AoS);
+        private static void TestPoolAsStack(int particleCount) => TestPool(particleCount, ParticlePool.ListPolicy.Stack, ParticlePool.FieldsPolicy.AoS);
+
+        private static void TestAccessAsRing(int particleCount) => TestSetGet(particleCount, ParticlePool.ListPolicy.Ring, ParticlePool.FieldsPolicy.AoS);
+        private static void TestAccessAsStack(int particleCount) => TestSetGet(particleCount, ParticlePool.ListPolicy.Stack, ParticlePool.FieldsPolicy.AoS);
+
         /// <summary>
         /// This test simulates how an Emitter would access and update the particles.
         /// Some numbers are fixed, like particle total count and field offsets.
         /// </summary>
-        private static void TestPool(ParticlePool.ListPolicy listPolicy, ParticlePool.FieldsPolicy fieldsPolicy)
+        private unsafe static void TestPool(int particleCount, ParticlePool.ListPolicy listPolicy, ParticlePool.FieldsPolicy fieldsPolicy)
         {
-            const int particleCount = 10000;
             var particlePool = new ParticlePool(0, particleCount, fieldsPolicy, listPolicy);
 
             const bool forceCreation = true;
@@ -148,13 +161,19 @@ namespace SiliconStudio.Xenko.Particles.Tests
             foreach (var particle in particlePool)
             {
                 vecToSet.Y = i;
-                particle.Set(positionField, vecToSet);
-                particle.Set(lifetimeField, i);
-                particle.Set(velocityField, vecToSet);
-                particle.Set(sizeField, i);
+
+                *((Vector3*)particle[positionField]) = vecToSet;
+
+                *((float*)particle[lifetimeField]) = i;
+
+                *((Vector3*)particle[velocityField]) = vecToSet;
+
+                *((float*)particle[sizeField]) = i;
+
                 i++;
             }
 
+#if DEBUG
             i = 0;
             foreach (var particle in particlePool)
             {
@@ -164,16 +183,22 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 Assert(Math.Abs(particle.Get(sizeField) - i) <= MathUtil.ZeroTolerance, $"Size does not equal {i}");
                 i++;
             }
-
+#endif
             i = 0;
             var dt = 0.033f;
             foreach (var particle in particlePool)
             {
-                particle.Set(positionField, particle.Get(positionField) + particle.Get(velocityField) * dt);
-                particle.Set(lifetimeField, particle.Get(lifetimeField) + 1);
+                var pos = ((Vector3*)particle[positionField]);
+                var vel = ((Vector3*)particle[velocityField]);
+
+                *pos += *vel * dt;
+
+                *((float*)particle[lifetimeField]) += 1;
+                
                 i++;
             }
 
+#if DEBUG
             i = 0;
             foreach (var particle in particlePool)
             {
@@ -182,6 +207,115 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 Assert(Math.Abs(particle.Get(lifetimeField) - i - 1) <= MathUtil.ZeroTolerance, "Particle's lifetime is different!");
                 i++;
             }
+#endif
+
+            var testVec = new Vector3(0, 1, 0);
+            // Perf test - many mundane operations at once
+            foreach (var particle in particlePool)
+            {
+                var vel = ((Vector3*)particle[velocityField]);
+
+                *vel += testVec;
+                *vel += testVec;
+                *vel += testVec;
+                *vel += testVec;
+                *vel += testVec;
+            }
+
+            foreach (var particle in particlePool)
+            {
+                *((float*)particle[sizeField]) += 1;
+                *((float*)particle[sizeField]) += 1;
+                *((float*)particle[sizeField]) += 1;
+                *((float*)particle[sizeField]) += 1;
+                *((float*)particle[sizeField]) += 1;
+            }
+
+            foreach (var particle in particlePool)
+            {
+                var pos = ((Vector3*)particle[positionField]);
+
+                *pos += testVec;
+                *pos += testVec;
+                *pos += testVec;
+                *pos += testVec;
+                *pos += testVec;
+            }
+
+            foreach (var particle in particlePool)
+            {
+                *((float*)particle[lifetimeField]) += 1;
+                *((float*)particle[lifetimeField]) += 1;
+                *((float*)particle[lifetimeField]) += 1;
+                *((float*)particle[lifetimeField]) += 1;
+                *((float*)particle[lifetimeField]) += 1;
+            }            
+        }
+
+        private unsafe static void TestSetGet(int particleCount, ParticlePool.ListPolicy listPolicy, ParticlePool.FieldsPolicy fieldsPolicy)
+        {
+            var particlePool = new ParticlePool(0, particleCount, fieldsPolicy, listPolicy);
+
+            const bool forceCreation = true;
+            particlePool.FieldExists(ParticleFields.Position, forceCreation);
+            particlePool.FieldExists(ParticleFields.RemainingLife, forceCreation);
+            particlePool.FieldExists(ParticleFields.Velocity, forceCreation);
+            particlePool.FieldExists(ParticleFields.Size, forceCreation);
+
+            var positionField = particlePool.GetField(ParticleFields.Position);
+            var lifetimeField = particlePool.GetField(ParticleFields.RemainingLife);
+            var velocityField = particlePool.GetField(ParticleFields.Velocity);
+            var sizeField = particlePool.GetField(ParticleFields.Size);
+
+            for (int idx = 0; idx < particleCount; idx++)
+            {
+                particlePool.AddParticle();
+            }
+
+            var i = 0;
+            var vecToSet = new Vector3(0, 0, 0);
+            foreach (var particle in particlePool)
+            {
+                vecToSet.Y = i;
+                particle.Set(positionField, vecToSet);
+                particle.Set(lifetimeField, i);
+                particle.Set(velocityField, vecToSet);
+                particle.Set(sizeField, i);
+                i++;
+            }
+
+#if DEBUG
+            i = 0;
+            foreach (var particle in particlePool)
+            {
+                Assert(particle.Get(positionField).Equals(new Vector3(0, i, 0)), $"Position.Y does not equal {i}");
+                Assert(Math.Abs(particle.Get(lifetimeField) - i) <= MathUtil.ZeroTolerance, $"Remaining life does not equal {i}");
+                Assert(particle.Get(velocityField).Equals(new Vector3(0, i, 0)), $"Velocity.Y does not equal {i}");
+                Assert(Math.Abs(particle.Get(sizeField) - i) <= MathUtil.ZeroTolerance, $"Size does not equal {i}");
+                i++;
+            }
+#endif
+            i = 0;
+            var dt = 0.033f;
+            foreach (var particle in particlePool)
+            {
+                particle.Set(positionField, particle.Get(positionField) + particle.Get(velocityField) * dt);
+
+                particle.Set(lifetimeField, particle.Get(lifetimeField) + 1);
+
+                i++;
+            }
+
+#if DEBUG
+            i = 0;
+            foreach (var particle in particlePool)
+            {
+                vecToSet.Y = i;
+                Assert(particle.Get(positionField).Equals(vecToSet + particle.Get(velocityField) * dt), "Particle's position is different!");
+                Assert(Math.Abs(particle.Get(lifetimeField) - i - 1) <= MathUtil.ZeroTolerance, "Particle's lifetime is different!");
+                i++;
+            }
+#endif
 
             var testVec = new Vector3(0, 1, 0);
             // Perf test - many mundane operations at once
@@ -220,31 +354,72 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 particle.Set(lifetimeField, particle.Get(lifetimeField) + 1);
                 particle.Set(lifetimeField, particle.Get(lifetimeField) + 1);
             }
+        }
 
-            i = 0;
-            var poolEnumerator = particlePool.GetEnumerator();
-            while (poolEnumerator.MoveNext())
+        private static void GroundTruth(int particleCount)
+        {
+            var positionField = new Vector3[particleCount];
+            var lifetimeField = new float  [particleCount];
+            var velocityField = new Vector3[particleCount];
+            var sizeField     = new float  [particleCount];
+
+            var vecToSet = new Vector3(0, 0, 0);
+            for(var i = 0; i < particleCount; i++)
             {
-                var particle = poolEnumerator.Current;
-                if (i%2 == 0)
-                {
-                    poolEnumerator.RemoveCurrent(ref particle);
-                    particle.Set(sizeField, particleCount + 9000);                   
-                }
-                i++;
+                vecToSet.Y = i;
+
+                positionField[i] = vecToSet;
+                lifetimeField[i] = i;
+                velocityField[i] = vecToSet;
+                sizeField[i] = i;
+
             }
 
-            if (listPolicy != ParticlePool.ListPolicy.Ring)
+            var dt = 0.033f;
+            for (var i = 0; i < particleCount; i++)
             {
-                i = 0;
-                foreach (var particle in particlePool)
-                {
-                    Assert(particle.Get(sizeField) < particleCount + 9000, "This particle is supposed to be dead!");
-                    i++;
-                }
-
-                Assert(i <= particleCount/2, "Number of living particles should be no more than half!");
+                positionField[i] += velocityField[i]*dt;
+                lifetimeField[i] += 1;
             }
+
+            var testVec = new Vector3(0, 1, 0);
+
+            for (var i = 0; i < particleCount; i++)
+            {
+                velocityField[i] += testVec;
+                velocityField[i] += testVec;
+                velocityField[i] += testVec;
+                velocityField[i] += testVec;
+                velocityField[i] += testVec;
+            }
+
+            for (var i = 0; i < particleCount; i++)
+            {
+                sizeField[i] += 1;
+                sizeField[i] += 1;
+                sizeField[i] += 1;
+                sizeField[i] += 1;
+                sizeField[i] += 1;
+            }
+
+            for (var i = 0; i < particleCount; i++)
+            {
+                positionField[i] += testVec;
+                positionField[i] += testVec;
+                positionField[i] += testVec;
+                positionField[i] += testVec;
+                positionField[i] += testVec;
+            }
+
+            for (var i = 0; i < particleCount; i++)
+            {
+                lifetimeField[i] += 1;
+                lifetimeField[i] += 1;
+                lifetimeField[i] += 1;
+                lifetimeField[i] += 1;
+                lifetimeField[i] += 1;
+            }
+
         }
     }
 }

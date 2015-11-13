@@ -50,7 +50,6 @@ namespace SiliconStudio.Xenko.Particles
         /// <returns>The field value.</returns>
         public T Get<T>(ParticleFieldAccessor<T> accessor) where T : struct
         {
-        //    return ParticleUtilities.ToStruct<T>(Pointer + accessor);
             return Utilities.Read<T>(accessor[Index]);
         }
 
@@ -62,7 +61,6 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="value">The value to set</param>
         public void Set<T>(ParticleFieldAccessor<T> accessor, ref T value) where T : struct
         {
-        //    ParticleUtilities.ToPtr(value, Pointer + accessor);
             Utilities.Write(accessor[Index], ref value);
         }
 
@@ -74,7 +72,6 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="value">The value to set</param>
         public void Set<T>(ParticleFieldAccessor<T> accessor, T value) where T : struct
         {
-        //    ParticleUtilities.ToPtr(value, Pointer + accessor);
             Utilities.Write(accessor[Index], ref value);
         }
 
