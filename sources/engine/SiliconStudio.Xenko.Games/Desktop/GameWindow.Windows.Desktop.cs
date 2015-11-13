@@ -154,8 +154,7 @@ namespace SiliconStudio.Xenko.Games
 
         protected override void Initialize(GameContext<Control> gameContext)
         {
-            var desktopContext = (GameContextWinforms)gameContext;
-            Control = desktopContext.Control;
+            Control = gameContext.Control;
 
             // Setup the initial size of the window
             var width = gameContext.RequestedWidth;
