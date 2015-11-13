@@ -1,7 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_ANDROID
+#if !SILICONSTUDIO_PLATFORM_ANDROID
 using System;
 using Android.App;
 using Android.Graphics;
@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Starter
     // TODO: make this class implement View.IOnSystemUiVisibilityChangeListener when support of Android < 3.0 is dropped.
     public class AndroidXenkoActivity : Activity, View.IOnTouchListener
     {
-        private AndroidGameView gameView;
+        private AndroidXenkoGameView gameView;
 
         /// <summary>
         /// The game context of the game instance.
@@ -124,18 +124,6 @@ namespace SiliconStudio.Xenko.Starter
 
             // Create the Game context
             GameContext = new GameContextAndroid(gameView, FindViewById<RelativeLayout>(Resource.Id.EditTextLayout));
-        }
-
-        public override void SetContentView(View view)
-        {
-            gameView = view as AndroidGameView;
-            SetupGameViewAndGameContext();
-        }
-
-        public override void SetContentView(View view, ViewGroup.LayoutParams @params)
-        {
-            gameView = view as AndroidGameView;
-            SetupGameViewAndGameContext();
         }
 
         protected override void OnPause()
