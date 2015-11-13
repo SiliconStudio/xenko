@@ -22,7 +22,7 @@
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Drawing" />
-	<Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Windows.Forms" />
+    <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Windows.Forms" />
     <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
@@ -86,7 +86,7 @@
     <Compile Include="Graphics\SamplerStateDescription.cs" />
     <Compile Include="Graphics\StandardImageHelper.Android.cs" />
     <Compile Include="Graphics\StandardImageHelper.cs" />
-    <Compile Include="Graphics\StandardImageHelper.WindowsRuntime.cs" />
+    <Compile Include="Graphics\StandardImageHelper.Windows.Store.cs" />
     <Compile Include="Graphics\StandardImageHelper.Windows.cs" />
     <Compile Include="Graphics\TextureAddressMode.cs" />
     <Compile Include="Graphics\TextureDimension.cs" />
