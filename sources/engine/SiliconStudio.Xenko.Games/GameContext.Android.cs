@@ -9,10 +9,10 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
     /// </summary>
-    public partial class GameContextAndroid : GameContext<AndroidGameView>
+    public partial class GameContextAndroid : GameContext<AndroidXenkoGameView>
     {
         /// <inheritDoc/>
-        public GameContextAndroid(AndroidGameView control, RelativeLayout editTextLayout, int requestedWidth = 0, int requestedHeight = 0)
+        public GameContextAndroid(AndroidXenkoGameView control, RelativeLayout editTextLayout, int requestedWidth = 0, int requestedHeight = 0)
             : base(control, requestedWidth, requestedHeight)
         {
             EditTextLayout = editTextLayout;

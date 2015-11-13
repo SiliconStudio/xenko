@@ -13,7 +13,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManagerAndroid : InputManager<AndroidGameView>
+    public partial class InputManagerAndroid : InputManager<AndroidXenkoGameView>
     {
         private const int SensorDesiredUpdateDelay = (int)(1 / DesiredSensorUpdateRate * 1000f);
 
