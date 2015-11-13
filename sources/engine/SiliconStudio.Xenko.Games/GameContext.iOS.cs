@@ -7,15 +7,15 @@ using OpenTK.Platform.iPhoneOS;
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
-    /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="GameView"/>.
+    /// A <see cref="GameContext"/> to use for rendering to an existing <see cref="iPhoneOSGameView"/>.
     /// </summary>
-    public partial class GameContextiOS : GameContext<UIWindow>
+    public partial class GameContextiOS : GameContext<iPhoneOSGameView>
     {
         /// <inheritDoc/> 
-        public GameContextiOS(UIWindow mainWindows, iPhoneOSGameView gameView, XenkoGameController gameViewController, int requestedWidth = 0, int requestedHeight = 0)
-            : base(mainWindows, requestedWidth, requestedHeight)
+        public GameContextiOS(UIWindow mainWindow, iPhoneOSGameView gameView, XenkoGameController gameViewController, int requestedWidth = 0, int requestedHeight = 0)
+            : base(gameView, requestedWidth, requestedHeight)
         {
-            GameView = gameView;
+            Window = mainWindow;
             GameViewController = gameViewController;
             ContextType = AppContextType.iOS;
         }
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Games
         /// <summary>
         /// The view in which is rendered the game.
         /// </summary>
-        public readonly iPhoneOSGameView GameView;
+        public readonly UIWindow Window;
 
         /// <summary>
         /// The controller of the game.

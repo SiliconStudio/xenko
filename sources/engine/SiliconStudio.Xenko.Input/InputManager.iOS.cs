@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public class InputManageriOS: InputManager<UIWindow>
+    public class InputManageriOS: InputManager<iPhoneOSGameView>
     {
         private iPhoneOSGameView view;
         private CMMotionManager motionManager;
@@ -30,16 +30,16 @@ namespace SiliconStudio.Xenko.Input
             HasPointer = true;
         }
 
-        public override void Initialize(GameContext<UIWindow> gameContext)
+        public override void Initialize(GameContext<iPhoneOSGameView> gameContext)
         {
             var context = (GameContextiOS) gameContext;
-            view = context.GameView;
-            Control = context.Control;
+            view = context.Control;
+            var window = context.window;
 
             var gameController = context.GameViewController;
 
-            Control.UserInteractionEnabled = true;
-            Control.MultipleTouchEnabled = true;
+            window.UserInteractionEnabled = true;
+            window.MultipleTouchEnabled = true;
             gameController.TouchesBeganDelegate += (touchesSet, _) => HandleTouches(touchesSet);
             gameController.TouchesMovedDelegate += (touchesSet, _) => HandleTouches(touchesSet);
             gameController.TouchesEndedDelegate += (touchesSet, _) => HandleTouches(touchesSet);
