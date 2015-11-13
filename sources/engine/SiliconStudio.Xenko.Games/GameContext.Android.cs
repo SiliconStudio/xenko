@@ -3,7 +3,7 @@
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using Android.Widget;
 using OpenTK.Platform.Android;
-SiliconStudio.Xenko.Games.Android;
+using SiliconStudio.Xenko.Games.Android;
 
 namespace SiliconStudio.Xenko.Games
 {
