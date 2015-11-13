@@ -3,12 +3,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using SiliconStudio.ActionStack;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Core;
-using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -85,7 +84,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        protected void RegisterValueChangedAction(string path, ViewModelActionItem actionItem)
+        protected void RegisterValueChangedAction(string path, DirtiableActionItem actionItem)
         {
             Owner.RegisterAction(path, actionItem);
         }

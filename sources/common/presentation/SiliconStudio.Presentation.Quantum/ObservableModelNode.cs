@@ -2,11 +2,10 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Linq;
-
+using SiliconStudio.ActionStack;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -390,7 +389,7 @@ namespace SiliconStudio.Presentation.Quantum
             OnPropertyChanged("IsPrimitive", "HasList", "HasDictionary");
         }
 
-        protected virtual ViewModelActionItem CreateValueChangedActionItem(object previousValue, object newValue)
+        protected virtual DirtiableActionItem CreateValueChangedActionItem(object previousValue, object newValue)
         {
             string displayName = Owner.FormatSingleUpdateMessage(this, newValue);
             return new ValueChangedActionItem(displayName, Owner.ObservableViewModelService, SourceNodePath, Path, Owner.Identifier, Index, Owner.Dirtiables, previousValue);

@@ -2,14 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
-using SiliconStudio.Presentation.ViewModel;
-using SiliconStudio.Presentation.ViewModel.ActionStack;
+using SiliconStudio.ActionStack;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public class ValueChangedActionItem : ViewModelActionItem
+    public class ValueChangedActionItem : DirtiableActionItem
     {
         protected ModelNodePath NodePath;
         protected object Index;
@@ -18,14 +16,14 @@ namespace SiliconStudio.Presentation.Quantum
         private ObservableViewModelService service;
 
 
-        public ValueChangedActionItem(string name, ObservableViewModelService service, ModelNodePath nodePath, string observableNodePath, ObservableViewModelIdentifier identifier, object index, IEnumerable<IDirtiableViewModel> dirtiables, object previousValue)
+        public ValueChangedActionItem(string name, ObservableViewModelService service, ModelNodePath nodePath, string observableNodePath, ObservableViewModelIdentifier identifier, object index, IEnumerable<IDirtiable> dirtiables, object previousValue)
             : base(name, dirtiables)
         {
-            if (service == null) throw new ArgumentNullException("service");
+            if (service == null) throw new ArgumentNullException(nameof(service));
             if (!nodePath.IsValid) throw new InvalidOperationException("Unable to retrieve the path of the modified node.");
             this.service = service;
             this.identifier = identifier;
-            this.PreviousValue = previousValue;
+            PreviousValue = previousValue;
             NodePath = nodePath;
             Index = index;
             ObservableNodePath = observableNodePath;

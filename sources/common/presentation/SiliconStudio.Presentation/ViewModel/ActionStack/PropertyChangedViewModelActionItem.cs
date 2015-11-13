@@ -7,11 +7,11 @@ using SiliconStudio.ActionStack;
 
 namespace SiliconStudio.Presentation.ViewModel.ActionStack
 {
-    public class PropertyChangedViewModelActionItem : ViewModelActionItem
+    public class PropertyChangedViewModelActionItem : DirtiableActionItem
     {
         private readonly PropertyChangedActionItem innerActionItem;
 
-        public PropertyChangedViewModelActionItem(string name, object container, IEnumerable<IDirtiableViewModel> dirtiables, string propertyName, object previousValue)
+        public PropertyChangedViewModelActionItem(string name, object container, IEnumerable<IDirtiable> dirtiables, string propertyName, object previousValue)
             : base(name, dirtiables)
         {
             if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));

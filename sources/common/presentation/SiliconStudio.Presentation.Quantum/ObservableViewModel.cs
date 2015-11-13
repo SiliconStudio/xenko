@@ -4,12 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-
+using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel;
-using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -34,7 +33,7 @@ namespace SiliconStudio.Presentation.Quantum
         public const string HasCommandPrefix = "HasCommand_";
         public const string HasAssociatedDataPrefix = "HasAssociatedData_";
 
-        private readonly IEnumerable<IDirtiableViewModel> dirtiables;
+        private readonly IEnumerable<IDirtiable> dirtiables;
         private readonly HashSet<string> nodeChangeList = new HashSet<string>();
         private IObservableNode rootNode;
         private ObservableViewModel parent;
@@ -49,8 +48,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
         /// <param name="modelContainer">A <see cref="ModelContainer"/> to use to build view model nodes.</param>
-        /// <param name="dirtiables">The list of <see cref="IDirtiableViewModel"/> objects linked to this view model.</param>
-        private ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IEnumerable<IDirtiableViewModel> dirtiables)
+        /// <param name="dirtiables">The list of <see cref="IDirtiable"/> objects linked to this view model.</param>
+        private ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IEnumerable<IDirtiable> dirtiables)
             : base(serviceProvider)
         {
             if (modelContainer == null) throw new ArgumentNullException(nameof(modelContainer));
@@ -68,8 +67,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
         /// <param name="modelContainer">A <see cref="ModelContainer"/> to use to build view model nodes.</param>
         /// <param name="modelNode">The root model node of the view model to generate.</param>
-        /// <param name="dirtiables">The list of <see cref="IDirtiableViewModel"/> objects linked to this view model.</param>
-        public ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IModelNode modelNode, IEnumerable<IDirtiableViewModel> dirtiables)
+        /// <param name="dirtiables">The list of <see cref="IDirtiable"/> objects linked to this view model.</param>
+        public ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IModelNode modelNode, IEnumerable<IDirtiable> dirtiables)
             : this(serviceProvider, modelContainer, dirtiables.SafeArgument("dirtiables").ToList())
         {
             if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
@@ -118,7 +117,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<IDirtiableViewModel> Dirtiables => dirtiables;
+        public override IEnumerable<IDirtiable> Dirtiables => dirtiables;
 
         /// <summary>
         /// Gets the root node of this observable view model.
@@ -187,7 +186,7 @@ namespace SiliconStudio.Presentation.Quantum
                 nodeChangeList.Add(observableNodePath);
         }
 
-        internal void RegisterAction(string observableNodePath, ViewModelActionItem actionItem)
+        internal void RegisterAction(string observableNodePath, DirtiableActionItem actionItem)
         {
             // This must be done before adding the action item to the stack!
             NotifyNodeChanged(observableNodePath);

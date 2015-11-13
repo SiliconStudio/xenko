@@ -3,20 +3,20 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Extensions;
-using SiliconStudio.Presentation.ViewModel.ActionStack;
+using SiliconStudio.Presentation.Services;
 
 namespace SiliconStudio.Presentation.ViewModel
 {
     /// <summary>
-    /// An implementation of the <see cref="EditableViewModel"/> that is also itself an <see cref="IDirtiableViewModel"/>. The <see cref="Dirtiables"/> 
+    /// An implementation of the <see cref="EditableViewModel"/> that is also itself an <see cref="IDirtiable"/>. The <see cref="Dirtiables"/> 
     /// property returns an enumerable containing the instance itself.
     /// </summary>
-    public abstract class DirtiableEditableViewModel : EditableViewModel, IDirtiableViewModel, IDisposable
+    public abstract class DirtiableEditableViewModel : EditableViewModel, IDirtiable, IDisposable
     {
-        private readonly HashSet<ViewModelActionItem> changes = new HashSet<ViewModelActionItem>();
-        private readonly List<IDirtiableViewModel> dependencies = new List<IDirtiableViewModel>();
+        private readonly HashSet<DirtiableActionItem> changes = new HashSet<DirtiableActionItem>();
+        private readonly List<IDirtiable> dependencies = new List<IDirtiable>();
         private bool isDirty;
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace SiliconStudio.Presentation.ViewModel
         public bool IsDirty { get { return isDirty; } protected set { var oldValue = isDirty; SetValueUncancellable(ref isDirty, value); OnDirtyFlagSet(oldValue, value); } }
 
         /// <inheritdoc/>
-        public override IEnumerable<IDirtiableViewModel> Dirtiables { get { return this.Yield(); } }
+        public override IEnumerable<IDirtiable> Dirtiables => this.Yield();
 
         /// <inheritdoc/>
         public event EventHandler<DirtinessUpdatedEventArgs> DirtinessUpdated;
@@ -45,17 +45,17 @@ namespace SiliconStudio.Presentation.ViewModel
         }
         
         /// <inheritdoc/>
-        public virtual void RegisterActionItem(ViewModelActionItem actionItem)
+        public virtual void RegisterActionItem(DirtiableActionItem actionItem)
         {
-            if (changes.Contains(actionItem)) throw new ArgumentException(@"The given action item is already registered.", "actionItem");
+            if (changes.Contains(actionItem)) throw new ArgumentException(@"The given action item is already registered.", nameof(actionItem));
             changes.Add(actionItem);
         }
 
         /// <inheritdoc/>
-        public virtual void DiscardActionItem(ViewModelActionItem actionItem)
+        public virtual void DiscardActionItem(DirtiableActionItem actionItem)
         {
             bool removed = changes.Remove(actionItem);
-            if (!removed) throw new ArgumentException(@"The given action item was not registered.", "actionItem");
+            if (!removed) throw new ArgumentException(@"The given action item was not registered.", nameof(actionItem));
         }
 
         /// <inheritdoc/>
@@ -68,19 +68,19 @@ namespace SiliconStudio.Presentation.ViewModel
         }
 
         /// <inheritdoc/>
-        public void RegisterDirtiableDependency(IDirtiableViewModel dirtiable)
+        public void RegisterDirtiableDependency(IDirtiable dirtiable)
         {
-            if (dependencies.Contains(dirtiable)) throw new ArgumentException(@"The given dirtiable object is already registered as a dependency.", "dirtiable");
+            if (dependencies.Contains(dirtiable)) throw new ArgumentException(@"The given dirtiable object is already registered as a dependency.", nameof(dirtiable));
             dependencies.Add(dirtiable);
             dirtiable.DirtinessUpdated += DependencyDirtinessUpdated;
         }
 
         /// <inheritdoc/>
-        public void UnregisterDirtiableDependency(IDirtiableViewModel dirtiable)
+        public void UnregisterDirtiableDependency(IDirtiable dirtiable)
         {
             dirtiable.DirtinessUpdated -= DependencyDirtinessUpdated;
             bool removed = dependencies.Remove(dirtiable);
-            if (!removed) throw new ArgumentException(@"The given dirtiable object was not registered as a dependency.", "dirtiable");
+            if (!removed) throw new ArgumentException(@"The given dirtiable object was not registered as a dependency.", nameof(dirtiable));
         }
 
         protected virtual void OnDirtyFlagSet(bool oldValue, bool newValue)
@@ -97,11 +97,7 @@ namespace SiliconStudio.Presentation.ViewModel
         {
             bool previousValue = IsDirty;
             IsDirty = changes.Any(x => x.IsSaved != x.IsDone) || dependencies.Any(x => x.IsDirty);
-            var handler = DirtinessUpdated;
-            if (handler != null)
-            {
-                handler(this, new DirtinessUpdatedEventArgs(previousValue, IsDirty));
-            }
+            DirtinessUpdated?.Invoke(this, new DirtinessUpdatedEventArgs(previousValue, IsDirty));
         }
     }
 }
