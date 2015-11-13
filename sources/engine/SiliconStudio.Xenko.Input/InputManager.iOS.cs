@@ -11,6 +11,7 @@ using CoreMotion;
 using OpenTK.Platform.iPhoneOS;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Input
 {
