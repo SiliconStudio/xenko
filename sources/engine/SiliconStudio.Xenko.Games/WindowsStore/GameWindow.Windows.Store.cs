@@ -27,7 +27,9 @@ using System.Diagnostics;
 using Windows.Graphics.Display;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
+#if SILICONSTUDIO_PLATFORM_WINDOWS_10
 using Windows.Foundation;
+#endif
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -189,14 +191,13 @@ namespace SiliconStudio.Xenko.Games
         protected override void Initialize(GameContext<SwapChainPanel> windowContext)
         {
             Debug.Assert(windowContext is GameContextWindowsRuntime, "By design only one descendant of GameContext<SwapChainPanel>");
-            var winContext = (GameContextWindowsRuntime)windowContext;
-            swapChainPanel = winContext.Control as SwapChainPanel;
+            swapChainPanel = windowContext.Control;
             windowHandle = new WindowHandle(AppContextType.WindowsRuntime, swapChainPanel);
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_10
             var appView = ApplicationView.GetForCurrentView();
-            if (appView != null && winContext.RequestedWidth != 0 && winContext.RequestedHeight != 0)
-                appView.TryResizeView(new Size(winContext.RequestedWidth, winContext.RequestedHeight));
+            if (appView != null && windowContext.RequestedWidth != 0 && windowContext.RequestedHeight != 0)
+                appView.TryResizeView(new Size(windowContext.RequestedWidth, windowContext.RequestedHeight));
 #endif
 
             //clientBounds = new DrawingRectangle(0, 0, (int)swapChainPanel.ActualWidth, (int)swapChainPanel.ActualHeight);
