@@ -5,14 +5,12 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Extensions;
 
 namespace SiliconStudio.Xenko.Particles
 {
-    public delegate void CopyParticlePoolDelegate(IntPtr oldPool, IntPtr newPool);
+    public delegate void CopyParticlePoolDelegate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize);
 
     public class ParticlePool : IDisposable, IEnumerable
     {
@@ -28,29 +26,28 @@ namespace SiliconStudio.Xenko.Particles
             /// New particles are allocated at the top of the stack. Dead particles are swapped out with the top particle.
             /// The stack stays small but order of the particles gets scrambled.
             /// </summary>
-            Stack,
+            Stack
 
-            /// <summary>
-            /// NOT IMPLEMENTED YET
-            /// Same as stack but the order of the particles is kept the same.
-            /// </summary>
-            OrderedStack,
-
-            /// <summary>
-            /// NOT IMPLEMENTED YET
-            /// Same as stack, but resized dynamically to fit more or less particles
-            /// </summary>
-            DynamicStack            
+            // OrderedStack,
+            // DynamicStack            
         }
 
-        private bool disposed = false;
+        private bool disposed;
         private readonly ListPolicy listPolicy;
 
         public IntPtr ParticleData { get; private set; } = IntPtr.Zero;
 
-        public int ParticleCapacity { get; private set; } = 0;
+        public int ParticleCapacity { get; private set; }
 
-        public int ParticleSize { get; private set; } = 0;
+        public void SetCapacity(int newCapacity)
+        {
+            if (newCapacity < 0)
+                return;
+
+            RelocatePool(ParticleSize, newCapacity, CapacityChangedRelocate);
+        }
+
+        public int ParticleSize { get; private set; }
 
         /// <summary>
         /// For ring implementations, the index just increases, looping when it reaches max count.
@@ -60,19 +57,14 @@ namespace SiliconStudio.Xenko.Particles
 
         public ParticlePool(int size, int capacity, ListPolicy listPolicy = ListPolicy.Ring)
         {
-            if (listPolicy == ListPolicy.OrderedStack || listPolicy == ListPolicy.DynamicStack)
-            {
-                throw new NotImplementedException();
-            }
-
             this.listPolicy = listPolicy;
 
             nextFreeIndex = 0;
 
-            RelocatePool(size, capacity, (pool, newPool) => {});
+            RelocatePool(size, capacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
         }
 
-        public void RelocatePool(int newSize, int newCapacity, CopyParticlePoolDelegate poolCopy)
+        private void RelocatePool(int newSize, int newCapacity, CopyParticlePoolDelegate poolCopy)
         {
             if (newCapacity == ParticleCapacity && newSize == ParticleSize)
                 return;
@@ -86,7 +78,7 @@ namespace SiliconStudio.Xenko.Particles
 
             if (ParticleData != IntPtr.Zero)
             {
-                poolCopy(ParticleData, newParticleData);
+                poolCopy(ParticleData, ParticleCapacity, ParticleSize, newParticleData, newCapacity, newSize);
 
                 Utilities.FreeMemory(ParticleData);
             }
@@ -94,6 +86,15 @@ namespace SiliconStudio.Xenko.Particles
             ParticleData = newParticleData;
             ParticleCapacity = newCapacity;
             ParticleSize = newSize;
+        }
+
+        public void Reset()
+        {
+            fields.Clear();
+#if PARTICLES_SOA
+            fieldDescriptions.Clear();
+#endif
+            RelocatePool(0, ParticleCapacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
         }
 
         ~ParticlePool()
@@ -129,19 +130,33 @@ namespace SiliconStudio.Xenko.Particles
 
         private void CopyParticleData(int dst, int src)
         {
-            // TODO Copy data - will depend on fields policy
-            
+            var dstParticle = FromIndex(dst);
+            var srcParticle = FromIndex(src);
+
+#if PARTICLES_SOA
+            foreach (var field in fields.Values)
+            {
+                var accessor = new ParticleFieldAccessor(field);
+                Utilities.CopyMemory(dstParticle[accessor], srcParticle[accessor], field.Stride);
+            }
+#else
+            Utilities.CopyMemory(dstParticle, srcParticle, ParticleSize);
+#endif
         }
 
+#if PARTICLES_SOA
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        static private Particle FromIndex(int idx)
+        {
+            return new Particle(idx);
+        }
+#else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private Particle FromIndex(int idx)
         {
-#if PARTICLES_SOA
-            return new Particle(idx);
-#else
             return new Particle(ParticleData + idx * ParticleSize);
-#endif
         }
+#endif
 
         /// <summary>
         /// Add a new particle to the pool. Doesn't worry about initialization.
@@ -149,42 +164,34 @@ namespace SiliconStudio.Xenko.Particles
         /// <returns></returns>
         public Particle AddParticle()
         {
-            if (nextFreeIndex == ParticleCapacity)
-            {
-                if (listPolicy == ListPolicy.Ring)
-                {
-                    nextFreeIndex = 0;
-                }
-                else if (listPolicy == ListPolicy.DynamicStack)
-                {
-                    throw new NotImplementedException();                  
-                }
-                else
-                {
-                    return Particle.Invalid();
-                }
-            }
+            if (nextFreeIndex != ParticleCapacity)
+                return FromIndex(nextFreeIndex++);
 
+            if (listPolicy != ListPolicy.Ring)
+                return Particle.Invalid();
+
+            nextFreeIndex = 0;
             return FromIndex(nextFreeIndex++);
         }
 
         private void RemoveCurrent(ref Particle particle, ref int oldIndex, ref int indexMax)
         {
-            if (listPolicy != ListPolicy.Ring)
-            {
-                // Next free index shouldn't be 0 because we are removing a particle
-                Debug.Assert(nextFreeIndex > 0);
+            // In case of a Ring list we don't bother to remove dead particles
+            if (listPolicy == ListPolicy.Ring)
+                return;
+            
+            // Next free index shouldn't be 0 because we are removing a particle
+            Debug.Assert(nextFreeIndex > 0);
 
-                // Update the top index since the list is shorter now
-                indexMax = --nextFreeIndex;
-                if (indexMax != oldIndex)
-                    CopyParticleData(oldIndex, indexMax);
+            // Update the top index since the list is shorter now
+            indexMax = --nextFreeIndex;
+            if (indexMax != oldIndex)
+                CopyParticleData(oldIndex, indexMax);
 
-                particle = FromIndex(indexMax);        
+            particle = FromIndex(indexMax);        
 
-                // Subract 1 from the old index to position the cursor of the enumerator to the previous particle
-                oldIndex--;
-            }
+            // We need to position the cursor of the enumerator to the previous particle, so that enumeration works fine
+            oldIndex--;            
         }
 
 #region Fields
@@ -192,7 +199,7 @@ namespace SiliconStudio.Xenko.Particles
         private readonly Dictionary<ParticleFieldDescription, ParticleField> fields = new Dictionary<ParticleFieldDescription, ParticleField>(DefaultMaxFielsPerPool);
 #if PARTICLES_SOA
         private readonly List<ParticleFieldDescription> fieldDescriptions = new List<ParticleFieldDescription>(DefaultMaxFielsPerPool);
-#endif 
+#endif
         internal ParticleField AddField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
         {
             ParticleField existingField;
@@ -204,29 +211,95 @@ namespace SiliconStudio.Xenko.Particles
             var newParticleSize = ParticleSize + newFieldSize;
 
 #if PARTICLES_SOA
-            var newField = new ParticleField(newFieldSize, IntPtr.Zero, 0);
+            var newField = new ParticleField(newFieldSize, IntPtr.Zero);
             fieldDescriptions.Add(fieldDesc);
 #else
             var newField = new ParticleField() { Offset = ParticleSize, Size = newFieldSize };
 #endif
             fields.Add(fieldDesc, newField);
 
-            // TODO Proper particle relocation
-            CopyParticlePoolDelegate emptyCopy = (pool, newPool) => { };
-            RelocatePool(newParticleSize, ParticleCapacity, emptyCopy);
+            RelocatePool(newParticleSize, ParticleCapacity, FieldAddedRelocate);
 
 #if PARTICLES_SOA
             {
-                int fieldOffset = 0;
+                var fieldOffset = 0;
                 foreach (var desc in fieldDescriptions)
                 {
-                    int fieldSize = fields[desc].FieldSize;
-                    fields[desc] = new ParticleField(fieldSize, ParticleData + fieldOffset * ParticleCapacity, fieldSize);
+                    var fieldSize = fields[desc].Stride;
+                    fields[desc] = new ParticleField(fieldSize, ParticleData + fieldOffset * ParticleCapacity);
                     fieldOffset += fieldSize;
                 }
             }
-#endif            
+#endif
             return fields[fieldDesc];
+        }
+
+        private void FieldAddedRelocate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize)
+        {
+            // Old particle capacity and new particle capacity should be the same when only the size changes.
+            // If this is not the case, something went wrong. Reset the particle count and do not copy.
+            // Also, since we are adding a field, the new particle size is expected to get bigger.
+            if (oldCapacity != newCapacity || newCapacity <= 0 || newSize <= 0 || oldPool == IntPtr.Zero || newPool == IntPtr.Zero || oldSize >= newSize)
+            {
+                nextFreeIndex = 0;
+                return;
+            }
+
+#if PARTICLES_SOA
+            // Easy case - the new field is added to the end. Copy the existing memory block into the new one
+            Utilities.CopyMemory(newPool, oldPool, oldSize * oldCapacity);
+            Utilities.ClearMemory(newPool + oldSize * oldCapacity, 0, (newSize - oldSize) * oldCapacity);
+#else
+            // Clear the memory first instead of once per particle
+            Utilities.ClearMemory(newPool, 0, newSize * newCapacity);
+
+            // Complex case - needs to copy the head of each particle
+            for (var i = 0; i < oldCapacity; i++)
+            {
+                Utilities.CopyMemory(newPool + i * newSize, oldPool + i * oldSize, oldSize);
+            }
+#endif
+        }
+
+        private void CapacityChangedRelocate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize)
+        {
+            // Old particle size and new particle size should be the same when only the capacity changes.
+            // If this is not the case, something went wrong. Reset the particle count and do not copy.
+            if (oldSize != newSize || newCapacity <= 0 || newSize <= 0 || oldPool == IntPtr.Zero || newPool == IntPtr.Zero)
+            {
+                nextFreeIndex = 0;
+                return;
+            }
+
+            if (nextFreeIndex > newCapacity)
+                nextFreeIndex = newCapacity;
+
+#if PARTICLES_SOA
+            // Clear the memory first instead of once per particle
+            Utilities.ClearMemory(newPool, 0, newSize * newCapacity);
+
+            var oldOffset = 0;
+            var newOffset = 0;
+
+            foreach (var field in fields.Values)
+            {                
+                var copySize = Math.Min(oldCapacity, newCapacity) * field.Stride;
+                Utilities.CopyMemory(newPool + newOffset, oldPool + oldOffset, field.Stride * copySize);
+
+                oldOffset += (field.Stride * oldCapacity);
+                newOffset += (field.Stride * newCapacity);
+            }
+#else
+            if (newCapacity > oldCapacity)
+            {
+                Utilities.CopyMemory(newPool, oldPool, newSize * oldCapacity);
+                Utilities.ClearMemory(newPool + newSize * oldCapacity, 0, newSize * (newCapacity - oldCapacity));
+            }
+            else
+            {
+                Utilities.CopyMemory(newPool, oldPool, newSize * newCapacity);
+            }
+#endif
         }
 
         // TODO internal RemoveField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
@@ -281,9 +354,14 @@ namespace SiliconStudio.Xenko.Particles
 #region Enumerator
         IEnumerator IEnumerable.GetEnumerator()
         {
-            return (IEnumerator)GetEnumerator();
+            return GetEnumerator();
         }
 
+        /// <summary>
+        /// Returns an <see cref="Enumerator"/> to the particles in this <see cref="ParticlePool"/>
+        /// In case of <see cref="ListPolicy.Ring"/> dead particles are returned too, so the calling entity should handle such cases.
+        /// </summary>
+        /// <returns></returns>
         public Enumerator GetEnumerator()
         {
             return (listPolicy == ListPolicy.Ring) ? 
@@ -296,11 +374,11 @@ namespace SiliconStudio.Xenko.Particles
 #if PARTICLES_SOA
 #else
             private IntPtr particlePtr;
+            private readonly int particleSize;
 #endif
             private int index;
 
             private readonly ParticlePool particlePool;
-            private readonly int particleSize;
             private readonly int indexFrom;
 
             // indexTo can change if particles are removed during iteration
@@ -313,9 +391,9 @@ namespace SiliconStudio.Xenko.Particles
             public Enumerator(ParticlePool particlePool)
             {
                 this.particlePool = particlePool;
-                particleSize = particlePool.ParticleSize;
 #if PARTICLES_SOA
 #else
+                particleSize = particlePool.ParticleSize;
                 particlePtr = IntPtr.Zero;
 #endif
                 indexFrom = 0;
@@ -324,7 +402,7 @@ namespace SiliconStudio.Xenko.Particles
             }
 
             /// <summary>
-            /// 
+            /// <see cref="Enumerator"/> to the particles in this <see cref="ParticlePool"/>
             /// </summary>
             /// <param name="particlePool">Particle pool to iterate</param>
             /// <param name="idxFrom">First valid particle index</param>
@@ -332,9 +410,9 @@ namespace SiliconStudio.Xenko.Particles
             public Enumerator(ParticlePool particlePool, int idxFrom, int idxTo)
             {
                 this.particlePool = particlePool;
-                particleSize = particlePool.ParticleSize;
 #if PARTICLES_SOA
 #else
+                particleSize = particlePool.ParticleSize;
                 particlePtr = IntPtr.Zero;
 #endif
                 indexFrom = Math.Max(0, Math.Min(idxFrom, idxTo));

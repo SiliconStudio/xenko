@@ -16,18 +16,12 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// Size of one data unit. Depends of how you group the fields together (AoS or SoA)
         /// </summary>
-        public int Size;
+        public readonly int Stride;
 
-        /// <summary>
-        /// Field size is strictly the size of one unit in this field, regardless of how it is grouped with other fields.
-        /// </summary>
-        public readonly int FieldSize;
-
-        public ParticleField(int fieldSize, IntPtr offset, int totalUnitSize = 0)
+        public ParticleField(int fieldSize, IntPtr offset)
         {
             Offset = offset;
-            Size = totalUnitSize;
-            FieldSize = fieldSize;
+            Stride = fieldSize;
         }
 #else
         /// <summary>

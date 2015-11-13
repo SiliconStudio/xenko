@@ -6,6 +6,10 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Particles
 {
+    /// <summary>
+    /// The most basic unit of a <see cref="ParticleSystem"/>
+    /// You can access individual fields with a <see cref="ParticleFieldAccessor"/>
+    /// </summary>
     public struct  Particle
     {
 #if PARTICLES_SOA
@@ -17,10 +21,10 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
-        /// Creates an invalid <see cref="Particle"/>. Accessing the invalid <see cref="Particle"/> is not resticted by the engine, so the user has to restrict it.
+        /// Creates an invalid <see cref="Particle"/>. Accessing the invalid <see cref="Particle"/> is not resticted by the engine.
         /// </summary>
         /// <returns></returns>
-        static public Particle Invalid()
+        static internal Particle Invalid()
         {
             return new Particle(int.MaxValue);
         }
@@ -33,20 +37,20 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
-        /// Creates an invalid <see cref="Particle"/>. Accessing the invalid <see cref="Particle"/> is not resticted by the engine, so the user has to restrict it.
+        /// Creates an invalid <see cref="Particle"/>. Accessing the invalid <see cref="Particle"/> is not resticted by the engine.
         /// </summary>
         /// <returns></returns>
-        static public Particle Invalid()
+        static internal Particle Invalid()
         {
             return new Particle(IntPtr.Zero);
         }
 #endif
 
         #region Accessors
-
+        /*
 
         /// <summary>
-        /// Gets the particle's field value.
+        /// Gets the particle's field value. However, you should try to use the indexer wherever possible.
         /// </summary>
         /// <typeparam name="T">The field type.</typeparam>
         /// <param name="accessor">The field accessor</param>
@@ -59,9 +63,10 @@ namespace SiliconStudio.Xenko.Particles
             return Utilities.Read<T>(Pointer + accessor);
 #endif
         }
+        */
 
         /// <summary>
-        /// Gets the particle's field value.
+        /// Gets the particle's field value. However, you should try to use the indexer wherever possible.
         /// </summary>
         /// <typeparam name="T">The field type.</typeparam>
         /// <param name="accessor">The field accessor</param>
@@ -76,7 +81,7 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
-        /// Sets the particle's field to a value.
+        /// Sets the particle's field to a value. However, you should try to use the indexer wherever possible.
         /// </summary>
         /// <typeparam name="T">The field type.</typeparam>
         /// <param name="accessor">The field accessor</param>
@@ -91,7 +96,7 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
-        /// Sets the particle's field to a value.
+        /// Sets the particle's field to a value. However, you should try to use the indexer wherever possible.
         /// </summary>
         /// <typeparam name="T">The field type.</typeparam>
         /// <param name="accessor">The field accessor</param>
@@ -117,6 +122,16 @@ namespace SiliconStudio.Xenko.Particles
         public IntPtr this[ParticleFieldAccessor accessor] => Pointer + accessor;
 #endif
 
+
+        public override bool Equals(object other)
+        {
+            if (other == null)
+                return false;
+
+            return (this == (Particle)other);
+        }
+
+
 #if PARTICLES_SOA
         /// <summary>
         /// Since particles are only indices, the comparison is only meaningful if it's done within the same particle pool
@@ -126,6 +141,11 @@ namespace SiliconStudio.Xenko.Particles
         /// <returns></returns>
         public static bool operator ==(Particle particleLeft, Particle particleRight) => (particleLeft.Index == particleRight.Index);
         public static bool operator !=(Particle particleLeft, Particle particleRight) => (particleLeft.Index != particleRight.Index);
+
+        public override int GetHashCode()
+        {
+            return Index;
+        }
 #else
         /// <summary>
         /// Checks if the two particles point to the same pointer.
@@ -136,6 +156,10 @@ namespace SiliconStudio.Xenko.Particles
         public static bool operator ==(Particle particleLeft, Particle particleRight) => (particleLeft.Pointer == particleRight.Pointer);
         public static bool operator !=(Particle particleLeft, Particle particleRight) => (particleLeft.Pointer != particleRight.Pointer);
 
+        public override int GetHashCode()
+        {
+            return Pointer.ToInt32();
+        }
 #endif
     }
 }
