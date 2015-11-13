@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("PhysicsElementBase")]
     [Display(40, "PhysicsElementBase")]
-    public abstract class PhysicsElementBase
+    public abstract class PhysicsElementBase : IPhysicsElement
     {
         protected PhysicsElementBase()
         {

@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("RigidbodyElement")]
     [Display(40, "Rigidbody")]
-    public class RigidbodyElement : PhysicsSkinnedElementBase, IPhysicsElement
+    public class RigidbodyElement : PhysicsSkinnedElementBase
     {
         public override Types Type => InternalCollider != null
             ? (((RigidBody)InternalCollider).Type == RigidBodyTypes.Kinematic ? Types.KinematicRigidBody : Types.DynamicRigidBody)
