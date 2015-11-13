@@ -235,16 +235,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns>The value of the model content associated to this <see cref="ObservableModelNode"/>.</returns>
         protected object GetModelContentValue()
         {
-            var dictionary = SourceNode.Content.Descriptor as DictionaryDescriptor;
-            var list = SourceNode.Content.Descriptor as CollectionDescriptor;
-
-            if (Index != null && dictionary != null)
-                return dictionary.GetValue(SourceNode.Content.Value, Index);
-
-            if (Index != null && list != null)
-                return list.GetValue(SourceNode.Content.Value, Index);
-
-            return SourceNode.Content.Value;
+            return SourceNode.Content.Descriptor.GetInnerCollectionContent(SourceNode.Content.Value, Index);
         }
 
         /// <summary>
@@ -253,35 +244,13 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
         protected bool SetModelContentValue(IModelNode node, object newValue)
         {
-            var dictionary = node.Content.Descriptor as DictionaryDescriptor;
-            var list = node.Content.Descriptor as CollectionDescriptor;
-            bool result = false;
-            if (Index != null && dictionary != null)
+            if (!Equals(node.Content.Descriptor.GetInnerCollectionContent(node.Content.Value, Index), newValue))
             {
-                if (!Equals(dictionary.GetValue(node.Content.Value, Index), newValue))
-                {
-                    result = true;
-                    dictionary.SetValue(node.Content.Value, Index, newValue);
-                }
-            }
-            else if (Index != null && list != null)
-            {
-                if (!Equals(list.GetValue(node.Content.Value, Index), newValue))
-                {
-                    result = true;
-                    list.SetValue(node.Content.Value, Index, newValue);
-                }
-            }
-            else
-            {
-                if (!Equals(node.Content.Value, newValue))
-                {
-                    result = true;
-                    node.Content.Value = newValue;
-                }
+                node.Content.Descriptor.SetInnerCollectionContent(node.Content.Value, Index, newValue);
+                return true;
             }
 
-            return result;
+            return false;
         }
 
         private void GenerateChildren(IModelNode modelNode, ModelNodePath modelNodePath)
