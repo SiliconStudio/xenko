@@ -12,8 +12,7 @@ namespace SiliconStudio.ActionStack
     /// </summary>
     public abstract class DirtiableActionItem : ActionItem
     {
-        // TODO: might be safer to make this private but to give a way to set the dirtiables during the first
-        protected readonly List<IDirtiable> dirtiables;
+        private readonly List<IDirtiable> dirtiables;
         private bool isSaved;
 
         /// <summary>
