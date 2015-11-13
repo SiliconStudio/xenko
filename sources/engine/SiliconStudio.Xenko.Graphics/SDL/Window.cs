@@ -490,13 +490,5 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             GC.SuppressFinalize(this);
         }
 #endregion
-
-#region Implementation
-        /// <summary>
-        /// Flag to know if the window has been shown once already. Used by `Show' to figure when to call the actions from <see cref="HandleCreated"/>.
-        /// </summary>
-        private bool _hasBeenShownOnce;
-
-#endregion
     }
 }
