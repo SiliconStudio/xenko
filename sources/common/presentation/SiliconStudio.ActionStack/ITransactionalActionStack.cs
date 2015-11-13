@@ -96,7 +96,11 @@ namespace SiliconStudio.ActionStack
         /// </summary>
         /// <param name="displayName"></param>
         /// <param name="aggregateActionItems">A function that will aggregate an enumeration of action items into a single action item.</param>
-        /// <remarks>Once the transaction is ended, an aggregate action is created with all action items that were added during the transaction. This aggregate is added to the action stack.</remarks>
+        /// <remarks>
+        /// Once the transaction is ended, an aggregate action is created with all action items that were added during the transaction.
+        /// This aggregate is added to the action stack. If no action item was added during the transaction, the transaction is then discarded instead,
+        /// as it would be if <see cref="DiscardTransaction"/> was called instead.
+        /// </remarks>
         void EndTransaction(string displayName, Func<IReadOnlyCollection<IActionItem>, IActionItem> aggregateActionItems);
 
         /// <summary>

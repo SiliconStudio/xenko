@@ -204,15 +204,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void EndCombinedAction(string displayName, string observableNodePath, object value)
         {
-            var actions = ActionStack.GetCurrentTransactions();
-            if (actions.Count == 0)
-            {
-                ActionStack.DiscardTransaction();
-            }
-            else
-            {
-                ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, observableViewModelService, observableNodePath, Identifier, x));
-            }
+            ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, ObservableViewModelService, observableNodePath, Identifier, x));
         }
 
         private void DirtinessUpdated(object sender, DirtinessUpdatedEventArgs e)
