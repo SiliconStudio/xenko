@@ -9,23 +9,4 @@ namespace SiliconStudio.Xenko.Testing
         public int Platform;
         public bool Tester;
     }
-
-    [DataContract]
-    public class TestEndedRequest
-    {
-        
-    }
-
-    [DataContract]
-    public class StatusMessageRequest
-    {
-        public bool Error;
-        public string Message;
-    }
-
-    [DataContract]
-    public class ScreenshotRequest
-    {
-        public string Filename;
-    }
 }

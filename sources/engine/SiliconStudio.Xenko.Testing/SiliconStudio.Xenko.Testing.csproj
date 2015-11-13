@@ -21,8 +21,13 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="KeySimulationRequest.cs" />
+    <Compile Include="LogRequest.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="ScreenshotRequest.cs" />
+    <Compile Include="StatusMessageRequest.cs" />
+    <Compile Include="TapSimulationRequest.cs" />
     <Compile Include="TestClient.cs" />
+    <Compile Include="TestEndedRequest.cs" />
     <Compile Include="TestRegistrationRequest.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -1,15 +1,14 @@
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.ConnectionRouter;
+using SiliconStudio.Xenko.Engine.Network;
+using SiliconStudio.Xenko.Testing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Xenko.ConnectionRouter;
-using SiliconStudio.Xenko.Engine.Network;
-using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Testing;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
 {
@@ -23,9 +22,9 @@ namespace SiliconStudio.Xenko.SamplesTestServer
             public string Filename;
         }
 
-        private readonly Dictionary<string, TestProcess> processes = new Dictionary<string, TestProcess>(); 
+        private readonly Dictionary<string, TestProcess> processes = new Dictionary<string, TestProcess>();
 
-        private readonly Dictionary<SocketMessageLayer, SocketMessageLayer> testerToGame = new Dictionary<SocketMessageLayer, SocketMessageLayer>(); 
+        private readonly Dictionary<SocketMessageLayer, SocketMessageLayer> testerToGame = new Dictionary<SocketMessageLayer, SocketMessageLayer>();
 
         public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
@@ -48,32 +47,38 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                     switch (request.Platform)
                     {
                         case (int)PlatformType.Windows:
-                        {
-                            Process process = null;
-                            try
                             {
-                                var start = new ProcessStartInfo
+                                Process process = null;
+                                string debugInfo = "";
+                                try
                                 {
-                                    WorkingDirectory = Path.GetDirectoryName(request.Cmd),
-                                    FileName = filename
-                                };
-                                process = Process.Start(start);
-                            }
-                            catch (Exception ex)
-                            {
-                                socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = ex.Message }).Wait();
-                            }
+                                    var start = new ProcessStartInfo
+                                    {
+                                        WorkingDirectory = Path.GetDirectoryName(request.Cmd),
+                                        FileName = request.Cmd,
+                                    };
+                                    start.EnvironmentVariables["SiliconStudioXenkoDir"] = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
+                                    start.UseShellExecute = false;
 
-                            if (process == null)
-                            {
-                                socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game process." }).Wait();
+                                    debugInfo = "Starting process " + start.FileName + " with path " + start.WorkingDirectory;
+                                    socketMessageLayer.Send(new LogRequest { Message = debugInfo }).Wait();
+                                    process = Process.Start(start);                                   
+                                }
+                                catch (Exception ex)
+                                {
+                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = ex.Message }).Wait();
+                                }
+
+                                if (process == null)
+                                {
+                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game process. " + debugInfo }).Wait();
+                                }
+                                else
+                                {
+                                    processes[filename] = new TestProcess { Process = process, TesterSocket = socketMessageLayer, Filename = filename };
+                                }
+                                break;
                             }
-                            else
-                            {
-                                processes[filename] = new TestProcess { Process = process, TesterSocket = socketMessageLayer, Filename = filename };
-                            }
-                            break;
-                        }
                     }
                 }
                 else //Game process

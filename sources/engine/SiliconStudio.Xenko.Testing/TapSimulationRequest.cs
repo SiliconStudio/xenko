@@ -1,12 +1,12 @@
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Input;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Testing
 {
     [DataContract]
-    public class KeySimulationRequest
+    public class TapSimulationRequest
     {
-        public Keys Key;
         public bool Down;
+        public Vector2 Coords;
     }
 }
