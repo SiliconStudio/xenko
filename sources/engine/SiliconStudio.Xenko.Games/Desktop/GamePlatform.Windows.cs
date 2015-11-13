@@ -47,19 +47,31 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        internal override GameWindow[] GetSupportedGameWindows()
+        internal override GameWindow GetSupportedGameWindow(AppContextType type)
         {
-            return new GameWindow[]
-                {
-#if !SILICONSTUDIO_UI_SDL_ONLY
+            switch (type)
+            {
+                case AppContextType.DesktopOpenTK:
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-                    new GameWindowOpenTK(),
+                    return new GameWindowOpenTK();
 #endif
-                    new GameWindowWinforms(),
+                 case AppContextType.DesktopSDL:
+                    return new GameWindowSdl();
+
+                 case AppContextType.Desktop:
+#if !SILICONSTUDIO_UI_SDL_ONLY
+                     return new GameWindowWinforms();
+#else
+                     return new GameWindowSdl();
 #endif
-                    // SDL is always available on Windows
-                    new GameWindowSdl(),
-                };
+
+                case AppContextType.DesktopWpf:
+                    // WPF is not supported yet.
+                    return null;
+
+                default:
+                    return null;
+            }
         }
     }
 }

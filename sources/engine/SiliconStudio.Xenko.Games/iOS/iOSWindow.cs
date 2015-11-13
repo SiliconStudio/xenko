@@ -37,3 +37,4 @@ namespace SiliconStudio.Xenko.Games
         public readonly XenkoGameController GameViewController;
     }
 }
+#endif

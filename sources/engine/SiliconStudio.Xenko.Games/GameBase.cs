@@ -438,7 +438,7 @@ namespace SiliconStudio.Xenko.Games
             }
 
             // Gets the GameWindow Context
-            Context = gameContext ?? GameContextFactory.NewGameContext();
+            Context = gameContext ?? GameContextFactory.NewDefaultGameContext();
 
             PrepareContext();
 

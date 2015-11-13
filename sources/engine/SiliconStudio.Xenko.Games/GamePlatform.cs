@@ -86,22 +86,16 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        internal abstract GameWindow[] GetSupportedGameWindows();
+        internal abstract GameWindow GetSupportedGameWindow(AppContextType type);
 
         public virtual GameWindow CreateWindow(GameContext gameContext)
         {
-            gameContext = gameContext ?? GameContextFactory.NewGameContext();
-
-            var windows = GetSupportedGameWindows();
-
-            foreach (var gameWindowToTest in windows)
+            var window = GetSupportedGameWindow(gameContext.ContextType);
+            if (window != null)
             {
-                if (gameWindowToTest.CanHandle(gameContext))
-                {
-                    gameWindowToTest.Services = Services;
-                    gameWindowToTest.Initialize(gameContext);
-                    return gameWindowToTest;
-                }
+                window.Services = Services;
+                window.Initialize(gameContext);
+                return window;
             }
 
             throw new ArgumentException("Game Window context not supported on this platform");

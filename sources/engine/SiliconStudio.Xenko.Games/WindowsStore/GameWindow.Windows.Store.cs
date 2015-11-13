@@ -183,11 +183,6 @@ namespace SiliconStudio.Xenko.Games
 
 #region Methods
 
-        internal override bool CanHandle(GameContext windowContext)
-        {
-            return windowContext.ContextType == AppContextType.WindowsRuntime;
-        }
-
         protected override void Initialize(GameContext<SwapChainPanel> windowContext)
         {
             Debug.Assert(windowContext is GameContextWindowsRuntime, "By design only one descendant of GameContext<SwapChainPanel>");

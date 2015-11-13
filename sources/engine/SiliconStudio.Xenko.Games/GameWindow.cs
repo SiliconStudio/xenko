@@ -187,12 +187,6 @@ namespace SiliconStudio.Xenko.Games
 
         #region Methods
 
-        /// <summary>
-        /// Initializes the GameWindow with the specified window context.
-        /// </summary>
-        /// <param name="gameContext">The window context.</param>
-        internal abstract bool CanHandle(GameContext gameContext);
-
         internal abstract void Initialize(GameContext gameContext);
 
         internal bool Exiting;

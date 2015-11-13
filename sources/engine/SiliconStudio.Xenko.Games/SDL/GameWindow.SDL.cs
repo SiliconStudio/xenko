@@ -141,11 +141,6 @@ namespace SiliconStudio.Xenko.Games
             // Desktop doesn't have orientation (unless on Windows 8?)
         }
 
-        internal override bool CanHandle(GameContext gameContext)
-        {
-            return (gameContext.ContextType == AppContextType.DesktopSDL) || (gameContext.ContextType == AppContextType.Desktop);
-        }
-
         protected override void Initialize(GameContext<Window> gameContext)
         {
             // Setup the initial size of the window
