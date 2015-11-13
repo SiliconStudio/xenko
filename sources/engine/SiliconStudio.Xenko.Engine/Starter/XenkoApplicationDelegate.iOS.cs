@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Starter
             var xenkoGameController = new XenkoGameController { View = xenkoGameView };
 
             // create the game context
-            var gameContext = new GameContext(MainWindow, xenkoGameView, xenkoGameController);
+            var gameContext = new GameContextiOS(MainWindow, xenkoGameView, xenkoGameController);
 
             // Force fullscreen
             UIApplication.SharedApplication.SetStatusBarHidden(true, false);

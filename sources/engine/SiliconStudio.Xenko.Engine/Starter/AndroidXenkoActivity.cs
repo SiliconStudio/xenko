@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Starter
         /// <summary>
         /// The game context of the game instance.
         /// </summary>
-        protected GameContext GameContext;
+        protected GameContextAndroid GameContext;
 
         /// <summary>
         /// The instance of the game to run.
@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Starter
             mainLayout.AddView(gameView);
 
             // Create the Game context
-            GameContext = new GameContext(gameView, FindViewById<RelativeLayout>(Resource.Id.EditTextLayout));
+            GameContext = new GameContextAndroid(gameView, FindViewById<RelativeLayout>(Resource.Id.EditTextLayout));
         }
 
         public override void SetContentView(View view)

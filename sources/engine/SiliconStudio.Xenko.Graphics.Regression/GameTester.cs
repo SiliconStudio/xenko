@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                         var xenkoGameController = new iOSGameTestController(game) { View = xenkoGameView };
 
                         // create the game context
-                        var gameContext = new GameContext(window, xenkoGameView, xenkoGameController);
+                        var gameContext = new GameContextiOS(window, xenkoGameView, xenkoGameController);
 
                         // push view
                         rootNavigationController.PushViewController(gameContext.GameViewController, false);
