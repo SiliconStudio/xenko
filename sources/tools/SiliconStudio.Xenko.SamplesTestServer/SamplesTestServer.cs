@@ -70,8 +70,6 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                     };
                                     start.EnvironmentVariables["SiliconStudioXenkoDir"] = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
                                     start.UseShellExecute = false;
-                                    start.UserName = "xenko"; //todo this is kinda hard coded
-                                    start.Password = MakeSecureString(Environment.GetEnvironmentVariable("xenkoPassword"));
 
                                     debugInfo = "Starting process " + start.FileName + " with path " + start.WorkingDirectory;
                                     socketMessageLayer.Send(new LogRequest { Message = debugInfo }).Wait();
