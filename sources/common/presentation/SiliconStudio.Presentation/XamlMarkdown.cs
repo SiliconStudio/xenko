@@ -123,7 +123,7 @@ namespace SiliconStudio.Presentation
             text = Normalize(text);
             var document = Create<FlowDocument, Block>(RunBlockGamut(text));
 
-            document.PagePadding = new Thickness(0);
+            //document.PagePadding = new Thickness(0);
             if (DocumentStyle != null)
             {
                 document.Style = DocumentStyle;
