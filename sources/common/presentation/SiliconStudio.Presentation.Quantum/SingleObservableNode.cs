@@ -53,7 +53,7 @@ namespace SiliconStudio.Presentation.Quantum
         public void SetDisplayNameProvider(Func<string> provider, params string[] dependentProperties)
         {
             DisplayNameProvider = provider;
-            DisplayNameDependentProperties = dependentProperties != null ? dependentProperties.Select(EscapeName).ToArray() : null;
+            DisplayNameDependentProperties = dependentProperties?.Select(EscapeName).ToArray();
             if (provider != null)
                 DisplayName = provider();
         }
@@ -93,7 +93,7 @@ namespace SiliconStudio.Presentation.Quantum
         private void SetName(string nodeName)
         {
             var index = Index;
-            nodeName = nodeName != null ? nodeName.Replace(".", "-") : null;
+            nodeName = nodeName?.Replace(".", "-");
             
             if (!string.IsNullOrWhiteSpace(nodeName))
             {
@@ -113,7 +113,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                     Name = name;
                     var parts = propertyKey.Name.Split('.');
-                    DisplayName = parts.Length == 2 ? string.Format("{0} ({1})", parts[1], parts[0]) : name;
+                    DisplayName = parts.Length == 2 ? $"{parts[1]} ({parts[0]})" : name;
                 }
                 else
                 {

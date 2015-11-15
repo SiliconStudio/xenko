@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <value><c>true</c> if [use TRS]; otherwise, <c>false</c>.</value>
         [DataMemberIgnore]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         [DefaultValue(true)]
         public bool UseTRS
         {
