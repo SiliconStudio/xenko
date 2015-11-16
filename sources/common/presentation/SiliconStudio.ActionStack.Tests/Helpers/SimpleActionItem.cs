@@ -1,6 +1,6 @@
 using System;
 
-namespace SiliconStudio.ActionStack.Tests
+namespace SiliconStudio.ActionStack.Tests.Helpers
 {
     public class SimpleActionItem : ActionItem
     {

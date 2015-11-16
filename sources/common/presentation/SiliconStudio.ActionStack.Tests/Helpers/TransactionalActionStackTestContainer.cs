@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace SiliconStudio.ActionStack.Tests
+namespace SiliconStudio.ActionStack.Tests.Helpers
 {
     class TransactionalActionStackTestContainer : ActionStackTestContainer
     {
