@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         private class DirectInputGamePad : GamePad
         {
-#region Constants and Fields
+            #region Constants and Fields
 
             private readonly GamePadKey key;
 
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Input
 
             private JoystickState joystickState;
 
-#endregion
+            #endregion
 
             public DirectInputGamePad(DirectInput directInput, GamePadKey key) : base(key)
             {
