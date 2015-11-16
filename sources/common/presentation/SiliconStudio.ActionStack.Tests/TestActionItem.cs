@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using NUnit.Framework;
+using SiliconStudio.ActionStack.Tests.Helpers;
 
 namespace SiliconStudio.ActionStack.Tests
 {
