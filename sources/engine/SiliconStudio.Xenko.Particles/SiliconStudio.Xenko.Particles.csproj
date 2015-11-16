@@ -42,7 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\GravityUpdater.cs" />
     <Compile Include="Modules\ParticleModule.cs" />
+    <Compile Include="Modules\SampleInitializer.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleEmitter.cs" />
     <Compile Include="ParticleField.cs" />

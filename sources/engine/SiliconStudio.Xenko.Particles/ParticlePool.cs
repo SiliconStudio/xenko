@@ -71,6 +71,11 @@ namespace SiliconStudio.Xenko.Particles
         public int ParticleSize { get; private set; }
 
         /// <summary>
+        /// The number of living (active) particles in the pool.
+        /// </summary>
+        public int ParticleCount { get; private set; }
+
+        /// <summary>
         /// For ring implementations, the index just increases, looping when it reaches max count.
         /// For stack implementations, the index points to the top of the stack and can reach 0 when there are no living particles.
         /// </summary>
@@ -87,6 +92,7 @@ namespace SiliconStudio.Xenko.Particles
             this.listPolicy = listPolicy;
 
             nextFreeIndex = 0;
+            ParticleCount = 0;
 
             RelocatePool(size, capacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
         }
@@ -182,7 +188,7 @@ namespace SiliconStudio.Xenko.Particles
         }
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private Particle FromIndex(int idx)
+        internal Particle FromIndex(int idx)
         {
             return new Particle(ParticleData + idx * ParticleSize);
         }
@@ -195,17 +201,23 @@ namespace SiliconStudio.Xenko.Particles
         public Particle AddParticle()
         {
             if (nextFreeIndex != ParticleCapacity)
+            {
+                ParticleCount++;
                 return FromIndex(nextFreeIndex++);
+            }
 
             if (listPolicy != ListPolicy.Ring || ParticleCapacity == 0)
                 return Particle.Invalid();
 
             nextFreeIndex = 0;
+            ParticleCount++;
             return FromIndex(nextFreeIndex++);
         }
 
         private void RemoveCurrent(ref Particle particle, ref int oldIndex, ref int indexMax)
         {
+            ParticleCount--;
+
             // In case of a Ring list we don't bother to remove dead particles
             if (listPolicy == ListPolicy.Ring)
                 return;
@@ -559,8 +571,8 @@ namespace SiliconStudio.Xenko.Particles
                 particleSize = particlePool.ParticleSize;
                 particlePtr = IntPtr.Zero;
 #endif
-                indexFrom = Math.Max(0, Math.Min(idxFrom, idxTo));
-                indexTo = Math.Min(particlePool.ParticleCapacity - 1, Math.Max(idxFrom, idxTo));
+                indexFrom = Math.Max(0, idxFrom);
+                indexTo = Math.Min(particlePool.ParticleCapacity - 1, idxTo);
                 index = indexFrom - 1;
             }
 

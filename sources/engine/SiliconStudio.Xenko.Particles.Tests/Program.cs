@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.Modules;
 
 namespace SiliconStudio.Xenko.Particles.Tests
 {
@@ -373,7 +374,10 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
             ChangePoolFields();
 
-            // Later - test Emitter updates
+            var emitterSimTime = 100f;
+            System.Console.Out.Write($"Testing emitter for {emitterSimTime} seconds ... ");
+            TestEmitter(emitterSimTime);
+            System.Console.Out.WriteLine($"DONE");
 
             // Later - test adding/removing modules
 
@@ -388,7 +392,29 @@ namespace SiliconStudio.Xenko.Particles.Tests
         {
             Debug.Assert(condition, $"Assert failed in {callingFilePath} at line[{callerLine}]: {message}");
         }
-    
+
+        static void TestEmitter(float maxTime)
+        {
+            var emitter = new ParticleEmitter();
+            emitter.AddModule(new GravityUpdater());
+            emitter.AddModule(new SampleInitializer());
+
+            // TODO MaxParticles
+
+            var dummyParticleSystem = new ParticleSystem();
+
+            // Fixed delta time for simulating 60 fps
+            const float dt = 0.0166666666667f;
+            var totalTime = 0f;
+
+            // Simulate 10 seconds
+            while (totalTime < 10)
+            {
+                emitter.Update(dt, dummyParticleSystem);
+
+                totalTime += dt;
+            }
+        }
 
         private static void TestPoolAsRing(int particleCount) => TestPool(particleCount, ParticlePool.ListPolicy.Ring);
         private static void TestPoolAsStack(int particleCount) => TestPool(particleCount, ParticlePool.ListPolicy.Stack);
