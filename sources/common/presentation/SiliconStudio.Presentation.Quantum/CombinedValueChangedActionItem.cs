@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using SiliconStudio.ActionStack;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -10,19 +10,18 @@ namespace SiliconStudio.Presentation.Quantum
     public class CombinedValueChangedActionItem : AggregateActionItem
     {
         private readonly ObservableViewModelService serviceProvider;
-        private readonly string observableNodePath;
         private readonly ObservableViewModelIdentifier identifier;
 
         internal CombinedValueChangedActionItem(string displayName, ObservableViewModelService serviceProvider, string observableNodePath, ObservableViewModelIdentifier identifier, IEnumerable<IActionItem> actionItems)
-            : base(displayName, actionItems)
+            : base(displayName, actionItems.ToArray())
         {
-            if (serviceProvider == null) throw new ArgumentNullException("serviceProvider");
+            if (serviceProvider == null) throw new ArgumentNullException(nameof(serviceProvider));
             this.serviceProvider = serviceProvider;
-            this.observableNodePath = observableNodePath;
             this.identifier = identifier;
+            ObservableNodePath = observableNodePath;
         }
 
-        public string ObservableNodePath { get { return observableNodePath; } }
+        public string ObservableNodePath { get; }
 
         /// <inheritdoc/>
         protected override void UndoAction()
