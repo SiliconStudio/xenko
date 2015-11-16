@@ -176,6 +176,70 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
                 Assert(i == 5, $"Count is not 5!");
             }
+
+            // Remove fields
+            pool.RemoveField(ParticleFields.Velocity);
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+                var sizeField = pool.GetField(ParticleFields.Size);
+
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    var particlePos = particle.Get(positionField);
+                    Assert(particlePos == testPos, $"Position is not {testPos}!");
+
+                    Assert(*((Vector3*)particle[positionField]) == testPos, $"Position is not {testPos}!");
+
+                    Assert(Math.Abs(*((float*)particle[lifetimeField]) - 5) <= MathUtil.ZeroTolerance, $"Lifetime is not 5!");
+
+                    Assert(Math.Abs(*((float*)particle[sizeField]) - 4) <= MathUtil.ZeroTolerance, $"Size is not 4!");
+
+                    i++;
+                }
+
+                Assert(i == 5, $"Count is not 5!");
+            }
+
+            // Remove fields
+            pool.RemoveField(ParticleFields.Size);
+            {
+                // Field accessors break every time there is a change in the pool
+                var positionField = pool.GetField(ParticleFields.Position);
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    Assert(*((Vector3*)particle[positionField]) == testPos, $"Position is not {testPos}!");
+
+                    Assert(Math.Abs(*((float*)particle[lifetimeField]) - 5) <= MathUtil.ZeroTolerance, $"Lifetime is not 5!");
+
+                    i++;
+                }
+
+                Assert(i == 5, $"Count is not 5!");
+            }
+
+            // Remove fields
+            pool.RemoveField(ParticleFields.Position);
+            {
+                // Field accessors break every time there is a change in the pool
+                var lifetimeField = pool.GetField(ParticleFields.RemainingLife);
+
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    Assert(Math.Abs(*((float*)particle[lifetimeField]) - 5) <= MathUtil.ZeroTolerance, $"Lifetime is not 5!");
+
+                    i++;
+                }
+
+                Assert(i == 5, $"Count is not 5!");
+            }
+
         }
 
         static unsafe void ChangePoolCapacity()

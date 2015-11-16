@@ -7,7 +7,9 @@ using System.Threading.Tasks;
 namespace SiliconStudio.Xenko.Particles.Modules
 {
     public abstract class ParticleModule
-    {         
+    {
+        internal List<ParticleFieldDescription> RequiredFields;
+                  
         /// <summary>
         /// Updates the module instance in case it has properties which change with time
         /// </summary>

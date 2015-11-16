@@ -26,13 +26,30 @@ namespace SiliconStudio.Xenko.Particles
 
         #region Modules
 
-        private List<ParticleModule> modules;
+        private readonly List<ParticleModule> modules;
 
         public void AddModule(ParticleModule module)
         {
-            modules.Add(module);
+            var allFieldsAdded = true;
+            module.RequiredFields.ForEach(desc => allFieldsAdded &= AddRequiredField(desc));
 
-            // TODO Add required fields
+            if (!allFieldsAdded)
+            {
+                module.RequiredFields.ForEach(RemoveRequiredField);
+                return;
+            }
+
+            modules.Add(module);
+        }
+
+        public void RemoveModule(ParticleModule module)
+        {
+            if (!modules.Contains(module))
+                return;
+
+            module.RequiredFields.ForEach(RemoveRequiredField);
+
+            modules.Remove(module);
         }
 
         #endregion
@@ -78,7 +95,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>
         private void ApplyParticleUpdaters(float dt)
         {
-            
+            modules.ForEach(module => module.Apply(dt, pool));
         }
 
         /// <summary>
@@ -96,7 +113,7 @@ namespace SiliconStudio.Xenko.Particles
 
         private readonly Dictionary<ParticleFieldDescription, int> requiredFields;
 
-        private bool AddRequiredField<T>(ParticleFieldDescription<T> description) where T : struct
+        private bool AddRequiredField(ParticleFieldDescription description)
         {
             var fieldReferences = 0;
             if (requiredFields.TryGetValue(description, out fieldReferences))
@@ -117,9 +134,9 @@ namespace SiliconStudio.Xenko.Particles
             return true;
         }
 
-        private void RemoveRequiredField<T>(ParticleFieldDescription<T> description) where T : struct
+        private void RemoveRequiredField(ParticleFieldDescription description)
         {
-            var fieldReferences = 0;
+            int fieldReferences;
             if (requiredFields.TryGetValue(description, out fieldReferences))
             {
                 requiredFields[description] = fieldReferences - 1;

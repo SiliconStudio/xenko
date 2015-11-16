@@ -113,6 +113,8 @@ namespace SiliconStudio.Xenko.Particles
             ParticleData = newParticleData;
             ParticleCapacity = newCapacity;
             ParticleSize = newSize;
+
+            RecalculateFieldsSoA();
         }
 
         /// <summary>
@@ -121,9 +123,7 @@ namespace SiliconStudio.Xenko.Particles
         public void Reset()
         {
             fields.Clear();
-#if PARTICLES_SOA
             fieldDescriptions.Clear();
-#endif
             RelocatePool(0, ParticleCapacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
         }
 
@@ -227,41 +227,54 @@ namespace SiliconStudio.Xenko.Particles
 #region Fields
         public const int DefaultMaxFielsPerPool = 16;
         private readonly Dictionary<ParticleFieldDescription, ParticleField> fields = new Dictionary<ParticleFieldDescription, ParticleField>(DefaultMaxFielsPerPool);
-#if PARTICLES_SOA
         private readonly List<ParticleFieldDescription> fieldDescriptions = new List<ParticleFieldDescription>(DefaultMaxFielsPerPool);
-#endif
 
-        internal ParticleField AddField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
+        private void RecalculateFieldsSoA()
         {
+#if PARTICLES_SOA
+            var fieldOffset = 0;
+            foreach (var desc in fieldDescriptions)
+            {
+                var fieldSize = fields[desc].Stride;
+                fields[desc] = new ParticleField(fieldSize, ParticleData + fieldOffset * ParticleCapacity);
+                fieldOffset += fieldSize;
+            }
+#else
+            var fieldOffset = 0;
+            foreach (var desc in fieldDescriptions)
+            {
+                fields[desc] = new ParticleField() { Offset = fieldOffset, Size = desc.FieldSize };
+                fieldOffset += desc.FieldSize;
+            }
+#endif
+        }
+
+        internal ParticleField AddField(ParticleFieldDescription fieldDesc)
+        {
+            // Fields with a stride of 0 are meaningless and cannot be added or removed
+            if (fieldDesc.FieldSize == 0)
+            {
+                return new ParticleField();
+            }
+
             ParticleField existingField;
             if (fields.TryGetValue(fieldDesc, out existingField))
                 return existingField;
 
-            var newFieldSize = ParticleUtilities.AlignedSize(Utilities.SizeOf<T>(), 4);
 
-            var newParticleSize = ParticleSize + newFieldSize;
+            var newParticleSize = ParticleSize + fieldDesc.FieldSize;
 
 #if PARTICLES_SOA
-            var newField = new ParticleField(newFieldSize, IntPtr.Zero);
-            fieldDescriptions.Add(fieldDesc);
+            var newField = new ParticleField(fieldDesc.FieldSize, IntPtr.Zero);
 #else
-            var newField = new ParticleField() { Offset = ParticleSize, Size = newFieldSize };
+            var newField = new ParticleField() { Offset = ParticleSize, Size = fieldDesc.FieldSize };
 #endif
+
+            fieldDescriptions.Add(fieldDesc);
             fields.Add(fieldDesc, newField);
 
             RelocatePool(newParticleSize, ParticleCapacity, FieldAddedRelocate);
 
-#if PARTICLES_SOA
-            {
-                var fieldOffset = 0;
-                foreach (var desc in fieldDescriptions)
-                {
-                    var fieldSize = fields[desc].Stride;
-                    fields[desc] = new ParticleField(fieldSize, ParticleData + fieldOffset * ParticleCapacity);
-                    fieldOffset += fieldSize;
-                }
-            }
-#endif
             return fields[fieldDesc];
         }
 
@@ -316,7 +329,7 @@ namespace SiliconStudio.Xenko.Particles
             foreach (var field in fields.Values)
             {                
                 var copySize = Math.Min(oldCapacity, newCapacity) * field.Stride;
-                Utilities.CopyMemory(newPool + newOffset, oldPool + oldOffset, field.Stride * copySize);
+                Utilities.CopyMemory(newPool + newOffset, oldPool + oldOffset, copySize);
 
                 oldOffset += (field.Stride * oldCapacity);
                 newOffset += (field.Stride * newCapacity);
@@ -334,8 +347,108 @@ namespace SiliconStudio.Xenko.Particles
 #endif
         }
 
-        // TODO internal RemoveField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
-        //  - will have to be handled by the emitter to ensure a field still in use is not removed
+        public bool RemoveField(ParticleFieldDescription fieldDesc)
+        {
+            // Fields with a stride of 0 are meaningless and cannot be added or removed
+            if (fieldDesc.FieldSize == 0)
+            {
+                return false;
+            }
+
+            // Check if the field exists in this particle pool. If it doesn't, obviously it cannot be removed
+            ParticleField existingField;
+            if (!fields.TryGetValue(fieldDesc, out existingField))
+                return false;
+
+            var newParticleSize = ParticleSize - fieldDesc.FieldSize;
+
+            fieldDescriptions.Remove(fieldDesc);
+
+#if PARTICLES_SOA
+            fields[fieldDesc] = new ParticleField(0, IntPtr.Zero);
+#else
+            fields[fieldDesc] = new ParticleField() { Offset = 0, Size = 0 };
+#endif
+
+            // The field is not removed yet. During relocation it will appear as having Size and Offset of 0, and should be ignored for the purpose of copying memory
+            RelocatePool(newParticleSize, ParticleCapacity, FieldRemovedRelocate);
+
+            fields.Remove(fieldDesc);
+
+            return true;
+        }
+
+        private void FieldRemovedRelocate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize)
+        {
+            // Old particle capacity and new particle capacity should be the same when only the size changes.
+            // If this is not the case, something went wrong. Reset the particle count and do not copy.
+            // Also, since we are re3moving a field, the new particle size is expected to get smaller.
+            if (oldCapacity != newCapacity || newCapacity <= 0 || newSize <= 0 || oldPool == IntPtr.Zero || newPool == IntPtr.Zero || oldSize <= newSize)
+            {
+                nextFreeIndex = 0;
+                return;
+            }
+
+#if PARTICLES_SOA
+            // Copy each field individually except the field which is being removed (we have marked it with a stride of 0 already)
+
+            var fieldOffset = 0;
+            foreach (var field in fields.Values)
+            {
+                // This is the field which we have marked - do not copy it
+                if (field.Stride == 0 || field.Offset == IntPtr.Zero)
+                    continue;
+
+                Utilities.CopyMemory(newPool + fieldOffset, field.Offset, field.Stride * ParticleCapacity);
+
+                fieldOffset += field.Stride * ParticleCapacity;
+            }
+#else
+            // Clear the memory first instead of once per particle
+            Utilities.ClearMemory(newPool, 0, newSize * newCapacity);
+
+            // Complex case - needs to copy up to two parts of each particle
+            var firstHalfSize = 0;
+            var secondHalfSize = 0;
+            var isSecondHalf = false;
+            foreach (var field in fields.Values)
+            {
+                if (field.Size == 0)
+                {
+                    isSecondHalf = true;
+                    continue;
+                }
+
+                if (isSecondHalf)
+                {
+                    secondHalfSize += field.Size;
+                }
+                else
+                {
+                    firstHalfSize += field.Size;
+                }                
+            }
+
+            if (firstHalfSize > 0)
+            {
+                for (var i = 0; i < oldCapacity; i++)
+                {
+                    Utilities.CopyMemory(newPool + i * newSize, oldPool + i * oldSize, firstHalfSize);
+                }
+            }
+
+            if (secondHalfSize > 0)
+            {
+                var secondHalfOffset = oldSize - secondHalfSize;
+
+                for (var i = 0; i < oldCapacity; i++)
+                {
+                    Utilities.CopyMemory(newPool + i * newSize + firstHalfSize, oldPool + i * oldSize + secondHalfOffset, secondHalfSize);
+                }
+            }
+#endif
+
+        }
 
         /// <summary>
         /// Unsafe method for getting a <see cref="ParticleFieldAccessor"/>.
@@ -347,10 +460,9 @@ namespace SiliconStudio.Xenko.Particles
         public ParticleFieldAccessor<T> GetField<T>(ParticleFieldDescription<T> fieldDesc) where T : struct
         {
             ParticleField field;
-            if (fields.TryGetValue(fieldDesc, out field))
-                return new ParticleFieldAccessor<T>(field);
-
-            return ParticleFieldAccessor<T>.Invalid();
+            return fields.TryGetValue(fieldDesc, out field) ?
+                new ParticleFieldAccessor<T>(field) :
+                ParticleFieldAccessor<T>.Invalid();
         }
 
         public bool TryGetField<T>(ParticleFieldDescription<T> fieldDesc, out ParticleFieldAccessor<T> accessor) where T : struct
@@ -366,7 +478,7 @@ namespace SiliconStudio.Xenko.Particles
             return true;
         }
 
-        public bool FieldExists<T>(ParticleFieldDescription<T> fieldDesc, bool forceCreate = false) where T : struct
+        public bool FieldExists(ParticleFieldDescription fieldDesc, bool forceCreate = false)
         {
             ParticleField field;
             if (fields.TryGetValue(fieldDesc, out field))
