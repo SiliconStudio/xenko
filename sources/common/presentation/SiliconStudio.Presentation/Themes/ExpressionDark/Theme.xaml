@@ -241,24 +241,24 @@
     </Setter>
   </Style>
   <Style TargetType="{x:Type FlowDocument}" x:Key="{x:Static local:XamlMarkdown.DocumentStyleKey}">
-    <Setter Property="FontFamily" Value="Segoe UI" />
-    <Setter Property="FontSize" Value="14" />
+    <Setter Property="FontFamily" Value="{DynamicResource {x:Static SystemFonts.MessageFontFamilyKey}}" />
+    <Setter Property="FontSize" Value="{DynamicResource {x:Static SystemFonts.MessageFontSizeKey}}" />
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     <Setter Property="PagePadding" Value="2,0" />
     <Setter Property="TextAlignment" Value="Left" />
   </Style>
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading1StyleKey}">
-    <Setter Property="FontSize" Value="36" />
+    <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=2}" />
     <Setter Property="FontWeight" Value="Bold" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
   </Style>
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading2StyleKey}">
-    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=1.5}" />
     <Setter Property="FontWeight" Value="Bold" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
   </Style>
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading3StyleKey}">
-    <Setter Property="FontSize" Value="18" />
+    <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=1.25}" />
     <Setter Property="FontWeight" Value="Light" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
   </Style>
