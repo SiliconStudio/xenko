@@ -130,7 +130,6 @@
     <Compile Include="ValueConverters\MinNum.cs" />
     <Compile Include="ValueConverters\MultiplyMultiConverter.cs" />
     <Compile Include="ValueConverters\TextToMarkdownFlowDocumentConverter.cs" />
-    <Compile Include="ViewModel\ActionStack\AnonymousViewModelActionItem.cs" />
     <Compile Include="ViewModel\IViewModelServiceProvider.cs" />
     <Compile Include="ViewModel\NullServiceProvider.cs" />
     <Compile Include="ViewModel\ServiceRegistrationEventArgs.cs" />
@@ -242,7 +241,6 @@
     <Compile Include="ValueConverters\XOrMultiConverter.cs" />
     <Compile Include="ViewModel\ActionStack\ActionStackViewModel.cs" />
     <Compile Include="ViewModel\ActionStack\ActionItemViewModel.cs" />
-    <Compile Include="ViewModel\ActionStack\CollectionChangedViewModelActionItem.cs" />
     <Compile Include="ViewModel\DirtiableEditableViewModel.cs" />
     <Compile Include="ViewModel\DispatcherViewModel.cs" />
     <Compile Include="ViewModel\EditableViewModel.cs" />
@@ -250,7 +248,6 @@
     <Compile Include="ViewModel\LoggerResultViewModel.cs" />
     <Compile Include="ViewModel\LoggerViewModel.cs" />
     <Compile Include="ViewModel\ActionStack\ViewModelTransactionalActionStack.cs" />
-    <Compile Include="ViewModel\ActionStack\PropertyChangedViewModelActionItem.cs" />
     <Compile Include="ValueConverters\VisibleOrCollapsed.cs" />
     <Compile Include="ValueConverters\VisibleOrHidden.cs" />
     <Compile Include="ValueConverters\InvertBool.cs" />
