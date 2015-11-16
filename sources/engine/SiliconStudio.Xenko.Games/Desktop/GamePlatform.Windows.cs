@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Games
                     return new GameWindowSdl();
 
                  case AppContextType.Desktop:
-#if !SILICONSTUDIO_UI_SDL_ONLY
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && !SILICONSTUDIO_UI_SDL_ONLY
                      return new GameWindowWinforms();
 #else
                      return new GameWindowSdl();
