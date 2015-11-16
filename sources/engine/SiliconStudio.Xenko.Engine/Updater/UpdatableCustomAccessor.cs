@@ -8,9 +8,21 @@ namespace SiliconStudio.Xenko.Updater
     /// </summary>
     public abstract class UpdatableCustomAccessor : UpdatablePropertyBase
     {
+        /// <summary>
+        /// Gets a reference object from a property.
+        /// </summary>
+        /// <param name="obj">The object encoded as a native pointer (<see cref="UpdateEngine"/> will make sure it is pinned).</param>
+        /// <returns>The object value from the property.</returns>
         public abstract object GetObject(IntPtr obj);
+
+        /// <summary>
+        /// Sets a reference object from a property.
+        /// </summary>
+        /// <param name="obj">The object encoded as a native pointer (<see cref="UpdateEngine"/> will make sure it is pinned).</param>
+        /// <param name="data">The object value to set.</param>
         public abstract void SetObject(IntPtr obj, object data);
 
+        /// <inheritdoc/>
         internal override UpdateOperationType GetSetOperationType()
         {
             if (MemberType.GetTypeInfo().IsValueType)
@@ -26,6 +38,7 @@ namespace SiliconStudio.Xenko.Updater
             }
         }
 
+        /// <inheritdoc/>
         internal override UpdateOperationType GetEnterOperationType()
         {
             if (MemberType.GetTypeInfo().IsValueType)

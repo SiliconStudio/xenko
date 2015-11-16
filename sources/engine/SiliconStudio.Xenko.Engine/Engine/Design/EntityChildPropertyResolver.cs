@@ -23,9 +23,9 @@ namespace SiliconStudio.Xenko.Engine.Design
             get { return typeof(Entity); }
         }
 
-        public override UpdatableMember ResolveProperty(string propertyName)
+        public override UpdatableMember ResolveProperty(string memberName)
         {
-            return new EntityChildPropertyAccessor(propertyName);
+            return new EntityChildPropertyAccessor(memberName);
         }
 
         public override UpdatableMember ResolveIndexer(string indexerName)

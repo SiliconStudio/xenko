@@ -3,6 +3,9 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Updater
 {
+    /// <summary>
+    /// Defines how to set and get values from a field of a given type for the <see cref="UpdateEngine"/>.
+    /// </summary>
     public class UpdatableField<T> : UpdatableField
     {
         public UpdatableField(int offset)
@@ -11,11 +14,13 @@ namespace SiliconStudio.Xenko.Updater
             Size = Interop.SizeOf<T>();
         }
 
+        /// <inheritdoc/>
         public override Type MemberType
         {
             get { return typeof(T); }
         }
 
+        /// <inheritdoc/>
         public override void SetStruct(IntPtr obj, object data)
         {
 #if IL

@@ -10,11 +10,20 @@ using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Updater
 {
+    /// <summary>
+    /// Efficiently updates values on objects using property paths.
+    /// </summary>
     public static unsafe class UpdateEngine
     {
         static readonly Dictionary<UpdateKey, UpdatableMember> UpdateKeys = new Dictionary<UpdateKey, UpdatableMember>();
         static readonly Dictionary<Type, UpdateMemberResolver> MemberResolvers = new Dictionary<Type, UpdateMemberResolver>();
 
+        /// <summary>
+        /// Registers a new member for a given type and name.
+        /// </summary>
+        /// <param name="owner">The owner type.</param>
+        /// <param name="name">The member name.</param>
+        /// <param name="updatableMember">The member update class to get and set value.</param>
         public static void RegisterMember(Type owner, string name, UpdatableMember updatableMember)
         {
             UpdateKeys[new UpdateKey(owner, name)] = updatableMember;
@@ -25,20 +34,29 @@ namespace SiliconStudio.Xenko.Updater
             MemberResolvers[resolver.SupportedType] = resolver;
         }
 
+        /// <summary>
+        /// An entry on the stack of <see cref="Compile"/>.
+        /// </summary>
         struct AnimationBuilderStackEntry
         {
             public Type Type;
 
-            // String
+            // Property path substring for current member
             public int StartIndex;
             public int EndIndex;
 
+            // Current offset in containing object
             public int ObjectStartOffset;
 
             public UpdatableMember Member;
+
+            // What to do when poping this entry from stack
             public UpdateOperationType LeaveOperation;
+
+            // What offset to set when poping this entry from stack
             public int LeaveOffset;
 
+            // Store current operation index to properly compute "skip count" if an error happens
             public int OperationIndex;
 
             public AnimationBuilderStackEntry(Type type, int startIndex, int endIndex, int operationIndex)
@@ -64,6 +82,10 @@ namespace SiliconStudio.Xenko.Updater
         private const char PathCastClose = ')';
         private static readonly char[] PathGroupDelimiters = new[] { PathDelimiter, PathIndexerOpen };
 
+        /// <summary>
+        /// Encode state of <see cref="Compile"/> so that it can be easily passed
+        /// to another function (easier to split it in multiple methods).
+        /// </summary>
         struct ComputeUpdateOperationState
         {
             public List<UpdateOperation> UpdateOperations;
@@ -449,11 +471,10 @@ namespace SiliconStudio.Xenko.Updater
                         }
 
                         // Compute offset and push to stack
-                        stack.Push(new UpdateStackEntry
-                        {
-                            Object = currentObj,
-                            Offset = (int) ((byte*) currentPtr - (byte*) UpdateEngineHelper.ObjectToPtr(currentObj))
-                        });
+                        stack.Push(new UpdateStackEntry(
+                            currentObj,
+                            (int) ((byte*) currentPtr - (byte*) UpdateEngineHelper.ObjectToPtr(currentObj))
+                        ));
 
                         // Get object
                         currentObj = nextObject;
@@ -464,11 +485,10 @@ namespace SiliconStudio.Xenko.Updater
                     case UpdateOperationType.EnterStructPropertyBase:
                     {
                         // Compute offset and push to stack
-                        stack.Push(new UpdateStackEntry
-                        {
-                            Object = currentObj,
-                            Offset = (int) ((byte*) currentPtr - (byte*) UpdateEngineHelper.ObjectToPtr(currentObj))
-                        });
+                        stack.Push(new UpdateStackEntry(
+                            currentObj,
+                            (int) ((byte*) currentPtr - (byte*) UpdateEngineHelper.ObjectToPtr(currentObj))
+                        ));
 
                         currentObj = temporaryObjects[operation.DataOffset];
                         currentPtr = ((UpdatablePropertyBase)operation.Member).GetStructAndUnbox(currentPtr, currentObj);
@@ -486,11 +506,10 @@ namespace SiliconStudio.Xenko.Updater
                         }
 
                         // Compute offset and push to stack
-                        stack.Push(new UpdateStackEntry
-                        {
-                            Object = currentObj,
-                            Offset = (int) ((byte*) currentPtr - (byte*) UpdateEngineHelper.ObjectToPtr(currentObj))
-                        });
+                        stack.Push(new UpdateStackEntry(
+                            currentObj,
+                            (int) ((byte*) currentPtr - (byte*) UpdateEngineHelper.ObjectToPtr(currentObj))
+                        ));
 
                         // Get object
                         currentObj = nextObject;
@@ -508,11 +527,10 @@ namespace SiliconStudio.Xenko.Updater
                         }
 
                         // Compute offset and push to stack
-                        stack.Push(new UpdateStackEntry
-                        {
-                            Object = currentObj,
-                            Offset = (int)((byte*)currentPtr - (byte*)UpdateEngineHelper.ObjectToPtr(currentObj))
-                        });
+                        stack.Push(new UpdateStackEntry(
+                            currentObj,
+                            (int)((byte*)currentPtr - (byte*)UpdateEngineHelper.ObjectToPtr(currentObj))
+                        ));
 
                         // Get object
                         currentObj = nextObject;
@@ -641,21 +659,27 @@ namespace SiliconStudio.Xenko.Updater
             }
         }
 
+        // Helper struct to blit small struct
         [StructLayout(LayoutKind.Sequential, Size = 8)]
         struct Blittable8
         {
         }
 
+        // Helper struct to blit small struct
         [StructLayout(LayoutKind.Sequential, Size = 12)]
         struct Blittable12
         {
         }
 
+        // Helper struct to blit small struct
         [StructLayout(LayoutKind.Sequential, Size = 16)]
         struct Blittable16
         {
         }
 
+        /// <summary>
+        /// Internally used as key to register members.
+        /// </summary>
         struct UpdateKey
         {
             public readonly Type Owner;
@@ -673,6 +697,9 @@ namespace SiliconStudio.Xenko.Updater
             }
         }
 
+        /// <summary>
+        /// Stack entry used in <see cref="Run"/>.
+        /// </summary>
         struct UpdateStackEntry
         {
             public object Object;

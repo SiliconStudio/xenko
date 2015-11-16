@@ -3,6 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace SiliconStudio.Xenko.Updater
 {
+    /// <summary>
+    /// Various helper functions for the <see cref="UpdateEngine"/>.
+    /// </summary>
     internal static unsafe class UpdateEngineHelper
     {
         public static int ArrayFirstElementOffset = ComputeArrayFirstElementOffset();

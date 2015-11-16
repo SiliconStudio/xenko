@@ -3,6 +3,9 @@ using System.Runtime.CompilerServices;
 
 namespace SiliconStudio.Xenko.Updater
 {
+    /// <summary>
+    /// Base class for <see cref="UpdatableListAccessor{T}"/>.
+    /// </summary>
     abstract class UpdatableListAccessor : UpdatableCustomAccessor
     {
         public readonly int Index;
@@ -13,17 +16,23 @@ namespace SiliconStudio.Xenko.Updater
         }
     }
 
+    /// <summary>
+    /// Describes how to get or set a list value for the <see cref="UpdateEngine"/>.
+    /// </summary>
+    /// <typeparam name="T"></typeparam>
     class UpdatableListAccessor<T> : UpdatableListAccessor
     {
         public UpdatableListAccessor(int index) : base(index)
         {
         }
 
+        /// <inheritdoc/>
         public override Type MemberType
         {
             get { return typeof(T); }
         }
 
+        /// <inheritdoc/>
         public override IntPtr GetStructAndUnbox(IntPtr obj, object data)
         {
 #if IL
@@ -41,6 +50,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public override void GetBlittable(IntPtr obj, IntPtr data)
         {
 #if IL
@@ -56,6 +66,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public override void SetStruct(IntPtr obj, object data)
         {
 #if IL
@@ -71,6 +82,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public override void SetBlittable(IntPtr obj, IntPtr data)
         {
 #if IL
@@ -86,6 +98,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public override object GetObject(IntPtr obj)
         {
 #if IL
@@ -99,6 +112,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public override void SetObject(IntPtr obj, object data)
         {
 #if IL

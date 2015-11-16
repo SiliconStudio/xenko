@@ -4,10 +4,15 @@ using System.Globalization;
 
 namespace SiliconStudio.Xenko.Updater
 {
+    /// <summary>
+    /// Resolver for <see cref="IList{T}"/> in property path.
+    /// </summary>
+    /// <typeparam name="T">The type of list items.</typeparam>
     public class ListUpdateResolver<T> : UpdateMemberResolver
     {
         public override Type SupportedType => typeof(IList<T>);
 
+        /// <inheritdoc/>
         public override UpdatableMember ResolveIndexer(string indexerName)
         {
             // Transform index into integer

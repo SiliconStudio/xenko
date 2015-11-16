@@ -1,5 +1,8 @@
 namespace SiliconStudio.Xenko.Updater
 {
+    /// <summary>
+    /// Defines the type of <see cref="UpdateOperation"/>.
+    /// </summary>
     public enum UpdateOperationType
     {
         /// <summary>

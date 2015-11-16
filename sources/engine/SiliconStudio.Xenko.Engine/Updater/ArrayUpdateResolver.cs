@@ -3,6 +3,10 @@ using System.Globalization;
 
 namespace SiliconStudio.Xenko.Updater
 {
+    /// <summary>
+    /// Resolver for <see cref="T[]"/> in property path.
+    /// </summary>
+    /// <typeparam name="T">The type of array items.</typeparam>
     public class ArrayUpdateResolver<T> : UpdateMemberResolver
     {
         public override Type SupportedType => typeof(T[]);

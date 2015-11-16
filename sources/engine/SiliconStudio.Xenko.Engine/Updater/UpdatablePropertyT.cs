@@ -2,6 +2,10 @@
 
 namespace SiliconStudio.Xenko.Updater
 {
+    /// <summary>
+    /// Defines how to set and get values from a property of a given value type for the <see cref="UpdateEngine"/>.
+    /// </summary>
+    /// <typeparam name="T">The property type.</typeparam>
     class UpdatableProperty<T> : UpdatableProperty where T : struct
     {
         public UpdatableProperty(IntPtr getter, IntPtr setter)
@@ -9,11 +13,13 @@ namespace SiliconStudio.Xenko.Updater
         {
         }
 
+        /// <inheritdoc/>
         public override Type MemberType
         {
             get { return typeof(T); }
         }
 
+        /// <inheritdoc/>
         public override IntPtr GetStructAndUnbox(IntPtr obj, object data)
         {
 #if IL
@@ -32,6 +38,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public override void GetBlittable(IntPtr obj, IntPtr data)
         {
 #if IL
@@ -46,6 +53,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public override void SetStruct(IntPtr obj, object data)
         {
 #if IL
@@ -60,6 +68,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         public override void SetBlittable(IntPtr obj, IntPtr data)
         {
 #if IL

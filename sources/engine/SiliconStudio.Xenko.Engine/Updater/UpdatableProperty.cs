@@ -18,6 +18,11 @@ namespace SiliconStudio.Xenko.Updater
             Setter = setter;
         }
 
+        /// <summary>
+        /// Gets a reference object from a property.
+        /// </summary>
+        /// <param name="obj">The object encoded as a native pointer (<see cref="UpdateEngine"/> will make sure it is pinned).</param>
+        /// <returns>The object value from the property.</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public object GetObject(IntPtr obj)
         {
@@ -32,6 +37,11 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
+        /// <summary>
+        /// Sets a reference object from a property.
+        /// </summary>
+        /// <param name="obj">The object encoded as a native pointer (<see cref="UpdateEngine"/> will make sure it is pinned).</param>
+        /// <param name="data">The object value to set.</param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void SetObject(IntPtr obj, object data)
         {
@@ -47,6 +57,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
+        /// <inheritdoc/>
         internal override UpdateOperationType GetSetOperationType()
         {
             if (MemberType.GetTypeInfo().IsValueType)
@@ -62,6 +73,7 @@ namespace SiliconStudio.Xenko.Updater
             }
         }
 
+        /// <inheritdoc/>
         internal override UpdateOperationType GetEnterOperationType()
         {
             if (MemberType.GetTypeInfo().IsValueType)

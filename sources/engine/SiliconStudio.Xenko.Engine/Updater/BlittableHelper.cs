@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 
-// TODO: We should switch to something determined at compile time with assembly processor?
 namespace SiliconStudio.Xenko.Updater
 {
+    /// <summary>
+    /// Various helpers for blittable types.
+    /// </summary>
+    // TODO: We should switch to something determined at compile time with assembly processor?
     internal static class BlittableHelper
     {
         private static Dictionary<Type, bool> BlittableTypesCache = new Dictionary<Type, bool>();

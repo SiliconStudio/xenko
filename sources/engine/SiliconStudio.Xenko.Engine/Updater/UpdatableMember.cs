@@ -7,6 +7,9 @@ namespace SiliconStudio.Xenko.Updater
     /// </summary>
     public abstract class UpdatableMember
     {
+        /// <summary>
+        /// Gets the type of the member.
+        /// </summary>
         public abstract Type MemberType { get; }
     }
 }
