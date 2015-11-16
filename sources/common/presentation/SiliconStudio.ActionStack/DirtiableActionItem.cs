@@ -13,7 +13,6 @@ namespace SiliconStudio.ActionStack
     public abstract class DirtiableActionItem : ActionItem
     {
         private readonly List<IDirtiable> dirtiables;
-        private bool isSaved;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DirtiableActionItem"/> class with the specified name and dirtiable object.
@@ -31,11 +30,5 @@ namespace SiliconStudio.ActionStack
         /// Gets the dirtiable view model associated to this object, or <c>null</c> if no dirtiable is associated.
         /// </summary>
         public IReadOnlyCollection<IDirtiable> Dirtiables => dirtiables;
-
-        /// <inheritdoc/>
-        public override bool IsSaved { get { return isSaved; } set { if (isSaved != value) { isSaved = value; dirtiables.ForEach(x => x.NotifyActionStackChange(ActionStackChange.Save)); } } }
-
-        /// <inheritdoc/>
-        public override bool IsDone { get { return base.IsDone; } protected set { base.IsDone = value; dirtiables.ForEach(x => x.NotifyActionStackChange(ActionStackChange.UndoRedo)); } }
     }
 }

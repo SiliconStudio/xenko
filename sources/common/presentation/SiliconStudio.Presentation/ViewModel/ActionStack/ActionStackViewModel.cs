@@ -6,27 +6,26 @@ using System.Linq;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Collections;
-using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.ViewModel.ActionStack
 {
     /// <summary>
-    /// This class is a view model for the <see cref="ViewModelTransactionalActionStack"/> class. It inherits from the <see cref="DispatcherViewModel"/> class.
+    /// This class is a view model for the <see cref="ITransactionalActionStack"/> class. It inherits from the <see cref="DispatcherViewModel"/> class.
     /// </summary>
     public class ActionStackViewModel : DispatcherViewModel, IDisposable
     {
-        private readonly ViewModelTransactionalActionStack actionStack;
         private readonly ObservableList<ActionItemViewModel> actionItems = new ObservableList<ActionItemViewModel>();
         private SavePoint savePoint;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionStackViewModel"/>.
         /// </summary>
+        /// <param name="serviceProvider">The service provider related to this view model</param>
         /// <param name="actionStack">The action stack. Cannot be null.</param>
-        public ActionStackViewModel(ViewModelTransactionalActionStack actionStack)
-            : base(actionStack.SafeArgument("actionStack").ServiceProvider)
+        public ActionStackViewModel(IViewModelServiceProvider serviceProvider, ITransactionalActionStack actionStack)
+            : base(serviceProvider)
         {
-            this.actionStack = actionStack;
+            ActionStack = actionStack;
 
             actionStack.ActionItemsAdded += ActionItemsAdded;
             actionStack.ActionItemsCleared += ActionItemsCleared;
@@ -35,42 +34,46 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
             actionStack.Redone += ActionItemModified;
         }
 
+        /// <inheritdoc/>
+        public void Dispose()
+        {
+            ActionStack.ActionItemsAdded -= ActionItemsAdded;
+            ActionStack.ActionItemsCleared -= ActionItemsCleared;
+            ActionStack.ActionItemsDiscarded -= ActionItemsDiscarded;
+            ActionStack.Undone -= ActionItemModified;
+            ActionStack.Redone -= ActionItemModified;
+            Dispatcher.Invoke(actionItems.Clear);
+        }
+
         /// <summary>
         /// Gets the action stack linked to this view model.
         /// </summary>
-        public ViewModelTransactionalActionStack ActionStack { get { return actionStack; } }
+        public ITransactionalActionStack ActionStack { get; }
 
         /// <summary>
         /// Gets the collection of action item view models currently contained in this view model.
         /// </summary>
-        public IReadOnlyObservableCollection<ActionItemViewModel> ActionItems { get { return actionItems; } }
+        public IReadOnlyObservableCollection<ActionItemViewModel> ActionItems => actionItems;
 
         /// <summary>
         /// Gets whether it is currently possible to perform an undo operation.
         /// </summary>
-        public bool CanUndo { get { return ActionItems.Count > 0 && ActionItems.First().IsDone; } }
+        public bool CanUndo => ActionItems.Count > 0 && ActionItems.First().IsDone;
 
         /// <summary>
         /// Gets whether it is currently possible to perform a redo operation.
         /// </summary>
-        public bool CanRedo { get { return ActionItems.Count > 0 && !ActionItems.Last().IsDone; } }
+        public bool CanRedo => ActionItems.Count > 0 && !ActionItems.Last().IsDone;
 
-        /// <inheritdoc/>
-        public void Dispose()
-        {
-            actionStack.ActionItemsAdded -= ActionItemsAdded;
-            actionStack.ActionItemsCleared -= ActionItemsCleared;
-            actionStack.ActionItemsDiscarded -= ActionItemsDiscarded;
-            Dispatcher.Invoke(actionItems.Clear);
-        }
-        
         /// <summary>
         /// Notify that everything has been saved and create a save point in the action stack.
         /// </summary>
         public void NotifySave()
         {
-            savePoint = actionStack.CreateSavePoint(true);
+            savePoint = ActionStack.CreateSavePoint(true);
             actionItems.ForEach(x => x.IsSavePoint = x.ActionItem.Identifier == savePoint.ActionItemIdentifier);
+            var dirtiableManager = ServiceProvider.TryGet<DirtiableManager>();
+            dirtiableManager.NotifySave();
         }
 
         private void ActionItemModified(object sender, ActionItemsEventArgs<IActionItem> e)
@@ -81,19 +84,18 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
 
         private void ActionItemsDiscarded(object sender, DiscardedActionItemsEventArgs<IActionItem> e)
         {
-            var actionsToRemove = e.ActionItems.Select(x => actionItems.FirstOrDefault(y => y.ActionItem.Identifier == x.Identifier)).Where(y => y != null).ToList();
+            var actionsToRemove = e.ActionItems.Select(x => actionItems.FirstOrDefault(y => y.ActionItem.Identifier == x.Identifier)).ToList();
             actionsToRemove.ForEach(x => actionItems.Remove(x));
         }
 
         private void ActionItemsCleared(object sender, EventArgs e)
         {
-            actionStack.Clear();
+            actionItems.Clear();
         }
 
         private void ActionItemsAdded(object sender, ActionItemsEventArgs<IActionItem> e)
         {
-            foreach (IActionItem actionItem in e.ActionItems)
-                actionItems.Add(new ActionItemViewModel(actionStack.ServiceProvider, actionItem));
+            e.ActionItems.ForEach(x => actionItems.Add(new ActionItemViewModel(ServiceProvider, x)));
         }
     }
 }

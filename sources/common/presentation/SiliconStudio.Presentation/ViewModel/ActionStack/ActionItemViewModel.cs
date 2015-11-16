@@ -12,7 +12,6 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
     /// </summary>
     public class ActionItemViewModel : DispatcherViewModel
     {
-        private readonly IActionItem actionItem;
         private bool isSavePoint;
         private bool isDone = true;
         private bool isFrozen;
@@ -26,9 +25,9 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
             : base(serviceProvider)
         {
             if (actionItem == null)
-                throw new ArgumentNullException("actionItem");
+                throw new ArgumentNullException(nameof(actionItem));
 
-            this.actionItem = actionItem;
+            ActionItem = actionItem;
             DisplayName = actionItem.Name;
             Refresh();
         }
@@ -56,15 +55,15 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
         /// <summary>
         /// Gets the action item linked to this view model
         /// </summary>
-        internal IActionItem ActionItem { get { return actionItem; } }
+        internal IActionItem ActionItem { get; }
 
         /// <summary>
         /// Refreshes the properties of this view model according to the values of the linked action item.
         /// </summary>
         internal void Refresh()
         {
-            IsDone = actionItem.IsDone;
-            IsFrozen = actionItem.IsFrozen;
+            IsDone = ActionItem.IsDone;
+            IsFrozen = ActionItem.IsFrozen;
         }
     }
 }

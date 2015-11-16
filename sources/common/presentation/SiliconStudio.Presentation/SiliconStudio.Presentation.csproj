@@ -247,7 +247,6 @@
     <Compile Include="Services\IDispatcherService.cs" />
     <Compile Include="ViewModel\LoggerResultViewModel.cs" />
     <Compile Include="ViewModel\LoggerViewModel.cs" />
-    <Compile Include="ViewModel\ActionStack\ViewModelTransactionalActionStack.cs" />
     <Compile Include="ValueConverters\VisibleOrCollapsed.cs" />
     <Compile Include="ValueConverters\VisibleOrHidden.cs" />
     <Compile Include="ValueConverters\InvertBool.cs" />
