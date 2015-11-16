@@ -26,52 +26,107 @@ namespace SiliconStudio.Xenko.Input
 
             switch (context.ContextType)
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+                case AppContextType.Desktop:
 #if !SILICONSTUDIO_UI_SDL_ONLY
-                case AppContextType.Desktop:
-                    res = new InputManagerWinforms(registry);
+                    res = NewInputManagerWinforms(registry);
+#else
+                    // When SDL is the only UI available, Desktop and DesktopSDL are equivalent.
+                    res = NewInputManagerSDL(registry);
+#endif
                     break;
+
                 case AppContextType.DesktopWpf:
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-                    res = new InputManagerWpf(registry);
-#endif
+                    res = NewInputManagerWpf(registry);
                     break;
-#else
-                case AppContextType.Desktop:
-                    res = new InputManagerSDL(registry);
-                    break;
-#endif
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+
                 case AppContextType.DesktopOpenTK:
-                    res = new InputManagerOpenTK(registry);
+                    res = NewInputManagerOpenTK(registry);
                     break;
-#endif
+
                 case AppContextType.DesktopSDL:
-                    res = new InputManagerSDL(registry);
+                    res = NewInputManagerSDL(registry);
                     break;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+
                 case AppContextType.WindowsRuntime:
-                    res = new InputManagerWindowsRuntime(registry);
+                    res = NewInputManagerWindowsRuntime(registry);
                     break;
-#endif
-#else
-#if SILICONSTUDIO_PLATFORM_ANDROID
+
                 case AppContextType.Android:
-                    res = new InputManagerAndroid(registry);
+                    res = NewInputManagerAndroid(registry);
                     break;
-#endif
-#if SILICONSTUDIO_PLATFORM_IOS
+
                 case AppContextType.iOS:
-                    res = new InputManageriOS(registry);
+                    res = NewInputManageriOS(registry);
                     break;
-#endif
-#endif
             }
             if (res == null)
             {
                 throw new NotSupportedException("Unsupported Input type");
             }
             return res;
+        }
+
+        private static InputManager NewInputManagerWinforms(IServiceRegistry registry)
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL_ONLY
+            return new InputManagerWinforms(registry);
+#else
+            return null;
+#endif
+        }
+
+        private static InputManager NewInputManagerWpf(IServiceRegistry registry)
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL_ONLY && !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+            return new InputManagerWpf(registry);
+#else
+            return null;
+#endif
+        }
+
+        private static InputManager NewInputManagerSDL(IServiceRegistry registry)
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+            return new InputManagerSDL(registry);
+#else
+            return null;
+#endif
+        }
+
+        private static InputManager NewInputManagerOpenTK(IServiceRegistry registry)
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+            return new InputManagerOpenTK(registry);
+#else
+            return null;
+#endif
+        }
+
+        private static InputManager NewInputManagerWindowsRuntime(IServiceRegistry registry)
+        {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+            return new InputManagerWindowsRuntime(registry);
+#else
+            return null;
+#endif
+        }
+
+        private static InputManager NewInputManagerAndroid(IServiceRegistry registry)
+        {
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            return new InputManagerAndroid(registry);
+#else
+            return null;
+#endif
+        }
+
+        private static InputManager NewInputManageriOS(IServiceRegistry registry)
+        {
+#if SILICONSTUDIO_PLATFORM_IOS
+            return new InputManageriOS(registry);
+#else
+            return null;
+#endif
         }
     }
 }
