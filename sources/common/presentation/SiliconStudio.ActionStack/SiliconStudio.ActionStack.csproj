@@ -19,6 +19,7 @@
     <Compile Include="ActionItemsEventArgs.cs" />
     <Compile Include="AnonymousActionItem.cs" />
     <Compile Include="CollectionChangedActionItem.cs" />
+    <Compile Include="DirtiableManager.cs" />
     <Compile Include="DirtinessUpdatedEventArgs.cs" />
     <Compile Include="IDirtiable.cs" />
     <Compile Include="NamespaceDoc.cs" />
