@@ -329,6 +329,14 @@ namespace SiliconStudio.Xenko.Assets
             // Rename variables
             newFileContents = newFileContents.Replace("Paradox", "Xenko");
 
+            // Create fallback for old environment variable
+            var index = newFileContents.IndexOf("<SiliconStudioCurrentPackagePath>", StringComparison.InvariantCulture);
+            if (index >= 0)
+            {
+                newFileContents = newFileContents.Insert(index, "<SiliconStudioXenkoDir Condition=\"'$(SiliconStudioXenkoDir)' == ''\">$(SiliconStudioParadoxDir)</SiliconStudioXenkoDir>\n    ");
+            }
+
+            // Save file if there were any changes
             if (newFileContents != fileContents)
             {
                 File.WriteAllText(projectPath, newFileContents);
@@ -342,22 +350,37 @@ namespace SiliconStudio.Xenko.Assets
             await Task.WhenAll(tasks);
         }
 
+        // TODO: Reverted to simple regex, to upgrade text in .pdxfx's generated code files. Should use syntax analysis again.
         private async Task UpgradeSourceFile(SyntaxTree syntaxTree)
         {
-            var root = await syntaxTree.GetRootAsync();
-            var rewriter = new RenamingRewriter();
-            var newRoot = rewriter.Visit(root);
+            var fileContents = File.ReadAllText(syntaxTree.FilePath);
 
-            if (newRoot != root)
+            // Rename referenced to the package, shaders and effects
+            var newFileContents = fileContents.Replace(".pdx", ".xk");
+
+            // Rename variables
+            newFileContents = newFileContents.Replace("Paradox", "Xenko");
+
+            // Save file if there were any changes
+            if (newFileContents != fileContents)
             {
-                var newSyntaxTree = syntaxTree.WithRootAndOptions(newRoot, syntaxTree.Options);
-                var sourceText = await newSyntaxTree.GetTextAsync();
-
-                using (var textWriter = new StreamWriter(syntaxTree.FilePath))
-                {
-                    sourceText.Write(textWriter);
-                }
+                File.WriteAllText(syntaxTree.FilePath, newFileContents);
             }
+
+            //var root = await syntaxTree.GetRootAsync();
+            //var rewriter = new RenamingRewriter();
+            //var newRoot = rewriter.Visit(root);
+
+            //if (newRoot != root)
+            //{
+            //    var newSyntaxTree = syntaxTree.WithRootAndOptions(newRoot, syntaxTree.Options);
+            //    var sourceText = await newSyntaxTree.GetTextAsync();
+
+            //    using (var textWriter = new StreamWriter(syntaxTree.FilePath))
+            //    {
+            //        sourceText.Write(textWriter);
+            //    }
+            //}
         }
 
         private class RenamingRewriter : CSharpSyntaxRewriter

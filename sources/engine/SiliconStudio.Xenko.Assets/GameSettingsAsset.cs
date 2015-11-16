@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Assets
     [AssetDescription(FileExtensions, false, AlwaysMarkAsRoot = true)]
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
-    [Display(80, "Game Settings", "A game settings asset")]
+    [Display(80, "Game Settings")]
     public class GameSettingsAsset : Asset
     {
         /// <summary>
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets
         /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
         /// </userdoc>
         [DataMember(20)]
-        [Display(null, null, "Graphics")]
+        [Display(null, "Graphics")]
         public int BackBufferWidth { get; set; }
 
         /// <summary>
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Assets
         /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
         /// </userdoc>
         [DataMember(30)]
-        [Display(null, null, "Graphics")]
+        [Display(null, "Graphics")]
         public int BackBufferHeight { get; set; }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Assets
         /// </summary>
         /// <userdoc>The graphics feature level this game require.</userdoc>
         [DataMember(40)]
-        [Display(null, null, "Graphics")]
+        [Display(null, "Graphics")]
         public GraphicsProfile DefaultGraphicsProfile { get; set; }
 
         /// <summary>
@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Assets
         /// </summary>
         /// <userdoc>The display orientations this game support.</userdoc>
         [DataMember(50)]
-        [Display(null, null, "Graphics")]
+        [Display(null, "Graphics")]
         public DisplayOrientation DisplayOrientation { get; set; }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Assets
         /// </summary>
         /// <userdoc>The texture quality when encoding textures. Higher settings might result in much slower build depending on the target platform.</userdoc>
         [DataMember(60)]
-        [Display(null, null, "Graphics")]
+        [Display(null, "Graphics")]
         public TextureQuality TextureQuality { get; set; }
 
         /// <summary>
@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Assets
         /// <userdoc>The default rendering mode (HDR or LDR) used to render the preview and thumbnail. This value doesn't affect the runtime but only the editor.</userdoc>
         [DataMember(70)]
         [DefaultValue(Assets.RenderingMode.HDR)]
-        [Display("Editor Rendering Mode", null, "Graphics")]
+        [Display("Editor Rendering Mode", "Graphics")]
         public RenderingMode RenderingMode { get; set; }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Assets
         /// <userdoc>The colorspace (Gamma or Linear) used for rendering. This value affects both the runtime and editor.</userdoc>
         [DataMember(80)]
         [DefaultValue(ColorSpace.Linear)]
-        [Display(null, null, "Graphics")]
+        [Display(null, "Graphics")]
         public ColorSpace ColorSpace { get; set; }
 
         /// <summary>

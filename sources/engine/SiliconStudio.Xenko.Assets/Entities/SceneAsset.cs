@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, 17, 18, typeof(RemoveSceneEditorCameraSettings))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.18", "1.5.0-alpha01", typeof(ChangeSpriteColorTypeAndTriggerElementRemoved))]
     [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.5.0-alpha02", typeof(MoveSceneSettingsToSceneAsset))]
-    [Display(200, "Scene", "A scene")]
+    [Display(200, "Scene")]
     public class SceneAsset : EntityAssetBase
     {
         private const string CurrentVersion = "1.5.0-alpha02";

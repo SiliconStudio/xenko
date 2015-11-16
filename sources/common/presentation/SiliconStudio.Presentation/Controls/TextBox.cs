@@ -125,8 +125,7 @@ namespace SiliconStudio.Presentation.Controls
             {
                 if (ValidationDelay > 0.0)
                 {
-                    if (validationTimer != null)
-                        validationTimer.Change(ValidationDelay, Timeout.Infinite);
+                    validationTimer?.Change(ValidationDelay, Timeout.Infinite);
                 }
                 else
                 {
@@ -164,10 +163,7 @@ namespace SiliconStudio.Presentation.Controls
         private static void OnClearTextCommand(object sender, ExecutedRoutedEventArgs e)
         {
             var textBox = sender as TextBox;
-            if (textBox != null)
-            {
-                textBox.Clear();
-            }
+            textBox?.Clear();
         }
     }
 }
