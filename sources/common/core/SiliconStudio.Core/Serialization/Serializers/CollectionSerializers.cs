@@ -322,7 +322,7 @@ namespace SiliconStudio.Core.Serialization.Serializers
         /// <inheritdoc/>
         public override void Initialize(SerializerSelector serializerSelector)
         {
-            elementSize = Marshal.SizeOf(typeof(T));
+            elementSize = Interop.SizeOf<T>();
         }
 
         /// <inheritdoc/>

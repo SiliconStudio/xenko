@@ -1,62 +1,74 @@
 !MaterialAsset
 Id: c88b7d39-bb04-407f-92e4-69f2dcfef378
-SerializedVersion: 1
+SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Attributes:
     Surface: !MaterialNormalMapFeature
         NormalMap: !ComputeTextureColor
             Texture: ffd38816-770b-4047-a376-6e5ec614f379:c100_body_nm
-            Scale: {X: 1, Y: 1}
-            Offset: {X: 0, Y: 0}
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
     Diffuse: !MaterialDiffuseMapFeature
         DiffuseMap: !ComputeTextureColor
             Texture: 3b9e7d5b-28b5-4091-852a-fe8732ca5787:c100_body_cm
-            Scale: {X: 1, Y: 1}
-            Offset: {X: 0, Y: 0}
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Specular: !MaterialSpecularMapFeature
         SpecularMap: !ComputeTextureColor
             Texture: 42e13c3a-d915-4255-9531-25891f8435be:c100_body_sp
-            Scale: {X: 1, Y: 1}
-            Offset: {X: 0, Y: 0}
+            FallbackValue:
+                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+            Scale: {X: 1.0, Y: 1.0}
+            Offset: {X: 0.0, Y: 0.0}
         Intensity: !ComputeFloat
-            Value: 1
+            Value: 1.0
     SpecularModel: !MaterialSpecularMicrofacetModelFeature
         Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
         Visibility: !MaterialSpecularMicrofacetVisibilityImplicit {}
         NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong {}
     Overrides:
-        UVScale: {X: 1, Y: 1}
+        UVScale: {X: 1.0, Y: 1.0}
 Layers: []
 ~Base:
     Location: --import--
     Asset: !MaterialAsset
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 1
+        SerializedVersion: {Xenko: 1.4.0-beta}
         Tags: []
         Attributes:
             Surface: !MaterialNormalMapFeature
                 NormalMap: !ComputeTextureColor
                     Texture: ffd38816-770b-4047-a376-6e5ec614f379:c100_body_nm
-                    Scale: {X: 1, Y: 1}
-                    Offset: {X: 0, Y: 0}
+                    FallbackValue:
+                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                    Scale: {X: 1.0, Y: 1.0}
+                    Offset: {X: 0.0, Y: 0.0}
             Diffuse: !MaterialDiffuseMapFeature
                 DiffuseMap: !ComputeTextureColor
                     Texture: 3b9e7d5b-28b5-4091-852a-fe8732ca5787:c100_body_cm
-                    Scale: {X: 1, Y: 1}
-                    Offset: {X: 0, Y: 0}
+                    FallbackValue:
+                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                    Scale: {X: 1.0, Y: 1.0}
+                    Offset: {X: 0.0, Y: 0.0}
             DiffuseModel: !MaterialDiffuseLambertModelFeature {}
             Specular: !MaterialSpecularMapFeature
                 SpecularMap: !ComputeTextureColor
                     Texture: 42e13c3a-d915-4255-9531-25891f8435be:c100_body_sp
-                    Scale: {X: 1, Y: 1}
-                    Offset: {X: 0, Y: 0}
+                    FallbackValue:
+                        Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                    Scale: {X: 1.0, Y: 1.0}
+                    Offset: {X: 0.0, Y: 0.0}
                 Intensity: !ComputeFloat
-                    Value: 1
+                    Value: 1.0
             SpecularModel: !MaterialSpecularMicrofacetModelFeature
                 Fresnel: !MaterialSpecularMicrofacetFresnelSchlick {}
                 Visibility: !MaterialSpecularMicrofacetVisibilityImplicit {}
                 NormalDistribution: !MaterialSpecularMicrofacetNormalDistributionBlinnPhong {}
             Overrides:
-                UVScale: {X: 1, Y: 1}
+                UVScale: {X: 1.0, Y: 1.0}
         Layers: []
