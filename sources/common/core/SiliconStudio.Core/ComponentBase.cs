@@ -1,10 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.ComponentModel;
-using SiliconStudio.Core.Diagnostics;
-
 namespace SiliconStudio.Core
 {
     /// <summary>
@@ -30,17 +26,7 @@ namespace SiliconStudio.Core
         protected ComponentBase(string name)
         {
             Name = name ?? GetType().Name;
-            Id = Guid.NewGuid();
-
-            // Track this component
-            if (ComponentTracker.Enable) ComponentTracker.Track(this);
         }
-
-        /// <summary>
-        /// Gets or sets the unique identifier attached to this object.
-        /// </summary>
-        [DataMember(-int.MaxValue), Browsable(false)] // By default don't store it, unless derived class are overriding this member
-        public virtual Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name of this component.
@@ -72,32 +58,9 @@ namespace SiliconStudio.Core
         {
         }
 
-        /// <summary>
-        /// Disposes of object resources.
-        /// </summary>
-        protected override void Destroy()
-        {
-            // Untrack this object
-            if (ComponentTracker.Enable) ComponentTracker.UnTrack(this);
-
-            base.Destroy();
-        }
-
         public override string ToString()
         {
             return $"{GetType().Name}: {name}";
-        }
-
-        protected override void OnAddReference()
-        {
-            if (ComponentTracker.Enable && ComponentTracker.EnableEvents)
-                ComponentTracker.NotifyEvent(this, ComponentEventType.AddReference);
-        }
-
-        protected override void OnReleaseReference()
-        {
-            if (ComponentTracker.Enable && ComponentTracker.EnableEvents)
-                ComponentTracker.NotifyEvent(this, ComponentEventType.Release);
         }
     }
 }

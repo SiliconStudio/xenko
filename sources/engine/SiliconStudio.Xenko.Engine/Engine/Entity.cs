@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Engine
     [ContentSerializer(typeof(DataContentSerializerWithReuse<Entity>))]
     [DataStyle(DataStyle.Normal)]
     [DataContract("Entity")]
-    public class Entity : ComponentBase, IEnumerable
+    public class Entity : ComponentBase, IEnumerable, IIdentifiable
     {
         protected TransformComponent transform;
 
@@ -63,6 +63,8 @@ namespace SiliconStudio.Xenko.Engine
         public Entity(Vector3 position, string name = null)
             : base(name)
         {
+            Id = Guid.NewGuid();
+
             Components = new PropertyContainer(this);
             Components.PropertyUpdated += EntityPropertyUpdated;
 
@@ -71,6 +73,9 @@ namespace SiliconStudio.Xenko.Engine
 
             Group = EntityGroup.Group0;
         }
+
+        [DataMember(-10), Browsable(false)]
+        public Guid Id { get; set; }
 
         [DataMember(0)] // Name is serialized
         public override string Name

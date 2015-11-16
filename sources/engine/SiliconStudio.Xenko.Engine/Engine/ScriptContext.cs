@@ -40,16 +40,17 @@ namespace SiliconStudio.Xenko.Engine
     }
 
     [DataContract("ScriptContext")]
-    public abstract class ScriptContext : ComponentBase, IScriptContext
+    public abstract class ScriptContext : ComponentBase, IScriptContext, IIdentifiable
     {
         private IGraphicsDeviceService graphicsDeviceService;
         private Logger logger;
 
         protected ScriptContext()
         {
+            Id = Guid.NewGuid();
         }
 
-        protected ScriptContext(IServiceRegistry registry)
+        protected ScriptContext(IServiceRegistry registry) : this()
         {
             Initialize(registry);
         }
@@ -69,6 +70,9 @@ namespace SiliconStudio.Xenko.Engine
             Audio = Services.GetSafeServiceAs<AudioSystem>();
             SpriteAnimation = Services.GetSafeServiceAs<SpriteAnimationSystem>();
         }
+
+        [DataMember(-10), Browsable(false)]
+        public Guid Id { get; set; }
 
         [DataMemberIgnore]
         public AudioSystem Audio { get; private set; }

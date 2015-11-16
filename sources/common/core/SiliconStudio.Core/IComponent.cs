@@ -6,7 +6,7 @@ namespace SiliconStudio.Core
     /// <summary>
     /// Base interface for all components.
     /// </summary>
-    public interface IComponent : IReferencable, IIdentifiable
+    public interface IComponent : IReferencable
     {
         /// <summary>
         /// Gets the name of this component.

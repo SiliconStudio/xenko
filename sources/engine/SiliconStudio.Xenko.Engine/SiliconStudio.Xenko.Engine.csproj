@@ -2215,7 +2215,6 @@
     <Compile Include="Engine\Design\ContentReferenceCloneDataSerializer.cs" />
     <Compile Include="Engine\Design\CloneEntityComponentSerializer.cs" />
     <Compile Include="Engine\EntityExtensions.cs" />
-    <Compile Include="Engine\Design\EntityHierarchyData.cs" />
     <Compile Include="Engine\Design\GameSettings.cs" />
     <Compile Include="Engine\Scene.cs" />
     <Compile Include="Rendering\SceneChildRenderer.cs" />

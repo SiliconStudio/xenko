@@ -35,13 +35,6 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         [DataMemberIgnore]
-        public override Guid Id
-        {
-            get { return base.Id; }
-            set { base.Id = value; }
-        }
-
-        [DataMemberIgnore]
         public override bool Enabled
         {
             get

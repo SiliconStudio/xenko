@@ -203,6 +203,7 @@
     <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityAnalysis.cs" />
     <Compile Include="Entities\EntityAsset.cs" />
+    <Compile Include="Entities\EntityHierarchyData.cs" />
     <Compile Include="Entities\SceneAssetCompiler.cs" />
     <Compile Include="Entities\EntityAssetOperations.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
@@ -215,6 +216,7 @@
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\IEntityComponentReference.cs" />
     <Compile Include="Entities\IEntityScriptReference.cs" />
+    <Compile Include="Entities\SceneAsset.Upgraders.cs" />
     <Compile Include="GameSettingsAsset.cs" />
     <Compile Include="Entities\SceneAsset.cs" />
     <Compile Include="GameSettingsAssetCompiler.cs" />

@@ -8,8 +8,9 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Xenko.Engine.Design
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
     /// Contains design data used by an <see cref="Entity"/>
