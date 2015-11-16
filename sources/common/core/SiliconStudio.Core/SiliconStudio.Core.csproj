@@ -124,8 +124,6 @@
     <Compile Include="Diagnostics\CollectionDebugView.cs" />
     <Compile Include="Diagnostics\ComponentEventInfo.cs" />
     <Compile Include="Diagnostics\ComponentEventType.cs" />
-    <Compile Include="Diagnostics\ComponentReference.cs" />
-    <Compile Include="Diagnostics\ComponentTracker.cs" />
     <Compile Include="Diagnostics\ConsoleLogListener.cs" />
     <Compile Include="Diagnostics\DebugLogListener.cs" />
     <Compile Include="Diagnostics\GlobalLogger.cs" />
