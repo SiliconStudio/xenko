@@ -23,12 +23,8 @@
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-#if !SILICONSTUDIO_UI_SDL_ONLY
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL_ONLY
 using System.Windows.Forms;
-#else
-using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
-#endif
 #endif
 using SharpDX;
 using SharpDX.DXGI;
@@ -260,7 +256,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return CreateSwapChainForWindowsRuntime();
 #else
-            return CreateSwapChainForDesktop();
+            return CreateSwapChainForWindows();
 #endif
         }
 
@@ -303,20 +299,37 @@ namespace SiliconStudio.Xenko.Graphics
             return swapChain;
         }
 #else
-        private SwapChain CreateSwapChainForDesktop()
+        private SwapChain CreateSwapChainForWindows()
         {
-            var control = Description.DeviceWindowHandle.NativeHandle as Control;
-            if (control == null)
+            var nativeHandle = Description.DeviceWindowHandle.NativeHandle;
+
+#if !SILICONSTUDIO_UI_SDL_ONLY
+            // Dynamically test if we are handling a Winform or a SDL window.
+            var control = nativeHandle as Control;
+            if (control != null)
             {
-                throw new NotSupportedException(string.Format("Form of type [{0}] is not supported. Only System.Windows.Control are supported", Description.DeviceWindowHandle != null ? Description.DeviceWindowHandle.GetType().Name : "null"));
+                return CreateSwapChainForDesktop(control.Handle);
+            }
+#endif
+
+            var window = nativeHandle as SiliconStudio.Xenko.Graphics.SDL.Window;
+            if (window != null)
+            {
+                return CreateSwapChainForDesktop(window.Handle);
             }
 
+            throw new NotSupportedException(string.Format("Form of type [{0}] is not supported. Only System.Windows.Control or SDL2.Window are supported",
+                Description.DeviceWindowHandle != null ? Description.DeviceWindowHandle.GetType().Name : "null"));
+        }
+
+        private SwapChain CreateSwapChainForDesktop(IntPtr handle)
+        {
             bufferCount = 1;
             var description = new SwapChainDescription
                 {
                     ModeDescription = new ModeDescription(Description.BackBufferWidth, Description.BackBufferHeight, Description.RefreshRate.ToSharpDX(), (SharpDX.DXGI.Format)Description.BackBufferFormat), 
                     BufferCount = bufferCount, // TODO: Do we really need this to be configurable by the user?
-                    OutputHandle = control.Handle, 
+                    OutputHandle = handle,
                     SampleDescription = new SampleDescription((int)Description.MultiSampleCount, 0), 
                     SwapEffect = SwapEffect.Discard,
                     Usage = SharpDX.DXGI.Usage.BackBuffer | SharpDX.DXGI.Usage.RenderTargetOutput,
