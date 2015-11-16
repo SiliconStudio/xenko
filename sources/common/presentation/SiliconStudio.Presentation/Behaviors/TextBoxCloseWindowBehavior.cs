@@ -38,7 +38,7 @@ namespace SiliconStudio.Presentation.Behaviors
         
         private void KeyUp(object sender, KeyEventArgs e)
         {
-            if (e.Key != Key.Enter || !IsEnabled)
+            if (e.Key != Key.Enter || !IsEnabled || AssociatedObject.HasChangesToValidate)
             {
                 return;
             }
