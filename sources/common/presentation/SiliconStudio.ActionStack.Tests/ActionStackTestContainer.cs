@@ -9,12 +9,16 @@ namespace SiliconStudio.ActionStack.Tests
         public ActionStackTestContainer(int capacity)
         {
             Stack = new ActionStack(capacity);
-            Stack.ActionItemsAdded += (sender, e) => ActionItemsAdded.Add(Tuple.Create(sender, e));
-            Stack.ActionItemsCleared += (sender, e) => ActionItemsCleared.Add(Tuple.Create(sender, e));
-            Stack.ActionItemsDiscarded += (sender, e) => ActionItemsDiscarded.Add(Tuple.Create(sender, e));
-            Stack.Undone += (sender, e) => Undone.Add(Tuple.Create(sender, e));
-            Stack.Redone += (sender, e) => Redone.Add(Tuple.Create(sender, e));
+            RegisterEvents();
         }
+
+        protected ActionStackTestContainer(ActionStack stack)
+        {
+            Stack = stack;
+            RegisterEvents();
+        }
+
+        public ActionStack Stack { get; }
 
         public List<Tuple<object, ActionItemsEventArgs<IActionItem>>> ActionItemsAdded = new List<Tuple<object, ActionItemsEventArgs<IActionItem>>>();
 
@@ -26,8 +30,6 @@ namespace SiliconStudio.ActionStack.Tests
 
         public List<Tuple<object, ActionItemsEventArgs<IActionItem>>> Redone = new List<Tuple<object, ActionItemsEventArgs<IActionItem>>>();
 
-        public ActionStack Stack;
-
         public void CheckRaiseCount(int added, int cleared, int discarded, int undone, int redone)
         {
             Assert.AreEqual(added, ActionItemsAdded.Count);
@@ -35,6 +37,15 @@ namespace SiliconStudio.ActionStack.Tests
             Assert.AreEqual(discarded, ActionItemsDiscarded.Count);
             Assert.AreEqual(undone, Undone.Count);
             Assert.AreEqual(redone, Redone.Count);
+        }
+
+        private void RegisterEvents()
+        {
+            Stack.ActionItemsAdded += (sender, e) => ActionItemsAdded.Add(Tuple.Create(sender, e));
+            Stack.ActionItemsCleared += (sender, e) => ActionItemsCleared.Add(Tuple.Create(sender, e));
+            Stack.ActionItemsDiscarded += (sender, e) => ActionItemsDiscarded.Add(Tuple.Create(sender, e));
+            Stack.Undone += (sender, e) => Undone.Add(Tuple.Create(sender, e));
+            Stack.Redone += (sender, e) => Redone.Add(Tuple.Create(sender, e));
         }
     }
 }
