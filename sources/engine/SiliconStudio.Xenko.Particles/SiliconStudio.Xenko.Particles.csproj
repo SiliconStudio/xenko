@@ -42,7 +42,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Modules\ParticleModule.cs" />
     <Compile Include="Particle.cs" />
+    <Compile Include="ParticleEmitter.cs" />
     <Compile Include="ParticleField.cs" />
     <Compile Include="ParticleFieldAccessor.cs" />
     <Compile Include="ParticleFieldDescription.cs" />
