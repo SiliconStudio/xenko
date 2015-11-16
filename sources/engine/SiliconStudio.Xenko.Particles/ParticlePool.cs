@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         public int NextFreeIndex => nextFreeIndex;
 
-        public ParticlePool(int size, int capacity, ListPolicy listPolicy = ListPolicy.Ring)
+        public ParticlePool(int size, int capacity, ListPolicy listPolicy = ListPolicy.Stack)
         {
             this.listPolicy = listPolicy;
 
@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Particles
         }
 
 #region Fields
-        private const int DefaultMaxFielsPerPool = 8;
+        public const int DefaultMaxFielsPerPool = 16;
         private readonly Dictionary<ParticleFieldDescription, ParticleField> fields = new Dictionary<ParticleFieldDescription, ParticleField>(DefaultMaxFielsPerPool);
 #if PARTICLES_SOA
         private readonly List<ParticleFieldDescription> fieldDescriptions = new List<ParticleFieldDescription>(DefaultMaxFielsPerPool);

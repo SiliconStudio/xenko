@@ -317,9 +317,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
             System.Console.Out.WriteLine($"We can have {(particleCount * numberOfTests * 2)/ totalMSecs} particles on this system with update time <= 1ms on one thread");
 
-            System.Console.ReadLine();
-
-            
+            System.Console.ReadLine();            
         }
 
         private static void Assert(bool condition, string message, [CallerFilePath] string callingFilePath = "", [CallerLineNumber] int callerLine = 0)
