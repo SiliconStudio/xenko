@@ -12,7 +12,6 @@ namespace SiliconStudio.ActionStack
     public class ActionStack : IActionStack
     {
         private readonly object lockObject = new object();
-        private readonly int capacity;
         private readonly List<IActionItem> actionItems = new List<IActionItem>();
 
         /// <summary>
@@ -31,7 +30,7 @@ namespace SiliconStudio.ActionStack
         /// <param name="initialActionsItems">The action items to add to the stack.</param>
         public ActionStack(int capacity, IEnumerable<IActionItem> initialActionsItems)
         {
-            this.capacity = capacity;
+            Capacity = capacity;
 
             if (initialActionsItems != null)
             {
@@ -43,22 +42,22 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IActionItem> ActionItems { get { return actionItems; } }
+        public IEnumerable<IActionItem> ActionItems => actionItems;
 
         /// <summary>
         /// Gets the capacity of this action stack.
         /// </summary>
-        public int Capacity { get { return capacity; } }
+        public int Capacity { get; }
 
         /// <summary>
         /// Gets whether an undo operation can be executed.
         /// </summary>
-        public bool CanUndo { get { return CurrentIndex > 0; } }
+        public bool CanUndo => CurrentIndex > 0;
 
         /// <summary>
         /// Gets whether an redo operation can be executed.
         /// </summary>
-        public bool CanRedo { get { return CurrentIndex < actionItems.Count; } }
+        public bool CanRedo => CurrentIndex < actionItems.Count;
 
         /// <summary>
         /// Raised whenever action items are added to the stack.
@@ -99,7 +98,7 @@ namespace SiliconStudio.ActionStack
         public virtual void Add(IActionItem item)
         {
             if (item == null)
-                throw new ArgumentNullException("item");
+                throw new ArgumentNullException(nameof(item));
 
             var items = new[] { item };
             if (UndoRedoInProgress)
@@ -115,7 +114,7 @@ namespace SiliconStudio.ActionStack
         public void AddRange(IEnumerable<IActionItem> items)
         {
             if (items == null)
-                throw new ArgumentNullException("items");
+                throw new ArgumentNullException(nameof(items));
 
             var cachedItems = items.ToArray();
             if (cachedItems.Length == 0)
@@ -134,16 +133,19 @@ namespace SiliconStudio.ActionStack
         /// <inheritdoc/>
         public virtual SavePoint CreateSavePoint(bool markActionsAsSaved)
         {
-            if (markActionsAsSaved)
+            lock (lockObject)
             {
-                int i = 0;
-                foreach (var action in actionItems)
+                if (markActionsAsSaved)
                 {
-                    action.IsSaved = i++ < CurrentIndex;
+                    int i = 0;
+                    foreach (var action in actionItems)
+                    {
+                        action.IsSaved = i++ < CurrentIndex;
+                    }
                 }
-            } 
-            
-            return CanUndo ? new SavePoint(actionItems[CurrentIndex - 1].Identifier) : SavePoint.Empty;
+
+                return CanUndo ? new SavePoint(actionItems[CurrentIndex - 1].Identifier) : SavePoint.Empty;
+            }
         }
 
         /// <inheritdoc/>
@@ -213,9 +215,7 @@ namespace SiliconStudio.ActionStack
         /// <param name="e">The arguments that will be passed to the <see cref="ActionItemsDiscarded"/> event raised by this method.</param>
         protected virtual void OnActionItemsDiscarded(DiscardedActionItemsEventArgs<IActionItem> e)
         {
-            var handler = ActionItemsDiscarded;
-            if (handler != null)
-                handler(this, e);
+            ActionItemsDiscarded?.Invoke(this, e);
         }
 
         /// <summary>
@@ -224,9 +224,7 @@ namespace SiliconStudio.ActionStack
         /// <param name="e">The arguments that will be passed to the <see cref="ActionItemsAdded"/> event raised by this method.</param>
         protected virtual void OnActionItemsAdded(ActionItemsEventArgs<IActionItem> e)
         {
-            var handler = ActionItemsAdded;
-            if (handler != null)
-                handler(this, e);
+            ActionItemsAdded?.Invoke(this, e);
         }
 
         /// <summary>
@@ -234,9 +232,7 @@ namespace SiliconStudio.ActionStack
         /// </summary>
         protected virtual void OnActionItemsCleared()
         {
-            var handler = ActionItemsCleared;
-            if (handler != null)
-                handler(this, EventArgs.Empty);
+            ActionItemsCleared?.Invoke(this, EventArgs.Empty);
         }
 
         /// <summary>
@@ -245,9 +241,7 @@ namespace SiliconStudio.ActionStack
         /// <param name="e">The arguments that will be passed to the <see cref="Undone"/> event raised by this method.</param>
         protected virtual void OnUndone(ActionItemsEventArgs<IActionItem> e)
         {
-            var handler = Undone;
-            if (handler != null)
-                handler(this, e);
+            Undone?.Invoke(this, e);
         }
 
         /// <summary>
@@ -256,9 +250,7 @@ namespace SiliconStudio.ActionStack
         /// <param name="e">The arguments that will be passed to the <see cref="Redone"/> event raised by this method.</param>
         protected virtual void OnRedone(ActionItemsEventArgs<IActionItem> e)
         {
-            var handler = Redone;
-            if (handler != null)
-                handler(this, e);
+            Redone?.Invoke(this, e);
         }
         
         private void InternalClear()
@@ -267,7 +259,6 @@ namespace SiliconStudio.ActionStack
             {
                 actionItems.Clear();
                 ResetIndexOnTop();
-                OnActionItemsCleared();
             }
         }
 
@@ -284,13 +275,13 @@ namespace SiliconStudio.ActionStack
 
                 // post-cleanup
                 IActionItem[] discarded = null;
-                if (capacity >= 0 && actionItems.Count > capacity)
+                if (Capacity >= 0 && actionItems.Count > Capacity)
                 {
                     // stack is overloaded
                     discarded = actionItems
-                        .Take(actionItems.Count - capacity)
+                        .Take(actionItems.Count - Capacity)
                         .ToArray();
-                    int itemsToRemove = actionItems.Count - capacity;
+                    int itemsToRemove = actionItems.Count - Capacity;
                     for (int i = 0; i < itemsToRemove; ++i)
                     {
                         actionItems[0].Freeze();
@@ -310,8 +301,8 @@ namespace SiliconStudio.ActionStack
 
                 // raise event to notify of added items
                 var added = items;
-                if (capacity >= 0 && items.Length > capacity)
-                    added = items.Skip(items.Length - capacity).ToArray();
+                if (Capacity >= 0 && items.Length > Capacity)
+                    added = items.Skip(items.Length - Capacity).ToArray();
 
                 OnActionItemsAdded(new ActionItemsEventArgs<IActionItem>(added));
             }

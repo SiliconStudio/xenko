@@ -1,27 +1,27 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.Collections.Generic;
-using SiliconStudio.ActionStack;
 
-namespace SiliconStudio.Presentation.ViewModel.ActionStack
+namespace SiliconStudio.ActionStack
 {
     /// <summary>
     /// An implementation of the <see cref="DirtiableActionItem"/> that uses delegate for undo and redo.
     /// </summary>
-    public class AnonymousViewModelActionItem : DirtiableActionItem
+    public class AnonymousActionItem : DirtiableActionItem
     {
-        private readonly Action undo;
-        private readonly Action redo;
+        private Action undo;
+        private Action redo;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AnonymousViewModelActionItem"/> class.
+        /// Initializes a new instance of the <see cref="AnonymousActionItem"/> class.
         /// </summary>
         /// <param name="name">The name of the action item.</param>
         /// <param name="dirtiables">The dirtiable objects associated to this action item.</param>
         /// <param name="undo">The <see cref="Action"/> to invoke on undo.</param>
         /// <param name="redo">The <see cref="Action"/> to invoke on redo.</param>
-        public AnonymousViewModelActionItem(string name, IEnumerable<IDirtiable> dirtiables, Action undo, Action redo)
+        public AnonymousActionItem(string name, IEnumerable<IDirtiable> dirtiables, Action undo, Action redo)
             : base(name, dirtiables)
         {
             if (undo == null) throw new ArgumentNullException(nameof(undo));
@@ -33,6 +33,8 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
         /// <inheritdoc/>
         protected override void FreezeMembers()
         {
+            undo = null;
+            redo = null;
         }
 
         /// <inheritdoc/>

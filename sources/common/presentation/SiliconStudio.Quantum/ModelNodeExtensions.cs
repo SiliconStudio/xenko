@@ -28,9 +28,9 @@ namespace SiliconStudio.Quantum
                 else
                     throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
 
+                // TODO: shouldn't this be done as long as the value is not a primitive type?
                 var memberContent = node.Content as MemberContent;
-                if (memberContent != null)
-                    memberContent.UpdateReferences();
+                memberContent?.UpdateReferences();
             }
             else
             {

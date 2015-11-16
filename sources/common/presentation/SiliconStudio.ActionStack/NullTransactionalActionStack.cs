@@ -28,20 +28,18 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdocs/>
-        public bool TransactionInProgress { get { return false; } }
-        
-        /// <inheritdocs/>
-        public IEnumerable<IActionItem> ActionItems { get { return Enumerable.Empty<IActionItem>(); } }
+        public bool TransactionInProgress => false;
 
         /// <inheritdocs/>
-        public bool CanUndo { get { return false; } }
+        public IEnumerable<IActionItem> ActionItems => Enumerable.Empty<IActionItem>();
 
         /// <inheritdocs/>
-        public bool CanRedo { get { return false; } }
+        public bool CanUndo => false;
+
+        /// <inheritdocs/>
+        public bool CanRedo => false;
 
         // The following events are intentionally never invoked.
-#pragma warning disable 67
-
         /// <inheritdocs/>
         public event EventHandler<ActionItemsEventArgs<IActionItem>> ActionItemsAdded;
 
@@ -68,8 +66,6 @@ namespace SiliconStudio.ActionStack
 
         /// <inheritdocs/>
         public event EventHandler<ActionItemsEventArgs<IActionItem>> Redone;
-
-#pragma warning restore 67
 
         /// <inheritdocs/>
         public IDisposable BeginEndTransaction(string name)

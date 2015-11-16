@@ -11,7 +11,6 @@ using System.Runtime.CompilerServices;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Services;
-using SiliconStudio.Presentation.ViewModel.ActionStack;
 
 namespace SiliconStudio.Presentation.ViewModel
 {
@@ -54,7 +53,7 @@ namespace SiliconStudio.Presentation.ViewModel
         public ITransactionalActionStack ActionStack => ServiceProvider.Get<ITransactionalActionStack>();
 
         /// <summary>
-        /// Registers the given collection to create <see cref="CollectionChangedViewModelActionItem"/> in the action stack when it is modified.
+        /// Registers the given collection to create <see cref="CollectionChangedActionItem"/> in the action stack when it is modified.
         /// </summary>
         /// <param name="name">The name of the collection (used only for formatting the display name of the action item).</param>
         /// <param name="collection">The collection to register.</param>
@@ -363,7 +362,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <returns>A new instance of the <see cref="DirtiableActionItem"/> class.</returns>
         protected virtual DirtiableActionItem CreatePropertyChangeActionItem(string displayName, string propertyName, object preEditValue)
         {
-            return new PropertyChangedViewModelActionItem(displayName, this, Dirtiables, propertyName, preEditValue);
+            return new PropertyChangedActionItem(displayName, propertyName, this, preEditValue, Dirtiables);
         }
 
         /// <summary>
@@ -375,7 +374,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <returns>A new instance of the <see cref="DirtiableActionItem"/> class.</returns>
         protected virtual DirtiableActionItem CreateCollectionChangeActionItem(string displayName, IList list, NotifyCollectionChangedEventArgs args)
         {
-            return new CollectionChangedViewModelActionItem(displayName, Dirtiables, list, args, Dispatcher);
+            return new CollectionChangedActionItem(displayName, list, args, Dirtiables);
         }
 
         private void CollectionChanged(object sender, NotifyCollectionChangedEventArgs e, string collectionName)
