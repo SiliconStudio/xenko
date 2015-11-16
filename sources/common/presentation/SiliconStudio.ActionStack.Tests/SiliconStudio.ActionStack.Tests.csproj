@@ -32,6 +32,7 @@
     <Compile Include="SimpleActionItem.cs" />
     <Compile Include="TestActionItem.cs" />
     <Compile Include="TestActionStack.cs" />
+    <Compile Include="TestAggregateActionItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">

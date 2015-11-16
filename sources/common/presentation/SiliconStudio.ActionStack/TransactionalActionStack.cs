@@ -180,7 +180,7 @@ namespace SiliconStudio.ActionStack
                     actionItem.Name = name;
                 return actionItem;
             }
-            return new AggregateActionItem(name, actionItems);
+            return new AggregateActionItem(name, actionItems.ToArray());
         }
     }
 }

@@ -14,6 +14,10 @@ namespace SiliconStudio.ActionStack.Tests
 
         public int Counter { get; }
 
+        public Action OnUndo { get; set; }
+
+        public Action OnRedo { get; set; }
+
         protected override void FreezeMembers()
         {
             Console.WriteLine($"Freezed {this}");
@@ -23,6 +27,7 @@ namespace SiliconStudio.ActionStack.Tests
         {
             Console.WriteLine($"Redoing {this}");
             done = true;
+            OnRedo?.Invoke();
             Console.WriteLine($"Redone {this}");
         }
 
@@ -30,6 +35,7 @@ namespace SiliconStudio.ActionStack.Tests
         {
             Console.WriteLine($"Undoing {this}");
             done = false;
+            OnUndo?.Invoke();
             Console.WriteLine($"Undone {this}");
         }
 

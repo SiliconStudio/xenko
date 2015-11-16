@@ -12,7 +12,7 @@ namespace SiliconStudio.ActionStack
         /// <summary>
         /// Gets the aggregated action items.
         /// </summary>
-        IEnumerable<IActionItem> ActionItems { get; }
+        IReadOnlyCollection<IActionItem> ActionItems { get; }
 
         /// <summary>
         /// Gets whether the given action item is contained in this aggregate.
