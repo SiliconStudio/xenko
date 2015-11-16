@@ -45,11 +45,6 @@ namespace SiliconStudio.Xenko.Games
             // Desktop doesn't have orientation (unless on Windows 8?)
         }
 
-        internal override bool CanHandle(GameContext gameContext)
-        {
-            return gameContext.ContextType == AppContextType.Android;
-        }
-
         protected override void Initialize(GameContext<AndroidXenkoGameView> gameContext)
         {
             xenkoGameForm = gameContext.Control;
