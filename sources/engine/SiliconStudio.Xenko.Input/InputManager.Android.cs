@@ -14,7 +14,7 @@ using SiliconStudio.Xenko.Games.Android;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManagerAndroid : InputManager<AndroidXenkoGameView>
+    internal partial class InputManagerAndroid : InputManager<AndroidXenkoGameView>
     {
         private const int SensorDesiredUpdateDelay = (int)(1 / DesiredSensorUpdateRate * 1000f);
 
