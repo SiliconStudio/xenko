@@ -11,7 +11,7 @@ namespace SiliconStudio.Presentation.Windows
     using MessageBoxImage = Services.MessageBoxImage;
     using MessageBoxResult = Services.MessageBoxResult;
     
-    public sealed class MessageBox : MessageDialogBase
+    public class MessageBox : MessageDialogBase
     {
         private MessageBox()
         {
@@ -79,18 +79,9 @@ namespace SiliconStudio.Presentation.Windows
             Content = "Yes",
         };
 
-        /// <summary>
-        /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
-        /// </summary>
-        /// <param name="owner">A <see cref="Window"/> that represents the owner window of the message box.</param>
-        /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
-        /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
-        /// <param name="button">A <see cref="MessageBoxButton"/> value that specifies which button or buttons to display</param>
-        /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
-        /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
-        public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton button, MessageBoxImage image)
+        public static ICollection<DialogButtonInfo> GetButtons(MessageBoxButton button)
         {
-            IEnumerable<DialogButtonInfo> buttons;
+            ICollection<DialogButtonInfo> buttons;
             switch (button)
             {
                 case MessageBoxButton.OK:
@@ -113,6 +104,11 @@ namespace SiliconStudio.Presentation.Windows
                 default:
                     throw new ArgumentOutOfRangeException(nameof(button), button, null);
             }
+            return buttons;
+        }
+
+        public static void SetImage(MessageBox messageBox, MessageBoxImage image)
+        {
             string imageKey;
             switch (image)
             {
@@ -138,6 +134,21 @@ namespace SiliconStudio.Presentation.Windows
                 default:
                     throw new ArgumentOutOfRangeException(nameof(image), image, null);
             }
+            messageBox.Image = imageKey != null ? (ImageSource)messageBox.TryFindResource(imageKey) : null;
+        }
+
+        /// <summary>
+        /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
+        /// </summary>
+        /// <param name="owner">A <see cref="Window"/> that represents the owner window of the message box.</param>
+        /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
+        /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
+        /// <param name="button">A <see cref="MessageBoxButton"/> value that specifies which button or buttons to display</param>
+        /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
+        public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton button, MessageBoxImage image)
+        {
+            var buttons = GetButtons(button);
             var messageBox = new MessageBox
             {
                 Owner = owner,
@@ -146,11 +157,7 @@ namespace SiliconStudio.Presentation.Windows
                 Content = message,
                 ButtonsSource = buttons,
             };
-            if (imageKey != null)
-            {
-                var bitmap = (ImageSource)messageBox.TryFindResource(imageKey);
-                messageBox.Image = bitmap;
-            }
+            SetImage(messageBox, image);
             return (MessageBoxResult)messageBox.ShowInternal();
         }
     }
