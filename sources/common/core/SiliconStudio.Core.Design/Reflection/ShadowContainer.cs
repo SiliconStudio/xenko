@@ -8,14 +8,25 @@ namespace SiliconStudio.Core.Reflection
 {
     internal sealed class ShadowContainer
     {
+        // TODO: this class is not threadsafe. 
+
         private static readonly IEnumerable<ShadowAttributes> EmptyAttributes = Enumerable.Empty<ShadowAttributes>();
         private Dictionary<object, ShadowAttributes> attachedAttributesPerKey;
         private Guid? id;
-        private readonly bool isIdentifiable;
+        private bool isIdentifiable;
+
+        internal ShadowContainer()
+        {
+        }
 
         public ShadowContainer(Type type)
         {
             isIdentifiable = IdentifiableHelper.IsIdentifiable(type);
+        }
+
+        public ShadowContainer(ShadowContainer copy)
+        {
+            copy.CopyTo(this);
         }
 
         public Guid GetId(object instance)
@@ -73,27 +84,25 @@ namespace SiliconStudio.Core.Reflection
             }
         }
 
-        public ShadowContainer Clone(object toInstance)
+        public ShadowContainer Clone()
         {
-            if (attachedAttributesPerKey == null)
-            {
-                return null;
-            }
-
-            var container = new ShadowContainer(toInstance.GetType()) { attachedAttributesPerKey = new Dictionary<object, ShadowAttributes>() };
-
-            // Copy only Id if it is declared as local and it is an identifiable type
-            if (isIdentifiable && id.HasValue)
-            {
-                container.id = id;
-            }
-
-            foreach (var keyValue in attachedAttributesPerKey)
-            {
-                container.attachedAttributesPerKey.Add(keyValue.Key, keyValue.Value.Clone());
-            }
-
+            var container = new ShadowContainer(this);
             return container;
+        }
+
+        internal void CopyTo(ShadowContainer copy)
+        {
+            copy.id = id;
+            copy.isIdentifiable = isIdentifiable;
+
+            if (attachedAttributesPerKey != null)
+            {
+                copy.attachedAttributesPerKey = new Dictionary<object, ShadowAttributes>();
+                foreach (var keyValue in attachedAttributesPerKey)
+                {
+                    copy.attachedAttributesPerKey.Add(keyValue.Key, keyValue.Value.Clone());
+                }
+            }
         }
 
         public bool Contains(object memberKey)

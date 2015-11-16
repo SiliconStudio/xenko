@@ -25,7 +25,8 @@ namespace SiliconStudio.Core.Reflection
                     var attributes = TypeDescriptorFactory.Default.AttributeRegistry.GetAttributes(type);
 
                     // Early exit if we don't need to add a unique identifier to a type
-                    result = !(type.IsValueType
+                    result = !( type == typeof(string)
+                            || type.IsValueType
                             || type.IsArray
                             || CollectionDescriptor.IsCollection(type)
                             || DictionaryDescriptor.IsDictionary(type)

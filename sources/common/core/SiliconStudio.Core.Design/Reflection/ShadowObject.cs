@@ -38,7 +38,7 @@ namespace SiliconStudio.Core.Reflection
 
 
             var type = fromInstance.GetType().GetTypeInfo();
-            bool forceShadowCreation = !(type.IsArray || CollectionDescriptor.IsCollection(type) || DictionaryDescriptor.IsDictionary(type));
+            bool forceShadowCreation = IdentifiableHelper.IsIdentifiable(type);
 
             ShadowContainer shadow;
             if (forceShadowCreation)
@@ -52,8 +52,8 @@ namespace SiliconStudio.Core.Reflection
 
             if (shadow != null)
             {
-                var shadowClone = shadow.Clone(fromInstance);
-                Shadows.GetValue(toInstance, callback => shadowClone);
+                var newShadow = Shadows.GetValue(toInstance, key => new ShadowContainer());
+                shadow.CopyTo(newShadow);
             }
         }
 
