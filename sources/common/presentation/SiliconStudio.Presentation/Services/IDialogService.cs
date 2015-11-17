@@ -45,6 +45,18 @@ namespace SiliconStudio.Presentation.Services
         MessageBoxResult ShowMessageBox(string message, string caption, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
+        /// Displays a modal message box with an additional checkbox between the message and the buttons.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="caption">The title of the message box</param>
+        /// <param name="checkedMessage"></param>
+        /// <param name="isChecked"></param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        MessageBoxResult ShowCheckedMessageBox(string message, string caption, string checkedMessage, ref bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
+
+        /// <summary>
         /// Attempts to close the current window.
         /// </summary>
         /// <param name="dialogResult">a nullable boolean indicating, if the current window behave like a dialog window, the result of the dialog invocation.</param>

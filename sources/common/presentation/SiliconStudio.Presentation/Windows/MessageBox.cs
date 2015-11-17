@@ -13,7 +13,7 @@ namespace SiliconStudio.Presentation.Windows
     
     public class MessageBox : MessageDialogBase
     {
-        private MessageBox()
+        protected MessageBox()
         {
         }
 

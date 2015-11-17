@@ -44,6 +44,15 @@ namespace SiliconStudio.Presentation.Dialogs
             return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, button, image));
         }
 
+        public MessageBoxResult ShowCheckedMessageBox(string message, string caption, string checkedMessage, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
+        {
+            var parentWindow = ParentWindow;
+            var localIsChecked = isChecked;
+            var result = dispatcher.Invoke(() => Windows.CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage, ref localIsChecked));
+            isChecked = localIsChecked;
+            return result;
+        }
+
         public void CloseCurrentWindow(bool? dialogResult = null)
         {
             // Window.DialogResult setter will throw an exception when the window was not displayed with ShowDialog, even if we're setting null.

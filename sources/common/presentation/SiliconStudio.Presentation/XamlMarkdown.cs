@@ -123,6 +123,7 @@ namespace SiliconStudio.Presentation
             text = Normalize(text);
             var document = Create<FlowDocument, Block>(RunBlockGamut(text));
 
+            // FIXME: was in the original file, but we are setting it in our style. Commented for now, could be removed later.
             //document.PagePadding = new Thickness(0);
             if (DocumentStyle != null)
             {
