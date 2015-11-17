@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Engine
     public class ModelNodeTransformLink : TransformLink
     {
         private readonly ModelComponent parentModelComponent;
-        private ModelViewHierarchyUpdater modelViewHierarchy;
+        private SkeletonUpdater skeleton;
         private readonly bool forceRecursive;
         private string nodeName;
         private int nodeIndex = int.MaxValue;
@@ -31,19 +31,19 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             // Updated? (rare slow path)
-            if (parentModelComponent.ModelViewHierarchy != modelViewHierarchy)
+            if (parentModelComponent.Skeleton != skeleton)
             {
-                modelViewHierarchy = parentModelComponent.ModelViewHierarchy;
-                if (modelViewHierarchy == null)
+                skeleton = parentModelComponent.Skeleton;
+                if (skeleton == null)
                 {
                     goto failed;
                 }
 
                 // Find our node index
                 nodeIndex = int.MaxValue;
-                for (int index = 0; index < modelViewHierarchy.Nodes.Length; index++)
+                for (int index = 0; index < skeleton.Nodes.Length; index++)
                 {
-                    var node = modelViewHierarchy.Nodes[index];
+                    var node = skeleton.Nodes[index];
                     if (node.Name == nodeName)
                     {
                         nodeIndex = index;
@@ -51,8 +51,8 @@ namespace SiliconStudio.Xenko.Engine
                 }
             }
 
-            var nodes = modelViewHierarchy.Nodes;
-            var nodeTransformations = modelViewHierarchy.NodeTransformations;
+            var nodes = skeleton.Nodes;
+            var nodeTransformations = skeleton.NodeTransformations;
             if (nodeIndex >= nodes.Length)
             {
                 goto failed;

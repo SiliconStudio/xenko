@@ -1,13 +1,13 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Windows;
+using System.Windows.Input;
 using SiliconStudio.Presentation.Controls;
-using SiliconStudio.Presentation.Core;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
     /// <summary>
-    /// A behavior that can be attached to a <see cref="TextBoxBase"/> and will close the window it is contained in on <see cref="TextBoxBase"/> <see cref="TextBoxBase.Validated"/> event.
+    /// A behavior that can be attached to a <see cref="TextBoxBase"/> and will close the window it is contained in when <see cref="Key.Enter"/> is pressed.
     /// A command can then be executed before closing the window, you can use the <see cref="CloseWindowBehavior{T}.Command"/> and <see cref="CloseWindowBehavior{T}.CommandParameter"/> property of this behavior.
     /// </summary>
     public class TextBoxCloseWindowBehavior : CloseWindowBehavior<TextBoxBase>
@@ -26,23 +26,22 @@ namespace SiliconStudio.Presentation.Behaviors
         protected override void OnAttached()
         {
             base.OnAttached();
-            AssociatedObject.Validated += Validated;
+            AssociatedObject.KeyUp += KeyUp;
         }
 
         /// <inheritdoc/>
         protected override void OnDetaching()
         {
-            AssociatedObject.Validated -= Validated;
+            AssociatedObject.KeyUp -= KeyUp;
             base.OnDetaching();
         }
-
-        /// <summary>
-        /// Raised when the associated <see cref="TextBoxBase"/> is validated. Close the containing window
-        /// </summary>
-        private void Validated(object sender, ValidationRoutedEventArgs<string> e)
+        
+        private void KeyUp(object sender, KeyEventArgs e)
         {
-            if (!IsEnabled)
+            if (e.Key != Key.Enter || !IsEnabled || AssociatedObject.HasChangesToValidate)
+            {
                 return;
+            }
 
             Close();
         }

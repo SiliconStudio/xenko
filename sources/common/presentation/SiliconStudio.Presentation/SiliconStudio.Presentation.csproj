@@ -90,7 +90,6 @@
     <Compile Include="Controls\TrimmingSource.cs" />
     <Compile Include="Controls\VectorEditor.cs" />
     <Compile Include="Core\AnonymousComparer.cs" />
-    <Compile Include="Core\AnonymousEqualityComparer.cs" />
     <Compile Include="Behaviors\CharInputBehavior.cs" />
     <Compile Include="Behaviors\ButtonCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ItemsControlCollectionViewBehavior.cs" />

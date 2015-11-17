@@ -11,7 +11,7 @@
 
 namespace SiliconStudio.DataSerializers
 {
-	<# if (type.HasGenericParameters) {#>public <#}#>sealed class <#=className#> : <#=type.IsClass && !type.IsValueType && !type.IsAbstract && HasEmptyConstructor(type) ? "Class" : string.Empty#>DataSerializer<<#=type.ConvertCSharp()#>>, IDataSerializerInitializer<#=GenerateGenericConstraints(type)#>
+	<# if (type.HasGenericParameters) {#>public <#}#>sealed class <#=className#> : <#=type.IsClass && !type.IsValueType && !type.IsAbstract && !type.IsInterface && HasEmptyConstructor(type) ? "Class" : string.Empty#>DataSerializer<<#=type.ConvertCSharp()#>>, IDataSerializerInitializer<#=GenerateGenericConstraints(type)#>
 	{
 <#if (hasParentSerializer) {#>
 		private DataSerializer<<#=parentType.ConvertCSharp()#>> parentSerializer;

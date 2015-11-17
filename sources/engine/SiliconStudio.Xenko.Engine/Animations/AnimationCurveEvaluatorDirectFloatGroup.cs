@@ -6,7 +6,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public class AnimationCurveEvaluatorDirectFloatGroup : AnimationCurveEvaluatorDirectGroup<float>
+    public class AnimationCurveEvaluatorDirectFloatGroup : AnimationCurveEvaluatorDirectBlittableGroupBase<float>
     {
         protected unsafe override void ProcessChannel(ref Channel channel, CompressedTimeSpan newTime, IntPtr location)
         {
