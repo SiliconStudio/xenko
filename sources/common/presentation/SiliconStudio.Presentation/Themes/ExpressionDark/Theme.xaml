@@ -248,17 +248,26 @@
     <Setter Property="TextAlignment" Value="Left" />
   </Style>
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading1StyleKey}">
+    <!-- note: in HTML4, default H1 font size is 2em (see http://www.w3.org/TR/CSS21/sample.html) -->
     <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=2}" />
     <Setter Property="FontWeight" Value="Bold" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
   </Style>
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading2StyleKey}">
+    <!-- note: in HTML4, default H2 font size is 1.5em (see http://www.w3.org/TR/CSS21/sample.html) -->
     <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=1.5}" />
     <Setter Property="FontWeight" Value="Bold" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
   </Style>
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading3StyleKey}">
-    <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=1.25}" />
+    <!-- note: in HTML4, default H3 font size is 1.17em (see http://www.w3.org/TR/CSS21/sample.html) -->
+    <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=1.17}" />
+    <Setter Property="FontWeight" Value="Light" />
+    <Setter Property="Foreground" Value="WhiteSmoke" />
+  </Style>
+  <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading4StyleKey}">
+    <!-- note: in HTML4, default H4 font size is 1em (see http://www.w3.org/TR/CSS21/sample.html) -->
+    <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}}" />
     <Setter Property="FontWeight" Value="Light" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
   </Style>
