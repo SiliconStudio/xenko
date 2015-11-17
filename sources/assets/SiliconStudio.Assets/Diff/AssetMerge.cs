@@ -70,11 +70,11 @@ namespace SiliconStudio.Assets.Diff
         /// or
         /// mergePolicy
         /// </exception>
-        public static MergeResult Merge(Asset assetBase, Asset assetFrom1, Asset assetFrom2, MergePolicyDelegate mergePolicy)
+        public static MergeResult Merge(object assetBase, object assetFrom1, object assetFrom2, MergePolicyDelegate mergePolicy)
         {
             if (assetFrom1 == null) throw new ArgumentNullException("assetFrom1");
             if (mergePolicy == null) throw new ArgumentNullException("mergePolicy");
-            return Merge(new AssetDiff((Asset)AssetCloner.Clone(assetBase), (Asset)AssetCloner.Clone(assetFrom1), (Asset)AssetCloner.Clone(assetFrom2)), mergePolicy);
+            return Merge(new AssetDiff(AssetCloner.Clone(assetBase), AssetCloner.Clone(assetFrom1), AssetCloner.Clone(assetFrom2)), mergePolicy);
         }
 
         /// <summary>

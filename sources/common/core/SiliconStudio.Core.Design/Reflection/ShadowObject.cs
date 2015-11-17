@@ -105,7 +105,7 @@ namespace SiliconStudio.Core.Reflection
             if (instance == null) throw new ArgumentNullException("instance");
             if (memberKey == null) throw new ArgumentNullException("memberKey");
             if (attributeKey == null) throw new ArgumentNullException("attributeKey");
-            Shadows.GetOrCreateValue(instance)[memberKey].SetAttribute(attributeKey, value);
+            GetShadow(instance)[memberKey].SetAttribute(attributeKey, value);
         }
     }
 }
