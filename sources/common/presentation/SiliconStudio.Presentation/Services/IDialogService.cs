@@ -48,8 +48,8 @@ namespace SiliconStudio.Presentation.Services
         /// Displays a modal message box with an additional checkbox between the message and the buttons.
         /// </summary>
         /// <param name="message">The text to display as message in the message box.</param>
-        /// <param name="caption">The title of the message box</param>
-        /// <param name="checkedMessage"></param>
+        /// <param name="caption">The title of the message box.</param>
+        /// <param name="checkedMessage">If null, use <see cref="Resources.Strings.DontAskMeAgain"/>.</param>
         /// <param name="isChecked"></param>
         /// <param name="buttons">The buttons to display in the message box.</param>
         /// <param name="image">The image to display in the message box.</param>

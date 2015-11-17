@@ -3,6 +3,7 @@
 using System;
 using System.Windows;
 using System.Windows.Threading;
+using SiliconStudio.Presentation.Resources;
 using SiliconStudio.Presentation.Services;
 using MessageBoxButton = SiliconStudio.Presentation.Services.MessageBoxButton;
 using MessageBoxImage = SiliconStudio.Presentation.Services.MessageBoxImage;
@@ -48,7 +49,8 @@ namespace SiliconStudio.Presentation.Dialogs
         {
             var parentWindow = ParentWindow;
             var localIsChecked = isChecked;
-            var result = dispatcher.Invoke(() => Windows.CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage, ref localIsChecked));
+            var result = dispatcher.Invoke(() =>
+                Windows.CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage ?? Strings.DontAskMeAgain, ref localIsChecked));
             isChecked = localIsChecked;
             return result;
         }
