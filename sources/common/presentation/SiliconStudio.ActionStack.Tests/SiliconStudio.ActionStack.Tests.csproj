@@ -28,11 +28,14 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helpers\ActionStackTestContainer.cs" />
+    <Compile Include="Helpers\SimpleDirtiable.cs" />
+    <Compile Include="Helpers\SimpleDirtiableActionItem.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Helpers\SimpleActionItem.cs" />
     <Compile Include="TestActionItem.cs" />
     <Compile Include="TestActionStack.cs" />
     <Compile Include="TestAggregateActionItem.cs" />
+    <Compile Include="TestDirtiable.cs" />
     <Compile Include="TestTransactionalActionStack.cs" />
     <Compile Include="Helpers\TransactionalActionStackTestContainer.cs" />
   </ItemGroup>
