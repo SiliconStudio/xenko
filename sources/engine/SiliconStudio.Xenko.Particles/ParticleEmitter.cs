@@ -3,17 +3,16 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
-using System.Collections.Specialized;
-using System.Diagnostics;
-using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.Modules;
+using SiliconStudio.Xenko.Particles.Spawner;
 
 namespace SiliconStudio.Xenko.Particles
 {
     public class ParticleEmitter
     {
+        public ParticleSpawner ParticleSpawner;
+
         private readonly ParticlePool pool;
          
         public ParticleEmitter()
@@ -24,7 +23,8 @@ namespace SiliconStudio.Xenko.Particles
 
             modules = new List<ParticleModule>();
 
-            // This is always required. Maybe later other cases will be added.
+            // The standard spawner requires a lifetime field
+            ParticleSpawner = new ParticleSpawner();
             AddRequiredField(ParticleFields.RemainingLife);
         }
 
@@ -81,9 +81,11 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         private void EnsurePoolCapacity()
         {
-            // TODO Resize pool and add/remove fields
-            if (pool.ParticleCapacity < 100)
-                pool.SetCapacity(100);
+            // If attributes linked to the maximum particle count haven't changed no need to change capacity
+            if (!ParticleSpawner.Dirty)
+                return;
+
+            pool.SetCapacity(ParticleSpawner.CalculateMaxParticles());
         }
 
         /// <summary>
@@ -92,71 +94,22 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>
         private unsafe void MoveAndDeleteParticles(float dt)
         {
-            // This module is pretty much fixed. It updates particles' lifetime and position
-            var lifeFieldExists = pool.FieldExists(ParticleFields.RemainingLife);
-            var moveFieldsExist = pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.Velocity);
+            ParticleSpawner.UpdateAndRemoveDead(dt, pool);
 
-            // Neither combination is available - early out
-            // Note! Since we always add Life field, we can't return here, but the check exists for future updates.
-            if (!lifeFieldExists && !moveFieldsExist)
+            if (!pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.Velocity))
                 return;
 
-            if (!lifeFieldExists)
+            // should this be a separate module?
+            // Position and velocity update only
+            var posField = pool.GetField(ParticleFields.Position);
+            var velField = pool.GetField(ParticleFields.Velocity);
+
+            foreach (var particle in pool)
             {
-                // Position and velocity update only
-                var posField = pool.GetField(ParticleFields.Position);
-                var velField = pool.GetField(ParticleFields.Velocity);
+                var pos = ((Vector3*)particle[posField]);
+                var vel = ((Vector3*)particle[velField]);
 
-                foreach (var particle in pool)
-                {
-                    var pos = ((Vector3*)particle[posField]);
-                    var vel = ((Vector3*)particle[velField]);
-
-                    *pos += *vel * dt;
-                }
-            }
-            else if (!moveFieldsExist)
-            {
-                // Lifetime update only
-                var lifeField = pool.GetField(ParticleFields.RemainingLife);
-
-                var particleEnumerator = pool.GetEnumerator();
-                while (particleEnumerator.MoveNext())
-                {
-                    var particle = particleEnumerator.Current;
-                    var life = (float*)particle[lifeField];
-
-                    if ((*life > 0) && ((*life -= dt) <= 0))
-                    {
-                        particleEnumerator.RemoveCurrent(ref particle);
-                        continue;
-                    }
-                }
-            }
-            else
-            {
-                // Both lifetime and movement updates
-                var lifeField = pool.GetField(ParticleFields.RemainingLife);
-                var posField = pool.GetField(ParticleFields.Position);
-                var velField = pool.GetField(ParticleFields.Velocity);
-
-                var particleEnumerator = pool.GetEnumerator();
-                while (particleEnumerator.MoveNext())
-                {
-                    var particle = particleEnumerator.Current;
-                    var life = (float*)particle[lifeField];
-
-                    if ((*life > 0) && ((*life -= dt) <= 0))
-                    {
-                        particleEnumerator.RemoveCurrent(ref particle);
-                        continue;
-                    }
-
-                    var pos = ((Vector3*)particle[posField]);
-                    var vel = ((Vector3*)particle[velField]);
-
-                    *pos += *vel * dt;
-                }
+                *pos += *vel * dt;
             }
         }
 
@@ -179,19 +132,11 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>
         private unsafe void SpawnNewParticles(float dt)
         {
-            var lifeField = pool.GetField(ParticleFields.RemainingLife);
-
-            var spawnCount = pool.ParticleCapacity - pool.ParticleCount;
-            spawnCount = Math.Min((int) (100*dt), spawnCount);
-
             var capacity = pool.ParticleCapacity;
             var startIndex = pool.NextFreeIndex % capacity;
-            for (var i = 0; i < spawnCount; i++)
-            {
-                var particle = pool.AddParticle();
 
-                *((float*)particle[lifeField]) = 1;
-            }
+            ParticleSpawner.SpawnNew(dt, pool);
+
             var endIndex = pool.NextFreeIndex % capacity;
 
             foreach (var module in modules)

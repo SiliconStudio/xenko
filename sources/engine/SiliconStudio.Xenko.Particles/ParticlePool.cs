@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="newCapacity">New maximum capacity</param>
         public void SetCapacity(int newCapacity)
         {
-            if (newCapacity < 0)
+            if (newCapacity < 0 || newCapacity == ParticleCapacity)
                 return;
 
             RelocatePool(ParticleSize, newCapacity, CapacityChangedRelocate);
