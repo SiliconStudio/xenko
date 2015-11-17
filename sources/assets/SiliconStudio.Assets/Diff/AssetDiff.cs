@@ -17,9 +17,9 @@ namespace SiliconStudio.Assets.Diff
     {
         private readonly static List<DataVisitNode> EmptyNodes = new List<DataVisitNode>();
 
-        private readonly Asset baseAsset;
-        private readonly Asset asset1;
-        private readonly Asset asset2;
+        private readonly object baseAsset;
+        private readonly object asset1;
+        private readonly object asset2;
         private readonly NodeEqualityComparer equalityComparer;
         private Diff3Node computed;
 
@@ -29,7 +29,7 @@ namespace SiliconStudio.Assets.Diff
         /// <param name="baseAsset">The base asset.</param>
         /// <param name="asset1">The asset1.</param>
         /// <param name="asset2">The asset2.</param>
-        public AssetDiff(Asset baseAsset, Asset asset1, Asset asset2)
+        public AssetDiff(object baseAsset, object asset1, object asset2)
         {
             // TODO handle some null values (no asset2....etc.)
             this.baseAsset = baseAsset;
@@ -38,7 +38,7 @@ namespace SiliconStudio.Assets.Diff
             this.equalityComparer = new NodeEqualityComparer(this);
         }
 
-        public Asset BaseAsset
+        public object BaseAsset
         {
             get
             {
@@ -46,7 +46,7 @@ namespace SiliconStudio.Assets.Diff
             }
         }
 
-        public Asset Asset1
+        public object Asset1
         {
             get
             {
@@ -54,7 +54,7 @@ namespace SiliconStudio.Assets.Diff
             }
         }
 
-        public Asset Asset2
+        public object Asset2
         {
             get
             {
@@ -65,12 +65,6 @@ namespace SiliconStudio.Assets.Diff
         public void Reset()
         {
             computed = null;
-        }
-
-        public static Diff3Node Compute(Asset baseAsset, Asset asset1, Asset asset2)
-        {
-            var diff3 = new AssetDiff(baseAsset, asset1, asset2);
-            return diff3.Compute();
         }
 
         /// <summary>
@@ -86,10 +80,10 @@ namespace SiliconStudio.Assets.Diff
             }
 
             // If asset implement IDiffResolver, run callback
-            if (baseAsset is IDiffResolver)
-            {
-                ((IDiffResolver)baseAsset).BeforeDiff(baseAsset, asset1, asset2);
-            }
+            //if (baseAsset is IDiffResolver)
+            //{
+            //    ((IDiffResolver)baseAsset).BeforeDiff(baseAsset, asset1, asset2);
+            //}
 
             var baseNodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, baseAsset);
             var asset1Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset1);
