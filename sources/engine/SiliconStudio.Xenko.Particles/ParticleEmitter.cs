@@ -3,17 +3,27 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.Modules;
 using SiliconStudio.Xenko.Particles.Spawner;
 
 namespace SiliconStudio.Xenko.Particles
 {
+    [DataContract("ParticleEmitter")]
+    [Category]
     public class ParticleEmitter
     {
-        public ParticleSpawner ParticleSpawner;
+        [DataMember(30)]
+        [NotNull]
+        public SpawnerBase ParticleSpawner;
 
-        private readonly ParticlePool pool;
+        // Exposing for debug drawing
+        [DataMemberIgnore]
+        public readonly ParticlePool pool;
          
         public ParticleEmitter()
         {
@@ -21,16 +31,28 @@ namespace SiliconStudio.Xenko.Particles
             pool = new ParticlePool(0, 0);
             requiredFields = new Dictionary<ParticleFieldDescription, int>();
 
-            modules = new List<ParticleModule>();
+            modules = new SafeList<ParticleModule>();
 
             // The standard spawner requires a lifetime field
-            ParticleSpawner = new ParticleSpawner();
+
+            // NOTE If the member is initialized in the constructor, trying to change it later results in an exception:
+            // Exception: InvalidCastException: Unable to cast object of type 'SiliconStudio.Xenko.Particles.Spawner.SpawnPerSecond' to type 'SiliconStudio.Xenko.Particles.Spawner.SpawnPerFrame'.
+            //ParticleSpawner = new SpawnPerSecond();
             AddRequiredField(ParticleFields.RemainingLife);
+
+            AddRequiredField(ParticleFields.Position);
+            AddRequiredField(ParticleFields.Velocity);
+
         }
 
         #region Modules
 
-        private readonly List<ParticleModule> modules;
+        [DataMember(50)]
+        [Category]
+        [Display("Modules", Expand = ExpandRule.Always)]
+        [NotNullItems] // Can't create non-derived classes if this attribute is set
+        [MemberCollection(CanReorderItems = true)]
+        public readonly SafeList<ParticleModule> modules;
 
         public void AddModule(ParticleModule module)
         {
@@ -81,11 +103,12 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         private void EnsurePoolCapacity()
         {
-            // If attributes linked to the maximum particle count haven't changed no need to change capacity
-            if (!ParticleSpawner.Dirty)
-                return;
+            // TODO Maybe add/remove fields here
 
-            pool.SetCapacity(ParticleSpawner.CalculateMaxParticles());
+            if (ParticleSpawner == null)
+                ParticleSpawner = new SpawnPerSecond();
+
+            pool.SetCapacity(ParticleSpawner.GetMaxParticles());
         }
 
         /// <summary>
@@ -94,7 +117,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>
         private unsafe void MoveAndDeleteParticles(float dt)
         {
-            ParticleSpawner.UpdateAndRemoveDead(dt, pool);
+            ParticleSpawner.RemoveOld(dt, pool);
 
             if (!pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.Velocity))
                 return;
@@ -106,10 +129,17 @@ namespace SiliconStudio.Xenko.Particles
 
             foreach (var particle in pool)
             {
-                var pos = ((Vector3*)particle[posField]);
-                var vel = ((Vector3*)particle[velField]);
+            //    var pos = ((Vector3*)particle[posField]);
+            //    var vel = ((Vector3*)particle[velField]);
 
-                *pos += *vel * dt;
+            //    *pos += *vel * dt;
+
+                var position = particle.Get(posField);
+                var velocity = particle.Get(velField);
+
+                position += velocity*dt;
+
+                particle.Set(posField, position);
             }
         }
 
@@ -121,7 +151,7 @@ namespace SiliconStudio.Xenko.Particles
         {
             foreach (var module in modules)
             {
-                if (module.Type == ParticleModule.ModuleType.Updater)
+                if (module.Type == ParticleModuleType.Updater)
                     module.Apply(dt, pool);
             }
         }
@@ -141,9 +171,34 @@ namespace SiliconStudio.Xenko.Particles
 
             foreach (var module in modules)
             {
-                if (module.Type == ParticleModule.ModuleType.Initializer)
+                if (module.Type == ParticleModuleType.Initializer)
                     module.Initialize(pool, startIndex, endIndex, capacity);
             }
+
+            Random randomNumberGenerator = new Random();
+
+            // TEST
+            var posField = pool.GetField(ParticleFields.Position);
+            var velField = pool.GetField(ParticleFields.Velocity);
+
+            var startPos = new Vector3(0, 0, 0);
+            var startVel = new Vector3(0, 0, 0);
+
+            var i = startIndex;
+            while (i != endIndex)
+            {
+                var particle = pool.FromIndex(i);
+
+                (*((Vector3*)particle[posField])) = startPos;
+
+                startVel.X = ((float)randomNumberGenerator.NextDouble() * 4 - 2);
+                startVel.Y = ((float)randomNumberGenerator.NextDouble() * 2 + 2);
+                startVel.Z = ((float)randomNumberGenerator.NextDouble() * 4 - 2);
+                (*((Vector3*)particle[velField])) = startVel;
+
+                i = (i + 1) % capacity;
+            }
+            //*/
         }
 
         #endregion

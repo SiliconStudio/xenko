@@ -2,36 +2,24 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
+    [DataContract("ParticleModule")]
     public abstract class ParticleModule
     {
-        public enum ModuleType
-        {
-            /// <summary>
-            /// The type of this module is not properly set
-            /// </summary>
-            Invalid,
+        [DataMemberIgnore]
+        public ParticleModuleType Type { get; protected set; }
 
-            /// <summary>
-            /// This module acts as an Updater - it must apply to the pool each frame
-            /// </summary>
-            Updater,
-
-            /// <summary>
-            /// This module acts as an Initializer - it only applies once to each newly spawend particle
-            /// </summary>
-            Initializer            
-        }
-
-        public ModuleType Type { get; protected set; }
+//        public Texture Texture { get; set; }
 
         internal List<ParticleFieldDescription> RequiredFields;
 
         protected ParticleModule()
         {
-            Type = ModuleType.Invalid;
+            Type = ParticleModuleType.Invalid;
             RequiredFields = new List<ParticleFieldDescription>(ParticlePool.DefaultMaxFielsPerPool);
         } 
          
@@ -93,5 +81,23 @@ namespace SiliconStudio.Xenko.Particles.Modules
             }
             //*/
         }
+    }
+
+    public enum ParticleModuleType
+    {
+        /// <summary>
+        /// The type of this module is not properly set
+        /// </summary>
+        Invalid,
+
+        /// <summary>
+        /// This module acts as an Updater - it must apply to the pool each frame
+        /// </summary>
+        Updater,
+
+        /// <summary>
+        /// This module acts as an Initializer - it only applies once to each newly spawend particle
+        /// </summary>
+        Initializer            
     }
 }

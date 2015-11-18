@@ -70,10 +70,20 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         public int ParticleSize { get; private set; }
 
+
         /// <summary>
-        /// The number of living (active) particles in the pool.
+        /// Gets how many more particles can be spawned
         /// </summary>
-        public int ParticleCount { get; private set; }
+        public int AvailableParticles
+        {
+            get
+            {
+                if (listPolicy == ListPolicy.Ring)
+                    return ParticleCapacity;
+
+                return (ParticleCapacity - nextFreeIndex);
+            }
+        }
 
         /// <summary>
         /// For ring implementations, the index just increases, looping when it reaches max count.
@@ -92,7 +102,6 @@ namespace SiliconStudio.Xenko.Particles
             this.listPolicy = listPolicy;
 
             nextFreeIndex = 0;
-            ParticleCount = 0;
 
             RelocatePool(size, capacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
         }
@@ -202,7 +211,6 @@ namespace SiliconStudio.Xenko.Particles
         {
             if (nextFreeIndex != ParticleCapacity)
             {
-                ParticleCount++;
                 return FromIndex(nextFreeIndex++);
             }
 
@@ -210,14 +218,11 @@ namespace SiliconStudio.Xenko.Particles
                 return Particle.Invalid();
 
             nextFreeIndex = 0;
-            ParticleCount++;
             return FromIndex(nextFreeIndex++);
         }
 
         private void RemoveCurrent(ref Particle particle, ref int oldIndex, ref int indexMax)
         {
-            ParticleCount--;
-
             // In case of a Ring list we don't bother to remove dead particles
             if (listPolicy == ListPolicy.Ring)
                 return;
