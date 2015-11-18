@@ -39,15 +39,19 @@ namespace SiliconStudio.Xenko.Engine
 
         /// <summary>
         /// The world matrix.
-        /// Use <see cref="UpdateWorldMatrix"/> to ensure it is updated.
+        /// Its value is automatically recomputed at each frame from the local and the parent matrices.
+        /// One can use <see cref="UpdateWorldMatrix"/> to force the update to happen before next frame.
         /// </summary>
+        /// <remarks>The setter should not be used and is accessible only for performance purposes.</remarks>
         [DataMemberIgnore]
         public Matrix WorldMatrix = Matrix.Identity;
 
         /// <summary>
         /// The local matrix.
-        /// Use <see cref="UpdateLocalMatrix"/> to ensure it is updated.
+        /// Its value is automatically recomputed at each frame from the position, rotation and scale.
+        /// One can use <see cref="UpdateLocalMatrix"/> to force the update to happen before next frame.
         /// </summary>
+        /// <remarks>The setter should not be used and is accessible only for performance purposes.</remarks>
         [DataMemberIgnore]
         public Matrix LocalMatrix = Matrix.Identity;
 
