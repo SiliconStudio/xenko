@@ -15,9 +15,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public static class EntityAssetOperations
     {
-        public static EntityAsset ExtractSceneClone(EntityAssetBase source, Guid sourceRootEntity)
+        public static EntityAssetBase ExtractSceneClone(EntityAssetBase source, Guid sourceRootEntity)
         {
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             // Note: Instead of copying the whole asset (with its potentially big hierarchy), we first copy the asset only (without the hierarchy), then the sub-hierarchy to extract.
 
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             source.Hierarchy = null;
 
             // clone asset without hierarchy
-            var clonedAsset = (EntityAsset)AssetCloner.Clone(source);
+            var clonedAsset = (EntityAssetBase)AssetCloner.Clone(source);
             clonedAsset.Hierarchy = clonedHierarchy;
 
             // revert the source hierarchy
@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public static EntityHierarchyData ImportScene(UFile sourceUrl, EntityAssetBase source, Guid sourceRootEntity, out EntityBase entityBase)
         {
-            if (source == null) throw new ArgumentNullException("source");
+            if (source == null) throw new ArgumentNullException(nameof(source));
 
             // Extract the scene starting from given root
             var newAsset = ExtractSceneClone(source, sourceRootEntity);
