@@ -45,12 +45,17 @@ namespace SiliconStudio.Presentation.Dialogs
             return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, button, image));
         }
 
+        public MessageBoxResult ShowCheckedMessageBox(string message, string caption, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
+        {
+            return ShowCheckedMessageBox(message, caption, Strings.DontAskMeAgain, ref isChecked, button, image);
+        }
+
         public MessageBoxResult ShowCheckedMessageBox(string message, string caption, string checkedMessage, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
         {
             var parentWindow = ParentWindow;
             var localIsChecked = isChecked;
             var result = dispatcher.Invoke(() =>
-                Windows.CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage ?? Strings.DontAskMeAgain, ref localIsChecked));
+                Windows.CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage, ref localIsChecked));
             isChecked = localIsChecked;
             return result;
         }
