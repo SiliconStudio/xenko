@@ -205,7 +205,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             {
                 foreach (MaterialShaderStage stage in Enum.GetValues(typeof(MaterialShaderStage)))
                 {
-                    // the initializers
+                    // the Initializers
                     Current.Parent.StreamInitializers[stage].AddRange(Current.StreamInitializers[stage]);
 
                     // skip pixel shader if shading model need to be blended

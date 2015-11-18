@@ -19,16 +19,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EmitterCPU.cs" />
+    <Compile Include="Initializers\InitializerBase.cs" />
+    <Compile Include="Initializers\TestInitializer.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Modules\GravityUpdater.cs" />
-    <Compile Include="Modules\ParticleModule.cs" />
-    <Compile Include="Modules\SampleInitializer.cs" />
+    <Compile Include="Modules\UpdaterBase.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleEmitter.cs" />
     <Compile Include="ParticleField.cs" />
     <Compile Include="ParticleFieldAccessor.cs" />
     <Compile Include="ParticleFieldDescription.cs" />
     <Compile Include="ParticleFields.cs" />
+    <Compile Include="ParticleModuleBase.cs" />
     <Compile Include="ParticlePool.cs" />
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="ParticleUtilities.cs" />
