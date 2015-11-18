@@ -5,25 +5,24 @@ using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.Initializers;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
-    [DataContract("SampleInitializer")]
-    public class SampleInitializer : ParticleModule
+    [DataContract("TestInitializer")]
+    public class TestInitializer : InitializerBase
     {
         // TODO Change the RNG to a deterministic generator
         readonly Random randomNumberGenerator = new Random();
 
-        public SampleInitializer()
+        public TestInitializer()
         {
-            Type = ParticleModuleType.Initializer;
-
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.Velocity);
         }
 
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
-        {            
+        {
             if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.Velocity))
                 return;
 

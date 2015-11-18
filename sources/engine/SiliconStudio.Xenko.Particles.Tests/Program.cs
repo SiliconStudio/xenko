@@ -379,7 +379,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
             TestEmitter(emitterSimTime);
             System.Console.Out.WriteLine($"DONE");
 
-            // Later - test adding/removing modules
+            // Later - test adding/removing Updaters
 
             // Much later - test draw calls
 
@@ -395,9 +395,11 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
         static void TestEmitter(float maxTime)
         {
+            return;
+
             var emitter = new ParticleEmitter();
-            emitter.AddModule(new GravityUpdater());
-            emitter.AddModule(new SampleInitializer());
+            //emitter.AddModule(new GravityUpdater());
+            //emitter.AddModule(new SampleInitializer());
 
             // TODO MaxParticles
 
