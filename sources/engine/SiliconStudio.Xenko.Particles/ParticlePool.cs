@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Particles
             if (newMemoryBlockSize > 0)
                 newParticleData = Utilities.AllocateMemory(newMemoryBlockSize);
 
-            if (ParticleData != IntPtr.Zero)
+            if (ParticleData != IntPtr.Zero && newParticleData != IntPtr.Zero)
             {
                 poolCopy(ParticleData, ParticleCapacity, ParticleSize, newParticleData, newCapacity, newSize);
 
@@ -231,9 +231,10 @@ namespace SiliconStudio.Xenko.Particles
             Debug.Assert(nextFreeIndex > 0);
 
             // Update the top index since the list is shorter now
-            indexMax = --nextFreeIndex;
+            --nextFreeIndex;
             if (indexMax != oldIndex)
                 CopyParticleData(oldIndex, indexMax);
+            indexMax = nextFreeIndex - 1;
 
             particle = FromIndex(indexMax);        
 

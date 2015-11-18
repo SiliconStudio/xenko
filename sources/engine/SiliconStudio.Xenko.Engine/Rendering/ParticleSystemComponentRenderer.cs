@@ -162,6 +162,10 @@ namespace SiliconStudio.Xenko.Rendering
                     var pool = emitter.pool;
 
                     var posField = pool.GetField(ParticleFields.Position);
+
+                    if (!posField.IsValid())
+                        continue;
+
                     foreach (var particle in pool)
                     {
                         var position = particle.Get(posField);
