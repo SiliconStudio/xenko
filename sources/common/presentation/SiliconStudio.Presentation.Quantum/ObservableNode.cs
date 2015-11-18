@@ -158,21 +158,6 @@ namespace SiliconStudio.Presentation.Quantum
         public event EventHandler<EventArgs> IsVisibleChanged;
         
         /// <summary>
-        /// Gets or sets the flags associated to this node.
-        /// </summary>
-        public ViewModelContentFlags Flags { get; set; }
-
-        /// <summary>
-        /// Gets or sets the serialization flags associated to this node.
-        /// </summary>
-        public ViewModelContentSerializeFlags SerializeFlags { get; set; }
-
-        /// <summary>
-        /// Gets or sets the state flags associated to this node.
-        /// </summary>
-        public ViewModelContentState LoadState { get; set; }
-
-        /// <summary>
         /// Indicates whether the given name is reserved for the name of a property in an <see cref="ObservableNode"/>. Any children node with a colliding name will
         /// be escaped with the <see cref="EscapeName"/> method.
         /// </summary>

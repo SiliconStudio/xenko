@@ -12,47 +12,35 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public abstract class ContentBase : IContent
     {
-        private readonly IReference reference;
-
         protected ContentBase(ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
         {
-            if (descriptor == null) throw new ArgumentNullException("descriptor");
-            this.reference = reference;
+            if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
+            Reference = reference;
             Descriptor = descriptor;
             IsPrimitive = isPrimitive;
-            SerializeFlags = ViewModelContentSerializeFlags.SerializeValue;
             ShouldProcessReference = true;
         }
 
         /// <inheritdoc/>
-        public Type Type { get { return Descriptor.Type; } }
+        public Type Type => Descriptor.Type;
 
         /// <inheritdoc/>
         public abstract object Value { get; set; }
 
         /// <inheritdoc/>
-        public bool IsPrimitive { get; private set; }
+        public bool IsPrimitive { get; }
 
         /// <inheritdoc/>
-        public ITypeDescriptor Descriptor { get; private set; }
+        public ITypeDescriptor Descriptor { get; }
 
         /// <inheritdoc/>
-        public bool IsReference { get { return Reference != null; } }
+        public bool IsReference => Reference != null;
 
         /// <inheritdoc/>
-        public IReference Reference { get { return reference; } }
+        public IReference Reference { get; }
 
         /// <inheritdoc/>
         public bool ShouldProcessReference { get; internal set; }
-
-        /// <inheritdoc/>
-        public virtual ViewModelContentState LoadState { get; set; }
-
-        /// <inheritdoc/>
-        public ViewModelContentFlags Flags { get; set; }
-
-        /// <inheritdoc/>
-        public ViewModelContentSerializeFlags SerializeFlags { get; set; }
 
         /// <inheritdoc/>
         public override string ToString()

@@ -47,8 +47,6 @@
     <Compile Include="Contents\MemberContent.cs" />
     <Compile Include="Contents\ObjectContent.cs" />
     <Compile Include="Contents\ContentBase.cs" />
-    <Compile Include="Contents\ViewModelContentSerializeFlags.cs" />
-    <Compile Include="Contents\ViewModelContentState.cs" />
     <Compile Include="IModelNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="References\Reference.cs" />
