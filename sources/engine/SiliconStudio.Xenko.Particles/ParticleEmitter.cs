@@ -3,8 +3,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -29,29 +31,18 @@ namespace SiliconStudio.Xenko.Particles
          
         public ParticleEmitter()
         {
-            // Create an empty pool. We only need one and are going to reuse it
             pool = new ParticlePool(0, 0);
             requiredFields = new Dictionary<ParticleFieldDescription, int>();
+            AddRequiredField(ParticleFields.RemainingLife); // TODO Maybe not add the Life field always? Could depend on the Spawner?
 
             Initializers = new TrackingCollection<InitializerBase>();
-            Initializers.CollectionChanged += UpdatersChanged;
+            Initializers.CollectionChanged += ModulesChanged;
 
             Updaters = new TrackingCollection<UpdaterBase>();
-            Updaters.CollectionChanged += UpdatersChanged;
-
-            // The standard spawner requires a lifetime field
-
-            // NOTE If the member is initialized in the constructor, trying to change it later results in an exception:
-            // Exception: InvalidCastException: Unable to cast object of type 'SiliconStudio.Xenko.Particles.Spawner.SpawnPerSecond' to type 'SiliconStudio.Xenko.Particles.Spawner.SpawnPerFrame'.
-            //ParticleSpawner = new SpawnPerSecond();
-            AddRequiredField(ParticleFields.RemainingLife);
-
-            //AddRequiredField(ParticleFields.Position);
-            //AddRequiredField(ParticleFields.Velocity);
-
+            Updaters.CollectionChanged += ModulesChanged;
         }
 
-        #region Updaters
+        #region Modules
 
         [DataMember(40)]
         [Display("Initializers", Expand = ExpandRule.Always)]
@@ -65,8 +56,7 @@ namespace SiliconStudio.Xenko.Particles
         [MemberCollection(CanReorderItems = true)]
         public readonly TrackingCollection<UpdaterBase> Updaters;
 
-
-        private void UpdatersChanged(object sender, TrackingCollectionChangedEventArgs e)
+        private void ModulesChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             var module = e.Item as ParticleModuleBase;
             switch (e.Action)
@@ -79,33 +69,7 @@ namespace SiliconStudio.Xenko.Particles
                     module?.RequiredFields.ForEach(RemoveRequiredField);
                     break;
             }
-        }
-
-        /*
-        public void AddModule(ParticleModule module)
-        {
-            var allFieldsAdded = true;
-            module.RequiredFields.ForEach(desc => allFieldsAdded &= AddRequiredField(desc));
-
-            if (!allFieldsAdded)
-            {
-                module.RequiredFields.ForEach(RemoveRequiredField);
-                return;
-            }
-
-            Updaters.Add(module);
-        }
-
-        public void RemoveModule(ParticleModule module)
-        {
-            if (!Updaters.Contains(module))
-                return;
-
-            module.RequiredFields.ForEach(RemoveRequiredField);
-
-            Updaters.Remove(module);
-        }
-        //*/
+        }      
 
         #endregion
 
@@ -132,8 +96,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         private void EnsurePoolCapacity()
         {
-            // TODO Maybe add/remove fields here
-
+            // Serializer workaround. ParticleSpawner = new SpawnPerSecond(); cannot be initialized in the constructor because it causes problems with the serialization
             if (ParticleSpawner == null)
                 ParticleSpawner = new SpawnPerSecond();
 

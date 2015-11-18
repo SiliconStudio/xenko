@@ -115,8 +115,10 @@ namespace SiliconStudio.Xenko.Particles.Spawner
             }
 
             var maxCount = particleMaxLifetime * spawnCount;
+
             // TODO Emitter lifetime, bursts, etc.
-            MaxParticles = Math.Max(1, (int)maxCount);
+
+            MaxParticles = Math.Max(1, (int) Math.Ceiling(maxCount));
 
             return MaxParticles;
         }
@@ -135,7 +137,10 @@ namespace SiliconStudio.Xenko.Particles.Spawner
                 var particle = particleEnumerator.Current;
                 var life = (float*)particle[lifeField];
 
-                if ((*life > 0) && ((*life -= dt) <= 0))
+                if (*life > particleMaxLifetime)
+                    *life = particleMaxLifetime;
+
+                if (*life <= 0 || (*life -= dt) <= 0)
                 {
                     particleEnumerator.RemoveCurrent(ref particle);
                 }
