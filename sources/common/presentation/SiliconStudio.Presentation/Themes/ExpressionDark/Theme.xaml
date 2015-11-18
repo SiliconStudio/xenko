@@ -140,10 +140,10 @@
   <BitmapImage x:Key="ImageMinimizeWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/minimize_window.png" />
   <BitmapImage x:Key="ImageRestoreWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/restore_window.png" />
   <BitmapImage x:Key="ImageAdvancedEditionVector" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/gear--pencil.png" />
-  <BitmapImage x:Key="ImageErrorDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/error-48.png" />
-  <BitmapImage x:Key="ImageInformationDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/info-48.png" />
-  <BitmapImage x:Key="ImageQuestionDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/question-48.png" />
-  <BitmapImage x:Key="ImageWarningDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/warning-48.png" />
+  <BitmapImage x:Key="ImageErrorDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/error-32.png" />
+  <BitmapImage x:Key="ImageInformationDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/info-32.png" />
+  <BitmapImage x:Key="ImageQuestionDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/question-32.png" />
+  <BitmapImage x:Key="ImageWarningDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/warning-32.png" />
 
   <!--  WINDOWS  -->
   <Style TargetType="Window" x:Key="WindowChromeStyle">
@@ -214,13 +214,13 @@
                           ItemsSource="{Binding ButtonsSource, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}">
               <ItemsControl.ItemsPanel>
                 <ItemsPanelTemplate>
-                  <UniformGrid HorizontalAlignment="Center" IsItemsHost="True" Rows="1" />
+                  <UniformGrid HorizontalAlignment="Right" IsItemsHost="True" Rows="1" />
                 </ItemsPanelTemplate>
               </ItemsControl.ItemsPanel>
               <ItemsControl.ItemTemplate>
                 <ItemContainerTemplate DataType="{x:Type wnd:DialogButtonInfo}">
                   <Button d:DataContext="{d:DesignInstance wnd:DialogButtonInfo}"
-                          Margin="10,0,0,0" Padding="16,4"
+                          Margin="10,0,0,0" Padding="20,6" MinWidth="80"
                           Command="{Binding ButtonCommand, RelativeSource={RelativeSource AncestorType={x:Type wnd:MessageDialogBase}}}"
                           CommandParameter="{Binding Result}"
                           Content="{Binding Content}" IsCancel="{Binding IsCancel}" IsDefault="{Binding IsDefault}" />
@@ -296,6 +296,26 @@
       </Setter.Value>
     </Setter>
   </Style>
+  <Style TargetType="{x:Type wnd:CheckedMessageBox}" BasedOn="{StaticResource {x:Type wnd:MessageBox}}">
+    <Setter Property="MessageTemplate">
+      <Setter.Value>
+        <DataTemplate>
+          <DockPanel LastChildFill="True">
+            <CheckBox DockPanel.Dock="Bottom" Margin="20,15,5,5"
+                      HorizontalAlignment="Left" VerticalAlignment="Bottom"
+                      Content="{Binding CheckedMessage, RelativeSource={RelativeSource AncestorType=wnd:CheckedMessageBox}}"
+                      IsChecked="{Binding IsChecked, RelativeSource={RelativeSource AncestorType=wnd:CheckedMessageBox}}"/>
+            <Image DockPanel.Dock="Left" Source="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:CheckedMessageBox}}"
+                   HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,5" RenderOptions.BitmapScalingMode="HighQuality"
+                   Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelHeight}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelWidth}"
+                   Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:CheckedMessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
+            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
+          </DockPanel>
+        </DataTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+  
   <Style TargetType="{x:Type ctrl:MarkdownTextBlock}">
     <Setter Property="Template">
       <Setter.Value>
