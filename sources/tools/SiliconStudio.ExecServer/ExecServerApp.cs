@@ -7,6 +7,7 @@ using System.IO;
 using System.Reflection;
 using System.ServiceModel;
 using System.ServiceModel.Channels;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -264,9 +265,7 @@ namespace SiliconStudio.ExecServer
 
         private static string GetEndpointAddress(string executablePath)
         {
-            var executableKey = executablePath.Replace(":", "_");
-            executableKey = executableKey.Replace("\\", "_");
-            executableKey = executableKey.Replace("/", "_");
+            var executableKey = Regex.Replace(executablePath, "[:\\/#]", "_");
             var address = "net.pipe://localhost/" + executableKey;
             return address;
         }
