@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
+    [DataContract("SampleInitializer")]
     public class SampleInitializer : ParticleModule
     {
         // TODO Change the RNG to a deterministic generator
@@ -14,15 +16,14 @@ namespace SiliconStudio.Xenko.Particles.Modules
 
         public SampleInitializer()
         {
-            Type = ModuleType.Initializer;
+            Type = ParticleModuleType.Initializer;
 
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.Velocity);
         }
 
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
-        {
-            
+        {            
             if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.Velocity))
                 return;
 

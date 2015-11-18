@@ -3,20 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
+    [DataContract("GravityUpdater")]
     public class GravityUpdater : ParticleModule
     {
         /// <summary>
         /// Direction and magnitude of the gravitational acceleration
         /// </summary>
+        [DataMember(10)]
         public Vector3 GravitationalAcceleration;
 
         public GravityUpdater()
         {
-            Type = ModuleType.Updater;
+            Type = ParticleModuleType.Updater;
 
             // In case of a conventional standard Earth gravitational acceleration, where Y is up. Change it depending on your needs.
             GravitationalAcceleration = new Vector3(0, -9.80665f, 0);
