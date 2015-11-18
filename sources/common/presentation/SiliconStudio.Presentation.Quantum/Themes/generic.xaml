@@ -10,7 +10,7 @@
         <Setter Property="Opacity" Value="{Binding Converter={StaticResource OpacityBindingErrorConverter}}"/>
     </Style>-->
 
-    <Style TargetType="ctrl:AsyncContentControl">
+    <!--<Style TargetType="ctrl:AsyncContentControl">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Content" Value="{Binding Value, Mode=TwoWay}"/>
         <Setter Property="AwaitingContent" Value="Loading..."/>
@@ -25,6 +25,6 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
+    </Style>-->
 
 </ResourceDictionary>

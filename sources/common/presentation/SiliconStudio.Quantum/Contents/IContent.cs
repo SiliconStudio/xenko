@@ -47,20 +47,5 @@ namespace SiliconStudio.Quantum.Contents
         /// Gets whether the <see cref="Reference"/> contained in this content should lead to the creation of model node for the referenced object.
         /// </summary>
         bool ShouldProcessReference { get; }
-
-        /// <summary>
-        /// Gets or sets the loading state.
-        /// </summary>
-        ViewModelContentState LoadState { get; set; }
-
-        /// <summary>
-        /// Gets or sets the content flags.
-        /// </summary>
-        ViewModelContentFlags Flags { get; set; }
-
-        /// <summary>
-        /// Gets or sets the serialization flags.
-        /// </summary>
-        ViewModelContentSerializeFlags SerializeFlags { get; set; }
     }
 }

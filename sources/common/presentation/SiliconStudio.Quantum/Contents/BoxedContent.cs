@@ -60,7 +60,7 @@ namespace SiliconStudio.Quantum.Contents
                 var indexerMethod = type.GetProperty("Item", valueType, new[] { keyType });
                 return indexerMethod.GetValue(enumerable, new [] { index });
             }
-            throw new ArgumentException(@"Enumerable object has no indexing and is not supported.", "enumerable");
+            throw new ArgumentException(@"Enumerable object has no indexing and is not supported.", nameof(enumerable));
         }
 
         private static void SetItem(object enumerable, object index, object value)
@@ -88,7 +88,7 @@ namespace SiliconStudio.Quantum.Contents
                 indexerMethod.SetValue(enumerable, value, new[] { index });
                 return;
             }
-            throw new ArgumentException(@"Enumerable object has no indexing and is not supported.", "enumerable");
+            throw new ArgumentException(@"Enumerable object has no indexing and is not supported.", nameof(enumerable));
         }
     }
 }

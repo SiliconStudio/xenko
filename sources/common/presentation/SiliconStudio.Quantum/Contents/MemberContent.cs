@@ -21,7 +21,7 @@ namespace SiliconStudio.Quantum.Contents
         public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
             : base(nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
         {
-            if (container == null) throw new ArgumentNullException("container");
+            if (container == null) throw new ArgumentNullException(nameof(container));
             Member = member;
             Container = container;
             modelContainer = nodeBuilder.ModelContainer;
