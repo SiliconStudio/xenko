@@ -24,7 +24,7 @@ namespace SiliconStudio.Presentation.Quantum
     /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
     /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
     /// <returns>A new instance of <see cref="ObservableModelNode"/> corresponding to the given parameters.</returns>
-    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index);
+    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, ModelNodePath modelNodePath, Type contentType, object index);
 
     public class ObservableViewModel : EditableViewModel, IDisposable
     {
@@ -68,7 +68,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="modelContainer">A <see cref="ModelContainer"/> to use to build view model nodes.</param>
         /// <param name="modelNode">The root model node of the view model to generate.</param>
         /// <param name="dirtiables">The list of <see cref="IDirtiable"/> objects linked to this view model.</param>
-        public ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IModelNode modelNode, IEnumerable<IDirtiable> dirtiables)
+        public ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IGraphNode modelNode, IEnumerable<IDirtiable> dirtiables)
             : this(serviceProvider, modelContainer, dirtiables.SafeArgument("dirtiables").ToList())
         {
             if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
@@ -216,7 +216,7 @@ namespace SiliconStudio.Presentation.Quantum
             nodeChangeList.Clear();
         }
 
-        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
+        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
         {
             return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, modelNodePath, contentType, index);
         }

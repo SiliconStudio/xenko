@@ -15,7 +15,7 @@ namespace SiliconStudio.Quantum
     /// </summary>
     public class ModelContainer
     {
-        private readonly Dictionary<Guid, IModelNode> modelsByGuid = new Dictionary<Guid, IModelNode>();
+        private readonly Dictionary<Guid, IGraphNode> modelsByGuid = new Dictionary<Guid, IGraphNode>();
         private readonly IGuidContainer guidContainer;
         private readonly object lockObject = new object();
 
@@ -45,7 +45,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets an enumerable of the registered models.
         /// </summary>
-        public IEnumerable<IModelNode> Models => modelsByGuid.Values;
+        public IEnumerable<IGraphNode> Models => modelsByGuid.Values;
 
         /// <summary>
         /// Gets an enumerable of the registered models.
@@ -61,8 +61,8 @@ namespace SiliconStudio.Quantum
         /// Gets the model associated to a data object, if it exists. If the ModelContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <returns>The <see cref="IModelNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
-        public IModelNode GetModelNode(object rootObject)
+        /// <returns>The <see cref="IGraphNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
+        public IGraphNode GetModelNode(object rootObject)
         {
             lock (lockObject)
             {
@@ -76,15 +76,15 @@ namespace SiliconStudio.Quantum
         /// Gets the model associated to the given Guid, if it exists.
         /// </summary>
         /// <param name="guid">The Guid.</param>
-        /// <returns>The <see cref="IModelNode"/> associated to the given Guid if available, or <c>null</c> otherwise.</returns>
-        public IModelNode GetModelNode(Guid guid)
+        /// <returns>The <see cref="IGraphNode"/> associated to the given Guid if available, or <c>null</c> otherwise.</returns>
+        public IGraphNode GetModelNode(Guid guid)
         {
             if (guid == Guid.Empty)
                 return null;
 
             lock (lockObject)
             {
-                IModelNode result;
+                IGraphNode result;
                 if (modelsByGuid.TryGetValue(guid, out result))
                 {
                     if (result != null)
@@ -112,15 +112,15 @@ namespace SiliconStudio.Quantum
         /// Gets the model associated to a data object, if it exists, or create a new model for the object otherwise.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <returns>The <see cref="IModelNode"/> associated to the given object.</returns>
-        public IModelNode GetOrCreateModelNode(object rootObject)
+        /// <returns>The <see cref="IGraphNode"/> associated to the given object.</returns>
+        public IGraphNode GetOrCreateModelNode(object rootObject)
         {
             if (rootObject == null)
                 return null;
 
             lock (lockObject)
             {
-                IModelNode result = null;
+                IGraphNode result = null;
                 if (guidContainer != null && !rootObject.GetType().IsValueType)
                 {
                     result = GetModelNode(rootObject);
@@ -146,7 +146,7 @@ namespace SiliconStudio.Quantum
         /// Refresh all references contained in the given node, creating new models for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
-        internal void UpdateReferences(IModelNode node)
+        internal void UpdateReferences(IGraphNode node)
         {
             lock (lockObject)
             {
@@ -174,7 +174,7 @@ namespace SiliconStudio.Quantum
         /// <param name="rootObject">The root object.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">@The given type does not match the given object.;rootObject</exception>
-        private IModelNode CreateModelNode(object rootObject)
+        private IGraphNode CreateModelNode(object rootObject)
         {
             if (rootObject == null) throw new ArgumentNullException(nameof(rootObject));
 
@@ -198,7 +198,7 @@ namespace SiliconStudio.Quantum
             return result;
         }
 
-        private void UpdateOrCreateReferenceTarget(IReference reference, IModelNode modelNode, Stack<object> indices = null)
+        private void UpdateOrCreateReferenceTarget(IReference reference, IGraphNode modelNode, Stack<object> indices = null)
         {
             if (reference == null) throw new ArgumentNullException(nameof(reference));
             if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
@@ -231,7 +231,7 @@ namespace SiliconStudio.Quantum
                     if (singleReference.TargetNode == null && reference.ObjectValue != null)
                     {
                         // This call will recursively update the references.
-                        IModelNode node = singleReference.SetTarget(this);
+                        IGraphNode node = singleReference.SetTarget(this);
                         if (node != null)
                         {                 
                             var structContent = node.Content as BoxedContent;

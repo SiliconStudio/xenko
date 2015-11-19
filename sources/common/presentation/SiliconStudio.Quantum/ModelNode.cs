@@ -9,11 +9,11 @@ using SiliconStudio.Quantum.Contents;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// This class is the default implementation of the <see cref="IModelNode"/>.
+    /// This class is the default implementation of the <see cref="IGraphNode"/>.
     /// </summary>
-    public class ModelNode : IModelNode
+    public class ModelNode : IGraphNode
     {
-        private readonly List<IModelNode> children = new List<IModelNode>();
+        private readonly List<IGraphNode> children = new List<IGraphNode>();
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
         private IContent content;
         private bool isSealed;
@@ -47,10 +47,10 @@ namespace SiliconStudio.Quantum
         public virtual IContent Content { get { return content; } set { content = value; } }
 
         /// <inheritdoc/>
-        public virtual IModelNode Parent { get; private set; }
+        public virtual IGraphNode Parent { get; private set; }
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<IModelNode> Children => children;
+        public IReadOnlyCollection<IGraphNode> Children => children;
 
         /// <inheritdoc/>
         public IReadOnlyCollection<INodeCommand> Commands => commands;

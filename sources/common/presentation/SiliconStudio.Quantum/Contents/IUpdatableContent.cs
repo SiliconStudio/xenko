@@ -7,6 +7,6 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public interface IUpdatableContent
     {
-        void RegisterOwner(IModelNode node);
+        void RegisterOwner(IGraphNode node);
     }
 }

@@ -31,6 +31,7 @@
     <Compile Include="Contents\ContentChangedEventArgs.cs" />
     <Compile Include="DefaultContentFactory.cs" />
     <Compile Include="IContentFactory.cs" />
+    <Compile Include="IContentNode.cs" />
     <Compile Include="IModelBuilderPlugin.cs" />
     <Compile Include="IGuidContainer.cs" />
     <Compile Include="INodeBuilder.cs" />
@@ -48,7 +49,7 @@
     <Compile Include="Contents\MemberContent.cs" />
     <Compile Include="Contents\ObjectContent.cs" />
     <Compile Include="Contents\ContentBase.cs" />
-    <Compile Include="IModelNode.cs" />
+    <Compile Include="IGraphNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="References\Reference.cs" />
     <Compile Include="References\ReferenceEnumerable.cs" />

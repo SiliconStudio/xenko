@@ -16,7 +16,7 @@ namespace SiliconStudio.Quantum.Contents
     {
         protected IContent Container;
         private readonly ModelContainer modelContainer;
-        private IModelNode modelNode;
+        private IGraphNode modelNode;
 
         public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
             : base(nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
@@ -76,7 +76,7 @@ namespace SiliconStudio.Quantum.Contents
             }
         }
 
-        void IUpdatableContent.RegisterOwner(IModelNode node)
+        void IUpdatableContent.RegisterOwner(IGraphNode node)
         {
             modelNode = node;
         }

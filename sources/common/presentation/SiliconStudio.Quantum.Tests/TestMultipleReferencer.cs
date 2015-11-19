@@ -64,7 +64,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var doubleRef = new DoubleReferenceClass(new SimpleObject());
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(doubleRef);
+            IGraphNode model = container.GetOrCreateModelNode(doubleRef);
             Assert.That(doubleRef.Object1, Is.EqualTo(doubleRef.Object2));
             Assert.That(model.GetChild("Object1").Content.Value, Is.EqualTo(doubleRef.Object1));
             Assert.That(model.GetChild("Object2").Content.Value, Is.EqualTo(doubleRef.Object2));
@@ -83,7 +83,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var doubleRef = new DoubleReferenceClass(new SimpleObject());
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(doubleRef);
+            IGraphNode model = container.GetOrCreateModelNode(doubleRef);
 
             doubleRef.Object1.Name = "New Name";
 
@@ -100,7 +100,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var doubleRef = new DoubleReferenceClass(new SimpleObject());
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(doubleRef);
+            IGraphNode model = container.GetOrCreateModelNode(doubleRef);
 
             ((ObjectReference)model.GetChild("Object1").Content.Reference).TargetNode.GetChild("Name").Content.Update("New Name");
 
