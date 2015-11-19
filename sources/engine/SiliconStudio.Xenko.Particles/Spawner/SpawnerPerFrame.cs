@@ -9,18 +9,16 @@ namespace SiliconStudio.Xenko.Particles.Spawner
     /// <summary>
     /// A particle spawner which continuously spawns particles. Number of particles to be spawned is given in seconds.
     /// </summary>
-    [DataContract("SpawnPerSecond")]
-    [Display("Per second")]
-    public sealed class SpawnPerSecond : SpawnerBase
+    [DataContract("SpawnerPerFrame")]
+    [Display("Per frame")]
+    public sealed class SpawnerPerFrame : SpawnerBase
     {
         [DataMemberIgnore]
         public bool Dirty { get; private set; }
 
-        private float carryOver;
-
         private float spawnCount;
         [DataMember(40)]
-        [Display("Particles/second")]
+        [Display("Particles/frame")]
         public float SpawnCount
         {
             get { return spawnCount; }
@@ -28,6 +26,20 @@ namespace SiliconStudio.Xenko.Particles.Spawner
             {
                 Dirty = true;
                 spawnCount = value;
+            }
+        }
+
+
+        private float defaultFramerate = 60;
+        [DataMember(45)]
+        [Display("Framerate")]
+        public float Framerate
+        {
+            get { return defaultFramerate; }
+            set
+            {
+                Dirty = true;
+                defaultFramerate = value;
             }
         }
 
@@ -87,12 +99,11 @@ namespace SiliconStudio.Xenko.Particles.Spawner
             }
         }
 
-        public SpawnPerSecond()
+        public SpawnerPerFrame()
         {
             Dirty = true;
 
-            spawnCount = 100f;
-            carryOver = 0;
+            spawnCount = 1f;
 
             particleMinLifetime = 1f;
             particleMaxLifetime = 1f;
@@ -106,19 +117,15 @@ namespace SiliconStudio.Xenko.Particles.Spawner
             if (!Dirty)
                 return MaxParticles;
 
-            Dirty = false;
-
             if (MaxParticlesOverride > 0)
             {
                 MaxParticles = MaxParticlesOverride;
                 return MaxParticles;
             }
 
-            var maxCount = particleMaxLifetime * spawnCount;
-
+            var maxCount = particleMaxLifetime * spawnCount * defaultFramerate;
             // TODO Emitter lifetime, bursts, etc.
-
-            MaxParticles = Math.Max(1, (int) Math.Ceiling(maxCount));
+            MaxParticles = Math.Max(1, (int)maxCount);
 
             return MaxParticles;
         }
@@ -137,10 +144,7 @@ namespace SiliconStudio.Xenko.Particles.Spawner
                 var particle = particleEnumerator.Current;
                 var life = (float*)particle[lifeField];
 
-                if (*life > particleMaxLifetime)
-                    *life = particleMaxLifetime;
-
-                if (*life <= 0 || (*life -= dt) <= 0)
+                if ((*life > 0) && ((*life -= dt) <= 0))
                 {
                     particleEnumerator.RemoveCurrent(ref particle);
                 }
@@ -151,14 +155,11 @@ namespace SiliconStudio.Xenko.Particles.Spawner
         {
             var lifeField = pool.GetField(ParticleFields.RemainingLife);
 
-            var toSpawn = spawnCount * dt + carryOver;
+            var toSpawn = spawnCount;
 
             toSpawn = Math.Min(pool.AvailableParticles, toSpawn);
 
-            var integerPart = (int)Math.Floor(toSpawn);
-            carryOver = toSpawn - integerPart;
-
-            for (var i = 0; i < integerPart; i++)
+            for (var i = 0; i < toSpawn; i++)
             {
                 var particle = pool.AddParticle();
 
@@ -166,6 +167,13 @@ namespace SiliconStudio.Xenko.Particles.Spawner
             }
 
         }
+
+
+   //     public static implicit operator SpawnerPerSecond(SpawnerPerFrame src)
+ //       {
+//
+//        }
+
     }
 }
 

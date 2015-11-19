@@ -1,12 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -96,9 +93,9 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         private void EnsurePoolCapacity()
         {
-            // Serializer workaround. ParticleSpawner = new SpawnPerSecond(); cannot be initialized in the constructor because it causes problems with the serialization
+            // Serializer workaround. ParticleSpawner = new SpawnerPerSecond(); cannot be initialized in the constructor because it causes problems with the serialization
             if (ParticleSpawner == null)
-                ParticleSpawner = new SpawnPerSecond();
+                ParticleSpawner = new SpawnerPerSecond();
 
             pool.SetCapacity(ParticleSpawner.GetMaxParticles());
         }
@@ -165,12 +162,16 @@ namespace SiliconStudio.Xenko.Particles
 
         private readonly Dictionary<ParticleFieldDescription, int> requiredFields;
 
+        /// <summary>
+        /// Add a particle field required by some dependent module. If the module already exists in the pool, only its reference counter is increased.
+        /// </summary>
+        /// <param name="description"></param>
         private void AddRequiredField(ParticleFieldDescription description)
         {
             int fieldReferences;
             if (requiredFields.TryGetValue(description, out fieldReferences))
             {
-                // Field already exists. Increase the reference by 1
+                // Field already exists. Increase the reference counter by 1
                 requiredFields[description] = fieldReferences + 1;
                 return;
             }
@@ -185,6 +186,10 @@ namespace SiliconStudio.Xenko.Particles
             requiredFields.Add(description, 1);
         }
 
+        /// <summary>
+        /// Remove a particle field no longer required by a dependent module. It only gets removed from the pool if it reaches 0 reference counters.
+        /// </summary>
+        /// <param name="description"></param>
         private void RemoveRequiredField(ParticleFieldDescription description)
         {
             int fieldReferences;
