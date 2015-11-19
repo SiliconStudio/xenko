@@ -54,7 +54,7 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithStructs();
             var container = new ModelContainer();
             container.NodeBuilder.PrimitiveTypes.Add(typeof(PrimitiveStruct));
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
 
             // Members should never have children
@@ -87,7 +87,7 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ClassWithStructs();
             var container = new ModelContainer();
             container.NodeBuilder.PrimitiveTypes.Add(typeof(PrimitiveStruct));
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
             // Modify direct struct via Quantum, check value on actual object
             var structNode = container.GetModelNode(((ObjectReference)model.GetChild("NestedStruct").Content.Reference).TargetGuid);

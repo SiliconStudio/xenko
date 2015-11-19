@@ -65,12 +65,12 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        // TODO: Remove the type argument here
-        public IModelNode Build(IModelNode referencer, object obj, Type type, Guid guid)
+        public IModelNode Build(object obj, Guid guid)
         {
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
             Reset();
             rootGuid = guid;
-            var typeDescriptor = TypeDescriptorFactory.Find(obj?.GetType() ?? type);
+            var typeDescriptor = TypeDescriptorFactory.Find(obj.GetType());
             VisitObject(obj, typeDescriptor as ObjectDescriptor, true);
 
             return rootNode;

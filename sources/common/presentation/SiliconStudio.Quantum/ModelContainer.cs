@@ -98,9 +98,8 @@ namespace SiliconStudio.Quantum
         /// Gets the <see cref="Guid"/> associated to a data object, if it exists. If the ModelContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <param name="type">Thetype of the data object.</param>
         /// <returns>The <see cref="Guid"/> associated to the given object if available, or <see cref="Guid.Empty"/> otherwise.</returns>
-        public Guid GetGuid(object rootObject, Type type)
+        public Guid GetGuid(object rootObject)
         {
             lock (lockObject)
             {
@@ -113,12 +112,8 @@ namespace SiliconStudio.Quantum
         /// Gets the model associated to a data object, if it exists, or create a new model for the object otherwise.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
-        /// <param name="type">The type of the data object.</param>
-        /// <param name="updateReferencesIfExists">Update references contained in the result node, if it already exists.</param>
-        /// <param name="referencer">The referencer (optional, just here to help having some context when building nodes).</param>
         /// <returns>The <see cref="IModelNode"/> associated to the given object.</returns>
-        // TODO: Remove the type argument here
-        public IModelNode GetOrCreateModelNode(object rootObject, Type type, bool updateReferencesIfExists = true, IModelNode referencer = null)
+        public IModelNode GetOrCreateModelNode(object rootObject)
         {
             if (rootObject == null)
                 return null;
@@ -131,7 +126,7 @@ namespace SiliconStudio.Quantum
                     result = GetModelNode(rootObject);
                 }
 
-                return result ?? CreateModelNode(rootObject, type, referencer);
+                return result ?? CreateModelNode(rootObject);
             }
         }
 
@@ -177,15 +172,11 @@ namespace SiliconStudio.Quantum
         /// Creates the model node.
         /// </summary>
         /// <param name="rootObject">The root object.</param>
-        /// <param name="type">The type.</param>
-        /// <param name="referencer">The referencer (optional, just here to help having some context when building nodes).</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">@The given type does not match the given object.;rootObject</exception>
-        private IModelNode CreateModelNode(object rootObject, Type type, IModelNode referencer)
+        private IModelNode CreateModelNode(object rootObject)
         {
             if (rootObject == null) throw new ArgumentNullException(nameof(rootObject));
-
-            if (!type.IsInstanceOfType(rootObject)) throw new ArgumentException(@"The given type does not match the given object.", nameof(rootObject));
 
             Guid guid = Guid.NewGuid();
 
@@ -193,7 +184,7 @@ namespace SiliconStudio.Quantum
             if (guidContainer != null && !rootObject.GetType().IsValueType)
                 guid = guidContainer.GetOrCreateGuid(rootObject);
 
-            var result = (ModelNode)NodeBuilder.Build(referencer, rootObject, type, guid);
+            var result = (ModelNode)NodeBuilder.Build(rootObject, guid);
 
             if (result != null)
             {

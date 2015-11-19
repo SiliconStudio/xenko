@@ -98,7 +98,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithLists();
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
 
             Assert.That(model.GetChild("IntList").Children.Count, Is.EqualTo(0));
@@ -138,7 +138,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithNullLists();
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
             Helper.ConsistencyCheck(container, obj);
         }
@@ -148,7 +148,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithLists();
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Console.WriteLine(model.PrintHierarchy());
             ((List<int>)model.GetChild("IntList").Content.Value)[1] = 42;
             ((List<int>)model.GetChild("IntList").Content.Value).Add(26);
@@ -163,7 +163,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithLists();
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
             var objRef = ((ReferenceEnumerable)model.GetChild("ClassList").Content.Reference).First();
             objRef.TargetNode.GetChild("SecondValue").Content.Update(32);
@@ -177,7 +177,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithLists();
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
             var objRef = ((ReferenceEnumerable)model.GetChild("SimpleStructList").Content.Reference).First();
             objRef.TargetNode.GetChild("SecondValue").Content.Update(32);
@@ -191,7 +191,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithLists();
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
             var objRef = ((ReferenceEnumerable)model.GetChild("NestedStructList").Content.Reference).First();
             var structNode = container.GetModelNode(((ObjectReference)objRef.TargetNode.GetChild("Struct").Content.Reference).TargetGuid);
@@ -208,7 +208,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithLists();
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
             var listRef = ((ReferenceEnumerable)model.GetChild("ListOfSimpleStructLists").Content.Reference).Last();
             var objRef = ((ReferenceEnumerable)listRef.TargetNode.Content.Reference).Last();
@@ -223,7 +223,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithLists();
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
             var listRef = ((ReferenceEnumerable)model.GetChild("ListOfNestedStructLists").Content.Reference).Last();
             var objRef = ((ReferenceEnumerable)listRef.TargetNode.Content.Reference).Last();

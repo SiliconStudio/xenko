@@ -52,7 +52,7 @@ namespace SiliconStudio.Quantum.Contents
                         SetItem(currentObj, BoxedStructureOwnerIndices[BoxedStructureOwnerIndices.Length - 1], newValue);
                     }
                     else
-                        BoxedStructureOwner.Update(newValue, null);
+                        BoxedStructureOwner.Update(newValue);
                 }
                 NotifyContentChanged(oldValue, Value);
             }

@@ -77,7 +77,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithDictionaries();
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
 
             Assert.That(model.GetChild("StringIntDic").Children.Count, Is.EqualTo(0));
@@ -124,7 +124,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithDictionaries();
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, model);
             ((Dictionary<string, int>)model.GetChild("StringIntDic").Content.Value)["b"] = 42;
             ((Dictionary<string, int>)model.GetChild("StringIntDic").Content.Value).Add("d", 26);
