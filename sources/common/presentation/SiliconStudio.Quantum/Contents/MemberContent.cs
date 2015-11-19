@@ -38,6 +38,7 @@ namespace SiliconStudio.Quantum.Contents
         /// <inheritdoc/>
         public override void Update(object newValue, object index)
         {
+            var oldValue = Value;
             if (index != null)
             {
                 var collectionDescriptor = Descriptor as CollectionDescriptor;
@@ -53,21 +54,18 @@ namespace SiliconStudio.Quantum.Contents
                 else
                     throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
 
-                UpdateReferences();
             }
             else
             {
-                var oldValue = Value;
                 if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
                 var containerValue = Container.Value;
                 Member.Set(containerValue, newValue);
 
                 if (Container.Value.GetType().GetTypeInfo().IsValueType)
                     Container.Update(containerValue);
-
-                UpdateReferences();
-                NotifyContentChanged(oldValue, Value);
             }
+            UpdateReferences();
+            NotifyContentChanged(index, oldValue, Value);
         }
 
         private void UpdateReferences()

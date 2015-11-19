@@ -21,6 +21,7 @@ namespace SiliconStudio.Quantum.Contents
 
         public override void Update(object newValue, object index)
         {
+            var oldValue = Value;
             if (index != null)
             {
                 var collectionDescriptor = Descriptor as CollectionDescriptor;
@@ -38,7 +39,6 @@ namespace SiliconStudio.Quantum.Contents
             }
             else
             {
-                var oldValue = Value;
                 SetValue(newValue);
                 if (BoxedStructureOwner != null)
                 {
@@ -54,8 +54,8 @@ namespace SiliconStudio.Quantum.Contents
                     else
                         BoxedStructureOwner.Update(newValue);
                 }
-                NotifyContentChanged(oldValue, Value);
             }
+            NotifyContentChanged(index, oldValue, Value);
         }
 
         private static object FetchItem(object enumerable, object index)

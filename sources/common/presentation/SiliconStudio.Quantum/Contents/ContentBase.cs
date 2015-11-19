@@ -78,11 +78,12 @@ namespace SiliconStudio.Quantum.Contents
         /// <summary>
         /// Raises the <see cref="Changed"/> event with the given parameters.
         /// </summary>
+        /// <param name="index">The index where the change occurred, if applicable. <c>null</c> otherwise.</param>
         /// <param name="oldValue">The old value of this content.</param>
         /// <param name="newValue">The new value of this content.</param>
-        protected void NotifyContentChanged(object oldValue, object newValue)
+        protected void NotifyContentChanged(object index, object oldValue, object newValue)
         {
-            Changed?.Invoke(this, new ContentChangedEventArgs(this, oldValue, newValue));
+            Changed?.Invoke(this, new ContentChangedEventArgs(this, index, oldValue, newValue));
         }
     }
 }
