@@ -1,0 +1,47 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Collections.Generic;
+using SiliconStudio.Assets;
+using SiliconStudio.Assets.Compiler;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Graphics.Font;
+
+namespace SiliconStudio.Xenko.Assets.SpriteFont
+{
+    [DataContract("PregeneratedSpriteFont")]
+    [AssetDescription(FileExtension)]
+    [AssetCompiler(typeof(PrecompiledSpriteFontAssetCompiler))]
+    [Display(105, "Pregenerated Sprite Font")]
+    public class PrecompiledSpriteFontAsset : AssetImport
+    {
+        /// <summary>
+        /// The default file extension used by the <see cref="PrecompiledSpriteFontAsset"/>.
+        /// </summary>
+        public const string FileExtension = ".xkpcfnt";
+
+        [Display(Browsable = false)]
+        public List<Glyph> Glyphs;
+
+        [Display(Browsable = false)]
+        public float Size;
+
+        [Display(Browsable = false)]
+        public float BaseOffset;
+
+        [Display(Browsable = false)]
+        public float DefaultLineSpacing;
+
+        [Display(Browsable = false)]
+        public List<Kerning> Kernings;
+
+        [Display(Browsable = false)]
+        public float ExtraSpacing;
+
+        [Display(Browsable = false)]
+        public float ExtraLineSpacing = 0;
+
+        [Display(Browsable = false)]
+        public char DefaultCharacter;
+    }
+}
