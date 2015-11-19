@@ -36,7 +36,7 @@ namespace SiliconStudio.Quantum.Contents
         public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
 
         /// <inheritdoc/>
-        public override void UpdateValue(object newValue, object index)
+        public override void Update(object newValue, object index)
         {
             if (index != null)
             {
@@ -64,7 +64,7 @@ namespace SiliconStudio.Quantum.Contents
                 Member.Set(containerValue, newValue);
 
                 if (Container.Value.GetType().GetTypeInfo().IsValueType)
-                    Container.UpdateValue(containerValue, null);
+                    Container.Update(containerValue, null);
 
                 if (modelContainer != null && modelNode != null)
                 {

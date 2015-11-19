@@ -52,22 +52,22 @@ namespace SiliconStudio.Quantum.Tests
             }
 
             [DataMember(1)]
-            public List<int> IntList { get; private set; }
+            public List<int> IntList { get; }
 
             [DataMember(2)]
-            public List<SimpleClass> ClassList { get; private set; }
+            public List<SimpleClass> ClassList { get; }
 
             [DataMember(3)]
-            public List<SimpleStruct> SimpleStructList { get; private set; }
+            public List<SimpleStruct> SimpleStructList { get; }
 
             [DataMember(4)]
-            public List<NestedStruct> NestedStructList { get; private set; }
+            public List<NestedStruct> NestedStructList { get; }
 
             [DataMember(5)]
-            public List<List<SimpleStruct>> ListOfSimpleStructLists { get; private set; }
+            public List<List<SimpleStruct>> ListOfSimpleStructLists { get; }
 
             [DataMember(6)]
-            public List<List<NestedStruct>> ListOfNestedStructLists { get; private set; }
+            public List<List<NestedStruct>> ListOfNestedStructLists { get; }
         }
 
         public class ClassWithNullLists
@@ -166,7 +166,7 @@ namespace SiliconStudio.Quantum.Tests
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
             Helper.PrintModelContainerContent(container, model);
             var objRef = ((ReferenceEnumerable)model.GetChild("ClassList").Content.Reference).First();
-            objRef.TargetNode.GetChild("SecondValue").Content.Value = 32;
+            objRef.TargetNode.GetChild("SecondValue").Content.Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.ClassList[0].SecondValue, Is.EqualTo(32));
             Helper.ConsistencyCheck(container, obj);
@@ -180,7 +180,7 @@ namespace SiliconStudio.Quantum.Tests
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
             Helper.PrintModelContainerContent(container, model);
             var objRef = ((ReferenceEnumerable)model.GetChild("SimpleStructList").Content.Reference).First();
-            objRef.TargetNode.GetChild("SecondValue").Content.Value = 32;
+            objRef.TargetNode.GetChild("SecondValue").Content.Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.SimpleStructList[0].SecondValue, Is.EqualTo(32));
             Helper.ConsistencyCheck(container, obj);
@@ -195,7 +195,7 @@ namespace SiliconStudio.Quantum.Tests
             Helper.PrintModelContainerContent(container, model);
             var objRef = ((ReferenceEnumerable)model.GetChild("NestedStructList").Content.Reference).First();
             var structNode = container.GetModelNode(((ObjectReference)objRef.TargetNode.GetChild("Struct").Content.Reference).TargetGuid);
-            structNode.GetChild("SecondValue").Content.Value = 32;
+            structNode.GetChild("SecondValue").Content.Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.NestedStructList[0].Struct.SecondValue, Is.EqualTo(32));
             var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
@@ -212,7 +212,7 @@ namespace SiliconStudio.Quantum.Tests
             Helper.PrintModelContainerContent(container, model);
             var listRef = ((ReferenceEnumerable)model.GetChild("ListOfSimpleStructLists").Content.Reference).Last();
             var objRef = ((ReferenceEnumerable)listRef.TargetNode.Content.Reference).Last();
-            objRef.TargetNode.GetChild("SecondValue").Content.Value = 32;
+            objRef.TargetNode.GetChild("SecondValue").Content.Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.ListOfSimpleStructLists[1][0].SecondValue, Is.EqualTo(32));
             Helper.ConsistencyCheck(container, obj);
@@ -228,7 +228,7 @@ namespace SiliconStudio.Quantum.Tests
             var listRef = ((ReferenceEnumerable)model.GetChild("ListOfNestedStructLists").Content.Reference).Last();
             var objRef = ((ReferenceEnumerable)listRef.TargetNode.Content.Reference).Last();
             var structNode = container.GetModelNode(((ObjectReference)objRef.TargetNode.GetChild("Struct").Content.Reference).TargetGuid);
-            structNode.GetChild("SecondValue").Content.Value = 32;
+            structNode.GetChild("SecondValue").Content.Update(32);
             Helper.PrintModelContainerContent(container, model);
             Assert.That(obj.ListOfNestedStructLists[1][0].Struct.SecondValue, Is.EqualTo(32));
             Helper.ConsistencyCheck(container, obj);

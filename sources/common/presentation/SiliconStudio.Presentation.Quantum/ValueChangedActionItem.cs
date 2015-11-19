@@ -48,7 +48,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (node == null)
                 throw new InvalidOperationException("Unable to retrieve the node to modify in this undo process.");
 
-            var currentValue = node.Content.RetrieveValue(Index);
+            var currentValue = node.Content.Retrieve(Index);
             bool setByObservableNode = false;
 
             var observableNode = service.ResolveObservableNode(identifier, ObservableNodePath) as SingleObservableNode;
@@ -60,7 +60,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             if (!setByObservableNode)
             {
-                node.Content.UpdateValue(PreviousValue, Index);
+                node.Content.Update(PreviousValue, Index);
             }
 
             PreviousValue = currentValue;

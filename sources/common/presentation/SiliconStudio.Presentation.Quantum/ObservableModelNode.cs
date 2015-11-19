@@ -252,35 +252,13 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
         protected bool SetModelContentValue(IModelNode node, object newValue)
         {
-            var dictionary = node.Content.Descriptor as DictionaryDescriptor;
-            var list = node.Content.Descriptor as CollectionDescriptor;
-            bool result = false;
-            if (Index != null && dictionary != null)
+            var oldValue = node.Content.Retrieve(Index);
+            if (!Equals(oldValue, newValue))
             {
-                if (!Equals(dictionary.GetValue(node.Content.Value, Index), newValue))
-                {
-                    result = true;
-                    dictionary.SetValue(node.Content.Value, Index, newValue);
-                }
+                node.Content.Update(newValue, Index);
+                return true;
             }
-            else if (Index != null && list != null)
-            {
-                if (!Equals(list.GetValue(node.Content.Value, Index), newValue))
-                {
-                    result = true;
-                    list.SetValue(node.Content.Value, Index, newValue);
-                }
-            }
-            else
-            {
-                if (!Equals(node.Content.Value, newValue))
-                {
-                    result = true;
-                    node.Content.UpdateValue(newValue, null);
-                }
-            }
-
-            return result;
+            return false;
         }
 
         private void GenerateChildren(IModelNode modelNode, ModelNodePath modelNodePath)

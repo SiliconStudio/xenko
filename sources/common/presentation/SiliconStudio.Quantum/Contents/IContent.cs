@@ -57,13 +57,13 @@ namespace SiliconStudio.Quantum.Contents
         /// Retrieves the value of this content or one of its item if it holds a collection.
         /// </summary>
         /// <param name="index">The index to use to retrieve the value, if applicable. index should be <c>null</c> otherwise.</param>
-        object RetrieveValue(object index);
+        object Retrieve(object index = null);
 
         /// <summary>
         /// Updates the <see cref="Value"/> property of this content with the given value, at the given index if applicable.
         /// </summary>
         /// <param name="newValue">The new value to set.</param>
         /// <param name="index">The index where to update the value, if applicable. index should be <c>null</c> otherwise.</param>
-        void UpdateValue(object newValue, object index);
+        void Update(object newValue, object index = null);
     }
 }

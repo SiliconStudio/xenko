@@ -19,7 +19,7 @@ namespace SiliconStudio.Quantum.Contents
 
         internal object[] BoxedStructureOwnerIndices { get; set; }
 
-        public override void UpdateValue(object newValue, object index)
+        public override void Update(object newValue, object index)
         {
             if (index != null)
             {
@@ -52,7 +52,7 @@ namespace SiliconStudio.Quantum.Contents
                         SetItem(currentObj, BoxedStructureOwnerIndices[BoxedStructureOwnerIndices.Length - 1], newValue);
                     }
                     else
-                        BoxedStructureOwner.UpdateValue(newValue, null);
+                        BoxedStructureOwner.Update(newValue, null);
                 }
                 NotifyContentChanged(oldValue, Value);
             }
