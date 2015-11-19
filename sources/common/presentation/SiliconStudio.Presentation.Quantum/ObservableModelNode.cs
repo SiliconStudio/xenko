@@ -276,7 +276,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (!Equals(node.Content.Value, newValue))
                 {
                     result = true;
-                    node.Content.Value = newValue;
+                    node.Content.UpdateValue(newValue, null);
                 }
             }
 
