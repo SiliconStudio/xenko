@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Core;
@@ -12,7 +12,48 @@ namespace SiliconStudio.Quantum.Tests
     [TestFixture]
     public class TestConstruction
     {
-        #region Test class definitions
+        public class PrimitiveMember
+        {
+            public int Member { get; set; }
+        }
+
+        [Test]
+        public void TestPrimitiveMember()
+        {
+            var obj = new PrimitiveMember { Member = 5 };
+
+            var container = new ModelContainer();
+            var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
+            Assert.AreEqual(obj, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            obj.Member = 6;
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            node.Children.First().Content.Update(7);
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+        }
+
+        public class StringMember
+        {
+            public string Member { get; set; }
+        }
+
+        [Test]
+        public void TestStringMember()
+        {
+            var obj = new StringMember { Member = "a" };
+
+            var container = new ModelContainer();
+            var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
+            Assert.AreEqual(obj, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            obj.Member = "b";
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            node.Children.First().Content.Update("c");
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+        }
+
         public class SimpleObject
         {
             public SimpleObject()
@@ -90,8 +131,6 @@ namespace SiliconStudio.Quantum.Tests
             [DataMember(1)]
             public SimpleObject NullObject { get; set; }
         }
-
-        #endregion Test class definitions
 
         [Test]
         public void TestNodeConstruction()

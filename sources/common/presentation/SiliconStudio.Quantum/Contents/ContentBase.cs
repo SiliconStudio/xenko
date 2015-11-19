@@ -46,7 +46,7 @@ namespace SiliconStudio.Quantum.Contents
         public event EventHandler<ContentChangedEventArgs> Changed;
 
         /// <inheritdoc/>
-        public virtual object RetrieveValue(object index)
+        public virtual object Retrieve(object index)
         {
             if (index != null)
             {
@@ -67,7 +67,7 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
-        public abstract void UpdateValue(object newValue, object index);
+        public abstract void Update(object newValue, object index);
 
         /// <inheritdoc/>
         public override string ToString()

@@ -91,11 +91,11 @@ namespace SiliconStudio.Quantum.Tests
             Helper.PrintModelContainerContent(container, model);
             // Modify direct struct via Quantum, check value on actual object
             var structNode = container.GetModelNode(((ObjectReference)model.GetChild("NestedStruct").Content.Reference).TargetGuid);
-            structNode.GetChild("SecondValue").Content.Value = 15;
+            structNode.GetChild("SecondValue").Content.Update(15);
             Assert.That(obj.NestedStruct.SecondValue, Is.EqualTo(15));
             // Modify nested struct via Quantum, check value on actual object
             structNode = container.GetModelNode(((ObjectReference)structNode.GetChild("Struct").Content.Reference).TargetGuid);
-            structNode.GetChild("FirstValue").Content.Value = 20;
+            structNode.GetChild("FirstValue").Content.Update(20);
             Assert.That(obj.NestedStruct.Struct.FirstValue, Is.EqualTo(20));
             // Modify direct struct on actual value, check value via Quantum
             obj.NestedStruct = new NestedStruct { Struct = new SimpleStruct { FirstValue = 30 }, SecondValue = 10 };

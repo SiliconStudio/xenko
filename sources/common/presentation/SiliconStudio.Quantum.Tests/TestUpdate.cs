@@ -29,18 +29,16 @@ namespace SiliconStudio.Quantum.Tests
 
         public struct SimpleStruct
         {
-            private string secondValue;
-
             public SimpleStruct(double firstValue, string secondValue)
             {
                 FirstValue = firstValue;
-                this.secondValue = secondValue;
+                this.SecondValue = secondValue;
             }
             [DataMember(1)]
             public double FirstValue;
 
             [DataMember(2)]
-            public string SecondValue { get { return secondValue; } set { secondValue = value; } }
+            public string SecondValue { get; set; }
         }
 
         public class SimpleClassWithSimpleStruct
@@ -56,12 +54,10 @@ namespace SiliconStudio.Quantum.Tests
 
         public struct NestedStruct
         {
-            private string secondValue;
-
             public NestedStruct(double firstValue, string secondValue, double innerStructFirstValue, string innerStructSecondValue)
             {
                 FirstValue = firstValue;
-                this.secondValue = secondValue;
+                SecondValue = secondValue;
                 InnerStruct = new SimpleStruct(innerStructFirstValue, innerStructSecondValue);
             }
 
@@ -69,7 +65,7 @@ namespace SiliconStudio.Quantum.Tests
             public double FirstValue;
 
             [DataMember(2)]
-            public string SecondValue { get { return secondValue; } set { secondValue = value; } }
+            public string SecondValue { get; set; }
 
             [DataMember(3)]
             public SimpleStruct InnerStruct;
@@ -97,8 +93,8 @@ namespace SiliconStudio.Quantum.Tests
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
             Console.WriteLine(model.PrintHierarchy());
-            model.GetChild("FirstValue").Content.Value = 2;
-            model.GetChild("SecondValue").Content.Value = "new value";
+            model.GetChild("FirstValue").Content.Update(2);
+            model.GetChild("SecondValue").Content.Update("new value");
 
             Assert.That(obj.FirstValue, Is.EqualTo(2));
             Assert.That(obj.SecondValue, Is.EqualTo("new value"));
@@ -115,8 +111,8 @@ namespace SiliconStudio.Quantum.Tests
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
             Console.WriteLine(model.PrintHierarchy());
             var structNode = model.GetChild("Struct").Content.Reference.AsObject.TargetNode;
-            structNode.GetChild("FirstValue").Content.Value = 2.0;
-            structNode.GetChild("SecondValue").Content.Value = "new value";
+            structNode.GetChild("FirstValue").Content.Update(2.0);
+            structNode.GetChild("SecondValue").Content.Update("new value");
 
             Assert.That(obj.Struct.FirstValue, Is.EqualTo(2.0));
             Assert.That(obj.Struct.SecondValue, Is.EqualTo("new value"));
@@ -135,11 +131,11 @@ namespace SiliconStudio.Quantum.Tests
             IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
             Console.WriteLine(model.PrintHierarchy());
             var structNode = model.GetChild("Struct").Content.Reference.AsObject.TargetNode;
-            structNode.GetChild("FirstValue").Content.Value = 2.0;
-            structNode.GetChild("SecondValue").Content.Value = "new value";
+            structNode.GetChild("FirstValue").Content.Update(2.0);
+            structNode.GetChild("SecondValue").Content.Update("new value");
             structNode = structNode.GetChild("InnerStruct").Content.Reference.AsObject.TargetNode;
-            structNode.GetChild("FirstValue").Content.Value = 7.0;
-            structNode.GetChild("SecondValue").Content.Value = "new inner value";
+            structNode.GetChild("FirstValue").Content.Update(7.0);
+            structNode.GetChild("SecondValue").Content.Update("new inner value");
 
             Assert.That(obj.Struct.FirstValue, Is.EqualTo(2.0));
             Assert.That(obj.Struct.SecondValue, Is.EqualTo("new value"));

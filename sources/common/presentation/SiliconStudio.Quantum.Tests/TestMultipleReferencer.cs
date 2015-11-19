@@ -1,9 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Linq;
 
+using System.Collections.Generic;
 using NUnit.Framework;
 
 using SiliconStudio.Quantum.References;
@@ -18,7 +16,7 @@ namespace SiliconStudio.Quantum.Tests
             private static int counter;
             public SimpleObject()
             {
-                Name = string.Format("(Simple Object {0})", ++counter);
+                Name = $"(Simple Object {++counter})";
             }
 
             public string Name { get; set; }
@@ -104,7 +102,7 @@ namespace SiliconStudio.Quantum.Tests
             var container = new ModelContainer();
             IModelNode model = container.GetOrCreateModelNode(doubleRef, doubleRef.GetType());
 
-            ((ObjectReference)model.GetChild("Object1").Content.Reference).TargetNode.GetChild("Name").Content.Value = "New Name";
+            ((ObjectReference)model.GetChild("Object1").Content.Reference).TargetNode.GetChild("Name").Content.Update("New Name");
 
             Assert.That(doubleRef.Object1.Name, Is.EqualTo("New Name"));
             Assert.That(doubleRef.Object2.Name, Is.EqualTo("New Name"));
