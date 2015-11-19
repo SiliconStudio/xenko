@@ -37,7 +37,7 @@ namespace SiliconStudio.Quantum
         /// <param name="guidContainer">A <see cref="IGuidContainer"/> to use to ensure the unicity of guid associated to data objects. Cannot be <c>null</c></param>
         public ModelContainer(IGuidContainer guidContainer)
         {
-            if (guidContainer == null) throw new ArgumentNullException("guidContainer");
+            if (guidContainer == null) throw new ArgumentNullException(nameof(guidContainer));
             this.guidContainer = guidContainer;
             NodeBuilder = CreateDefaultNodeBuilder();
         }
@@ -45,12 +45,12 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets an enumerable of the registered models.
         /// </summary>
-        public IEnumerable<IModelNode> Models { get { return modelsByGuid.Values; } }
+        public IEnumerable<IModelNode> Models => modelsByGuid.Values;
 
         /// <summary>
         /// Gets an enumerable of the registered models.
         /// </summary>
-        public IEnumerable<Guid> Guids { get { return modelsByGuid.Keys; } }
+        public IEnumerable<Guid> Guids => modelsByGuid.Keys;
 
         /// <summary>
         /// Gets or set the visitor to use to create models. Default value is a <see cref="DefaultModelBuilder"/> constructed with default parameters.
@@ -136,10 +136,7 @@ namespace SiliconStudio.Quantum
         {
             lock (lockObject)
             {
-                if (guidContainer != null)
-                {
-                    guidContainer.Clear();
-                }
+                guidContainer?.Clear();
                 modelsByGuid.Clear();
             }
         }
@@ -180,7 +177,7 @@ namespace SiliconStudio.Quantum
         /// <exception cref="System.ArgumentException">@The given type does not match the given object.;rootObject</exception>
         private IModelNode CreateModelNode(object rootObject, Type type, IModelNode referencer)
         {
-            if (rootObject != null && !type.IsInstanceOfType(rootObject)) throw new ArgumentException(@"The given type does not match the given object.", "rootObject");
+            if (rootObject != null && !type.IsInstanceOfType(rootObject)) throw new ArgumentException(@"The given type does not match the given object.", nameof(rootObject));
 
             Guid guid = Guid.NewGuid();
 
@@ -204,8 +201,8 @@ namespace SiliconStudio.Quantum
 
         private void UpdateOrCreateReferenceTarget(IReference reference, IModelNode modelNode, Stack<object> indices = null)
         {
-            if (reference == null) throw new ArgumentNullException("reference");
-            if (modelNode == null) throw new ArgumentNullException("modelNode");
+            if (reference == null) throw new ArgumentNullException(nameof(reference));
+            if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
 
             var content = (ContentBase)modelNode.Content;
 
@@ -242,7 +239,7 @@ namespace SiliconStudio.Quantum
                             if (structContent != null)
                             {
                                 structContent.BoxedStructureOwner = content;
-                                structContent.BoxedStructureOwnerIndices = indices != null ? indices.Reverse().ToArray() : null;
+                                structContent.BoxedStructureOwnerIndices = indices?.Reverse().ToArray();
                             }
                         }
                         else
