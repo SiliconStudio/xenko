@@ -209,7 +209,7 @@ namespace SiliconStudio.Quantum
             return null;
         }
 
-        private void AddReference(IModelNode referencer, IReference reference)
+        private void AddReference(IGraphNode referencer, IReference reference)
         {
             var enumerableReference = reference as ReferenceEnumerable;
             if (enumerableReference != null)
@@ -225,7 +225,7 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private void AddObjectReference(IModelNode referencer, ObjectReference reference)
+        private void AddObjectReference(IGraphNode referencer, ObjectReference reference)
         {
             if (reference.TargetNode == null)
                 throw new QuantumConsistencyException("A resolved reference", "An unresolved reference", referencer);

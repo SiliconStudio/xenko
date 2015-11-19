@@ -90,12 +90,12 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
-        /// Refreshes the <see cref="ObservableNode"/> corresponding to the given <see cref="IModelNode"/>, if an <see cref="ObservableViewModel"/>
+        /// Refreshes the <see cref="ObservableNode"/> corresponding to the given <see cref="IGraphNode"/>, if an <see cref="ObservableViewModel"/>
         /// is available in the current.<see cref="IViewModelServiceProvider"/>.
         /// </summary>
         /// <param name="modelNode">The model node to use to fetch a corresponding <see cref="ObservableNode"/>.</param>
         /// <param name="index">The index at which the actual value to update is stored.</param>
-        protected virtual void Refresh(IModelNode modelNode, object index)
+        protected virtual void Refresh(IGraphNode modelNode, object index)
         {
             if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
 

@@ -11,23 +11,23 @@ namespace SiliconStudio.Quantum
     public static class ModelNodeExtensions
     {
         /// <summary>
-        /// Retrieve the child node of the given <see cref="IModelNode"/> that matches the given name.
+        /// Retrieve the child node of the given <see cref="IGraphNode"/> that matches the given name.
         /// </summary>
         /// <param name="modelNode">The view model node to look into.</param>
         /// <param name="name">The name of the child to retrieve.</param>
         /// <returns>The child node that matches the given name, or <c>null</c> if no child matches.</returns>
-        public static IModelNode GetChild(this IModelNode modelNode, string name)
+        public static IGraphNode GetChild(this IGraphNode modelNode, string name)
         {
             return modelNode.Children.FirstOrDefault(x => x.Name == name);
         }
 
         /// <summary>
-        /// Retrieve the child node of the given <see cref="IModelNode"/> that matches the given name. If the node represents an object reference, it returns the referenced object.
+        /// Retrieve the child node of the given <see cref="IGraphNode"/> that matches the given name. If the node represents an object reference, it returns the referenced object.
         /// </summary>
         /// <param name="modelNode">The view model node to look into.</param>
         /// <param name="name">The name of the child to retrieve.</param>
         /// <returns>The child node that matches the given name, or the referenced node if the child hold an object reference, or <c>null</c> if no child matches.</returns>
-        public static IModelNode GetReferencedChild(this IModelNode modelNode, string name)
+        public static IGraphNode GetReferencedChild(this IGraphNode modelNode, string name)
         {
             return modelNode.GetChild(name)?.ResolveTarget();
         }
@@ -39,18 +39,18 @@ namespace SiliconStudio.Quantum
         /// <param name="modelNode">The model node.</param>
         /// <param name="name">The name of the child to retrieve.</param>
         /// <returns></returns>
-        public static IModelNode GetChildThroughReferences(this IModelNode modelNode, string name)
+        public static IGraphNode GetChildThroughReferences(this IGraphNode modelNode, string name)
         {
             var child = modelNode.GetChild(name) ?? modelNode.ResolveTarget().GetChild(name);
             return child;
         }
 
         /// <summary>
-        /// Gets the target node of the given <see cref="IModelNode"/> if it holds an object reference, or returns the node itself otherwise
+        /// Gets the target node of the given <see cref="IGraphNode"/> if it holds an object reference, or returns the node itself otherwise
         /// </summary>
         /// <param name="modelNode">The node that may contains an object reference.</param>
-        /// <returns>The target node of the given <see cref="IModelNode"/> if it holds an object reference, or the node itself otherwise.</returns>
-        public static IModelNode ResolveTarget(this IModelNode modelNode)
+        /// <returns>The target node of the given <see cref="IGraphNode"/> if it holds an object reference, or the node itself otherwise.</returns>
+        public static IGraphNode ResolveTarget(this IGraphNode modelNode)
         {
             var objReference = modelNode.Content.Reference as ObjectReference;
             return objReference != null ? objReference.TargetNode : modelNode;

@@ -54,10 +54,10 @@ namespace SiliconStudio.Quantum
         }
 
         private readonly List<NodePathElement> path = new List<NodePathElement>();
-        private readonly IModelNode rootNode;
+        private readonly IGraphNode rootNode;
         private readonly bool targetIsRootNode;
 
-        private ModelNodePath(IModelNode rootNode, bool targetIsRootNode)
+        private ModelNodePath(IGraphNode rootNode, bool targetIsRootNode)
         {
             this.rootNode = rootNode;
             this.targetIsRootNode = targetIsRootNode;
@@ -68,7 +68,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="rootNode">The root node to represent with this instance of <see cref="ModelNodePath"/>.</param>
         /// <remarks>This constructor should be used for path to a root node only. To create a path to a child node, use <see cref="GetChildPath"/>.</remarks>
-        public ModelNodePath(IModelNode rootNode)
+        public ModelNodePath(IGraphNode rootNode)
             : this(rootNode, true)
         {
         }
@@ -84,12 +84,12 @@ namespace SiliconStudio.Quantum
         /// <param name="targetIndex">The index to the target node, if applicable.</param>
         /// <returns>The node corresponding to this path.</returns>
         /// <exception cref="InvalidOperationException">The path is invalid.</exception>
-        public IModelNode GetSourceNode(out object targetIndex)
+        public IGraphNode GetSourceNode(out object targetIndex)
         {
             if (!IsValid)
                 throw new InvalidOperationException("The node path is invalid.");
 
-            IModelNode node = rootNode;
+            IGraphNode node = rootNode;
             targetIndex = null;
             foreach (var itemPath in path)
             {
@@ -128,7 +128,7 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <returns>The node corresponding to this path.</returns>
         /// <exception cref="InvalidOperationException">The path is invalid.</exception>
-        public IModelNode GetSourceNode()
+        public IGraphNode GetSourceNode()
         {
             object index;
             return GetSourceNode(out index);
@@ -140,7 +140,7 @@ namespace SiliconStudio.Quantum
         /// <param name="parentNode">The parent node which must be a direct child or a direct reference of the <see cref="target"/>.</param>
         /// <param name="target">The target node for which to build a <see cref="ModelNodePath"/> instance.</param>
         /// <returns></returns>
-        public ModelNodePath GetChildPath(IModelNode parentNode, IModelNode target)
+        public ModelNodePath GetChildPath(IGraphNode parentNode, IGraphNode target)
         {
             if (parentNode == target)
                 return Clone();
@@ -208,7 +208,7 @@ namespace SiliconStudio.Quantum
             return IsValid ? "(root)" + path.Select(x => x.ToString()).Aggregate((current, next) => current + next) : "(invalid)";
         }
 
-        public ModelNodePath Clone(IModelNode newRoot)
+        public ModelNodePath Clone(IGraphNode newRoot)
         {
             return Clone(newRoot, targetIsRootNode);
         }
@@ -239,7 +239,7 @@ namespace SiliconStudio.Quantum
             return result;
         }
 
-        private ModelNodePath Clone(IModelNode newRoot, bool newTargetIsRootNode)
+        private ModelNodePath Clone(IGraphNode newRoot, bool newTargetIsRootNode)
         {
             var clone = new ModelNodePath(newRoot, newTargetIsRootNode);
             clone.path.AddRange(path);
