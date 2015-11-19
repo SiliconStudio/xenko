@@ -91,7 +91,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.That(obj.SecondValue, Is.EqualTo("test"));
 
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Console.WriteLine(model.PrintHierarchy());
             model.GetChild("FirstValue").Content.Update(2);
             model.GetChild("SecondValue").Content.Update("new value");
@@ -108,7 +108,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.That(obj.Struct.SecondValue, Is.EqualTo("test"));
 
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Console.WriteLine(model.PrintHierarchy());
             var structNode = model.GetChild("Struct").Content.Reference.AsObject.TargetNode;
             structNode.GetChild("FirstValue").Content.Update(2.0);
@@ -128,7 +128,7 @@ namespace SiliconStudio.Quantum.Tests
             Assert.That(obj.Struct.InnerStruct.SecondValue, Is.EqualTo("inner value"));
 
             var container = new ModelContainer();
-            IModelNode model = container.GetOrCreateModelNode(obj, obj.GetType());
+            IModelNode model = container.GetOrCreateModelNode(obj);
             Console.WriteLine(model.PrintHierarchy());
             var structNode = model.GetChild("Struct").Content.Reference.AsObject.TargetNode;
             structNode.GetChild("FirstValue").Content.Update(2.0);

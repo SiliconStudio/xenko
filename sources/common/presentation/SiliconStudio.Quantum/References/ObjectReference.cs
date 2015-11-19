@@ -75,7 +75,7 @@ namespace SiliconStudio.Quantum.References
         public IModelNode SetTarget(ModelContainer modelContainer)
         {
             if (modelContainer == null) throw new ArgumentNullException("modelContainer");
-            IModelNode targetNode = modelContainer.GetOrCreateModelNode(ObjectValue, Type);
+            IModelNode targetNode = modelContainer.GetOrCreateModelNode(ObjectValue);
             if (targetNode != null)
             {
                 if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");

@@ -24,7 +24,7 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new PrimitiveMember { Member = 5 };
 
             var container = new ModelContainer();
-            var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
+            var node = (ModelNode)container.GetOrCreateModelNode(obj);
             Assert.AreEqual(obj, node.Content.Value);
             Assert.AreEqual(1, node.Children.Count);
             Assert.AreEqual(nameof(PrimitiveMember.Member), node.Children.First().Name);
@@ -46,7 +46,7 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new StringMember { Member = "a" };
 
             var container = new ModelContainer();
-            var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
+            var node = (ModelNode)container.GetOrCreateModelNode(obj);
             Assert.AreEqual(obj, node.Content.Value);
             Assert.AreEqual(1, node.Children.Count);
             Assert.AreEqual(nameof(StringMember.Member), node.Children.First().Name);
@@ -68,7 +68,7 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ReferenceMember { Member = new StringMember { Member = "a" } };
 
             var container = new ModelContainer();
-            var node = container.GetOrCreateModelNode(obj, obj.GetType());
+            var node = container.GetOrCreateModelNode(obj);
             Assert.AreEqual(obj, node.Content.Value);
             Assert.AreEqual(1, node.Children.Count);
             Assert.AreEqual(nameof(ReferenceMember.Member), node.Children.First().Name);
@@ -96,7 +96,7 @@ namespace SiliconStudio.Quantum.Tests
             var obj = new ReferenceMember { Member = null };
 
             var container = new ModelContainer();
-            var node = container.GetOrCreateModelNode(obj, obj.GetType());
+            var node = container.GetOrCreateModelNode(obj);
             Assert.AreEqual(obj, node.Content.Value);
             Assert.AreEqual(1, node.Children.Count);
             Assert.AreEqual(nameof(ReferenceMember.Member), node.Children.First().Name);
@@ -230,7 +230,7 @@ namespace SiliconStudio.Quantum.Tests
             };
 
             var container = new ModelContainer();
-            var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
+            var node = (ModelNode)container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, node);
             // Run the consistency check to verify construction.
             Helper.ConsistencyCheck(container, obj);
@@ -241,7 +241,7 @@ namespace SiliconStudio.Quantum.Tests
         {
             var obj = new ClassWithNullObject();
             var container = new ModelContainer();
-            var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
+            var node = (ModelNode)container.GetOrCreateModelNode(obj);
             Helper.PrintModelContainerContent(container, node);
             // TODO: Asserts regarding the status of the null value
             // Run the consistency check to verify construction.

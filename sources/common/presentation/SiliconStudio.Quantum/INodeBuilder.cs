@@ -48,12 +48,10 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Build the node hierarchy corresponding to the given object.
         /// </summary>
-        /// <param name="referencer">The referencer (optional, just here to help having some context when building nodes).</param>
         /// <param name="obj">The object. Can be <c>null</c>.</param>
-        /// <param name="type">The type of the object</param>
         /// <param name="rootGuid">The <see cref="Guid"/> To assign to the root node.</param>
         /// <returns>The root node of the node hierarchy corresponding to the given object.</returns>
-        IModelNode Build(IModelNode referencer, object obj, Type type, Guid rootGuid);
+        IModelNode Build(object obj, Guid rootGuid);
 
         /// <summary>
         /// Creates a reference for the specified type/value node.

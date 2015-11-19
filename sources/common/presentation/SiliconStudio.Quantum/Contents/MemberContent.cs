@@ -53,7 +53,6 @@ namespace SiliconStudio.Quantum.Contents
                 else
                     throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
 
-                // TODO: shouldn't this be done as long as the value is not a primitive type?
                 UpdateReferences();
             }
             else
@@ -64,17 +63,14 @@ namespace SiliconStudio.Quantum.Contents
                 Member.Set(containerValue, newValue);
 
                 if (Container.Value.GetType().GetTypeInfo().IsValueType)
-                    Container.Update(containerValue, null);
+                    Container.Update(containerValue);
 
-                if (modelContainer != null && modelNode != null)
-                {
-                    modelContainer.UpdateReferences(modelNode);
-                }
+                UpdateReferences();
                 NotifyContentChanged(oldValue, Value);
             }
         }
 
-        internal void UpdateReferences()
+        private void UpdateReferences()
         {
             if (modelContainer != null && modelNode != null)
             {
