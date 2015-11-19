@@ -79,6 +79,9 @@ namespace SiliconStudio.Quantum
         /// <returns>The <see cref="IModelNode"/> associated to the given Guid if available, or <c>null</c> otherwise.</returns>
         public IModelNode GetModelNode(Guid guid)
         {
+            if (guid == Guid.Empty)
+                return null;
+
             lock (lockObject)
             {
                 IModelNode result;
@@ -117,10 +120,13 @@ namespace SiliconStudio.Quantum
         // TODO: Remove the type argument here
         public IModelNode GetOrCreateModelNode(object rootObject, Type type, bool updateReferencesIfExists = true, IModelNode referencer = null)
         {
+            if (rootObject == null)
+                return null;
+
             lock (lockObject)
             {
                 IModelNode result = null;
-                if (guidContainer != null && (rootObject == null || !rootObject.GetType().IsValueType))
+                if (guidContainer != null && !rootObject.GetType().IsValueType)
                 {
                     result = GetModelNode(rootObject);
                 }
@@ -177,12 +183,14 @@ namespace SiliconStudio.Quantum
         /// <exception cref="System.ArgumentException">@The given type does not match the given object.;rootObject</exception>
         private IModelNode CreateModelNode(object rootObject, Type type, IModelNode referencer)
         {
-            if (rootObject != null && !type.IsInstanceOfType(rootObject)) throw new ArgumentException(@"The given type does not match the given object.", nameof(rootObject));
+            if (rootObject == null) throw new ArgumentNullException(nameof(rootObject));
+
+            if (!type.IsInstanceOfType(rootObject)) throw new ArgumentException(@"The given type does not match the given object.", nameof(rootObject));
 
             Guid guid = Guid.NewGuid();
 
             // Retrieve results
-            if (guidContainer != null && rootObject != null && !rootObject.GetType().IsValueType)
+            if (guidContainer != null && !rootObject.GetType().IsValueType)
                 guid = guidContainer.GetOrCreateGuid(rootObject);
 
             var result = (ModelNode)NodeBuilder.Build(referencer, rootObject, type, guid);
@@ -229,7 +237,7 @@ namespace SiliconStudio.Quantum
                         singleReference.Clear();
                     }
 
-                    if (singleReference.TargetNode == null)
+                    if (singleReference.TargetNode == null && reference.ObjectValue != null)
                     {
                         // This call will recursively update the references.
                         IModelNode node = singleReference.SetTarget(this);
