@@ -47,5 +47,10 @@ namespace SiliconStudio.Quantum.Contents
         /// Gets whether the <see cref="Reference"/> contained in this content should lead to the creation of model node for the referenced object.
         /// </summary>
         bool ShouldProcessReference { get; }
+
+        /// <summary>
+        /// Raised when the <see cref="Value"/> of this content has changed.
+        /// </summary>
+        event EventHandler<ContentChangedEventArgs> Changed;
     }
 }

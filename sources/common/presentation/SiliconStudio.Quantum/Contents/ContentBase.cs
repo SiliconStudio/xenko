@@ -43,9 +43,22 @@ namespace SiliconStudio.Quantum.Contents
         public bool ShouldProcessReference { get; internal set; }
 
         /// <inheritdoc/>
+        public event EventHandler<ContentChangedEventArgs> Changed;
+
+        /// <inheritdoc/>
         public override string ToString()
         {
             return "[" + GetType().Name + "]: " + Value;
+        }
+
+        /// <summary>
+        /// Raises the <see cref="Changed"/> event with the given parameters.
+        /// </summary>
+        /// <param name="oldValue">The old value of this content.</param>
+        /// <param name="newValue">The new value of this content.</param>
+        protected void NotifyContentChanged(object oldValue, object newValue)
+        {
+            Changed?.Invoke(this, new ContentChangedEventArgs(this, oldValue, newValue));
         }
     }
 }

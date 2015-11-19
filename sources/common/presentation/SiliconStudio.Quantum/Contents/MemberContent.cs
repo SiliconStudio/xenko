@@ -43,6 +43,7 @@ namespace SiliconStudio.Quantum.Contents
             set
             {
                 if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
+                var oldValue = Value;
                 var containerValue = Container.Value;
                 Member.Set(containerValue, value);
 
@@ -53,6 +54,7 @@ namespace SiliconStudio.Quantum.Contents
                 {
                     modelContainer.UpdateReferences(modelNode);
                 }
+                NotifyContentChanged(oldValue, Value);
             }
         }
 
