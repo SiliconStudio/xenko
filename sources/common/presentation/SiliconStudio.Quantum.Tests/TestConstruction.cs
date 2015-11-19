@@ -6,6 +6,7 @@ using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Core;
+using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests
 {
@@ -26,6 +27,7 @@ namespace SiliconStudio.Quantum.Tests
             var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
             Assert.AreEqual(obj, node.Content.Value);
             Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(PrimitiveMember.Member), node.Children.First().Name);
             Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
             obj.Member = 6;
             Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
@@ -47,11 +49,45 @@ namespace SiliconStudio.Quantum.Tests
             var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
             Assert.AreEqual(obj, node.Content.Value);
             Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(StringMember.Member), node.Children.First().Name);
             Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
             obj.Member = "b";
             Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
             node.Children.First().Content.Update("c");
             Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+        }
+
+        public class ReferenceMember
+        {
+            public StringMember Member { get; set; }
+        }
+
+        [Test]
+        public void TestReferenceMember()
+        {
+            var obj = new ReferenceMember { Member = new StringMember { Member = "a" } };
+
+            var container = new ModelContainer();
+            var node = container.GetOrCreateModelNode(obj, obj.GetType());
+            Assert.AreEqual(obj, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(ReferenceMember.Member), node.Children.First().Name);
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            Assert.AreEqual(true, node.Children.First().Content.IsReference);
+            Assert.IsInstanceOf<ObjectReference>(node.Children.First().Content.Reference);
+            var reference = (ObjectReference)node.Children.First().Content.Reference;
+            Assert.AreEqual(obj.Member, reference.ObjectValue);
+            Assert.IsNotNull(reference.TargetNode);
+            Assert.AreEqual(obj.Member, reference.TargetNode.Content.Value);
+            node = reference.TargetNode;
+            Assert.AreEqual(obj.Member, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(StringMember.Member), node.Children.First().Name);
+            Assert.AreEqual(obj.Member.Member, node.Children.First().Content.Value);
+            obj.Member.Member = "b";
+            Assert.AreEqual(obj.Member.Member, node.Children.First().Content.Value);
+            node.Children.First().Content.Update("c");
+            Assert.AreEqual(obj.Member.Member, node.Children.First().Content.Value);
         }
 
         public class SimpleObject

@@ -36,13 +36,13 @@ namespace SiliconStudio.Quantum
         }
 
         /// <inheritdoc/>
-        public ModelContainer ModelContainer { get; private set; }
+        public ModelContainer ModelContainer { get; }
         
         /// <inheritdoc/>
-        public ICollection<Type> PrimitiveTypes { get; private set; }
+        public ICollection<Type> PrimitiveTypes { get; }
         
         /// <inheritdoc/>
-        public ICollection<INodeCommand> AvailableCommands { get; private set; }
+        public ICollection<INodeCommand> AvailableCommands { get; }
 
         public IContentFactory ContentFactory { get; set; }
 
@@ -70,7 +70,7 @@ namespace SiliconStudio.Quantum
         {
             Reset();
             rootGuid = guid;
-            var typeDescriptor = TypeDescriptorFactory.Find(obj != null ? obj.GetType() : type);
+            var typeDescriptor = TypeDescriptorFactory.Find(obj?.GetType() ?? type);
             VisitObject(obj, typeDescriptor as ObjectDescriptor, true);
 
             return rootNode;
@@ -199,12 +199,7 @@ namespace SiliconStudio.Quantum
         /// <remarks>This method is internal so it can be used by the <see cref="ModelConsistencyCheckVisitor"/>.</remarks>
         internal void NotifyNodeConstructed(IContent content)
         {
-            var handler = NodeConstructed;
-            if (handler != null)
-            {
-                var args = new NodeConstructedArgs(content);
-                handler(this, args);
-            }
+            NodeConstructed?.Invoke(this, new NodeConstructedArgs(content));
         }
 
         /// <inheritdoc/>
@@ -288,11 +283,7 @@ namespace SiliconStudio.Quantum
         {
             var dictionaryDescriptor = descriptor as DictionaryDescriptor;
             var collectionDescriptor = descriptor as CollectionDescriptor;
-            if (dictionaryDescriptor != null)
-            {
-                return dictionaryDescriptor.ValueType;
-            }
-            return collectionDescriptor != null ? collectionDescriptor.ElementType : null;
+            return dictionaryDescriptor != null ? dictionaryDescriptor.ValueType : collectionDescriptor?.ElementType;
         }
     }
 }
