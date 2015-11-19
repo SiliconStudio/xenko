@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Particles
         {
             ParticleSpawner.RemoveOld(dt, pool);
 
-            if (!pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.Velocity))
+            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.Velocity))
                 return;
 
             // should this be a separate module?

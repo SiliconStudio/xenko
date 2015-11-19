@@ -6,7 +6,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
-    [DataContract("GravityUpdater")]
+    [DataContract("OldPositionUpdater")]
     [Display("OldPosition")]
     public class OldPositionUpdater : UpdaterBase
     {

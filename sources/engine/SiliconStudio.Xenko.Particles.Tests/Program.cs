@@ -395,27 +395,58 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
         static void TestEmitter(float maxTime)
         {
-            return;
-
             var emitter = new ParticleEmitter();
-            //emitter.AddModule(new GravityUpdater());
-            //emitter.AddModule(new SampleInitializer());
-
-            // TODO MaxParticles
-
             var dummyParticleSystem = new ParticleSystem();
+            const float dt = 0.0166666666667f;
+
+            // Updating the emitter forces the creation of a default spawner (100 particles per second)
+            emitter.Update(dt, dummyParticleSystem);
+
+            var gravity = new GravityUpdater();
+            emitter.Updaters.Add(gravity);
+
+            var initializer = new TestInitializer();
+            emitter.Initializers.Add(initializer);
+
 
             // Fixed delta time for simulating 60 fps
-            const float dt = 0.0166666666667f;
             var totalTime = 0f;
 
             // Simulate 10 seconds
             while (totalTime < 10)
             {
                 emitter.Update(dt, dummyParticleSystem);
-
                 totalTime += dt;
             }
+
+            emitter.Updaters.Remove(gravity);
+
+            // Simulate 10 seconds
+            while (totalTime < 10)
+            {
+                emitter.Update(dt, dummyParticleSystem);
+                totalTime += dt;
+            }
+
+            emitter.Initializers.Remove(initializer);
+
+            // Simulate 10 seconds
+            while (totalTime < 10)
+            {
+                emitter.Update(dt, dummyParticleSystem);
+                totalTime += dt;
+            }
+
+            emitter.Updaters.Add(gravity);
+            emitter.Initializers.Add(initializer);
+
+            // Simulate 10 seconds
+            while (totalTime < 10)
+            {
+                emitter.Update(dt, dummyParticleSystem);
+                totalTime += dt;
+            }
+
         }
 
         private static void TestPoolAsRing(int particleCount) => TestPool(particleCount, ParticlePool.ListPolicy.Ring);
