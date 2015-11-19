@@ -60,9 +60,9 @@ namespace SiliconStudio.Presentation.Quantum
             if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var currentValue = modelNode.GetValue(index);
+            var currentValue = modelNode.Content.RetrieveValue(index);
             var newValue = NodeCommand.Invoke(currentValue, parameter, out token);
-            modelNode.SetValue(newValue, index);
+            modelNode.Content.UpdateValue(newValue, index);
             Refresh(modelNode, index);
 
             var additionalToken = new UndoToken();
@@ -81,9 +81,9 @@ namespace SiliconStudio.Presentation.Quantum
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the undo operation.");
 
             var modelNodeToken = (ModelNodeToken)token.TokenValue;
-            var currentValue = modelNode.GetValue(index);
+            var currentValue = modelNode.Content.RetrieveValue(index);
             var newValue = NodeCommand.Undo(currentValue, modelNodeToken.Token);
-            modelNode.SetValue(newValue, index);
+            modelNode.Content.UpdateValue(newValue, index);
             Refresh(modelNode, index);
 
             AdditionalCommand?.UndoCommand(null, modelNodeToken.AdditionalToken);
@@ -104,7 +104,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (observableNode == null)
                 return;
 
-            var newValue = modelNode.GetValue(index);
+            var newValue = modelNode.Content.RetrieveValue(index);
 
             observableNode.ForceSetValue(newValue);
             observableNode.Owner.NotifyNodeChanged(observableNode.Path);

@@ -4,60 +4,12 @@ using System;
 using System.Linq;
 
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
     public static class ModelNodeExtensions
     {
-        public static void SetValue(this IModelNode node, object value, object index = null)
-        {
-            if (index != null)
-            {
-                var collectionDescriptor = node.Content.Descriptor as CollectionDescriptor;
-                var dictionaryDescriptor = node.Content.Descriptor as DictionaryDescriptor;
-                if (collectionDescriptor != null)
-                {
-                    collectionDescriptor.SetValue(node.Content.Value, (int)index, value);
-                }
-                else if (dictionaryDescriptor != null)
-                {
-                    dictionaryDescriptor.SetValue(node.Content.Value, index, value);
-                }
-                else
-                    throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
-
-                // TODO: shouldn't this be done as long as the value is not a primitive type?
-                var memberContent = node.Content as MemberContent;
-                memberContent?.UpdateReferences();
-            }
-            else
-            {
-                node.Content.Value = value;
-            }
-        }
-
-        public static object GetValue(this IModelNode node, object index)
-        {
-            if (index != null)
-            {
-                var collectionDescriptor = node.Content.Descriptor as CollectionDescriptor;
-                var dictionaryDescriptor = node.Content.Descriptor as DictionaryDescriptor;
-                if (collectionDescriptor != null)
-                {
-                    return collectionDescriptor.GetValue(node.Content.Value, (int)index);
-                }
-                if (dictionaryDescriptor != null)
-                {
-                    return dictionaryDescriptor.GetValue(node.Content.Value, index);
-                }
-
-                throw new NotSupportedException("Unable to get the node value, the collection is unsupported");
-            }
-            return node.Content.Value;
-        }
-
         /// <summary>
         /// Retrieve the child node of the given <see cref="IModelNode"/> that matches the given name.
         /// </summary>
@@ -77,8 +29,7 @@ namespace SiliconStudio.Quantum
         /// <returns>The child node that matches the given name, or the referenced node if the child hold an object reference, or <c>null</c> if no child matches.</returns>
         public static IModelNode GetReferencedChild(this IModelNode modelNode, string name)
         {
-            var child = modelNode.GetChild(name);
-            return child != null ? child.ResolveTarget() : null;
+            return modelNode.GetChild(name)?.ResolveTarget();
         }
 
         /// <summary>

@@ -15,13 +15,31 @@ namespace SiliconStudio.Quantum.Contents
         {
         }
 
-        public override object Value
+        internal IContent BoxedStructureOwner { get; set; }
+
+        internal object[] BoxedStructureOwnerIndices { get; set; }
+
+        public override void UpdateValue(object newValue, object index)
         {
-            get { return base.Value; }
-            set
+            if (index != null)
+            {
+                var collectionDescriptor = Descriptor as CollectionDescriptor;
+                var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+                if (collectionDescriptor != null)
+                {
+                    collectionDescriptor.SetValue(Value, (int)index, newValue);
+                }
+                else if (dictionaryDescriptor != null)
+                {
+                    dictionaryDescriptor.SetValue(Value, index, newValue);
+                }
+                else
+                    throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+            }
+            else
             {
                 var oldValue = Value;
-                SetValue(value);
+                SetValue(newValue);
                 if (BoxedStructureOwner != null)
                 {
                     if (BoxedStructureOwnerIndices != null)
@@ -31,18 +49,14 @@ namespace SiliconStudio.Quantum.Contents
                         {
                             currentObj = FetchItem(currentObj, BoxedStructureOwnerIndices[i]);
                         }
-                        SetItem(currentObj, BoxedStructureOwnerIndices[BoxedStructureOwnerIndices.Length - 1], value);
+                        SetItem(currentObj, BoxedStructureOwnerIndices[BoxedStructureOwnerIndices.Length - 1], newValue);
                     }
                     else
-                        BoxedStructureOwner.Value = value;
+                        BoxedStructureOwner.UpdateValue(newValue, null);
                 }
                 NotifyContentChanged(oldValue, Value);
             }
         }
-
-        internal IContent BoxedStructureOwner { get; set; }
-
-        internal object[] BoxedStructureOwnerIndices { get; set; }
 
         private static object FetchItem(object enumerable, object index)
         {

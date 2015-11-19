@@ -20,7 +20,7 @@ namespace SiliconStudio.Quantum.Contents
         /// <summary>
         /// Gets or sets the value.
         /// </summary>
-        object Value { get; set; }
+        object Value { get; }
 
         /// <summary>
         /// Gets whether this content hold a primitive type value. If so, the node owning this content should have no children and modifying its value should not trigger any node refresh.
@@ -52,5 +52,18 @@ namespace SiliconStudio.Quantum.Contents
         /// Raised when the <see cref="Value"/> of this content has changed.
         /// </summary>
         event EventHandler<ContentChangedEventArgs> Changed;
+
+        /// <summary>
+        /// Retrieves the value of this content or one of its item if it holds a collection.
+        /// </summary>
+        /// <param name="index">The index to use to retrieve the value, if applicable. index should be <c>null</c> otherwise.</param>
+        object RetrieveValue(object index);
+
+        /// <summary>
+        /// Updates the <see cref="Value"/> property of this content with the given value, at the given index if applicable.
+        /// </summary>
+        /// <param name="newValue">The new value to set.</param>
+        /// <param name="index">The index where to update the value, if applicable. index should be <c>null</c> otherwise.</param>
+        void UpdateValue(object newValue, object index);
     }
 }

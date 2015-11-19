@@ -25,7 +25,7 @@ namespace SiliconStudio.Quantum.Contents
         public Type Type => Descriptor.Type;
 
         /// <inheritdoc/>
-        public abstract object Value { get; set; }
+        public abstract object Value { get; }
 
         /// <inheritdoc/>
         public bool IsPrimitive { get; }
@@ -44,6 +44,30 @@ namespace SiliconStudio.Quantum.Contents
 
         /// <inheritdoc/>
         public event EventHandler<ContentChangedEventArgs> Changed;
+
+        /// <inheritdoc/>
+        public virtual object RetrieveValue(object index)
+        {
+            if (index != null)
+            {
+                var collectionDescriptor = Descriptor as CollectionDescriptor;
+                var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+                if (collectionDescriptor != null)
+                {
+                    return collectionDescriptor.GetValue(Value, (int)index);
+                }
+                if (dictionaryDescriptor != null)
+                {
+                    return dictionaryDescriptor.GetValue(Value, index);
+                }
+
+                throw new NotSupportedException("Unable to get the node value, the collection is unsupported");
+            }
+            return Value;
+        }
+
+        /// <inheritdoc/>
+        public abstract void UpdateValue(object newValue, object index);
 
         /// <inheritdoc/>
         public override string ToString()

@@ -33,22 +33,38 @@ namespace SiliconStudio.Quantum.Contents
         public IMemberDescriptor Member { get; protected set; }
 
         /// <inheritdoc/>
-        public sealed override object Value
+        public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
+
+        /// <inheritdoc/>
+        public override void UpdateValue(object newValue, object index)
         {
-            get
+            if (index != null)
             {
-                if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
-                return Member.Get(Container.Value);
+                var collectionDescriptor = Descriptor as CollectionDescriptor;
+                var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+                if (collectionDescriptor != null)
+                {
+                    collectionDescriptor.SetValue(Value, (int)index, newValue);
+                }
+                else if (dictionaryDescriptor != null)
+                {
+                    dictionaryDescriptor.SetValue(Value, index, newValue);
+                }
+                else
+                    throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+
+                // TODO: shouldn't this be done as long as the value is not a primitive type?
+                UpdateReferences();
             }
-            set
+            else
             {
-                if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
                 var oldValue = Value;
+                if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
                 var containerValue = Container.Value;
-                Member.Set(containerValue, value);
+                Member.Set(containerValue, newValue);
 
                 if (Container.Value.GetType().GetTypeInfo().IsValueType)
-                    Container.Value = containerValue;
+                    Container.UpdateValue(containerValue, null);
 
                 if (modelContainer != null && modelNode != null)
                 {
@@ -65,6 +81,7 @@ namespace SiliconStudio.Quantum.Contents
                 modelContainer.UpdateReferences(modelNode);
             }
         }
+
         void IUpdatableContent.RegisterOwner(IModelNode node)
         {
             modelNode = node;
