@@ -290,7 +290,7 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"
                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelHeight}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelWidth}"
                    Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
-            <ctrl:MarkdownTextBlock Text="{Binding}" />
+            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
           </DockPanel>
         </DataTemplate>
       </Setter.Value>
