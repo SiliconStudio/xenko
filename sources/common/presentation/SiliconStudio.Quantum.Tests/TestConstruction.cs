@@ -90,6 +90,41 @@ namespace SiliconStudio.Quantum.Tests
             Assert.AreEqual(obj.Member.Member, node.Children.First().Content.Value);
         }
 
+        [Test]
+        public void TestNullReferenceMember()
+        {
+            var obj = new ReferenceMember { Member = null };
+
+            var container = new ModelContainer();
+            var node = container.GetOrCreateModelNode(obj, obj.GetType());
+            Assert.AreEqual(obj, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(ReferenceMember.Member), node.Children.First().Name);
+            Assert.AreEqual(null, node.Children.First().Content.Value);
+            Assert.AreEqual(true, node.Children.First().Content.IsReference);
+            Assert.IsInstanceOf<ObjectReference>(node.Children.First().Content.Reference);
+            var reference = (ObjectReference)node.Children.First().Content.Reference;
+            Assert.AreEqual(null, reference.ObjectValue);
+            Assert.IsNull(reference.TargetNode);
+
+            node.Children.First().Content.Update(new StringMember { Member = "a" });
+            Assert.AreEqual(obj, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(ReferenceMember.Member), node.Children.First().Name);
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            Assert.AreEqual(true, node.Children.First().Content.IsReference);
+            Assert.IsInstanceOf<ObjectReference>(node.Children.First().Content.Reference);
+            reference = (ObjectReference)node.Children.First().Content.Reference;
+            Assert.AreEqual(obj.Member, reference.ObjectValue);
+            Assert.IsNotNull(reference.TargetNode);
+            Assert.AreEqual(obj.Member, reference.TargetNode.Content.Value);
+            node = reference.TargetNode;
+            Assert.AreEqual(obj.Member, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(StringMember.Member), node.Children.First().Name);
+            Assert.AreEqual(obj.Member.Member, node.Children.First().Content.Value);
+        }
+
         public class SimpleObject
         {
             public SimpleObject()
