@@ -20,6 +20,7 @@ namespace SiliconStudio.Quantum.Contents
             get { return base.Value; }
             set
             {
+                var oldValue = Value;
                 SetValue(value);
                 if (BoxedStructureOwner != null)
                 {
@@ -35,6 +36,7 @@ namespace SiliconStudio.Quantum.Contents
                     else
                         BoxedStructureOwner.Value = value;
                 }
+                NotifyContentChanged(oldValue, Value);
             }
         }
 
