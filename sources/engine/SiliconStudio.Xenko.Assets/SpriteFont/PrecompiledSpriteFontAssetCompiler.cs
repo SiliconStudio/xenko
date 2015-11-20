@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     }
 
                     Graphics.SpriteFont staticFont = FontDataFactory.NewStatic(
-                        AssetParameters.Size,
+                        FontHelper.PointsToPixels(AssetParameters.Size),
                         AssetParameters.Glyphs,
                         new[] { image },
                         AssetParameters.BaseOffset,

@@ -6,6 +6,7 @@ using System.IO;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.SpriteFont.Compiler;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Data;
 using SiliconStudio.Xenko.Graphics.Font;
 using Glyph = SiliconStudio.Xenko.Graphics.Font.Glyph;
 
@@ -32,23 +33,26 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             var imageType = ImageFileType.Xenko;
             var textureFileName = new UFile(texturePath).GetFullPathWithoutExtension() + imageType.ToFileExtension();
 
-            if (textures != null && textures.Count == 0)
+            if (textures != null && textures.Count > 0)
             {
                 // save the texture   TODO support for multi-texture
                 using (var stream = File.OpenWrite(textureFileName))
-                    staticFont.Textures[0].Save(stream, imageType);
+                    staticFont.Textures[0].GetSerializationData().Save(stream, imageType);
             }
 
             var precompiledAsset = new PrecompiledSpriteFontAsset
             {
                 Glyphs = glyphs,
-                Size = staticFont.Size,
+                Size = asset.Size,
+                Style = asset.Style,
                 Source = textureFileName,
                 BaseOffset = staticFont.BaseOffsetY,
                 DefaultLineSpacing = staticFont.DefaultLineSpacing,
                 ExtraSpacing = staticFont.ExtraSpacing,
                 ExtraLineSpacing = staticFont.ExtraLineSpacing,
                 DefaultCharacter = asset.DefaultCharacter,
+                FontName = asset.Source != null ? (asset.Source.GetFileName() ?? "") : asset.FontName,
+                IsPremultiplied = !asset.NoPremultiply,
             };
 
             return precompiledAsset;

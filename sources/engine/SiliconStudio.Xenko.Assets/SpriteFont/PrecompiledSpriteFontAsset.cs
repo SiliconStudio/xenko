@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("PregeneratedSpriteFont")]
     [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(PrecompiledSpriteFontAssetCompiler))]
-    [Display(105, "Pregenerated Sprite Font")]
+    [Display(105, "Sprite Font (Precompiled)")]
     public class PrecompiledSpriteFontAsset : AssetImport
     {
         /// <summary>
@@ -21,10 +21,22 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         public const string FileExtension = ".xkpcfnt";
 
         [Display(Browsable = false)]
-        public List<Glyph> Glyphs;
+        public string FontName; // Note: this field is used only for thumbnail.
 
         [Display(Browsable = false)]
+        public FontStyle Style; // Note: this field is used only for thumbnail.
+
+        [Display(Browsable = false)]
+        public bool IsPremultiplied; // Note: this field is used only for thumbnail / preview.
+
+        /// <summary>
+        /// The size in points (pt).
+        /// </summary>
+        [Display(Browsable = false)]
         public float Size;
+
+        [Display(Browsable = false)]
+        public List<Glyph> Glyphs;
 
         [Display(Browsable = false)]
         public float BaseOffset;
