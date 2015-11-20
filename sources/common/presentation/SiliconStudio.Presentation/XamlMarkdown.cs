@@ -299,8 +299,8 @@ namespace SiliconStudio.Presentation
             var title = match.Groups[6].Value;
 
             var result = Create<Hyperlink, Inline>(RunSpanGamut(linkText));
-            result.Command = HyperlinkCommand;
             result.CommandParameter = url;
+            result.Command = HyperlinkCommand;
             return result;
         }
 
