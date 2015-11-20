@@ -49,9 +49,14 @@ namespace SiliconStudio.Quantum.Contents
         bool ShouldProcessReference { get; }
 
         /// <summary>
+        /// Raised just before the <see cref="Value"/> of this content changes.
+        /// </summary>
+        event EventHandler<ContentChangeEventArgs> Changing;
+
+        /// <summary>
         /// Raised when the <see cref="Value"/> of this content has changed.
         /// </summary>
-        event EventHandler<ContentChangedEventArgs> Changed;
+        event EventHandler<ContentChangeEventArgs> Changed;
 
         /// <summary>
         /// Retrieves the value of this content or one of its item if it holds a collection.

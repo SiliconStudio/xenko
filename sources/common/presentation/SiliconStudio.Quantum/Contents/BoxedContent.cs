@@ -22,6 +22,7 @@ namespace SiliconStudio.Quantum.Contents
         public override void Update(object newValue, object index)
         {
             var oldValue = Value;
+            NotifyContentChanging(index, oldValue, Value);
             if (index != null)
             {
                 var collectionDescriptor = Descriptor as CollectionDescriptor;

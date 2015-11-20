@@ -43,7 +43,10 @@ namespace SiliconStudio.Quantum.Contents
         public bool ShouldProcessReference { get; internal set; }
 
         /// <inheritdoc/>
-        public event EventHandler<ContentChangedEventArgs> Changed;
+        public event EventHandler<ContentChangeEventArgs> Changing;
+
+        /// <inheritdoc/>
+        public event EventHandler<ContentChangeEventArgs> Changed;
 
         /// <inheritdoc/>
         public virtual object Retrieve(object index)
@@ -76,6 +79,17 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <summary>
+        /// Raises the <see cref="Changing"/> event with the given parameters.
+        /// </summary>
+        /// <param name="index">The index where the change occurred, if applicable. <c>null</c> otherwise.</param>
+        /// <param name="oldValue">The old value of this content.</param>
+        /// <param name="newValue">The new value of this content.</param>
+        protected void NotifyContentChanging(object index, object oldValue, object newValue)
+        {
+            Changing?.Invoke(this, new ContentChangeEventArgs(this, index, oldValue, newValue));
+        }
+
+        /// <summary>
         /// Raises the <see cref="Changed"/> event with the given parameters.
         /// </summary>
         /// <param name="index">The index where the change occurred, if applicable. <c>null</c> otherwise.</param>
@@ -83,7 +97,7 @@ namespace SiliconStudio.Quantum.Contents
         /// <param name="newValue">The new value of this content.</param>
         protected void NotifyContentChanged(object index, object oldValue, object newValue)
         {
-            Changed?.Invoke(this, new ContentChangedEventArgs(this, index, oldValue, newValue));
+            Changed?.Invoke(this, new ContentChangeEventArgs(this, index, oldValue, newValue));
         }
     }
 }
