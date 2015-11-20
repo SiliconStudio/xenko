@@ -23,7 +23,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="viewModelProvider">A function that returns an <see cref="ObservableViewModel"/> for an given <see cref="ObservableViewModelIdentifier"/>.</param>
         public ObservableViewModelService(Func<ObservableViewModelIdentifier, ObservableViewModel> viewModelProvider)
         {
-            if (viewModelProvider == null) throw new ArgumentNullException("viewModelProvider");
+            if (viewModelProvider == null) throw new ArgumentNullException(nameof(viewModelProvider));
             ViewModelProvider = viewModelProvider;
             ObservableNodeFactory = ObservableViewModel.DefaultObservableNodeFactory;
         }
@@ -37,7 +37,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets or sets a method that retrieves the currently active <see cref="ObservableViewModel"/>. This method is used to get the current observable
         /// view model matching a Quantum object when using undo/redo features, since observable objects can be destroyed and recreated frequently.
         /// </summary>
-        public Func<ObservableViewModelIdentifier, ObservableViewModel> ViewModelProvider { get; private set; }
+        public Func<ObservableViewModelIdentifier, ObservableViewModel> ViewModelProvider { get; }
 
         /// <summary>
         /// Raised when a node is initialized, either during the construction of the <see cref="ObservableViewModel"/> or during the refresh of a
@@ -58,8 +58,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// <returns>A reference to the <see cref="ObservableNode"/> corresponding to the given path of the given view model if available, <c>nulll</c> otherwise.</returns>
         public ObservableNode ResolveObservableNode(ObservableViewModelIdentifier identifier, string observableNodePath)
         {
-            var observableViewModel = ViewModelProvider != null ? ViewModelProvider(identifier) : null;
-            return observableViewModel != null ? observableViewModel.ResolveObservableNode(observableNodePath) as ObservableNode : null;
+            var observableViewModel = ViewModelProvider?.Invoke(identifier);
+            return observableViewModel?.ResolveObservableNode(observableNodePath) as ObservableNode;
         }
 
         /// <summary>
@@ -68,9 +68,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="node">The node that has been modified.</param>
         internal void NotifyNodeInitialized(SingleObservableNode node)
         {
-            var handler = NodeInitialized;
-            if (handler != null)
-                handler(this, new NodeInitializedEventArgs(node));
+            NodeInitialized?.Invoke(this, new NodeInitializedEventArgs(node));
         }
     }
 }
