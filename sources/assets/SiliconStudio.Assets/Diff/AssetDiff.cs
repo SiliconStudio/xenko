@@ -204,14 +204,26 @@ namespace SiliconStudio.Assets.Diff
         {
             var node = diff3.Asset1Node ?? diff3.Asset2Node ?? diff3.BaseNode;
             var dataVisitMember = node as DataVisitMember;
-            var diffMember = dataVisitMember?.MemberDescriptor.GetCustomAttributes<DiffMemberAttribute>(true).FirstOrDefault();
-            if (diffMember != null)
+            if (dataVisitMember != null)
             {
-                if (diffMember.PreferredChange.HasValue)
-                    diff3.ChangeType = diffMember.PreferredChange.Value;
+                var diffMember = dataVisitMember.MemberDescriptor.GetCustomAttributes<DiffMemberAttribute>(true).FirstOrDefault();
+                if (diffMember != null)
+                {
+                    if (diffMember.PreferredChange.HasValue)
+                        diff3.ChangeType = diffMember.PreferredChange.Value;
 
-                diff3.Weight = diffMember.Weight;
+                    diff3.Weight = diffMember.Weight;
+                }
             }
+
+            var memberBase = (diff3.BaseNode) as DataVisitMember;
+            var memberAsset1 = (diff3.Asset1Node) as DataVisitMember;
+            var memberAsset2 = (diff3.Asset2Node) as DataVisitMember;
+            var baseOverride = memberBase?.Parent.Instance.GetOverride(memberBase.MemberDescriptor) ?? OverrideType.Base;
+            var member1Override = memberAsset1?.Parent.Instance.GetOverride(memberAsset1.MemberDescriptor) ?? OverrideType.Base;
+            var member2Override = memberAsset2?.Parent.Instance.GetOverride(memberAsset2.MemberDescriptor) ?? OverrideType.Base;
+
+            // TODO: Add code for Override
 
             var baseAsset1Equals = Equals(baseNodeDesc.Instance, asset1NodeDesc.Instance);
             var baseAsset2Equals = Equals(baseNodeDesc.Instance, asset2NodeDesc.Instance);

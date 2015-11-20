@@ -60,6 +60,7 @@
     <Compile Include="Analysis\ContentLinkType.cs" />
     <Compile Include="Analysis\PackageAnalysis.cs" />
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
+    <Compile Include="Analysis\PackageAssetTemplatingAnalysis.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
     <Compile Include="AssetCloner.cs" />
     <Compile Include="Analysis\AssetCollision.cs" />
