@@ -183,6 +183,8 @@
     <Reference Include="System.Core" />
     <Compile Include="Build\TestBuilder.cs" />
     <Compile Include="EngineTestBase.cs" />
+    <Compile Include="EntityUpdateEngineTest.cs" />
+    <Compile Include="AnimatedModelTests.cs" />
     <Compile Include="SpriteProviderTests.cs" />
     <Compile Include="SpriteRenderer2DTests.cs" />
     <Compile Include="SpriteRenderer3DTests.cs" />
@@ -192,6 +194,7 @@
     <Compile Include="TestCamera.cs" />
     <Compile Include="SpriteAnimationTest.cs" />
     <Compile Include="TesselationTest.cs" />
+    <Compile Include="TestUpdateEngine.cs" />
     <None Include="Build\TestSerializer.cs" />
     <Compile Include="Build\TestStorage.cs" />
     <Compile Include="Module.cs" />

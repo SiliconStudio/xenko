@@ -5,6 +5,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Engine.Processors;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -13,6 +14,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("ScriptComponent")]
     [Display(1000, "Scripts", Expand = ExpandRule.Once)]
+    [DefaultEntityComponentProcessor(typeof(ScriptProcessor), ExecutionMode = ExecutionMode.Runtime)]
     public sealed class ScriptComponent : EntityComponent
     {
         public static PropertyKey<ScriptComponent> Key = new PropertyKey<ScriptComponent>("Key", typeof(ScriptComponent));

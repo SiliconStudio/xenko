@@ -1,6 +1,6 @@
 !Package
 Id: 637e7e88-bc09-4ddd-95eb-00114fd32e5e
-SerializedVersion: 2
+SerializedVersion: {Assets: 0.0.2}
 Tags: []
 Meta:
     Name: SiliconStudio.Xenko.Audio.Tests
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.4.0-beta
+            Version: 1.5.0-alpha02
             RootAssets: []
 LocalDependencies: []
 Profiles:

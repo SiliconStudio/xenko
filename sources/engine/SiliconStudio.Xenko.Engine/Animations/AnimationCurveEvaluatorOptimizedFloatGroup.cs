@@ -5,7 +5,7 @@ using System;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public class AnimationCurveEvaluatorOptimizedFloatGroup : AnimationCurveEvaluatorOptimizedGroup<float>
+    public class AnimationCurveEvaluatorOptimizedFloatGroup : AnimationCurveEvaluatorOptimizedBlittableGroupBase<float>
     {
         protected unsafe override void ProcessChannel(ref Channel channel, CompressedTimeSpan currentTime, IntPtr location, float factor)
         {

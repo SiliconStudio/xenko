@@ -40,14 +40,25 @@ namespace SiliconStudio.Assets
         public static AssetItem FindAssetFromAttachedReference(this PackageSession session, object obj)
         {
             var reference = AttachedReferenceManager.GetAttachedReference(obj);
-            return reference != null ? FindAsset(session, reference.Id) : null;
+            return reference != null ? (FindAsset(session, reference.Id) ?? FindAsset(session, reference.Url)) : null;
         }
 
         /// <summary>
-        /// Create a <see cref="PackageSession"/> that can be used to compile an <see cref="AssetItem"/> by analyzing and resolving its dependencies.
+        /// Create a <see cref="Package"/> that can be used to compile an <see cref="AssetItem"/> by analyzing and resolving its dependencies.
         /// </summary>
         /// <returns>The package packageSession that can be used to compile the asset item.</returns>
-        public static PackageSession CreateCompilePackageFromAsset(this PackageSession session, AssetItem originalAssetItem)
+        public static Package CreateCompilePackageFromAsset(this PackageSession session, AssetItem originalAssetItem)
+        {
+            // create the compile root package and package session
+            var assetPackageCloned = new Package();
+            var compilePackageSession = new PackageSession(assetPackageCloned);
+
+            AddAssetToCompilePackage(session, originalAssetItem, assetPackageCloned);
+
+            return assetPackageCloned;
+        }
+
+        public static void AddAssetToCompilePackage(this PackageSession session, AssetItem originalAssetItem, Package assetPackageCloned)
         {
             if (originalAssetItem == null) throw new ArgumentNullException("originalAssetItem");
 
@@ -65,11 +76,8 @@ namespace SiliconStudio.Assets
             // Store the fullpath to the sourcefolder, this avoid us to clone hierarchy of packages
             assetItemRootCloned.SourceFolder = assetItem.FullPath.GetParent();
 
-            // create the compile root package and package session
-            var assetPackageCloned = new Package();
-            var compilePackageSession = new PackageSession(assetPackageCloned);
-
-            assetPackageCloned.Assets.Add(assetItemRootCloned);
+            if (assetPackageCloned.Assets.Find(assetItemRootCloned.Id) == null)
+                assetPackageCloned.Assets.Add(assetItemRootCloned);
 
             // For each asset item dependency, clone it in the new package
             foreach (var assetLink in dependencies.LinksOut)
@@ -85,8 +93,6 @@ namespace SiliconStudio.Assets
                     assetPackageCloned.Assets.Add(itemCloned);
                 }
             }
-
-            return compilePackageSession;
         }
     }
 }

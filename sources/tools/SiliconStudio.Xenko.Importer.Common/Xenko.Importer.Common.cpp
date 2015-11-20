@@ -30,6 +30,7 @@ public:
 	String^ MaterialName;
 	String^ MeshName;
 	String^ NodeName;
+	HashSet<String^>^ BoneNodes;
 };
 
 public ref class NodeInfo
@@ -55,6 +56,7 @@ public ref class MeshMaterials
 public:
 	Dictionary<String^, MaterialAsset^>^ Materials;
 	List<MeshParameters^>^ Models;
+	List<String^>^ BoneNodes;
 };
 
 public ref class TextureLayerGenerator

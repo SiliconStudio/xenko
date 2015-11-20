@@ -3,6 +3,7 @@
 using System;
 using System.Windows;
 using System.Windows.Threading;
+using SiliconStudio.Presentation.Resources;
 using SiliconStudio.Presentation.Services;
 using MessageBoxButton = SiliconStudio.Presentation.Services.MessageBoxButton;
 using MessageBoxImage = SiliconStudio.Presentation.Services.MessageBoxImage;
@@ -42,6 +43,21 @@ namespace SiliconStudio.Presentation.Dialogs
         {
             var parentWindow = ParentWindow;
             return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, button, image));
+        }
+
+        public MessageBoxResult ShowCheckedMessageBox(string message, string caption, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
+        {
+            return ShowCheckedMessageBox(message, caption, Strings.DontAskMeAgain, ref isChecked, button, image);
+        }
+
+        public MessageBoxResult ShowCheckedMessageBox(string message, string caption, string checkedMessage, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
+        {
+            var parentWindow = ParentWindow;
+            var localIsChecked = isChecked;
+            var result = dispatcher.Invoke(() =>
+                Windows.CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage, ref localIsChecked));
+            isChecked = localIsChecked;
+            return result;
         }
 
         public void CloseCurrentWindow(bool? dialogResult = null)
