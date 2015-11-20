@@ -20,6 +20,8 @@
   <ItemGroup>
     <Compile Include="Initializers\InitializerBase.cs" />
     <Compile Include="Initializers\TestInitializer.cs" />
+    <Compile Include="Materials\ParticleMaterialBase.cs" />
+    <Compile Include="Materials\ParticleMaterialTexture.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Modules\GravityUpdater.cs" />
     <Compile Include="Modules\OldPositionUpdater.cs" />
