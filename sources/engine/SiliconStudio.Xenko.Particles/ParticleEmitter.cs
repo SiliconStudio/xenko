@@ -8,14 +8,15 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Initializers;
 using SiliconStudio.Xenko.Particles.Modules;
+using SiliconStudio.Xenko.Particles.ShapeBuilders;
 using SiliconStudio.Xenko.Particles.Spawner;
 
 namespace SiliconStudio.Xenko.Particles
 {
     [DataContract("ParticleEmitter")]
-    [Category]
     public class ParticleEmitter
     {
         [DataMember(30)]
@@ -41,13 +42,13 @@ namespace SiliconStudio.Xenko.Particles
 
         #region Modules
 
-        [DataMember(40)]
+        [DataMember(200)]
         [Display("Initializers", Expand = ExpandRule.Always)]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
         public readonly TrackingCollection<InitializerBase> Initializers;
 
-        [DataMember(50)]
+        [DataMember(300)]
         [Display("Updaters", "Description", Expand = ExpandRule.Always)]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
@@ -208,6 +209,23 @@ namespace SiliconStudio.Xenko.Particles
             }
 
             // This line can be reached when a AddModule was unsuccessful and the required fields should be cleaned up
+        }
+
+        #endregion
+
+        #region Rendering
+
+        [DataMember(40)]
+        [Display("Shape")]
+        [NotNull]
+        public ShapeBuilderBase ShapeBuilder;
+
+        public int BuildVertexBuffer(MappedResource vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)
+        {
+            if (ShapeBuilder == null)
+                ShapeBuilder = new BillboardBuilder();
+
+            return ShapeBuilder.BuildVertexBuffer(vertexBuffer, invViewX, invViewY, ref remainingCapacity, pool);
         }
 
         #endregion
