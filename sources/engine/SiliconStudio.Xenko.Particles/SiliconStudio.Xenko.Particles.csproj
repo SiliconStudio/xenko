@@ -34,7 +34,10 @@
     <Compile Include="ParticlePool.cs" />
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="ParticleUtilities.cs" />
+    <Compile Include="ParticleVertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ShapeBuilders\BillboardBuilder.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilderBase.cs" />
     <Compile Include="Spawner\SpawnerBase.cs" />
     <Compile Include="Spawner\SpawnerPerFrame.cs" />
     <Compile Include="Spawner\SpawnerPerSecond.cs" />
@@ -51,6 +54,18 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
       <Name>SiliconStudio.Xenko.Graphics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
+      <Project>{e8b3553f-a79f-4e50-b75b-acee771c320c}</Project>
+      <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders\SiliconStudio.Xenko.Shaders.csproj">
+      <Project>{273bdd15-7392-4078-91f0-af23594a3d7b}</Project>
+      <Name>SiliconStudio.Xenko.Shaders</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
+      <Project>{72390339-b2a1-4f61-a800-31ed0975b515}</Project>
+      <Name>SiliconStudio.Xenko</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

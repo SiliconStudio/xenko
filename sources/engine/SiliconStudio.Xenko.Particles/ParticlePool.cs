@@ -86,6 +86,20 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
+        /// Get the number of living (active) particles
+        /// </summary>
+        public int LivingParticles
+        {
+            get
+            {
+                if (listPolicy == ListPolicy.Ring)
+                    return ParticleCapacity;
+
+                return (nextFreeIndex);
+            }
+        }
+
+        /// <summary>
         /// For ring implementations, the index just increases, looping when it reaches max count.
         /// For stack implementations, the index points to the top of the stack and can reach 0 when there are no living particles.
         /// </summary>
