@@ -30,21 +30,22 @@ namespace SiliconStudio.Quantum
         public DefaultModelBuilder(ModelContainer modelContainer)
         {
             ModelContainer = modelContainer;
-            PrimitiveTypes = new List<Type>();
-            AvailableCommands = new List<INodeCommand>();
-            ContentFactory = new DefaultContentFactory();
         }
 
         /// <inheritdoc/>
         public ModelContainer ModelContainer { get; }
         
         /// <inheritdoc/>
-        public ICollection<Type> PrimitiveTypes { get; }
-        
-        /// <inheritdoc/>
-        public ICollection<INodeCommand> AvailableCommands { get; }
+        public ICollection<Type> PrimitiveTypes { get; } = new List<Type>();
 
-        public IContentFactory ContentFactory { get; set; }
+        /// <inheritdoc/>
+        public ICollection<INodeCommand> AvailableCommands { get; } = new List<INodeCommand>();
+
+        /// <inheritdoc/>
+        public IContentFactory ContentFactory { get; set; } = new DefaultContentFactory();
+
+        /// <inheritdoc/>
+        public Func<string, IContent, Guid, IGraphNode> NodeFactory { get; set; } = (name, content, guid) => new ModelNode(name, content, guid);
 
         /// <inheritdoc/>
         public event EventHandler<NodeConstructingArgs> NodeConstructing;

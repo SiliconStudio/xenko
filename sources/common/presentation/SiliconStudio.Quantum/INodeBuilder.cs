@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Commands;
+using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
@@ -29,6 +30,16 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <value>The type descriptor factory.</value>
         ITypeDescriptorFactory TypeDescriptorFactory { get; }
+
+        /// <summary>
+        /// Gets or sets the factory that will create instances of <see cref="IContent"/> for nodes.
+        /// </summary>
+        IContentFactory ContentFactory { get; set; }
+
+        /// <summary>
+        /// Gets or sets the factory that will create nodes.
+        /// </summary>
+        Func<string, IContent, Guid, IGraphNode> NodeFactory { get; set; }
 
         /// <summary>
         /// Gets the collection of available commands to attach to nodes.
