@@ -108,7 +108,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(item,
                         (guid, location) =>
                         {
-                            var newValue = AssetReference.New(descriptor.ElementType, guid.HasValue ? guid.Value : assetReference.Id, location);
+                            var newValue = new AssetReference(guid.HasValue ? guid.Value : assetReference.Id, location);
                             array.SetValue(newValue, index);
                             return newValue;
                         });
@@ -165,7 +165,7 @@ namespace SiliconStudio.Assets.Analysis
                 if (assetReference != null)
                 {
                     var list = (IList)collection;
-                    AddLink(assetReference, (guid, location) => list[index] = AssetReference.New(descriptor.ElementType, guid.HasValue ? guid.Value : assetReference.Id, location));
+                    AddLink(assetReference, (guid, location) => list[index] = new AssetReference(guid.HasValue ? guid.Value : assetReference.Id, location));
                 }
                 else if (assetBase != null)
                 {
@@ -200,7 +200,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(assetReference,
                         (guid, location) =>
                         {
-                            var newValue = AssetReference.New(descriptor.ValueType, guid.HasValue ? guid.Value : assetReference.Id, location);
+                            var newValue = new AssetReference(guid.HasValue ? guid.Value : assetReference.Id, location);
                             descriptor.SetValue(dictionaryObj, key, newValue);
                             return newValue;
                         });
@@ -258,7 +258,7 @@ namespace SiliconStudio.Assets.Analysis
                     AddLink(assetReference,
                         (guid, location) =>
                         {
-                            var newValue = AssetReference.New(member.Type, guid.HasValue ? guid.Value : assetReference.Id, location);
+                            var newValue = new AssetReference(guid.HasValue ? guid.Value : assetReference.Id, location);
                             member.Set(container, newValue);
                             return newValue;
                         });

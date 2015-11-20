@@ -200,7 +200,7 @@ namespace SiliconStudio.Assets.Analysis
 
                 if (changed)
                 {
-                    var newRootAsset = new AssetReference<Asset>(id, location);
+                    var newRootAsset = new AssetReference(id, location);
                     rootAssetCollection.Remove(rootAsset.Id);
                     rootAssetCollection.Add(newRootAsset);
                 }

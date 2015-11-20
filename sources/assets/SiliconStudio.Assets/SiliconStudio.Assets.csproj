@@ -76,7 +76,7 @@
     <Compile Include="AssetMigrationContext.cs" />
     <Compile Include="AssetPart.cs" />
     <Compile Include="AssetPropertyKeyNameResolver.cs" />
-    <Compile Include="AssetReferenceDataSerializer.cs" />
+    <Compile Include="Serializers\AssetReferenceDataSerializer.cs" />
     <Compile Include="AssetSelector.cs" />
     <Compile Include="AssetFormatVersionAttribute.cs" />
     <Compile Include="AssetToImportMergeGroup.cs" />

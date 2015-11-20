@@ -138,7 +138,7 @@ namespace SiliconStudio.Assets
         /// <returns>AssetReference.</returns>
         public AssetReference ToReference()
         {
-            return new AssetReference<Asset>(Id, Location);
+            return new AssetReference(Id, Location);
         }
 
         /// <summary>

@@ -218,7 +218,7 @@ namespace SiliconStudio.Assets.Analysis
                 if (newLocationWithoutExtension != rootAsset.Location || newItemReference.Id != rootAsset.Id)
                 {
                     rootAssets.Remove(rootAsset.Id);
-                    rootAssets.Add(new AssetReference<Asset>(newItemReference.Id, newLocationWithoutExtension));
+                    rootAssets.Add(new AssetReference(newItemReference.Id, newLocationWithoutExtension));
                     package.IsDirty = true;
                 }
             }

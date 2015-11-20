@@ -24,7 +24,7 @@ namespace SiliconStudio.Assets.Serializers
         public override object ConvertFrom(ref ObjectContext context, Scalar fromScalar)
         {
             AssetReference assetReference;
-            if (!AssetReference.TryParse(context.Descriptor.Type, fromScalar.Value, out assetReference))
+            if (!AssetReference.TryParse(fromScalar.Value, out assetReference))
             {
                 throw new YamlException(fromScalar.Start, fromScalar.End, "Unable to decode asset reference [{0}]. Expecting format GUID:LOCATION".ToFormat(fromScalar.Value));
             }

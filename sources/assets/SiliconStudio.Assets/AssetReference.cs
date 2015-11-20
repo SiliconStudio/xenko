@@ -13,8 +13,8 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    [Obsolete("This type of reference will be removed in a future version")]
-    public abstract class AssetReference : ITypedContentReference, IEquatable<AssetReference>
+    [DataSerializer(typeof(AssetReferenceDataSerializer))]
+    public sealed class AssetReference : IContentReference, IEquatable<AssetReference>
     {
         private readonly UFile location;
         private readonly Guid id;
@@ -24,8 +24,9 @@ namespace SiliconStudio.Assets
         /// </summary>
         /// <param name="id">The unique identifier of the asset.</param>
         /// <param name="location">The location.</param>
-        internal AssetReference(Guid id, UFile location)
+        public AssetReference(Guid id, UFile location)
         {
+            if (location == null) throw new ArgumentNullException(nameof(location));
             this.location = location;
             this.id = id;
         }
@@ -107,24 +108,6 @@ namespace SiliconStudio.Assets
             return string.Format("{0}:{1}", id, location);
         }
 
-        [DataMemberIgnore]
-        public abstract Type Type { get; }
-
-        /// <summary>
-        /// Tries to parse an asset reference in the format "GUID:Location".
-        /// </summary>
-        /// <param name="referenceType">The referenceType.</param>
-        /// <param name="id">The identifier.</param>
-        /// <param name="location">The location.</param>
-        /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
-        public static AssetReference New(Type referenceType, Guid id, UFile location)
-        {
-            if (referenceType == null) throw new ArgumentNullException("referenceType");
-            if (!typeof(AssetReference).IsAssignableFrom(referenceType)) throw new ArgumentException("Reference must inherit from AssetReference", "referenceType");
-
-            return (AssetReference)Activator.CreateInstance(referenceType, id, location);            
-        }
-
         /// <summary>
         /// Tries to parse an asset reference in the format "GUID:Location".
         /// </summary>
@@ -156,13 +139,11 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Tries to parse an asset reference in the format "GUID:Location".
         /// </summary>
-        /// <param name="referenceType"></param>
         /// <param name="assetReferenceText">The asset reference.</param>
         /// <param name="assetReference">The reference.</param>
         /// <returns><c>true</c> if parsing was successful, <c>false</c> otherwise.</returns>
-        public static bool TryParse(Type referenceType, string assetReferenceText, out AssetReference assetReference)
+        public static bool TryParse(string assetReferenceText, out AssetReference assetReference)
         {
-            if (referenceType == null) throw new ArgumentNullException("referenceType");
             if (assetReferenceText == null) throw new ArgumentNullException("assetReferenceText");
 
             assetReference = null;
@@ -172,7 +153,7 @@ namespace SiliconStudio.Assets
             {
                 return false;
             }
-            assetReference = New(referenceType, guid, location);
+            assetReference = new AssetReference(guid, location);
             return true;
         }
     }
@@ -190,35 +171,6 @@ namespace SiliconStudio.Assets
         public static bool HasLocation(this AssetReference assetReference)
         {
             return assetReference != null && assetReference.Location != null;
-        }
-    }
-
-    /// <summary>
-    /// A typed content reference
-    /// </summary>
-    /// <typeparam name="T"></typeparam>
-    [DataContract("aref")]
-    [DataStyle(DataStyle.Compact)]
-    [DataSerializer(typeof(AssetReferenceDataSerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
-    [Obsolete("This type of reference will be removed in a future version")]
-    public sealed class AssetReference<T> : AssetReference where T : Asset
-    {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AssetReference" /> class.
-        /// </summary>
-        /// <param name="id">The unique identifier of the asset.</param>
-        /// <param name="location">The location.</param>
-        public AssetReference(Guid id, UFile location) : base(id, location)
-        {
-        }
-
-        [DataMemberIgnore]
-        public override Type Type
-        {
-            get
-            {
-                return typeof(T);
-            }
         }
     }
 }
