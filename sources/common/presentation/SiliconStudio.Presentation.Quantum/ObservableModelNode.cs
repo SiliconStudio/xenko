@@ -152,7 +152,7 @@ namespace SiliconStudio.Presentation.Quantum
             get { return (SourceNode.Content as OverridableMemberContent)?.Override ?? OverrideType.Base; }
             private set
             {
-                SetValue(() =>
+                SetValue(Override != value, () =>
                 {
                     var overrideContent = SourceNode.Content as OverridableMemberContent;
                     if (overrideContent != null)
