@@ -20,6 +20,29 @@ namespace SiliconStudio.ActionStack.Tests
         }
 
         [Test]
+        public void TestEvent()
+        {
+            var actionStack = new TransactionalActionStack(5);
+            int eventCount = 0;
+            using (new DirtiableManager(actionStack))
+            {
+                var dirtiable = new SimpleDirtiable();
+                dirtiable.DirtinessUpdated += (sender, e) =>
+                {
+                    Assert.AreEqual(eventCount != 0, e.OldValue);
+                    Assert.AreEqual(true, e.NewValue);
+                    eventCount++;
+                };
+                Assert.AreEqual(false, dirtiable.IsDirty);
+                actionStack.Add(new SimpleDirtiableActionItem(dirtiable.Yield()));
+                Assert.AreEqual(true, dirtiable.IsDirty);
+                actionStack.Add(new SimpleDirtiableActionItem(dirtiable.Yield()));
+                Assert.AreEqual(true, dirtiable.IsDirty);
+                Assert.AreEqual(2, eventCount);
+            }
+        }
+
+        [Test]
         public void TestDoAndSave()
         {
             var actionStack = new TransactionalActionStack(5);

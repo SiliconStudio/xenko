@@ -130,7 +130,7 @@ namespace SiliconStudio.ActionStack
             }
 
             // Finally propagate the update
-            foreach (var dirtiable in dirtiablesToUpdate.Where(x => x.Key.IsDirty != x.Value))
+            foreach (var dirtiable in dirtiablesToUpdate)
             {
                 dirtiable.Key.UpdateDirtiness(dirtiable.Value);
             }
