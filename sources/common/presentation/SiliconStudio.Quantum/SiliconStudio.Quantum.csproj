@@ -28,7 +28,7 @@
     <Compile Include="Commands\NodeCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="Commands\UncancellableCommand.cs" />
-    <Compile Include="Contents\ContentChangedEventArgs.cs" />
+    <Compile Include="Contents\ContentChangeEventArgs.cs" />
     <Compile Include="Contents\OverridableMemberContent.cs" />
     <Compile Include="DefaultContentFactory.cs" />
     <Compile Include="IContentFactory.cs" />
@@ -83,6 +83,9 @@
       <Name>SiliconStudio.ActionStack</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="ActionStack\" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

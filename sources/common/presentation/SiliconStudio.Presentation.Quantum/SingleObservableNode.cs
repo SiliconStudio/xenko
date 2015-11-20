@@ -86,7 +86,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected void RegisterValueChangedAction(string path, DirtiableActionItem actionItem)
         {
-            Owner.RegisterAction(path, actionItem);
+            Owner.RegisterAction(path);
         }
 
         private void SetName(string nodeName)
