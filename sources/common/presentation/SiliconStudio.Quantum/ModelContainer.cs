@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -18,6 +18,7 @@ namespace SiliconStudio.Quantum
         private readonly Dictionary<Guid, IGraphNode> modelsByGuid = new Dictionary<Guid, IGraphNode>();
         private readonly IGuidContainer guidContainer;
         private readonly object lockObject = new object();
+        private readonly Dictionary<IContent, WeakReference<IGraphNode>> modelsByContent = new Dictionary<IContent, WeakReference<IGraphNode>>();
 
         /// <summary>
         /// Create a new instance of <see cref="ModelContainer"/>.
@@ -69,6 +70,22 @@ namespace SiliconStudio.Quantum
                 if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
                 Guid guid = guidContainer.GetGuid(rootObject);
                 return guid == Guid.Empty ? null : GetModelNode(guid);
+            }
+        }
+
+        public IGraphNode GetModelNode(IContent content)
+        {
+            lock (lockObject)
+            {
+                WeakReference<IGraphNode> reference;
+                modelsByContent.TryGetValue(content, out reference);
+                if (reference != null)
+                {
+                    IGraphNode node;
+                    reference.TryGetTarget(out node);
+                    return node;
+                }
+                return null;
             }
         }
 
@@ -190,6 +207,11 @@ namespace SiliconStudio.Quantum
             {
                 // Register reference objects
                 modelsByGuid.Add(result.Guid, result);
+                modelsByContent.Add(result.Content, new WeakReference<IGraphNode>(result));
+                foreach (var child in result.Children.SelectDeep(x => x.Children))
+                {
+                    modelsByContent.Add(child.Content, new WeakReference<IGraphNode>(child));
+                }
 
                 // Create or update model for referenced objects
                 UpdateReferences(result);

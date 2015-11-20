@@ -42,11 +42,11 @@ namespace SiliconStudio.Quantum
                 switch (Type)
                 {
                     case ElementType.Member:
-                        return string.Format(".{0}", Value);
+                        return $".{Value}";
                     case ElementType.Target:
                         return "-> (Target)";
                     case ElementType.Index:
-                        return string.Format("[{0}]", Value);
+                        return $"[{Value}]";
                     default:
                         throw new ArgumentOutOfRangeException();
                 }
@@ -76,7 +76,7 @@ namespace SiliconStudio.Quantum
         /// <summary>
         /// Gets whether this path is a valid path.
         /// </summary>
-        public bool IsValid { get { return path.Count > 0 || targetIsRootNode; } }
+        public bool IsValid => path.Count > 0 || targetIsRootNode;
 
         /// <summary>
         /// Gets the source node corresponding to this path.
@@ -186,16 +186,13 @@ namespace SiliconStudio.Quantum
             foreach (var child in parentNode.Children)
             {
                 enumerableReference = child.Content.Reference as ReferenceEnumerable;
-                if (enumerableReference != null)
+                var reference = enumerableReference?.FirstOrDefault(x => x.TargetNode == target);
+                if (reference != null)
                 {
-                    ObjectReference reference = enumerableReference.FirstOrDefault(x => x.TargetNode == target);
-                    if (reference != null)
-                    {
-                        // The target is the node referenced by one of the children of the parent at a given index.
-                        result.path.Add(new NodePathElement { Type = ElementType.Member, Value = child.Name });
-                        result.path.Add(new NodePathElement { Type = ElementType.Index, Value = reference.Index });
-                        return result;
-                    }
+                    // The target is the node referenced by one of the children of the parent at a given index.
+                    result.path.Add(new NodePathElement { Type = ElementType.Member, Value = child.Name });
+                    result.path.Add(new NodePathElement { Type = ElementType.Index, Value = reference.Index });
+                    return result;
                 }
             }
             return null;
@@ -233,7 +230,7 @@ namespace SiliconStudio.Quantum
                     if (elementValue == null) throw new ArgumentException("The value must be non-null when type is ElementType.Target.");
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("type");
+                    throw new ArgumentOutOfRangeException(nameof(type));
             }
             result.path.Add(new NodePathElement { Type = type, Value = elementValue });
             return result;

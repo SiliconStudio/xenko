@@ -409,6 +409,8 @@ namespace SiliconStudio.Presentation.Quantum
 
     public class ObservableModelNode<T> : ObservableModelNode
     {
+        private bool isUpdating;
+
         /// <summary>
         /// Construct a new <see cref="ObservableModelNode"/>.
         /// </summary>
@@ -423,6 +425,8 @@ namespace SiliconStudio.Presentation.Quantum
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
+            SourceNode.Content.Changing += ContentChanging;
+            SourceNode.Content.Changed += ContentChanged;
         }
 
         /// <summary>
@@ -437,6 +441,7 @@ namespace SiliconStudio.Presentation.Quantum
             set
             {
                 AssertInit();
+                isUpdating = true;
                 var previousValue = (T)GetModelContentValue();
                 bool hasChanged = !Equals(previousValue, value);
                 var parent = Parent;
@@ -464,6 +469,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                     RegisterValueChangedAction(Path, CreateValueChangedActionItem(previousValue, value));
                 }
+                isUpdating = false;
             }
         }
 
@@ -472,5 +478,23 @@ namespace SiliconStudio.Presentation.Quantum
 
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
+
+        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        {
+            if (!isUpdating)
+                OnPropertyChanging(nameof(TypedValue));
+        }
+
+        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        {
+            if (!IsPrimitive)
+            {
+                Refresh();
+            }
+
+            if (!isUpdating)
+                OnPropertyChanged(nameof(TypedValue));
+        }
+
     }
 }

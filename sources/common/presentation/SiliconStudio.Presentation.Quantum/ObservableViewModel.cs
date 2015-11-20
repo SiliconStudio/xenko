@@ -186,11 +186,10 @@ namespace SiliconStudio.Presentation.Quantum
                 nodeChangeList.Add(observableNodePath);
         }
 
-        internal void RegisterAction(string observableNodePath, DirtiableActionItem actionItem)
+        internal void RegisterAction(string observableNodePath)
         {
             // This must be done before adding the action item to the stack!
             NotifyNodeChanged(observableNodePath);
-            ActionStack.Add(actionItem);
         }
 
         internal void BeginCombinedAction()

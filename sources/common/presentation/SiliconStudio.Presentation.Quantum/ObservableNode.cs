@@ -152,6 +152,7 @@ namespace SiliconStudio.Presentation.Quantum
         public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
 
         /// <inheritdoc/>
+        [Obsolete("This event is deprecated, IContent.Changed should be used instead")] // Unless needed for virtual/combined nodes?
         public event EventHandler<EventArgs> ValueChanged;
         
         /// <inheritdoc/>

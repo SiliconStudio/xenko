@@ -32,6 +32,8 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         public IMemberDescriptor Member { get; protected set; }
 
+        public string Name => modelNode?.Name;
+
         /// <inheritdoc/>
         public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
 
@@ -70,6 +72,7 @@ namespace SiliconStudio.Quantum.Contents
 
         private void UpdateReferences()
         {
+            // TODO: move this out of the content to avoid referencing the node (and delete IUpdatableContent)
             if (modelContainer != null && modelNode != null)
             {
                 modelContainer.UpdateReferences(modelNode);
