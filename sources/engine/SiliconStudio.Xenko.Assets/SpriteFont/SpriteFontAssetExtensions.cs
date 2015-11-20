@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.SpriteFont.Compiler;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Font;
@@ -29,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             var textures = staticFont.Textures;
             
             var imageType = ImageFileType.Xenko;
-            var textureFileName = texturePath + imageType.ToFileExtension();
+            var textureFileName = new UFile(texturePath).GetFullPathWithoutExtension() + imageType.ToFileExtension();
 
             if (textures != null && textures.Count == 0)
             {
