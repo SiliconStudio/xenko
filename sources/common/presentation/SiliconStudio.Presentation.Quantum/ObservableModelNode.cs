@@ -118,7 +118,7 @@ namespace SiliconStudio.Presentation.Quantum
             }
 
             FinalizeChildrenInitialization();
-            
+
             CheckDynamicMemberConsistency();
         }
 
@@ -146,6 +146,20 @@ namespace SiliconStudio.Presentation.Quantum
         // To distinguish between dictionaries and items of a dictionary (which have the same TargetNode if the value type is a primitive type), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
         //public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
+
+        public OverrideType Override
+        {
+            get { return (SourceNode.Content as OverridableMemberContent)?.Override ?? OverrideType.Base; }
+            private set
+            {
+                SetValue(() =>
+                {
+                    var overrideContent = SourceNode.Content as OverridableMemberContent;
+                    if (overrideContent != null)
+                        overrideContent.Override = value;
+                });
+            }
+        }
 
         internal Guid ModelGuid => SourceNode.Guid;
    
@@ -260,6 +274,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (!Equals(oldValue, newValue))
             {
                 node.Content.Update(newValue, Index);
+                Override = OverrideType.New;
                 return true;
             }
             return false;

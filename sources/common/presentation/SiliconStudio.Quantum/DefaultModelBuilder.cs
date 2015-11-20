@@ -94,7 +94,7 @@ namespace SiliconStudio.Quantum
                 IContent content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type))
                                                 : ContentFactory.CreateObjectContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type), shouldProcessReference);
                 currentDescriptor = content.Descriptor;
-                rootNode = new ModelNode(currentDescriptor.Type.Name, content, rootGuid);
+                rootNode = (ModelNode)NodeFactory(currentDescriptor.Type.Name, content, rootGuid);
                 if (content.IsReference && currentDescriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
 
@@ -213,7 +213,7 @@ namespace SiliconStudio.Quantum
             // If this member should contains a reference, create it now.
             ModelNode containerNode = GetContextNode();
             IContent content = ContentFactory.CreateMemberContent(this, containerNode.Content, member, IsPrimitiveType(member.Type), value, shouldProcessReference);
-            var node = new ModelNode(member.Name, content, Guid.NewGuid());
+            var node = (ModelNode)NodeFactory(member.Name, content, Guid.NewGuid());
             containerNode.AddChild(node);
 
             if (content.IsReference)
