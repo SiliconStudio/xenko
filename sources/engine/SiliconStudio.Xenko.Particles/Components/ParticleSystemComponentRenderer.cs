@@ -7,13 +7,13 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Particles;
 using SiliconStudio.Xenko.Rendering.Sprites;
 using SiliconStudio.Xenko.Shaders.Compiler;
 using System.Runtime.CompilerServices;
-using SiliconStudio.Xenko.Particles;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Xenko.Rendering
+namespace SiliconStudio.Xenko.Particles.Components
 {
     /// <summary>
     /// This <see cref="ParticleSystemComponentRenderer"/> is responsible for preparing and rendering the particles for a specific pass.
@@ -177,12 +177,14 @@ namespace SiliconStudio.Xenko.Rendering
 
                         var normalizedCenter = new Vector2(sprite.Center.X / sourceRegion.Width - 0.5f, 0.5f - sprite.Center.Y / sourceRegion.Height);
 
-                        var centerOffset = Vector2.Modulate(normalizedCenter, sprite.SizeInternal);
+                        Vector2 spriteSize = new Vector2(1, 1);
+
+                        var centerOffset = Vector2.Modulate(normalizedCenter, spriteSize);
                         worldMatrix.M41 -= centerOffset.X * worldMatrix.M11 + centerOffset.Y * worldMatrix.M21;
                         worldMatrix.M42 -= centerOffset.X * worldMatrix.M12 + centerOffset.Y * worldMatrix.M22;
                         worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23;
 
-                        sprite3DBatch.Draw(sourceTexture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+                        sprite3DBatch.Draw(sourceTexture, ref worldMatrix, ref sourceRegion, ref spriteSize, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
                     }
                 }
 

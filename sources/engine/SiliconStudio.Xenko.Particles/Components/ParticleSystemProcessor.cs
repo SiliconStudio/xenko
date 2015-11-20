@@ -1,12 +1,11 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
+﻿
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Rendering;
 
-namespace SiliconStudio.Xenko.Rendering.Particles
+namespace SiliconStudio.Xenko.Particles.Components
 {
     class ParticleSystemProcessor : EntityProcessor<ParticleSystemProcessor.ParticleSystemComponentState>
     {
@@ -19,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Particles
             ParticleSystems = new List<ParticleSystemComponentState>();
         }
 
-        protected internal override void OnSystemAdd()
+        protected override void OnSystemAdd()
         {
         }
 
