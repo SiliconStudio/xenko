@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Graphics.Font;
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
     [DataContract("PregeneratedSpriteFont")]
-    [AssetDescription(FileExtension)]
+    [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(PrecompiledSpriteFontAssetCompiler))]
     [Display(105, "Pregenerated Sprite Font")]
     public class PrecompiledSpriteFontAsset : AssetImport
