@@ -16,6 +16,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         public SpriteSheet SpriteSheet { get; set; }
 
         [DataMemberIgnore]
-        public Dictionary<int, Sprite> Sprites { get; internal set; }
+        public Sprite[] Sprites { get; internal set; }
     }
 }

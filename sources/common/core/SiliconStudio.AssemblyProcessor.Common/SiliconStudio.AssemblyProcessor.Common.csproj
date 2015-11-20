@@ -101,11 +101,15 @@
     <Compile Include="AssemblyVersionProcessor.cs" />
     <Compile Include="AsyncBridgeProcessor.cs" />
     <Compile Include="CecilArraySerializerFactory.cs" />
+    <Compile Include="ComplexSerializerGenerator.cs" />
     <Compile Include="Core\Utilities.cs" />
     <Compile Include="CustomAssemblyResolver.cs" />
+    <Compile Include="DataContractAliasProcessor.cs" />
+    <Compile Include="FixupValueTypeVisitor.cs" />
     <Compile Include="GenerateUserDocumentationProcessor.cs" />
     <Compile Include="OpenSourceSignProcessor.cs" />
     <Compile Include="ProfileSerializerProcessor.cs" />
+    <Compile Include="SerializationProcessor.cs" />
     <Compile Include="Serializers\CecilComplexClassSerializerProcessor.cs" />
     <Compile Include="CecilEnumSerializerFactory.cs" />
     <Compile Include="CecilExtensions.cs" />
@@ -119,7 +123,7 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="ComplexClassSerializerGenerator.Members.cs" />
-    <Compile Include="ComplexSerializerGenerator.cs" />
+    <Compile Include="RoslynCodeMerger.cs" />
     <Compile Include="ComplexTypeSerializerFlags.cs" />
     <Compile Include="ComplexClassSerializerGenerator.cs">
       <DependentUpon>ComplexClassSerializerGenerator.tt</DependentUpon>
@@ -140,8 +144,10 @@
     <Compile Include="Serializers\ReferencedAssemblySerializerProcessor.cs" />
     <Compile Include="RenameAssemblyProcessor.cs" />
     <Compile Include="ResolveGenericsVisitor.cs" />
-    <Compile Include="SerializationProcessor.cs" />
+    <Compile Include="RoslynExtraCodeProcessor.cs" />
     <Compile Include="TypeReferenceEqualityComparer.cs" />
+    <Compile Include="UpdateEngineProcessor.IL.cs" />
+    <Compile Include="UpdateEngineProcessor.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ComplexSerializerCodeGenerator.tt">
@@ -157,7 +163,6 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
-  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">

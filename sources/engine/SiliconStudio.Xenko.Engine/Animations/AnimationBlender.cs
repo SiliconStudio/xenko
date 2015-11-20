@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Updater;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Animations
@@ -28,6 +29,7 @@ namespace SiliconStudio.Xenko.Animations
         private Dictionary<string, Channel> channelsByName = new Dictionary<string, Channel>();
         private List<Channel> channels = new List<Channel>();
         private int structureSize;
+        private int objectsSize;
 
         public AnimationClipEvaluator CreateEvaluator(AnimationClip clip)
         {
@@ -47,7 +49,7 @@ namespace SiliconStudio.Xenko.Animations
                         // New channel, add it to every evaluator
 
                         // Find blend type
-                        var blendType = BlendType.None;
+                        BlendType blendType;
                         var elementType = curve.Value.ElementType;
 
                         if (elementType == typeof(Quaternion))
@@ -70,25 +72,31 @@ namespace SiliconStudio.Xenko.Animations
                         {
                             blendType = BlendType.Float4;
                         }
+                        else
+                        {
+                            blendType = BlittableHelper.IsBlittable(elementType) ? BlendType.Blit : BlendType.Object;
+                        }
 
                         // Create channel structure
                         channel.BlendType = blendType;
-                        channel.Offset = structureSize;
+                        channel.Offset = blendType == BlendType.Object ? objectsSize : structureSize;
                         channel.PropertyName = curve.Key;
-
-                        // TODO: Remove this totally hardcoded property name parsing!
-                        channel.NodeName = curve.Value.NodeName;
-                        channel.Type = curve.Value.Type;
-
                         channel.Size = curve.Value.ElementSize;
 
                         // Add channel
                         channelsByName.Add(channel.PropertyName, channel);
                         channels.Add(channel);
 
-                        // Update new structure size
-                        // We also reserve space for a float that will specify channel existence and factor in case of subtree blending
-                        structureSize += sizeof(float) + channel.Size;
+                        if (blendType == BlendType.Object)
+                        {
+                            objectsSize++;
+                        }
+                        else
+                        {
+                            // Update new structure size
+                            // We also reserve space for a float that will specify channel existence and factor in case of subtree blending
+                            structureSize += sizeof(float) + channel.Size;
+                        }
 
                         // Add new channel update info to every evaluator
                         // TODO: Maybe it's better lazily done? (avoid need to store list of all evaluators)
@@ -192,8 +200,8 @@ namespace SiliconStudio.Xenko.Animations
                             // It will blend between left (0.0) and right (1.0)
                             switch (channel.BlendType)
                             {
-                                case BlendType.None:
-                                    Utilities.CopyMemory((IntPtr)resultData, (IntPtr)sourceLeftData, channel.Size);
+                                case BlendType.Blit:
+                                    Utilities.CopyMemory((IntPtr)resultData, (IntPtr)(blendFactor < 0.5f ? sourceLeftData : sourceRightData), channel.Size);
                                     break;
                                 case BlendType.Float2:
                                     Vector2.Lerp(ref *(Vector2*)sourceLeftData, ref *(Vector2*)sourceRightData, blendFactor, out *(Vector2*)resultData);
@@ -213,7 +221,7 @@ namespace SiliconStudio.Xenko.Animations
                             // It will blend between left (0.0) and left + right (1.0).
                             switch (channel.BlendType)
                             {
-                                case BlendType.None:
+                                case BlendType.Blit:
                                     Utilities.CopyMemory((IntPtr)resultData, (IntPtr)sourceLeftData, channel.Size);
                                     break;
                                 case BlendType.Float2:
@@ -241,7 +249,7 @@ namespace SiliconStudio.Xenko.Animations
                             // It will blend between left (0.0) and left - right (1.0).
                             switch (channel.BlendType)
                             {
-                                case BlendType.None:
+                                case BlendType.Blit:
                                     Utilities.CopyMemory((IntPtr)resultData, (IntPtr)sourceLeftData, channel.Size);
                                     break;
                                 case BlendType.Float2:
@@ -300,6 +308,11 @@ namespace SiliconStudio.Xenko.Animations
                 {
                     result.DataSize = structureSize;
                     result.Data = new byte[structureSize];
+                }
+
+                if (objectsSize > 0 && (result.Objects == null || result.Objects.Length < objectsSize))
+                {
+                    result.Objects = new UpdateObjectData[objectsSize];
                 }
 
                 result.Channels = channels;
@@ -397,7 +410,8 @@ namespace SiliconStudio.Xenko.Animations
         [DataContract]
         public enum BlendType
         {
-            None,
+            Blit,
+            Object,
             Float1,
             Float2,
             Float3,
@@ -409,8 +423,6 @@ namespace SiliconStudio.Xenko.Animations
         public struct Channel
         {
             public string PropertyName;
-            public string NodeName;
-            public MeshAnimationUpdater.ChannelType Type;
             public int Offset;
             public int Size;
             public BlendType BlendType;

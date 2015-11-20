@@ -3,44 +3,64 @@
 
 using System;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public abstract class AnimationCurveEvaluatorDirectGroup<T> : AnimationCurveEvaluatorGroup
+    public abstract class AnimationCurveEvaluatorDirectGroup : AnimationCurveEvaluatorGroup
     {
-        FastListStruct<Channel> channels = new FastListStruct<Channel>(8);
+        public static AnimationCurveEvaluatorDirectGroup Create<T>()
+        {
+            // Those types require interpolators
+            // TODO: Simple enough for now, but at some point we might want a mechanism to register them externally?
+            if (typeof(T) == typeof(float))
+                return new AnimationCurveEvaluatorDirectFloatGroup();
+
+            if (typeof(T) == typeof(Vector3))
+                return new AnimationCurveEvaluatorDirectVector3Group();
+
+            if (typeof(T) == typeof(Quaternion))
+                return new AnimationCurveEvaluatorDirectQuaternionGroup();
+
+            if (typeof(T) == typeof(Vector3))
+                return new AnimationCurveEvaluatorDirectVector3Group();
+
+            if (typeof(T) == typeof(Vector4))
+                return new AnimationCurveEvaluatorDirectVector4Group();
+
+            // Blittable
+            if (BlittableHelper.IsBlittable(typeof(T)))
+                return new AnimationCurveEvaluatorDirectBlittableGroup<T>();
+
+            // Objects
+            return new AnimationCurveEvaluatorDirectObjectGroup<T>();
+        }
+
+        public abstract void AddChannel(AnimationCurve curve, int offset);
+    }
+
+    public abstract class AnimationCurveEvaluatorDirectGroup<T> : AnimationCurveEvaluatorDirectGroup
+    {
+        protected FastListStruct<Channel> channels = new FastListStruct<Channel>(8);
+
+        public override Type ElementType => typeof(T);
 
         public void Initialize()
         {
             
         }
 
-        public void Cleanup()
+        public override void Cleanup()
         {
             channels.Clear();
         }
 
-        public void AddChannel(AnimationCurve curve, int offset)
+        public override void AddChannel(AnimationCurve curve, int offset)
         {
             channels.Add(new Channel { Offset = offset, Curve = (AnimationCurve<T>)curve, InterpolationType = curve.InterpolationType });
         }
 
-        public override void Evaluate(CompressedTimeSpan newTime, IntPtr location)
-        {
-            var channelCount = channels.Count;
-            var channelItems = channels.Items;
-
-            for (int i = 0; i < channelCount; ++i)
-            {
-                ProcessChannel(ref channelItems[i], newTime, location);
-            }
-        }
-
-        public override void Evaluate(CompressedTimeSpan newTime, object[] results)
-        {
-            throw new NotImplementedException();
-        }
-        
         protected static void SetTime(ref Channel channel, CompressedTimeSpan newTime)
         {
             var currentTime = channel.CurrentTime;
@@ -77,8 +97,6 @@ namespace SiliconStudio.Xenko.Animations
             channel.CurrentTime = newTime;
         }
 
-        protected abstract void ProcessChannel(ref Channel channel, CompressedTimeSpan newTime, IntPtr location);
-
         protected struct Channel
         {
             public int Offset;
@@ -86,6 +104,46 @@ namespace SiliconStudio.Xenko.Animations
             public AnimationCurve<T> Curve;
             public int CurrentIndex;
             public CompressedTimeSpan CurrentTime;
+        }
+    }
+
+    public abstract class AnimationCurveEvaluatorDirectBlittableGroupBase<T> : AnimationCurveEvaluatorDirectGroup<T>
+    {
+        public override void Evaluate(CompressedTimeSpan newTime, IntPtr data, UpdateObjectData[] objects)
+        {
+            var channelCount = channels.Count;
+            var channelItems = channels.Items;
+
+            for (int i = 0; i < channelCount; ++i)
+            {
+                ProcessChannel(ref channelItems[i], newTime, data);
+            }
+        }
+
+        protected abstract void ProcessChannel(ref Channel channel, CompressedTimeSpan newTime, IntPtr location);
+    }
+
+    public class AnimationCurveEvaluatorDirectObjectGroup<T> : AnimationCurveEvaluatorDirectGroup<T>
+    {
+        public override void Evaluate(CompressedTimeSpan newTime, IntPtr data, UpdateObjectData[] objects)
+        {
+            var channelCount = channels.Count;
+            var channelItems = channels.Items;
+
+            for (int i = 0; i < channelCount; ++i)
+            {
+                ProcessChannel(ref channelItems[i], newTime, objects);
+            }
+        }
+
+        private void ProcessChannel(ref Channel channel, CompressedTimeSpan newTime, UpdateObjectData[] objects)
+        {
+            SetTime(ref channel, newTime);
+
+            var keyFrames = channel.Curve.KeyFrames;
+            var currentIndex = channel.CurrentIndex;
+
+            objects[channel.Offset].Value = keyFrames.Items[currentIndex].Value;
         }
     }
 }

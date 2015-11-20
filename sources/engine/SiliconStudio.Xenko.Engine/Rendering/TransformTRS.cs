@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The translation.
         /// </summary>
-        public Vector3 Translation;
+        public Vector3 Position;
 
         /// <summary>
         /// The rotation.
@@ -29,6 +29,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// The scaling
         /// </summary>
-        public Vector3 Scaling;
+        public Vector3 Scale;
     }
 }

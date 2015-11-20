@@ -1,12 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Animations;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
@@ -30,10 +32,17 @@ namespace SiliconStudio.Xenko.Assets.Model
             return sceneData;
         }
 
-        protected override AnimationClip LoadAnimation(ICommandContext commandContext, AssetManager assetManager)
+        protected override Dictionary<string, AnimationClip> LoadAnimation(ICommandContext commandContext, AssetManager assetManager)
         {
             var meshConverter = CreateMeshConverter(commandContext);
             var sceneData = meshConverter.ConvertAnimation(SourcePath, Location);
+            return sceneData;
+        }
+
+        protected override Skeleton LoadSkeleton(ICommandContext commandContext, AssetManager assetManager)
+        {
+            var meshConverter = CreateMeshConverter(commandContext);
+            var sceneData = meshConverter.ConvertSkeleton(SourcePath, Location);
             return sceneData;
         }
 
@@ -41,7 +50,6 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             return new Importer.FBX.MeshConverter(commandContext.Logger)
                 {
-                    TextureTagSymbol = TextureTagSymbol,
                     AllowUnsignedBlendIndices = AllowUnsignedBlendIndices,
                     ScaleImport = ScaleImport
                 };

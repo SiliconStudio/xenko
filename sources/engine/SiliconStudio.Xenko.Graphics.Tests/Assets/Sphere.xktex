@@ -1,6 +1,6 @@
 !Texture
 Id: eedb5de8-e19f-4218-8389-99c4178b86c1
-SerializedVersion: 1
+SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Source: ../../../data/tests/sphere.png
 ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
@@ -12,7 +12,7 @@ Alpha: Mask
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 1
+        SerializedVersion: {Xenko: 1.4.0-beta}
         Tags: []
         Source: 
         ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}

@@ -1,6 +1,6 @@
 !Model
 Id: a22fce22-5505-4761-ac9d-91c74d92494c
-SerializedVersion: 2
+SerializedVersion: {Xenko: 1.5.0-alpha02}
 BuildOrder: 500
 Tags: []
 Source: ../../../data/tests/megalodon/megalodon.FBX
@@ -9,14 +9,12 @@ Materials:
     -   Name: 01-Default
         MaterialInstance:
             Material: 39f244ad-8360-48db-8074-d0d3cade8289:01-Default
-Nodes:
-    - {Name: RootNode, Depth: 0, Preserve: false}
-    - {Name: Shark_01SG1, Depth: 1, Preserve: false}
+Skeleton: null
 ~Base:
     Location: --import--
     Asset: !Model
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 2
+        SerializedVersion: {Xenko: 1.5.0-alpha02}
         BuildOrder: 500
         Tags: []
         Source: 
@@ -25,6 +23,4 @@ Nodes:
             -   Name: 01-Default
                 MaterialInstance:
                     Material: 39f244ad-8360-48db-8074-d0d3cade8289:01-Default
-        Nodes:
-            - {Name: RootNode, Depth: 0, Preserve: false}
-            - {Name: Shark_01SG1, Depth: 1, Preserve: false}
+        Skeleton: null

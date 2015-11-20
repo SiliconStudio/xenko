@@ -49,15 +49,14 @@ namespace SiliconStudio.Xenko.Games
         private int currentWidth;
         private int currentHeight;
         private readonly CoreWindow coreWindow;
-
+        private static readonly Windows.Devices.Input.MouseCapabilities mouseCapabilities = new Windows.Devices.Input.MouseCapabilities();
         #endregion
 
-#region Public Properties
+        #region Public Properties
 
         public GameWindowWindowsRuntimeSwapChainPanel()
         {
             coreWindow = CoreWindow.GetForCurrentThread();
-            cursor = coreWindow.PointerCursor;
         }
 
         public override bool AllowUserResizing
@@ -106,6 +105,12 @@ namespace SiliconStudio.Xenko.Games
             }
             set
             {
+                if (isMouseVisible == value)
+                    return;
+
+                if (mouseCapabilities.MousePresent == 0)
+                    return;
+
                 if (value)
                 {
                     if (cursor != null)
