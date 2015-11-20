@@ -1,35 +1,23 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Particles;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Particles;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
-namespace SiliconStudio.Xenko.Engine
+namespace SiliconStudio.Xenko.Particles.Components
 {
-    // TODO: Add ParticleSystem to SiliconStudio.Xenko.Graphics
-    // TODO: Add ParticleSystemComponentRenderer to SiliconStudio.Xenko.Rendering
-    // TODO: Add ParticleSystemProcessor to SiliconStudio.Xenko.Rendering.Particles
-
-
     /// <summary>
     /// Add a <see cref="ParticleSystem"/> to an <see cref="Entity"/>
     /// </summary>
     [DataContract("ParticleSystemComponent")]
     [Display(10200, "ParticleSystemComponent", Expand = ExpandRule.Once)]
-    //    [DefaultEntityComponentRenderer(typeof(ParticleSystemComponentRenderer))]
-    //    [DefaultEntityComponentProcessor(typeof(ParticleSystemProcessor))]
     [DefaultEntityComponentRenderer(typeof(ParticleSystemComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(ParticleSystemProcessor))]
-
 
     public sealed class ParticleSystemComponent : ActivableEntityComponent
     {

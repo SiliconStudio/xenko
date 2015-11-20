@@ -102,7 +102,6 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ICommsInterface.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
-    <Compile Include="Engine\ParticleSystemComponent.cs" />
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
     <Compile Include="Engine\TransformOperation.cs" />
@@ -148,8 +147,6 @@
     </Compile>
     <Compile Include="Rendering\Materials\MaterialFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
-    <Compile Include="Rendering\ParticleSystemComponentRenderer.cs" />
-    <Compile Include="Rendering\Particles\ParticleSystemProcessor.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
@@ -3502,10 +3499,6 @@
       <Project>{1677b922-ccf0-44de-b57e-1cdd3d2b8e8a}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj">
-      <Project>{f32fda80-b6dd-47a8-8681-437e2c0d3f31}</Project>
-      <Name>SiliconStudio.Xenko.Particles</Name>
     </ProjectReference>
     <ProjectReference Condition="'$(XenkoEffectCompiler)' == 'true'" Include="..\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
