@@ -10,6 +10,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.Initializers;
+using SiliconStudio.Xenko.Particles.Materials;
 using SiliconStudio.Xenko.Particles.Modules;
 using SiliconStudio.Xenko.Particles.ShapeBuilders;
 using SiliconStudio.Xenko.Particles.Spawner;
@@ -219,6 +220,11 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Shape")]
         [NotNull]
         public ShapeBuilderBase ShapeBuilder;
+
+        [DataMember(50)]
+        [Display("Material")]
+        [NotNull]
+        public ParticleMaterialBase Material;
 
         public int BuildVertexBuffer(MappedResource vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)
         {

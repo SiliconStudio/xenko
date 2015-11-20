@@ -66,15 +66,15 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// The tint color to apply to all particles.
         /// </summary>
-        [DataMember(40)]
-        [Display("Tint", "This tint description doesn't show on the Property grid")]
+        [DataMember(4)]
+        [Display("Test Tint", "This tint description doesn't show on the Property grid")]
         public Color4 Color = Color4.White;
 
         /// <summary>
         /// The speed scale at which the particle simulation runs.
         /// </summary>
-        [DataMember(50)]
-        [Display("Speed")]
+        [DataMember(5)]
+        [Display("Test Speed")]
         public float Speed = 1;
 
         [DataMemberIgnore]
