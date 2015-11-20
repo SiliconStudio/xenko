@@ -1,8 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.IO;
+using SiliconStudio.Xenko.Assets.SpriteFont.Compiler;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Font;
+using Glyph = SiliconStudio.Xenko.Graphics.Font.Glyph;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
@@ -19,18 +23,31 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <returns>The precompiled sprite font asset</returns>
         public static PrecompiledSpriteFontAsset GeneratePrecompiledSpriteFont(this SpriteFontAsset asset, string texturePath, bool srgb)
         {
-            // TODO actually generate the asset
-            //var staticFont = StaticFontCompiler.Compile(FontDataFactory, asset, srgb);
-            
-            // save the texture
-            using (var stream = File.OpenWrite(texturePath))
-            {
+            var staticFont = (StaticSpriteFont)StaticFontCompiler.Compile(FontDataFactory, asset, srgb);
 
+            var glyphs = new List<Glyph>(staticFont.CharacterToGlyph.Values);
+            var textures = staticFont.Textures;
+            
+            var imageType = ImageFileType.Xenko;
+            var textureFileName = texturePath + imageType.ToFileExtension();
+
+            if (textures != null && textures.Count == 0)
+            {
+                // save the texture   TODO support for multi-texture
+                using (var stream = File.OpenWrite(textureFileName))
+                    staticFont.Textures[0].Save(stream, imageType);
             }
 
             var precompiledAsset = new PrecompiledSpriteFontAsset
             {
-                Source = texturePath,
+                Glyphs = glyphs,
+                Size = staticFont.Size,
+                Source = textureFileName,
+                BaseOffset = staticFont.BaseOffsetY,
+                DefaultLineSpacing = staticFont.DefaultLineSpacing,
+                ExtraSpacing = staticFont.ExtraSpacing,
+                ExtraLineSpacing = staticFont.ExtraLineSpacing,
+                DefaultCharacter = asset.DefaultCharacter,
             };
 
             return precompiledAsset;
