@@ -367,6 +367,7 @@
 
   <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource NuclearScrollViewer}"/>
 
+  <!--  COMBO BOXES  -->
   <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
     <Grid x:Name="grid">
       <Grid.ColumnDefinitions>
@@ -686,6 +687,7 @@
     </Setter>
   </Style>
 
+  <!--  BUTTONS  -->
   <Style x:Key="VectorEditorToggleButtonStyle" TargetType="ToggleButton">
     <!--<Setter Property="Background" Value="{DynamicResource NormalBrush}"/>-->
     <Setter Property="Background" Value="Transparent"/>
@@ -2115,6 +2117,7 @@
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
   </Style>
 
+  <!--  MENUS  -->
   <Style TargetType="{x:Type Menu}">
     <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
@@ -3287,6 +3290,7 @@
     </Setter>
   </Style>
 
+  <!--  TOOLBARS  -->
   <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" TargetType="{x:Type Button}" BasedOn="{x:Null}">
     <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}" />
     <Setter Property="Background" Value="Transparent" />
@@ -3657,7 +3661,36 @@
       </DataTrigger>
     </Style.Triggers>
   </Style>
-
+  
+  <SolidColorBrush x:Key="TagBackgroundBrush" Color="#FF708090"/>
+  <Style TargetType="{x:Type ctrl:TagControl}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:TagControl}">
+          <DockPanel>
+            <Border DockPanel.Dock="Left" Margin="0,0,-2,0">
+              <Path Stretch="Uniform" Fill="{StaticResource TagBackgroundBrush}" Stroke="{StaticResource TagBackgroundBrush}" StrokeThickness="4" StrokeLineJoin="Round"
+                    Data="F1 M 35,25L 46,14L 46,53L 35,42L 35,25 Z " />
+            </Border>
+            <Border Background="{StaticResource TagBackgroundBrush}" CornerRadius="3">
+              <DockPanel>
+                <Button DockPanel.Dock="Right" Background="Transparent" Width="12" Height="12" Margin="2"
+                        Command="{Binding CloseTagCommand, RelativeSource={RelativeSource AncestorType={x:Type ctrl:TagControl}}}">
+                  <Path Width="8" Height="8" Stretch="Fill" Fill="{DynamicResource TextBrush}"
+                        Data="F1 M 26.9166,22.1667L 37.9999,33.25L 49.0832,22.1668L 53.8332,26.9168L 42.7499,38L 53.8332,49.0834L 49.0833,53.8334L 37.9999,42.75L 26.9166,53.8334L 22.1666,49.0833L 33.25,38L 22.1667,26.9167L 26.9166,22.1667 Z "/>
+                </Button>
+                <Border Background="{StaticResource TagBackgroundBrush}">
+                  <ContentPresenter Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}"
+                                    ContentTemplate="{TemplateBinding ContentTemplate}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                    HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
+                </Border>
+              </DockPanel>
+            </Border>
+          </DockPanel>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 
   <Style TargetType="{x:Type GridSplitter}">
     <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
@@ -3666,6 +3699,7 @@
     <Setter Property="VerticalAlignment" Value="Stretch"/>
   </Style>
 
+  <!--  EDITORS  -->
   <Style TargetType="ctrl:Vector2Editor">
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="Template">
@@ -4354,6 +4388,7 @@
     <Setter Property="SnapsToDevicePixels" Value="True"/>
   </Style>
 
+  <!--  TREE VIEWS  -->
   <Style TargetType="{x:Type ctrl:TreeView}">
     <Style.Resources>
       <ResourceDictionary />

@@ -61,6 +61,7 @@
     <Compile Include="Controls\ExpandableItemsControl.cs" />
     <Compile Include="Controls\FilteringComboBoxSort.cs" />
     <Compile Include="Controls\MarkdownTextBlock.cs" />
+    <Compile Include="Controls\TagControl.cs" />
     <Compile Include="Controls\TreeViewElementFinder.cs" />
     <Compile Include="Controls\TreeView.cs" />
     <Compile Include="Controls\TreeViewItem.cs" />
