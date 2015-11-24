@@ -62,9 +62,14 @@ namespace SiliconStudio.Xenko.Input.Extensions
             inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Down, PointerType.Touch, true));
         }
 
-        public static void SimulateTapUp(this InputManager inputManager, Vector2 coords)
+        public static void SimulateTapMove(this InputManager inputManager, Vector2 coords, Vector2 deltaCoords, TimeSpan delta)
         {
-            inputManager.InjectPointerEvent(new PointerEvent(0, coords, Vector2.Zero, TimeSpan.Zero, PointerState.Up, PointerType.Touch, true));
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Move, PointerType.Touch, true));
+        }
+
+        public static void SimulateTapUp(this InputManager inputManager, Vector2 coords, Vector2 deltaCoords, TimeSpan delta)
+        {
+            inputManager.InjectPointerEvent(new PointerEvent(0, coords, deltaCoords, delta, PointerState.Up, PointerType.Touch, true));
         }
 
         public static SimulatedTap SimulateTap(this InputManager inputManager, Vector2 coords)

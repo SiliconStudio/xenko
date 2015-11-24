@@ -1,5 +1,6 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace SiliconStudio.Xenko.Testing
     {
         private readonly SocketMessageLayer socketMessageLayer;
         private readonly string xenkoDir;
-        private string gameName;
+        private readonly string gameName;
         private int screenShots;
 
         public GameTest(string gamePath, PlatformType platform)
@@ -80,13 +81,51 @@ namespace SiliconStudio.Xenko.Testing
 
         public void Tap(Vector2 coords, TimeSpan timeDown)
         {
-            socketMessageLayer.Send(new TapSimulationRequest { Down = true, Coords = coords }).Wait();
+            socketMessageLayer.Send(new TapSimulationRequest { State = PointerState.Down, Coords = coords }).Wait();
             Console.WriteLine(@"Simulating tap down {0}.", coords);
 
             Thread.Sleep(timeDown);
 
-            socketMessageLayer.Send(new TapSimulationRequest { Down = false, Coords = coords }).Wait();
+            socketMessageLayer.Send(new TapSimulationRequest { State = PointerState.Up, Coords = coords, Delta = timeDown }).Wait();
             Console.WriteLine(@"Simulating tap up {0}.", coords);
+        }
+
+        public void Drag(Vector2 from, Vector2 target, TimeSpan timeToTarget, TimeSpan timeDown)
+        {
+            socketMessageLayer.Send(new TapSimulationRequest { State = PointerState.Down, Coords = from }).Wait();
+            Console.WriteLine(@"Simulating tap down {0}.", from);
+
+            //send 15 events per second?
+            var sleepTime = TimeSpan.FromMilliseconds(1000/15.0);
+            var watch = Stopwatch.StartNew();
+            var start = watch.Elapsed;
+            var end = watch.Elapsed + timeToTarget;
+            Vector2 prev = from;
+            while (true)
+            {
+                if (watch.Elapsed > timeToTarget)
+                {
+                    break;
+                }
+
+                float factor = (watch.Elapsed.Ticks - start.Ticks) / (float)(end.Ticks - start.Ticks);
+
+                var current = Vector2.Lerp(from, target, factor);
+
+                var delta = current - prev;
+
+                socketMessageLayer.Send(new TapSimulationRequest { State = PointerState.Move, Coords = current, Delta = sleepTime, CoordsDelta = delta }).Wait();
+                Console.WriteLine(@"Simulating tap update {0}.", current);
+
+                prev = current;
+
+                Thread.Sleep(sleepTime);
+            }
+
+            Thread.Sleep(timeDown);
+
+            socketMessageLayer.Send(new TapSimulationRequest { State = PointerState.Up, Coords = target, Delta = watch.Elapsed, CoordsDelta = target - from }).Wait();
+            Console.WriteLine(@"Simulating tap up {0}.", target);
         }
 
         public void TakeScreenshot()

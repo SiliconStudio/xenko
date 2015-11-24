@@ -7,6 +7,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Input.Extensions;
 
 namespace SiliconStudio.Xenko.Testing
@@ -50,13 +51,17 @@ namespace SiliconStudio.Xenko.Testing
 
             socketMessageLayer.AddPacketHandler<TapSimulationRequest>(request =>
             {
-                if (request.Down)
+                switch (request.State)
                 {
-                    game.Input.SimulateTapDown(request.Coords);
-                }
-                else
-                {
-                    game.Input.SimulateTapUp(request.Coords);
+                    case PointerState.Down:
+                        game.Input.SimulateTapDown(request.Coords);
+                        break;
+                    case PointerState.Up:
+                        game.Input.SimulateTapUp(request.Coords, request.CoordsDelta, request.Delta);
+                        break;
+                    case PointerState.Move:
+                        game.Input.SimulateTapMove(request.Coords, request.CoordsDelta, request.Delta);
+                        break;
                 }
             });
 
@@ -79,7 +84,7 @@ namespace SiliconStudio.Xenko.Testing
 
         public TestClient(IServiceRegistry registry) : base(registry)
         {
-            DrawOrder = 0xfffffff;
+            DrawOrder = int.MaxValue;
             Enabled = true;
             Visible = true;
         }
