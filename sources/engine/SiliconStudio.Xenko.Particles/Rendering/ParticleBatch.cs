@@ -30,10 +30,10 @@ namespace SiliconStudio.Xenko.Particles
             var emitter = elementInfo.DrawInfo.Emitter;
 
             // TODO Ivnerse view
-            var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
-            var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
-            //var unitX = new Vector3(0, 0, 0);
-            //var unitY = new Vector3(0, 0, 0);
+            //var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
+            //var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
+            var unitX = new Vector3(0, 0, 0);
+            var unitY = new Vector3(0, 0, 0);
 
             var remainingCapacity = 2000;
             emitter.BuildVertexBuffer(vertexPointer, unitX, unitY, ref remainingCapacity);
