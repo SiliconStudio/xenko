@@ -23,14 +23,19 @@ class ParticleBase : ShaderBase, Texturing
     // -------------------------------------
     stage override void VSMain()
     {
-//        float2 cornerOffset;
-//        cornerOffset.r = streams.TexCoord.r * 2 - 1;
-//        cornerOffset.g = 1 - streams.TexCoord.g * 2;
+        float2 cornerOffset;
+        cornerOffset.r = streams.TexCoord.r * 2 - 1;
+        cornerOffset.g = 1 - streams.TexCoord.g * 2;
 
+        float4 worldPos = streams.Position;
+       // worldPos.rgb += cornerOffset.rrr * InvViewX.rgb;
+       // worldPos.rgb += cornerOffset.ggg * InvViewY.rgb;
 
 //        float4 viewPos = mul(streams.Position + InvViewX * cornerOffset.rrr + InvViewY * cornerOffset.ggg, ViewMatrix);
-        float4 viewPos = mul(streams.Position, ViewMatrix);
+        float4 viewPos = mul(worldPos, ViewMatrix);
         //viewPos.w = 1;
+
+        viewPos.rg += cornerOffset;
 
 
         streams.ShadingPosition = mul(viewPos, ProjectionMatrix);
