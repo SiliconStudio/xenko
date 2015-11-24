@@ -10,8 +10,15 @@ using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Assets.Analysis
 {
+    /// <summary>
+    /// Allows to perform asset templating at load time when a base asset could change in one branch, while another branch as already derived a new asset from the base asset.
+    /// </summary>
     internal class PackageAssetTemplatingAnalysis
     {
+        // TODO: The current code doesn't perform skip optimization and always tries to merge assets base/derived, even things didn't change from base.
+        // In order to support this skip optimization, we will have to add a content hash when loading assets, this hash will be used to check if content has changed.
+        // The hash should include shadow informations (like overrides)
+
         private readonly Package package;
         private readonly Dictionary<Guid, AssetItem> assetsToProcess;
         private readonly Dictionary<Guid, AssetItem> assetsProcessed;
@@ -117,7 +124,6 @@ namespace SiliconStudio.Assets.Analysis
 
             assetsProcessed.Add(assetItem.Id, assetItem);
             assetsToProcess.Remove(assetItem.Id);
-
 
             return true;
         }
