@@ -6,13 +6,14 @@ using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Input;
+using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.Extensions;
 
 namespace SiliconStudio.Presentation.Controls
 {
     [TemplatePart(Name = EditableTextBoxPartName, Type = typeof(TextBox))]
     [TemplatePart(Name = ListBoxPartName, Type = typeof(ListBox))]
-    public class SuggestionComboBox : Selector
+    public class SearchComboBox : Selector
     {
         /// <summary>
         /// The name of the part for the <see cref="TextBox"/>.
@@ -24,35 +25,30 @@ namespace SiliconStudio.Presentation.Controls
         private const string ListBoxPartName = "PART_ListBox";
 
         /// <summary>
-        /// Identifies the <see cref="ClearTextAfterValidation"/> dependency property.
+        /// Identifies the <see cref="ClearTextAfterSelection"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ClearTextAfterValidationProperty =
-            DependencyProperty.Register("ClearTextAfterValidation", typeof(bool), typeof(SuggestionComboBox));
+        public static readonly DependencyProperty ClearTextAfterSelectionProperty =
+            DependencyProperty.Register("ClearTextAfterSelection", typeof(bool), typeof(SearchComboBox));
         /// <summary>
         /// Identifies the <see cref="IsDropDownOpen"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsDropDownOpenProperty =
-            DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(SuggestionComboBox));
+            DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(SearchComboBox));
         /// <summary>
         /// Identifies the <see cref="OpenDropDownOnFocus"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty OpenDropDownOnFocusProperty =
-            DependencyProperty.Register("OpenDropDownOnFocus", typeof(bool), typeof(SuggestionComboBox));
+            DependencyProperty.Register("OpenDropDownOnFocus", typeof(bool), typeof(SearchComboBox));
         /// <summary>
-        /// Identifies the <see cref="RequireSelectedItemToValidate"/> dependency property.
+        /// Identifies the <see cref="SearchText"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty RequireSelectedItemToValidateProperty =
-            DependencyProperty.Register("RequireSelectedItemToValidate", typeof(bool), typeof(SuggestionComboBox));
-        /// <summary>
-        /// Identifies the <see cref="Text"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty TextProperty =
-            DependencyProperty.Register("Text", typeof(string), typeof(SuggestionComboBox), new FrameworkPropertyMetadata { /*DefaultUpdateSourceTrigger = UpdateSourceTrigger.Explicit,*/ BindsTwoWayByDefault = true });
+        public static readonly DependencyProperty SearchTextProperty =
+            DependencyProperty.Register("SearchText", typeof(string), typeof(SearchComboBox), new FrameworkPropertyMetadata { BindsTwoWayByDefault = true });
         /// <summary>
         /// Identifies the <see cref="WatermarkContent"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty WatermarkContentProperty =
-            DependencyProperty.Register("WatermarkContent", typeof(object), typeof(SuggestionComboBox));
+            DependencyProperty.Register("WatermarkContent", typeof(object), typeof(SearchComboBox));
 
         /// <summary>
         /// The input text box.
@@ -63,6 +59,10 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private ListBox listBox;
         /// <summary>
+        /// Indicates that the selection is being internally cleared and that the drop down should not be opened nor refreshed.
+        /// </summary>
+        private bool clearing;
+        /// <summary>
         /// Indicates that the user clicked in the listbox with the mouse and that the drop down should not be opened.
         /// </summary>
         private bool listBoxClicking;
@@ -71,20 +71,24 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         private bool updatingSelection;
         
-        static SuggestionComboBox()
+        static SearchComboBox()
         {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(SuggestionComboBox), new FrameworkPropertyMetadata(typeof(SuggestionComboBox)));
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(SearchComboBox), new FrameworkPropertyMetadata(typeof(SearchComboBox)));
+
+            SelectedIndexProperty.OverrideMetadata(typeof(SearchComboBox), new FrameworkPropertyMetadata { DefaultUpdateSourceTrigger = UpdateSourceTrigger.Explicit });
+            SelectedItemProperty.OverrideMetadata(typeof(SearchComboBox), new FrameworkPropertyMetadata { DefaultUpdateSourceTrigger = UpdateSourceTrigger.Explicit });
+            SelectedValueProperty.OverrideMetadata(typeof(SearchComboBox), new FrameworkPropertyMetadata { DefaultUpdateSourceTrigger = UpdateSourceTrigger.Explicit });
         }
 
-        public SuggestionComboBox()
+        public SearchComboBox()
         {
             IsTextSearchEnabled = false;
         }
 
         /// <summary>
-        /// Gets or sets whether to clear the text after the validation.
+        /// Gets or sets whether to clear the text after the selection.
         /// </summary>
-        public bool ClearTextAfterValidation { get { return (bool)GetValue(ClearTextAfterValidationProperty); } set { SetValue(ClearTextAfterValidationProperty, value); } }
+        public bool ClearTextAfterSelection { get { return (bool)GetValue(ClearTextAfterSelectionProperty); } set { SetValue(ClearTextAfterSelectionProperty, value); } }
         /// <summary>
         /// Gets or sets whether to open the dropdown when the control got the focus.
         /// </summary>
@@ -94,13 +98,9 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public bool IsDropDownOpen { get { return (bool)GetValue(IsDropDownOpenProperty); } set { SetValue(IsDropDownOpenProperty, value); } }
         /// <summary>
-        /// Gets or sets whether the validation will be cancelled if <see cref="Selector.SelectedItem"/> is null.
+        /// Gets or sets the search text of this <see cref="SearchComboBox"/>
         /// </summary>
-        public bool RequireSelectedItemToValidate { get { return (bool)GetValue(RequireSelectedItemToValidateProperty); } set { SetValue(RequireSelectedItemToValidateProperty, value); } }
-        /// <summary>
-        /// Gets or sets the text of this <see cref="SuggestionComboBox"/>
-        /// </summary>
-        public string Text { get { return (string)GetValue(TextProperty); } set { SetValue(TextProperty, value); } }
+        public string SearchText { get { return (string)GetValue(SearchTextProperty); } set { SetValue(SearchTextProperty, value); } }
         /// <summary>
         /// Gets or sets the content to display when the TextBox is empty.
         /// </summary>
@@ -118,9 +118,13 @@ namespace SiliconStudio.Presentation.Controls
             if (listBox == null)
                 throw new InvalidOperationException($"A part named '{ListBoxPartName}' must be present in the ControlTemplate, and must be of type '{nameof(ListBox)}'.");
             
+            editableTextBox.LostFocus += EditableTextBoxLostFocus;
             editableTextBox.PreviewKeyDown += EditableTextBoxPreviewKeyDown;
+            editableTextBox.PreviewKeyUp += EditableTextBoxPreviewKeyUp;
+            editableTextBox.Validated += EditableTextBoxValidated;
             listBox.MouseUp += ListBoxMouseUp;
         }
+
         protected override void OnGotKeyboardFocus(KeyboardFocusChangedEventArgs e)
         {
             base.OnGotKeyboardFocus(e);
@@ -131,28 +135,32 @@ namespace SiliconStudio.Presentation.Controls
             listBoxClicking = false;
         }
 
+        private void EditableTextBoxLostFocus(object sender, RoutedEventArgs e)
+        {
+            // This may happens somehow when the template is refreshed.
+            if (!ReferenceEquals(sender, editableTextBox))
+                return;
+
+            Clear();
+        }
+
         private void EditableTextBoxPreviewKeyDown(object sender, KeyEventArgs e)
         {
-            if (listBox.Items.Count <= 0)
+            if (e.Key == Key.Escape)
+            {
+                Clear();
                 return;
+            }
+
+            if (listBox.Items.Count <= 0)
+            {
+                return;
+            }
 
             updatingSelection = true;
             var stackPanel = listBox.FindVisualChildOfType<VirtualizingStackPanel>();
             switch (e.Key)
             {
-                case Key.Escape:
-                    if (IsDropDownOpen)
-                    {
-                        IsDropDownOpen = false;
-                        if (RequireSelectedItemToValidate)
-                            editableTextBox.Cancel();
-                    }
-                    else
-                    {
-                        editableTextBox.Cancel();
-                    }
-                    break;
-
                 case Key.Up:
                     listBox.SelectedIndex = Math.Max(listBox.SelectedIndex - 1, 0);
                     BringSelectedItemIntoView();
@@ -202,14 +210,46 @@ namespace SiliconStudio.Presentation.Controls
             updatingSelection = false;
         }
 
+        private void EditableTextBoxPreviewKeyUp(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.Enter)
+            {
+                // Make sure the text is validated
+                editableTextBox.ForceValidate();
+                // If there a selection?
+                var selectedItem = listBox.SelectedItem;
+                if (selectedItem == null)
+                {
+                    // Force selecting the first item
+                    listBox.SelectedIndex = 0;
+                }
+                UpdatePublicSelectionProperties();
+                if (ClearTextAfterSelection)
+                {
+                    Clear();
+                }
+            }
+        }
+
+        private void EditableTextBoxValidated(object sender, ValidationRoutedEventArgs<string> e)
+        {
+            if (!IsDropDownOpen && !clearing && IsKeyboardFocusWithin)
+            {
+                // Setting IsDropDownOpen to true will select all the text. We don't want this behavior, so let's save and restore the caret index.
+                var index = editableTextBox.CaretIndex;
+                IsDropDownOpen = true;
+                editableTextBox.CaretIndex = index;
+            }
+        }
+
         private void ListBoxMouseUp(object sender, MouseButtonEventArgs e)
         {
-            if (e.ChangedButton == MouseButton.Left && listBox.SelectedIndex > -1)
+            UpdatePublicSelectionProperties();
+            if (ClearTextAfterSelection)
             {
-                // We need to force the validation here
-                // The user might have clicked on the list after the drop down was automatically open (see OpenDropDownOnFocus).
-                editableTextBox.ForceValidate();
+                Clear();
             }
+
             listBoxClicking = true;
         }
 
@@ -220,6 +260,26 @@ namespace SiliconStudio.Presentation.Controls
             {
                 listBox.ScrollIntoView(selectedItem);
             }
+        }
+
+        private void Clear()
+        {
+            clearing = true;
+            editableTextBox.Text = string.Empty;
+            listBox.SelectedItem = null;
+            // Make sure the drop down is closed
+            IsDropDownOpen = false;
+            clearing = false;
+        }
+
+        private void UpdatePublicSelectionProperties()
+        {
+            var expression = GetBindingExpression(SelectedIndexProperty);
+            expression?.UpdateSource();
+            expression = GetBindingExpression(SelectedItemProperty);
+            expression?.UpdateSource();
+            expression = GetBindingExpression(SelectedValueProperty);
+            expression?.UpdateSource();
         }
     }
 }
