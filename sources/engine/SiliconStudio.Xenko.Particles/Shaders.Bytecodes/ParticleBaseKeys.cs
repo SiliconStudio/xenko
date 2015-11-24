@@ -10,9 +10,9 @@ namespace SiliconStudio.Xenko.Rendering
     {
         static ParticleBaseKeys()
         {
-        //    MatrixTransform = ParameterKeys.New(Matrix.Identity);
-            ViewMatrix = ParameterKeys.New(Matrix.Identity);
-            ProjectionMatrix = ParameterKeys.New(Matrix.Identity);
+            MatrixTransform = ParameterKeys.New(Matrix.Identity);
+        //    ViewMatrix = ParameterKeys.New(Matrix.Identity);
+        //    ProjectionMatrix = ParameterKeys.New(Matrix.Identity);
         }
 
         public static readonly ParameterKey<bool> ColorIsSRgb = ParameterKeys.New(false);

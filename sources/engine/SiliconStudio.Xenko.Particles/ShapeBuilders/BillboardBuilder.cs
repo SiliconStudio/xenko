@@ -36,9 +36,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 // TODO Sorting
 
                 var vertex = new ParticleVertex();
-
-                vertex.Position.W = 1;
-
+                
                 vertex.Color = colorField.IsValid() ? particle.Get(colorField) : whiteColor;
 
                 //vertex.Color = colorField.IsValid() ? (uint)particle.Get(colorField).ToRgba() : 0xFFFFFFFF;
@@ -52,22 +50,22 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                // vertex.Size = particleSize;
 
                 // 0f 0f
-                vertex.Position = new Vector4(centralPos - unitX - unitY, 1);
+                vertex.Position = centralPos - unitX + unitY;
                 vertex.TexCoord = new Vector2(0, 0);
                 *vertices++ = vertex;
 
                 // 0f 1f
-                vertex.Position = new Vector4(centralPos - unitX + unitY, 1);
+                vertex.Position = centralPos - unitX - unitY;
                 vertex.TexCoord = new Vector2(0, 1);
                 *vertices++ = vertex;
 
                 // 1f 1f
-                vertex.Position = new Vector4(centralPos + unitX + unitY, 1);
+                vertex.Position = centralPos + unitX - unitY;
                 vertex.TexCoord = new Vector2(1, 1);
                 *vertices++ = vertex;
 
                 // 1f 0f
-                vertex.Position = new Vector4(centralPos + unitX - unitY, 1);
+                vertex.Position = centralPos + unitX + unitY;
                 vertex.TexCoord = new Vector2(1, 0);
                 *vertices++ = vertex;
 
