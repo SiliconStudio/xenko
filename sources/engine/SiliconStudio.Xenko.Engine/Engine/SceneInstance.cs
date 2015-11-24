@@ -30,7 +30,6 @@ namespace SiliconStudio.Xenko.Engine
 
         private Scene previousScene;
         private Scene scene;
-        private bool enableScripting = true;
 
         /// <summary>
         /// Occurs when the scene changed from a scene child component.
@@ -54,11 +53,11 @@ namespace SiliconStudio.Xenko.Engine
         /// <exception cref="System.ArgumentNullException">services
         /// or
         /// sceneEntityRoot</exception>
-        public SceneInstance(IServiceRegistry services, Scene sceneEntityRoot, bool enableScripting = true) : base(services)
+        public SceneInstance(IServiceRegistry services, Scene sceneEntityRoot, ExecutionMode executionMode = ExecutionMode.Runtime) : base(services)
         {
             if (services == null) throw new ArgumentNullException("services");
 
-            this.enableScripting = enableScripting;
+            ExecutionMode = executionMode;
             Scene = sceneEntityRoot;
             RendererTypes = new EntityComponentRendererTypeCollection();
             ComponentTypeAdded += EntitySystemOnComponentTypeAdded;
@@ -217,8 +216,6 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             // Initialize processors
-            if (enableScripting)
-                AddProcessor(new ScriptProcessor());   // Order: -100000
             AddProcessor(new HierarchicalProcessor()); // Order: -1000  - Important to pre-register this processor
             AddProcessor(new TransformProcessor());    // Order: -100
             AddProcessor(new CameraProcessor());       // Order: -10    - By default, as a scene without a camera is not really possible

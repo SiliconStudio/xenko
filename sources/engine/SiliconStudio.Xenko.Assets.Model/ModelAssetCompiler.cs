@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         {
             if (!EnsureSourceExists(result, asset, assetAbsolutePath))
                 return;
-        
+
             // Get absolute path of asset source on disk
             var assetDirectory = assetAbsolutePath.GetParent();
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
@@ -31,46 +31,28 @@ namespace SiliconStudio.Xenko.Assets.Model
             var allowUnsignedBlendIndices = context.GetGraphicsPlatform() != GraphicsPlatform.OpenGLES;
             var extension = asset.Source.GetFileExtension();
 
-            if (ImportFbxCommand.IsSupportingExtensions(extension))
-            {
-                result.BuildSteps = new AssetBuildStep(AssetItem)
-                    {
-                        new ImportFbxCommand
-                            {
-                                SourcePath = assetSource,
-                                Location = urlInStorage,
-                                Allow32BitIndex = allow32BitIndex,
-                                AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
-                                Compact = asset.Compact,
-                                PreservedNodes = asset.PreservedNodes,
-                                Materials = asset.Materials,
-                                ScaleImport = asset.ScaleImport
-                            }
-                    };
-            }
-            else if (ImportAssimpCommand.IsSupportingExtensions(extension))
-            {
-                result.BuildSteps = new AssetBuildStep(AssetItem)
-                    {
-                        new ImportAssimpCommand
-                            {
-                                SourcePath = assetSource,
-                                Location = urlInStorage,
-                                Allow32BitIndex = allow32BitIndex,
-                                AllowUnsignedBlendIndices = allowUnsignedBlendIndices,
-                                Compact = asset.Compact,
-                                PreservedNodes = asset.PreservedNodes,
-                                Materials = asset.Materials,
-                                ScaleImport = asset.ScaleImport
-                            }
-                    };
-            }
-            else
+            // Find skeleton asset, if any
+            AssetItem skeleton = null;
+            if (asset.Skeleton != null)
+                skeleton = AssetItem.Package.FindAssetFromAttachedReference(asset.Skeleton);
+
+            var importModelCommand = ImportModelCommand.Create(extension);
+            if (importModelCommand == null)
             {
                 result.Error("No importer found for model extension '{0}. The model '{1}' can't be imported.", extension, assetSource);
+                return;
             }
+
+            importModelCommand.Mode = ImportModelCommand.ExportMode.Model;
+            importModelCommand.SourcePath = assetSource;
+            importModelCommand.Location = urlInStorage;
+            importModelCommand.Allow32BitIndex = allow32BitIndex;
+            importModelCommand.AllowUnsignedBlendIndices = allowUnsignedBlendIndices;
+            importModelCommand.Materials = asset.Materials;
+            importModelCommand.ScaleImport = asset.ScaleImport;
+            importModelCommand.SkeletonUrl = skeleton?.Location;
+
+            result.BuildSteps = new AssetBuildStep(AssetItem) { importModelCommand };
         }
     }
-
-    
 }

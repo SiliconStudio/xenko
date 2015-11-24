@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
@@ -12,7 +13,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Performs hierarchical updates for a given <see cref="Model"/>.
     /// </summary>
-    public class ModelViewHierarchyUpdater
+    [DataContract] // Here for update engine; TODO: better separation and different attribute?
+    public class SkeletonUpdater
     {
         private ModelNodeDefinition[] nodes;
         private ModelNodeTransformation[] nodeTransformations;
@@ -31,36 +33,22 @@ namespace SiliconStudio.Xenko.Rendering
 
         private static ModelNodeDefinition[] GetDefaultNodeDefinitions()
         {
-            return new[] { new ModelNodeDefinition { Name = "Root", ParentIndex = -1, Transform = { Scaling = Vector3.One }, Flags = ModelNodeFlags.Default } };
+            return new[] { new ModelNodeDefinition { Name = "Root", ParentIndex = -1, Transform = { Scale = Vector3.One }, Flags = ModelNodeFlags.Default } };
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelViewHierarchyUpdater"/> class.
+        /// Initializes a new instance of the <see cref="SkeletonUpdater" /> class.
         /// </summary>
-        /// <param name="model">The model.</param>
-        public ModelViewHierarchyUpdater(Model model)
+        /// <param name="skeleton">The skeleton.</param>
+        public SkeletonUpdater(Skeleton skeleton)
         {
-            if (model == null) throw new ArgumentNullException("model");
-            Initialize(model);
+            Initialize(skeleton);
         }
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="ModelViewHierarchyUpdater" /> class.
-        /// </summary>
-        /// <param name="newNodes">The new nodes.</param>
-        public ModelViewHierarchyUpdater(ModelNodeDefinition[] newNodes)
+        public void Initialize(Skeleton skeleton)
         {
-            Initialize(newNodes);
-        }
+            var newNodes = skeleton?.Nodes;
 
-        public void Initialize(Model model)
-        {
-            Initialize(model.Hierarchy?.Nodes);
-            nodeTransformations[0].Flags &= ~ModelNodeFlags.EnableTransform;
-        }
-
-        public void Initialize(ModelNodeDefinition[] newNodes)
-        {
             if (this.nodes == newNodes && this.nodes != null)
             {
                 return;
@@ -78,6 +66,8 @@ namespace SiliconStudio.Xenko.Rendering
                 nodeTransformations[index].Flags = nodes[index].Flags;
                 nodeTransformations[index].RenderingEnabledRecursive = true;
             }
+
+            nodeTransformations[0].Flags &= ~ModelNodeFlags.EnableTransform;
         }
 
         /// <summary>
@@ -138,8 +128,8 @@ namespace SiliconStudio.Xenko.Rendering
             // Compute LocalMatrix
             if ((node.Flags & ModelNodeFlags.EnableTransform) == ModelNodeFlags.EnableTransform)
             {
-                var scaling = node.Transform.Scaling;
-                TransformComponent.CreateMatrixTRS(ref node.Transform.Translation, ref node.Transform.Rotation, ref scaling, out node.LocalMatrix);
+                var scaling = node.Transform.Scale;
+                TransformComponent.CreateMatrixTRS(ref node.Transform.Position, ref node.Transform.Rotation, ref scaling, out node.LocalMatrix);
                 node.IsScalingNegative = scaling.X * scaling.Y * scaling.Z < 0.0f;
             }
 

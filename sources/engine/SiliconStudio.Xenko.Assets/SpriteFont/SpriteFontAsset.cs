@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
     [ObjectFactory(typeof(SpriteFontFactory))]
-    [Display(140, "Sprite Font", "A sprite containing a rendered font")]
+    [Display(140, "Sprite Font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(20, "Characters")]
     [CategoryOrder(30, "Rendering")]
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The path to the file containing the font data to use.
         /// </userdoc>
         [DataMember(10)]
-        [Display(null, null, "Font")]
+        [Display(null, "Font")]
         public UFile Source { get; set; }
 
         /// <summary>
@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The name of the font family to use. Only the fonts installed on the system can be used here.
         /// </userdoc>
         [DataMember(20)]
-        [Display(null, null, "Font")]
+        [Display(null, "Font")]
         public string FontName { get; set; }
 
         /// <summary>
@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The size of the font (in points) for static fonts, the default size for dynamic fonts. This property is ignored when the font source is a bitmap.
         /// </userdoc>
         [DataMember(30)]
-        [Display(null, null, "Font")]
+        [Display(null, "Font")]
         public float Size { get; set; }
         
         /// <summary>
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The style of the font (regular / bold / italic). Note that this property is ignored is the desired style is not available in the font's source file.
         /// </userdoc>
         [DataMember(40)]
-        [Display(null, null, "Font")]
+        [Display(null, "Font")]
         public FontStyle Style { get; set; }
 
         /// <summary>
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// Note that it is not possible to resize at execution time a font that is not dynamic.
         /// </userdoc>
         [DataMember(50)]
-        [Display(null, null, "Font")]
+        [Display(null, "Font")]
         public bool IsDynamic { get; set; }
 
         /// <summary>
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The fallback character to use when a given character is not available in the font file data.
         /// </userdoc>
         [DataMember(60)]
-        [Display(null, null, "Characters")]
+        [Display(null, "Characters")]
         public char DefaultCharacter { get; set; }
         
         /// <summary>
@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The path to a file containing the characters to import from the font source file. This property is ignored when 'IsDynamic' is checked.
         /// </userdoc>
         [DataMember(70)]
-        [Display(null, null, "Characters")]
+        [Display(null, "Characters")]
         public UFile CharacterSet { get; set; }
 
         /// <summary>
@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(80)]
         [Category]
-        [Display(null, null, "Characters")]
+        [Display(null, "Characters")]
         public List<CharacterRegion> CharacterRegions { get; set; }
 
         /// <summary>
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(100)]
         [DefaultValue(FontTextureFormat.Rgba32)]
-        [Display(null, null, "Rendering")]
+        [Display(null, "Rendering")]
         public FontTextureFormat Format { get; set; }
 
         /// <summary>
@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// The type of anti-aliasing to use when rendering the font. 
         /// </userdoc>
         [DataMember(110)]
-        [Display(null, null, "Rendering")]
+        [Display(null, "Rendering")]
         public FontAntiAliasMode AntiAlias { get; set; }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// Check this property if you prefer to use interpolative alpha blending when rendering the font.
         /// </userdoc>
         [DataMember(120)]
-        [Display(null, null, "Rendering")]
+        [Display(null, "Rendering")]
         public bool NoPremultiply { get; set; }
 
         /// <summary>
@@ -159,7 +159,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(130)]
         [DataMemberRange(-500, 500, 1, 10)]
-        [Display(null, null, "Rendering")]
+        [Display(null, "Rendering")]
         public float Spacing { get; set; }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// </userdoc>
         [DataMember(140)]
         [DataMemberRange(-500, 500, 1, 10)]
-        [Display(null, null, "Rendering")]
+        [Display(null, "Rendering")]
         public float LineSpacing { get; set; }
 
         /// <summary>
@@ -183,7 +183,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMember(150)]
         [DefaultValue(1.0f)]
         [DataMemberRange(-500, 500, 1, 10)]
-        [Display(null, null, "Rendering")]
+        [Display(null, "Rendering")]
         public float LineGapFactor { get; set; }
 
         /// <summary>
@@ -202,7 +202,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DataMember(160)]
         [DefaultValue(1.0f)]
         [DataMemberRange(-500, 500, 1, 10)]
-        [Display(null, null, "Rendering")]
+        [Display(null, "Rendering")]
         public float LineGapBaseLineFactor { get; set; }
 
         /// <summary>
@@ -212,7 +212,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// If checked, kerning information is imported from the font. (NOT SUPPORTED YET)
         /// </userdoc>
         [DataMember(170)]
-        [Display(null, null, "Rendering")]
+        [Display(null, "Rendering")]
         public bool UseKerning { get; set; }
 
         public SpriteFontAsset()

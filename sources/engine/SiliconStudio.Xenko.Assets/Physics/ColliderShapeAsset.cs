@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(UpgraderShapeDescriptions))]
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(Box2DRemovalUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.2", "1.4.0-beta", typeof(EmptyAssetUpgrader))]
-    [Display("Collider Shape", "A physics collider shape")]
+    [Display("Collider Shape")]
     public class ColliderShapeAsset : Asset, IAssetCompileTimeDependencies
     {
         public const string FileExtension = ".xkphy;pdxphy";

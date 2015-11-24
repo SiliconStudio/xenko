@@ -500,13 +500,13 @@ private:
 		// Create node
 		ModelNodeDefinition modelNodeDefinition;
 		modelNodeDefinition.ParentIndex = parentIndex;
-		modelNodeDefinition.Transform.Translation = Vector3(aiTranslation.x, aiTranslation.y, aiTranslation.z) * ScaleImport;
+		modelNodeDefinition.Transform.Position = Vector3(aiTranslation.x, aiTranslation.y, aiTranslation.z) * ScaleImport;
 		modelNodeDefinition.Transform.Rotation = aiQuaternionToQuaternion(aiOrientation);
 		
 		if (parentIndex == -1)
-			modelNodeDefinition.Transform.Scaling = Vector3::One;
+			modelNodeDefinition.Transform.Scale = Vector3::One;
 		else
-			modelNodeDefinition.Transform.Scaling = Vector3(aiScaling.x, aiScaling.y, aiScaling.z);
+			modelNodeDefinition.Transform.Scale = Vector3(aiScaling.x, aiScaling.y, aiScaling.z);
 		
 		modelNodeDefinition.Name = gcnew String(nodeNames[fromNode].c_str());
 		modelNodeDefinition.Flags = ModelNodeFlags::Default;
@@ -623,22 +623,42 @@ private:
 		}
 	}
 	
-	void ProcessNodeAnimation(AnimationClip^ animationClip, const aiNodeAnim* nodeAnim, double ticksPerSec)
+	void ProcessNodeAnimation(Dictionary<String^, AnimationClip^>^ animationClips, const aiNodeAnim* nodeAnim, double ticksPerSec)
 	{
 		// Find the nodes on which the animation is performed
 		auto nodeName = aiStringToString(nodeAnim->mNodeName);
+
+		auto animationClip = gcnew AnimationClip();
 		
-		// The scales
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, String::Format("Transform.Scale[{0}]", nodeName), ticksPerSec, false);
-		// The rotation
-		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, String::Format("Transform.Rotation[{0}]", nodeName), ticksPerSec);
 		// The translation
-		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, String::Format("Transform.Position[{0}]", nodeName), ticksPerSec, true);
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mPositionKeys, nodeAnim->mNumPositionKeys, "Transform.Position", ticksPerSec, true);
+		// The rotation
+		ProcessAnimationCurveQuaternion(animationClip, nodeAnim->mRotationKeys, nodeAnim->mNumRotationKeys, "Transform.Rotation", ticksPerSec);
+		// The scales
+		ProcessAnimationCurveVector(animationClip, nodeAnim->mScalingKeys, nodeAnim->mNumScalingKeys, "Transform.Scale", ticksPerSec, false);
+
+		if (animationClip->Curves->Count > 0)
+			animationClips->Add(nodeName, animationClip);
 	}
 
-	AnimationClip^ ProcessAnimation(const aiScene* scene)
+	Skeleton^ ProcessSkeleton(const aiScene* scene)
 	{
-		auto animationClip = gcnew AnimationClip();
+		std::map<aiNode*, std::string> nodeNames;
+		GenerateNodeNames(scene, nodeNames);
+
+		// register the nodes and fill hierarchy
+		std::map<int, std::vector<int>*> meshIndexToNodeIndex;
+		RegisterNodes(scene->mRootNode, -1, nodeNames, meshIndexToNodeIndex);
+
+		auto skeleton = gcnew Skeleton();
+		skeleton->Nodes = nodes.ToArray();
+
+		return skeleton;
+	}
+
+	Dictionary<String^, AnimationClip^>^ ProcessAnimation(const aiScene* scene)
+	{
+		auto animationClips = gcnew Dictionary<String^, AnimationClip^>();
 		std::set<std::string> visitedNodeNames;
 
 		for (unsigned int i = 0; i < scene->mNumAnimations; ++i)
@@ -670,7 +690,7 @@ private:
 				if (visitedNodeNames.find(nodeName) == visitedNodeNames.end())
 				{
 					visitedNodeNames.insert(nodeName);
-					ProcessNodeAnimation(animationClip, nodeAnim, ticksPerSec);
+					ProcessNodeAnimation(animationClips, nodeAnim, ticksPerSec);
 				}
 				else
 				{
@@ -680,7 +700,7 @@ private:
 				}
 			}
 		}
-		return animationClip;
+		return animationClips;
 	}
 
 	ComputeTextureColor^ GetTextureReferenceNode(String^ vfsOutputPath, String^ sourceTextureFile, size_t textureUVSetIndex, Vector2 textureUVscaling, bool wrapTextureU, bool wrapTextureV, MaterialAsset^ finalMaterial, SiliconStudio::Core::Diagnostics::Logger^ logger)
@@ -1313,7 +1333,6 @@ private:
 	Model^ ConvertAssimpScene(const aiScene *scene)
 	{
 		modelData = gcnew Model();
-		modelData->Hierarchy = gcnew ModelViewHierarchyDefinition();
 
 		std::map<aiMesh*, std::string> meshNames;
 		GenerateMeshNames(scene, meshNames);
@@ -1325,7 +1344,6 @@ private:
 		std::map<int, std::vector<int>*> meshIndexToNodeIndex;
 
 		RegisterNodes(scene->mRootNode, -1, nodeNames, meshIndexToNodeIndex);
-		modelData->Hierarchy->Nodes = nodes.ToArray();
 
 		// meshes
 		for (unsigned int i = 0; i < scene->mNumMeshes; ++i)
@@ -1381,7 +1399,7 @@ private:
 		auto newNodeInfo = gcnew NodeInfo();
 		newNodeInfo->Name = gcnew String(nodeNames[node].c_str());
 		newNodeInfo->Depth = depth;
-		newNodeInfo->Preserve = false;
+		newNodeInfo->Preserve = true;
 
 		allNodes->Add(newNodeInfo);
 		for (uint32_t i = 0; i < node->mNumChildren; ++i)
@@ -1464,12 +1482,20 @@ public:
 		return ConvertAssimpScene(scene);
 	}
 
-	AnimationClip^ ConvertAnimation(String^ inputFilename, String^ outputFilename)
+	Dictionary<String^, AnimationClip^>^ ConvertAnimation(String^ inputFilename, String^ outputFilename)
 	{
 		// the importer is kept here since it owns the scene object.
 		Assimp::Importer importer;
 		auto scene = Initialize(inputFilename, outputFilename, &importer, 0);
 		return ProcessAnimation(scene);
+	}
+
+	Skeleton^ ConvertSkeleton(String^ inputFilename, String^ outputFilename)
+	{
+		// the importer is kept here since it owns the scene object.
+		Assimp::Importer importer;
+		auto scene = Initialize(inputFilename, outputFilename, &importer, 0);
+		return ProcessSkeleton(scene);
 	}
 };
 

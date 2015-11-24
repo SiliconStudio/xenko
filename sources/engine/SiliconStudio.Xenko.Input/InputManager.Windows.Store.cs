@@ -34,6 +34,7 @@ namespace SiliconStudio.Xenko.Input
 
         // mapping between WinRT keys and toolkit keys
         private static readonly Dictionary<VirtualKey, Keys> mapKeys;
+        private static readonly MouseCapabilities mouseCapabilities = new MouseCapabilities();
 
         private WindowsAccelerometer windowsAccelerometer;
         private WindowsCompass windowsCompass;
@@ -267,7 +268,8 @@ namespace SiliconStudio.Xenko.Input
             Gravity.IsSupported = Orientation.IsSupported && Accelerometer.IsSupported;
             UserAcceleration.IsSupported = Gravity.IsSupported;
 
-            MouseDevice.GetForCurrentView().MouseMoved += (_,y) => HandleRelativeOnMouseMoved(y);
+            if (mouseCapabilities.MousePresent > 0)
+                MouseDevice.GetForCurrentView().MouseMoved += (_,y) => HandleRelativeOnMouseMoved(y);
         }
 
         private void HandleRelativeOnMouseMoved(MouseEventArgs args)

@@ -4,15 +4,57 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public abstract class AnimationCurveEvaluatorOptimizedGroup<T> : AnimationCurveEvaluatorGroup
+    public abstract class AnimationCurveEvaluatorOptimizedGroup : AnimationCurveEvaluatorGroup
+    {
+        public abstract void Initialize(AnimationData animationData);
+        public abstract void SetChannelOffset(string name, int offset);
+
+        public static AnimationCurveEvaluatorOptimizedGroup Create<T>()
+        {
+            // Those types require interpolators
+            // TODO: Simple enough for now, but at some point we might want a mechanism to register them externally?
+            if (typeof(T) == typeof(float))
+                return new AnimationCurveEvaluatorOptimizedFloatGroup();
+
+            if (typeof(T) == typeof(Vector3))
+                return new AnimationCurveEvaluatorOptimizedVector3Group();
+
+            if (typeof(T) == typeof(Quaternion))
+                return new AnimationCurveEvaluatorOptimizedQuaternionGroup();
+
+            if (typeof(T) == typeof(Vector3))
+                return new AnimationCurveEvaluatorOptimizedVector3Group();
+
+            if (typeof(T) == typeof(Vector4))
+                return new AnimationCurveEvaluatorOptimizedVector4Group();
+
+            // Blittable
+            if (BlittableHelper.IsBlittable(typeof(T)))
+                return new AnimationCurveEvaluatorOptimizedBlittableGroup<T>();
+
+            // Objects
+            return new AnimationCurveEvaluatorOptimizedObjectGroup<T>();
+        }
+    }
+
+    public abstract class AnimationCurveEvaluatorOptimizedGroup<T> : AnimationCurveEvaluatorOptimizedGroup
     {
         private int animationSortedIndex;
-        private AnimationData<T> animationData;
+        protected AnimationData<T> animationData;
         private CompressedTimeSpan currentTime;
-        private FastListStruct<Channel> channels = new FastListStruct<Channel>(8);
+        protected FastListStruct<Channel> channels = new FastListStruct<Channel>(8);
+
+        public override Type ElementType => typeof(T);
+
+        public override void Initialize(AnimationData animationData)
+        {
+            Initialize((AnimationData<T>)animationData);
+        }
 
         public void Initialize(AnimationData<T> animationData)
         {
@@ -20,20 +62,20 @@ namespace SiliconStudio.Xenko.Animations
 
             foreach (var channel in animationData.AnimationInitialValues)
             {
-                channels.Add(new Channel { InterpolationType = channel.InterpolationType });
+                channels.Add(new Channel { InterpolationType = channel.InterpolationType, Offset = -1 });
             }
 
             // Setting infinite time means next time a rewind will be performed and initial values will be populated properly
             currentTime = CompressedTimeSpan.MaxValue;
         }
 
-        public void Cleanup()
+        public override void Cleanup()
         {
             animationData = null;
             channels.Clear();
         }
 
-        public void AddChannel(string name, int offset)
+        public override void SetChannelOffset(string name, int offset)
         {
             var targetKeys = animationData.TargetKeys;
             for (int i = 0; i < targetKeys.Length; ++i)
@@ -48,55 +90,7 @@ namespace SiliconStudio.Xenko.Animations
             }
         }
 
-        public override void Evaluate(CompressedTimeSpan newTime, IntPtr location)
-        {
-            if (animationData == null)
-                return;
-
-            SetTime(newTime);
-
-            var channelCount = channels.Count;
-            var channelItems = channels.Items;
-
-            for (int i = 0; i < channelCount; ++i)
-            {
-                ProcessChannel(ref channelItems[i], newTime, location);
-            }
-        }
-
-        public override void Evaluate(CompressedTimeSpan newTime, object[] results)
-        {
-            throw new NotImplementedException();
-        }
-
-        protected void ProcessChannel(ref Channel channel, CompressedTimeSpan currentTime, IntPtr location)
-        {
-            var startTime = channel.ValueStart.Time;
-
-            // Sampling before start (should not really happen because we add a keyframe at TimeSpan.Zero, but let's keep it in case it changes later.
-            if (currentTime <= startTime)
-            {
-                Utilities.UnsafeWrite(location + channel.Offset, ref channel.ValueStart.Value);
-                return;
-            }
-
-            var endTime = channel.ValueEnd.Time;
-
-            // Sampling after end
-            if (currentTime >= endTime)
-            {
-                Utilities.UnsafeWrite(location + channel.Offset, ref channel.ValueEnd.Value);
-                return;
-            }
-
-            float factor = (float)(currentTime.Ticks - startTime.Ticks) / (float)(endTime.Ticks - startTime.Ticks);
-
-            ProcessChannel(ref channel, currentTime, location, factor);
-        }
-
-        protected abstract void ProcessChannel(ref Channel channel, CompressedTimeSpan currentTime, IntPtr location, float factor);
-
-        private void SetTime(CompressedTimeSpan timeSpan)
+        protected void SetTime(CompressedTimeSpan timeSpan)
         {
             // TODO: Add jump frames to do faster seeking.
             // If user seek back, need to start from beginning
@@ -158,6 +152,95 @@ namespace SiliconStudio.Xenko.Animations
             public KeyFrameData<T> ValueStart;
             public KeyFrameData<T> ValueEnd;
             public KeyFrameData<T> ValueNext;
+        }
+    }
+
+    public abstract class AnimationCurveEvaluatorOptimizedBlittableGroupBase<T> : AnimationCurveEvaluatorOptimizedGroup<T>
+    {
+        public override void Evaluate(CompressedTimeSpan newTime, IntPtr data, UpdateObjectData[] objects)
+        {
+            if (animationData == null)
+                return;
+
+            SetTime(newTime);
+
+            var channelCount = channels.Count;
+            var channelItems = channels.Items;
+
+            for (int i = 0; i < channelCount; ++i)
+            {
+                ProcessChannel(ref channelItems[i], newTime, data);
+            }
+        }
+
+        protected void ProcessChannel(ref Channel channel, CompressedTimeSpan currentTime, IntPtr data)
+        {
+            if (channel.Offset == -1)
+                return;
+
+            var startTime = channel.ValueStart.Time;
+
+            // TODO: Should we really do that?
+            // Sampling before start (should not really happen because we add a keyframe at TimeSpan.Zero, but let's keep it in case it changes later.
+            if (currentTime <= startTime)
+            {
+                Utilities.UnsafeWrite(data + channel.Offset, ref channel.ValueStart.Value);
+                return;
+            }
+
+            var endTime = channel.ValueEnd.Time;
+
+            // TODO: Should we really do that?
+            // Sampling after end
+            if (currentTime >= endTime)
+            {
+                Utilities.UnsafeWrite(data + channel.Offset, ref channel.ValueEnd.Value);
+                return;
+            }
+
+            float factor = (float)(currentTime.Ticks - startTime.Ticks) / (float)(endTime.Ticks - startTime.Ticks);
+
+            ProcessChannel(ref channel, currentTime, data, factor);
+        }
+
+        protected abstract void ProcessChannel(ref Channel channel, CompressedTimeSpan currentTime, IntPtr data, float factor);
+    }
+
+    public class AnimationCurveEvaluatorOptimizedObjectGroup<T> : AnimationCurveEvaluatorOptimizedGroup<T>
+    {
+        public override void Evaluate(CompressedTimeSpan newTime, IntPtr data, UpdateObjectData[] objects)
+        {
+            if (animationData == null)
+                return;
+
+            SetTime(newTime);
+
+            var channelCount = channels.Count;
+            var channelItems = channels.Items;
+
+            for (int i = 0; i < channelCount; ++i)
+            {
+                ProcessChannel(ref channelItems[i], newTime, objects);
+            }
+        }
+
+        protected void ProcessChannel(ref Channel channel, CompressedTimeSpan currentTime, UpdateObjectData[] objects)
+        {
+            if (channel.Offset == -1)
+                return;
+
+            var startTime = channel.ValueStart.Time;
+
+            // TODO: Should we really do that?
+            // Sampling before start (should not really happen because we add a keyframe at TimeSpan.Zero, but let's keep it in case it changes later.
+            if (currentTime <= startTime)
+            {
+                objects[channel.Offset].Value = channel.ValueStart.Value;
+                return;
+            }
+
+            // (This including sampling after end)
+            objects[channel.Offset].Value = channel.ValueStart.Value;
         }
     }
 }

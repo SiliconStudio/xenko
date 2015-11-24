@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetDescription(FileExtension, false)]
     //[AssetCompiler(typeof(SceneAssetCompiler))]
     //[ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
-    [Display("Entity", "An entity")]
+    [Display("Entity")]
     //[AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
     public class EntityAsset : EntityAssetBase
     {
