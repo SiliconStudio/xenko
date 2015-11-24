@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -207,13 +206,6 @@ namespace SiliconStudio.Xenko.Assets
 
             // Rename variables
             newFileContents = newFileContents.Replace("Paradox", "Xenko");
-
-            // Create fallback for old environment variable
-            var index = newFileContents.IndexOf("<SiliconStudioCurrentPackagePath>", StringComparison.InvariantCulture);
-            if (index >= 0)
-            {
-                newFileContents = newFileContents.Insert(index, "<SiliconStudioXenkoDir Condition=\"'$(SiliconStudioXenkoDir)' == ''\">$(SiliconStudioParadoxDir)</SiliconStudioXenkoDir>\n    ");
-            }
 
             // Save file if there were any changes
             if (newFileContents != fileContents)
