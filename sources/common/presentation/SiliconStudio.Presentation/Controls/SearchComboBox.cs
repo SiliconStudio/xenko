@@ -30,6 +30,11 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty ClearTextAfterSelectionProperty =
             DependencyProperty.Register("ClearTextAfterSelection", typeof(bool), typeof(SearchComboBox));
         /// <summary>
+        /// Identifies the <see cref="Command"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty CommandProperty =
+            DependencyProperty.Register("Command", typeof(ICommand), typeof(SearchComboBox));
+        /// <summary>
         /// Identifies the <see cref="IsDropDownOpen"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty IsDropDownOpenProperty =
@@ -66,11 +71,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Indicates that the user clicked in the listbox with the mouse and that the drop down should not be opened.
         /// </summary>
         private bool listBoxClicking;
-        /// <summary>
-        /// Indicates that the selection is being internally updated and that the text should not be cleared.
-        /// </summary>
-        private bool updatingSelection;
-        
+
         static SearchComboBox()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(SearchComboBox), new FrameworkPropertyMetadata(typeof(SearchComboBox)));
@@ -89,6 +90,10 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets whether to clear the text after the selection.
         /// </summary>
         public bool ClearTextAfterSelection { get { return (bool)GetValue(ClearTextAfterSelectionProperty); } set { SetValue(ClearTextAfterSelectionProperty, value); } }
+        /// <summary>
+        /// Gets or Sets the command that is invoked once a selection has been made. The parameter of the command is the current <see cref="Selector.SelectedValue"/>.
+        /// </summary>
+        public ICommand Command { get { return (ICommand)GetValue(CommandProperty); } set { SetValue(CommandProperty, value); } }
         /// <summary>
         /// Gets or sets whether to open the dropdown when the control got the focus.
         /// </summary>
@@ -157,7 +162,6 @@ namespace SiliconStudio.Presentation.Controls
                 return;
             }
 
-            updatingSelection = true;
             var stackPanel = listBox.FindVisualChildOfType<VirtualizingStackPanel>();
             switch (e.Key)
             {
@@ -207,7 +211,6 @@ namespace SiliconStudio.Presentation.Controls
                     BringSelectedItemIntoView();
                     break;
             }
-            updatingSelection = false;
         }
 
         private void EditableTextBoxPreviewKeyUp(object sender, KeyEventArgs e)
@@ -223,7 +226,7 @@ namespace SiliconStudio.Presentation.Controls
                     // Force selecting the first item
                     listBox.SelectedIndex = 0;
                 }
-                UpdatePublicSelectionProperties();
+                ValidateSelection();
                 if (ClearTextAfterSelection)
                 {
                     Clear();
@@ -244,7 +247,7 @@ namespace SiliconStudio.Presentation.Controls
 
         private void ListBoxMouseUp(object sender, MouseButtonEventArgs e)
         {
-            UpdatePublicSelectionProperties();
+            ValidateSelection();
             if (ClearTextAfterSelection)
             {
                 Clear();
@@ -272,7 +275,7 @@ namespace SiliconStudio.Presentation.Controls
             clearing = false;
         }
 
-        private void UpdatePublicSelectionProperties()
+        private void ValidateSelection()
         {
             var expression = GetBindingExpression(SelectedIndexProperty);
             expression?.UpdateSource();
@@ -280,6 +283,11 @@ namespace SiliconStudio.Presentation.Controls
             expression?.UpdateSource();
             expression = GetBindingExpression(SelectedValueProperty);
             expression?.UpdateSource();
+
+            if (Command != null && Command.CanExecute(listBox.SelectedValue))
+            {
+                Command.Execute(listBox.SelectedValue);
+            }
         }
     }
 }
