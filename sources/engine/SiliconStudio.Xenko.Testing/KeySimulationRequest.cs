@@ -4,7 +4,7 @@ using SiliconStudio.Xenko.Input;
 namespace SiliconStudio.Xenko.Testing
 {
     [DataContract]
-    public class KeySimulationRequest
+    internal class KeySimulationRequest
     {
         public Keys Key;
         public bool Down;

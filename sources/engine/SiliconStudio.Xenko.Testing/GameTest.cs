@@ -62,23 +62,23 @@ namespace SiliconStudio.Xenko.Testing
             Console.WriteLine(@"Game started. (message: " + message + @")");
         }
 
-        public void KeyPress(Keys key, int downMs)
+        public void KeyPress(Keys key, TimeSpan timeDown)
         {
             socketMessageLayer.Send(new KeySimulationRequest { Down = true, Key = key }).Wait();
             Console.WriteLine(@"Simulating key down {0}.", key);
 
-            Thread.Sleep(downMs);
+            Thread.Sleep(timeDown);
 
             socketMessageLayer.Send(new KeySimulationRequest { Down = false, Key = key }).Wait();
             Console.WriteLine(@"Simulating key up {0}.", key);
         }
 
-        public void Tap(Vector2 coords, int downMs)
+        public void Tap(Vector2 coords, TimeSpan timeDown)
         {
             socketMessageLayer.Send(new TapSimulationRequest { Down = true, Coords = coords }).Wait();
             Console.WriteLine(@"Simulating tap down {0}.", coords);
 
-            Thread.Sleep(downMs);
+            Thread.Sleep(timeDown);
 
             socketMessageLayer.Send(new TapSimulationRequest { Down = false, Coords = coords }).Wait();
             Console.WriteLine(@"Simulating tap up {0}.", coords);
@@ -90,9 +90,9 @@ namespace SiliconStudio.Xenko.Testing
             Console.WriteLine(@"Screenshot requested.");
         }
 
-        public void Wait(int ms)
+        public void Wait(TimeSpan sleepTime)
         {
-            Thread.Sleep(ms);
+            Thread.Sleep(sleepTime);
         }
 
         public void Dispose()

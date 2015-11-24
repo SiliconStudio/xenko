@@ -23,6 +23,7 @@
     <Compile Include="KeySimulationRequest.cs" />
     <Compile Include="LogRequest.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ScreenshotRequest.cs" />
     <Compile Include="StatusMessageRequest.cs" />
     <Compile Include="TapSimulationRequest.cs" />

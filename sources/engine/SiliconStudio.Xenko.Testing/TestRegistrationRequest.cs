@@ -3,7 +3,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Testing
 {
     [DataContract]
-    public class TestRegistrationRequest
+    internal class TestRegistrationRequest
     {
         public string Cmd;
         public int Platform;

@@ -3,7 +3,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Testing
 {
     [DataContract]
-    public class ScreenshotRequest
+    internal class ScreenshotRequest
     {
         public string Filename;
     }
