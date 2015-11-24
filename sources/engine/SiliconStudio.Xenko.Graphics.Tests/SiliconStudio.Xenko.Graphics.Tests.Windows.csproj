@@ -203,6 +203,7 @@
     <Compile Include="TestExternSpriteFont.cs" />
     <Compile Include="TestFontManager.cs" />
     <Compile Include="TestImageLoad.cs" />
+    <Compile Include="TestPrecompiledSpriteFont.cs" />
     <Compile Include="TestScene.cs" />
     <Compile Include="TestSprite.cs" />
     <Compile Include="TestSpriteBatch3D.cs" />
