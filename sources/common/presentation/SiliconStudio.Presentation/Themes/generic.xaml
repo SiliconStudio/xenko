@@ -454,6 +454,40 @@
         </Setter>
     </Style>
 
+  <!-- TODO: merge template with FilteringComboBox -->
+  <Style TargetType="{x:Type ctrl:SuggestionComboBox}">
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:SuggestionComboBox}">
+          <Grid>
+            <ctrl:TextBox x:Name="PART_EditableTextBox" ValidateOnLostFocus="False" VerticalAlignment="Center" Focusable="True"
+                          WatermarkContent="{TemplateBinding WatermarkContent}"  UseTimedValidation="True"
+                          Text="{Binding Text, RelativeSource={RelativeSource AncestorType=ctrl:SuggestionComboBox}}"
+                          IsEnabled="{TemplateBinding IsEnabled}" CancelWithEscape="False" />
+            <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
+              <Grid>
+                <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"
+                         FocusManager.IsFocusScope="True"
+                         ItemsSource="{TemplateBinding ItemsSource}"
+                         SelectedIndex="{TemplateBinding SelectedIndex}" SelectedItem="{TemplateBinding SelectedItem}"
+                         SelectedValue="{TemplateBinding SelectedValue}" SelectedValuePath="{TemplateBinding SelectedValuePath}"
+                         ItemTemplate="{TemplateBinding ItemTemplate}" ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                         ItemStringFormat="{TemplateBinding ItemStringFormat}"
+                         Visibility="{Binding Items.Count, RelativeSource={RelativeSource Self}, Converter={cvt:VisibleOrCollapsed}}" />
+              </Grid>
+            </Popup>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsGrouping" Value="True">
+              <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
     <Style x:Key="DefaultLogViewerStyle" TargetType="ctrl:TextLogViewer">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Template">
