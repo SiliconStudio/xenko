@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using SiliconStudio.Assets.Visitors;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Diff
 {
@@ -32,6 +33,8 @@ namespace SiliconStudio.Assets.Diff
         public DataVisitNode Asset2Node { get; set; }
 
         public Diff3ChangeType ChangeType { get; set; }
+
+        public OverrideType FinalOverride { get; set; }
 
         public float Weight { get; set; }
 

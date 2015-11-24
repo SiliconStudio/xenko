@@ -62,6 +62,8 @@ namespace SiliconStudio.Assets.Diff
             }
         }
 
+        public bool UseOverride { get; set; }
+
         public void Reset()
         {
             computed = null;
@@ -200,7 +202,7 @@ namespace SiliconStudio.Assets.Diff
             return isComparableType;
         }
 
-        private static void DiffValue(Diff3Node diff3, ref NodeDescription baseNodeDesc, ref NodeDescription asset1NodeDesc, ref NodeDescription asset2NodeDesc)
+        private void DiffValue(Diff3Node diff3, ref NodeDescription baseNodeDesc, ref NodeDescription asset1NodeDesc, ref NodeDescription asset2NodeDesc)
         {
             var node = diff3.Asset1Node ?? diff3.Asset2Node ?? diff3.BaseNode;
             var dataVisitMember = node as DataVisitMember;
@@ -214,16 +216,14 @@ namespace SiliconStudio.Assets.Diff
 
                     diff3.Weight = diffMember.Weight;
                 }
+
+                // In case of Override Diff, we only use override information to decide from which {base,asset1,asset2} we should merge
+                if (UseOverride)
+                {
+                    ApplyOverride(diff3);
+                    return;
+                }
             }
-
-            var memberBase = (diff3.BaseNode) as DataVisitMember;
-            var memberAsset1 = (diff3.Asset1Node) as DataVisitMember;
-            var memberAsset2 = (diff3.Asset2Node) as DataVisitMember;
-            var baseOverride = memberBase?.Parent.Instance.GetOverride(memberBase.MemberDescriptor) ?? OverrideType.Base;
-            var member1Override = memberAsset1?.Parent.Instance.GetOverride(memberAsset1.MemberDescriptor) ?? OverrideType.Base;
-            var member2Override = memberAsset2?.Parent.Instance.GetOverride(memberAsset2.MemberDescriptor) ?? OverrideType.Base;
-
-            // TODO: Add code for Override
 
             var baseAsset1Equals = Equals(baseNodeDesc.Instance, asset1NodeDesc.Instance);
             var baseAsset2Equals = Equals(baseNodeDesc.Instance, asset2NodeDesc.Instance);
@@ -232,6 +232,39 @@ namespace SiliconStudio.Assets.Diff
             diff3.ChangeType = baseAsset1Equals && baseAsset2Equals
                 ? Diff3ChangeType.None
                 : baseAsset2Equals ? Diff3ChangeType.MergeFromAsset1 : baseAsset1Equals ? Diff3ChangeType.MergeFromAsset2 : asset1And2Equals ? Diff3ChangeType.MergeFromAsset1And2 : Diff3ChangeType.Conflict;
+        }
+
+        private static void ApplyOverride(Diff3Node diff3)
+        {
+            var memberBase = (diff3.BaseNode) as DataVisitMember;
+            var memberAsset1 = (diff3.Asset1Node) as DataVisitMember;
+            var memberAsset2 = (diff3.Asset2Node) as DataVisitMember;
+            var baseOverride = memberBase?.Parent.Instance.GetOverride(memberBase.MemberDescriptor) ?? OverrideType.Base;
+            var member1Override = memberAsset1?.Parent.Instance.GetOverride(memberAsset1.MemberDescriptor) ?? OverrideType.Base;
+            var member2Override = memberAsset2?.Parent.Instance.GetOverride(memberAsset2.MemberDescriptor) ?? OverrideType.Base;
+
+            if (member2Override.IsSealed())
+            {
+                diff3.ChangeType = Diff3ChangeType.MergeFromAsset2;
+                // Force asset1 override to be base|sealed
+                diff3.FinalOverride = OverrideType.Base | OverrideType.Sealed;
+            }
+            else if (member1Override.IsBase())
+            {
+                diff3.ChangeType = Diff3ChangeType.MergeFromAsset2;
+                diff3.FinalOverride = member1Override;
+            }
+            else
+            {
+                diff3.ChangeType = Diff3ChangeType.MergeFromAsset1;
+                diff3.FinalOverride = member1Override;
+            }
+
+            // If base changed from Sealed to non-sealed, and asset1 was base|sealed, change it back to plain base.
+            if (baseOverride.IsSealed() && !member2Override.IsSealed() && member1Override == (OverrideType.Base | OverrideType.Sealed))
+            {
+                diff3.FinalOverride = OverrideType.Base;
+            }
         }
 
         private void DiffMembers(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
