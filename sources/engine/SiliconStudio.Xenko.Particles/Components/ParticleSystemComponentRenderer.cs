@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         // TODO For now try to render particle systems as Sprites, later move on to a proper particle representation
 
         // TEMP sprite3DBatch will be removed when proper particle rendering is done
-        private Sprite3DBatch sprite3DBatch;
+        private ParticleBatch sprite3DBatch;
 
         private ParticleSystemProcessor particleSystemProcessor;
 
@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         {
             base.InitializeCore();
 
-            sprite3DBatch = new Sprite3DBatch(Context.GraphicsDevice);
+            sprite3DBatch = new ParticleBatch(Context.GraphicsDevice);
         }
 
         protected override void Unload()
@@ -209,6 +209,7 @@ namespace SiliconStudio.Xenko.Particles.Components
             if (hasBegun)
                 sprite3DBatch.End();
         }
+
 
         protected override void PreDrawCore(RenderContext context)
         {
