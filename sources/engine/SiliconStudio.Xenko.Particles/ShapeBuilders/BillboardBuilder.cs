@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [Display("Billboard")]
     public class BillboardBuilder : ShapeBuilderBase
     {
-        public override unsafe int BuildVertexBuffer(MappedResource vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity, ParticlePool pool)
+        public override unsafe int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity, ParticlePool pool)
         {
             var numberOfParticles = Math.Min(remainingCapacity / 4, pool.LivingParticles);
             if (numberOfParticles <= 0)
@@ -25,9 +25,10 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var colorField = pool.GetField(ParticleFields.Color);
             var sizeField = pool.GetField(ParticleFields.Size);
 
-            var vertices = (ParticleVertex*)vertexBuffer.DataBox.DataPointer;
+//            var vertices = (ParticleVertex*)vertexBuffer.DataBox.DataPointer;
+            var vertices = (ParticleVertex*)vertexBuffer;
 
-
+            var whiteColor = new Color4(1, 1, 1, 1);
             var renderedParticles = 0;
 
             foreach (var particle in pool)
@@ -35,7 +36,12 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 // TODO Sorting
 
                 var vertex = new ParticleVertex();
-                vertex.Color = colorField.IsValid() ? (uint)particle.Get(colorField).ToRgba() : 0xFFFFFFFF;
+
+                vertex.Position.W = 1;
+
+                vertex.Color = colorField.IsValid() ? particle.Get(colorField) : whiteColor;
+
+                //vertex.Color = colorField.IsValid() ? (uint)particle.Get(colorField).ToRgba() : 0xFFFFFFFF;
 
                 var centralPos = particle.Get(positionField); // TODO Local vs World emitters
 
@@ -43,25 +49,25 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 var unitX = invViewX * particleSize; // TODO Rotation
                 var unitY = invViewY * particleSize; // TODO Rotation
 
-                vertex.Size = particleSize;
+               // vertex.Size = particleSize;
 
                 // 0f 0f
-                vertex.Position = centralPos - unitX - unitY;
+                vertex.Position = new Vector4(centralPos - unitX - unitY, 1);
                 vertex.TexCoord = new Vector2(0, 0);
                 *vertices++ = vertex;
 
                 // 0f 1f
-                vertex.Position = centralPos - unitX + unitY;
+                vertex.Position = new Vector4(centralPos - unitX + unitY, 1);
                 vertex.TexCoord = new Vector2(0, 1);
                 *vertices++ = vertex;
 
                 // 1f 1f
-                vertex.Position = centralPos + unitX + unitY;
+                vertex.Position = new Vector4(centralPos + unitX + unitY, 1);
                 vertex.TexCoord = new Vector2(1, 1);
                 *vertices++ = vertex;
 
                 // 1f 0f
-                vertex.Position = centralPos + unitX - unitY;
+                vertex.Position = new Vector4(centralPos + unitX - unitY, 1);
                 vertex.TexCoord = new Vector2(1, 0);
                 *vertices++ = vertex;
 

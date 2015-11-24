@@ -23,7 +23,9 @@ namespace SiliconStudio.Xenko.Particles.Components
     {
         // TODO For now try to render particle systems as Sprites, later move on to a proper particle representation
 
-        // TEMP particleBatch will be removed when proper particle rendering is done
+        /// <summary>
+        /// ParticleBatch batches similar particles together, based on Material properties.
+        /// </summary>
         private ParticleBatch particleBatch;
 
         private ParticleSystemProcessor particleSystemProcessor;
@@ -58,11 +60,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                 return;
             }
 
-            // TODO What about rendering the particles to more than one camera? Examples: VR, second screen, render-to-texture
-
             var viewProjectionMatrix = camera.ViewProjectionMatrix;
-
-            // TODO For particles it might be convenient to get the ViewMatrix and ProjectionMatrix separately, because some part of the shader code will require camera-space coordinates
 
             foreach (var particleSystemState in particleSystemProcessor.ParticleSystems)
             {
@@ -86,7 +84,6 @@ namespace SiliconStudio.Xenko.Particles.Components
                 // TODO Sort value based on custom key
                 list.Add(new RenderItem(this, particleSystemState, projectedZ));
             }
-
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
@@ -110,6 +107,10 @@ namespace SiliconStudio.Xenko.Particles.Components
 
             var viewMat = viewParameters.Get(TransformationKeys.View);
             var projMat = viewParameters.Get(TransformationKeys.Projection);
+
+//            var viewInv = viewParameters.Get(TransformationKeys.ViewInverse);
+            Matrix viewInv;
+            Matrix.Invert(ref viewMat, out viewInv);
 
             // For batching similar materials together
             BlendState previousBlendState = null;
@@ -149,7 +150,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                     {
                         particleBatch.End();
                     }
-                    particleBatch.Begin(viewMat, projMat, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
+                    particleBatch.Begin(viewMat, projMat, viewInv, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
                     hasBegun = true;
                 }
 
@@ -162,51 +163,11 @@ namespace SiliconStudio.Xenko.Particles.Components
                 // Test - draw all particles
                 foreach (var emitter in particleSystemComponent.ParticleSystem.Emitters)
                 {
-                    var pool = emitter.pool;
+                    particleBatch.Draw(sourceTexture, emitter);
 
-                    var posField = pool.GetField(ParticleFields.Position);
 
-                    if (!posField.IsValid())
-                        continue;
-
-                    foreach (var particle in pool)
-                    {
-                        var position = particle.Get(posField);
-
-                        var worldMatrix = transformComponent.WorldMatrix;
-                        worldMatrix.M41 += position.X;
-                        worldMatrix.M42 += position.Y;
-                        worldMatrix.M43 += position.Z;
-
-                        var normalizedCenter = new Vector2(sprite.Center.X / sourceRegion.Width - 0.5f, 0.5f - sprite.Center.Y / sourceRegion.Height);
-
-                        Vector2 spriteSize = new Vector2(1, 1);
-
-                        var centerOffset = Vector2.Modulate(normalizedCenter, spriteSize);
-                        worldMatrix.M41 -= centerOffset.X * worldMatrix.M11 + centerOffset.Y * worldMatrix.M21;
-                        worldMatrix.M42 -= centerOffset.X * worldMatrix.M12 + centerOffset.Y * worldMatrix.M22;
-                        worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23;
-
-                        particleBatch.Draw(sourceTexture, ref worldMatrix, ref sourceRegion, ref spriteSize, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
-                    }
                 }
 
-                /*
-                var worldMatrix = transformComponent.WorldMatrix;
-                // TODO: Billboards
-
-                var normalizedCenter = new Vector2(sprite.Center.X / sourceRegion.Width - 0.5f, 0.5f - sprite.Center.Y / sourceRegion.Height);
-                // TODO: Rotated90
-
-                // Component-wise multiplication.
-                var centerOffset = Vector2.Modulate(normalizedCenter, sprite.SizeInternal);
-                worldMatrix.M41 -= centerOffset.X * worldMatrix.M11 + centerOffset.Y * worldMatrix.M21;
-                worldMatrix.M42 -= centerOffset.X * worldMatrix.M12 + centerOffset.Y * worldMatrix.M22;
-                worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23;
-
-                // draw the sprite
-                particleBatch.Draw(sourceTexture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
-                //*/
             }
 
             if (hasBegun)

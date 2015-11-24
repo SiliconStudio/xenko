@@ -12,17 +12,26 @@ class ParticleBase : ShaderBase, Texturing
     // uniforms
     // -------------------------------------
     // A general transformation matrix
-    stage float4x4 MatrixTransform;
+//    stage float4x4 MatrixTransform;
     stage float4x4 ViewMatrix;
     stage float4x4 ProjectionMatrix;
+    stage float4 InvViewX;
+    stage float4 InvViewY;
         
     // -------------------------------------
     // VertexShader
     // -------------------------------------
     stage override void VSMain()
     {
+//        float2 cornerOffset;
+//        cornerOffset.r = streams.TexCoord.r * 2 - 1;
+//        cornerOffset.g = 1 - streams.TexCoord.g * 2;
+
+
+//        float4 viewPos = mul(streams.Position + InvViewX * cornerOffset.rrr + InvViewY * cornerOffset.ggg, ViewMatrix);
         float4 viewPos = mul(streams.Position, ViewMatrix);
         //viewPos.w = 1;
+
 
         streams.ShadingPosition = mul(viewPos, ProjectionMatrix);
 
