@@ -41,7 +41,15 @@
     <Compile Include="ParticleUtilities.cs" />
     <Compile Include="ParticleVertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\ParticleBatch.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBaseKeys.cs" />
+    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecode.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecode.OpenGL.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecode.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.OpenGL.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\ParticleBatch.Extensions.cs" />
     <Compile Include="Shaders\ParticleBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -127,9 +135,7 @@
       <LastGenOutput>ParticleEffect.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Rendering\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
