@@ -23,8 +23,8 @@ namespace SiliconStudio.Xenko.Particles.Components
     {
         // TODO For now try to render particle systems as Sprites, later move on to a proper particle representation
 
-        // TEMP sprite3DBatch will be removed when proper particle rendering is done
-        private ParticleBatch sprite3DBatch;
+        // TEMP particleBatch will be removed when proper particle rendering is done
+        private ParticleBatch particleBatch;
 
         private ParticleSystemProcessor particleSystemProcessor;
 
@@ -32,12 +32,12 @@ namespace SiliconStudio.Xenko.Particles.Components
         {
             base.InitializeCore();
 
-            sprite3DBatch = new ParticleBatch(Context.GraphicsDevice);
+            particleBatch = new ParticleBatch(Context.GraphicsDevice);
         }
 
         protected override void Unload()
         {
-            sprite3DBatch.Dispose();
+            particleBatch.Dispose();
 
             base.Unload();
         }
@@ -106,7 +106,10 @@ namespace SiliconStudio.Xenko.Particles.Components
         {
             var viewParameters = context.Parameters;
             var device = context.GraphicsDevice;
-            var viewProjection = viewParameters.Get(TransformationKeys.ViewProjection);
+            // var viewProjection = viewParameters.Get(TransformationKeys.ViewProjection);
+
+            var viewMat = viewParameters.Get(TransformationKeys.View);
+            var projMat = viewParameters.Get(TransformationKeys.Projection);
 
             // For batching similar materials together
             BlendState previousBlendState = null;
@@ -144,9 +147,9 @@ namespace SiliconStudio.Xenko.Particles.Components
                 {
                     if (hasBegun)
                     {
-                        sprite3DBatch.End();
+                        particleBatch.End();
                     }
-                    sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
+                    particleBatch.Begin(viewMat, projMat, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
                     hasBegun = true;
                 }
 
@@ -184,7 +187,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                         worldMatrix.M42 -= centerOffset.X * worldMatrix.M12 + centerOffset.Y * worldMatrix.M22;
                         worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23;
 
-                        sprite3DBatch.Draw(sourceTexture, ref worldMatrix, ref sourceRegion, ref spriteSize, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+                        particleBatch.Draw(sourceTexture, ref worldMatrix, ref sourceRegion, ref spriteSize, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
                     }
                 }
 
@@ -202,12 +205,12 @@ namespace SiliconStudio.Xenko.Particles.Components
                 worldMatrix.M43 -= centerOffset.X * worldMatrix.M13 + centerOffset.Y * worldMatrix.M23;
 
                 // draw the sprite
-                sprite3DBatch.Draw(sourceTexture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
+                particleBatch.Draw(sourceTexture, ref worldMatrix, ref sourceRegion, ref sprite.SizeInternal, ref color, sprite.Orientation, SwizzleMode.None, renderItem.Depth);
                 //*/
             }
 
             if (hasBegun)
-                sprite3DBatch.End();
+                particleBatch.End();
         }
 
 
