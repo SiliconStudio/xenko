@@ -94,19 +94,19 @@ namespace SiliconStudio.Xenko.Assets.Physics
                     var nodeTransforms = new List<Matrix>();
 
                     //pre-compute all node transforms, assuming nodes are ordered... see ModelViewHierarchyUpdater
-                    var nodesLength = modelAsset.Hierarchy.Nodes.Length;
+                    var nodesLength = modelAsset.Skeleton.Nodes.Length;
                     for (var i = 0; i < nodesLength; i++)
                     {
                         Matrix localMatrix;
                         TransformComponent.CreateMatrixTRS(
-                            ref modelAsset.Hierarchy.Nodes[i].Transform.Translation,
-                            ref modelAsset.Hierarchy.Nodes[i].Transform.Rotation,
-                            ref modelAsset.Hierarchy.Nodes[i].Transform.Scaling, out localMatrix);
+                            ref modelAsset.Skeleton.Nodes[i].Transform.Position,
+                            ref modelAsset.Skeleton.Nodes[i].Transform.Rotation,
+                            ref modelAsset.Skeleton.Nodes[i].Transform.Scale, out localMatrix);
 
                         Matrix worldMatrix;
-                        if (modelAsset.Hierarchy.Nodes[i].ParentIndex != -1)
+                        if (modelAsset.Skeleton.Nodes[i].ParentIndex != -1)
                         {
-                            var nodeTransform = nodeTransforms[modelAsset.Hierarchy.Nodes[i].ParentIndex];
+                            var nodeTransform = nodeTransforms[modelAsset.Skeleton.Nodes[i].ParentIndex];
                             Matrix.Multiply(ref localMatrix, ref nodeTransform, out worldMatrix);
                         }
                         else

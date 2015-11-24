@@ -183,6 +183,9 @@
     <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Windows\FileLock.cs">
       <Link>Core\Design\Windows\FileLock.cs</Link>
     </Compile>
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\IDynamicYamlNode.cs">
+      <Link>Core\Design\Yaml\IDynamicYamlNode.cs</Link>
+    </Compile>
     <Compile Include="..\..\common\core\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
       <Link>Core\Design\Windows\NativeLockFile.cs</Link>
     </Compile>

@@ -3,6 +3,7 @@
 using System;
 using System.Windows;
 using System.Windows.Threading;
+using SiliconStudio.Presentation.Resources;
 using SiliconStudio.Presentation.Services;
 using MessageBoxButton = SiliconStudio.Presentation.Services.MessageBoxButton;
 using MessageBoxImage = SiliconStudio.Presentation.Services.MessageBoxImage;
@@ -16,7 +17,7 @@ namespace SiliconStudio.Presentation.Dialogs
 
         public DialogService(Dispatcher dispatcher, Window parentWindow)
         {
-            if (dispatcher == null) throw new ArgumentNullException("dispatcher");
+            if (dispatcher == null) throw new ArgumentNullException(nameof(dispatcher));
             this.dispatcher = dispatcher;
             ParentWindow = parentWindow;
         }
@@ -41,13 +42,22 @@ namespace SiliconStudio.Presentation.Dialogs
         public MessageBoxResult ShowMessageBox(string message, string caption, MessageBoxButton button, MessageBoxImage image)
         {
             var parentWindow = ParentWindow;
-            return dispatcher.Invoke(() =>
-            {
-                if (parentWindow != null)
-                    return (MessageBoxResult)MessageBox.Show(parentWindow, message, caption, (System.Windows.MessageBoxButton)button, (System.Windows.MessageBoxImage)image);
+            return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, button, image));
+        }
 
-                return (MessageBoxResult)MessageBox.Show(message, caption, (System.Windows.MessageBoxButton)button, (System.Windows.MessageBoxImage)image);
-            });
+        public MessageBoxResult ShowCheckedMessageBox(string message, string caption, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
+        {
+            return ShowCheckedMessageBox(message, caption, Strings.DontAskMeAgain, ref isChecked, button, image);
+        }
+
+        public MessageBoxResult ShowCheckedMessageBox(string message, string caption, string checkedMessage, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
+        {
+            var parentWindow = ParentWindow;
+            var localIsChecked = isChecked;
+            var result = dispatcher.Invoke(() =>
+                Windows.CheckedMessageBox.Show(parentWindow, message, caption, button, image, checkedMessage, ref localIsChecked));
+            isChecked = localIsChecked;
+            return result;
         }
 
         public void CloseCurrentWindow(bool? dialogResult = null)

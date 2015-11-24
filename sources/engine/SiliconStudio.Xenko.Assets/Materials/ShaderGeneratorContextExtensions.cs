@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Materials
                 var reference = AttachedReferenceManager.GetAttachedReference(runtimeAsset);
 
 
-                var assetItem = package.FindAsset(reference.Id) ?? package.FindAsset(reference.Url);
+                var assetItem = package.FindAsset(reference);
 
                 return assetItem?.Asset;
             };            

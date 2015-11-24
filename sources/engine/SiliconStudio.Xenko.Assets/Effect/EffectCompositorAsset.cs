@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     /// </summary>
     [DataContract("EffectCompositorAsset")]
     [AssetDescription(FileExtension, false, AlwaysMarkAsRoot = true)]
-    [Display(95, "Effect Compositor", "An effect compositor")]
+    [Display(95, "Effect Compositor")]
     public sealed class EffectCompositorAsset : SourceCodeAsset
     {
         /// <summary>

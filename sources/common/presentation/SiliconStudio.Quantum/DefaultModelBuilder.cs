@@ -113,7 +113,7 @@ namespace SiliconStudio.Quantum
 
             if (!IsPrimitiveType(currentDescriptor.Type))
             {
-                base.VisitObject(obj, descriptor, (GetContextNode().Flags & ModelNodeFlags.DoNotVisitMembers) == 0);
+                base.VisitObject(obj, descriptor, true);
             }
 
             if (isRootNode)

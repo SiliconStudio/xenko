@@ -187,6 +187,10 @@
       <Project>{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}</Project>
       <Name>SiliconStudio.Xenko.UI</Name>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj">
+      <Project>{9BC63BEC-F305-451D-BB31-262938EA964D}</Project>
+      <Name>SiliconStudio.Xenko.SpriteStudio.Runtime</Name>
+    </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Compile Include="Events\EventManagerTests.cs" />

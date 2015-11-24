@@ -329,7 +329,7 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 var renderMesh = renderMeshes[i];
                 // Update the model hierarchy
-                var modelViewHierarchy = renderModel.ModelComponent.ModelViewHierarchy;
+                var modelViewHierarchy = renderModel.ModelComponent.Skeleton;
                 modelViewHierarchy.UpdateRenderMesh(renderMesh);
 
                 if (!renderMesh.Enabled || !renderMesh.UpdateMaterial())

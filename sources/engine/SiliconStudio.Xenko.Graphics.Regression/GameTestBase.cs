@@ -232,7 +232,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                 SaveBackBuffer(FrameGameSystem.TestName);
         }
 
-        protected void PerformTest(Action<Game> action, GraphicsProfile? profileOverride = null, bool takeSnapshot = false)
+        protected void PerformTest(Action<Game> testAction, GraphicsProfile? profileOverride = null, bool takeSnapshot = false)
         {
             // create the game instance
             var typeGame = GetType();
@@ -242,14 +242,14 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 
             // register the tests.
             game.FrameGameSystem.IsUnityTestFeeding = true;
-            game.FrameGameSystem.Draw(() => action(game));
+            game.FrameGameSystem.Draw(() => testAction(game));
             if (takeSnapshot)
                 game.FrameGameSystem.TakeScreenshot();
 
             RunGameTest(game);
         }
 
-        protected void PerformDrawTest(Action<Game, RenderContext, RenderFrame> action, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
+        protected void PerformDrawTest(Action<Game, RenderContext, RenderFrame> drawTestAction, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
         {
             // create the game instance
             var typeGame = GetType();
@@ -271,7 +271,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
                     Renderers =
                     {
                         new ClearRenderFrameRenderer { Color = Color.Green, Name = "Clear frame" },
-                        new SceneDelegateRenderer((context, frame) => action(game, context, frame)),
+                        new SceneDelegateRenderer((context, frame) => drawTestAction(game, context, frame)),
                     }
                 }
             };
