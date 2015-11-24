@@ -1,0 +1,17 @@
+---
+!EffectCompileRequest
+EffectName: ParticleBatch
+UsedParameters:
+    CompilerParameters.DebugKey: true
+    EffectSourceCode.Enable: true
+    EffectSourceCode.Namespace: SiliconStudio.Xenko.Particles
+    ParticleBase.ColorIsSRgb: false
+---
+!EffectCompileRequest
+EffectName: ParticleBatch
+UsedParameters:
+    CompilerParameters.DebugKey: true
+    EffectSourceCode.Enable: true
+    EffectSourceCode.Namespace: SiliconStudio.Xenko.Particles
+    EffectSourceCode.FieldName: binaryBytecodeSRgb
+    ParticleBase.ColorIsSRgb: true

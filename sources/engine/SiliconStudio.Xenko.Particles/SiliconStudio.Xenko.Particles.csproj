@@ -41,6 +41,7 @@
     <Compile Include="ParticleUtilities.cs" />
     <Compile Include="ParticleVertex.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Shaders.Bytecodes\ParticleBaseKeys.cs" />
     <Compile Include="Shaders\ParticleBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -58,6 +59,12 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleBatchShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\ParticleEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ParticleEffect.xksl</DependentUpon>
     </Compile>
     <Compile Include="ShapeBuilders\BillboardBuilder.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderBase.cs" />
@@ -100,6 +107,9 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
+    <None Include="Shaders.Bytecodes\Graphics.xkpkg" />
+    <None Include="Shaders.Bytecodes\Shaders.xkeffectlog" />
     <None Include="Shaders\ParticleBase.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleBase.cs</LastGenOutput>
@@ -111,6 +121,10 @@
     <None Include="Shaders\ParticleBatchShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleBatchShader.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\ParticleEffect.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ParticleEffect.cs</LastGenOutput>
     </None>
   </ItemGroup>
   <ItemGroup>
