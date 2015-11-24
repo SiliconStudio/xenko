@@ -18,9 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class ParticleBaseKeys
     {
-        public static readonly ParameterKey<Matrix> ViewMatrix = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> ProjectionMatrix = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Vector4> InvViewX = ParameterKeys.New<Vector4>();
-        public static readonly ParameterKey<Vector4> InvViewY = ParameterKeys.New<Vector4>();
+        public static readonly ParameterKey<Matrix> MatrixTransform = ParameterKeys.New<Matrix>();
     }
 }
