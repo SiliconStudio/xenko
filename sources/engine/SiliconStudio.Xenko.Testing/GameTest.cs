@@ -1,5 +1,6 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
+using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
@@ -13,6 +14,8 @@ namespace SiliconStudio.Xenko.Testing
     {
         private readonly SocketMessageLayer socketMessageLayer;
         private readonly string xenkoDir;
+        private string gameName;
+        private int screenShots;
 
         public GameTest(string gamePath, PlatformType platform)
         {
@@ -41,6 +44,8 @@ namespace SiliconStudio.Xenko.Testing
             var runTask = Task.Run(() => socketMessageLayer.MessageLoop());
 
             xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
+
+            gameName = Path.GetFileNameWithoutExtension(gamePath);
 
             socketMessageLayer.Send(new TestRegistrationRequest
             {
@@ -86,8 +91,9 @@ namespace SiliconStudio.Xenko.Testing
 
         public void TakeScreenshot()
         {
-            socketMessageLayer.Send(new ScreenshotRequest { Filename = xenkoDir + "\\screenshots\\JumpyJet.png" }).Wait();
+            socketMessageLayer.Send(new ScreenshotRequest { Filename = xenkoDir + "\\screenshots\\" + gameName + screenShots + ".png" }).Wait();
             Console.WriteLine(@"Screenshot requested.");
+            screenShots++;
         }
 
         public void Wait(TimeSpan sleepTime)
