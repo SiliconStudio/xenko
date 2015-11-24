@@ -16,21 +16,8 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    internal static partial class ShaderMixins
+    public static partial class ParticleEffectKeys
     {
-        internal partial class ParticleBatch  : IShaderMixinBuilder
-        {
-            public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
-            {
-                context.Mixin(mixin, "ParticleBatchShader", context.GetParam(ParticleBaseKeys.ColorIsSRgb));
-            }
-
-            [ModuleInitializer]
-            internal static void __Initialize__()
-
-            {
-                ShaderMixinManager.Register("ParticleBatch", new ParticleBatch());
-            }
-        }
+        public static readonly ParameterKey<Color4> Color = ParameterKeys.New<Color4>(new Color4(1,1,1,1));
     }
 }

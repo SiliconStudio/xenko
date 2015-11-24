@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     partial shader ParticleBatch
     {
-        using params SpriteBaseKeys;
-        mixin ParticleBatchShader<SpriteBaseKeys.ColorIsSRgb>;
+        using params ParticleBaseKeys;
+        mixin ParticleBatchShader<ParticleBaseKeys.ColorIsSRgb>;
    };
 }
