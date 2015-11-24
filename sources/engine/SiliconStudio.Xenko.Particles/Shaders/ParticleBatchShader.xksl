@@ -25,6 +25,10 @@ class ParticleBatchShader<bool TSRgb> : ParticleBase
     {
         float4 swizzleColor = streams.Swizzle == 0 ? base.Shading() : base.Shading().rrrr;
         float4 finalColor = swizzleColor * streams.Color;
+
+        // DEBUG
+        finalColor.r *= 3;
+
         return finalColor;
     }
 };

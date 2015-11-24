@@ -14,7 +14,8 @@ namespace SiliconStudio.Xenko.Particles
 
     public partial class ParticleBatch : BatchBase<ParticleBatch.ParticleDrawInfo>
     {
-        private Matrix transformationMatrix;
+        private Matrix viewMatrix;
+        private Matrix projMatrix;
         private Vector4 vector4UnitX = Vector4.UnitX;
         private Vector4 vector4UnitY = -Vector4.UnitY;
 
@@ -120,18 +121,7 @@ namespace SiliconStudio.Xenko.Particles
             }
             Vector4.Transform(ref leftTopCorner, ref matrix, out drawInfo.LeftTopCornerWorld);
 
-            float depthSprite;
-            if (depth.HasValue)
-            {
-                depthSprite = depth.Value;
-            }
-            else
-            {
-                Vector4 projectedPosition;
-                var worldPosition = new Vector4(worldMatrix.TranslationVector, 1.0f);
-                Vector4.Transform(ref worldPosition, ref transformationMatrix, out projectedPosition);
-                depthSprite = projectedPosition.Z / projectedPosition.W;
-            }
+            float depthSprite = 1f;
 
             var elementInfo = new ElementInfo(StaticQuadBufferInfo.VertexByElement, StaticQuadBufferInfo.IndicesByElement, ref drawInfo, depthSprite);
 
@@ -140,8 +130,13 @@ namespace SiliconStudio.Xenko.Particles
 
         protected override void PrepareForRendering()
         {
+            // TODO Setup my uniforms here
+
             // Setup the Transformation matrix of the shader
-            Parameters.Set(ParticleBaseKeys.MatrixTransform, transformationMatrix);
+            //Parameters.Set(ParticleBaseKeys.MatrixTransform, transformationMatrix);
+
+            Parameters.Set(ParticleBaseKeys.ViewMatrix, viewMatrix);
+            Parameters.Set(ParticleBaseKeys.ProjectionMatrix, projMatrix);
 
             base.PrepareForRendering();
         }
@@ -159,11 +154,12 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
         /// <param name="viewProjection">The view-projection matrix to use for the batch session</param>
-        public void Begin(Matrix viewProjection, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
+        public void Begin(Matrix viewMat, Matrix projMat, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
         {
             CheckEndHasBeenCalled("begin");
 
-            transformationMatrix = viewProjection;
+            viewMatrix = viewMat;
+            projMatrix = projMat;
 
             Begin(effect, parameterCollectionGroup, sortMode, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
         }
