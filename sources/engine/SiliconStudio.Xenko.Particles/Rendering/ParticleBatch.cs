@@ -9,124 +9,60 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles
 {
-    using VerxtexParticleBasic = VertexPositionColorTextureSwizzle; // TODO Change when the shader is ready
-
-
     public partial class ParticleBatch : BatchBase<ParticleBatch.ParticleDrawInfo>
     {
         private Matrix viewMatrix;
         private Matrix projMatrix;
+        private Matrix invViewMatrix;
         private Vector4 vector4UnitX = Vector4.UnitX;
         private Vector4 vector4UnitY = -Vector4.UnitY;
 
         public ParticleBatch(GraphicsDevice device, int bufferElementCount = 1024, int batchCapacity = 64)
-            : base(device, ParticleBatch.Bytecode, ParticleBatch.BytecodeSRgb, StaticQuadBufferInfo.CreateQuadBufferInfo("ParticleBatch.VertexIndexBuffer", false, bufferElementCount, batchCapacity), VerxtexParticleBasic.Layout)
+            : base(device, ParticleBatch.Bytecode, ParticleBatch.BytecodeSRgb, StaticQuadBufferInfo.CreateQuadBufferInfo("ParticleBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), ParticleVertex.Layout)
         {
         }
 
         // TODO Implement
         protected unsafe override void UpdateBufferValuesFromElementInfo(ref ElementInfo elementInfo, IntPtr vertexPointer, IntPtr indexPointer, int vexterStartOffset)
         {
-            var vertex = (VertexPositionColorTextureSwizzle*)vertexPointer;
-            fixed (ParticleDrawInfo* drawInfo = &elementInfo.DrawInfo)
-            {
-                var currentPosition = drawInfo->LeftTopCornerWorld;
+            var vertex = (ParticleVertex*)vertexPointer;
 
-                var textureCoordX = new Vector2(drawInfo->Source.Left, drawInfo->Source.Right);
-                var textureCoordY = new Vector2(drawInfo->Source.Top, drawInfo->Source.Bottom);
+            var emitter = elementInfo.DrawInfo.Emitter;
 
-                // set the two first line of vertices
-                for (int r = 0; r < 2; r++)
-                {
-                    for (int c = 0; c < 2; c++)
-                    {
-                        vertex->Color = drawInfo->Color;
-                        vertex->Swizzle = (int)drawInfo->Swizzle;
-                        vertex->TextureCoordinate.X = textureCoordX[c];
-                        vertex->TextureCoordinate.Y = textureCoordY[r];
+            // TODO Ivnerse view
+            var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
+            var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
+            //var unitX = new Vector3(0, 0, 0);
+            //var unitY = new Vector3(0, 0, 0);
 
-                        vertex->Position.X = currentPosition.X;
-                        vertex->Position.Y = currentPosition.Y;
-                        vertex->Position.Z = currentPosition.Z;
-                        vertex->Position.W = currentPosition.W;
+            var remainingCapacity = 2000;
+            emitter.BuildVertexBuffer(vertexPointer, unitX, unitY, ref remainingCapacity);
 
-                        vertex++;
-
-                        if (c == 0)
-                            Vector4.Add(ref currentPosition, ref drawInfo->UnitXWorld, out currentPosition);
-                        else
-                            Vector4.Subtract(ref currentPosition, ref drawInfo->UnitXWorld, out currentPosition);
-                    }
-
-                    Vector4.Add(ref currentPosition, ref drawInfo->UnitYWorld, out currentPosition);
-                }
-            }
+            
         }
 
-        /// <summary>
-        /// Draw a 3D sprite (or add it to the draw list depending on the sortMode).
-        /// </summary>
-        /// <param name="texture">The texture to use during the draw</param>
-        /// <param name="worldMatrix">The world matrix of the element</param>
-        /// <param name="sourceRectangle">The rectangle indicating the source region of the texture to use</param>
-        /// <param name="elementSize">The size of the sprite in the object space</param>
-        /// <param name="color">The color to apply to the texture image.</param>
-        /// <param name="imageOrientation">The rotation to apply on the image uv</param>
-        /// <param name="swizzle">Swizzle mode indicating the swizzle use when sampling the texture in the shader</param>
-        /// <param name="depth">The depth of the element. If null, it is calculated using world and view-projection matrix.</param>
-        public void Draw(Texture texture, ref Matrix worldMatrix, ref RectangleF sourceRectangle, ref Vector2 elementSize, ref Color4 color,
-                         ImageOrientation imageOrientation = ImageOrientation.AsIs, SwizzleMode swizzle = SwizzleMode.None, float? depth = null)
+        public void Draw(Texture texture, ParticleEmitter emitter)
         {
-            // Check that texture is not null
-            if (texture == null)
-                throw new ArgumentNullException("texture");
-
-            // Skip items with null size
-            if (elementSize.Length() < MathUtil.ZeroTolerance)
-                return;
-
-            // Calculate the information needed to draw.
             var drawInfo = new ParticleDrawInfo
             {
-                Source =
-                {
-                    X = sourceRectangle.X / texture.ViewWidth,
-                    Y = sourceRectangle.Y / texture.ViewHeight,
-                    Width = sourceRectangle.Width / texture.ViewWidth,
-                    Height = sourceRectangle.Height / texture.ViewHeight
-                },
-                Color = color,
-                Swizzle = swizzle,
+                Emitter = emitter,
             };
 
-            var matrix = worldMatrix;
-            matrix.M11 *= elementSize.X;
-            matrix.M12 *= elementSize.X;
-            matrix.M13 *= elementSize.X;
-            matrix.M21 *= elementSize.Y;
-            matrix.M22 *= elementSize.Y;
-            matrix.M23 *= elementSize.Y;
-
-            Vector4.Transform(ref vector4UnitX, ref matrix, out drawInfo.UnitXWorld);
-            Vector4.Transform(ref vector4UnitY, ref matrix, out drawInfo.UnitYWorld);
-
-            // rotate origin and unit axis if need.
-            var leftTopCorner = new Vector4(-0.5f, 0.5f, 0, 1);
-            if (imageOrientation == ImageOrientation.Rotated90)
-            {
-                var unitX = drawInfo.UnitXWorld;
-                drawInfo.UnitXWorld = -drawInfo.UnitYWorld;
-                drawInfo.UnitYWorld = unitX;
-                leftTopCorner = new Vector4(-0.5f, -0.5f, 0, 1);
-            }
-            Vector4.Transform(ref leftTopCorner, ref matrix, out drawInfo.LeftTopCornerWorld);
-
+            // TODO Sort by depth
             float depthSprite = 1f;
 
-            var elementInfo = new ElementInfo(StaticQuadBufferInfo.VertexByElement, StaticQuadBufferInfo.IndicesByElement, ref drawInfo, depthSprite);
+            var totalParticles = emitter.pool.LivingParticles;
+
+            var elementInfo = new ElementInfo(
+                StaticQuadBufferInfo.VertexByElement * totalParticles, 
+                StaticQuadBufferInfo.IndicesByElement * totalParticles, 
+                ref drawInfo, 
+                depthSprite);
 
             Draw(texture, ref elementInfo);
+
         }
+
 
         protected override void PrepareForRendering()
         {
@@ -137,6 +73,9 @@ namespace SiliconStudio.Xenko.Particles
 
             Parameters.Set(ParticleBaseKeys.ViewMatrix, viewMatrix);
             Parameters.Set(ParticleBaseKeys.ProjectionMatrix, projMatrix);
+
+            Parameters.Set(ParticleBaseKeys.InvViewX, new Vector4(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13, 0));
+            Parameters.Set(ParticleBaseKeys.InvViewY, new Vector4(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23, 0));
 
             base.PrepareForRendering();
         }
@@ -154,12 +93,13 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
         /// <param name="viewProjection">The view-projection matrix to use for the batch session</param>
-        public void Begin(Matrix viewMat, Matrix projMat, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
+        public void Begin(Matrix viewMat, Matrix projMat, Matrix viewInv, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
         {
             CheckEndHasBeenCalled("begin");
 
             viewMatrix = viewMat;
             projMatrix = projMat;
+            invViewMatrix = viewInv;
 
             Begin(effect, parameterCollectionGroup, sortMode, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
         }
@@ -167,12 +107,7 @@ namespace SiliconStudio.Xenko.Particles
         [StructLayout(LayoutKind.Sequential)]
         public struct ParticleDrawInfo
         {
-            public Vector4 LeftTopCornerWorld;
-            public Vector4 UnitXWorld;
-            public Vector4 UnitYWorld;
-            public RectangleF Source;
-            public Color4 Color;
-            public SwizzleMode Swizzle;
+            public ParticleEmitter Emitter;
         }
     }
 }
