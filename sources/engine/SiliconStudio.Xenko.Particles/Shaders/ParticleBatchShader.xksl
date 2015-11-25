@@ -6,7 +6,7 @@ class ParticleBatchShader<bool TSRgb> : ParticleBase
     // streams
     // -------------------------------------
     stage stream float4 Color : COLOR;
-    stage stream float Swizzle : BATCH_SWIZZLE;
+   // stage stream float Swizzle : BATCH_SWIZZLE;
 
     // -------------------------------------
     // VertexShader
@@ -23,11 +23,16 @@ class ParticleBatchShader<bool TSRgb> : ParticleBase
     // Shading of the sprite
     stage override float4 Shading()
     {
-        float4 swizzleColor = streams.Swizzle == 0 ? base.Shading() : base.Shading().rrrr;
-        float4 finalColor = swizzleColor * streams.Color;
+       // float4 swizzleColor = streams.Swizzle == 0 ? base.Shading() : base.Shading().rrrr;
+       // float4 finalColor = swizzleColor * streams.Color;
+
+        float4 finalColor = base.Shading() * streams.Color;
 
         // DEBUG
-        finalColor.r *= 3;
+        //finalColor.rgb *= 13;
+
+//        finalColor.a = 1;
+        finalColor.a *= AlphaAdditive;
 
         return finalColor;
     }

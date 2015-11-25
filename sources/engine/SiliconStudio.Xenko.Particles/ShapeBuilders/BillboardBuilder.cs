@@ -37,9 +37,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 var vertex = new ParticleVertex();
                 
-                vertex.Color = colorField.IsValid() ? particle.Get(colorField) : whiteColor;
+                //vertex.Color = colorField.IsValid() ? particle.Get(colorField) : whiteColor;
 
-                //vertex.Color = colorField.IsValid() ? (uint)particle.Get(colorField).ToRgba() : 0xFFFFFFFF;
+                vertex.Color = colorField.IsValid() ? (uint)particle.Get(colorField).ToRgba() : 0xFFFFFFFF;
 
                 var centralPos = particle.Get(positionField); // TODO Local vs World emitters
 

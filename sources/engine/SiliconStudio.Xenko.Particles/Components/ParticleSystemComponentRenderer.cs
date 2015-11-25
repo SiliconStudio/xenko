@@ -64,10 +64,6 @@ namespace SiliconStudio.Xenko.Particles.Components
 
             foreach (var particleSystemState in particleSystemProcessor.ParticleSystems)
             {
-                var sprite = particleSystemState.ParticleSystemComponent.CurrentSprite;
-                if (sprite == null || sprite.Texture == null || sprite.Region.Width <= 0f || sprite.Region.Height <= 0f)
-                    continue;
-
                 // Perform culling on group and accept
                 // TODO Should culling be performed on a per-sprite basis or batched?
                 if (!CurrentCullingMask.Contains(particleSystemState.ParticleSystemComponent.Entity.Group))
@@ -79,99 +75,47 @@ namespace SiliconStudio.Xenko.Particles.Components
                 Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
                 var projectedZ = projectedPosition.Z / projectedPosition.W;
 
-                var list = sprite.IsTransparent ? transparentList : opaqueList;
+                var list = true ? transparentList : opaqueList;
 
                 // TODO Sort value based on custom key
                 list.Add(new RenderItem(this, particleSystemState, projectedZ));
             }
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static private bool IsSameState(ref BlendState oldBlendState, ref DepthStencilState oldDepthStencilState, ref Effect oldEffect,
-            BlendState currentBlendState, DepthStencilState currentDepthStencilState, Effect currentEffect)
-        {
-            bool isSameState = !(oldBlendState != currentBlendState || oldDepthStencilState != currentDepthStencilState || oldEffect != currentEffect);
-
-            oldBlendState = currentBlendState;
-            oldDepthStencilState = currentDepthStencilState;
-            oldEffect = currentEffect;
-
-            return isSameState;
-        }
-
         protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             var viewParameters = context.Parameters;
             var device = context.GraphicsDevice;
-            // var viewProjection = viewParameters.Get(TransformationKeys.ViewProjection);
 
+            // var viewProjection = viewParameters.Get(TransformationKeys.ViewProjection);
             var viewMat = viewParameters.Get(TransformationKeys.View);
             var projMat = viewParameters.Get(TransformationKeys.Projection);
 
-//            var viewInv = viewParameters.Get(TransformationKeys.ViewInverse);
             Matrix viewInv;
             Matrix.Invert(ref viewMat, out viewInv);
 
-            // For batching similar materials together
-            BlendState previousBlendState = null;
-            // TODO Use pre-multiplied alpha-additive blending for particles to reduce blend states (ideally only 1 state should exist) - BlendStateDescription
-            DepthStencilState previousDepthStencilState = null; // DepthStencilStateDescription - depth write, depth test, face culling, stencil buffer settings etc.
-            Effect previousEffect = null;
-
-            // TODO For now isPicking is being ignored
-            // TODO For now SpriteType.Billboard is being ignored
-            // TODO Ignore depth variable is ignore (doesn't exist yet) so the depth state is none
-
-            bool hasBegun = false;
             for (var i = fromIndex; i <= toIndex; i++)
             {
                 var renderItem = renderItems[i];
                 var particleSystemState = (ParticleSystemProcessor.ParticleSystemComponentState)renderItem.DrawContext;
                 var particleSystemComponent = particleSystemState.ParticleSystemComponent;
-                var sprite = particleSystemComponent.CurrentSprite;
-                if (sprite == null)
-                    continue;
 
+                // TODO Use transform component? Or no?
                 var transformComponent = particleSystemState.TransformComponent;
-                var depthStencilState = device.DepthStencilStates.None; // Ignore depth
+          
+                
+                particleBatch.Begin(viewMat, projMat, viewInv);
 
-                // Code copied from the sprite component renderer:
-                // var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? (spriteComp.PremultipliedAlpha ? device.BlendStates.AlphaBlend : device.BlendStates.NonPremultiplied) : device.BlendStates.Opaque;
-                var blendState = device.BlendStates.AlphaBlend; // TODO: Alpha-additive
+                // TODO Use color scale? Or no?
+                var color = particleSystemComponent.Color;
 
-                // Code copied from the sprite component renderer
-                // var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : spriteComp.Tags.Get(IsEntitySelected) ? GetOrCreateSelectedSpriteEffect() : null; // TODO remove this code when material are available
-                Effect currentEffect = null; // Is neither picking nor selected - for now
-
-                // Update the sprite batch
-                if (!IsSameState(ref previousBlendState, ref previousDepthStencilState, ref previousEffect, blendState, depthStencilState, currentEffect) || !hasBegun)
-                {
-                    if (hasBegun)
-                    {
-                        particleBatch.End();
-                    }
-                    particleBatch.Begin(viewMat, projMat, viewInv, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
-                    hasBegun = true;
-                }
-
-                var sourceRegion = sprite.Region;
-                var sourceTexture = sprite.Texture;
-                var color = particleSystemComponent.Color; // Or white
-                if (sourceTexture == null)
-                    continue;
-
-                // Test - draw all particles
                 foreach (var emitter in particleSystemComponent.ParticleSystem.Emitters)
                 {
-                    particleBatch.Draw(sourceTexture, emitter);
-
-
+                    particleBatch.Draw(emitter);
                 }
 
-            }
-
-            if (hasBegun)
                 particleBatch.End();
+            }
         }
 
 

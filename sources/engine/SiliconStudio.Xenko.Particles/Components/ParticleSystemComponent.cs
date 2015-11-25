@@ -22,21 +22,7 @@ namespace SiliconStudio.Xenko.Particles.Components
     public sealed class ParticleSystemComponent : ActivableEntityComponent
     {
         public static PropertyKey<ParticleSystemComponent> Key = new PropertyKey<ParticleSystemComponent>("Key", typeof(ParticleSystemComponent));
-
-        /// <summary>
-        /// The particle asset data associated to the component.
-        /// </summary>
-        [DataMember(1)]
-        [Display("Test Sprite")]
-        public ISpriteProvider TestSprite;
-
-        /// <summary>
-        /// Gets the current sprite.
-        /// </summary>
-        [DataMemberIgnore]
-        // Expression-bodied get-only property
-        public Sprite CurrentSprite => TestSprite?.GetSprite(0);
-
+        
         /// <summary>
         /// The particle system data associated to the component.
         /// </summary>
@@ -62,8 +48,9 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// The speed scale at which the particle simulation runs.
         /// </summary>
         [DataMember(5)]
-        [Display("Test Speed")]
-        public float Speed = 1;
+        [DataMemberRange(0, 10, 0.01, 1)]
+        [Display("Time speed")]
+        public float Speed { get; set; } = 1f;
 
         [DataMemberIgnore]
         internal double ElapsedTime;
@@ -74,8 +61,6 @@ namespace SiliconStudio.Xenko.Particles.Components
         public ParticleSystemComponent()
         {
             particleSystem = new ParticleSystem();
-
-            TestSprite = new SpriteFromSheet();
         }
 
         public override PropertyKey GetDefaultKey()

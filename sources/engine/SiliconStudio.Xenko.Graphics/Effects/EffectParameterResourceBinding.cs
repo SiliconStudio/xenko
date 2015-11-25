@@ -5,7 +5,7 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics.Internals
 {
-    internal struct EffectParameterResourceBinding
+    public struct EffectParameterResourceBinding
     {
         public delegate void ApplyParameterWithUpdaterDelegate(GraphicsDevice graphicsDevice, ref EffectParameterResourceData resourceBinding, EffectParameterCollectionGroup parameterCollectionGroup);
         

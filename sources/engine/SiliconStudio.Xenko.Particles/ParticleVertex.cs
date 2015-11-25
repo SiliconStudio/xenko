@@ -10,19 +10,19 @@ using SiliconStudio.Xenko.Graphics;
 namespace SiliconStudio.Xenko.Particles
 {
     // TODO This is just a copy from the old implementation. It will change when the particle shader is done.
-    [StructLayout(LayoutKind.Sequential)]
+    [StructLayout(LayoutKind.Sequential, Pack = 4)]
     public struct ParticleVertex // Identical to VertexPositionColorTextureSwizzle
     {
         public Vector3   Position;
         public Vector2   TexCoord;
-        public Color4    Color;
-        public float     Swizzle;
+        public uint      Color;
+//        public float     Swizzle;
 
 
         /// <summary>
         /// Defines structure byte size.
         /// </summary>
-        public static readonly int Size = 40;
+        public static readonly int Size = 24;
 
         /// <summary>
         /// The vertex layout of this struct.
@@ -30,8 +30,8 @@ namespace SiliconStudio.Xenko.Particles
         public static readonly VertexDeclaration Layout = new VertexDeclaration(
             VertexElement.Position<Vector3>(),
             VertexElement.TextureCoordinate<Vector2>(),
-            VertexElement.Color<Color4>(),
-            new VertexElement("BATCH_SWIZZLE", PixelFormat.R32_Float)
+            VertexElement.Color<Color>()
+//            new VertexElement("BATCH_SWIZZLE", PixelFormat.R32_Float)
             );
     }
 

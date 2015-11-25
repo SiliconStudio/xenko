@@ -19,5 +19,6 @@ namespace SiliconStudio.Xenko.Rendering
     public static partial class ParticleBaseKeys
     {
         public static readonly ParameterKey<Matrix> MatrixTransform = ParameterKeys.New<Matrix>();
+        public static readonly ParameterKey<float> AlphaAdditive = ParameterKeys.New<float>();
     }
 }
