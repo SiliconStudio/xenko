@@ -5,10 +5,10 @@ Meta:
     Name: Xenko
     Version: 1.4.0-beta
     Owners:
-      - Silicon Studio Corp.
+      - Silicon Studio
     Authors: 
-      - Silicon Studio Corp.
-    Copyright: © Silicon Studio Corp. All rights reserved.
+      - Silicon Studio
+    Copyright: © Silicon Studio. All rights reserved.
     Description: Xenko Game Package
     LicenseUrl: http://xenko.com/license.txt
     ProjectUrl: http://xenko.com
