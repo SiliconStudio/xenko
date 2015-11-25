@@ -303,9 +303,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.VisualStudio.Commands", "..\sources\tools\SiliconStudio.Xenko.VisualStudio.Commands\SiliconStudio.Xenko.VisualStudio.Commands.csproj", "{E136B568-3E3F-498F-A8B4-2877B7768560}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics", "..\sources\engine\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj", "{DD592516-B341-40FE-9100-1B0FA784A060}"
-	ProjectSection(ProjectDependencies) = postProject
-		{42780CBD-3FE7-48E3-BD5B-59945EA20137} = {42780CBD-3FE7-48E3-BD5B-59945EA20137}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Presentation.Dialogs", "..\sources\common\presentation\SiliconStudio.Presentation.Dialogs\SiliconStudio.Presentation.Dialogs.csproj", "{4FAC003A-2532-42F3-AED7-A296D1A1615E}"
 EndProject
