@@ -13,6 +13,10 @@ namespace SiliconStudio.Assets.CompilerApp
         {
             try
             {
+                // Set the SiliconStudioXenkoDir environment variable
+                var installDir = DirectoryHelper.GetInstallationDirectory("Xenko");
+                Environment.SetEnvironmentVariable("SiliconStudioXenkoDir", installDir);
+
                 var packageBuilder = new PackageBuilderApp();
                 return packageBuilder.Run(args);
             }
