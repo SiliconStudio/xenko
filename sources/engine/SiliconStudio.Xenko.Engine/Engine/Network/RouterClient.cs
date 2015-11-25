@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Engine.Network
         {
             var socketContextTCS = new TaskCompletionSource<SimpleSocket>();
             var socketContext = new SimpleSocket();
-            socketContext.Connected = async context =>
+            socketContext.Connected = context =>
             {
                 socketContextTCS.TrySetResult(context);
             };
