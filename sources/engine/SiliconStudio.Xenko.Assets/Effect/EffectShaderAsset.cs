@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Effect
     [DataContract("EffectShader")]
     [AssetDescription(FileExtension, AlwaysMarkAsRoot = true)]
     [AssetCompiler(typeof(EffectShaderAssetCompiler))]
-    [Display(90, "Effect Shader", "An effect shader")]
+    [Display(90, "Effect Shader")]
     public sealed class EffectShaderAsset : SourceCodeAsset
     {
         /// <summary>

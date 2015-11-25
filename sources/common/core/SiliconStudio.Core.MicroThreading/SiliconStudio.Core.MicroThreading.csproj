@@ -32,6 +32,7 @@
     <Compile Include="MicroThreadEvent.cs" />
     <Compile Include="MicroThreadFlags.cs" />
     <Compile Include="MicroThreadLocal.cs" />
+    <Compile Include="MicroThreadProfilingKeys.cs" />
     <Compile Include="MicroThreadState.cs" />
     <Compile Include="MicroThreadSynchronizationContext.cs" />
     <Compile Include="MicroThreadYieldAwaiter.cs" />

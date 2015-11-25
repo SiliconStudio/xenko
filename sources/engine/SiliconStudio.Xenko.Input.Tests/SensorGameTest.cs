@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Input.Tests
     /// <summary>
     /// Game class for test on the Input sensors.
     /// </summary>
-    class SensorGameTest : GraphicsTestBase
+    class SensorGameTest : GameTestBase
     {
         private SpriteFont font;
 

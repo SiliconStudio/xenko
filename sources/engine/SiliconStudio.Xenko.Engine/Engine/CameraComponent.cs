@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Engine
     /// Describes the camera projection and view.
     /// </summary>
     [DataContract("CameraComponent")]
-    [Display(130, "Camera", Expand = ExpandRule.Once)]
+    [Display(13000, "Camera", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
     public sealed class CameraComponent : ActivableEntityComponent
     {

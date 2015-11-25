@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Graphics.Regression;
 namespace SiliconStudio.Xenko.Graphics.Tests.Regression
 {
     [TestFixture]
-    public class TestSimpleTexture : GraphicsTestBase
+    public class TestSimpleTexture : GameTestBase
     {
         /// <summary>
         /// The texture.

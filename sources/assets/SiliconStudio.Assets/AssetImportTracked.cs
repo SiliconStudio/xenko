@@ -18,7 +18,7 @@ namespace SiliconStudio.Assets
         /// <value>The source hash.</value>
         [DataMember(-30)]
         [DefaultValue(null)]
-        [Browsable(false)]
+        [Display(Browsable = false)]
         public ObjectId? SourceHash { get; set; }
 
         override internal void SetAsRootImport()

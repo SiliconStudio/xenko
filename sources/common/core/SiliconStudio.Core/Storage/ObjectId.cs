@@ -14,7 +14,7 @@ namespace SiliconStudio.Core.Storage
     {
         public static readonly ObjectId Empty = new ObjectId();
 
-        // SHA1 hash size is 160 bits.
+        // Murmurshash3 ahsh size is 128 bits.
         public const int HashSize = 16;
         public const int HashStringLength = HashSize * 2;
         private const int HashSizeInUInt = HashSize / sizeof(uint);

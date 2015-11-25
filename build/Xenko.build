@@ -19,7 +19,8 @@ Example of use:
     <AdvancedInstallerPath Condition="'$(AdvancedInstallerPath)' == '' And Exists('$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.6.3\bin\x86\advinst.exe')">$(MSBuildProgramFiles32)\Caphyon\Advanced Installer 11.6.3\bin\x86\advinst.exe</AdvancedInstallerPath>
   </PropertyGroup>
 
-  <UsingTask TaskName="SiliconStudio.Assets.PackageArchiveTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Assets.dll" />
+  <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageArchiveTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />
+  <UsingTask TaskName="SiliconStudio.Xenko.Assets.Tasks.PackageGetVersionTask" AssemblyFile="$(XenkoRootBin)SiliconStudio.Xenko.Assets.dll" />
   
   <Target Name="Help">
     <Message Importance="high" Text="TODO"/>
@@ -28,7 +29,7 @@ Example of use:
   <!--
   Package Xenko to a nupkg
   -->
-  <Target Name="Package">
+  <Target Name="Package" DependsOnTargets="GitLinkPdb">
     <ItemGroup>
         <FilesToDeletePackage Include="$(MSBuildThisFileDirectory)Xenko*.nupkg"/>
     </ItemGroup>    
@@ -162,5 +163,12 @@ Example of use:
   
   <Target Name="BuildWindowsPhone" DependsOnTargets="CopyXenkoKey">
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).WindowsPhone.sln" Properties="$(BuildProperties);Platform=WindowsPhone"/>
+  </Target>
+  
+  <Target Name="GitLinkPdb">
+    <PackageGetVersionTask File="$(XenkoPackage)">
+      <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
+    </PackageGetVersionTask>
+    <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/paradox -s releases/$(XenkoPackageVersion)" />
   </Target>
 </Project>

@@ -136,10 +136,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 var result = base.ReadYaml(ref objectContext);
 
-                if (objectContext.Descriptor.Type == typeof(EntityHierarchyData))
+                if (typeof(EntityAssetBase).IsAssignableFrom(objectContext.Descriptor.Type))
                 {
                     // Let's fixup entity references after serialization
-                    EntityAnalysis.FixupEntityReferences((EntityHierarchyData)objectContext.Instance);
+                    EntityAnalysis.FixupEntityReferences((EntityAssetBase)objectContext.Instance);
                 }
 
                 return result;
@@ -161,20 +161,20 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // SceneSettings: Pretend we are already inside an entity so add one level
             if (objectContext.Descriptor.Type == typeof(SceneSettings))
-                recursionLevel++;
+                recursionLevel += 2;
         }
 
         private static void LeaveNode(ref ObjectContext objectContext)
         {
             if (objectContext.Descriptor.Type == typeof(SceneSettings))
-                recursionLevel--;
+                recursionLevel -= 2;
             recursionLevel--;
             levelSinceScriptComponent--;
         }
 
         public bool CanVisit(Type type)
         {
-            return type == typeof(EntityHierarchyData) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
+            return typeof(EntityAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
         }
 
         //public void Visit(ref VisitorContext context)
@@ -186,9 +186,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private static void SetupMaxExpectedDepth(ObjectContext objectContext)
         {
             // Make sure we start with 0 (in case previous serialization failed with an exception)
-            if (objectContext.Descriptor.Type == typeof(EntityHierarchyData))
+            if (typeof(EntityAssetBase).IsAssignableFrom(objectContext.Descriptor.Type))
             {
-                // Level 1 is EntityHierarchyData, Level 2 is Entity, Level 3 is EntityComponent
+                // Level 1 is EntityAssetBase, Level 2 is EntityHierarchyData, Level 3 is Entity, Level 4 is EntityComponent
                 recursionMaxExpectedDepth = 4;
             }
             else

@@ -4,12 +4,11 @@
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Engine.Processors;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
     [DataContract("SpriteStudioNodeLinkComponent")]
-    [Display(15, "Sprite Studio Node Link", Expand = ExpandRule.Once)]
+    [Display(1400, "Sprite Studio Node Link", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(SpriteStudioNodeLinkProcessor))]
     public sealed class SpriteStudioNodeLinkComponent : EntityComponent
     {

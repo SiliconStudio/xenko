@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Engine
     /// Add an <see cref="UIElement"/> to an <see cref="Entity"/>.
     /// </summary>
     [DataContract("UIComponent")]
-    [Display(98, "UI", Expand = ExpandRule.Once)]
+    [Display(9800, "UI", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(UIComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(UIComponentProcessor))]
     public class UIComponent : ActivableEntityComponent

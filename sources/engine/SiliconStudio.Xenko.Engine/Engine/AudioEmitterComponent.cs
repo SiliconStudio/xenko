@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Engine
     /// To get the AudioEmitterSoundController associated to a SoundEffect use the <see cref="GetSoundEffectController"/> function.
     /// </para>
     /// </remarks>
-    [Display(70, "Audio Emitter", Expand = ExpandRule.Once)]
+    [Display(7000, "Audio Emitter", Expand = ExpandRule.Once)]
     [DataContract("AudioEmitterComponent")]
     [DefaultEntityComponentProcessor(typeof(AudioEmitterProcessor))]
     public sealed class AudioEmitterComponent : EntityComponent

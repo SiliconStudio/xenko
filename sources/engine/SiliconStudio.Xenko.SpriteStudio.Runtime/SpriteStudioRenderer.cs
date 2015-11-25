@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
                 foreach (var node in spriteState.SpriteStudioComponent.SortedNodes)
                 {
-                    if (node.Sprite?.Texture == null || node.Sprite.Region.Width <= 0 || node.Sprite.Region.Height <= 0f || node.Hide) continue;
+                    if (node.Sprite?.Texture == null || node.Sprite.Region.Width <= 0 || node.Sprite.Region.Height <= 0f || node.Hide != 0) continue;
 
                     // Update the sprite batch
 
@@ -182,7 +182,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     if (isPicking)
                     {
                         // TODO move this code corresponding to picking out of the runtime code.
-                        color4 = new Color4(spriteState.SpriteStudioComponent.Id);
+                        color4 = new Color4(spriteState.SpriteStudioComponent.Id.ToRuntimeId());
                     }
                     else
                     {

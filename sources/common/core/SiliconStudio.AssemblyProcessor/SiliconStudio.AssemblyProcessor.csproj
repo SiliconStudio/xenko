@@ -4,6 +4,9 @@
     <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
     <XenkoGraphicsApi>Direct3D11</XenkoGraphicsApi>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
+    <UseVSHostingProcess>false</UseVSHostingProcess>
+  </PropertyGroup>
   <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>

@@ -21,7 +21,7 @@ namespace SiliconStudio.Core.Reflection
         New = 1,
 
         /// <summary>
-        /// The value is sealed and cannot be changed by 
+        /// The value is sealed and cannot be changed by inherited instances.
         /// </summary>
         Sealed = 2,
     }

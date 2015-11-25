@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Physics;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("PhysicsComponent")]
-    [Display(30, "Physics", Expand = ExpandRule.Once)]
+    [Display(3000, "Physics", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     public sealed class PhysicsComponent : EntityComponent
     {

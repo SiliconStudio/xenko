@@ -492,9 +492,20 @@ namespace SiliconStudio.Assets.Analysis
             var itemsToAnalyze = new Queue<AssetItem>();
             var referenceCollector = new DependenciesCollector();
 
+            // Reset the dependencies/parts.
             result.Reset(keepParents);
 
             var assetItem = result.Item;
+
+            // Collect part assets.
+            var container = assetItem.Asset as IAssetPartContainer;
+            if (container != null)
+            {
+                foreach (var part in container.CollectParts())
+                {
+                    result.AddPart(part);
+                }
+            }
 
             // marked as processed to not add it again
             addedReferences.Add(assetItem.Id);
@@ -787,6 +798,12 @@ namespace SiliconStudio.Assets.Analysis
                 // Track asset import paths
                 UpdateAssetImportPathsTracked(dependencies.Item, true);
 
+                // Remove previous part assets registered
+                foreach (var part in dependencies.Parts)
+                {
+                    Dependencies.Remove(part.Id);
+                }
+
                 // Remove previous missing dependencies
                 RemoveMissingDependencies(dependencies);
 
@@ -802,6 +819,12 @@ namespace SiliconStudio.Assets.Analysis
 
                 // Recalculate [Out] dependencies
                 CollectDynamicOutReferences(dependencies, FindAssetFromDependencyOrSession, false, true);
+
+                // Add part assets
+                foreach (var part in dependencies.Parts)
+                {
+                    Dependencies[part.Id] = dependencies;
+                }
 
                 // Add [In] dependencies to new children
                 foreach (var assetLink in dependencies.LinksOut)
@@ -1463,10 +1486,9 @@ namespace SiliconStudio.Assets.Analysis
                 Visit(item.Asset);
                 
                 // composition inheritances
-                var assetComposer = item.Asset as IAssetComposer;
-                if (assetComposer != null)
+                if (item.Asset.BaseParts != null)
                 {
-                    foreach (var compositionBase in assetComposer.GetCompositionBases())
+                    foreach (var compositionBase in item.Asset.BaseParts)
                         dependencies.AddBrokenLinkOut(compositionBase, ContentLinkType.CompositionInheritance);
                 }
 
@@ -1498,6 +1520,17 @@ namespace SiliconStudio.Assets.Analysis
                 {
                     base.VisitObject(obj, descriptor, visitMembers);
                 }
+            }
+
+            public override void VisitObjectMember(object container, ObjectDescriptor containerDescriptor, IMemberDescriptor member, object value)
+            {
+                // Don't visit base parts as they are visited at the top level.
+                if (typeof(Asset).IsAssignableFrom(member.DeclaringType) && (member.Name == "~BaseParts"))
+                {
+                    return;
+                }
+
+                base.VisitObjectMember(container, containerDescriptor, member, value);
             }
         }
 

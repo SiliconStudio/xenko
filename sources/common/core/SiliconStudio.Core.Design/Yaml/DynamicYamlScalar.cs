@@ -10,7 +10,7 @@ namespace SiliconStudio.Core.Yaml
     /// <summary>
     /// Dynamic version of <see cref="YamlScalarNode"/>.
     /// </summary>
-    public class DynamicYamlScalar : DynamicYamlObject
+    public class DynamicYamlScalar : DynamicYamlObject, IDynamicYamlNode
     {
         internal YamlScalarNode node;
 
@@ -21,6 +21,8 @@ namespace SiliconStudio.Core.Yaml
                 return node;
             }
         }
+
+        YamlNode IDynamicYamlNode.Node => Node;
 
         public DynamicYamlScalar(YamlScalarNode node)
         {

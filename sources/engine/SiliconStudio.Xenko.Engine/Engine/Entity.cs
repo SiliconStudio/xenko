@@ -33,12 +33,6 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(100, DataMemberMode.Content)]
         public PropertyContainer Components;
 
-        /// <summary>
-        /// The entity identifier.
-        /// </summary>
-        [Browsable(false)]
-        public new Guid Id;
-
         static Entity()
         {
             PropertyContainer.AddAccessorProperty(typeof(Entity), TransformComponent.Key);
@@ -56,9 +50,8 @@ namespace SiliconStudio.Xenko.Engine
         /// Create a new <see cref="Entity"/> instance having the provided name.
         /// </summary>
         /// <param name="name">The name to give to the entity</param>
-        /// <param name="generateId">if set to <c>true</c> use <see cref="Guid.NewGuid()"/> to initialize <see cref="Entity.Id"/>.</param>
-        public Entity(string name, bool generateId = true)
-            : this(Vector3.Zero, name, generateId)
+        public Entity(string name)
+            : this(Vector3.Zero, name)
         {
         }
 
@@ -67,13 +60,9 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <param name="position">The initial position of the entity</param>
         /// <param name="name">The name to give to the entity</param>
-        /// <param name="generateId">if set to <c>true</c> use <see cref="Guid.NewGuid()"/> to initialize <see cref="Entity.Id"/>.</param>
-        public Entity(Vector3 position, string name = null, bool generateId = true)
+        public Entity(Vector3 position, string name = null)
             : base(name)
         {
-            if (generateId)
-                Id = Guid.NewGuid();
-
             Components = new PropertyContainer(this);
             Components.PropertyUpdated += EntityPropertyUpdated;
 
@@ -81,6 +70,13 @@ namespace SiliconStudio.Xenko.Engine
             transform.Position = position;
 
             Group = EntityGroup.Group0;
+        }
+
+        [DataMember(-10), Display(Browsable = false)]
+        public override Guid Id
+        {
+            get { return base.Id; }
+            set { base.Id = value; }
         }
 
         [DataMember(0)] // Name is serialized

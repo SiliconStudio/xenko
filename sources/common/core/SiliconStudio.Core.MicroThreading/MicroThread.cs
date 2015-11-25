@@ -6,7 +6,6 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Core.MicroThreading
 {
@@ -15,8 +14,6 @@ namespace SiliconStudio.Core.MicroThreading
     /// </summary>
     public class MicroThread
     {
-        internal static readonly ProfilingKey ProfilingKey = new ProfilingKey("MicroThread-Running");
-
         internal string ScriptId;
 
         /// <summary>

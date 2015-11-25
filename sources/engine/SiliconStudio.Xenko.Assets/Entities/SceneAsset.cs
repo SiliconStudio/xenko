@@ -28,6 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetDescription(FileSceneExtension)]
     [ObjectFactory(typeof(SceneFactory))]
     [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
+    [AssetCompiler(typeof(SceneAssetCompiler))]
     [AssetUpgrader(XenkoConfig.PackageName, 0, 1, typeof(RemoveSourceUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 1, 2, typeof(RemoveBaseUpgrader))]
     [AssetUpgrader(XenkoConfig.PackageName, 2, 3, typeof(RemoveModelDrawOrderUpgrader))]
@@ -47,12 +48,24 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [AssetUpgrader(XenkoConfig.PackageName, 16, 17, typeof(NewElementLayoutUpgrader4))]
     [AssetUpgrader(XenkoConfig.PackageName, 17, 18, typeof(RemoveSceneEditorCameraSettings))]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.18", "1.5.0-alpha01", typeof(ChangeSpriteColorTypeAndTriggerElementRemoved))]
-    [Display(200, "Scene", "A scene")]
-    public class SceneAsset : EntityAsset
+    [AssetUpgrader(XenkoConfig.PackageName, "1.5.0-alpha01", "1.5.0-alpha02", typeof(MoveSceneSettingsToSceneAsset))]
+    [Display(200, "Scene")]
+    public class SceneAsset : EntityAssetBase
     {
-        private const string CurrentVersion = "1.5.0-alpha01";
+        private const string CurrentVersion = "1.5.0-alpha02";
 
         public const string FileSceneExtension = ".xkscene;.pdxscene";
+
+        public SceneAsset()
+        {
+            SceneSettings = new SceneSettings();
+        }
+
+        /// <summary>
+        /// Gets the scene settings for this instance.
+        /// </summary>
+        [DataMember(30)]
+        public SceneSettings SceneSettings { get; private set; }
 
         public static SceneAsset Create()
         {
@@ -604,6 +617,18 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         }
                     }
                 }
+            }
+        }
+
+        class MoveSceneSettingsToSceneAsset : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                // Move SceneSettings to SceneAsset outside the HierarchyData
+                var sceneSettings = asset.Hierarchy.SceneSettings;
+                asset.SceneSettings = sceneSettings;
+                var assetYaml = (DynamicYamlMapping)asset.Hierarchy;
+                assetYaml.RemoveChild("SceneSettings");
             }
         }
 

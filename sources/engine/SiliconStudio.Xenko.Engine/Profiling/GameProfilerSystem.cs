@@ -25,6 +25,9 @@ namespace SiliconStudio.Xenko.Profiling
         private string gcCollectionsString = "";
         private readonly string gcCollectionsStringBase;
 
+        private readonly StringBuilder fpsStatStringBuilder = new StringBuilder();
+        private string fpsStatString = "";
+
         private SpriteBatch spriteBatch;
 
         private readonly StringBuilder profilersStringBuilder = new StringBuilder();
@@ -104,7 +107,6 @@ namespace SiliconStudio.Xenko.Profiling
                     {
                         gcMemoryStringBuilder.Clear();
                         gcMemoryStringBuilder.AppendFormat(gcMemoryStringBase, e.Custom0.Value.LongValue, e.Custom2.Value.LongValue, e.Custom1.Value.LongValue);
-                        gcCollectionsStringBuilder.AppendLine();
                         continue;
                     }
 
@@ -112,7 +114,13 @@ namespace SiliconStudio.Xenko.Profiling
                     {
                         gcCollectionsStringBuilder.Clear();
                         gcCollectionsStringBuilder.AppendFormat(gcCollectionsStringBase, e.Custom0.Value.IntValue, e.Custom1.Value.IntValue, e.Custom2.Value.IntValue);
-                        gcCollectionsStringBuilder.AppendLine();
+                        continue;
+                    }
+
+                    if (e.Key == GameProfilingKeys.GameDrawFPS && e.Type == ProfilingMessageType.End)
+                    {
+                        fpsStatStringBuilder.Clear();
+                        fpsStatStringBuilder.AppendFormat(e.Text, e.Custom0.Value.IntValue, e.Custom1.Value.DoubleValue, e.Custom2.Value.DoubleValue, e.Custom3.Value.FloatValue);
                         continue;
                     }
 
@@ -155,7 +163,7 @@ namespace SiliconStudio.Xenko.Profiling
                         profilingResult.Custom3 = e.Custom3.Value;
                     }
 
-                    if (e.Key == MicroThread.ProfilingKey)
+                    if (e.Key == MicroThreadProfilingKeys.ProfilingKey)
                     {
                         scriptsProfilingResultsDictionary[e.Text] = profilingResult;
                     }
@@ -205,6 +213,7 @@ namespace SiliconStudio.Xenko.Profiling
                     gcCollectionsString = gcCollectionsStringBuilder.ToString();
                     gcMemoryString = gcMemoryStringBuilder.ToString();
                     profilersString = profilersStringBuilder.ToString();
+                    fpsStatString = fpsStatStringBuilder.ToString();
                 }
             });
             stringBuilderTask.Start();
@@ -287,7 +296,8 @@ namespace SiliconStudio.Xenko.Profiling
             {                
                 spriteBatch.DrawString(Font, gcMemoryString, new Vector2(10, 10), TextColor);
                 spriteBatch.DrawString(Font, gcCollectionsString, new Vector2(10, 20), TextColor);
-                spriteBatch.DrawString(Font, profilersString, new Vector2(10, 30), TextColor);               
+                spriteBatch.DrawString(Font, fpsStatString, new Vector2(10, 30), TextColor);
+                spriteBatch.DrawString(Font, profilersString, new Vector2(10, 40), TextColor);               
             }
             spriteBatch.End();
         }

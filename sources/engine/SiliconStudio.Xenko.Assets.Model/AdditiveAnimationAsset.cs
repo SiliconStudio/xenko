@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 {
     [DataContract("AdditiveAnimation")]
     [ObjectFactory(typeof(AdditiveAnimationFactory))]
-    [Display(175, "Additive Animation", "An additive skeletal animation")]
+    [Display(175, "Additive Animation")]
     public class AdditiveAnimationAsset : AnimationAsset
     {
         /// <summary>

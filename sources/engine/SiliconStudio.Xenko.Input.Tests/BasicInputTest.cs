@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.Input.Tests
 {
-    class BasicInputTest : GraphicsTestBase
+    class BasicInputTest : GameTestBase
     {
         private readonly Logger log = GlobalLogger.GetLogger("InputTests");
 

@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             public List<EntityLink> EntityReferences;
         }
 
-        public static Result Visit(EntityHierarchyData entityHierarchy)
+        public static Result Visit(object entityHierarchy)
         {
             if (entityHierarchy == null) throw new ArgumentNullException("entityHierarchy");
 
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return entityReferenceVistor.Result;
         }
 
-        public static Result Visit(ComponentBase componentBase)
+        private static Result Visit(ComponentBase componentBase)
         {
             if (componentBase == null) throw new ArgumentNullException("componentBase");
 
@@ -45,13 +45,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // TODO: Either remove this function or make it do something!
         }
 
-        /// <summary>
-        /// Fixups the entity references, by clearing invalid <see cref="EntityReference.Id"/>, and updating <see cref="EntityReference.Value"/> (same for components).
-        /// </summary>
-        /// <param name="entityHierarchy">The entity asset.</param>
-        public static void FixupEntityReferences(EntityHierarchyData entityHierarchy)
+
+        private static void FixupEntityReferences(object rootToVisit, EntityHierarchyData entityHierarchy)
         {
-            var entityAnalysisResult = Visit(entityHierarchy);
+            var entityAnalysisResult = Visit(rootToVisit);
 
             // Reverse the list, so that we can still properly update everything
             // (i.e. if we have a[0], a[1], a[1].Test, we have to do it from back to front to be valid at each step)
@@ -69,7 +66,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     {
                         throw new InvalidOperationException("Found a reference to a component which doesn't have any entity");
                     }
-                        
+
                     EntityDesign realEntity;
                     if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity)
                         && realEntity.Entity.Components.TryGetValue(entityLink.EntityComponent.GetDefaultKey(), out obj))
@@ -113,14 +110,28 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 if (obj != null)
                 {
                     // We could find the referenced item, let's use it
-                    entityLink.Path.Apply(entityHierarchy, MemberPathAction.ValueSet, obj);
+                    entityLink.Path.Apply(rootToVisit, MemberPathAction.ValueSet, obj);
                 }
                 else
                 {
                     // Item could not be found, let's null it
-                    entityLink.Path.Apply(entityHierarchy, MemberPathAction.ValueClear, null);
+                    entityLink.Path.Apply(rootToVisit, MemberPathAction.ValueClear, null);
                 }
             }
+        }
+
+        /// <summary>
+        /// Fixups the entity references, by clearing invalid <see cref="EntityReference.Id"/>, and updating <see cref="EntityReference.Value"/> (same for components).
+        /// </summary>
+        /// <param name="entityAssetBase">The entity asset.</param>
+        public static void FixupEntityReferences(EntityAssetBase entityAssetBase)
+        {
+            FixupEntityReferences(entityAssetBase, entityAssetBase.Hierarchy);
+        }
+
+        public static void FixupEntityReferences(EntityHierarchyData hierarchyData)
+        {
+            FixupEntityReferences(hierarchyData, hierarchyData);
         }
 
         /// <summary>

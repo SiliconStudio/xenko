@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
+using System.Linq;
 using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Tests
 {
     [DataContract("!AssetObjectTest")]
     [AssetDescription(FileExtension)]
-    public class AssetObjectTest : Asset, IEquatable<AssetObjectTest>, IAssetComposer
+    public class AssetObjectTest : Asset, IEquatable<AssetObjectTest>
     {
         public const string FileExtension = ".xktest";
 
@@ -21,9 +21,6 @@ namespace SiliconStudio.Assets.Tests
 
         [DefaultValue(null)]
         public AssetReference<AssetObjectTest> Reference { get; set; }
-
-        [DefaultValue(null)]
-        public List<AssetReference<AssetObjectTest>> CompositionBases = new List<AssetReference<AssetObjectTest>>();
 
         [DefaultValue(null)]
         public UFile RawAsset { get; set; }
@@ -54,11 +51,6 @@ namespace SiliconStudio.Assets.Tests
             }
         }
 
-        public IEnumerable<IContentReference> GetCompositionBases()
-        {
-            return CompositionBases;
-        }
-
         public static bool operator ==(AssetObjectTest left, AssetObjectTest right)
         {
             return Equals(left, right);
@@ -70,6 +62,48 @@ namespace SiliconStudio.Assets.Tests
         }
     }
 
+    [DataContract("!TestAssetWithParts")]
+    [AssetDescription(FileExtension)]
+    public class TestAssetWithParts : Asset, IAssetPartContainer
+    {
+        public const string FileExtension = ".xkpart";
+
+        public TestAssetWithParts()
+        {
+            Parts = new List<AssetPart>();
+        }
+
+        public string Name { get; set; }
+
+        public List<AssetPart> Parts { get; set; }
+
+        public IEnumerable<AssetPart> CollectParts()
+        {
+            return Parts;
+        }
+
+        public bool ContainsPart(Guid id)
+        {
+            return Parts.Any(t => t.Id == id);
+        }
+
+        public override Asset CreateChildAsset(string location)
+        {
+            var asset = (TestAssetWithParts)base.CreateChildAsset(location);
+
+            // Create asset with new base
+            for (int i = 0; i < asset.Parts.Count; i++)
+            {
+                var part = asset.Parts[i];
+                part.BaseId = part.Id;
+                part.Id = Guid.NewGuid();
+                asset.Parts[i] = part;
+            }
+
+            return asset;
+        }
+    }
+    
     [DataContract("!AssetImportObjectTest")]
     [AssetDescription(".xkimptest")]
     public class AssetImportObjectTest : AssetImport

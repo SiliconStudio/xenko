@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
     /// <summary>
     /// Test class for <see cref="Sprite"/>
     /// </summary>
-    public class SpriteTests : GraphicsTestBase
+    public class SpriteTests : GameTestBase
     {
         private const string DefaultName = "toto";
 
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void Constructor2Tests()
         {
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 // texture
                 var textureSize = new Vector2(50, 75);
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 Assert.AreEqual(textureSize, sprite.SizeInPixels);
             });
 
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 // texture + name
                 var textureSize = new Vector2(50, 75);
@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void NamePropertyTests()
         {
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 const string otherName = "tutu";
                 var sprite = CreateSprite(game);
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         public void TexturePropertyTests()
         {
             // no checks on texture affectation for the moment.
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 var sprite = CreateSprite(game);
                 var region = sprite.Region;
@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         public void CenterPropertyTests()
         {
             // no checks on center affectation for the moment.
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 var sprite = CreateSprite(game);
                 var textureSize = new Vector2(sprite.Texture.Width, sprite.Texture.Height);
@@ -164,7 +164,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void RegionPropertyTests()
         {
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 var sprite = CreateSprite(game);
                 var textureSize = new Vector2(sprite.Texture.Width, sprite.Texture.Height);
@@ -192,7 +192,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void OrientationPropertyTests()
         {
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 var sprite = CreateSprite(game);
                 var sizePixel = sprite.SizeInPixels;
@@ -221,7 +221,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void SizePropertyTests()
         {
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 var sprite = CreateSprite(game);
 
@@ -249,7 +249,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void SizeInPixelPropertyTests()
         {
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 var sizeChanged = false;
                 var sprite = CreateSprite(game);
@@ -277,7 +277,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void CloneMethodTests()
         {
-            RunDrawTest(game =>
+            PerformTest(game =>
             {
                 var sprite = CreateSprite(game);
                 sprite.Region = new RectangleF(1,2,3,4);

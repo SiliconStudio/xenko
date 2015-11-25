@@ -58,9 +58,9 @@ namespace SiliconStudio {
 						return false;
 					}
 
-					AnimationClip^ ProcessAnimation()
+					Dictionary<System::String^, AnimationClip^>^ ProcessAnimation()
 					{
-						auto animationClip = gcnew AnimationClip();
+						auto animationClips = gcnew Dictionary<System::String^, AnimationClip^>();
 
 						int animStackCount = scene->GetMemberCount<FbxAnimStack>();
 						// We support only anim stack count.
@@ -81,7 +81,7 @@ namespace SiliconStudio {
 							scene->GetRootNode()->ResetPivotSet(FbxNode::eDestinationPivot);
 							SetPivotStateRecursive(scene->GetRootNode());
 							scene->GetRootNode()->ConvertPivotAnimationRecursive(animStack, FbxNode::eDestinationPivot, 30.0f);
-							ProcessAnimationByCurve(animationClip, animLayer, scene->GetRootNode());
+							ProcessAnimationByCurve(animationClips, animLayer, scene->GetRootNode());
 							scene->GetRootNode()->ResetPivotSet(FbxNode::eSourcePivot);
 
 							// Reference code (Uncomment Optimized code to use this part)
@@ -89,10 +89,7 @@ namespace SiliconStudio {
 							//ProcessAnimation(animationClip, animStack, scene->GetRootNode());
 						}
 
-						if (animationClip->Curves->Count == 0)
-							animationClip = nullptr;
-
-						return animationClip;
+						return animationClips;
 					}
 
 					List<String^>^ ExtractAnimationNodesNoInit()
@@ -407,7 +404,7 @@ namespace SiliconStudio {
 						for (int i = 0; i < channel->KeyFrames->Count; ++i)
 						{
 							auto keyFrame = channel->KeyFrames[i];
-							keyFrame.Value = (float)FocalLengthToVerticalFov(pCamera->FilmHeight.Get(), keyFrame.Value);
+							keyFrame.Value = (float)(FocalLengthToVerticalFov(pCamera->FilmHeight.Get(), keyFrame.Value) * 180.0 / Math::PI);
 							channel->KeyFrames[i] = keyFrame;
 						}
 					}
@@ -423,8 +420,10 @@ namespace SiliconStudio {
 						}
 					}
 
-					void ProcessAnimationByCurve(AnimationClip^ animationClip, FbxAnimLayer* animLayer, FbxNode* pNode)
+					void ProcessAnimationByCurve(Dictionary<String^, AnimationClip^>^ animationClips, FbxAnimLayer* animLayer, FbxNode* pNode)
 					{
+						auto animationClip = gcnew AnimationClip();
+
 						auto nodeData = sceneMapping->FindNode(pNode);
 						FbxAnimCurve* curves[3];
 
@@ -440,17 +439,17 @@ namespace SiliconStudio {
 						curves[0] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclTranslation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto translationCurve = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Position[{0}]", nodeName), 3, curves, 0.005f);
+						auto translationCurve = ProcessAnimationCurveVector<Vector3>(animationClip, "Transform.Position", 3, curves, 0.005f);
 
 						curves[0] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclRotation.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						ProcessAnimationCurveRotation(animationClip, String::Format("Transform.Rotation[{0}]", nodeName), curves, 0.01f, rotation);
+						ProcessAnimationCurveRotation(animationClip, "Transform.Rotation", curves, 0.01f, rotation);
 
 						curves[0] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_X);
 						curves[1] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Y);
 						curves[2] = pNode->LclScaling.GetCurve(animLayer, FBXSDK_CURVENODE_COMPONENT_Z);
-						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, String::Format("Transform.Scale[{0}]", nodeName), 3, curves, 0.005f);
+						auto scalingCurve = ProcessAnimationCurveVector<Vector3>(animationClip, "Transform.Scale", 3, curves, 0.005f);
 
 						if (translationCurve != nullptr)
 						{
@@ -480,37 +479,42 @@ namespace SiliconStudio {
 							if (camera->FieldOfViewY.GetCurve(animLayer))
 							{
 								curves[0] = camera->FieldOfViewY.GetCurve(animLayer);
-								auto FovAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
-								ConvertDegreeToRadians(FovAnimChannel);
+								auto FovAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.VerticalFieldOfView", 1, curves, 0.01f);
 
-								if (!exportedFromMaya)
-									MultiplyChannel(FovAnimChannel, 0.6); // Random factor to match what we see in 3dsmax, need to check why!
+								// TODO: Check again Max
+								//if (!exportedFromMaya)
+								//	MultiplyChannel(FovAnimChannel, 0.6); // Random factor to match what we see in 3dsmax, need to check why!
 							}
 
 
 							if (camera->FocalLength.GetCurve(animLayer))
 							{
 								curves[0] = camera->FocalLength.GetCurve(animLayer);
-								auto flAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.FieldOfViewVertical", 1, curves, 0.01f);
+								auto flAnimChannel = ProcessAnimationCurveVector<float>(animationClip, "Camera.VerticalFieldOfView", 1, curves, 0.01f);
 								ComputeFovFromFL(flAnimChannel, camera);
 							}
 
 							if (camera->NearPlane.GetCurve(animLayer))
 							{
 								curves[0] = camera->NearPlane.GetCurve(animLayer);
-								ProcessAnimationCurveVector<float>(animationClip, "Camera.NearPlane", 1, curves, 0.01f);
+								ProcessAnimationCurveVector<float>(animationClip, "Camera.NearClipPlane", 1, curves, 0.01f);
 							}
 
 							if (camera->FarPlane.GetCurve(animLayer))
 							{
 								curves[0] = camera->FarPlane.GetCurve(animLayer);
-								ProcessAnimationCurveVector<float>(animationClip, "Camera.FarPlane", 1, curves, 0.01f);
+								ProcessAnimationCurveVector<float>(animationClip, "Camera.FarClipPlane", 1, curves, 0.01f);
 							}
+						}
+
+						if (animationClip->Curves->Count > 0)
+						{
+							animationClips->Add(nodeName, animationClip);
 						}
 
 						for (int i = 0; i < pNode->GetChildCount(); ++i)
 						{
-							ProcessAnimationByCurve(animationClip, animLayer, pNode->GetChild(i));
+							ProcessAnimationByCurve(animationClips, animLayer, pNode->GetChild(i));
 						}
 					}
 
@@ -603,8 +607,79 @@ namespace SiliconStudio {
 
 					void SetPivotStateRecursive(FbxNode* pNode)
 					{
+						// From FbxNode.h
+						FbxVector4 lZero(0, 0, 0);
+						FbxVector4 lOne(1, 1, 1);
 						pNode->SetPivotState(FbxNode::eSourcePivot, FbxNode::ePivotActive);
 						pNode->SetPivotState(FbxNode::eDestinationPivot, FbxNode::ePivotActive);
+
+						EFbxRotationOrder lRotationOrder;
+						pNode->GetRotationOrder(FbxNode::eSourcePivot, lRotationOrder);
+						pNode->SetRotationOrder(FbxNode::eDestinationPivot, lRotationOrder);
+
+						//For cameras and lights (without targets) let's compensate the postrotation.
+						if (pNode->GetCamera() || pNode->GetLight())
+						{
+							if (!pNode->GetTarget())
+							{
+								FbxVector4 lRV(90, 0, 0);
+								if (pNode->GetCamera())
+									lRV.Set(0, 90, 0);
+
+								FbxVector4 prV = pNode->GetPostRotation(FbxNode::eSourcePivot);
+								FbxAMatrix lSourceR;
+								FbxAMatrix lR(lZero, lRV, lOne);
+								FbxVector4 res = prV;
+
+								// Rotation order don't affect post rotation, so just use the default XYZ order
+								FbxRotationOrder rOrder;
+								rOrder.V2M(lSourceR, res);
+
+								lR = lSourceR * lR;
+								rOrder.M2V(res, lR);
+								prV = res;
+								pNode->SetPostRotation(FbxNode::eSourcePivot, prV);
+								pNode->SetRotationActive(true);
+							}
+
+							// Point light do not need to be adjusted (since they radiate in all the directions).
+							if (pNode->GetLight() && pNode->GetLight()->LightType.Get() == FbxLight::ePoint)
+							{
+								pNode->SetPostRotation(FbxNode::eSourcePivot, FbxVector4(0, 0, 0, 0));
+							}
+						}
+						// apply Pre rotations only on bones / end of chains
+						if (pNode->GetNodeAttribute() && pNode->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton
+							|| (pNode->GetMarker() && pNode->GetMarker()->GetType() == FbxMarker::eEffectorFK)
+							|| (pNode->GetMarker() && pNode->GetMarker()->GetType() == FbxMarker::eEffectorIK))
+						{
+							if (pNode->GetRotationActive())
+							{
+								pNode->SetPreRotation(FbxNode::eDestinationPivot, pNode->GetPreRotation(FbxNode::eSourcePivot));
+							}
+
+							// No pivots on bones
+							pNode->SetRotationPivot(FbxNode::eDestinationPivot, lZero);
+							pNode->SetScalingPivot(FbxNode::eDestinationPivot, lZero);
+							pNode->SetRotationOffset(FbxNode::eDestinationPivot, lZero);
+							pNode->SetScalingOffset(FbxNode::eDestinationPivot, lZero);
+						}
+						else
+						{
+							// any other type: no pre-rotation support but...
+							pNode->SetPreRotation(FbxNode::eDestinationPivot, lZero);
+
+							// support for rotation and scaling pivots.
+							pNode->SetRotationPivot(FbxNode::eDestinationPivot, pNode->GetRotationPivot(FbxNode::eSourcePivot));
+							pNode->SetScalingPivot(FbxNode::eDestinationPivot, pNode->GetScalingPivot(FbxNode::eSourcePivot));
+							// Rotation and scaling offset are supported
+							pNode->SetRotationOffset(FbxNode::eDestinationPivot, pNode->GetRotationOffset(FbxNode::eSourcePivot));
+							pNode->SetScalingOffset(FbxNode::eDestinationPivot, pNode->GetScalingOffset(FbxNode::eSourcePivot));
+							//
+							// If we don't "support" scaling pivots, we can simply do:
+							// pNode->SetRotationPivot(FbxNode::eDestinationPivot, lZero);
+							// pNode->SetScalingPivot(FbxNode::eDestinationPivot, lZero);
+						}
 
 						for (int i = 0; i < pNode->GetChildCount(); ++i)
 						{
