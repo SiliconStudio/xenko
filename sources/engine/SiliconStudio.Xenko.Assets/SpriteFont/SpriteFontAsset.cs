@@ -148,8 +148,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// Check this property if you prefer to use interpolative alpha blending when rendering the font.
         /// </userdoc>
         [DataMember(120)]
-        [Display(null, "Rendering")]
-        public bool NoPremultiply { get; set; }
+        [DataAlias("NoPremultiply")]
+        [Display("Not Premultiply", "Rendering")]
+        public bool IsNotPremultiply { get; set; }
 
         /// <summary>
         /// Gets or sets the extra character spacing in pixels (relative to the font size). Zero is default spacing, negative closer together, positive further apart

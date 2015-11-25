@@ -1,0 +1,85 @@
+!PregeneratedSpriteFont
+Id: 37849a2b-82f1-4e4b-9ef6-680331c5fa87
+Tags: []
+Source: ../../../../data/tests/PrecompileFonts/TestBitmapFont.xkimg
+BaseOffset: 0.0
+DefaultCharacter: ' '
+DefaultLineSpacing: 32.0
+ExtraLineSpacing: 0.0
+ExtraSpacing: 0.0
+FontName: TestFont
+Glyphs:
+    -   BitmapIndex: 0
+        Character: 32
+        Offset: {X: 31.0, Y: 31.0}
+        Subrect: {X: 62, Y: 47, Width: 1, Height: 1}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 48
+        Offset: {X: 8.0, Y: 6.0}
+        Subrect: {X: 1, Y: 1, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 49
+        Offset: {X: 10.0, Y: 6.0}
+        Subrect: {X: 33, Y: 47, Width: 11, Height: 21}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 50
+        Offset: {X: 9.0, Y: 5.0}
+        Subrect: {X: 17, Y: 1, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 51
+        Offset: {X: 8.0, Y: 5.0}
+        Subrect: {X: 33, Y: 1, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 52
+        Offset: {X: 8.0, Y: 5.0}
+        Subrect: {X: 49, Y: 1, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 53
+        Offset: {X: 8.0, Y: 5.0}
+        Subrect: {X: 1, Y: 24, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 54
+        Offset: {X: 8.0, Y: 5.0}
+        Subrect: {X: 17, Y: 24, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 55
+        Offset: {X: 9.0, Y: 5.0}
+        Subrect: {X: 33, Y: 24, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 56
+        Offset: {X: 9.0, Y: 6.0}
+        Subrect: {X: 49, Y: 24, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 57
+        Offset: {X: 10.0, Y: 5.0}
+        Subrect: {X: 1, Y: 47, Width: 14, Height: 21}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 101
+        Offset: {X: 10.0, Y: 10.0}
+        Subrect: {X: 46, Y: 67, Width: 12, Height: 14}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 115
+        Offset: {X: 6.0, Y: 7.0}
+        Subrect: {X: 46, Y: 47, Width: 14, Height: 18}
+        XAdvance: 32.0
+    -   BitmapIndex: 0
+        Character: 116
+        Offset: {X: 7.0, Y: 5.0}
+        Subrect: {X: 17, Y: 47, Width: 14, Height: 21}
+        XAdvance: 32.0
+IsPremultiplied: true
+Kernings: null
+Size: 8.25
+Style: Regular
