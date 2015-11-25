@@ -62,7 +62,10 @@ namespace SiliconStudio.Assets.Diff
             }
         }
 
-        public bool UseOverride { get; set; }
+        /// <summary>
+        /// Gets or sets a boolean indicating whether the diff is assuming that it is in a base/child context using override informations.
+        /// </summary>
+        public bool UseOverrideMode { get; set; }
 
         public void Reset()
         {
@@ -218,7 +221,7 @@ namespace SiliconStudio.Assets.Diff
                 }
 
                 // In case of Override Diff, we only use override information to decide from which {base,asset1,asset2} we should merge
-                if (UseOverride)
+                if (UseOverrideMode)
                 {
                     ApplyOverride(diff3);
                     return;
@@ -304,8 +307,8 @@ namespace SiliconStudio.Assets.Diff
             // Find an item in any of the list
             var firstItem = baseItems.FirstOrDefault() ?? asset1Items.FirstOrDefault() ?? asset2Items.FirstOrDefault();
 
-            // For now, in the context of UseOverride and we have identifiers per item, use DiffCollectionByIds instead
-            if (UseOverride && firstItem != null && IdentifiableHelper.HasId(firstItem.Instance))
+            // For now, in the context of UseOverrideMode and we have identifiers per item, use DiffCollectionByIds instead
+            if (UseOverrideMode && firstItem != null && IdentifiableHelper.HasId(firstItem.Instance))
             {
                 DiffCollectionByIds(diff3, baseNode, asset1Node, asset2Node);
                 return;
