@@ -1,12 +1,10 @@
 !PregeneratedSpriteFont
 Id: 21b75b22-569e-4338-b23f-4606d3c4d684
 Tags: []
-Source: ../../../../data/tests/PrecompileFonts/MicrosoftSansSerif10.xkimg
+Source: bf28a16e-9945-4f3f-87e3-815b61944bef:StaticFonts/MicrosoftSansSerif10
+FontDataFile: ../../../../data/tests/PrecompileFonts/MicrosoftSansSerif10.xkimg
 BaseOffset: 12.291666
-DefaultCharacter: ' '
 DefaultLineSpacing: 15.0911455
-ExtraLineSpacing: 0.0
-ExtraSpacing: 0.0
 FontName: 
 Glyphs:
     -   BitmapIndex: 0
@@ -489,7 +487,5 @@ Glyphs:
         Offset: {X: -1.0, Y: -11.0}
         Subrect: {X: 21, Y: 100, Width: 8, Height: 14}
         XAdvance: 3.90625
-IsPremultiplied: true
 Kernings: null
 Size: 10.0
-Style: Regular

@@ -1,12 +1,10 @@
 !PregeneratedSpriteFont
 Id: 9db45af0-fe3a-44c8-a533-b7d8f0ff3e5b
 Tags: []
-Source: ../../../../data/tests/PrecompileFonts/ExternFont.xkimg
+Source: 2382194a-83fb-45fb-96e6-27fae1056e99:StaticFonts/ExternFont
+FontDataFile: ../../../../data/tests/PrecompileFonts/ExternFont.xkimg
 BaseOffset: 16.9010429
-DefaultCharacter: ' '
 DefaultLineSpacing: 23.255209
-ExtraLineSpacing: 0.0
-ExtraSpacing: 0.0
 FontName: Risaltyp_024
 Glyphs:
     -   BitmapIndex: 0
@@ -489,7 +487,5 @@ Glyphs:
         Offset: {X: 0.0, Y: -9.0}
         Subrect: {X: 99, Y: 70, Width: 9, Height: 9}
         XAdvance: 8.802084
-IsPremultiplied: true
 Kernings: null
 Size: 16.0
-Style: Regular

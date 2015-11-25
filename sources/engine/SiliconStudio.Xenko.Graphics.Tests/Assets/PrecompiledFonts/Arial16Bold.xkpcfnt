@@ -1,12 +1,10 @@
 !PregeneratedSpriteFont
 Id: 5a4ddca8-7c53-4b7d-b234-450bd84a408f
 Tags: []
-Source: ../../../../data/tests/PrecompileFonts/Arial16Bold.xkimg
+Source: a8c5497e-7dea-46ec-a818-5728f34f5cc5:StaticFonts/Arial16Bold
+FontDataFile: ../../../../data/tests/PrecompileFonts/Arial16Bold.xkimg
 BaseOffset: 20.0104179
-DefaultCharacter: ' '
 DefaultLineSpacing: 24.53125
-ExtraLineSpacing: 0.0
-ExtraSpacing: 0.0
 FontName: 
 Glyphs:
     -   BitmapIndex: 0
@@ -489,7 +487,6 @@ Glyphs:
         Offset: {X: 2.0, Y: -14.0}
         Subrect: {X: 14, Y: 124, Width: 12, Height: 14}
         XAdvance: 16.0
-IsPremultiplied: true
 Kernings: null
 Size: 16.0
 Style: Bold

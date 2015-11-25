@@ -1,12 +1,10 @@
 !PregeneratedSpriteFont
 Id: 37849a2b-82f1-4e4b-9ef6-680331c5fa87
 Tags: []
-Source: ../../../../data/tests/PrecompileFonts/TestBitmapFont.xkimg
+Source: 21069bb0-91b2-4570-be00-a70a1df67cb1:StaticFonts/TestBitmapFont
+FontDataFile: ../../../../data/tests/PrecompileFonts/TestBitmapFont.xkimg
 BaseOffset: 0.0
-DefaultCharacter: ' '
 DefaultLineSpacing: 32.0
-ExtraLineSpacing: 0.0
-ExtraSpacing: 0.0
 FontName: TestFont
 Glyphs:
     -   BitmapIndex: 0
@@ -79,7 +77,5 @@ Glyphs:
         Offset: {X: 7.0, Y: 5.0}
         Subrect: {X: 17, Y: 47, Width: 14, Height: 21}
         XAdvance: 32.0
-IsPremultiplied: true
 Kernings: null
 Size: 8.25
-Style: Regular

@@ -1,12 +1,10 @@
 !PregeneratedSpriteFont
 Id: 0e2b48ac-a089-4ea6-b62b-f797c64f6904
 Tags: []
-Source: ../../../../data/tests/PrecompileFonts/Calibri64.xkimg
+Source: 83cbacc4-ae04-4a9b-94ef-4ecd49557287:StaticFonts/Calibri64
+FontDataFile: ../../../../data/tests/PrecompileFonts/Calibri64.xkimg
 BaseOffset: 81.25
-DefaultCharacter: ' '
 DefaultLineSpacing: 104.166672
-ExtraLineSpacing: 0.0
-ExtraSpacing: 0.0
 FontName: 
 Glyphs:
     -   BitmapIndex: 0
@@ -489,7 +487,5 @@ Glyphs:
         Offset: {X: 1.0, Y: -54.0}
         Subrect: {X: 248, Y: 240, Width: 40, Height: 54}
         XAdvance: 43.25
-IsPremultiplied: true
 Kernings: null
 Size: 64.0
-Style: Regular

@@ -35,12 +35,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override IEnumerable<ObjectUrl> GetInputFilesImpl()
             {
-                yield return new ObjectUrl(UrlType.File, AssetParameters.Source);
+                yield return new ObjectUrl(UrlType.File, AssetParameters.FontDataFile);
             }
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                using (var imageStream = File.OpenRead(AssetParameters.Source))
+                using (var imageStream = File.OpenRead(AssetParameters.FontDataFile))
                 {
                     Image image;
                     try
