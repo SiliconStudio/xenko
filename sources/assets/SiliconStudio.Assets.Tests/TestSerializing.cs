@@ -33,8 +33,8 @@ namespace SiliconStudio.Assets.Tests
 
             //assetObject.Base = new AssetBase("/this/is/an/url/to/MyObject", null);
 
-            assetObject.CustomReference2 = new AssetReference<Asset>(Guid.Empty, "/this/is/an/url/to/MyCustomReference2");
-            assetObject.CustomReferences.Add(new AssetReference<Asset>(Guid.Empty, "/this/is/an/url/to/MyCustomReferenceItem1"));
+            assetObject.CustomReference2 = new AssetReference(Guid.Empty, "/this/is/an/url/to/MyCustomReference2");
+            assetObject.CustomReferences.Add(new AssetReference(Guid.Empty, "/this/is/an/url/to/MyCustomReferenceItem1"));
 
             assetObject.SeqItems1.Add("value1");
             assetObject.SeqItems1.Add("value2");
