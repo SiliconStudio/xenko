@@ -14,6 +14,9 @@ class ParticleBase : ShaderBase, Texturing
     // A general transformation matrix
     stage float4x4 MatrixTransform;
 
+    // When the value is 0 there is no occlusion (100% emissive), when it is 1 there is 100% occlusion (still limited by alpha)
+    stage float AlphaAdditive;
+
 //    stage float4x4 ViewMatrix;
 //    stage float4x4 ProjectionMatrix;
 //    stage float4 InvViewX;

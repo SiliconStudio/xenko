@@ -39,9 +39,12 @@ namespace SiliconStudio.Xenko.Particles.Components
                 {
                     // TODO Update the particle system here
 
+                    // Exposed variables
+                    var speed = particleSystemStateKeyPair.Value.ParticleSystemComponent.Speed;
+
                     var particleSystem = particleSystemStateKeyPair.Value.ParticleSystemComponent.ParticleSystem;
 
-                    particleSystem.Update(0.016f);
+                    particleSystem.Update(0.016f * speed);
 
                     ParticleSystems.Add(particleSystemStateKeyPair.Value);
                 }
