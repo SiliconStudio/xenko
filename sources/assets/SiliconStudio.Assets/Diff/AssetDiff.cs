@@ -304,6 +304,13 @@ namespace SiliconStudio.Assets.Diff
             // Find an item in any of the list
             var firstItem = baseItems.FirstOrDefault() ?? asset1Items.FirstOrDefault() ?? asset2Items.FirstOrDefault();
 
+            // For now, in the context of UseOverride and we have identifiers per item, use DiffCollectionByIds instead
+            if (UseOverride && firstItem != null && IdentifiableHelper.HasId(firstItem.Instance))
+            {
+                DiffCollectionByIds(diff3, baseNode, asset1Node, asset2Node);
+                return;
+            }
+
             // If we have a DiffUseAsset1Attribute, list of Asset1Node becomes authoritative.
             var dataVisitMember = node as DataVisitMember;
             var diffMemberAttribute = dataVisitMember != null ? dataVisitMember.MemberDescriptor.GetCustomAttributes<DiffMemberAttribute>(true).FirstOrDefault() : null;
@@ -431,6 +438,107 @@ namespace SiliconStudio.Assets.Diff
             {
                 diff3.ChangeType = Diff3ChangeType.Children;
             }
+        }
+
+        private void DiffCollectionByIds(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
+        {
+            var baseItems = baseNode != null ? baseNode.Items ?? EmptyNodes : EmptyNodes;
+            var asset1Items = asset1Node != null ? asset1Node.Items ?? EmptyNodes : EmptyNodes;
+            var asset2Items = asset2Node != null ? asset2Node.Items ?? EmptyNodes : EmptyNodes;
+
+            // Pre-build dictionary
+            var items = new Dictionary<Guid, Diff3CollectionByIdItem>();
+
+            for (int i = 0; i < baseItems.Count; i++)
+            {
+                var item = baseItems[i];
+                var id = IdentifiableHelper.GetId(item.Instance);
+                Diff3CollectionByIdItem entry;
+                items.TryGetValue(id, out entry);
+                entry.BaseIndex = i;
+                items[id] = entry;
+            }
+            for (int i = 0; i < asset1Items.Count; i++)
+            {
+                var item = asset1Items[i];
+                var id = IdentifiableHelper.GetId(item.Instance);
+                Diff3CollectionByIdItem entry;
+                items.TryGetValue(id, out entry);
+                entry.Asset1Index = i;
+                items[id] = entry;
+            }
+            for (int i = 0; i < asset2Items.Count; i++)
+            {
+                var item = asset2Items[i];
+                var id = IdentifiableHelper.GetId(item.Instance);
+                Diff3CollectionByIdItem entry;
+                items.TryGetValue(id, out entry);
+                entry.Asset2Index = i;
+                items[id] = entry;
+            }
+
+            foreach (var idAndEntry in items.OrderBy(item => item.Value.Asset1Index ?? item.Value.Asset2Index ?? item.Value.BaseIndex ?? 0))
+            {
+                var entry = idAndEntry.Value;
+
+                bool hasBase = entry.BaseIndex.HasValue;
+                bool hasAsset1 = entry.Asset1Index.HasValue;
+                bool hasAsset2 = entry.Asset2Index.HasValue;
+
+                int baseIndex = entry.BaseIndex ?? -1;
+                int asset1Index = entry.Asset1Index ?? -1;
+                int asset2Index = entry.Asset2Index ?? -1;
+
+                if (hasBase && hasAsset1 && hasAsset2)
+                {
+                    // If asset was already in base and is still valid for asset1 and asset2
+                    var diff3Node = DiffNode(baseNode.Items[baseIndex], asset1Node.Items[asset1Index], asset2Node.Items[asset2Index]);
+                    // Use index from asset2 if baseIndex = asset1Index, else use from asset1 index
+                    AddItemByPosition(diff3, diff3Node, baseIndex == asset1Index ? asset2Index : asset1Index, true);
+                }
+                else if (!hasBase)
+                {
+                    // If no base, there is at least either asset1 or asset2
+                    if (hasAsset1)
+                    {
+                        var diff3Node = new Diff3Node(null, asset1Node.Items[asset1Index], null) { ChangeType = Diff3ChangeType.MergeFromAsset1 };
+                        AddItemByPosition(diff3, diff3Node, asset1Index, true);
+                    }
+                    else if (hasAsset2)
+                    {
+                        var diff3Node = new Diff3Node(null, null, asset2Node.Items[asset2Index]) { ChangeType = Diff3ChangeType.MergeFromAsset2 };
+                        AddItemByPosition(diff3, diff3Node, asset2Index, true);
+                    }
+                }
+                else
+                {
+                    // either item was removed from asset1 or asset2, so we assume that it is completely removed 
+                    // (not strictly correct, because one item could change a sub-property, but we assume that when a top-level list item is removed, we remove it, even if it has changed internally)
+                }
+            }
+
+            // Cleanup any hole in the list
+            diff3.ChangeType = Diff3ChangeType.Children;
+
+            // If new items are found, just cleanup
+            if (diff3.Items == null)
+            {
+                // Because in the previous loop, we can add some hole while trying to merge index (null nodes), we need to remove them from here.
+                for (int i = diff3.Items.Count - 1; i >= 0; i--)
+                {
+                    if (diff3.Items[i] == null)
+                    {
+                        diff3.Items.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        struct Diff3CollectionByIdItem
+        {
+            public int? BaseIndex;
+            public int? Asset1Index;
+            public int? Asset2Index;
         }
 
         private static DataVisitNode GetSafeFromList(List<DataVisitNode> nodes, ref int index, ref Span span)
@@ -598,6 +706,15 @@ namespace SiliconStudio.Assets.Diff
         /// <exception cref="System.ArgumentNullException">item</exception>
         private static void AddItem(Diff3Node thisObject, Diff3Node item, bool hasChildrenChanged = false)
         {
+            if (thisObject.Items == null)
+                thisObject.Items = new List<Diff3Node>();
+
+            // Add at the end of the list
+            AddItemByPosition(thisObject, item, thisObject.Items.Count, hasChildrenChanged);
+        }
+
+        private static void AddItemByPosition(Diff3Node thisObject, Diff3Node item, int position, bool hasChildrenChanged = false)
+        {
             if (item == null) throw new ArgumentNullException("item");
             if (thisObject.Items == null)
                 thisObject.Items = new List<Diff3Node>();
@@ -607,8 +724,25 @@ namespace SiliconStudio.Assets.Diff
             {
                 thisObject.ChangeType = Diff3ChangeType.Children;
             }
-            item.Index = thisObject.Items.Count;
-            thisObject.Items.Add(item);
+
+            if (position >= thisObject.Items.Count)
+            {
+                for (int i = 0; i < (position - thisObject.Items.Count + 1); i++)
+                {
+                    thisObject.Items.Add(null);
+                }
+            }
+
+            if (thisObject.Items[position] == null)
+            {
+                item.Index = position;
+                thisObject.Items[position] = item;
+            }
+            else
+            {
+                item.Index = position + 1;
+                thisObject.Items.Insert(item.Index, item);
+            }
         }
 
         private NodeDescription GetNodeDescription(DataVisitNode node)
