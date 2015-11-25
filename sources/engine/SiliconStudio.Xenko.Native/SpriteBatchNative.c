@@ -1,27 +1,23 @@
-// SiliconStudio.Xenko.Native.cpp : Defines the exported functions for the DLL application.
-//
-
 #include "SiliconStudio.Xenko.Native.h"
-#include <math.h>
 
-void UpdateBufferValuesFromElementInfoNative(SpriteDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertexPointer, void* indexPointer, int32_t vertexStartOffset)
+EXPORT void UpdateBufferValuesFromElementInfoNative(SpriteDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertexPointer, void* indexPointer, int vertexStartOffset)
 {
-	auto deltaX = 1.0f / drawInfo->TextureSize.X;
-	auto deltaY = 1.0f / drawInfo->TextureSize.Y;
+	float deltaX = 1.0f / drawInfo->TextureSize.X;
+	float deltaY = 1.0f / drawInfo->TextureSize.Y;
 
 	Vector2 rotation;
 	rotation.X = 1;
 	rotation.Y = 0;
 
-	if (fabs(drawInfo->Rotation) > 1e-6f)
+	if (npLolFabs(drawInfo->Rotation) > 1e-6f)
 	{
-		rotation.X = cosf(drawInfo->Rotation);
-		rotation.Y = sinf(drawInfo->Rotation);
+		rotation.X = npLolCos(drawInfo->Rotation);
+		rotation.Y = npLolSin(drawInfo->Rotation);
 	}
 
-	auto origin = drawInfo->Origin;
-	origin.X /= fmaxf(1e-6f, drawInfo->Source.width);
-	origin.Y /= fmaxf(1e-6f, drawInfo->Source.height);
+	Vector2 origin = drawInfo->Origin;
+	origin.X /= npFmax(1e-6f, drawInfo->Source.width);
+	origin.Y /= npFmax(1e-6f, drawInfo->Source.height);
 
 	const Vector2 cornerOffsets[] =
 	{
@@ -33,7 +29,7 @@ void UpdateBufferValuesFromElementInfoNative(SpriteDrawInfo* drawInfo, VertexPos
 
 	for (int j = 0; j < 4; j++)
 	{
-		auto corner = cornerOffsets[j];
+		Vector2 corner = cornerOffsets[j];
 		Vector2 position;
 		position.X = (corner.X - origin.X) * drawInfo->Destination.width;
 		position.Y = (corner.Y - origin.Y) * drawInfo->Destination.height;
