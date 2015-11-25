@@ -20,14 +20,12 @@ namespace SiliconStudio.Presentation.Collections
 
         public ObservableSet(IEnumerable<T> collection)
         {
-            // First try to keep order by filling the list and use it for the hash set
-            list = new List<T>(collection);
-            hashSet = new HashSet<T>(list);
-            // If there are duplicated values in the list, we won't be able to keep order
-            if (hashSet.Count != list.Count)
+            list = new List<T>();
+            hashSet = new HashSet<T>();
+            foreach (var item in collection)
             {
-                list.Clear();
-                list.AddRange(hashSet);
+                if (hashSet.Add(item))
+                    list.Add(item);
             }
         }
 
