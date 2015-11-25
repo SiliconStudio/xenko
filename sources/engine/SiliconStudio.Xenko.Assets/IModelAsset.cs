@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using System.ComponentModel;
-
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets
@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets
         /// <summary>
         /// Gets the collection of material instances associated with the model.
         /// </summary>
-        [Browsable(false)]
+        [Display(Browsable = false)]
         IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get; }
     }
 }

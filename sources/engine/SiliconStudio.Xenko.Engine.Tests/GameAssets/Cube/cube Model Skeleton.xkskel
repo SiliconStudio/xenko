@@ -1,0 +1,9 @@
+!Skeleton
+Id: e1b4aa1c-e0ab-409b-bbe4-a5fa0c1afc8d
+Tags: []
+Source: ../../../../data/tests/cube/cube.fbx
+SourceHash: 2471e6b1be7106f3e68cf790e9306164
+ScaleImport: 0.0
+Nodes:
+    - {Name: RootNode, Depth: 0}
+    - {Name: pCube1, Depth: 1}

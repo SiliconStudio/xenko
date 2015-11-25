@@ -18,6 +18,7 @@ namespace SiliconStudio.Presentation.Controls
         internal VirtualizingTreePanel.VerticalArea RealizationSpace = new VirtualizingTreePanel.VerticalArea();
         internal VirtualizingTreePanel.SizesCache CachedSizes = new VirtualizingTreePanel.SizesCache();
         private bool updatingSelection;
+        private bool stoppingEdition;
         private bool allowedSelectionChanges;
         private bool mouseDown;
         private object lastShiftRoot;
@@ -315,12 +316,14 @@ namespace SiliconStudio.Presentation.Controls
 
         internal void StopEditing()
         {
-            if (editedItem == null)
+            if (stoppingEdition || editedItem == null)
                 return;
 
+            stoppingEdition = true;
             Keyboard.Focus(editedItem);
             editedItem.ForceFocus();
             editedItem = null;
+            stoppingEdition = false;
         }
 
         internal IEnumerable<TreeViewItem> GetChildren(TreeViewItem item)

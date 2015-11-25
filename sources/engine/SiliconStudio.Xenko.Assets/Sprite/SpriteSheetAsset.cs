@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteSheetAssetCompiler))]
     [ObjectFactory(typeof(SpriteSheetFactory))]
-    [Display(160, "Sprite Sheet", "A sheet of sprites")]
+    [Display(160, "Sprite Sheet")]
     public class SpriteSheetAsset : Asset
     {
         /// <summary>
@@ -103,7 +103,7 @@ namespace SiliconStudio.Xenko.Assets.Sprite
         /// </userdoc>
         [DataMember(45)]
         [DefaultValue(TextureColorSpace.Auto)]
-        [Display("ColorSpace", null, "Parameters")]
+        [Display("ColorSpace", "Parameters")]
         public TextureColorSpace ColorSpace { get; set; }
 
         /// <summary>

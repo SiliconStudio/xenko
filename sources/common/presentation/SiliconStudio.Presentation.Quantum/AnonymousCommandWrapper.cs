@@ -11,9 +11,6 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class AnonymousCommandWrapper : NodeCommandWrapperBase
     {
-        private readonly IViewModelServiceProvider serviceProvider;
-        private readonly string name;
-        private readonly CombineMode combineMode;
         private readonly Func<object, bool, UndoToken> redo;
         private readonly Action<object, UndoToken> undo;
 
@@ -30,14 +27,13 @@ namespace SiliconStudio.Presentation.Quantum
         public AnonymousCommandWrapper(IViewModelServiceProvider serviceProvider, string name, CombineMode combineMode, Func<object, UndoToken> redo, Action<object, UndoToken> undo, IEnumerable<IDirtiableViewModel> dirtiables, bool discardTransactions = true)
             : base(serviceProvider, dirtiables)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (redo == null) throw new ArgumentNullException("redo");
-            this.name = name;
-            this.combineMode = combineMode;
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (redo == null) throw new ArgumentNullException(nameof(redo));
+            Name = name;
+            CombineMode = combineMode;
             this.redo = (parameter, creatingActionItem) => redo(parameter);
             this.undo = undo;
-            this.serviceProvider = serviceProvider;
-            this.DiscardTransactions = discardTransactions;
+            DiscardTransactions = discardTransactions;
         }
 
         /// <summary>
@@ -53,22 +49,21 @@ namespace SiliconStudio.Presentation.Quantum
         public AnonymousCommandWrapper(IViewModelServiceProvider serviceProvider, string name, CombineMode combineMode, Func<object, bool, UndoToken> redo, Action<object, UndoToken> undo, IEnumerable<IDirtiableViewModel> dirtiables, bool discardTransactions = true)
             : base(serviceProvider, dirtiables)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (redo == null) throw new ArgumentNullException("redo");
-            this.name = name;
-            this.combineMode = combineMode;
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (redo == null) throw new ArgumentNullException(nameof(redo));
+            Name = name;
+            CombineMode = combineMode;
             this.redo = redo;
             this.undo = undo;
-            this.serviceProvider = serviceProvider;
-            this.DiscardTransactions = discardTransactions;
-            this.AllowReentrancy = false;
+            DiscardTransactions = discardTransactions;
+            AllowReentrancy = false;
         }
 
         /// <inheritdoc/>
-        public override string Name { get { return name; } }
+        public override string Name { get; }
 
         /// <inheritdoc/>
-        public override CombineMode CombineMode { get { return combineMode; } }
+        public override CombineMode CombineMode { get; }
 
         /// <inheritdoc/>
         protected override UndoToken Redo(object parameter, bool creatingActionItem)

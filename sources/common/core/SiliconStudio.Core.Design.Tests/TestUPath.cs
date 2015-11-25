@@ -409,12 +409,14 @@ namespace SiliconStudio.Core.IO.Tests
             Assert.AreEqual("test.txt", filePath.GetFileNameWithExtension());
         }
 
-        [Test]
+        [Test, Ignore]
         public void TestWithSimpleDirectory()
         {
             var assetPath = new UDirectory("/a/b/c");
             Assert.AreEqual("/a/b/c", assetPath.GetDirectory());
             Assert.AreEqual("/a/b/c", assetPath.FullPath);
+            var directory = new UDirectory("/a");
+            Assert.AreEqual("/a", directory.GetDirectory());
         }
 
         [Test]

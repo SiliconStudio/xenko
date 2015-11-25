@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Animations
 {
@@ -26,8 +27,13 @@ namespace SiliconStudio.Xenko.Animations
         public List<AnimationBlender.Channel> Channels { get; set; }
 
         /// <summary>
-        /// Stores all animation channel struct values at a given time.
+        /// Stores all animation channel blittable struct at a given time.
         /// </summary>
         public byte[] Data = EmptyData;
+
+        /// <summary>
+        /// Stores all animation channel objects and non-blittable struct at a given time.
+        /// </summary>
+        public UpdateObjectData[] Objects;
     }
 }

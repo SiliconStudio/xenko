@@ -167,18 +167,27 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
       <Project>{42780CBD-3FE7-48E3-BD5B-59945EA20137}</Project>
       <Name>SiliconStudio.Xenko.Games</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.csproj">
       <Project>{D002FEB1-00A6-4AB1-A83F-1F253465E64D}</Project>
       <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj">
       <Project>{dd592516-b341-40fe-9100-1b0fa784a060}</Project>
       <Name>SiliconStudio.Xenko.Physics</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj">
       <Project>{bb9deeef-f18c-40d8-b016-6434cc71b8c3}</Project>
       <Name>SiliconStudio.Xenko.UI</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj">
+      <Project>{9BC63BEC-F305-451D-BB31-262938EA964D}</Project>
+      <Name>SiliconStudio.Xenko.SpriteStudio.Runtime</Name>
+      <Private>False</Private>
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />

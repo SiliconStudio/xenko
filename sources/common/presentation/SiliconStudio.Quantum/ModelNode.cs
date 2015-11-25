@@ -26,25 +26,22 @@ namespace SiliconStudio.Quantum
         /// <param name="guid">An unique identifier for this node.</param>
         public ModelNode(string name, IContent content, Guid guid)
         {
-            if (name == null) throw new ArgumentNullException("name");
-            if (content == null) throw new ArgumentNullException("content");
-            if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be differ from Guid.Empty.", "content");
+            if (name == null) throw new ArgumentNullException(nameof(name));
+            if (content == null) throw new ArgumentNullException(nameof(content));
+            if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(content));
             this.content = content;
             Name = name;
             Guid = guid;
 
             var updatableContent = content as IUpdatableContent;
-            if (updatableContent != null)
-            {
-                updatableContent.RegisterOwner(this);
-            }
+            updatableContent?.RegisterOwner(this);
         }
 
         /// <inheritdoc/>
-        public string Name { get; private set; }
+        public string Name { get; }
 
         /// <inheritdoc/>
-        public Guid Guid { get; private set; }
+        public Guid Guid { get; }
 
         /// <inheritdoc/>
         public virtual IContent Content { get { return content; } set { content = value; } }
@@ -53,18 +50,10 @@ namespace SiliconStudio.Quantum
         public virtual IModelNode Parent { get; private set; }
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<IModelNode> Children { get { return children; } }
+        public IReadOnlyCollection<IModelNode> Children => children;
 
         /// <inheritdoc/>
-        public IReadOnlyCollection<INodeCommand> Commands { get { return commands; } }
-
-        /// <summary>
-        /// Gets the flags.
-        /// </summary>
-        /// <value>
-        /// The flags.
-        /// </value>
-        public ModelNodeFlags Flags { get; set; }
+        public IReadOnlyCollection<INodeCommand> Commands => commands;
 
         /// <summary>
         /// Add a child to this node. The node must not have been sealed yet.
@@ -77,7 +66,7 @@ namespace SiliconStudio.Quantum
                 throw new InvalidOperationException("Unable to add a child to a ModelNode that has been sealed");
 
             if (child.Parent != null)
-                throw new ArgumentException(@"This node has already been registered to a different parent", "child");
+                throw new ArgumentException(@"This node has already been registered to a different parent", nameof(child));
 
             if (Content.Reference != null && !allowIfReference)
                 throw new InvalidOperationException("A ModelNode cannot have children when its content hold a reference.");
@@ -105,7 +94,7 @@ namespace SiliconStudio.Quantum
         public void RemoveCommand(INodeCommand command)
         {
             if (isSealed)
-                throw new InvalidOperationException("Unable to add a child to a ModelNode that has been sealed");
+                throw new InvalidOperationException("Unable to remove a command from a ModelNode that has been sealed");
 
             commands.Remove(command);
         }
@@ -121,7 +110,7 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format("{0}: [{1}]", Name, Content.Value);
+            return $"{Name}: [{Content.Value}]";
         }
     }
 }

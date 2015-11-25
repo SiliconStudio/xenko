@@ -6,7 +6,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public class AnimationCurveEvaluatorOptimizedQuaternionGroup : AnimationCurveEvaluatorOptimizedGroup<Quaternion>
+    public class AnimationCurveEvaluatorOptimizedQuaternionGroup : AnimationCurveEvaluatorOptimizedBlittableGroupBase<Quaternion>
     {
         protected unsafe override void ProcessChannel(ref Channel channel, CompressedTimeSpan currentTime, IntPtr location, float factor)
         {

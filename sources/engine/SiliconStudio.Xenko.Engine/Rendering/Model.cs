@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <value>
         /// The hierarchy, which describes nodes name, default transformation and hierarchical parent.
         /// </value>
-        public ModelViewHierarchyDefinition Hierarchy { get; set; }
+        public Skeleton Skeleton { get; set; }
 
         /// <summary>
         /// Gets or sets the bounding box encompassing all the <see cref="Meshes"/> (not including animation).
@@ -150,7 +150,7 @@ namespace SiliconStudio.Xenko.Rendering
                 result.Meshes.Add(meshCopy);
             }
 
-            result.Hierarchy = Hierarchy;
+            result.Skeleton = Skeleton;
             result.BoundingBox = BoundingBox;
 
             return result;

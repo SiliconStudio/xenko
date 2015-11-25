@@ -47,11 +47,7 @@ namespace SiliconStudio.Xenko.Animations
         // TODO: The curve stored inside should be internal/private (it is public now to avoid implementing custom serialization before first release).
         public List<AnimationCurve> Curves = new List<AnimationCurve>();
 
-        public AnimationData<float> OptimizedCurvesFloat;
-        public AnimationData<Vector3> OptimizedCurvesVector3;
-        public AnimationData<Quaternion> OptimizedCurvesQuaternion;
-        public AnimationData<int> OptimizedCurvesInt;
-        public AnimationData<Vector4> OptimizedCurvesVector4;
+        public AnimationData[] OptimizedAnimationDatas;
 
         /// <summary>
         /// Adds a named curve.
@@ -66,13 +62,25 @@ namespace SiliconStudio.Xenko.Animations
             // Add channel
             Channels.Add(propertyName, new Channel
             {
-                NodeName = MeshAnimationUpdater.GetNodeName(propertyName),
-                Type = MeshAnimationUpdater.GetType(propertyName),
+                PropertyName = propertyName,
                 CurveIndex = Curves.Count,
                 ElementType = curve.ElementType,
                 ElementSize = curve.ElementSize,
             });
             Curves.Add(curve);
+        }
+
+        public AnimationCurve GetCurve(string propertyName)
+        {
+            Channel channel;
+            if (!Channels.TryGetValue(propertyName, out channel))
+                return null;
+
+            // Optimized (should we throw exception?)
+            if (channel.CurveIndex == -1)
+                return null;
+
+            return Curves[channel.CurveIndex];
         }
 
         /// <summary>
@@ -82,36 +90,35 @@ namespace SiliconStudio.Xenko.Animations
         {
             Freeze();
 
-            OptimizedCurvesFloat = CreateOptimizedData<float>();
-            OptimizedCurvesVector3 = CreateOptimizedData<Vector3>();
-            OptimizedCurvesQuaternion = CreateOptimizedData<Quaternion>();
-            OptimizedCurvesInt = CreateOptimizedData<int>();
-            OptimizedCurvesVector4 = CreateOptimizedData<Vector4>();
-        }
+            // Already optimized?
+            if (OptimizedAnimationDatas != null)
+                return;
 
-        private AnimationData<T> CreateOptimizedData<T>()
-        {
+            var optimizedAnimationDatas = new List<AnimationData>();
+
             // Find Vector3 channels
-            var curves = Channels
-                .Where(x => x.Value.CurveIndex != -1 && x.Value.ElementType == typeof(T))
-                .ToDictionary(x => x.Key, x => (AnimationCurve<T>)Curves[x.Value.CurveIndex]);
-
-            // Update channels
-            foreach (var curve in curves)
+            foreach (var curveByTypes in Channels
+                .Where(x => x.Value.CurveIndex != -1)
+                .GroupBy(x => x.Value.ElementType))
             {
-                var channel = Channels[curve.Key];
+                // Create AnimationData
+                var firstCurve = Curves[curveByTypes.First().Value.CurveIndex];
+                var animationData = firstCurve.CreateOptimizedData(curveByTypes.Select(x => new KeyValuePair<string, AnimationCurve>(x.Key, Curves[x.Value.CurveIndex])));
+                optimizedAnimationDatas.Add(animationData);
 
-                // CurveIndex -1 means there is optimized data
-                if (channel.CurveIndex != -1)
+                // Update channels
+                foreach (var curve in curveByTypes)
                 {
+                    var channel = Channels[curve.Key];
+
                     Curves[channel.CurveIndex] = null;
                     channel.CurveIndex = -1;
-                }
 
-                Channels[curve.Key] = channel;
+                    Channels[curve.Key] = channel;
+                }
             }
 
-            return AnimationData<T>.FromAnimationChannels(curves);
+            OptimizedAnimationDatas = optimizedAnimationDatas.ToArray();
         }
 
         internal void Freeze()
@@ -122,8 +129,7 @@ namespace SiliconStudio.Xenko.Animations
         [DataContract]
         public struct Channel
         {
-            public string NodeName;
-            public MeshAnimationUpdater.ChannelType Type;
+            public string PropertyName;
 
             public int CurveIndex;
             public Type ElementType;

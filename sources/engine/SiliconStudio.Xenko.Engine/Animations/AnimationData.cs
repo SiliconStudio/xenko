@@ -8,18 +8,38 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Animations
 {
     [DataContract(Inherited = true)]
-    public class AnimationData
+    public abstract class AnimationData
     {
         public const int AnimationSortedValueBlock = 4096;
 
         public int AnimationSortedValueCount { get; set; }
         public string[] TargetKeys { get; set; }
+
+        public abstract Type ElementType { get; }
+        internal abstract AnimationCurveEvaluatorOptimizedGroup CreateEvaluator();
     }
 
+    [DataSerializerGlobal(null, typeof(AnimationData<float>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<double>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Vector2>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Vector3>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Vector4>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<int>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<uint>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<long>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<ulong>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Int2>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Int3>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Int4>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<Quaternion>))]
+    [DataSerializerGlobal(null, typeof(AnimationData<object>))]
     public class AnimationData<T> : AnimationData
     {
         public AnimationInitialValues<T>[] AnimationInitialValues { get; set; }
@@ -29,15 +49,16 @@ namespace SiliconStudio.Xenko.Animations
         {
             get { return AnimationSortedValueCount == 0 ? TimeSpan.FromSeconds(1) : AnimationSortedValues[(AnimationSortedValueCount - 1) / AnimationSortedValueBlock][(AnimationSortedValueCount - 1) % AnimationSortedValueBlock].Value.Time; }
         }
-        
-        public static AnimationData<T> FromAnimationChannels(IDictionary<string, AnimationCurve<T>> animationChannelsByName)
+
+        public override Type ElementType => typeof(T);
+
+        public static AnimationData<T> FromAnimationChannels(IList<KeyValuePair<string, AnimationCurve<T>>> animationChannelsWithName)
         {
             var result = new AnimationData<T>();
 
             // Build target object and target properties lists
-            var animationChannelsKeyValuePair = animationChannelsByName.ToList();
-            var animationChannels = animationChannelsKeyValuePair.Select(x => x.Value).ToList();
-            result.TargetKeys = animationChannelsKeyValuePair.Select(x => x.Key).ToArray();
+            var animationChannels = animationChannelsWithName.Select(x => x.Value).ToList();
+            result.TargetKeys = animationChannelsWithName.Select(x => x.Key).ToArray();
 
             // Complexity _might_ be better by inserting directly in order instead of sorting later.
             var animationValues = new List<AnimationKeyValuePair<T>>[animationChannels.Count];
@@ -112,6 +133,11 @@ namespace SiliconStudio.Xenko.Animations
 
             return result;
         }
+
+        internal override AnimationCurveEvaluatorOptimizedGroup CreateEvaluator()
+        {
+            return AnimationCurveEvaluatorOptimizedGroup.Create<T>();
+        }
     }
 
     [DataContract]
@@ -125,10 +151,6 @@ namespace SiliconStudio.Xenko.Animations
     [StructLayout(LayoutKind.Sequential)]
     public struct AnimationKeyValuePair<T>
     {
-        // 4 highest bit specifies format:
-        // - 0: float
-        // - 1: Vector3
-        // - 2: Quaternion
         public int ChannelIndex;
         public CompressedTimeSpan RequiredTime;
         public KeyFrameData<T> Value;
