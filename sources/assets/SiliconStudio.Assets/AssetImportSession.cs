@@ -537,7 +537,7 @@ namespace SiliconStudio.Assets
                             object newReference;
                             if (asset2Instance is AssetReference)
                             {
-                                newReference = new AssetReference(realItem.Id, realItem.Location);
+                                newReference = AssetReference.New(asset2Instance.GetType(), realItem.Id, realItem.Location);
                             }
                             else if (asset2Instance is ContentReference)
                             {
@@ -727,8 +727,18 @@ namespace SiliconStudio.Assets
             var typeDependencies = new Dictionary<AssetToImportMergeGroup, HashSet<Type>>();
             foreach (var toImport in AllImports())
             {
-                toImportListSorted.Add(toImport);
-                registeredTypes.Add(toImport.Item.Asset.GetType());
+                var references = AssetReferenceAnalysis.Visit(toImport.Item.Asset);
+                var refTypes = new HashSet<Type>(references.Select(assetLink => assetLink.Reference).OfType<AssetReference>().Select(assetRef => assetRef.Type));
+                // Optimized path, if an asset has no dependencies, directly add it to the sorted list
+                if (refTypes.Count == 0)
+                {
+                    toImportListSorted.Add(toImport);
+                    registeredTypes.Add(toImport.Item.Asset.GetType());
+                }
+                else
+                {
+                    typeDependencies[toImport] = refTypes;
+                }
             }
 
             var typeToRegisters = new HashSet<Type>();

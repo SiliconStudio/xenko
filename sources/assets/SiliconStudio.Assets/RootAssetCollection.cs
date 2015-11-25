@@ -8,11 +8,11 @@ using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Assets
 {
-    [DataSerializer(typeof(KeyedSortedListSerializer<RootAssetCollection, Guid, AssetReference>))]
-    public class RootAssetCollection : KeyedSortedList<Guid, AssetReference>
+    [DataSerializer(typeof(KeyedSortedListSerializer<RootAssetCollection, Guid, AssetReference<Asset>>))]
+    public class RootAssetCollection : KeyedSortedList<Guid, AssetReference<Asset>>
     {
         /// <inheritdoc/>
-        protected override Guid GetKeyForItem(AssetReference item)
+        protected override Guid GetKeyForItem(AssetReference<Asset> item)
         {
             return item.Id;
         }
