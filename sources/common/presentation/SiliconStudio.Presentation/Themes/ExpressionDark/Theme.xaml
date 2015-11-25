@@ -288,7 +288,7 @@
           <DockPanel LastChildFill="True">
             <Image DockPanel.Dock="Left" Source="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}}"
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"
-                   Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelHeight}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelWidth}"
+                   Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}"
                    Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
             <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
           </DockPanel>
@@ -2242,7 +2242,7 @@
                 <Path x:Name="GlyphPanelpath" VerticalAlignment="Center" Fill="{TemplateBinding Foreground}" Data="M0,2 L0,4.8 L2.5,7.4 L7.1,2.8 L7.1,0 L2.5,4.6 z" FlowDirection="LeftToRight" />
               </Grid>
               <ContentPresenter Grid.Column="1" x:Name="HeaderHost" RecognizesAccessKey="True" ContentSource="Header" Margin="4,2,16,2" VerticalAlignment="Center" HorizontalAlignment="Stretch" SnapsToDevicePixels="True"/>
-              <TextBlock x:Name="IGTTextBlock" Grid.Column="3" Text="{TemplateBinding MenuItem.InputGestureText}" IsEnabled="{TemplateBinding IsEnabled}" Margin="{TemplateBinding Control.Padding}" Visibility="Visible"/>
+              <TextBlock x:Name="IGTTextBlock" Grid.Column="3" Text="{TemplateBinding MenuItem.InputGestureText}" IsEnabled="{TemplateBinding IsEnabled}" Margin="{TemplateBinding Control.Padding}" VerticalAlignment="Center" Visibility="Visible"/>
               <Grid Grid.Column="4" Margin="4,2" x:Name="ArrowPanel" VerticalAlignment="Center">
                 <Path x:Name="ArrowPanelPath" VerticalAlignment="Center" Fill="{TemplateBinding Foreground}" Data="M0,0 L0,8 L4,4 z" />
               </Grid>
