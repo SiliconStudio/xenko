@@ -38,7 +38,7 @@ namespace SiliconStudio.Assets
                 // If we have a root directory, then store it as the default package directory
                 if (!IsPackageDirectory(defaultPackageDirectoryTemp.FullName, packageName))
                 {
-                    throw new InvalidOperationException("The current AppDomain.BaseDirectory [{0}] is not part of the package [{1}]".ToFormat(binDirectory, packageName));
+                    throw new InvalidOperationException($"The current AppDomain.BaseDirectory [{binDirectory}] is not part of the package [{packageName}]");
                 }
                 return defaultPackageDirectoryTemp.FullName;
             }

@@ -61,20 +61,27 @@ ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
 RootAssets:
+    - 016f522f-7283-4bd5-a8b1-03056f2c80bd:PrecompiledFonts/Arial13
+    - 02f7368b-8c33-4b23-a923-c6ead567e96d:PrecompiledFonts/Arial16
     - 05718a05-c688-4340-853a-e22ee854d9cf:DynamicFonts/ExternFont
     - 0dbf1792-c53a-41ea-9f98-ba65014c5277:DynamicFonts/CourierNew10
+    - 0e2b48ac-a089-4ea6-b62b-f797c64f6904:PrecompiledFonts/Calibri64
     - 16e99f0d-a138-41e3-a424-9fcb5dcb1f81:ImageTypes/pngImage
     - 21069bb0-91b2-4570-be00-a70a1df67cb1:StaticFonts/TestBitmapFont
     - 215e8a1b-a56e-4103-b529-ddd1fbfaacce:DynamicFonts/Arial16
+    - 21b75b22-569e-4338-b23f-4606d3c4d684:PrecompiledFonts/MicrosoftSansSerif10
     - 2382194a-83fb-45fb-96e6-27fae1056e99:StaticFonts/ExternFont
     - 2615a072-845e-4d15-a19b-aebf612e432c:DynamicFonts/Arial16ClearType
     - 2fba8d24-2510-463f-b5d0-af0ad5b1da80:DynamicFonts/MSMincho10
+    - 37849a2b-82f1-4e4b-9ef6-680331c5fa87:PrecompiledFonts/TestBitmapFont
     - 4c2284c7-4de2-4235-906a-af7158817325:ImageTypes/gifImage
     - 54bf2894-2a2c-477e-be9c-2a88d265e739:DynamicFonts/MicrosoftSansSerif10
     - 5875a604-ea72-4efb-8d1b-dcdbf2f324b5:StaticFonts/Arial13
+    - 5a4ddca8-7c53-4b7d-b234-450bd84a408f:PrecompiledFonts/Arial16Bold
     - 5d7ecea5-50f2-49c1-8fe8-16e67dd65ab0:SpriteSphere
     - 5d8ecea5-50f2-49c1-8fe8-16e67dd65ab0:BallSprite1
     - 693f0d3d-b0ef-4cb8-bc84-0aa69efb3462:DynamicFonts/Meiryo14
+    - 7ea96b46-d786-42c8-9541-0dba7cd63a44:PrecompiledFonts/CourierNew10
     - 804b77a2-792d-4113-a148-756d55aaa3b1:JpegImage
     - 83cbacc4-ae04-4a9b-94ef-4ecd49557287:StaticFonts/Calibri64
     - 857cdf3a-4784-4b56-8d62-e807c076381d:ImageTypes/bmpImage
@@ -87,6 +94,7 @@ RootAssets:
     - 95518128-cbb7-4b55-bd38-d3232de12a34:ImageTypes/xkimgImage
     - 96066ad9-49e1-4fd0-9bac-6e192504573f:ImageTypes/jpgImage
     - 99bb5cc9-f931-4233-b71b-c57be97146d6:ImageTypes/debugImage
+    - 9db45af0-fe3a-44c8-a533-b7d8f0ff3e5b:PrecompiledFonts/ExternFont
     - a60c5fe7-6934-455f-bf6a-bd7abe1453d1:uv
     - a8c5497e-7dea-46ec-a818-5728f34f5cc5:StaticFonts/Arial16Bold
     - ac273d83-ded2-45b9-9789-37c5c5cd6c14:DynamicFonts/Arial16Bold
@@ -97,6 +105,7 @@ RootAssets:
     - bf28a16e-9945-4f3f-87e3-815b61944bef:StaticFonts/MicrosoftSansSerif10
     - c1d87e8a-fccf-4d06-bc1b-02d02d37ca64:ImageTypes/tiffImage
     - c3cb3d3b-8e27-4a1a-9e35-26a92fdc18b0:SpriteUV
+    - caebfee9-d821-4641-8a0e-56f20d857cdd:PrecompiledFonts/Arial16ClearType
     - d743e676-2c6f-4fc0-917d-4203d4d409ed:DynamicFonts/Arial13
     - e5212023-2460-48bf-a2f1-c57c94d1f40a:ImageTypes/ddsImage
     - eedb5de8-e19f-4218-8389-99c4178b86c1:Sphere

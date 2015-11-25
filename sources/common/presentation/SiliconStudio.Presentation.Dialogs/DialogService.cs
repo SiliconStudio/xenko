@@ -1,10 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Collections.Generic;
 using System.Windows;
 using System.Windows.Threading;
 using SiliconStudio.Presentation.Resources;
 using SiliconStudio.Presentation.Services;
+using SiliconStudio.Presentation.Windows;
 using MessageBoxButton = SiliconStudio.Presentation.Services.MessageBoxButton;
 using MessageBoxImage = SiliconStudio.Presentation.Services.MessageBoxImage;
 using MessageBoxResult = SiliconStudio.Presentation.Services.MessageBoxResult;
@@ -43,6 +45,12 @@ namespace SiliconStudio.Presentation.Dialogs
         {
             var parentWindow = ParentWindow;
             return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, button, image));
+        }
+
+        public MessageBoxResult ShowMessageBox(string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
+        {
+            var parentWindow = ParentWindow;
+            return dispatcher.Invoke(() => Windows.MessageBox.Show(parentWindow, message, caption, buttons, image));
         }
 
         public MessageBoxResult ShowCheckedMessageBox(string message, string caption, ref bool? isChecked, MessageBoxButton button, MessageBoxImage image)
