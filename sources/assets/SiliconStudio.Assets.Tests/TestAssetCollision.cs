@@ -23,7 +23,7 @@ namespace SiliconStudio.Assets.Tests
             var asset = new AssetObjectTest();
             for (int i = 0; i < 10; i++)
             {
-                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference =  new AssetReference(asset.Id, "bad")};
+                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference =  new AssetReference<AssetObjectTest>(asset.Id, "bad")};
                 inputs.Add(new AssetItem("0", newAsset));
             }
 
@@ -65,7 +65,7 @@ namespace SiliconStudio.Assets.Tests
             var asset = new AssetObjectTest();
             for (int i = 0; i < 10; i++)
             {
-                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference = new AssetReference(asset.Id, "bad") };
+                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference = new AssetReference<AssetObjectTest>(asset.Id, "bad") };
                 inputs.Add(new AssetItem("0", newAsset));
             }
 
@@ -111,7 +111,7 @@ namespace SiliconStudio.Assets.Tests
 
             for (int i = 0; i < 10; i++)
             {
-                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference = new AssetReference(asset.Id, "bad") };
+                var newAsset = new AssetObjectTest() { Id = asset.Id, Reference = new AssetReference<AssetObjectTest>(asset.Id, "bad") };
                 inputs.Add(new AssetItem("0", newAsset));
             }
 

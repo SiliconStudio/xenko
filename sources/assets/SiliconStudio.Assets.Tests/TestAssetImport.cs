@@ -240,7 +240,7 @@ namespace SiliconStudio.Assets.Tests
 
             var subAssetItem = new AssetItem(rawAssetPath.GetFileName() + "_SubAsset", subAsset);
 
-            asset.References.Add("Test", new AssetReference(subAsset.Id, subAssetItem.Location));
+            asset.References.Add("Test", new AssetReference<AssetObjectTestSub>(subAsset.Id, subAssetItem.Location));
 
             var list = new List<AssetItem>
                 {

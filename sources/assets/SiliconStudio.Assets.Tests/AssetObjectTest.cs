@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets.Tests
         public string Name { get; set; }
 
         [DefaultValue(null)]
-        public AssetReference Reference { get; set; }
+        public AssetReference<AssetObjectTest> Reference { get; set; }
 
         [DefaultValue(null)]
         public UFile RawAsset { get; set; }
@@ -110,13 +110,13 @@ namespace SiliconStudio.Assets.Tests
     {
         public AssetImportObjectTest()
         {
-            References = new Dictionary<string, AssetReference>();
+            References = new Dictionary<string, AssetReference<AssetObjectTestSub>>();
         }
 
         public string Name { get; set; }
 
         [DefaultValue(null)]
-        public Dictionary<string, AssetReference> References { get; set; }
+        public Dictionary<string, AssetReference<AssetObjectTestSub>> References { get; set; }
     }
 
     [DataContract("!AssetObjectTestSub")]

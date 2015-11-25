@@ -46,7 +46,7 @@ namespace SiliconStudio.Assets.Tests.Diff
 
             public List<DiffComponent> Components { get; set; }
 
-            public AssetReference AssetReference { get; set; }
+            public AssetReference<TestDiffAsset> AssetReference { get; set; }
         }
 
         [DataContract]
@@ -358,7 +358,7 @@ namespace SiliconStudio.Assets.Tests.Diff
         public void TestMergeWithAssetReference()
         {
             var diff = NewTestDiff();
-            ((TestDiffAsset)diff.Asset1).AssetReference = new AssetReference(Guid.NewGuid(), new UFile("/a"));
+            ((TestDiffAsset)diff.Asset1).AssetReference = new AssetReference<TestDiffAsset>(Guid.NewGuid(), new UFile("/a"));
             var diff3 = diff.Compute();
 
             var nodes = diff3.FindLeafDifferences().ToList();
@@ -378,9 +378,9 @@ namespace SiliconStudio.Assets.Tests.Diff
         public void TestConflictWithAssetReference()
         {
             var diff = NewTestDiff();
-            ((TestDiffAsset)diff.BaseAsset).AssetReference = new AssetReference(Guid.Empty, new UFile("/a"));
-            ((TestDiffAsset)diff.Asset1).AssetReference = new AssetReference(Guid.NewGuid(), new UFile("/a"));
-            ((TestDiffAsset)diff.Asset2).AssetReference = new AssetReference(Guid.Empty, new UFile("/a"));
+            ((TestDiffAsset)diff.BaseAsset).AssetReference = new AssetReference<TestDiffAsset>(Guid.Empty, new UFile("/a"));
+            ((TestDiffAsset)diff.Asset1).AssetReference = new AssetReference<TestDiffAsset>(Guid.NewGuid(), new UFile("/a"));
+            ((TestDiffAsset)diff.Asset2).AssetReference = new AssetReference<TestDiffAsset>(Guid.Empty, new UFile("/a"));
             var diff3 = diff.Compute();
 
             var nodes = diff3.FindLeafDifferences().ToList();
@@ -395,7 +395,7 @@ namespace SiliconStudio.Assets.Tests.Diff
             var member1 = (DataVisitMember)nodes[0].Asset1Node;
             Assert.AreEqual("AssetReference", member1.MemberDescriptor.Name);
 
-            ((TestDiffAsset)diff.Asset2).AssetReference = new AssetReference(Guid.NewGuid(), new UFile("/a"));
+            ((TestDiffAsset)diff.Asset2).AssetReference = new AssetReference<TestDiffAsset>(Guid.NewGuid(), new UFile("/a"));
             diff.Reset();
             diff3 = diff.Compute();
             nodes = diff3.FindLeafDifferences().ToList();

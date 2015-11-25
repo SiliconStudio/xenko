@@ -38,7 +38,7 @@ namespace SiliconStudio.Assets.Tests
             var asset3 = assetItem1.CreateChildAsset();
             var assetItem3 = new AssetItem("asset-3", asset3);
 
-            asset1.Reference = new AssetReference(assetItem2.Id, assetItem2.Location);
+            asset1.Reference = new AssetReference<AssetObjectTest>(assetItem2.Id, assetItem2.Location);
 
             var project = new Package();
             project.Assets.Add(assetItem1);
@@ -103,10 +103,10 @@ namespace SiliconStudio.Assets.Tests
             var assetItem2 = new AssetItem("asset-2", asset2);
             var assetItem3 = new AssetItem("asset-3", asset3);
             var assetItem4 = new AssetItem("asset-4", asset4);
-            asset1.Reference = new AssetReference(assetItem2.Id, assetItem2.Location);
-            asset2.Reference = new AssetReference(assetItem3.Id, assetItem3.Location);
-            asset3.Reference = new AssetReference(assetItem4.Id, assetItem4.Location);
-            asset4.Reference = new AssetReference(assetItem1.Id, assetItem1.Location);
+            asset1.Reference = new AssetReference<AssetObjectTest>(assetItem2.Id, assetItem2.Location);
+            asset2.Reference = new AssetReference<AssetObjectTest>(assetItem3.Id, assetItem3.Location);
+            asset3.Reference = new AssetReference<AssetObjectTest>(assetItem4.Id, assetItem4.Location);
+            asset4.Reference = new AssetReference<AssetObjectTest>(assetItem1.Id, assetItem1.Location);
 
             var project = new Package();
             project.Assets.Add(assetItem1);
@@ -186,8 +186,8 @@ namespace SiliconStudio.Assets.Tests
             var assetItem2 = new AssetItem("asset-2", asset2);
             var assetItem3 = new AssetItem("asset-3", asset3);
             var assetItem4 = new AssetItem("asset-4", asset4);
-            asset1.Reference = new AssetReference(assetItem2.Id, assetItem2.Location);
-            asset3.Reference = new AssetReference(assetItem4.Id, assetItem4.Location);
+            asset1.Reference = new AssetReference<AssetObjectTest>(assetItem2.Id, assetItem2.Location);
+            asset3.Reference = new AssetReference<AssetObjectTest>(assetItem4.Id, assetItem4.Location);
 
             var project = new Package();
             project.Assets.Add(assetItem1);
@@ -284,7 +284,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(0, dependencyManager.AssetsWithMissingReferences.Count);
                 Assert.AreEqual(0, dependencyManager.MissingReferencesToParent.Count);
 
-                asset1.Reference = new AssetReference(assetItem2.Id, assetItem2.Location);
+                asset1.Reference = new AssetReference<AssetObjectTest>(assetItem2.Id, assetItem2.Location);
 
                 // Mark the asset dirty
                 assetItem1.IsDirty = true;
@@ -326,8 +326,8 @@ namespace SiliconStudio.Assets.Tests
             var assetItem2 = new AssetItem("asset-2", asset2);
             var assetItem3 = new AssetItem("asset-3", asset3);
 
-            asset1.Reference = new AssetReference(assetItem2.Id, assetItem2.Location);
-            asset3.Reference = new AssetReference(assetItem1.Id, assetItem1.Location);
+            asset1.Reference = new AssetReference<AssetObjectTest>(assetItem2.Id, assetItem2.Location);
+            asset3.Reference = new AssetReference<AssetObjectTest>(assetItem1.Id, assetItem1.Location);
 
             var project = new Package();
 
@@ -439,7 +439,7 @@ namespace SiliconStudio.Assets.Tests
 
                 // Modify reference asset3 to asset1 with fake asset
                 var previousAsset3ToAsset1Reference = asset3.Reference;
-                asset3.Reference = new AssetReference(Guid.NewGuid(), "fake");
+                asset3.Reference = new AssetReference<AssetObjectTest>(Guid.NewGuid(), "fake");
                 assetItem3.IsDirty = true;
                 {
                     var assets = dependencyManager.FindAssetsWithMissingReferences().ToList();
@@ -742,9 +742,9 @@ namespace SiliconStudio.Assets.Tests
             }
         }
 
-        private AssetReference CreateAssetReference(AssetItem item)
+        private AssetReference<AssetObjectTest> CreateAssetReference(AssetItem item)
         {
-            return new AssetReference(item.Id, item.Location);
+            return new AssetReference<AssetObjectTest>(item.Id, item.Location);
         }
 
         /// <summary>
