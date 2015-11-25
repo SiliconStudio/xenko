@@ -5,7 +5,6 @@ using System.Collections.Generic;
 using System.Linq;
 using SharpDiff;
 using SiliconStudio.Assets.Visitors;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Diff
@@ -501,7 +500,7 @@ namespace SiliconStudio.Assets.Diff
                 }
                 else if (!hasBase)
                 {
-                    // If no base, there is at least either asset1 or asset2
+                    // If no base, there is at least either asset1 or asset2 but not both, as they can't have the same id
                     if (hasAsset1)
                     {
                         var diff3Node = new Diff3Node(null, asset1Node.Items[asset1Index], null) { ChangeType = Diff3ChangeType.MergeFromAsset1 };
@@ -520,9 +519,10 @@ namespace SiliconStudio.Assets.Diff
                 }
             }
 
-            // Cleanup any hole in the list
+            // The diff will only applied to children (we don't support members)
             diff3.ChangeType = Diff3ChangeType.Children;
 
+            // Cleanup any hole in the list
             // If new items are found, just cleanup
             if (diff3.Items == null)
             {
@@ -535,13 +535,6 @@ namespace SiliconStudio.Assets.Diff
                     }
                 }
             }
-        }
-
-        struct Diff3CollectionByIdItem
-        {
-            public int? BaseIndex;
-            public int? Asset1Index;
-            public int? Asset2Index;
         }
 
         private static DataVisitNode GetSafeFromList(List<DataVisitNode> nodes, ref int index, ref Span span)
@@ -678,8 +671,9 @@ namespace SiliconStudio.Assets.Diff
                     asset1Items == null ? null : asset1Items[i],
                     asset2Items == null ? null : asset2Items[i]));
             }
-        }
 
+            // TODO: Add diff by ids on array
+        }
 
         /// <summary>
         /// Adds a member to this instance.
@@ -775,6 +769,13 @@ namespace SiliconStudio.Assets.Diff
             public readonly object Instance;
 
             public readonly Type Type;
+        }
+
+        struct Diff3CollectionByIdItem
+        {
+            public int? BaseIndex;
+            public int? Asset1Index;
+            public int? Asset2Index;
         }
 
         private struct Diff3DictionaryItem
