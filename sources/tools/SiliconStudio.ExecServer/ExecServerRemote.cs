@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
@@ -53,14 +54,14 @@ namespace SiliconStudio.ExecServer
         {
         }
 
-        public int Run(string currentDirectory, string[] args)
+        public int Run(string currentDirectory, Dictionary<string, string> environmentVariables, string[] args)
         {
             Console.WriteLine("Run Received {0}", string.Join(" ", args));
 
             upTime.Restart();
 
             var logger = OperationContext.Current.GetCallbackChannel<IServerLogger>();
-            var result = shadowManager.Run(currentDirectory, args, logger);
+            var result = shadowManager.Run(currentDirectory, environmentVariables, args, logger);
             return result;
         }
 

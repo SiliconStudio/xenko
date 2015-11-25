@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
@@ -49,7 +50,7 @@ namespace SiliconStudio.ExecServer
                 args.RemoveAt(0);
                 var executablePath = ExtractPath(args, "executable");
                 var execServerApp = new ExecServerRemote(executablePath, false, false);
-                int result = execServerApp.Run(Environment.CurrentDirectory, args.ToArray());
+                int result = execServerApp.Run(Environment.CurrentDirectory, new Dictionary<string, string>(), args.ToArray());
                 return result;
             }
 
@@ -65,7 +66,13 @@ namespace SiliconStudio.ExecServer
                 var executablePath = ExtractPath(args, "executable");
                 var workingDirectory = ExtractPath(args, "working directory");
                 execServerPath = Path.Combine(Path.GetDirectoryName(executablePath), Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer.exe");
-                var result = RunClient(executablePath, workingDirectory, args);
+
+                // Collect environment variables
+                var environmentVariables = new Dictionary<string, string>();
+                foreach (DictionaryEntry environmentVariable in Environment.GetEnvironmentVariables())
+                    environmentVariables.Add((string)environmentVariable.Key, (string)environmentVariable.Value);
+
+                var result = RunClient(executablePath, workingDirectory, environmentVariables, args);
                 return result;
             }
         }
@@ -117,7 +124,7 @@ namespace SiliconStudio.ExecServer
         /// <param name="workingDirectory">The working directory.</param>
         /// <param name="args">The arguments.</param>
         /// <returns>Return status.</returns>
-        private int RunClient(string executablePath, string workingDirectory, List<string> args)
+        private int RunClient(string executablePath, string workingDirectory, Dictionary<string, string> environmentVariables, List<string> args)
         {
             var address = GetEndpointAddress(executablePath);
 
@@ -144,7 +151,7 @@ namespace SiliconStudio.ExecServer
                     //Console.WriteLine("{0}: ExecServer - running start", DateTime.Now);
                     try
                     {
-                        var result = service.Run(workingDirectory, args.ToArray());
+                        var result = service.Run(workingDirectory, environmentVariables, args.ToArray());
                         //Console.WriteLine("{0}: ExecServer - running end", DateTime.Now);
                         return result;
                     }
@@ -256,6 +263,7 @@ namespace SiliconStudio.ExecServer
 
             // NOTE: We are not using Process.Start as it is for some unknown reasons blocking the process calling this process on Process.ExitProcess
             // Handling directly the creation of the process with Win32 function solves this. Not sure why.
+            // TODO: We might want the process to not inherit environment
             var arguments = string.Format("/server \"{0}\"", executablePath);
             if (!ProcessHelper.LaunchProcess(execServerPath, arguments))
             {
