@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Particles
         public readonly TrackingCollection<InitializerBase> Initializers;
 
         [DataMember(300)]
-        [Display("Updaters", "Description", Expand = ExpandRule.Always)]
+        [Display("Updaters", Expand = ExpandRule.Always)]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
         public readonly TrackingCollection<UpdaterBase> Updaters;
@@ -82,6 +82,17 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> hosting this emitter</param>
         public void Update(float dt, ParticleSystem parentSystem)
         {
+            // Update sub-systems
+            foreach (var initializer in Initializers)
+            {
+                initializer.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+            }
+
+            foreach (var updater in Updaters)
+            {
+                updater.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+            }
+
             EnsurePoolCapacity();
 
             MoveAndDeleteParticles(dt);

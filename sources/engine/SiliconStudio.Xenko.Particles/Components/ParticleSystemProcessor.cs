@@ -42,7 +42,15 @@ namespace SiliconStudio.Xenko.Particles.Components
                     // Exposed variables
                     var speed = particleSystemStateKeyPair.Value.ParticleSystemComponent.Speed;
 
+                    
+                    var transformComponent = particleSystemStateKeyPair.Value.TransformComponent;
                     var particleSystem = particleSystemStateKeyPair.Value.ParticleSystemComponent.ParticleSystem;
+
+                    // We must update the TRS location of the particle system prior to updating the system itself.
+                    // Particles only handle uniform scale.
+                    particleSystem.Translation = transformComponent.Position;
+                    particleSystem.Rotation = transformComponent.Rotation;
+                    particleSystem.UniformScale = transformComponent.Scale.X;   // This is incorrect for non-uniform scale vectors.
 
                     particleSystem.Update(0.016f * speed);
 
