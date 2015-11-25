@@ -14,12 +14,12 @@ namespace SiliconStudio.Xenko.Engine.Network
         /// <summary>
         /// The default port to connect to router server.
         /// </summary>
-        public static readonly int DefaultPort = 31244;
+        public static readonly int DefaultPort = 31254;
 
         /// <summary>
         /// The default port to listen for connection from router.
         /// </summary>
-        public static readonly int DefaultListenPort = 31245;
+        public static readonly int DefaultListenPort = 31255;
 
         /// <summary>
         /// Starts a service.
