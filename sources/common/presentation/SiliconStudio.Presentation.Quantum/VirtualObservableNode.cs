@@ -9,9 +9,6 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class VirtualObservableNode : SingleObservableNode
     {
-        private readonly int? order;
-        private readonly bool isPrimitive;
-
         static VirtualObservableNode()
         {
             typeof(VirtualObservableNode).GetProperties().Select(x => x.Name).ForEach(x => ReservedNames.Add(x));
@@ -20,8 +17,8 @@ namespace SiliconStudio.Presentation.Quantum
         protected VirtualObservableNode(ObservableViewModel ownerViewModel, string name, int? order, bool isPrimitive, object index, NodeCommandWrapperBase valueChangedCommand)
             : base(ownerViewModel, name, index)
         {
-            this.order = order;
-            this.isPrimitive = isPrimitive;
+            Order = order;
+            IsPrimitive = isPrimitive;
             Name = name;
             ValueChangedCommand = valueChangedCommand;
         }
@@ -32,18 +29,18 @@ namespace SiliconStudio.Presentation.Quantum
             return node;
         }
 
-        public override int? Order { get { return order; } }
-        
-        public override bool HasList { get { return typeof(ICollection).IsAssignableFrom(Type); } }
+        public override int? Order { get; }
 
-        public override bool HasDictionary { get { return typeof(IDictionary).IsAssignableFrom(Type); } }
+        public override bool HasList => typeof(ICollection).IsAssignableFrom(Type);
 
-        public override bool IsPrimitive { get { return isPrimitive; } }
+        public override bool HasDictionary => typeof(IDictionary).IsAssignableFrom(Type);
+
+        public override bool IsPrimitive { get; }
 
         /// <summary>
         /// Gets the command to execute when the value of this node is changed.
         /// </summary>
-        public NodeCommandWrapperBase ValueChangedCommand { get; private set; }
+        public NodeCommandWrapperBase ValueChangedCommand { get; }
 
         /// <summary>
         /// Clears the list of children from this <see cref="VirtualObservableNode"/>.
@@ -84,17 +81,14 @@ namespace SiliconStudio.Presentation.Quantum
                 bool hasChanged = SetValue(ref this.value, value);
                 if (hasChanged)
                 {
-                    if (ValueChangedCommand != null)
-                    {
-                        ValueChangedCommand.Execute(value);
-                    }
+                    ValueChangedCommand?.Execute(value);
                     OnValueChanged();
                 }
             }
         }
 
         /// <inheritdoc/>
-        public override Type Type { get { return typeof(T); } }
+        public override Type Type => typeof(T);
 
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }

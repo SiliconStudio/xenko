@@ -15,7 +15,6 @@ namespace SiliconStudio.Presentation.Controls
     public class TextBoxBase : System.Windows.Controls.TextBox
     {
         private bool validating;
-        private bool hasChangesToValidate;
 
         /// <summary>
         /// Identifies the <see cref="HasText"/> dependency property.
@@ -177,12 +176,14 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public event RoutedEventHandler Cancelled { add { AddHandler(CancelledEvent, value); } remove { RemoveHandler(CancelledEvent, value); } }
 
+        internal bool HasChangesToValidate { get; private set; }
+
         /// <summary>
         /// Validates the current changes in the TextBox. Does nothing is there are no changes.
         /// </summary>
         public void Validate()
         {
-            if (!hasChangesToValidate)
+            if (!HasChangesToValidate)
                 return;
 
             var cancelRoutedEventArgs = new CancelRoutedEventArgs(ValidatingEvent);
@@ -210,7 +211,7 @@ namespace SiliconStudio.Presentation.Controls
             if (ValidateCommand != null && ValidateCommand.CanExecute(ValidateCommandParameter))
                 ValidateCommand.Execute(ValidateCommandParameter);
             validating = false;
-            hasChangesToValidate = false;
+            HasChangesToValidate = false;
         }
 
         /// <summary>
@@ -218,7 +219,7 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public void ForceValidate()
         {
-            hasChangesToValidate = true;
+            HasChangesToValidate = true;
             Validate();
         }
 
@@ -361,7 +362,7 @@ namespace SiliconStudio.Presentation.Controls
             var input = (TextBoxBase)d;
             input.HasText = e.NewValue != null && ((string)e.NewValue).Length > 0;
             if (!input.validating)
-                input.hasChangesToValidate = true;
+                input.HasChangesToValidate = true;
 
             input.OnTextChanged((string)e.OldValue, (string)e.NewValue);
             if (input.ValidateOnTextChange && !input.validating)

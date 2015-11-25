@@ -1,6 +1,6 @@
 !Package
 Id: 04ed1618-1a06-4a69-ac34-1006a978af11
-SerializedVersion: 2
+SerializedVersion: {Assets: 0.0.2}
 Tags: []
 Meta:
     Name: SiliconStudio.Xenko.Graphics.Tests
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.4.0-beta
+            Version: 1.5.0-alpha02
             RootAssets: []
 LocalDependencies: []
 Profiles:

@@ -68,16 +68,23 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     RepeatMode = AssetParameters.RepeatMode
                 };
 
+                var nodeMapping = nodes.Select((x, i) => new { Name = x.Name, Index = i }).ToDictionary(x => x.Name, x => x.Index);
+
                 foreach (var pair in anim.NodesData)
                 {
+                    int nodeIndex;
+                    if (!nodeMapping.TryGetValue(pair.Key, out nodeIndex))
+                        continue;
+
                     var data = pair.Value;
-                    var nodeName = pair.Key;
                     if (data.Data.Count == 0) continue;
+
+                    var keyPrefix = $"[SpriteStudioComponent.Key].Nodes[{nodeIndex}]";
 
                     if (data.Data.ContainsKey("POSX"))
                     {
                         var posxCurve = new AnimationCurve<float>();
-                        animation.AddCurve("posx[" + nodeName + "]", posxCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.Position)}.{nameof(Vector2.X)}", posxCurve);
                         posxCurve.InterpolationType = data.Data["POSX"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["POSX"])
@@ -91,7 +98,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("POSY"))
                     {
                         var posyCurve = new AnimationCurve<float>();
-                        animation.AddCurve("posy[" + nodeName + "]", posyCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.Position)}.{nameof(Vector2.Y)}", posyCurve);
                         posyCurve.InterpolationType = data.Data["POSY"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["POSY"])
@@ -105,7 +112,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("ROTZ"))
                     {
                         var anglCurve = new AnimationCurve<float>();
-                        animation.AddCurve("rotz[" + nodeName + "]", anglCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.RotationZ)}", anglCurve);
                         anglCurve.InterpolationType = data.Data["ROTZ"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["ROTZ"])
@@ -119,7 +126,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("PRIO"))
                     {
                         var prioCurve = new AnimationCurve<int>();
-                        animation.AddCurve("prio[" + nodeName + "]", prioCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.Priority)}", prioCurve);
                         prioCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["PRIO"])
@@ -133,7 +140,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("SCLX"))
                     {
                         var scaxCurve = new AnimationCurve<float>();
-                        animation.AddCurve("sclx[" + nodeName + "]", scaxCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.Scale)}.{nameof(Vector2.X)}", scaxCurve);
                         scaxCurve.InterpolationType = data.Data["SCLX"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["SCLX"])
@@ -147,7 +154,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("SCLY"))
                     {
                         var scayCurve = new AnimationCurve<float>();
-                        animation.AddCurve("scly[" + nodeName + "]", scayCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.Scale)}.{nameof(Vector2.Y)}", scayCurve);
                         scayCurve.InterpolationType = data.Data["SCLY"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["SCLY"])
@@ -161,7 +168,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("ALPH"))
                     {
                         var tranCurve = new AnimationCurve<float>();
-                        animation.AddCurve("alph[" + nodeName + "]", tranCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.Transparency)}", tranCurve);
                         tranCurve.InterpolationType = data.Data["ALPH"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["ALPH"])
@@ -175,7 +182,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("HIDE"))
                     {
                         var hideCurve = new AnimationCurve<int>();
-                        animation.AddCurve("hide[" + nodeName + "]", hideCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.Hide)}", hideCurve);
                         hideCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["HIDE"])
@@ -189,7 +196,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("FLPH"))
                     {
                         var flphCurve = new AnimationCurve<int>();
-                        animation.AddCurve("flph[" + nodeName + "]", flphCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.HFlipped)}", flphCurve);
                         flphCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["FLPH"])
@@ -203,7 +210,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("FLPV"))
                     {
                         var flpvCurve = new AnimationCurve<int>();
-                        animation.AddCurve("flpv[" + nodeName + "]", flpvCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.VFlipped)}", flpvCurve);
                         flpvCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["FLPV"])
@@ -217,7 +224,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("CELL"))
                     {
                         var cellCurve = new AnimationCurve<int>();
-                        animation.AddCurve("cell[" + nodeName + "]", cellCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.SpriteId)}", cellCurve);
                         cellCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["CELL"])
@@ -231,7 +238,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("COLV"))
                     {
                         var colvCurve = new AnimationCurve<Vector4>();
-                        animation.AddCurve("colv[" + nodeName + "]", colvCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.BlendColor)}", colvCurve);
                         colvCurve.InterpolationType = AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["COLV"])
@@ -246,7 +253,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("COLB"))
                     {
                         var colbCurve = new AnimationCurve<int>();
-                        animation.AddCurve("colb[" + nodeName + "]", colbCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.BlendType)}", colbCurve);
                         colbCurve.InterpolationType = AnimationCurveInterpolationType.Constant;
 
                         foreach (var nodeData in data.Data["COLB"])
@@ -260,7 +267,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     if (data.Data.ContainsKey("COLF"))
                     {
                         var colfCurve = new AnimationCurve<float>();
-                        animation.AddCurve("colf[" + nodeName + "]", colfCurve);
+                        animation.AddCurve($"{keyPrefix}.{nameof(SpriteStudioNodeState.BlendFactor)}", colfCurve);
                         colfCurve.InterpolationType = data.Data["COLF"].Any(x => x["curve"] != "linear") ? AnimationCurveInterpolationType.Cubic : AnimationCurveInterpolationType.Linear;
 
                         foreach (var nodeData in data.Data["COLF"])

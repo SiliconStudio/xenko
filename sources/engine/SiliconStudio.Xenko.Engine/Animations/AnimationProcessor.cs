@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Animations
         {
             base.OnEntityAdding(entity, data);
 
-            data.MeshAnimationUpdater = new MeshAnimationUpdater();
+            data.AnimationUpdater = new AnimationUpdater();
         }
 
         protected override void OnEntityRemoved(Entity entity, AssociatedData data)
@@ -70,13 +70,13 @@ namespace SiliconStudio.Xenko.Animations
             foreach (var entity in enabledEntities)
             {
                 var associatedData = entity.Value;
-                var meshAnimation = associatedData.MeshAnimationUpdater;
+                var animationUpdater = associatedData.AnimationUpdater;
                 var animationComponent = associatedData.AnimationComponent;
 
                 // Advance time for all playing animations with AutoPlay set to on
                 foreach (var playingAnimation in animationComponent.PlayingAnimations)
                 {
-                    if (playingAnimation.IsPlaying)
+                    if (playingAnimation.Enabled)
                     {
                         switch (playingAnimation.RepeatMode)
                         {
@@ -141,12 +141,7 @@ namespace SiliconStudio.Xenko.Animations
                     animationComponent.CurrentFrameResult = associatedData.AnimationClipResult;
 
                     // Update animation data if we have a model component
-                    if (associatedData.ModelComponent != null)
-                    {
-                        var modelViewHierarchy = associatedData.ModelComponent.ModelViewHierarchy;
-                        if (modelViewHierarchy != null)
-                            meshAnimation.Update(modelViewHierarchy, associatedData.AnimationClipResult);
-                    }
+                    animationUpdater.Update(entity.Key, associatedData.AnimationClipResult);
                 }
 
                 // Update weight animation
@@ -196,7 +191,7 @@ namespace SiliconStudio.Xenko.Animations
 
         public class AssociatedData
         {
-            public MeshAnimationUpdater MeshAnimationUpdater;
+            public AnimationUpdater AnimationUpdater;
             public ModelComponent ModelComponent;
             public AnimationComponent AnimationComponent;
             public AnimationClipResult AnimationClipResult;

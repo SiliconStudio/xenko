@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Assets
 {
@@ -36,6 +37,31 @@ namespace SiliconStudio.Assets
         {
             var packages = package.GetPackagesWithDependencies();
             return packages.Select(packageItem => packageItem.Assets.Find(assetId)).FirstOrDefault(asset => asset != null);
+        }
+
+        /// <summary>
+        /// Finds an asset from all the packages by its asset reference.
+        /// It will first try by id, then location.
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="contentReference">The reference to the asset.</param>
+        /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
+        public static AssetItem FindAsset(this Package package, IContentReference contentReference)
+        {
+            return package.FindAsset(contentReference.Id) ?? package.FindAsset(contentReference.Location);
+        }
+
+        /// <summary>
+        /// Finds an asset from its attached reference.
+        /// It will first try by id, then location.
+        /// </summary>
+        /// <param name="package">The package.</param>
+        /// <param name="obj">The object containing the attached reference.</param>
+        /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
+        public static AssetItem FindAssetFromAttachedReference(this Package package, object obj)
+        {
+            var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
+            return attachedReference != null ? package.FindAsset(attachedReference) : null;
         }
 
         private static IEnumerable<Package> GetPackagesWithDependencies(this Package currentPackage)

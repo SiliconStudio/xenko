@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Internals;
@@ -49,6 +50,14 @@ namespace SiliconStudio.Xenko.Animations
         /// <param name="newTime">The new time.</param>
         /// <param name="location">The location.</param>
         public abstract void AddValue(CompressedTimeSpan newTime, IntPtr location);
+
+        /// <summary>
+        /// Meant for internal use, to call AnimationData{T}.FromAnimationChannels() without knowing the generic type.
+        /// </summary>
+        /// <param name="animationChannelsByName"></param>
+        internal abstract AnimationData CreateOptimizedData(IEnumerable<KeyValuePair<string, AnimationCurve>> animationChannelsByName);
+
+        internal abstract AnimationCurveEvaluatorDirectGroup CreateEvaluator();
 
         protected AnimationCurve()
         {
@@ -134,6 +143,17 @@ namespace SiliconStudio.Xenko.Animations
             T value;
             Utilities.UnsafeReadOut(location, out value);
             KeyFrames.Add(new KeyFrameData<T> { Time = (CompressedTimeSpan)newTime, Value = value });
+        }
+
+        /// <inheritdoc/>
+        internal override AnimationData CreateOptimizedData(IEnumerable<KeyValuePair<string, AnimationCurve>> animationChannelsByName)
+        {
+            return AnimationData<T>.FromAnimationChannels(animationChannelsByName.Select(x => new KeyValuePair<string, AnimationCurve<T>>(x.Key, (AnimationCurve<T>)x.Value)).ToList());
+        }
+
+        internal override AnimationCurveEvaluatorDirectGroup CreateEvaluator()
+        {
+            return AnimationCurveEvaluatorDirectGroup.Create<T>();
         }
     }
 }

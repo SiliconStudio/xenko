@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public bool Update()
         {
-            if (!ModelComponent.Enabled || ModelComponent.ModelViewHierarchy == null || ModelComponent.Model == null)
+            if (!ModelComponent.Enabled || ModelComponent.Skeleton == null || ModelComponent.Model == null)
             {
                 return false;
             }

@@ -80,7 +80,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 var mode = commandGroup.Value.First().CombineMode;
                 if (commandGroup.Value.Any(x => x.CombineMode != mode))
-                    throw new InvalidOperationException(string.Format("Inconsistent combine mode among command {0}", commandGroup.Key));
+                    throw new InvalidOperationException($"Inconsistent combine mode among command {commandGroup.Key}");
 
                 var shouldCombine = mode != CombineMode.DoNotCombine && (mode == CombineMode.AlwaysCombine || commandGroup.Value.Count == combinedNodes.Count);
 
@@ -138,23 +138,23 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override sealed bool IsPrimitive { get { return CombinedNodes.All(x => x.IsPrimitive); } }
 
-        public IReadOnlyCollection<SingleObservableNode> CombinedNodes { get { return combinedNodes; } }
+        public IReadOnlyCollection<SingleObservableNode> CombinedNodes => combinedNodes;
 
-        public bool HasMultipleValues { get { return ComputeHasMultipleValues(); } }
+        public bool HasMultipleValues => ComputeHasMultipleValues();
 
-        public bool HasMultipleInitialValues { get { return ComputeHasMultipleInitialValues(); } }
+        public bool HasMultipleInitialValues => ComputeHasMultipleInitialValues();
 
         public ICommandBase ResetInitialValues { get; private set; }
 
-        public IEnumerable<object> DistinctInitialValues { get { return distinctCombinedNodeInitialValues; } }
+        public IEnumerable<object> DistinctInitialValues => distinctCombinedNodeInitialValues;
 
-        public override int? Order { get { return order; } }
-
-        /// <inheritdoc/>
-        public override sealed bool HasList { get { return CombinedNodes.First().HasList; } }
+        public override int? Order => order;
 
         /// <inheritdoc/>
-        public override sealed bool HasDictionary { get { return CombinedNodes.First().HasDictionary; } }
+        public override sealed bool HasList => CombinedNodes.First().HasList;
+
+        /// <inheritdoc/>
+        public override sealed bool HasDictionary => CombinedNodes.First().HasDictionary;
 
         public void Refresh()
         {
@@ -238,7 +238,7 @@ namespace SiliconStudio.Presentation.Quantum
                     continue;
 
                 var contentType = children.Value.First().Type;
-                var name = string.Format("Item {0}", currentIndex);
+                var name = $"Item {currentIndex}";
                 CombinedObservableNode child = Create(Owner, name, this, contentType, children.Value, currentIndex);
                 AddChild(child);
                 child.Initialize();
@@ -276,7 +276,7 @@ namespace SiliconStudio.Presentation.Quantum
                     combineMode = node.CombineMode;
 
                 if (combineMode != node.CombineMode)
-                    throw new InvalidOperationException(string.Format("Inconsistent values of CombineMode in single nodes for child '{0}'", name));
+                    throw new InvalidOperationException($"Inconsistent values of CombineMode in single nodes for child '{name}'");
             }
 
             if (combineMode == CombineMode.DoNotCombine)
@@ -405,7 +405,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override Type Type { get { return typeof(T); } }
+        public override Type Type => typeof(T);
 
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
