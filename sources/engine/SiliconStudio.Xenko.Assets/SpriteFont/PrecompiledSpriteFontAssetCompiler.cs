@@ -23,12 +23,12 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             if (!EnsureSourceExists(result, asset, assetAbsolutePath))
                 return;
             
-            result.BuildSteps = new AssetBuildStep(AssetItem) { new PregeneratedSpriteFontCommand(urlInStorage, asset) };
+            result.BuildSteps = new AssetBuildStep(AssetItem) { new PrecompiledSpriteFontCommand(urlInStorage, asset) };
         }
 
-        internal class PregeneratedSpriteFontCommand : AssetCommand<PrecompiledSpriteFontAsset>
+        internal class PrecompiledSpriteFontCommand : AssetCommand<PrecompiledSpriteFontAsset>
         {
-            public PregeneratedSpriteFontCommand(string url, PrecompiledSpriteFontAsset description)
+            public PrecompiledSpriteFontCommand(string url, PrecompiledSpriteFontAsset description)
                 : base(url, description)
             {
             }
