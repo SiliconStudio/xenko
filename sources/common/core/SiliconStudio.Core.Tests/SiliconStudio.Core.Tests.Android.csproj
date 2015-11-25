@@ -4,6 +4,7 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <AndroidApplication>true</AndroidApplication>
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
+    <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
   </PropertyGroup>
   <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
   <PropertyGroup>
@@ -22,6 +23,10 @@
   <ItemGroup>
     <Reference Include="Mono.Android" Label="Xenko.DoNotSync" />
     <Reference Include="Xamarin.Android.NUnitLite" Label="Xenko.DoNotSync" />
+    <Content Label="Xenko.DoNotSync" Include="Properties\AndroidManifest.xml" />
+    <AndroidResource Label="Xenko.DoNotSync" Include="Resources\Drawable\Icon.png" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Compile Include="TestObjectIdBuilder.cs" />
