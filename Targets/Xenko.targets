@@ -169,9 +169,6 @@
 
     <SiliconStudioXenkoCompileAssetCommand Condition="'$(SiliconStudioXenkoCompileAssetCommand)' == ''">$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.Assets.CompilerApp.exe</SiliconStudioXenkoCompileAssetCommand>
 
-    <!-- disable asset command proxy on Android (not working with latest Xamarin -->
-    <SiliconStudioXenkoDisableAssetCompilerExecServerProxy Condition="'$(SiliconStudioPlatform)' == 'Android'">true</SiliconStudioXenkoDisableAssetCompilerExecServerProxy>
-
     <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(DisableAssetCompilerExecServerProxy)' == 'true' Or '$(SiliconStudioXenkoDisableAssetCompilerExecServerProxy)' == 'true'">&quot;$(SiliconStudioXenkoCompileAssetCommand)&quot;</SiliconStudioXenkoCompileAssetCommandProxy>
     <SiliconStudioXenkoCompileAssetCommandProxy Condition="'$(SiliconStudioXenkoCompileAssetCommandProxy)' == ''">&quot;$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.Assets.CompilerClient.exe&quot;</SiliconStudioXenkoCompileAssetCommandProxy>
   </PropertyGroup>
