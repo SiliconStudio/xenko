@@ -3,7 +3,7 @@ Id: 05718a05-c688-4340-853a-e22ee854d9cf
 Tags: []
 Source: ../../../../data/tests/Risaltyp_024.ttf
 FontName: Arial
-Size: 16
+Size: 16.0
 Style: Regular
 IsDynamic: true
 DefaultCharacter: ' '
@@ -12,7 +12,7 @@ CharacterRegions:
     -   Start: ' '
         End: "\x7F"
 AntiAlias: Grayscale
-NoPremultiply: false
-Spacing: 0
-LineSpacing: 0
+IsNotPremultiply: false
+Spacing: 0.0
+LineSpacing: 0.0
 UseKerning: false

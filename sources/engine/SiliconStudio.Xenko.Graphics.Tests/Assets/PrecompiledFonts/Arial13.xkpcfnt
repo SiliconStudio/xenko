@@ -1,0 +1,491 @@
+!PregeneratedSpriteFont
+Id: 016f522f-7283-4bd5-a8b1-03056f2c80bd
+Tags: []
+Source: 5875a604-ea72-4efb-8d1b-dcdbf2f324b5:StaticFonts/Arial13
+FontDataFile: ../../../../data/tests/PrecompileFonts/Aria13l.xkimg
+BaseOffset: 16.2584648
+DefaultLineSpacing: 19.93164
+FontName: 
+Glyphs:
+    -   BitmapIndex: 0
+        Character: 32
+        Offset: {X: -1.0, Y: -1.0}
+        Subrect: {X: 83, Y: 32, Width: 1, Height: 1}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 33
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 86, Y: 85, Width: 3, Height: 12}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 34
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 67, Y: 60, Width: 6, Height: 4}
+        XAdvance: 6.152995
+    -   BitmapIndex: 0
+        Character: 35
+        Offset: {X: -1.0, Y: -12.0}
+        Subrect: {X: 44, Y: 32, Width: 11, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 36
+        Offset: {X: 0.0, Y: -13.0}
+        Subrect: {X: 25, Y: 1, Width: 9, Height: 15}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 37
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 102, Y: 15, Width: 15, Height: 12}
+        XAdvance: 15.41211
+    -   BitmapIndex: 0
+        Character: 38
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 86, Y: 30, Width: 12, Height: 12}
+        XAdvance: 11.5611982
+    -   BitmapIndex: 0
+        Character: 39
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 67, Y: 66, Width: 3, Height: 4}
+        XAdvance: 3.30924487
+    -   BitmapIndex: 0
+        Character: 40
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 36, Y: 1, Width: 6, Height: 15}
+        XAdvance: 5.77213573
+    -   BitmapIndex: 0
+        Character: 41
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 44, Y: 1, Width: 6, Height: 15}
+        XAdvance: 5.77213573
+    -   BitmapIndex: 0
+        Character: 42
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 68, Y: 108, Width: 7, Height: 5}
+        XAdvance: 6.745443
+    -   BitmapIndex: 0
+        Character: 43
+        Offset: {X: 0.0, Y: -10.0}
+        Subrect: {X: 92, Y: 99, Width: 10, Height: 7}
+        XAdvance: 10.1223965
+    -   BitmapIndex: 0
+        Character: 44
+        Offset: {X: 1.0, Y: -1.0}
+        Subrect: {X: 123, Y: 85, Width: 3, Height: 4}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 45
+        Offset: {X: 0.0, Y: -5.0}
+        Subrect: {X: 117, Y: 109, Width: 6, Height: 1}
+        XAdvance: 5.77213573
+    -   BitmapIndex: 0
+        Character: 46
+        Offset: {X: 1.0, Y: -1.0}
+        Subrect: {X: 80, Y: 86, Width: 3, Height: 1}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 47
+        Offset: {X: -1.0, Y: -12.0}
+        Subrect: {X: 121, Y: 1, Width: 6, Height: 12}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 48
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 64, Y: 46, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 49
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 78, Y: 72, Width: 6, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 50
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 1, Y: 47, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 51
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 96, Y: 57, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 52
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 107, Y: 57, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 53
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 118, Y: 57, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 54
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 75, Y: 58, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 55
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 12, Y: 60, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 56
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 23, Y: 60, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 57
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 34, Y: 60, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 58
+        Offset: {X: 1.0, Y: -9.0}
+        Subrect: {X: 75, Y: 46, Width: 3, Height: 9}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 59
+        Offset: {X: 1.0, Y: -9.0}
+        Subrect: {X: 91, Y: 85, Width: 3, Height: 12}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 60
+        Offset: {X: 0.0, Y: -11.0}
+        Subrect: {X: 24, Y: 88, Width: 10, Height: 9}
+        XAdvance: 10.1223965
+    -   BitmapIndex: 0
+        Character: 61
+        Offset: {X: 0.0, Y: -8.0}
+        Subrect: {X: 56, Y: 108, Width: 10, Height: 5}
+        XAdvance: 10.1223965
+    -   BitmapIndex: 0
+        Character: 62
+        Offset: {X: 0.0, Y: -11.0}
+        Subrect: {X: 36, Y: 88, Width: 10, Height: 9}
+        XAdvance: 10.1223965
+    -   BitmapIndex: 0
+        Character: 63
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 45, Y: 60, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 64
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 1, Y: 1, Width: 17, Height: 16}
+        XAdvance: 17.5957031
+    -   BitmapIndex: 0
+        Character: 65
+        Offset: {X: -1.0, Y: -12.0}
+        Subrect: {X: 87, Y: 16, Width: 13, Height: 12}
+        XAdvance: 11.5611982
+    -   BitmapIndex: 0
+        Character: 66
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 117, Y: 29, Width: 10, Height: 12}
+        XAdvance: 11.5611982
+    -   BitmapIndex: 0
+        Character: 67
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 16, Y: 32, Width: 12, Height: 12}
+        XAdvance: 12.5175781
+    -   BitmapIndex: 0
+        Character: 68
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 57, Y: 32, Width: 11, Height: 12}
+        XAdvance: 12.5175781
+    -   BitmapIndex: 0
+        Character: 69
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 40, Y: 46, Width: 10, Height: 12}
+        XAdvance: 11.5611982
+    -   BitmapIndex: 0
+        Character: 70
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 56, Y: 60, Width: 9, Height: 12}
+        XAdvance: 10.5878906
+    -   BitmapIndex: 0
+        Character: 71
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 41, Y: 18, Width: 13, Height: 12}
+        XAdvance: 13.4824228
+    -   BitmapIndex: 0
+        Character: 72
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 70, Y: 32, Width: 11, Height: 12}
+        XAdvance: 12.5175781
+    -   BitmapIndex: 0
+        Character: 73
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 96, Y: 85, Width: 3, Height: 12}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 74
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 119, Y: 15, Width: 8, Height: 12}
+        XAdvance: 8.666667
+    -   BitmapIndex: 0
+        Character: 75
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 1, Y: 33, Width: 11, Height: 12}
+        XAdvance: 11.5611982
+    -   BitmapIndex: 0
+        Character: 76
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 1, Y: 61, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 77
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 25, Y: 18, Width: 14, Height: 12}
+        XAdvance: 14.4388027
+    -   BitmapIndex: 0
+        Character: 78
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 100, Y: 43, Width: 11, Height: 12}
+        XAdvance: 12.5175781
+    -   BitmapIndex: 0
+        Character: 79
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 56, Y: 18, Width: 13, Height: 12}
+        XAdvance: 13.4824228
+    -   BitmapIndex: 0
+        Character: 80
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 52, Y: 46, Width: 10, Height: 12}
+        XAdvance: 11.5611982
+    -   BitmapIndex: 0
+        Character: 81
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 87, Y: 1, Width: 13, Height: 13}
+        XAdvance: 13.4824228
+    -   BitmapIndex: 0
+        Character: 82
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 30, Y: 32, Width: 12, Height: 12}
+        XAdvance: 12.5175781
+    -   BitmapIndex: 0
+        Character: 83
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 113, Y: 43, Width: 11, Height: 12}
+        XAdvance: 11.5611982
+    -   BitmapIndex: 0
+        Character: 84
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 83, Y: 44, Width: 11, Height: 12}
+        XAdvance: 10.5878906
+    -   BitmapIndex: 0
+        Character: 85
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 14, Y: 46, Width: 11, Height: 12}
+        XAdvance: 12.5175781
+    -   BitmapIndex: 0
+        Character: 86
+        Offset: {X: -1.0, Y: -12.0}
+        Subrect: {X: 71, Y: 18, Width: 13, Height: 12}
+        XAdvance: 11.5611982
+    -   BitmapIndex: 0
+        Character: 87
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 102, Y: 1, Width: 17, Height: 12}
+        XAdvance: 16.3600273
+    -   BitmapIndex: 0
+        Character: 88
+        Offset: {X: -1.0, Y: -12.0}
+        Subrect: {X: 1, Y: 19, Width: 13, Height: 12}
+        XAdvance: 11.5611982
+    -   BitmapIndex: 0
+        Character: 89
+        Offset: {X: -1.0, Y: -12.0}
+        Subrect: {X: 102, Y: 29, Width: 13, Height: 12}
+        XAdvance: 11.5611982
+    -   BitmapIndex: 0
+        Character: 90
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 27, Y: 46, Width: 11, Height: 12}
+        XAdvance: 10.5878906
+    -   BitmapIndex: 0
+        Character: 91
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 68, Y: 1, Width: 5, Height: 15}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 92
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 1, Y: 75, Width: 5, Height: 12}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 93
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 75, Y: 1, Width: 4, Height: 15}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 94
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 86, Y: 58, Width: 8, Height: 7}
+        XAdvance: 8.133464
+    -   BitmapIndex: 0
+        Character: 95
+        Offset: {X: -1.0, Y: 2.0}
+        Subrect: {X: 104, Y: 109, Width: 11, Height: 1}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 96
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 86, Y: 67, Width: 4, Height: 2}
+        XAdvance: 5.77213573
+    -   BitmapIndex: 0
+        Character: 97
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 48, Y: 88, Width: 9, Height: 9}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 98
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 86, Y: 71, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 99
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 59, Y: 97, Width: 9, Height: 9}
+        XAdvance: 8.666667
+    -   BitmapIndex: 0
+        Character: 100
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 97, Y: 71, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 101
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 70, Y: 97, Width: 9, Height: 9}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 102
+        Offset: {X: -1.0, Y: -12.0}
+        Subrect: {X: 119, Y: 71, Width: 7, Height: 12}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 103
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 108, Y: 71, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 104
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 67, Y: 72, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 105
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 101, Y: 85, Width: 3, Height: 12}
+        XAdvance: 3.85091162
+    -   BitmapIndex: 0
+        Character: 106
+        Offset: {X: -1.0, Y: -12.0}
+        Subrect: {X: 81, Y: 1, Width: 4, Height: 15}
+        XAdvance: 3.85091162
+    -   BitmapIndex: 0
+        Character: 107
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 12, Y: 74, Width: 9, Height: 12}
+        XAdvance: 8.666667
+    -   BitmapIndex: 0
+        Character: 108
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 106, Y: 85, Width: 3, Height: 12}
+        XAdvance: 3.85091162
+    -   BitmapIndex: 0
+        Character: 109
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 64, Y: 86, Width: 14, Height: 9}
+        XAdvance: 14.4388027
+    -   BitmapIndex: 0
+        Character: 110
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 111, Y: 98, Width: 9, Height: 9}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 111
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 1, Y: 99, Width: 9, Height: 9}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 112
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 23, Y: 74, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 113
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 34, Y: 74, Width: 9, Height: 12}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 114
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 16, Y: 19, Width: 7, Height: 9}
+        XAdvance: 5.77213573
+    -   BitmapIndex: 0
+        Character: 115
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 12, Y: 99, Width: 9, Height: 9}
+        XAdvance: 8.666667
+    -   BitmapIndex: 0
+        Character: 116
+        Offset: {X: -1.0, Y: -12.0}
+        Subrect: {X: 56, Y: 74, Width: 6, Height: 12}
+        XAdvance: 4.81575537
+    -   BitmapIndex: 0
+        Character: 117
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 23, Y: 99, Width: 9, Height: 9}
+        XAdvance: 9.639975
+    -   BitmapIndex: 0
+        Character: 118
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 34, Y: 99, Width: 9, Height: 9}
+        XAdvance: 8.666667
+    -   BitmapIndex: 0
+        Character: 119
+        Offset: {X: -1.0, Y: -9.0}
+        Subrect: {X: 8, Y: 88, Width: 14, Height: 9}
+        XAdvance: 12.5175781
+    -   BitmapIndex: 0
+        Character: 120
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 45, Y: 99, Width: 9, Height: 9}
+        XAdvance: 8.666667
+    -   BitmapIndex: 0
+        Character: 121
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 45, Y: 74, Width: 9, Height: 12}
+        XAdvance: 8.666667
+    -   BitmapIndex: 0
+        Character: 122
+        Offset: {X: 0.0, Y: -9.0}
+        Subrect: {X: 81, Y: 99, Width: 9, Height: 9}
+        XAdvance: 8.666667
+    -   BitmapIndex: 0
+        Character: 123
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 52, Y: 1, Width: 6, Height: 15}
+        XAdvance: 5.7890625
+    -   BitmapIndex: 0
+        Character: 124
+        Offset: {X: 1.0, Y: -12.0}
+        Subrect: {X: 20, Y: 1, Width: 3, Height: 16}
+        XAdvance: 4.50260448
+    -   BitmapIndex: 0
+        Character: 125
+        Offset: {X: 0.0, Y: -12.0}
+        Subrect: {X: 60, Y: 1, Width: 6, Height: 15}
+        XAdvance: 5.7890625
+    -   BitmapIndex: 0
+        Character: 126
+        Offset: {X: 0.0, Y: -7.0}
+        Subrect: {X: 92, Y: 108, Width: 10, Height: 2}
+        XAdvance: 10.1223965
+    -   BitmapIndex: 0
+        Character: 127
+        Offset: {X: 1.0, Y: -11.0}
+        Subrect: {X: 111, Y: 85, Width: 10, Height: 11}
+        XAdvance: 13.0
+Kernings: null
+Size: 13.0
