@@ -18,8 +18,12 @@ namespace SiliconStudio.ExecServer
     [ServiceBehavior(InstanceContextMode = InstanceContextMode.Single, ConcurrencyMode=ConcurrencyMode.Multiple)]
     internal class ExecServerRemote : IExecServerRemote
     {
-        private const int ShutdownExecServerAfterSeconds = 3600;
-        private const int DisposeAppDomainsAfterSeconds = 600;
+        public const int BusyReturnCode = -8000;
+
+        private const int ShutdownExecServerAfterSeconds = 10 * 60;
+        private const int DisposeAppDomainsAfterSeconds = 60;
+        private const int ShutdownExecServerAfterSecondsMain = 30 * 60;
+        private const int DisposeAppDomainsAfterSecondsMain = 3 * 60;
 
         private readonly AppDomainShadowManager shadowManager;
 
@@ -27,15 +31,21 @@ namespace SiliconStudio.ExecServer
 
         private readonly Stopwatch upTime;
 
+        private readonly object runLock = new object();
+
+        private readonly bool isMainDomain;
+
         public event EventHandler<EventArgs> ShuttingDown;
 
-        public ExecServerRemote(string executablePath, bool trackingServer, bool cachingAppDomain)
+        public ExecServerRemote(string executablePath, bool trackingServer, bool cachingAppDomain, bool isMainDomain)
         {
             // TODO: List of native dll directory is hardcoded here. Instead, it should be extracted from .exe.config file for example
             shadowManager = new AppDomainShadowManager(executablePath, new[] { IntPtr.Size == 8 ? "x64" : "x86" })
             {
                 IsCachingAppDomain = cachingAppDomain
             };
+
+            this.isMainDomain = isMainDomain;
 
             upTime = Stopwatch.StartNew();
 
@@ -56,13 +66,30 @@ namespace SiliconStudio.ExecServer
 
         public int Run(string currentDirectory, Dictionary<string, string> environmentVariables, string[] args)
         {
-            Console.WriteLine("Run Received {0}", string.Join(" ", args));
+            bool lockTaken = false;
+            try
+            {
+                Monitor.TryEnter(runLock, ref lockTaken);
+                if (!lockTaken)
+                {
+                    // Busy, exit right away
+                    return BusyReturnCode;
+                }
 
-            upTime.Restart();
+                // Do your stuff...
+                Console.WriteLine("Run Received {0}", string.Join(" ", args));
 
-            var logger = OperationContext.Current.GetCallbackChannel<IServerLogger>();
-            var result = shadowManager.Run(currentDirectory, environmentVariables, args, logger);
-            return result;
+                upTime.Restart();
+
+                var logger = OperationContext.Current.GetCallbackChannel<IServerLogger>();
+                var result = shadowManager.Run(currentDirectory, environmentVariables, args, logger);
+                return result;
+            }
+            finally
+            {
+                if (lockTaken)
+                    Monitor.Exit(runLock);
+            }
         }
 
         public void Wait()
@@ -83,6 +110,9 @@ namespace SiliconStudio.ExecServer
             var assemblyPath = thisAssembly.Location;
             var thisAssemblyTime = File.GetLastWriteTimeUtc(assemblyPath);
 
+            var shutdownExecServerAfterSeconds = isMainDomain ? ShutdownExecServerAfterSecondsMain : ShutdownExecServerAfterSeconds;
+            var disposeAppDomainsAfterSeconds = isMainDomain ? DisposeAppDomainsAfterSecondsMain : DisposeAppDomainsAfterSeconds;
+
             try
             {
                 while (true)
@@ -90,9 +120,9 @@ namespace SiliconStudio.ExecServer
                     Thread.Sleep(500);
 
                     var localUpTime = GetUpTime();
-                    if (localUpTime > TimeSpan.FromSeconds(ShutdownExecServerAfterSeconds))
+                    if (localUpTime > TimeSpan.FromSeconds(shutdownExecServerAfterSeconds))
                     {
-                        Console.WriteLine("Shutdown server after {0}s of inactivity", ShutdownExecServerAfterSeconds);
+                        Console.WriteLine("Shutdown server after {0}s of inactivity", shutdownExecServerAfterSeconds);
                         break;
                     }
 
@@ -104,7 +134,7 @@ namespace SiliconStudio.ExecServer
                         break;
                     }
 
-                    shadowManager.Recycle(TimeSpan.FromSeconds(DisposeAppDomainsAfterSeconds));
+                    shadowManager.Recycle(TimeSpan.FromSeconds(disposeAppDomainsAfterSeconds));
                 }
             }
             finally
