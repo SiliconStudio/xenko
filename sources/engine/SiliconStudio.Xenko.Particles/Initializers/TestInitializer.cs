@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
             var posField = pool.GetField(ParticleFields.Position);
             var velField = pool.GetField(ParticleFields.Velocity);
 
-            var startPos = new Vector3(0, 0, 0);
+            var startPos = new Vector3(0, 0, 0) + WorldPosition;
             var startVel = new Vector3(0, 0, 0);
 
             var i = startIdx;

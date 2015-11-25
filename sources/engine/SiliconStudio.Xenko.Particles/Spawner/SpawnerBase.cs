@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Particles.Spawner
 {
     [DataContract("SpawnerBase")]
-    public abstract class SpawnerBase
+    public abstract class SpawnerBase 
     {
         public abstract void SpawnNew(float dt, ParticlePool pool);
 

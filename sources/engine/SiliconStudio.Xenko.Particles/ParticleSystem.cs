@@ -50,6 +50,24 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
+        /// Translation of the ParticleSystem. Usually inherited directly from the ParticleSystemComponent.
+        /// </summary>
+        [DataMemberIgnore]
+        public Vector3 Translation = new Vector3(0, 0, 0);
+
+        /// <summary>
+        /// Rotation of the ParticleSystem, expressed as a quaternion rotation. Usually inherited directly from the ParticleSystemComponent.
+        /// </summary>
+        [DataMemberIgnore]
+        public Quaternion Rotation = new Quaternion(0, 0, 0, 1);
+
+        /// <summary>
+        /// Scale of the ParticleSystem. Only uniform scale is supported. Usually inherited directly from the ParticleSystemComponent.
+        /// </summary>
+        [DataMemberIgnore]
+        public float UniformScale = 1f;
+
+        /// <summary>
         /// Updates the particles
         /// </summary>
         /// <param name="dt"></param>

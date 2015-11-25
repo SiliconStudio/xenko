@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// The tint color to apply to all particles.
         /// </summary>
         [DataMember(4)]
-        [Display("Test Tint", "This tint description doesn't show on the Property grid")]
+        [Display("Test Tint")]
         public Color4 Color = Color4.White;
 
         /// <summary>
