@@ -62,6 +62,7 @@ namespace SiliconStudio.Core.Reflection
             {
                 var newShadow = Shadows.GetValue(toInstance, key => new ShadowContainer());
                 shadow.CopyTo(newShadow);
+                newShadow.SetId(toInstance, shadow.GetId(fromInstance));
             }
         }
 
