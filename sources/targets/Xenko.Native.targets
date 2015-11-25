@@ -10,12 +10,12 @@
   </PropertyGroup>
   
   <Target Name="CompileNativeClang_Windows" Condition="'$(SiliconStudioPlatform)' == 'Windows'">
+    <!--
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-pc-windows-msvc -DWIN_EXPORT" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -shared -v -o &quot;$(ProjectName).dll&quot; &quot;obj\@(CFiles->'%(Filename).o', '')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Windows\x86\libNativePath.lib&quot; -lmsvcrt.lib" />
-
-    <Exec Command="&quot;$(MSBuildProgramFiles32)\Microsoft Visual Studio 14.0\VC\vcvarsall&quot; x64" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -shared -v -target i686-pc-windows-msvc -o &quot;$(ProjectName).dll&quot; &quot;obj\@(CFiles->'%(Filename).o', '')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Windows\x86\libNativePath.lib&quot; -lmsvcrt.lib" />
+    -->
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-pc-windows-msvc -DWIN_EXPORT" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -shared -v -o &quot;$(ProjectName).dll&quot; &quot;obj\@(CFiles->'%(Filename).o', '')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Windows\x64\libNativePath.lib&quot; -lmsvcrt.lib" />
+    <Exec Command="&quot;$(MSBuildProgramFiles32)\Microsoft Visual Studio 14.0\VC\vcvarsall&quot; x64 &amp; &quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -shared -v -m64 -target x86_64-pc-windows-msvc -o &quot;$(ProjectName).dll&quot; &quot;obj\@(CFiles->'%(Filename).o', '')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Windows\x64\libNativePath.lib&quot; -lmsvcrt.lib" />
   </Target>
 
   <Target Name="CompileNativeClang_iOS" Condition="'$(SiliconStudioPlatform)' == 'iOS'">
