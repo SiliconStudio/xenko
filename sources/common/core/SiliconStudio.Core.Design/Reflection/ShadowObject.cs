@@ -26,6 +26,14 @@ namespace SiliconStudio.Core.Reflection
             return shadow;
         }
 
+        internal static ShadowContainer TryGetShadow(object instance)
+        {
+            if (instance == null) return null;
+            ShadowContainer container;
+            Shadows.TryGetValue(instance, out container);
+            return container;
+        }
+
         /// <summary>
         /// Copies all dynamic properties from an instance to another instance.
         /// </summary>

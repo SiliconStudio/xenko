@@ -29,6 +29,11 @@ namespace SiliconStudio.Core.Reflection
             copy.CopyTo(this);
         }
 
+        public bool HasId(object instance)
+        {
+            return instance is IIdentifiable || id.HasValue;
+        }
+
         public Guid GetId(object instance)
         {
             // If the object is not identifiable, early exit
