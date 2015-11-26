@@ -40,14 +40,14 @@ namespace SiliconStudio.Xenko.Particles
         /// The rotation relative to the parent transformation.
         /// </summary>
         /// <userdoc>The rotation of the entity with regard to its parent</userdoc>
-        [DataMember(20)]
+        [DataMember(12)]
         public Quaternion Rotation = new Quaternion(0, 0, 0, 1);
 
         /// <summary>
         /// The scaling relative to the parent transformation.
         /// </summary>
         /// <userdoc>The scale of the entity with regard to its parent</userdoc>
-        [DataMember(30)]
+        [DataMember(14)]
         public float Scale = 1f;
 
         /// <summary>
@@ -66,17 +66,22 @@ namespace SiliconStudio.Xenko.Particles
 
             WorldScale = (hasScl) ? this.Scale * Scale : this.Scale;
 
-            // TODO I think this is correct, but it needs testing. q1 -> q2 rotation should be q' = q2 * q1
+            // TODO I think this is correct, but it needs testing. q1 -> q2 rotation should be q' = q2 x q1
             WorldRotation = (hasRot) ? this.Rotation * Rotation : this.Rotation;
 
             // The position is the most difficult to calculate, because it involves rotation and scaling as well
-            var ownPosition = (hasScl) ? this.Position * Scale : this.Position;
-            if (hasRot)
-            {
-                var pureQuaternion = new Quaternion(ownPosition, 0);
-                pureQuaternion = Rotation * pureQuaternion * Quaternion.Conjugate(Rotation);
-                ownPosition = new Vector3(pureQuaternion.X, pureQuaternion.Y, pureQuaternion.Z);
-            }
+
+            // Confirm Inherit Scale flag doesn't matter here. Position should always be scaled.
+            var ownPosition = this.Position * Scale;
+
+            Rotation.Rotate(ref ownPosition);
+
+//            // Confirm Inherit Rotation flag doesn't matter here. Position should always be rotated.
+//            var pureQuaternion = new Quaternion(ownPosition, 0);
+//            // TODO I think this is correct, but it needs testing. v' = q x v x q*, but we write the operations backwards (see the note above):
+//            pureQuaternion = Quaternion.Conjugate(Rotation) * pureQuaternion * Rotation;
+//            ownPosition = new Vector3(pureQuaternion.X, pureQuaternion.Y, pureQuaternion.Z);
+
             WorldPosition = (hasPos) ? Translation + ownPosition : ownPosition;
         }
     }
