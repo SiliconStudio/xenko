@@ -104,6 +104,11 @@ namespace SiliconStudio.Xenko.Engine.Network
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
+
+                    // Connection should happen within 5 seconds, otherwise consider there is no connection router trying to connect back to us
+                    await Task.Delay(TimeSpan.FromSeconds(5));
+
+                    socketContextTCS.TrySetCanceled();
                 }
                 catch (Exception e)
                 {
