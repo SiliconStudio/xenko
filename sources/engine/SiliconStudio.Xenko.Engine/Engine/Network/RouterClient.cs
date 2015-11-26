@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core.Diagnostics;
 
@@ -66,31 +67,32 @@ namespace SiliconStudio.Xenko.Engine.Network
         /// <returns></returns>
         private static Task<SimpleSocket> InitiateConnectionToRouter()
         {
-            var socketContextTCS = new TaskCompletionSource<SimpleSocket>();
-            var socketContext = new SimpleSocket();
-            socketContext.Connected = context =>
+            // Let's make sure this run in a different thread (in case some operation are blocking)
+            return Task.Factory.StartNew(() =>
             {
-                socketContextTCS.TrySetResult(context);
-            };
+                var socketContextTCS = new TaskCompletionSource<SimpleSocket>();
+                var socketContext = new SimpleSocket();
+                socketContext.Connected = context =>
+                {
+                    socketContextTCS.TrySetResult(context);
+                };
 
-            Task.Run(async () =>
-            {
                 try
                 {
                     // If connecting as a client, try once, otherwise try to listen multiple time (in case port is shared)
                     switch (ConnectionMode)
                     {
                         case RouterConnectionMode.Connect:
-                            await socketContext.StartClient("127.0.0.1", DefaultPort);
+                            socketContext.StartClient("127.0.0.1", DefaultPort).Wait();
                             break;
                         case RouterConnectionMode.Listen:
-                            await socketContext.StartServer(DefaultListenPort, true, 10);
+                            socketContext.StartServer(DefaultListenPort, true, 10).Wait();
                             break;
                         case RouterConnectionMode.ConnectThenListen:
                             bool clientException = false;
                             try
                             {
-                                await socketContext.StartClient("127.0.0.1", DefaultPort);
+                                socketContext.StartClient("127.0.0.1", DefaultPort).Wait();
                             }
                             catch (Exception) // Ideally we should filter SocketException, but not available on some platforms (maybe it should be wrapped in a type available on all paltforms?)
                             {
@@ -98,7 +100,7 @@ namespace SiliconStudio.Xenko.Engine.Network
                             }
                             if (clientException)
                             {
-                                await socketContext.StartServer(DefaultListenPort, true, 10);
+                                socketContext.StartServer(DefaultListenPort, true, 10).Wait();
                             }
                             break;
                         default:
@@ -106,19 +108,20 @@ namespace SiliconStudio.Xenko.Engine.Network
                     }
 
                     // Connection should happen within 5 seconds, otherwise consider there is no connection router trying to connect back to us
-                    await Task.Delay(TimeSpan.FromSeconds(5));
+                    if (!socketContextTCS.Task.Wait(TimeSpan.FromSeconds(5)))
+                        throw new InvalidOperationException("Connection router did not connect back to our listen socket");
 
-                    socketContextTCS.TrySetCanceled();
+                    return socketContext;
                 }
                 catch (Exception e)
                 {
                     Log.Error("Could not connect to connection router using mode {0}: {1}", ConnectionMode, e.Message);
                     throw;
                 }
-            });
-
-            // Wait for server to connect to us (as a Task)
-            return socketContextTCS.Task;
+            },
+                CancellationToken.None,
+                TaskCreationOptions.LongRunning,
+                TaskScheduler.Default);
         }
 
         private static void StartControlConnection()
