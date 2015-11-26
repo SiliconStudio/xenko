@@ -6,13 +6,13 @@ namespace SiliconStudio.Xenko.VisualStudio
 {
     internal static class GuidList
     {
-        public const string guidXenko_VisualStudio_PackagePkgString = "c26b1ce9-bbab-497b-98ad-67e93a2037d1";
-        public const string guidXenko_VisualStudio_PackageCmdSetString = "12225fdc-b608-43d7-9c75-e8b845984494";
+        public const string guidXenko_VisualStudio_PackagePkgString = "B0B8FEB1-7B83-43FC-9FC0-70065DDB80A1";
+        public const string guidXenko_VisualStudio_PackageCmdSetString = "9428DB93-BFEA-4115-8D4A-40B047166E61";
         public const string guidToolWindowPersistanceString = "ddd10155-9f63-4694-95ce-c7ba2d74ad46";
 
-        public const string guidXenko_VisualStudio_ShaderKeyFileGenerator = "BA7DB143-D0D6-4C7C-B545-1DCEDDB763FB";
+        public const string guidXenko_VisualStudio_ShaderKeyFileGenerator = "B50E6ECE-B11F-477B-A8E1-1E60E0531A53";
 
-        public const string guidXenko_VisualStudio_DataCodeGenerator = "52FCBA1A-42F7-4DBA-B543-C19E921EC203";
+        public const string guidXenko_VisualStudio_DataCodeGenerator = "22555301-D58A-4D71-9DAB-B2552CC3DE0E";
 
         public static readonly Guid guidXenko_VisualStudio_PackageCmdSet = new Guid(guidXenko_VisualStudio_PackageCmdSetString);
 
