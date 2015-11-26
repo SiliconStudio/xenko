@@ -17,11 +17,6 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public partial class SpriteBatch : BatchBase<SpriteBatch.SpriteDrawInfo>
     {
-        static SpriteBatch()
-        {
-            NativeLibrary.PreloadLibrary("SiliconStudio.Xenko.Native.dll");
-        }
-
         private static readonly Vector2[] CornerOffsets = { Vector2.Zero, Vector2.UnitX, Vector2.One, Vector2.UnitY };
         private static Vector2 vector2Zero = Vector2.Zero;
         private static RectangleF? nullRectangle;
@@ -586,7 +581,7 @@ namespace SiliconStudio.Xenko.Graphics
             Draw(texture, ref elementInfo);
         }
 
-        [DllImport("SiliconStudio.Xenko.Native.dll", CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+        [DllImport(NativeBridge.NativeBridge.Library, CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
         private static extern void UpdateBufferValuesFromElementInfoNative(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
 
         protected override unsafe void UpdateBufferValuesFromElementInfo(ref ElementInfo elementInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset)

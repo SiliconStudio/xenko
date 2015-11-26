@@ -9,8 +9,8 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{1DBBC150-F085-43EF-B41D-27C72D133770}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Xenko.Native</RootNamespace>
-    <AssemblyName>SiliconStudio.Xenko.Native</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.NativeBridge</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.NativeBridge</AssemblyName>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
@@ -25,6 +25,7 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Module.cs" />
+    <Compile Include="NativeBridge.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">

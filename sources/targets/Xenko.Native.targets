@@ -6,28 +6,36 @@
   </ItemGroup>
 
   <PropertyGroup>
-    <SiliconStudioXenkoNativeObjFiles>$(SiliconStudioXenkoNativeObjFiles) %(CFiles.Filename).o</SiliconStudioXenkoNativeObjFiles>
+    <SiliconStudioXenkoNativeObjFiles>$(SiliconStudioXenkoNativeObjFiles) %(CFiles.Filename).o</SiliconStudioXenkoNativeObjFiles>   
+    <SiliconStudioXenkoSdkBinDir>$(XenkoDependenciesDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioXenkoSdkBinDir>
   </PropertyGroup>
   
-  <Target Name="CompileNativeClang_Windows" Condition="'$(SiliconStudioPlatform)' == 'Windows'">
-    <!--
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-pc-windows-msvc -DWIN_EXPORT" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -shared -v -target i686-pc-windows-msvc -o &quot;$(ProjectName).dll&quot; &quot;obj\@(CFiles->'%(Filename).o', '')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Windows\x86\libNativePath.lib&quot; -lmsvcrt.lib" />
-    -->
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-pc-windows-msvc -DWIN_EXPORT" />
-    <Exec Command="&quot;$(MSBuildProgramFiles32)\Microsoft Visual Studio 14.0\VC\vcvarsall&quot; x64 &amp; &quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -shared -v -m64 -target x86_64-pc-windows-msvc -o &quot;$(ProjectName).dll&quot; &quot;obj\@(CFiles->'%(Filename).o', '')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Windows\x64\libNativePath.lib&quot; -lmsvcrt.lib" />
+  <Target Name="CompileNativeClang_Windows" Inputs="@(CFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\$(ProjectName).dll;$(SiliconStudioXenkoSdkBinDir)\x64\$(ProjectName).dll"  Condition="'$(SiliconStudioPlatform)' == 'Windows'" BeforeTargets="Build">
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-pc-windows-msvc -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-pc-windows-msvc -DWIN_EXPORT" />
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
+    
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-pc-windows-msvc -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-pc-windows-msvc -DWIN_EXPORT" />
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
   </Target>
-
-  <Target Name="CompileNativeClang_iOS" Condition="'$(SiliconStudioPlatform)' == 'iOS'">
-    <Exec Command="$(XenkoDependenciesDir)\LLVM\clang.exe -O3 -o %(CFiles.Filename).o -c %(CFiles.FullPath) -I$(XenkoDependenciesDir)\NativePath -target armv7-apple-ios -mios-version-min=6.0" />
-    <Exec Command="$(XenkoDependenciesDir)\LLVM\llvm-ar.exe rcs $(ProjectName)_armv7.a @(CFiles->'%(Filename).o', '')" />
-    <Exec Command="$(XenkoDependenciesDir)\LLVM\clang.exe -O3 -o %(CFiles.Filename).o -c %(CFiles.FullPath) -I$(XenkoDependenciesDir)\NativePath -target armv7s-apple-ios -mios-version-min=6.0" />
-    <Exec Command="$(XenkoDependenciesDir)\LLVM\llvm-ar.exe rcs $(ProjectName)_armv7s.a @(CFiles->'%(Filename).o', '')" />
-    <Exec Command="$(XenkoDependenciesDir)\LLVM\clang.exe -O3 -o %(CFiles.Filename).o -c %(CFiles.FullPath) -I$(XenkoDependenciesDir)\NativePath -target arm64-apple-ios -mios-version-min=6.0" />
-    <Exec Command="$(XenkoDependenciesDir)\LLVM\llvm-ar.exe rcs $(ProjectName)_arm64.a @(CFiles->'%(Filename).o', '')" />
-    <Exec Command="$(XenkoDependenciesDir)\LLVM\clang.exe -O3 -o %(CFiles.Filename).o -c %(CFiles.FullPath) -I$(XenkoDependenciesDir)\NativePath -target i386-apple-ios -mios-version-min=6.0" />
-    <Exec Command="$(XenkoDependenciesDir)\LLVM\llvm-ar.exe rcs $(ProjectName)_i386.a @(CFiles->'%(Filename).o', '')" />
-    <Exec Command="$(XenkoDependenciesDir)\LLVM\clang.exe -O3 -o %(CFiles.Filename).o -c %(CFiles.FullPath) -I$(XenkoDependenciesDir)\NativePath -target x86_64-apple-ios -mios-version-min=6.0" />
-    <Exec Command="$(XenkoDependenciesDir)\LLVM\llvm-ar.exe rcs $(ProjectName)_x86_64.a @(CFiles->'%(Filename).o', '')" />
+  
+  <Target Name="CompileNativeClang_iOS" Inputs="@(CFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\$(ProjectName)__armv7.a;$(SiliconStudioXenkoSdkBinDir)\$(ProjectName)__armv7s.a;$(SiliconStudioXenkoSdkBinDir)\$(ProjectName)__arm64.a;$(SiliconStudioXenkoSdkBinDir)\$(ProjectName)__i386.a;$(SiliconStudioXenkoSdkBinDir)\$(ProjectName)__x86_64.a" Condition="'$(SiliconStudioPlatform)' == 'iOS'" BeforeTargets="Build">
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target armv7-apple-ios -mios-version-min=6.0" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)_armv7.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
+    
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target armv7s-apple-ios -mios-version-min=6.0" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)_armv7s.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
+    
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target arm64-apple-ios -mios-version-min=6.0" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)_arm64.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
+    
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i386-apple-ios -mios-version-min=6.0" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)_i386.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
+    
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-apple-ios -mios-version-min=6.0" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)_x86_64.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
+    
+    <Copy SourceFiles="$(XenkoDependenciesDir)\NativePath\iOS\libNativePath.a" DestinationFolder="$(SiliconStudioXenkoSdkBinDir)" />
   </Target>
 </Project>

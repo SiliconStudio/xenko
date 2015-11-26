@@ -1,6 +1,6 @@
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Native
+namespace SiliconStudio.Xenko.NativeBridge
 {
     public static class Module
     {

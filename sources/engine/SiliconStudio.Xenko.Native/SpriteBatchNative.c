@@ -49,3 +49,4 @@ EXPORT void UpdateBufferValuesFromElementInfoNative(SpriteDrawInfo* drawInfo, Ve
 		vertexPointer++;
 	}
 }
+
