@@ -220,15 +220,24 @@ namespace SiliconStudio.Xenko.Engine
             {
                 InitializeAssetDatabase();
 
-                // Load several default settings
-                if (AutoLoadDefaultSettings && Asset.Exists(GameSettings.AssetUrl))
+                if (Asset.Exists(GameSettings.AssetUrl))
                 {
                     gameSettings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
 
+                    // Set ShaderProfile even if AutoLoadDefaultSettings is false (because that is what shaders in effect logs are compiled against, even if actual instantiated profile is different)
+                    if (gameSettings.DefaultGraphicsProfileUsed > 0)
+                    {
+                        var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+                        deviceManager.ShaderProfile = gameSettings.DefaultGraphicsProfileUsed;
+                    }
+                }
+
+                // Load several default settings
+                if (AutoLoadDefaultSettings)
+                {
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
                     if (gameSettings.DefaultGraphicsProfileUsed > 0)
                     {
-                        deviceManager.ShaderProfile = gameSettings.DefaultGraphicsProfileUsed;
                         deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
                     }
                     if (gameSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = gameSettings.DefaultBackBufferWidth;
