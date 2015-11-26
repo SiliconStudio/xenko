@@ -236,7 +236,11 @@ namespace SiliconStudio.Xenko.Engine
                 if (AutoLoadDefaultSettings)
                 {
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                    if (gameSettings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
+                    if (gameSettings.DefaultGraphicsProfileUsed > 0)
+                    {
+                        deviceManager.ShaderProfile = gameSettings.DefaultGraphicsProfileUsed;
+                        deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
+                    }
                     if (gameSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = gameSettings.DefaultBackBufferWidth;
                     if (gameSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = gameSettings.DefaultBackBufferHeight;
                     deviceManager.PreferredColorSpace = gameSettings.ColorSpace;
