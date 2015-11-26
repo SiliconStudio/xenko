@@ -32,6 +32,10 @@ namespace SiliconStudio.Xenko.Particles.Modules
             var startPos = new Vector3(0, 0, 0) + WorldPosition;
             var startVel = new Vector3(0, 0, 0);
 
+            // TODO Pos
+            // TODO Rot
+            // TODO Scl
+
             var i = startIdx;
             while (i != endIdx)
             {
