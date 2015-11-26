@@ -22,6 +22,8 @@
     <Compile Include="Components\ParticleSystemComponentRenderer.cs" />
     <Compile Include="Components\ParticleSystemProcessor.cs" />
     <Compile Include="Initializers\InitializerBase.cs" />
+    <Compile Include="Initializers\InitialPosition.cs" />
+    <Compile Include="Initializers\InitialSize.cs" />
     <Compile Include="Initializers\TestInitializer.cs" />
     <Compile Include="Materials\ParticleMaterialBase.cs" />
     <Compile Include="Materials\ParticleMaterialTexture.cs" />
