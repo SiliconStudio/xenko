@@ -2172,7 +2172,7 @@
       </Grid>
     </Border>
     <ControlTemplate.Triggers>
-      <Trigger Property="IsSuspendingPopupAnimation" Value="true">
+      <Trigger Property="IsSuspendingPopupAnimation" Value="True">
         <Setter Property="PopupAnimation" Value="None" TargetName="SubMenuPopup" />
       </Trigger>
       <Trigger Property="Icon" Value="{x:Null}">
@@ -3299,7 +3299,6 @@
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     <Setter Property="Margin" Value="2,0,2,0"/>
     <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="FontSize" Value="10"/>
     <Setter Property="MinHeight" Value="20"/>
     <Setter Property="MinWidth" Value="20"/>
     <Style.Triggers>
@@ -3310,7 +3309,6 @@
   </Style>
 
   <Style x:Key="{x:Static ToolBar.CheckBoxStyleKey}" TargetType="{x:Type CheckBox}">
-    <Setter Property="FontSize" Value="10"/>
     <Setter Property="SnapsToDevicePixels" Value="true" />
     <Setter Property="FocusVisualStyle" Value="{DynamicResource CheckBoxFocusVisual}" />
     <Setter Property="Background" Value="Transparent" />
@@ -3321,7 +3319,6 @@
   </Style>
 
   <Style x:Key="{x:Static ToolBar.RadioButtonStyleKey}" TargetType="{x:Type RadioButton}">
-    <Setter Property="FontSize" Value="10"/>
     <Setter Property="SnapsToDevicePixels" Value="true" />
     <Setter Property="FocusVisualStyle" Value="{DynamicResource RadioButtonFocusVisual}" />
     <Setter Property="Background" Value="Transparent" />
@@ -3357,7 +3354,6 @@
   </Style>
 
   <Style x:Key="{x:Static ToolBar.ComboBoxStyleKey}" TargetType="{x:Type ComboBox}">
-    <Setter Property="FontSize" Value="10"/>
     <Setter Property="SnapsToDevicePixels" Value="true" />
     <Setter Property="Background" Value="{DynamicResource LightBrush}"/>
     <Setter Property="Template" Value="{DynamicResource ComboBoxTemplate}" />
@@ -3369,7 +3365,6 @@
   </Style>
 
   <Style x:Key="{x:Static ToolBar.TextBoxStyleKey}" TargetType="{x:Type TextBox}">
-    <Setter Property="FontSize" Value="10"/>
     <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
     <Setter Property="FocusVisualStyle" Value="{x:Null}" />
     <Setter Property="AllowDrop" Value="true" />
