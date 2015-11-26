@@ -1,12 +1,10 @@
 !PregeneratedSpriteFont
 Id: 7ea96b46-d786-42c8-9541-0dba7cd63a44
 Tags: []
-Source: ../../../../data/tests/PrecompileFonts/CourierNew10.xkimg
+Source: 90b99454-a7b4-4b88-8d42-638acc73e34b:StaticFonts/CourierNew10
+FontDataFile: ../../../../data/tests/PrecompileFonts/CourierNew10.xkimg
 BaseOffset: 11.10026
-DefaultCharacter: ' '
 DefaultLineSpacing: 15.104166
-ExtraLineSpacing: 0.0
-ExtraSpacing: 0.0
 FontName: 
 Glyphs:
     -   BitmapIndex: 0
@@ -489,7 +487,5 @@ Glyphs:
         Offset: {X: 0.0, Y: -8.0}
         Subrect: {X: 46, Y: 43, Width: 7, Height: 8}
         XAdvance: 8.001302
-IsPremultiplied: true
 Kernings: null
 Size: 10.0
-Style: Regular

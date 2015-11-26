@@ -3,6 +3,7 @@
 
 using System.Collections.Generic;
 using System.IO;
+using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Xenko.Assets.SpriteFont.Compiler;
 using SiliconStudio.Xenko.Graphics;
@@ -20,13 +21,15 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// Generate a precompiled sprite font from the current sprite font asset.
         /// </summary>
         /// <param name="asset">The sprite font asset</param>
+        /// <param name="sourceAsset">The source sprite font asset item</param>
         /// <param name="texturePath">The path of the source texture</param>
         /// <param name="srgb">Indicate if the generated texture should be srgb</param>
         /// <returns>The precompiled sprite font asset</returns>
-        public static PrecompiledSpriteFontAsset GeneratePrecompiledSpriteFont(this SpriteFontAsset asset, string texturePath, bool srgb)
+        public static PrecompiledSpriteFontAsset GeneratePrecompiledSpriteFont(this SpriteFontAsset asset, AssetItem sourceAsset, string texturePath, bool srgb)
         {
             var staticFont = (StaticSpriteFont)StaticFontCompiler.Compile(FontDataFactory, asset, srgb);
 
+            var referenceToSourceFont = new AssetReference<SpriteFontAsset>(sourceAsset.Id, sourceAsset.Location);
             var glyphs = new List<Glyph>(staticFont.CharacterToGlyph.Values);
             var textures = staticFont.Textures;
             
@@ -45,7 +48,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 Glyphs = glyphs,
                 Size = asset.Size,
                 Style = asset.Style,
-                Source = textureFileName,
+                Source = referenceToSourceFont,
+                FontDataFile = textureFileName,
                 BaseOffset = staticFont.BaseOffsetY,
                 DefaultLineSpacing = staticFont.DefaultLineSpacing,
                 ExtraSpacing = staticFont.ExtraSpacing,

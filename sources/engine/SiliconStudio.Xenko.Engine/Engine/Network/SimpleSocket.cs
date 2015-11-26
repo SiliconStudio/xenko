@@ -60,7 +60,8 @@ namespace SiliconStudio.Xenko.Engine.Network
             // Create TCP listener
             var listener = new TcpSocketListener(2048);
 
-            listener.ConnectionReceived = async (sender, args) =>
+            listener.ConnectionReceived = (sender, args) =>
+            Task.Run(async () =>
             {
                 var clientSocketContext = new SimpleSocket();
 
@@ -85,7 +86,7 @@ namespace SiliconStudio.Xenko.Engine.Network
                 {
                     clientSocketContext.DisposeSocket();
                 }
-            };
+            });
 
             for (int i = 0; i < retryCount; ++i)
             {
