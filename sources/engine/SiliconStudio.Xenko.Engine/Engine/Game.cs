@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Reflection;
@@ -25,6 +26,13 @@ using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    public interface IGamePlugin
+    {
+        void Initialize(Game game);
+
+        void Destroy(Game game);
+    }
+
     /// <summary>
     /// Main Game class system.
     /// </summary>
@@ -35,7 +43,7 @@ namespace SiliconStudio.Xenko.Engine
         private readonly LogListener logListener;
         private GameSettings gameSettings; // for easy transfer from PrepareContext to Initialize
 
-        public static Game CurrentGame;
+        public static List<IGamePlugin> GamePlugins = new List<IGamePlugin>();
 
         /// <summary>
         /// Gets the graphics device manager.
@@ -213,11 +221,19 @@ namespace SiliconStudio.Xenko.Engine
 
             AutoLoadDefaultSettings = true;
 
-            CurrentGame = this;
+            foreach (var gamePlugin in GamePlugins)
+            {
+                gamePlugin.Initialize(this);
+            }
         }
 
         protected override void Destroy()
         {
+            foreach (var gamePlugin in GamePlugins)
+            {
+                gamePlugin.Destroy(this);
+            }
+
             base.Destroy();
             
             if (logListener != null)
