@@ -51,23 +51,30 @@ namespace SiliconStudio.Xenko.Games
         {
             switch (type)
             {
-                case AppContextType.DesktopOpenTK:
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                case AppContextType.DesktopOpenTK:
                     return new GameWindowOpenTK();
 #endif
+
+#if SILICONSTUDIO_UI_SDL
                  case AppContextType.DesktopSDL:
                     return new GameWindowSdl();
-
-                 case AppContextType.Desktop:
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && !SILICONSTUDIO_UI_SDL_ONLY
-                     return new GameWindowWinforms();
-#else
-                     return new GameWindowSdl();
 #endif
 
+                 case AppContextType.Desktop:
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && SILICONSTUDIO_UI_WINFORMS
+                     return new GameWindowWinforms();
+#elif SILICONSTUDIO_UI_SDL
+                    return new GameWindowSdl();
+#else
+                    return null;
+#endif
+
+#if SILICONSTUDIO_UI_WPF
                 case AppContextType.DesktopWpf:
                     // WPF is not supported yet.
                     return null;
+#endif
 
                 default:
                     return null;

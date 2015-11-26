@@ -18,7 +18,7 @@
     <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' != '' and !HasTrailingSlash('$(SiliconStudioDependenciesDir)')">$(SiliconStudioDependenciesDir)\</SiliconStudioDependenciesDir>
     <!-- Define the location where to build assemblies. -->
     <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUI)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUIDir)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUIDir)</SiliconStudioBuildDirectory>
     <BaseIntermediateOutputPath Condition=" $(BaseIntermediateOutputPath) == '' ">obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath Condition=" $(IntermediateOutputPath) == '' ">$(BaseIntermediateOutputPath)$(SiliconStudioBuildDirectory)\</IntermediateOutputPath>
     <DefaultOutputPath>Bin\$(SiliconStudioBuildDirectory)\</DefaultOutputPath>
@@ -126,12 +126,13 @@
     <MtouchLink>SdkOnly</MtouchLink>
   </PropertyGroup>
 
-
   <!-- 
-    Settings SiliconStudioUI specific
+    Settings SiliconStudioUI specific defines.
+    The computation of SiliconStudioUIDefineConstants is done in SiliconStudio.PreSettings.targets.
   -->
-  <PropertyGroup Condition=" '$(SiliconStudioUI)' == 'SDL' ">
-    <SiliconStudioUIDefines>SILICONSTUDIO_UI_SDL_ONLY</SiliconStudioUIDefines>
+
+  <PropertyGroup>
+    <SiliconStudioUIDefines>@(SiliconStudioUIDefineConstants->'%(Argument)')</SiliconStudioUIDefines>
   </PropertyGroup>
  
   <!-- 

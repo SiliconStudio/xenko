@@ -23,7 +23,7 @@
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL_ONLY
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF)
 using System.Windows.Forms;
 #endif
 using SharpDX;
@@ -303,7 +303,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             var nativeHandle = Description.DeviceWindowHandle.NativeHandle;
 
-#if !SILICONSTUDIO_UI_SDL_ONLY
+#if (SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF)
             // Dynamically test if we are handling a Winform or a SDL window.
             var control = nativeHandle as Control;
             if (control != null)

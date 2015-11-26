@@ -2,11 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
-#if !SILICONSTUDIO_UI_SDL_ONLY
+#if (SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF)
 using System.Drawing;
 using System.Drawing.Imaging;
 #endif
+#if SILICONSTUDIO_UI_SDL
 using SDL2;
+#endif
 using System.IO;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
@@ -14,7 +16,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Graphics
 {
 
-#if SILICONSTUDIO_UI_SDL_ONLY
+#if SILICONSTUDIO_UI_SDL && (!SILICONSTUDIO_UI_WINFORMS && !SILICONSTUDIO_UI_WPF)
     public sealed class ImageFormat
     {
         // Format IDs
@@ -94,7 +96,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         public unsafe static Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
-#if !SILICONSTUDIO_UI_SDL_ONLY
+#if SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF
             using (var memoryStream = new UnmanagedMemoryStream((byte*)pSource, size))
             using (var bitmap = (Bitmap)System.Drawing.Image.FromStream(memoryStream))
             {
@@ -128,8 +130,8 @@ namespace SiliconStudio.Xenko.Graphics
                 return image;
             }
 #else
-                // FIXME: Manu: The following beginning of code shows that we can read images using SDL.
-                // FIXME: We will do the implementation logic later.
+            // FIXME: Manu: The following beginning of code shows that we can read images using SDL.
+            // FIXME: We will do the implementation logic later.
             IntPtr rw = SDL.SDL_RWFromMemNative((byte *)pSource, size);
             IntPtr image = SDL_image.IMG_Load_RW(rw, 1);
             return null;
@@ -169,7 +171,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static void SaveFromMemory(PixelBuffer[] pixelBuffers, int count, ImageDescription description, Stream imageStream, ImageFormat imageFormat)
         {
-#if !SILICONSTUDIO_UI_SDL_ONLY
+#if (SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF)
             using (var bitmap = new Bitmap(description.Width, description.Height))
             {
                 var sourceArea = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
@@ -196,7 +198,7 @@ namespace SiliconStudio.Xenko.Graphics
                 bitmap.Save(imageStream, imageFormat);
             }
 #else
-                // FIXME: Manu: Currently SDL can only save to BMP or PNG.
+            // FIXME: Manu: Currently SDL can only save to BMP or PNG.
 #endif
         }
     }

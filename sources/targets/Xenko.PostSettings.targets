@@ -25,8 +25,8 @@
           </Choose>
           <ItemGroup>
             <Reference Include="System.Data" />
-            <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Drawing" />
-            <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Windows.Forms" />
+            <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Drawing" />
+            <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
             <Reference Include="PresentationFramework" />
             <Reference Include="PresentationCore" />
             <Reference Include="WindowsBase" />

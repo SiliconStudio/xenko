@@ -30,7 +30,7 @@
   <PropertyGroup Condition="'$(SiliconStudioPlatformFullName)' == ''">
     <!-- Define the location where to build assemblies. -->
     <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
-    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioUI)</SiliconStudioPlatformFullName>
+    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioUIDir)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioUIDir)</SiliconStudioPlatformFullName>
   </PropertyGroup>
 
 
@@ -199,7 +199,7 @@
     <PropertyGroup>
       <SiliconStudioPlatformFullNameOriginal>$(SiliconStudioPlatformFullName)</SiliconStudioPlatformFullNameOriginal>
       <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
-      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioUI)</SiliconStudioPlatformFullName>
+      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioUIDir)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioUIDir)</SiliconStudioPlatformFullName>
     </PropertyGroup>
     
     <!-- Rewrite dependencies -->

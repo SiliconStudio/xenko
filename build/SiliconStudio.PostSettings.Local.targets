@@ -5,7 +5,7 @@
     <SiliconStudioAssemblyProcessorGlobal>true</SiliconStudioAssemblyProcessorGlobal>
     <!-- Define the location where to build assemblies. -->
     <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUI)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUIDir)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUIDir)</SiliconStudioBuildDirectory>
     <SiliconStudioOutputCommonDir>$(SolutionDir)..\Bin\$(SiliconStudioBuildDirectory)\</SiliconStudioOutputCommonDir>
     <OutputPath>$(SiliconStudioOutputCommonDir)</OutputPath>
 

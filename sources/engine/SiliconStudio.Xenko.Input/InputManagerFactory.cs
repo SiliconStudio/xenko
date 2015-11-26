@@ -27,9 +27,9 @@ namespace SiliconStudio.Xenko.Input
             switch (context.ContextType)
             {
                 case AppContextType.Desktop:
-#if !SILICONSTUDIO_UI_SDL_ONLY
+#if SILICONSTUDIO_UI_WINFORMS
                     res = NewInputManagerWinforms(registry);
-#else
+#elif SILICONSTUDIO_UI_SDL
                     // When SDL is the only UI available, Desktop and DesktopSDL are equivalent.
                     res = NewInputManagerSDL(registry);
 #endif
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Input
 
         private static InputManager NewInputManagerWinforms(IServiceRegistry registry)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL_ONLY
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_UI_WINFORMS
             return new InputManagerWinforms(registry);
 #else
             return null;
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Input
 
         private static InputManager NewInputManagerWpf(IServiceRegistry registry)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL_ONLY && !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_UI_WPF && !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             return new InputManagerWpf(registry);
 #else
             return null;
@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Input
 
         private static InputManager NewInputManagerSDL(IServiceRegistry registry)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_UI_SDL
             return new InputManagerSDL(registry);
 #else
             return null;

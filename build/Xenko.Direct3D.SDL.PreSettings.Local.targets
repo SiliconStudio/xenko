@@ -9,6 +9,7 @@
 
     <!-- Defines the platform used by Xenko - Values are Windows/WindowsStore/WindowsPhone/Android/iOS...etc. -->
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
+    <SiliconStudioUIDir Condition=" '$(SiliconStudioUIDir)' == '' ">SDL</SiliconStudioUIDir>
     <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">SDL</SiliconStudioUI>
   </PropertyGroup>
 </Project>

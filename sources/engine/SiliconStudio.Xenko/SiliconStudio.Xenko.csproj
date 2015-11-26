@@ -21,9 +21,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-    <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Drawing" />
-    <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Windows.Forms" />
-    <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Drawing" />
+    <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
+    <Reference Condition="$(SiliconStudioUI.Contains('SDL'))" Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
     </Reference>

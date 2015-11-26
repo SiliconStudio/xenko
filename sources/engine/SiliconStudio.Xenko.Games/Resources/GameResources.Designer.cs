@@ -59,8 +59,8 @@ namespace SiliconStudio.Xenko.Games.Resources {
                 resourceCulture = value;
             }
         }
-        
-#if !SILICONSTUDIO_UI_SDL_ONLY
+
+#if SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>
