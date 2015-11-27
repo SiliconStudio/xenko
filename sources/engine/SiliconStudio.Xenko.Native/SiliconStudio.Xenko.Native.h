@@ -2,12 +2,6 @@
 
 #include <NativeMath.h>
 
-#ifdef WIN_EXPORT
-#define EXPORT __declspec(dllexport) 
-#else
-#define EXPORT
-#endif
-
 #pragma pack(push, 4)
 typedef struct Vector2
 {

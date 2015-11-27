@@ -1,0 +1,3 @@
+LIBRARY SiliconStudio.Xenko.Native.dll
+EXPORTS
+UpdateBufferValuesFromElementInfoNative

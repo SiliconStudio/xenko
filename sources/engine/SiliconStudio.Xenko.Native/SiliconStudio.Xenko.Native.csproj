@@ -37,6 +37,7 @@
   <ItemGroup>
     <None Include="SiliconStudio.Xenko.Native.h" />
     <None Include="SpriteBatchNative.c" />
+	<None Include="symbols.def" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
