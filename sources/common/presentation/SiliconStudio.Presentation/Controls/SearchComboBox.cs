@@ -151,7 +151,7 @@ namespace SiliconStudio.Presentation.Controls
             if (listBox == null)
                 throw new InvalidOperationException($"A part named '{ListBoxPartName}' must be present in the ControlTemplate, and must be of type '{nameof(ListBox)}'.");
             
-            editableTextBox.LostFocus += EditableTextBoxLostFocus;
+            editableTextBox.LostKeyboardFocus += EditableTextBoxLostFocus;
             editableTextBox.PreviewKeyDown += EditableTextBoxPreviewKeyDown;
             editableTextBox.PreviewKeyUp += EditableTextBoxPreviewKeyUp;
             editableTextBox.Validated += EditableTextBoxValidated;
@@ -176,6 +176,7 @@ namespace SiliconStudio.Presentation.Controls
                 IsAlternative = true;
             }
         }
+
         protected override void OnKeyUp(KeyEventArgs e)
         {
             base.OnKeyUp(e);
