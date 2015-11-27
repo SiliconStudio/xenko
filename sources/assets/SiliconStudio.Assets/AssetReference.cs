@@ -4,7 +4,6 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Assets
 {
@@ -13,7 +12,6 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    [Obsolete("This type of reference will be removed in a future version")]
     public abstract class AssetReference : ITypedContentReference, IEquatable<AssetReference>
     {
         private readonly UFile location;
