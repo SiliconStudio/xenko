@@ -5,7 +5,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Xenko.Particles.Spawner;
+using SiliconStudio.Xenko.Particles.Spawners;
 
 namespace SiliconStudio.Xenko.Particles
 {
