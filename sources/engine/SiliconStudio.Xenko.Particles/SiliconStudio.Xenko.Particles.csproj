@@ -28,9 +28,9 @@
     <Compile Include="Materials\ParticleMaterialBase.cs" />
     <Compile Include="Materials\ParticleMaterialTexture.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="Modules\GravityUpdater.cs" />
-    <Compile Include="Modules\OldPositionUpdater.cs" />
-    <Compile Include="Modules\UpdaterBase.cs" />
+    <Compile Include="Updaters\UpdaterGravity.cs" />
+    <Compile Include="Updaters\UpdaterOldPosition.cs" />
+    <Compile Include="Updaters\UpdaterBase.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleEmitter.cs" />
     <Compile Include="ParticleField.cs" />
@@ -77,7 +77,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleEffect.xksl</DependentUpon>
     </Compile>
-    <Compile Include="ShapeBuilders\BillboardBuilder.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilderBillboard.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderBase.cs" />
     <Compile Include="Spawners\SpawnerBase.cs" />
     <Compile Include="Spawners\SpawnerPerFrame.cs" />

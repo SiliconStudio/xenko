@@ -327,7 +327,7 @@ namespace SiliconStudio.Xenko.Particles
         public int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)
         {
             if (ShapeBuilder == null)
-                ShapeBuilder = new BillboardBuilder();
+                ShapeBuilder = new ShapeBuilderBillboard();
 
             return ShapeBuilder.BuildVertexBuffer(vertexBuffer, invViewX, invViewY, ref remainingCapacity, pool);
         }

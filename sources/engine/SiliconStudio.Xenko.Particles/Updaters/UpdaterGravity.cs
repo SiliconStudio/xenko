@@ -6,9 +6,9 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
-    [DataContract("GravityUpdater")]
+    [DataContract("UpdaterGravity")]
     [Display("Gravity")]
-    public class GravityUpdater : UpdaterBase
+    public class UpdaterGravity : UpdaterBase
     {
         /// <summary>
         /// Direction and magnitude of the gravitational acceleration
@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
         [DataMember(10)]
         public Vector3 GravitationalAcceleration;
 
-        public GravityUpdater()
+        public UpdaterGravity()
         {
             // In case of a conventional standard Earth gravitational acceleration, where Y is up. Change it depending on your needs.
             GravitationalAcceleration = new Vector3(0, -9.80665f, 0);

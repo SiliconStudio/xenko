@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Particles
             /*
             var emitter = new ParticleEmitter();
 
-            emitter.AddModule(new GravityUpdater());
+            emitter.AddModule(new UpdaterGravity());
             emitter.AddModule(new SampleInitializer());
 
             emitters.Add(emitter);

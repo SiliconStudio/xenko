@@ -15,18 +15,18 @@ namespace SiliconStudio.Xenko.Particles
         public const UInt32 Lifetime = 0;
 
         /// <summary>
-        /// Random seed offset used for coupling 1-dimentional random values
+        /// Random seed offset used for coupling 1-dimensional random values
         /// </summary>
         public const UInt32 Offset1A = 1112;
 
         /// <summary>
-        /// Random seed offset used for coupling 2-dimentional random values
+        /// Random seed offset used for coupling 2-dimensional random values
         /// </summary>
         public const UInt32 Offset2A = 2223;
         public const UInt32 Offset2B = 3334;
 
         /// <summary>
-        /// Random seed offset used for coupling 3-dimentional random values
+        /// Random seed offset used for coupling 3-dimensional random values
         /// </summary>
         public const UInt32 Offset3A = 4445;
         public const UInt32 Offset3B = 5556;
