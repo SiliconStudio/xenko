@@ -9,52 +9,31 @@ using System.Linq;
 
 namespace SiliconStudio.Presentation.Collections
 {
-    public class ObservableList<T> : IObservableList<T>, IReadOnlyObservableCollection<T>
+    public class ObservableLinkedList<T> : IObservableCollection<T>, IReadOnlyObservableCollection<T>
     {
-        private readonly List<T> list;
+        private readonly LinkedList<T> list;
 
-        public ObservableList()
+        public ObservableLinkedList()
         {
-            list = new List<T>();
+            list = new LinkedList<T>();
         }
 
-        public ObservableList(IEnumerable<T> collection)
+        public ObservableLinkedList(IEnumerable<T> collection)
         {
-            list = new List<T>(collection);
-        }
-
-        public ObservableList(int capacity)
-        {
-            list = new List<T>(capacity);
-        }
-
-        public T this[int index]
-        {
-            get
-            {
-                return list[index];
-            }
-            set
-            {
-                var oldItem = list[index];
-                list[index] = value;
-                var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, value, oldItem, index);
-                OnCollectionChanged(arg);
-            }
+            list = new LinkedList<T>(collection);
         }
 
         public int Count => list.Count;
 
+        public T First => list.Count > 0 ? list.First.Value : default(T);
+
         public bool IsReadOnly => false;
+
+        public T Last => list.Count > 0 ? list.Last.Value : default(T);
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public event NotifyCollectionChangedEventHandler CollectionChanged;
-
-        public IList ToIList()
-        {
-            return new NonGenericObservableListWrapper<T>(this);
-        }
 
         public IEnumerator<T> GetEnumerator()
         {
@@ -68,15 +47,52 @@ namespace SiliconStudio.Presentation.Collections
 
         public void Add(T item)
         {
-            Insert(Count, item);
+            AddLast(item);
+        }
+
+        public void AddFirst(T item)
+        {
+            list.AddFirst(item);
+            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, 0);
+            OnCollectionChanged(arg);
+        }
+
+        public void AddLast(T item)
+        {
+            list.AddLast(item);
+            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, Count - 1);
+            OnCollectionChanged(arg);
         }
 
         public void AddRange(IEnumerable<T> items)
         {
+            AddRangeLast(items);
+        }
+
+        public void AddRangeFirst(IEnumerable<T> items)
+        {
+            var itemList = items.Reverse().ToList();
+            if (itemList.Count > 0)
+            {
+                foreach (var item in itemList)
+                {
+                    list.AddFirst(item);
+                }
+
+                var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemList, Count - itemList.Count);
+                OnCollectionChanged(arg);
+            }
+        }
+
+        public void AddRangeLast(IEnumerable<T> items)
+        {
             var itemList = items.ToList();
             if (itemList.Count > 0)
             {
-                list.AddRange(itemList);
+                foreach (var item in itemList)
+                {
+                    list.AddLast(item);
+                }
 
                 var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemList, Count - itemList.Count);
                 OnCollectionChanged(arg);
@@ -106,39 +122,29 @@ namespace SiliconStudio.Presentation.Collections
 
         public bool Remove(T item)
         {
-            int index = list.IndexOf(item);
-            if (index != -1)
+            var success = list.Remove(item);
+            if (success)
             {
-                RemoveAt(index);
+                // HACK: getting the correct index requires iterating over the whole collection, instead we use the Reset action
+                var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+                OnCollectionChanged(arg);
             }
-            return index != -1;
+            return success;
         }
 
-        public void RemoveRange(int index, int count)
+        public void RemoveFirst()
         {
-            var oldItems = list.Skip(index).Take(count).ToList();
-            list.RemoveRange(index, count);
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, oldItems, index);
+            var item = list.First;
+            list.RemoveFirst();
+            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, 0);
             OnCollectionChanged(arg);
         }
 
-        public int IndexOf(T item)
+        public void RemoveLast()
         {
-            return list.IndexOf(item);
-        }
-
-        public void Insert(int index, T item)
-        {
-            list.Insert(index, item);
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, index);
-            OnCollectionChanged(arg);
-        }
-
-        public void RemoveAt(int index)
-        {
-            var item = list[index];
-            list.RemoveAt(index);
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index);
+            var item = list.Last;
+            list.RemoveFirst();
+            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, Count);
             OnCollectionChanged(arg);
         }
 
@@ -151,7 +157,7 @@ namespace SiliconStudio.Presentation.Collections
         /// <inheritdoc/>
         public override string ToString()
         {
-            return $"{{ObservableList}} Count = {Count}";
+            return $"{{ObservableLinkedList}} Count = {Count}";
         }
 
         protected void OnCollectionChanged(NotifyCollectionChangedEventArgs arg)

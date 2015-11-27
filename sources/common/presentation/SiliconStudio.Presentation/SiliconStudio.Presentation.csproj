@@ -56,9 +56,12 @@
     <Compile Include="Behaviors\TextBoxCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\TextBoxKeyUpCommandBehavior.cs" />
     <Compile Include="Behaviors\ThumbTransactionalDragBehavior.cs" />
+    <Compile Include="Collections\IObservableList.cs" />
     <Compile Include="Collections\NonGenericObservableCollectionWrapper.cs" />
     <Compile Include="Collections\NonGenericObservableSetWrapper.cs" />
+    <Compile Include="Collections\ObservableLinkedList.cs" />
     <Compile Include="Collections\ObservableSet.cs" />
+    <Compile Include="Collections\ObservableLinkedSet.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
     <Compile Include="Controls\FilteringComboBoxSort.cs" />
     <Compile Include="Controls\MarkdownTextBlock.cs" />

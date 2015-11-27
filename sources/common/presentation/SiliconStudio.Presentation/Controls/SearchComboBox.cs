@@ -25,6 +25,16 @@ namespace SiliconStudio.Presentation.Controls
         private const string ListBoxPartName = "PART_ListBox";
 
         /// <summary>
+        /// Identifies the <see cref="AlternativeCommand"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AlternativeCommandProperty =
+            DependencyProperty.Register("AlternativeCommand", typeof(ICommand), typeof(SearchComboBox));
+        /// <summary>
+        /// Identifies the <see cref="AlternativeModifiers"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty AlternativeModifiersProperty =
+            DependencyProperty.Register("AlternativeModifiers", typeof(ModifierKeys), typeof(SearchComboBox), new PropertyMetadata(ModifierKeys.Shift));
+        /// <summary>
         /// Identifies the <see cref="ClearTextAfterSelection"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ClearTextAfterSelectionProperty =
@@ -34,6 +44,11 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public static readonly DependencyProperty CommandProperty =
             DependencyProperty.Register("Command", typeof(ICommand), typeof(SearchComboBox));
+        /// <summary>
+        /// Identifies the <see cref="IsAlternative"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty IsAlternativeProperty =
+            DependencyProperty.Register("IsAlternative", typeof(bool), typeof(SearchComboBox), new PropertyMetadata(false));
         /// <summary>
         /// Identifies the <see cref="IsDropDownOpen"/> dependency property.
         /// </summary>
@@ -87,6 +102,15 @@ namespace SiliconStudio.Presentation.Controls
         }
 
         /// <summary>
+        /// Gets or Sets the command that is invoked once a selection has been made and <see cref="AlternativeModifiers"/> are active.
+        /// The parameter of the command is the current <see cref="Selector.SelectedValue"/>.
+        /// </summary>
+        public ICommand AlternativeCommand { get { return (ICommand)GetValue(AlternativeCommandProperty); } set { SetValue(AlternativeCommandProperty, value); } }
+        /// <summary>
+        /// 
+        /// </summary>
+        public ModifierKeys AlternativeModifiers { get { return (ModifierKeys)GetValue(AlternativeModifiersProperty); } set { SetValue(AlternativeModifiersProperty, value); } }
+        /// <summary>
         /// Gets or sets whether to clear the text after the selection.
         /// </summary>
         public bool ClearTextAfterSelection { get { return (bool)GetValue(ClearTextAfterSelectionProperty); } set { SetValue(ClearTextAfterSelectionProperty, value); } }
@@ -98,6 +122,10 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets whether to open the dropdown when the control got the focus.
         /// </summary>
         public bool OpenDropDownOnFocus { get { return (bool)GetValue(OpenDropDownOnFocusProperty); } set { SetValue(OpenDropDownOnFocusProperty, value); } }
+        /// <summary>
+        /// 
+        /// </summary>
+        public bool IsAlternative { get { return (bool)GetValue(IsAlternativeProperty); } set { SetValue(IsAlternativeProperty, value); } }
         /// <summary>
         /// Gets or sets whether the drop down is open.
         /// </summary>
@@ -138,6 +166,23 @@ namespace SiliconStudio.Presentation.Controls
                 IsDropDownOpen = true;
             }
             listBoxClicking = false;
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e)
+        {
+            base.OnKeyDown(e);
+            if (IsAlternativeModifier(e.Key))
+            {
+                IsAlternative = true;
+            }
+        }
+        protected override void OnKeyUp(KeyEventArgs e)
+        {
+            base.OnKeyUp(e);
+            if (IsAlternativeModifier(e.Key))
+            {
+                IsAlternative = false;
+            }
         }
 
         private void EditableTextBoxLostFocus(object sender, RoutedEventArgs e)
@@ -275,6 +320,25 @@ namespace SiliconStudio.Presentation.Controls
             clearing = false;
         }
 
+        private bool IsAlternativeModifier(Key key)
+        {
+            switch (AlternativeModifiers)
+            {
+                case ModifierKeys.None:
+                    return false;
+                case ModifierKeys.Alt:
+                    return key == Key.LeftAlt || key == Key.RightAlt;
+                case ModifierKeys.Control:
+                    return key == Key.LeftCtrl || key == Key.RightCtrl;
+                case ModifierKeys.Shift:
+                    return key == Key.LeftShift || key == Key.RightShift;
+                case ModifierKeys.Windows:
+                    return key == Key.LWin || key == Key.RWin;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
         private void ValidateSelection()
         {
             var expression = GetBindingExpression(SelectedIndexProperty);
@@ -283,10 +347,15 @@ namespace SiliconStudio.Presentation.Controls
             expression?.UpdateSource();
             expression = GetBindingExpression(SelectedValueProperty);
             expression?.UpdateSource();
-
-            if (Command != null && Command.CanExecute(listBox.SelectedValue))
+            
+            var commandParameter = listBox.SelectedValue;
+            if (IsAlternative && AlternativeCommand.CanExecute(commandParameter))
             {
-                Command.Execute(listBox.SelectedValue);
+                AlternativeCommand.Execute(commandParameter);
+            }
+            else if (Command != null && Command.CanExecute(commandParameter))
+            {
+                Command.Execute(commandParameter);
             }
         }
     }
