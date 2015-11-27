@@ -22,7 +22,7 @@ namespace SiliconStudio.Assets.Tests.Diff
     [TestFixture()]
     public class TestDiffTemplatingAndMerge
     {
-        [DataContract("TestDiffAsset")]
+        [DataContract()]
         [AssetDescription(".xkdiff2")]
         public class TestDiffAsset : Asset
         {
