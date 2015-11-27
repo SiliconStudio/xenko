@@ -53,59 +53,6 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <returns>Deterministic pseudo-random value between 0 and 1</returns>
         public double GetFloat(UInt32 offset) => (float)GetDouble(offset);
-
-        /// <summary>
-        /// Run some tests to check random distribution, etc.
-        /// </summary>
-        public static void RunTests()
-        {
-            const UInt32 maxValue = 0x00FFFFFF;
-
-            System.Console.Out.WriteLine();
-            System.Console.Out.WriteLine($"Random distribution (step of 0.01) for the first {maxValue:D} seeds");
-            var distribution = new int[100];
-            var seed = new RandomSeed(0);
-            for (UInt32 i = 0; i <= maxValue; i++)
-            {
-                var random = seed.GetDouble(i);
-                var bucket = (int)(random * 100);
-                distribution[bucket]++;
-            }
-
-            foreach (var i in distribution)
-            {
-                System.Console.Out.WriteLine($"{((double)i/(double)maxValue):##.00000} %");
-            }
-
-            var randVals = new double[100];
-
-            System.Console.Out.WriteLine();
-            System.Console.Out.WriteLine($"Random values for seeds 0 - 99, sorted");
-            for (UInt32 i = 0; i < 100; i++)
-            {
-                randVals[i] = seed.GetDouble(i);
-            }
-
-            Array.Sort(randVals);
-            foreach (var randVal in randVals)
-            {
-                System.Console.Out.WriteLine($"{randVal}");
-            }
-
-
-            System.Console.Out.WriteLine();
-            System.Console.Out.WriteLine($"Random values for seeds 10000 - 10099, sorted");
-            for (UInt32 i = 0; i < 100; i++)
-            {
-                randVals[i] = seed.GetDouble(i + 10000);
-            }
-
-            Array.Sort(randVals);
-            foreach (var randVal in randVals)
-            {
-                System.Console.Out.WriteLine($"{randVal}");
-            }
-
-        }
+        
     }
 }

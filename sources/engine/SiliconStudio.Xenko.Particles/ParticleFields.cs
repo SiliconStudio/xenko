@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// Random seed, for generating fast random values in runtime.
         /// </summary>
-        public static readonly ParticleFieldDescription<UInt32> RandSeed        = new ParticleFieldDescription<UInt32>("RandSeed", 1);
+        public static readonly ParticleFieldDescription<RandomSeed> RandomSeed  = new ParticleFieldDescription<RandomSeed>("RandomSeed", new RandomSeed(0));
 
         /// <summary>
         /// Particle remaining lifetime. When it reaches 0, the particle dies.
