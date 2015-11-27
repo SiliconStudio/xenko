@@ -24,6 +24,7 @@
     <Compile Include="Initializers\InitializerBase.cs" />
     <Compile Include="Initializers\InitialPosition.cs" />
     <Compile Include="Initializers\InitialSize.cs" />
+    <Compile Include="Initializers\InitialVelocity.cs" />
     <Compile Include="Initializers\TestInitializer.cs" />
     <Compile Include="Materials\ParticleMaterialBase.cs" />
     <Compile Include="Materials\ParticleMaterialTexture.cs" />

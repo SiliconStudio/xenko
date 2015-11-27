@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Particles
     {
         [DataMember(30)]
         [NotNull]
-        public SpawnerBase ParticleSpawner;
+        public SpawnerBase ParticleSpawner { get; set; }
 
         // Exposing for debug drawing
         [DataMemberIgnore]
@@ -40,6 +40,9 @@ namespace SiliconStudio.Xenko.Particles
 
             Updaters = new TrackingCollection<UpdaterBase>();
             Updaters.CollectionChanged += ModulesChanged;
+
+            ParticleSpawner = new SpawnerPerSecond();
+            
         }
 
         #region Modules
@@ -109,9 +112,28 @@ namespace SiliconStudio.Xenko.Particles
         {
             // Serializer workaround. ParticleSpawner = new SpawnerPerSecond(); cannot be initialized in the constructor because it causes problems with the serialization
             if (ParticleSpawner == null)
+            {
                 ParticleSpawner = new SpawnerPerSecond();
+                ParticleSpawner.SpawnNew(0, this);
+            }
 
-            pool.SetCapacity(ParticleSpawner.GetMaxParticles());
+            if (!Dirty)
+                return;
+
+            Dirty = false;
+
+            if (MaxParticlesOverride > 0)
+            {
+                MaxParticles = MaxParticlesOverride;
+                pool.SetCapacity(MaxParticles);
+                return;
+            }
+
+            var particlesPerSecond = ParticleSpawner.GetMaxParticles();
+
+            MaxParticles = (int)Math.Ceiling(ParticleMaxLifetime * particlesPerSecond);
+
+            pool.SetCapacity(MaxParticles);
         }
 
         /// <summary>
@@ -120,22 +142,42 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>
         private unsafe void MoveAndDeleteParticles(float dt)
         {
-            ParticleSpawner.RemoveOld(dt, pool);
-
-            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.Velocity))
-                return;
-
-            // should this be a separate module?
-            // Position and velocity update only
-            var posField = pool.GetField(ParticleFields.Position);
-            var velField = pool.GetField(ParticleFields.Velocity);
-
-            foreach (var particle in pool)
+            // Hardcoded life update
+            if (pool.FieldExists(ParticleFields.RemainingLife))
             {
-                var pos = ((Vector3*)particle[posField]);
-                var vel = ((Vector3*)particle[velField]);
+                var lifeField = pool.GetField(ParticleFields.RemainingLife);
 
-                *pos += *vel * dt;
+                var particleEnumerator = pool.GetEnumerator();
+                while (particleEnumerator.MoveNext())
+                {
+                    var particle = particleEnumerator.Current;
+                    var life = (float*)particle[lifeField];
+
+                    if (*life > particleMaxLifetime)
+                        *life = particleMaxLifetime;
+
+                    if (*life <= 0 || (*life -= dt) <= 0)
+                    {
+                        particleEnumerator.RemoveCurrent(ref particle);
+                    }
+                }
+            }
+
+            // Hardcoded position and velocity update
+            if (pool.FieldExists(ParticleFields.Position) && pool.FieldExists(ParticleFields.Velocity))
+            {
+                // should this be a separate module?
+                // Position and velocity update only
+                var posField = pool.GetField(ParticleFields.Position);
+                var velField = pool.GetField(ParticleFields.Velocity);
+
+                foreach (var particle in pool)
+                {
+                    var pos = ((Vector3*)particle[posField]);
+                    var vel = ((Vector3*)particle[velField]);
+
+                    *pos += *vel*dt;
+                }
             }
         }
 
@@ -155,12 +197,32 @@ namespace SiliconStudio.Xenko.Particles
         /// Spawns new particles and in general should be one of the last methods to call from the <see cref="Update"/> method
         /// </summary>
         /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>
-        private void SpawnNewParticles(float dt)
+        private unsafe void SpawnNewParticles(float dt)
         {
+            ParticleSpawner.SpawnNew(dt, this);
+
             var capacity = pool.ParticleCapacity;
+            if (capacity <= 0 || pool.AvailableParticles <= 0 || particlesToSpawn <= 0)
+            {
+                particlesToSpawn = 0;
+                return;
+            }
+
             var startIndex = pool.NextFreeIndex % capacity;
 
-            ParticleSpawner.SpawnNew(dt, pool);
+            var lifeField = pool.GetField(ParticleFields.RemainingLife);
+
+
+            particlesToSpawn = Math.Min(pool.AvailableParticles, particlesToSpawn);
+
+
+            for (var i = 0; i < particlesToSpawn; i++)
+            {
+                var particle = pool.AddParticle();
+
+                *((float*)particle[lifeField]) = particleMaxLifetime; // TODO Random
+            }
+            particlesToSpawn = 0;
 
             var endIndex = pool.NextFreeIndex % capacity;
 
@@ -244,6 +306,81 @@ namespace SiliconStudio.Xenko.Particles
                 ShapeBuilder = new BillboardBuilder();
 
             return ShapeBuilder.BuildVertexBuffer(vertexBuffer, invViewX, invViewY, ref remainingCapacity, pool);
+        }
+
+        #endregion
+
+        #region Particles
+        [DataMemberIgnore]
+        private int particlesToSpawn = 0;
+
+        /// <summary>
+        /// Requests the emitter to spawn several new particles.
+        /// The particles are buffered and will be spawned during the <see cref="Update"/> step
+        /// </summary>
+        /// <param name="count"></param>
+        public void EmitParticles(int count)
+        {
+            particlesToSpawn += count;
+        }
+
+        [DataMemberIgnore]
+        public bool Dirty { get; internal set; }
+
+        private int maxParticlesOverride;
+        [DataMember(5)]
+        [Display("Maximum particles")]
+        public int MaxParticlesOverride
+        {
+            get { return maxParticlesOverride; }
+            set
+            {
+                Dirty = true;
+                maxParticlesOverride = value;
+            }
+        }
+
+        [DataMemberIgnore]
+        public int MaxParticles { get; private set; }
+
+        private float particleMinLifetime;
+
+        /// <summary>
+        /// Minimum particle lifetime, in seconds. Should be positive and no bigger than <see cref="ParticleMaxLifetime"/>
+        /// </summary>
+        [DataMember(8)]
+        [Display("Particle's min lifetime")]
+        public float ParticleMinLifetime
+        {
+            get { return particleMinLifetime; }
+            set
+            {
+                if (value <= 0 || value > particleMaxLifetime)
+                    return;
+
+                Dirty = true;
+                particleMinLifetime = value;
+            }
+        }
+
+        private float particleMaxLifetime;
+
+        /// <summary>
+        /// Maximum particle lifetime, in seconds. Should be positive and no smaller than <see cref="ParticleMinLifetime"/>
+        /// </summary>
+        [DataMember(10)]
+        [Display("Particle's max lifetime")]
+        public float ParticleMaxLifetime
+        {
+            get { return particleMaxLifetime; }
+            set
+            {
+                if (value < particleMinLifetime)
+                    return;
+
+                Dirty = true;
+                particleMaxLifetime = value;
+            }
         }
 
         #endregion
