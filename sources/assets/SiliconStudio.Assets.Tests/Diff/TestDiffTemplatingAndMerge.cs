@@ -316,9 +316,8 @@ namespace SiliconStudio.Assets.Tests.Diff
             }
         }
 
-
         [Test]
-        public void TestPackageLoading()
+        public void TestPackageAnalysis()
         {
             var package = new Package();
 
