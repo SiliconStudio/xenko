@@ -79,9 +79,9 @@
     </Compile>
     <Compile Include="ShapeBuilders\BillboardBuilder.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderBase.cs" />
-    <Compile Include="Spawner\SpawnerBase.cs" />
-    <Compile Include="Spawner\SpawnerPerFrame.cs" />
-    <Compile Include="Spawner\SpawnerPerSecond.cs" />
+    <Compile Include="Spawners\SpawnerBase.cs" />
+    <Compile Include="Spawners\SpawnerPerFrame.cs" />
+    <Compile Include="Spawners\SpawnerPerSecond.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
