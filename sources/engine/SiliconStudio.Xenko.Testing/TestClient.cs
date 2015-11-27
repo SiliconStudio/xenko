@@ -16,15 +16,19 @@ namespace SiliconStudio.Xenko.Testing
     {
         protected void SaveTexture(Texture texture, string filename)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             using (var image = texture.GetDataAsImage())
             {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+                //Directly save to disk
                 using (var resultFileStream = File.OpenWrite(filename))
                 {
                     image.Save(resultFileStream, ImageFileType.Png);
                 }
-            }
+#elif SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
+                //Send to server and store to disk
 #endif
+            }
+
         }
 
         public async Task StartClient(Game game)
@@ -75,8 +79,8 @@ namespace SiliconStudio.Xenko.Testing
 
             Task.Run(() => socketMessageLayer.MessageLoop());
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            await socketMessageLayer.Send(new TestRegistrationRequest { Cmd = AppDomain.CurrentDomain.FriendlyName, Tester = false, Platform = (int)PlatformType.Windows });
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
+            await socketMessageLayer.Send(new TestRegistrationRequest { Cmd = AppDomain.CurrentDomain.FriendlyName, Tester = false, Platform = (int)Platform.Type });
 #endif
         }
 
