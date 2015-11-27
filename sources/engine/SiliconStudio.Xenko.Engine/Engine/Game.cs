@@ -237,7 +237,8 @@ namespace SiliconStudio.Xenko.Engine
                     if (gameSettings.DefaultGraphicsProfileUsed > 0)
                     {
                         var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                        deviceManager.ShaderProfile = gameSettings.DefaultGraphicsProfileUsed;
+                        if (!deviceManager.ShaderProfile.HasValue)
+                            deviceManager.ShaderProfile = gameSettings.DefaultGraphicsProfileUsed;
                     }
                 }
 
