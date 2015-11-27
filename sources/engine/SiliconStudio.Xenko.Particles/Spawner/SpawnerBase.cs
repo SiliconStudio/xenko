@@ -8,9 +8,27 @@ namespace SiliconStudio.Xenko.Particles.Spawner
     [DataContract("SpawnerBase")]
     public abstract class SpawnerBase 
     {
-        public abstract void SpawnNew(float dt, ParticlePool pool);
+        [DataMemberIgnore]
+        protected ParticleEmitter emitter = null;
 
-        public abstract void RemoveOld(float dt, ParticlePool pool);
+        protected void MarkAsDirty()
+        {
+            if (emitter != null)
+            {
+                emitter.Dirty = true;
+            }
+        }
+
+        public virtual void SpawnNew(float dt, ParticleEmitter emitter)
+        {
+            // emitter.EmitParticles(0);
+
+            if (this.emitter != null)
+                return;
+
+            this.emitter = emitter;
+            emitter.Dirty = true;            
+        }
 
         public abstract int GetMaxParticles();
     }
