@@ -37,8 +37,8 @@ namespace SiliconStudio.Core.Mathematics
         /// </summary>
         /// <returns>Deterministic pseudo-random value between 0 and 1</returns>
         public double GetDouble(UInt32 offset)
-        {
-            var dRand = (double)(seed + offset);
+        {           
+            var dRand = (double)(unchecked(seed + offset)); // We want it to overflow
 
             var dotProduct = Math.Cos(dRand) * GelfondConst + Math.Sin(dRand) * GelfondSchneiderConst;
             var denominator = 1e-7 + 256 * dotProduct;
@@ -52,7 +52,7 @@ namespace SiliconStudio.Core.Mathematics
         /// The calculations are still made as doubles to prevent underflow errors.
         /// </summary>
         /// <returns>Deterministic pseudo-random value between 0 and 1</returns>
-        public double GetFloat(UInt32 offset) => (float)GetDouble(offset);
+        public float GetFloat(UInt32 offset) => (float)GetDouble(offset);
         
     }
 }

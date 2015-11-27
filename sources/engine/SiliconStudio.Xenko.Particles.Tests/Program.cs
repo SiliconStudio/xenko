@@ -5,6 +5,7 @@ using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.Initializers;
 using SiliconStudio.Xenko.Particles.Modules;
 
 namespace SiliconStudio.Xenko.Particles.Tests
@@ -405,9 +406,11 @@ namespace SiliconStudio.Xenko.Particles.Tests
             var gravity = new GravityUpdater();
             emitter.Updaters.Add(gravity);
 
-            var initializer = new TestInitializer();
+            var initializer = new InitialPositionSeed();
             emitter.Initializers.Add(initializer);
 
+            var initializer2 = new InitialVelocitySeed();
+            emitter.Initializers.Add(initializer2);
 
             // Fixed delta time for simulating 60 fps
             var totalTime = 0f;

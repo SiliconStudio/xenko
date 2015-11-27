@@ -22,10 +22,9 @@
     <Compile Include="Components\ParticleSystemComponentRenderer.cs" />
     <Compile Include="Components\ParticleSystemProcessor.cs" />
     <Compile Include="Initializers\InitializerBase.cs" />
-    <Compile Include="Initializers\InitialPosition.cs" />
-    <Compile Include="Initializers\InitialSize.cs" />
-    <Compile Include="Initializers\InitialVelocity.cs" />
-    <Compile Include="Initializers\TestInitializer.cs" />
+    <Compile Include="Initializers\InitialPositionSeed.cs" />
+    <Compile Include="Initializers\InitialSizeSeed.cs" />
+    <Compile Include="Initializers\InitialVelocitySeed.cs" />
     <Compile Include="Materials\ParticleMaterialBase.cs" />
     <Compile Include="Materials\ParticleMaterialTexture.cs" />
     <Compile Include="Module.cs" />
@@ -40,6 +39,7 @@
     <Compile Include="ParticleFields.cs" />
     <Compile Include="ParticleModuleBase.cs" />
     <Compile Include="ParticlePool.cs" />
+    <Compile Include="ParticleRandomSeedGenerator.cs" />
     <Compile Include="ParticleSystem.cs" />
     <Compile Include="ParticleUtilities.cs" />
     <Compile Include="ParticleVertex.cs" />

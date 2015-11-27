@@ -29,11 +29,21 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         public readonly ParticlePool pool;
          
+        [DataMemberIgnore]
+        public ParticleRandomSeedGenerator RandomSeedGenerator;
+
         public ParticleEmitter()
         {
             pool = new ParticlePool(0, 0);
             requiredFields = new Dictionary<ParticleFieldDescription, int>();
-            AddRequiredField(ParticleFields.RemainingLife); // TODO Maybe not add the Life field always? Could depend on the Spawner?
+
+            // For now all particles require Life and RandomSeed fields, always
+            AddRequiredField(ParticleFields.RemainingLife);
+            AddRequiredField(ParticleFields.RandomSeed);
+
+            // Create a default RNG based on time. It can be changed later if random seed settings change
+            RandomSeedGenerator = new ParticleRandomSeedGenerator(unchecked ((UInt32)Environment.TickCount));
+
 
             Initializers = new TrackingCollection<InitializerBase>();
             Initializers.CollectionChanged += ModulesChanged;
@@ -211,6 +221,9 @@ namespace SiliconStudio.Xenko.Particles
             }
 
             var lifeField = pool.GetField(ParticleFields.RemainingLife);
+            var randField = pool.GetField(ParticleFields.RandomSeed);
+
+            var lifetimeGap = particleMaxLifetime - particleMinLifetime;
 
             var startIndex = pool.NextFreeIndex % capacity;
 
@@ -218,7 +231,11 @@ namespace SiliconStudio.Xenko.Particles
             {
                 var particle = pool.AddParticle();
 
-                *((float*)particle[lifeField]) = particleMaxLifetime; // TODO Random
+                var randSeed = RandomSeedGenerator.GetNextSeed();
+
+                *((RandomSeed*)particle[randField]) = randSeed;
+
+                *((float*)particle[lifeField]) = particleMinLifetime + lifetimeGap * randSeed.GetFloat(RandomOffset.Lifetime);                
             }
 
             var endIndex = pool.NextFreeIndex % capacity;
@@ -350,7 +367,7 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         public int MaxParticles { get; private set; }
 
-        private float particleMinLifetime;
+        private float particleMinLifetime = 1;
 
         /// <summary>
         /// Minimum particle lifetime, in seconds. Should be positive and no bigger than <see cref="ParticleMaxLifetime"/>
@@ -362,7 +379,7 @@ namespace SiliconStudio.Xenko.Particles
             get { return particleMinLifetime; }
             set
             {
-                if (value <= 0 || value > particleMaxLifetime)
+                if (value <= 0) //  || value > particleMaxLifetime - there is a problem with reading data when MaxLifetime is still not initialized
                     return;
 
                 Dirty = true;
@@ -370,7 +387,7 @@ namespace SiliconStudio.Xenko.Particles
             }
         }
 
-        private float particleMaxLifetime;
+        private float particleMaxLifetime = 1;
 
         /// <summary>
         /// Maximum particle lifetime, in seconds. Should be positive and no smaller than <see cref="ParticleMinLifetime"/>
