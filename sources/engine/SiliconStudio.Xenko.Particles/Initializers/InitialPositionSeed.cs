@@ -1,34 +1,34 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-
-using System;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
-    [DataContract("InitialVelocity")]
-    public class InitialVelocity : InitializerBase
+    [DataContract("InitialPosition")]
+    public class InitialPositionSeed : InitializerBase
     {
-        // TODO Change the RNG to a deterministic generator
-        readonly Random randomNumberGenerator = new Random();
-
-        public InitialVelocity()
+        public InitialPositionSeed()
         {
-            RequiredFields.Add(ParticleFields.Velocity);
+            RequiredFields.Add(ParticleFields.Position);
+            RequiredFields.Add(ParticleFields.RandomSeed);
         }
 
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
-            if (!pool.FieldExists(ParticleFields.Velocity))
+            if (!pool.FieldExists(ParticleFields.Position) || !pool.FieldExists(ParticleFields.RandomSeed))
                 return;
 
-            var velField = pool.GetField(ParticleFields.Velocity);
+            var posField = pool.GetField(ParticleFields.Position);
+            var rndField = pool.GetField(ParticleFields.RandomSeed);
 
-            var leftCorner = VelocityMin * WorldScale;
-            var xAxis = new Vector3(VelocityMax.X * WorldScale - leftCorner.X, 0, 0);
-            var yAxis = new Vector3(0, VelocityMax.Y * WorldScale - leftCorner.Y, 0);
-            var zAxis = new Vector3(0, 0, VelocityMax.Z * WorldScale - leftCorner.Z);
+            var leftCorner = PositionMin * WorldScale;
+            var xAxis = new Vector3(PositionMax.X * WorldScale - leftCorner.X, 0, 0);
+            var yAxis = new Vector3(0, PositionMax.Y * WorldScale - leftCorner.Y, 0);
+            var zAxis = new Vector3(0, 0, PositionMax.Z * WorldScale - leftCorner.Z);
 
             if (!WorldRotation.IsIdentity)
             {
@@ -45,13 +45,15 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             while (i != endIdx)
             {
                 var particle = pool.FromIndex(i);
+                var randSeed = particle.Get(rndField);
 
-                var particleRandVel = leftCorner;
-                particleRandVel += xAxis * (float)randomNumberGenerator.NextDouble();
-                particleRandVel += yAxis * (float)randomNumberGenerator.NextDouble();
-                particleRandVel += zAxis * (float)randomNumberGenerator.NextDouble();
+                var particleRandPos = leftCorner;
 
-                (*((Vector3*)particle[velField])) = particleRandVel;
+                particleRandPos += xAxis * randSeed.GetFloat(RandomOffset.Offset3A + SeedOffset);
+                particleRandPos += yAxis * randSeed.GetFloat(RandomOffset.Offset3B + SeedOffset);
+                particleRandPos += zAxis * randSeed.GetFloat(RandomOffset.Offset3C + SeedOffset);
+
+                (*((Vector3*)particle[posField])) = particleRandPos;
 
                 i = (i + 1) % maxCapacity;
             }
@@ -65,13 +67,17 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [Display("Inheritance")]
         public InheritLocation InheritLocation { get; set; } = InheritLocation.Position | InheritLocation.Rotation | InheritLocation.Scale;
 
+        [DataMember(8)]
+        [Display("Seed offset")]
+        public UInt32 SeedOffset { get; set; } = 0;
+
         [DataMember(30)]
-        [Display("Velocity min")]
-        public Vector3 VelocityMin = new Vector3(-1, 1, -1);
+        [Display("Position min")]
+        public Vector3 PositionMin { get; set; } = new Vector3(-1, 1, -1);
 
         [DataMember(40)]
-        [Display("Velocity max")]
-        public Vector3 VelocityMax = new Vector3(1, 1, 1);
+        [Display("Position max")]
+        public Vector3 PositionMax { get; set; } = new Vector3(1, 1, 1);
 
         [DataMemberIgnore]
         public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
@@ -85,7 +91,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         /// </summary>
         /// <userdoc>The rotation of the entity with regard to its parent</userdoc>
         [DataMember(12)]
-        public Quaternion Rotation = new Quaternion(0, 0, 0, 1);
+        public Quaternion Rotation { get; set; } = new Quaternion(0, 0, 0, 1);
 
         public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
         {
@@ -93,7 +99,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             var hasRot = InheritLocation.HasFlag(Particles.InheritLocation.Rotation);
             var hasScl = InheritLocation.HasFlag(Particles.InheritLocation.Scale);
 
-            WorldScale = (hasScl) ? Scale : 1f;
+            WorldScale    = (hasScl) ? Scale : 1f;
 
             WorldRotation = (hasRot) ? this.Rotation * Rotation : this.Rotation;
 

@@ -9,23 +9,22 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialSize")]
-    public class InitialSize : InitializerBase
+    public class InitialSizeSeed : InitializerBase
     {
-        // TODO Change the RNG to a deterministic generator
-        readonly Random randomNumberGenerator = new Random();
-
-        public InitialSize()
+        public InitialSizeSeed()
         {
             RequiredFields.Add(ParticleFields.Size);
+            RequiredFields.Add(ParticleFields.RandomSeed);
         }
 
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
         {
-            if (!pool.FieldExists(ParticleFields.Size))
+            if (!pool.FieldExists(ParticleFields.Size) || !pool.FieldExists(ParticleFields.RandomSeed))
                 return;
 
             var sizeField = pool.GetField(ParticleFields.Size);
-
+            var rndField = pool.GetField(ParticleFields.RandomSeed);
+            
             var minSize = WorldScale * RandomSize.X;
             var sizeGap = WorldScale * RandomSize.Y - minSize;
 
@@ -33,8 +32,9 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             while (i != endIdx)
             {
                 var particle = pool.FromIndex(i);
+                var randSeed = particle.Get(rndField);
 
-                (*((float*)particle[sizeField])) = ((float)randomNumberGenerator.NextDouble() * sizeGap + minSize); 
+                (*((float*)particle[sizeField])) = minSize + sizeGap * randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset);
 
                 i = (i + 1) % maxCapacity;
             }
@@ -51,10 +51,13 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [Display("Inheritance")]
         public InheritLocation InheritLocation { get; set; } = InheritLocation.Scale;
 
+        [DataMember(8)]
+        [Display("Seed offset")]
+        public UInt32 SeedOffset { get; set; } = 0;
 
         [DataMember(30)]
         [Display("Random size")]
-        public Vector2 RandomSize = new Vector2(0.5f, 1);
+        public Vector2 RandomSize { get; set; } = new Vector2(0.5f, 1);
 
         public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
         {
