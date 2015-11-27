@@ -14,7 +14,7 @@ using SiliconStudio.Xenko.Particles.Initializers;
 using SiliconStudio.Xenko.Particles.Materials;
 using SiliconStudio.Xenko.Particles.Modules;
 using SiliconStudio.Xenko.Particles.ShapeBuilders;
-using SiliconStudio.Xenko.Particles.Spawner;
+using SiliconStudio.Xenko.Particles.Spawners;
 
 namespace SiliconStudio.Xenko.Particles
 {
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Particles
                 return;
             }
 
-            var particlesPerSecond = ParticleSpawner.GetMaxParticles();
+            var particlesPerSecond = ParticleSpawner.GetMaxParticlesPerSecond();
 
             MaxParticles = (int)Math.Ceiling(ParticleMaxLifetime * particlesPerSecond);
 
@@ -201,20 +201,18 @@ namespace SiliconStudio.Xenko.Particles
         {
             ParticleSpawner.SpawnNew(dt, this);
 
+            particlesToSpawn = Math.Min(pool.AvailableParticles, particlesToSpawn);
+
             var capacity = pool.ParticleCapacity;
-            if (capacity <= 0 || pool.AvailableParticles <= 0 || particlesToSpawn <= 0)
+            if (capacity <= 0 || particlesToSpawn <= 0)
             {
                 particlesToSpawn = 0;
                 return;
             }
 
-            var startIndex = pool.NextFreeIndex % capacity;
-
             var lifeField = pool.GetField(ParticleFields.RemainingLife);
 
-
-            particlesToSpawn = Math.Min(pool.AvailableParticles, particlesToSpawn);
-
+            var startIndex = pool.NextFreeIndex % capacity;
 
             for (var i = 0; i < particlesToSpawn; i++)
             {
@@ -222,9 +220,18 @@ namespace SiliconStudio.Xenko.Particles
 
                 *((float*)particle[lifeField]) = particleMaxLifetime; // TODO Random
             }
-            particlesToSpawn = 0;
 
             var endIndex = pool.NextFreeIndex % capacity;
+
+            if (startIndex == endIndex)
+            {
+                // All particles are spawned in the same frame so change indices to 0 .. MAX
+                startIndex = 0;
+                endIndex = capacity;
+                capacity++; // Prevent looping
+            }
+
+            particlesToSpawn = 0;
 
             foreach (var initializer in Initializers)
             {

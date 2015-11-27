@@ -385,6 +385,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
             System.Console.Out.WriteLine($"We can have {(particleCount * numberOfTests * 2)/ totalMSecs} particles on this system with update time <= 1ms on one thread");
 
+            RandomSeed.RunTests();
+
             System.Console.ReadLine();            
         }
 

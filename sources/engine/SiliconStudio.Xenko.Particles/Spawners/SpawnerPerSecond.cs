@@ -4,20 +4,20 @@
 using System;
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Particles.Spawner
+namespace SiliconStudio.Xenko.Particles.Spawners
 {
     /// <summary>
     /// A particle spawner which continuously spawns particles. Number of particles to be spawned is given in seconds.
     /// </summary>
-    [DataContract("SpawnerPerFrame")]
-    [Display("Per frame")]
-    public sealed class SpawnerPerFrame : SpawnerBase
+    [DataContract("SpawnerPerSecond")]
+    [Display("Per second")]
+    public sealed class SpawnerPerSecond : SpawnerBase
     {
         private float carryOver;
 
         private float spawnCount;
         [DataMember(40)]
-        [Display("Particles/frame")]
+        [Display("Particles/second")]
         public float SpawnCount
         {
             get { return spawnCount; }
@@ -28,43 +28,28 @@ namespace SiliconStudio.Xenko.Particles.Spawner
             }
         }
 
-        private float defaultFramerate = 60;
-        [DataMember(45)]
-        [Display("Framerate")]
-        public float Framerate
+        public SpawnerPerSecond()
         {
-            get { return defaultFramerate; }
-            set
-            {
-                MarkAsDirty();
-                defaultFramerate = value;
-            }
+            spawnCount = 100f;
+            carryOver = 0;
         }
 
         public override int GetMaxParticlesPerSecond()
         {
-            return (int)Math.Ceiling(SpawnCount * defaultFramerate);
+            return (int)Math.Ceiling(SpawnCount);
         }
-
-
-        public SpawnerPerFrame()
-        {
-            spawnCount = 1f;
-            carryOver = 0;
-        }
-
+        
         public override void SpawnNew(float dt, ParticleEmitter emitter)
         {
             base.SpawnNew(dt, emitter);
 
-            var toSpawn = spawnCount + carryOver;
+            var toSpawn = spawnCount * dt + carryOver;
 
             var integerPart = (int)Math.Floor(toSpawn);
             carryOver = toSpawn - integerPart;
 
             emitter.EmitParticles(integerPart);
         }
-
     }
 }
 

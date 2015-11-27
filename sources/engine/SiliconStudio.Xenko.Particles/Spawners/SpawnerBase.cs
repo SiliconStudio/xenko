@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Particles.Spawner
+namespace SiliconStudio.Xenko.Particles.Spawners
 {
     [DataContract("SpawnerBase")]
     public abstract class SpawnerBase 
@@ -30,6 +30,6 @@ namespace SiliconStudio.Xenko.Particles.Spawner
             emitter.Dirty = true;            
         }
 
-        public abstract int GetMaxParticles();
+        public abstract int GetMaxParticlesPerSecond();
     }
 }
