@@ -34,7 +34,7 @@ namespace SiliconStudio.Assets.Diff
 
         public Diff3ChangeType ChangeType { get; set; }
 
-        public OverrideType FinalOverride { get; set; }
+        public OverrideType? FinalOverride { get; set; }
 
         public float Weight { get; set; }
 
