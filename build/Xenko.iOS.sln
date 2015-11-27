@@ -9,18 +9,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "50-Engine", "50-Engine", "{
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", "{97978864-95DD-43A6-9159-AA1C881BE99F}"
 	ProjectSection(SolutionItems) = preProject
-		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
-		Xenko.build = Xenko.build
-		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
-		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
-		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
-		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
-		..\Xenko.xkpkg = ..\Xenko.xkpkg
-		..\sources\targets\Xenko.PostSettings.References.targets = ..\sources\targets\Xenko.PostSettings.References.targets
-		..\sources\targets\Xenko.PostSettings.targets = ..\sources\targets\Xenko.PostSettings.targets
-		..\sources\targets\Xenko.PostSettings.User.targets = ..\sources\targets\Xenko.PostSettings.User.targets
-		..\sources\targets\Xenko.PreSettings.targets = ..\sources\targets\Xenko.PreSettings.targets
-		..\sources\targets\Xenko.PreSettings.User.targets = ..\sources\targets\Xenko.PreSettings.User.targets
 		..\doc\ReleaseNotes\ReleaseNotes.md = ..\doc\ReleaseNotes\ReleaseNotes.md
 		..\sources\common\targets\SiliconStudio.Android.CSharp.targets = ..\sources\common\targets\SiliconStudio.Android.CSharp.targets
 		SiliconStudio.GlobalSettings.Local.targets = SiliconStudio.GlobalSettings.Local.targets
@@ -38,6 +26,18 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.Cpp.targets
 		..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets = ..\sources\common\targets\SiliconStudio.WindowsStore.CSharp.targets
 		..\store.config = ..\store.config
+		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
+		Xenko.build = Xenko.build
+		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
+		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
+		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
+		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
+		..\sources\targets\Xenko.PostSettings.References.targets = ..\sources\targets\Xenko.PostSettings.References.targets
+		..\sources\targets\Xenko.PostSettings.targets = ..\sources\targets\Xenko.PostSettings.targets
+		..\sources\targets\Xenko.PostSettings.User.targets = ..\sources\targets\Xenko.PostSettings.User.targets
+		..\sources\targets\Xenko.PreSettings.targets = ..\sources\targets\Xenko.PreSettings.targets
+		..\sources\targets\Xenko.PreSettings.User.targets = ..\sources\targets\Xenko.PreSettings.User.targets
+		..\Xenko.xkpkg = ..\Xenko.xkpkg
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{D2A80DA7-3C1A-4A73-BE85-0B28847EA44C}"
@@ -47,6 +47,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Shared", "Shared", "{D2A80D
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTargets", "{BB2D1F96-E184-4EE2-8677-3EA5E059E1A6}"
 	ProjectSection(SolutionItems) = preProject
+		..\Targets\SiliconStudio.Common.targets = ..\Targets\SiliconStudio.Common.targets
 		..\Targets\Xenko.Android.targets = ..\Targets\Xenko.Android.targets
 		..\Targets\Xenko.iOS.targets = ..\Targets\Xenko.iOS.targets
 		..\Targets\Xenko.targets = ..\Targets\Xenko.targets
@@ -54,7 +55,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTa
 		..\Targets\Xenko.Windows10.targets = ..\Targets\Xenko.Windows10.targets
 		..\Targets\Xenko.WindowsPhone.targets = ..\Targets\Xenko.WindowsPhone.targets
 		..\Targets\Xenko.WindowsStore.targets = ..\Targets\Xenko.WindowsStore.targets
-		..\Targets\SiliconStudio.Common.targets = ..\Targets\SiliconStudio.Common.targets
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine", "..\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj", "{C121A566-555E-42B9-9B0A-1696529A9088}"
@@ -101,8 +101,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko", "..\s
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Input", "..\sources\engine\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj", "{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.iOS", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests.iOS.csproj", "{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.UI", "..\sources\engine\SiliconStudio.Xenko.UI\SiliconStudio.Xenko.UI.csproj", "{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.UI.Tests.iOS", "..\sources\engine\SiliconStudio.Xenko.UI.Tests\SiliconStudio.Xenko.UI.Tests.iOS.csproj", "{E7B1B17F-D04B-4978-B504-A6BB3EE846C9}"
@@ -110,17 +108,21 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Regression", "..\sources\engine\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.csproj", "{D002FEB1-00A6-4AB1-A83F-1F253465E64D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Physics", "..\sources\engine\SiliconStudio.Xenko.Physics\SiliconStudio.Xenko.Physics.csproj", "{DD592516-B341-40FE-9100-1B0FA784A060}"
-	ProjectSection(ProjectDependencies) = postProject
-		{42780CBD-3FE7-48E3-BD5B-59945EA20137} = {42780CBD-3FE7-48E3-BD5B-59945EA20137}
-	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.iOS", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests.iOS.csproj", "{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.10_0.iOS", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.iOS.csproj", "{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.11_0.iOS", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.11_0\SiliconStudio.Xenko.Graphics.Tests.11_0.iOS.csproj", "{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
-		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
+		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{950badd0-ad5a-4f58-87ec-4adaecbea89b}*SharedItemsImports = 13
@@ -520,30 +522,6 @@ Global
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhone.ActiveCfg = Release|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhone.Build.0 = Release|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhone.Deploy.0 = Release|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhone.ActiveCfg = Debug|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhone.Build.0 = Debug|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhone.Deploy.0 = Debug|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhone.ActiveCfg = Release|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhone.Build.0 = Release|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhone.Deploy.0 = Release|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhone.ActiveCfg = Release|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhone.Build.0 = Release|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhone.Deploy.0 = Release|iPhone
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhoneSimulator.Deploy.0 = Debug|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.AppStore|iPhone.ActiveCfg = Release|iPhone
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.AppStore|iPhone.Build.0 = Release|iPhone
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3}.AppStore|iPhone.Deploy.0 = Release|iPhone
@@ -664,6 +642,78 @@ Global
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
 		{9BC63BEC-F305-451D-BB31-262938EA964D}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhone.ActiveCfg = Release|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhone.Build.0 = Release|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhone.Deploy.0 = Release|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhone.Build.0 = Debug|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhone.Deploy.0 = Debug|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhone.ActiveCfg = Release|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhone.Build.0 = Release|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhone.Deploy.0 = Release|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhone.ActiveCfg = Release|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhone.Build.0 = Release|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhone.Deploy.0 = Release|iPhone
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Debug|iPhoneSimulator.Deploy.0 = Debug|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Release|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|iPhone.ActiveCfg = Release|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|iPhone.Build.0 = Release|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|iPhone.Deploy.0 = Release|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|iPhone.Build.0 = Debug|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|iPhone.Deploy.0 = Debug|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|iPhone.ActiveCfg = Release|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|iPhone.Build.0 = Release|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|iPhone.Deploy.0 = Release|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|iPhone.ActiveCfg = Release|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|iPhone.Build.0 = Release|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|iPhone.Deploy.0 = Release|iPhone
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.AppStore|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Debug|iPhoneSimulator.Deploy.0 = Debug|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Release|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.AppStore|iPhone.ActiveCfg = Release|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.AppStore|iPhone.Build.0 = Release|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.AppStore|iPhone.Deploy.0 = Release|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Debug|iPhone.ActiveCfg = Debug|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Debug|iPhone.Build.0 = Debug|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Debug|iPhone.Deploy.0 = Debug|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Release|iPhone.ActiveCfg = Release|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Release|iPhone.Build.0 = Release|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Release|iPhone.Deploy.0 = Release|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Testing|iPhone.ActiveCfg = Release|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Testing|iPhone.Build.0 = Release|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Testing|iPhone.Deploy.0 = Release|iPhone
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.AppStore|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.AppStore|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.AppStore|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Debug|iPhoneSimulator.ActiveCfg = Debug|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Debug|iPhoneSimulator.Build.0 = Debug|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Debug|iPhoneSimulator.Deploy.0 = Debug|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Release|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Release|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Release|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Testing|iPhoneSimulator.ActiveCfg = Release|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Testing|iPhoneSimulator.Build.0 = Release|iPhoneSimulator
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}.Testing|iPhoneSimulator.Deploy.0 = Release|iPhoneSimulator
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -686,11 +736,13 @@ Global
 		{DE042125-C270-4D1D-9270-0759C167567A} = {4C142567-C42B-40F5-B092-798882190209}
 		{72390339-B2A1-4F61-A800-31ED0975B515} = {4C142567-C42B-40F5-B092-798882190209}
 		{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E} = {4C142567-C42B-40F5-B092-798882190209}
-		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC} = {4C142567-C42B-40F5-B092-798882190209}
 		{BB9DEEEF-F18C-40D8-B016-6434CC71B8C3} = {4C142567-C42B-40F5-B092-798882190209}
 		{E7B1B17F-D04B-4978-B504-A6BB3EE846C9} = {4C142567-C42B-40F5-B092-798882190209}
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D} = {4C142567-C42B-40F5-B092-798882190209}
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
 		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
+		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC} = {4C142567-C42B-40F5-B092-798882190209}
+		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9} = {4C142567-C42B-40F5-B092-798882190209}
+		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

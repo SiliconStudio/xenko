@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.ComponentModel;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
@@ -20,64 +21,24 @@ namespace SiliconStudio.Xenko.Animations
         // TODO: Stored in AnimationProcessor?
         internal AnimationClipEvaluator Evaluator;
         internal float[] NodeFactors;
-        internal AnimationComponent AnimationComponent;
         internal TaskCompletionSource<bool> endedTCS;
         internal bool attached; // Is it part of a AnimationComponent.PlayingAnimations collection?
 
-        internal PlayingAnimation(AnimationComponent animationComponent, string name)
+        internal PlayingAnimation(string name, AnimationClip clip) : this()
         {
-            AnimationComponent = animationComponent;
-            IsPlaying = true;
-            TimeFactor = 1.0f;
-            BlendOperation = AnimationBlendOperation.LinearBlend;
             Name = name;
-            Clip = animationComponent.Animations[name];
+            Clip = clip;
             RepeatMode = Clip.RepeatMode;
         }
 
-        /// <summary>
-        /// Gets or sets the blend operation.
-        /// </summary>
-        /// <value>
-        /// The blend operation.
-        /// </value>
-        public AnimationBlendOperation BlendOperation { get; set; }
-
-        /// <summary>
-        /// Gets or sets the repeat mode.
-        /// </summary>
-        /// <value>
-        /// The repeat mode.
-        /// </value>
-        public AnimationRepeatMode RepeatMode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the animation weight.
-        /// </summary>
-        /// <value>
-        /// The weight.
-        /// </value>
-        public float Weight { get; set; }
-
-        public string Name { get; private set; }
-
-        public AnimationClip Clip { get; private set; }
-
-        /// <summary>
-        /// Gets or sets the current time.
-        /// </summary>
-        /// <value>
-        /// The current time.
-        /// </value>
-        public TimeSpan CurrentTime { get; set; }
-
-        /// <summary>
-        /// Gets or sets the playback speed factor.
-        /// </summary>
-        /// <value>
-        /// The playback speed factor.
-        /// </value>
-        public float TimeFactor { get; set; }
+        public PlayingAnimation()
+        {
+            Enabled = true;
+            TimeFactor = 1.0f;
+            Weight = 1.0f;
+            BlendOperation = AnimationBlendOperation.LinearBlend;
+            RepeatMode = AnimationRepeatMode.LoopInfinite;
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether animation is playing.
@@ -85,10 +46,79 @@ namespace SiliconStudio.Xenko.Animations
         /// <value>
         ///   <c>true</c> if animation is playing; otherwise, <c>false</c>.
         /// </value>
-        public bool IsPlaying { get; set; }
+        [DefaultValue(true)]
+        [DataMember(10)]
+        public bool Enabled { get; set; }
 
-        // Animation
+        /// <summary>
+        /// Gets or sets the name of this playing animation (optional).
+        /// </summary>
+        /// <userdoc>
+        /// The name of this playing animation (optional).
+        /// </userdoc>
+        [DataMember(20)]
+        public string Name { get; set; }
+
+        /// <summary>
+        /// Gets or sets the animation clip to run
+        /// </summary>
+        /// <userdoc>
+        /// The clip being played.
+        /// </userdoc>
+        [DataMember(30)]
+        public AnimationClip Clip { get; set; }
+
+        /// <summary>
+        /// Gets or sets the repeat mode.
+        /// </summary>
+        /// <value>
+        /// The repeat mode.
+        /// </value>
+        [DataMember(40)]
+        public AnimationRepeatMode RepeatMode { get; set; }
+
+        /// <summary>
+        /// Gets or sets the blend operation.
+        /// </summary>
+        /// <value>
+        /// The blend operation.
+        /// </value>
+        [DataMember(50)]
+        public AnimationBlendOperation BlendOperation { get; set; }
+
+        /// <summary>
+        /// Gets or sets the current time.
+        /// </summary>
+        /// <userdoc>
+        /// The current time when playing the animation.
+        /// </userdoc>
+        [DataMember(60)]
+        public TimeSpan CurrentTime { get; set; }
+
+        /// <summary>
+        /// Gets or sets the playback speed factor.
+        /// </summary>
+        /// <userdoc>
+        /// The playback speed factor.
+        /// </userdoc>
+        [DataMember(70)]
+        [DefaultValue(1.0f)]
+        public float TimeFactor { get; set; }
+
+        /// <summary>
+        /// Gets or sets the animation weight.
+        /// </summary>
+        /// <value>
+        /// The animation weight.
+        /// </value>
+        [DataMember(80)]
+        [DefaultValue(1.0f)]
+        public float Weight { get; set; }
+
+        // Animation (not exposed until stabilized)
+        [DataMemberIgnore]
         public float WeightTarget { get; set; }
+        [DataMemberIgnore]
         public TimeSpan RemainingTime { get; set; }
 
         /// <summary>
@@ -111,51 +141,6 @@ namespace SiliconStudio.Xenko.Animations
             }
 
             return endedTCS.Task;
-        }
-
-        /// <summary>
-        /// Filters the animation to the specified sub-trees given by <see cref="roots"/>.
-        /// </summary>
-        /// <param name="nodes">The node hierarchy.</param>
-        /// <param name="roots">The node roots of sub-trees that should be active (others will be filtered out).</param>
-        public void FilterNodes(ModelNodeDefinition[] nodes, params string[] roots)
-        {
-            // Initialize list of factors (matching nodes list)
-            var nodeFactors = new float[nodes.Length];
-            for (int index = 0; index < nodes.Length; index++)
-            {
-                var node = nodes[index];
-                if (roots.Contains(node.Name)
-                    || (node.ParentIndex != -1 && nodeFactors[node.ParentIndex] == 1.0f))
-                {
-                    nodeFactors[index] = 1.0f;
-                }
-            }
-
-            //Make sure Evaluator is populated
-            //TODO this is not optimal, but since evaluators are being pooled there is no other safe way
-            if (Evaluator == null)
-            {
-                Evaluator = AnimationComponent.Blender.CreateEvaluator(Clip);
-            }
-
-            // Update animation channel factors
-            var blenderChannels = Evaluator.BlenderChannels;
-            var channels = Evaluator.Channels.Items;
-            for (int index = 0; index < blenderChannels.Count; index++)
-            {
-                var blenderChannel = blenderChannels[index];
-
-                // Find node index
-                var nodeName = MeshAnimationUpdater.GetNodeName(blenderChannel.PropertyName);
-                var nodeIndex = nodes.IndexOf(x => x.Name == nodeName);
-
-                if (nodeIndex != -1)
-                {
-                    // Update factor
-                    channels[index].Factor *= nodeFactors[nodeIndex];
-                }
-            }
         }
     }
 }

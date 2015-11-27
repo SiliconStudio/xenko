@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Engine
             Group = EntityGroup.Group0;
         }
 
-        [DataMember(-10), Browsable(false)]
+        [DataMember(-10), Display(Browsable = false)]
         public Guid Id { get; set; }
 
         [DataMember(0)] // Name is serialized

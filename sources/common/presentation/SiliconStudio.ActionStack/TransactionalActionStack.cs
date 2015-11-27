@@ -43,7 +43,7 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
-        public bool TransactionInProgress { get { return TransactionStack.Count > 0; } }
+        public bool TransactionInProgress => TransactionStack.Count > 0;
 
         /// <inheritdoc/>
         public event EventHandler<EventArgs> TransactionStarted;
@@ -103,9 +103,7 @@ namespace SiliconStudio.ActionStack
         {
             var currentTransaction = new List<IActionItem>();
             TransactionStack.Push(currentTransaction);
-            var handler = TransactionStarted;
-            if (handler != null)
-                handler(this, EventArgs.Empty);
+            TransactionStarted?.Invoke(this, EventArgs.Empty);
         }
 
         /// <inheritdoc/>
@@ -120,11 +118,16 @@ namespace SiliconStudio.ActionStack
             if (TransactionStack.Count == 0) throw new InvalidOperationException(Properties.ExceptionMessages.CannotEndNoTransactionInProgress);
 
             var currentTransaction = TransactionStack.Pop();
-            var aggregateActionItem = aggregateActionItems(currentTransaction);
-            Add(aggregateActionItem);
-            var handler = TransactionEnded;
-            if (handler != null)
-                handler(this, new ActionItemsEventArgs<IActionItem>(aggregateActionItem));
+            if (currentTransaction.Count > 0)
+            {
+                var aggregateActionItem = aggregateActionItems(currentTransaction);
+                Add(aggregateActionItem);
+                TransactionEnded?.Invoke(this, new ActionItemsEventArgs<IActionItem>(aggregateActionItem));
+            }
+            else
+            {
+                TransactionDiscarded?.Invoke(this, new ActionItemsEventArgs<IActionItem>(new IActionItem[0]));
+            }
         }
 
         /// <inheritdoc/>
@@ -136,9 +139,7 @@ namespace SiliconStudio.ActionStack
             {
                 item.Undo();
             }
-            var handler = TransactionCancelled;
-            if (handler != null)
-                handler(this, new ActionItemsEventArgs<IActionItem>(currentTransaction.ToArray()));
+            TransactionCancelled?.Invoke(this, new ActionItemsEventArgs<IActionItem>(currentTransaction.ToArray()));
         }
 
         /// <inheritdoc/>
@@ -146,9 +147,7 @@ namespace SiliconStudio.ActionStack
         {
             if (TransactionStack.Count == 0) throw new InvalidOperationException(Properties.ExceptionMessages.CannotEndNoTransactionInProgress);
             var actions = TransactionStack.Pop();
-            var handler = TransactionDiscarded;
-            if (handler != null)
-                handler(this, new ActionItemsEventArgs<IActionItem>(actions.ToArray()));
+            TransactionDiscarded?.Invoke(this, new ActionItemsEventArgs<IActionItem>(actions.ToArray()));
         }
 
         /// <inheritdoc/>

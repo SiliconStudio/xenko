@@ -53,7 +53,7 @@ namespace SiliconStudio.Assets
     [AssetFormatVersion("Assets", PackageFileVersion)]
     [AssetUpgrader("Assets", 0, 1, typeof(RemoveRawImports))]
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
-    public sealed class Package : Asset, IFileSynchronizable
+    public sealed partial class Package : Asset, IFileSynchronizable
     {
         private const int PackageFileVersion = 2;
 
@@ -65,13 +65,6 @@ namespace SiliconStudio.Assets
         private UFile previousPackagePath;
         private bool isDirty;
         private readonly Lazy<PackageUserSettings> settings;
-
-        /// <summary>
-        /// The file extension used for <see cref="Package"/>.
-        /// </summary>
-        public const string PackageFileExtension = ".xkpkg";
-
-        public const string PackageFileExtensions = PackageFileExtension + ";.pdxpkg";
 
         /// <summary>
         /// Occurs when an asset dirty changed occured.
@@ -913,7 +906,7 @@ namespace SiliconStudio.Assets
                 AssetMigration.MigrateAssetIfNeeded(context, assetFile, PackageStore.Instance.DefaultPackageName);
 
                 // Try to load only if asset is not already in the package or assetRef.Asset is null
-                var assetPath = fileUPath.MakeRelative(sourceFolder).GetDirectoryAndFileName();
+                var assetPath = assetFile.AssetPath;
 
                 var assetFullPath = fileUPath.FullPath;
                 var assetContent = assetFile.AssetContent;

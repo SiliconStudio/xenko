@@ -19,5 +19,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         public DefaultEntityComponentProcessorAttribute(Type type) : base(type)
         {
         }
+
+        public ExecutionMode ExecutionMode { get; set; } = ExecutionMode.All;
     }
 } 

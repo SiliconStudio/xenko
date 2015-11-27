@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                 Priority = 0,
                 Scale = Vector2.One,
                 Transparency = 1.0f,
-                Hide = true,
+                Hide = 1,
                 SpriteId = -1,
                 BlendColor = Color.White,
                 BlendType = SpriteStudioBlending.Mix,

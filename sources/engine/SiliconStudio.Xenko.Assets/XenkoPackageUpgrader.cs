@@ -1,6 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.IO;
@@ -15,6 +17,7 @@ using Microsoft.CodeAnalysis.MSBuild;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
@@ -104,6 +107,125 @@ namespace SiliconStudio.Xenko.Assets
 
                 // Make sure all assets are upgraded
                 RunAssetUpgradersUntilVersion(log, dependentPackage, XenkoConfig.PackageName, assetFiles, PackageVersion.Parse("1.4.0-beta"));
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.5.0-alpha01"))
+            {
+                RunAssetUpgradersUntilVersion(log, dependentPackage, XenkoConfig.PackageName, assetFiles, PackageVersion.Parse("1.5.0-alpha01"));
+            }
+
+            if (dependency.Version.MinVersion < new PackageVersion("1.5.0-alpha02"))
+            {
+                // Ideally, this should be part of asset upgrader but we can't upgrade multiple assets at once yet
+
+                var modelAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkm3d").Select(x => x.AsYamlAsset()).ToArray();
+                var animAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkanim").Select(x => x.AsYamlAsset()).ToArray();
+                var sceneAssets = assetFiles.Where(f => f.FilePath.GetFileExtension() == ".xkscene").Select(x => x.AsYamlAsset()).ToArray();
+
+                // Select models with at least two nodes
+                var modelAssetsWithSekeleton = modelAssets
+                    .Where(model => ((IEnumerable)model.DynamicRootNode.Nodes).Cast<object>().Count() > 1).ToArray();
+
+                var animToModelMapping = new Dictionary<PackageLoadingAssetFile.YamlAsset, PackageLoadingAssetFile.YamlAsset>();
+
+                // Find associations in scene
+                foreach (var sceneAsset in sceneAssets)
+                {
+                    var hierarchy = sceneAsset.DynamicRootNode.Hierarchy;
+                    foreach (dynamic entity in hierarchy.Entities)
+                    {
+                        var components = entity.Entity.Components;
+                        var animationComponent = components["AnimationComponent.Key"];
+                        var model = components["ModelComponent.Key"]?.Model;
+                        if (animationComponent != null && model != null)
+                        {
+                            var modelReference = DynamicYamlExtensions.ConvertTo<AssetReference<Asset>>(model);
+                            var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(x => x.Asset.AssetPath == modelReference.Location);
+
+                            foreach (var animation in animationComponent.Animations)
+                            {
+                                var animationReference = DynamicYamlExtensions.ConvertTo<AssetReference<Asset>>(animation.Value);
+                                var animationAsset = animAssets.FirstOrDefault(x => x.Asset.AssetPath == animationReference.Location);
+
+                                if (modelAsset != null && animationAsset != null)
+                                {
+                                    animToModelMapping[animationAsset] = modelAsset;
+                                }
+                            }
+                        }
+                    }
+                }
+
+                // Find associations when sharing same source file
+                foreach (var animationAsset in animAssets)
+                {
+                    // Comparing absolute path of assets
+                    var modelAsset = modelAssetsWithSekeleton.FirstOrDefault(
+                        x => UPath.Combine(animationAsset.Asset.AssetPath.GetParent(), new UFile((string)animationAsset.DynamicRootNode.Source))
+                             == UPath.Combine(x.Asset.AssetPath.GetParent(), new UFile((string)x.DynamicRootNode.Source)));
+                    if (modelAsset != null)
+                    {
+                        animToModelMapping[animationAsset] = modelAsset;
+                    }
+                }
+
+                var modelToSkeletonMapping = new Dictionary<PackageLoadingAssetFile.YamlAsset, PackageLoadingAssetFile.YamlAsset>();
+
+                // For each model asset, create skeleton assets
+                foreach (var modelAsset in modelAssetsWithSekeleton)
+                {
+                    var skeletonAsset = new PackageLoadingAssetFile(modelAsset.Asset.FilePath.GetFullPathWithoutExtension() + " Skeleton.xkskel", modelAsset.Asset.SourceFolder)
+                    {
+                        AssetContent = System.Text.Encoding.UTF8.GetBytes("!Skeleton\r\nId: " + Guid.NewGuid())
+                    };
+
+                    using (var skeletonAssetYaml = skeletonAsset.AsYamlAsset())
+                    {
+                        // Set source
+                        skeletonAssetYaml.DynamicRootNode.Source = modelAsset.DynamicRootNode.Source;
+                        skeletonAssetYaml.DynamicRootNode.SourceHash = modelAsset.DynamicRootNode.SourceHash;
+
+                        // To be on the safe side, mark everything as preserved
+                        var nodes = modelAsset.DynamicRootNode.Nodes;
+                        foreach (var node in nodes)
+                        {
+                            node.Preserve = true;
+                        }
+
+                        skeletonAssetYaml.DynamicRootNode.Nodes = nodes;
+                        skeletonAssetYaml.DynamicRootNode.ScaleImport = modelAsset.DynamicRootNode.ScaleImport;
+
+                        // Update model to point to this skeleton
+                        modelAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAssetYaml.DynamicRootNode.Id), skeletonAsset.AssetPath.MakeRelative(modelAsset.Asset.AssetPath.GetParent()));
+                        modelToSkeletonMapping.Add(modelAsset, skeletonAssetYaml);
+                    }
+
+                    assetFiles.Add(skeletonAsset);
+                }
+
+                // Update animation to point to skeleton, and set preview default model
+                foreach (var animToModelEntry in animToModelMapping)
+                {
+                    var animationAsset = animToModelEntry.Key;
+                    var modelAsset = animToModelEntry.Value;
+
+                    var skeletonAsset = modelToSkeletonMapping[modelAsset];
+                    animationAsset.DynamicRootNode.Skeleton = new AssetReference<Asset>(Guid.Parse((string)skeletonAsset.DynamicRootNode.Id), skeletonAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
+                    animationAsset.DynamicRootNode.PreviewModel = new AssetReference<Asset>(Guid.Parse((string)modelAsset.DynamicRootNode.Id), modelAsset.Asset.AssetPath.MakeRelative(animationAsset.Asset.AssetPath.GetParent()));
+                }
+
+                // Remove Nodes from models
+                foreach (var modelAsset in modelAssets)
+                {
+                    modelAsset.DynamicRootNode.Nodes = DynamicYamlEmpty.Default;
+                    modelAsset.DynamicRootNode["~Base"].Asset.Nodes = DynamicYamlEmpty.Default;
+                }
+
+                // Save back
+                foreach (var modelAsset in modelAssets)
+                    modelAsset.Dispose();
+                foreach (var animAsset in animAssets)
+                    animAsset.Dispose();
             }
 
             return true;
@@ -219,6 +341,14 @@ namespace SiliconStudio.Xenko.Assets
             // Rename variables
             newFileContents = newFileContents.Replace("Paradox", "Xenko");
 
+            // Create fallback for old environment variable
+            var index = newFileContents.IndexOf("<SiliconStudioCurrentPackagePath>", StringComparison.InvariantCulture);
+            if (index >= 0)
+            {
+                newFileContents = newFileContents.Insert(index, "<SiliconStudioXenkoDir Condition=\"'$(SiliconStudioXenkoDir)' == ''\">$(SiliconStudioParadoxDir)</SiliconStudioXenkoDir>\n    ");
+            }
+
+            // Save file if there were any changes
             if (newFileContents != fileContents)
             {
                 File.WriteAllText(projectPath, newFileContents);
@@ -232,22 +362,37 @@ namespace SiliconStudio.Xenko.Assets
             await Task.WhenAll(tasks);
         }
 
+        // TODO: Reverted to simple regex, to upgrade text in .pdxfx's generated code files. Should use syntax analysis again.
         private async Task UpgradeSourceFile(SyntaxTree syntaxTree)
         {
-            var root = await syntaxTree.GetRootAsync();
-            var rewriter = new RenamingRewriter();
-            var newRoot = rewriter.Visit(root);
+            var fileContents = File.ReadAllText(syntaxTree.FilePath);
 
-            if (newRoot != root)
+            // Rename referenced to the package, shaders and effects
+            var newFileContents = fileContents.Replace(".pdx", ".xk");
+
+            // Rename variables
+            newFileContents = newFileContents.Replace("Paradox", "Xenko");
+
+            // Save file if there were any changes
+            if (newFileContents != fileContents)
             {
-                var newSyntaxTree = syntaxTree.WithRootAndOptions(newRoot, syntaxTree.Options);
-                var sourceText = await newSyntaxTree.GetTextAsync();
-
-                using (var textWriter = new StreamWriter(syntaxTree.FilePath))
-                {
-                    sourceText.Write(textWriter);
-                }
+                File.WriteAllText(syntaxTree.FilePath, newFileContents);
             }
+
+            //var root = await syntaxTree.GetRootAsync();
+            //var rewriter = new RenamingRewriter();
+            //var newRoot = rewriter.Visit(root);
+
+            //if (newRoot != root)
+            //{
+            //    var newSyntaxTree = syntaxTree.WithRootAndOptions(newRoot, syntaxTree.Options);
+            //    var sourceText = await newSyntaxTree.GetTextAsync();
+
+            //    using (var textWriter = new StreamWriter(syntaxTree.FilePath))
+            //    {
+            //        sourceText.Write(textWriter);
+            //    }
+            //}
         }
 
         private class RenamingRewriter : CSharpSyntaxRewriter

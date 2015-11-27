@@ -3,7 +3,7 @@ Id: 2382194a-83fb-45fb-96e6-27fae1056e99
 Tags: []
 Source: ../../../../data/tests/Risaltyp_024.ttf
 FontName: Microsoft Sans Serif
-Size: 16
+Size: 16.0
 Style: Regular
 IsDynamic: false
 DefaultCharacter: ' '
@@ -12,7 +12,7 @@ CharacterRegions:
     -   Start: ' '
         End: "\x7F"
 AntiAlias: Grayscale
-NoPremultiply: false
-Spacing: 0
-LineSpacing: 0
+IsNotPremultiply: false
+Spacing: 0.0
+LineSpacing: 0.0
 UseKerning: false

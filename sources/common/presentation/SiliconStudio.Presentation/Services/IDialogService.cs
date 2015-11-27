@@ -1,7 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System.Collections.Generic;
 using System.Windows;
+using SiliconStudio.Presentation.Windows;
 
 namespace SiliconStudio.Presentation.Services
 {
@@ -43,6 +45,39 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="image">The image to display in the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
         MessageBoxResult ShowMessageBox(string message, string caption, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
+        /// <summary>
+        /// Displays a modal message box.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="caption">The title of the message box</param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        MessageBoxResult ShowMessageBox(string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image = MessageBoxImage.None);
+
+        /// <summary>
+        /// Displays a modal message box with an additional checkbox between the message and the buttons.
+        /// The message displayed in the checkbox is the localized string <see cref="Resources.Strings.DontAskMeAgain"/>.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="caption">The title of the message box.</param>
+        /// <param name="isChecked"></param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        MessageBoxResult ShowCheckedMessageBox(string message, string caption, ref bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
+
+        /// <summary>
+        /// Displays a modal message box with an additional checkbox between the message and the buttons.
+        /// </summary>
+        /// <param name="message">The text to display as message in the message box.</param>
+        /// <param name="caption">The title of the message box.</param>
+        /// <param name="checkedMessage">The message displayed in the checkbox.</param>
+        /// <param name="isChecked"></param>
+        /// <param name="buttons">The buttons to display in the message box.</param>
+        /// <param name="image">The image to display in the message box.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
+        MessageBoxResult ShowCheckedMessageBox(string message, string caption, string checkedMessage, ref bool? isChecked, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
 
         /// <summary>
         /// Attempts to close the current window.

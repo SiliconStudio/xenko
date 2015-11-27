@@ -39,7 +39,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, object index = null)
             : base(ownerViewModel, baseName, index)
         {
-            if (modelNode == null) throw new ArgumentNullException("modelNode");
+            if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
             if (baseName == null && index == null)
                 throw new ArgumentException("baseName and index can't be both null.");
 
@@ -57,7 +57,7 @@ namespace SiliconStudio.Presentation.Quantum
                 if (index == null)
                 {
                     var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(memberDescriptor.MemberInfo);
-                    if (displayAttribute != null && !string.IsNullOrEmpty(displayAttribute.Name))
+                    if (!string.IsNullOrEmpty(displayAttribute?.Name))
                     {
                         DisplayName = displayAttribute.Name;
                     }
@@ -123,7 +123,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override int? Order { get { return CustomOrder ?? (SourceNode.Content is MemberContent && Index == null ? ((MemberContent)SourceNode.Content).Member.Order : null); } }
+        public override int? Order => CustomOrder ?? (SourceNode.Content is MemberContent && Index == null ? ((MemberContent)SourceNode.Content).Member.Order : null);
 
         /// <summary>
         /// Gets or sets a custom value for the <see cref="Order"/> of this node.
@@ -131,19 +131,19 @@ namespace SiliconStudio.Presentation.Quantum
         public int? CustomOrder { get { return customOrder; } set { SetValue(ref customOrder, value, "CustomOrder", "Order"); } }
 
         /// <inheritdoc/>
-        public sealed override bool IsPrimitive { get { return isPrimitive; } }
-        
+        public sealed override bool IsPrimitive => isPrimitive;
+
         // To distinguish between lists and items of a list (which have the same TargetNode if the items are primitive types), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a list of primitive objects. 
         /// <inheritdoc/>
-        public sealed override bool HasList { get { return (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable); } }
+        public sealed override bool HasList => (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable);
 
         // To distinguish between dictionaries and items of a dictionary (which have the same TargetNode if the value type is a primitive type), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
         /// <inheritdoc/>
-        public sealed override bool HasDictionary { get { return (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary); } }
+        public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
 
-        internal Guid ModelGuid { get { return targetNode.Guid; } }
+        internal Guid ModelGuid => targetNode.Guid;
 
         private ObservableModelNode ModelNodeParent { get { for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
    
@@ -161,7 +161,7 @@ namespace SiliconStudio.Presentation.Quantum
         public IMemberDescriptor GetMemberDescriptor()
         {
             var memberContent = SourceNode.Content as MemberContent;
-            return memberContent != null ? memberContent.Member : null;
+            return memberContent?.Member;
         }
 
         internal void CheckConsistency()
@@ -472,7 +472,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override Type Type { get { return typeof(T); } }
+        public override Type Type => typeof(T);
 
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }

@@ -204,7 +204,7 @@ namespace SiliconStudio {
 						// Create node
 						ModelNodeDefinition modelNodeDefinition;
 						modelNodeDefinition.ParentIndex = parentIndex;
-						modelNodeDefinition.Transform.Scaling = Vector3::One;
+						modelNodeDefinition.Transform.Scale = Vector3::One;
 						modelNodeDefinition.Name = ConvertToUTF8(nodeNames[pNode]);
 						modelNodeDefinition.Flags = ModelNodeFlags::Default;
 						nodes->Add(modelNodeDefinition);
