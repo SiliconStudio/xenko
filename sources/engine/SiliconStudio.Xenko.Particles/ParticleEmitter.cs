@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
+using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -18,6 +19,13 @@ using SiliconStudio.Xenko.Particles.Spawners;
 
 namespace SiliconStudio.Xenko.Particles
 {
+    public enum EmitterRandomSeedMethod : byte
+    {
+        Time = 0,
+        Fixed = 1,
+        Position = 2,        
+    }
+
     [DataContract("ParticleEmitter")]
     public class ParticleEmitter
     {
@@ -30,7 +38,7 @@ namespace SiliconStudio.Xenko.Particles
         public readonly ParticlePool pool;
          
         [DataMemberIgnore]
-        public ParticleRandomSeedGenerator RandomSeedGenerator;
+        protected ParticleRandomSeedGenerator RandomSeedGenerator;
 
         public ParticleEmitter()
         {
@@ -40,10 +48,6 @@ namespace SiliconStudio.Xenko.Particles
             // For now all particles require Life and RandomSeed fields, always
             AddRequiredField(ParticleFields.RemainingLife);
             AddRequiredField(ParticleFields.RandomSeed);
-
-            // Create a default RNG based on time. It can be changed later if random seed settings change
-            RandomSeedGenerator = new ParticleRandomSeedGenerator(unchecked ((UInt32)Environment.TickCount));
-
 
             Initializers = new TrackingCollection<InitializerBase>();
             Initializers.CollectionChanged += ModulesChanged;
@@ -95,6 +99,11 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> hosting this emitter</param>
         public void Update(float dt, ParticleSystem parentSystem)
         {
+            if (!delayInit)
+            {
+                DelayedInitialization(parentSystem);
+            }
+
             // Update sub-systems
             foreach (var initializer in Initializers)
             {
@@ -113,6 +122,52 @@ namespace SiliconStudio.Xenko.Particles
             ApplyParticleUpdaters(dt);
 
             SpawnNewParticles(dt);
+        }
+
+        [DataMemberIgnore]
+        private bool delayInit = false;
+
+        /// <summary>
+        /// Some parameters should be initialized when the emitter first runs, rather than in the constructor
+        /// </summary>
+        protected unsafe void DelayedInitialization(ParticleSystem parentSystem)
+        {
+            if (delayInit)
+                return;
+
+            delayInit = true;
+
+            // RandomNumberGenerator creation
+            {
+                UInt32 rngSeed = 0; // EmitterRandomSeedMethod.Fixed
+
+                if (randomSeedMethod == EmitterRandomSeedMethod.Time)
+                {
+                    // Stopwatch has maximum possible frequency, so rngSeeds initialized at different times will be different
+                    rngSeed = unchecked((UInt32)Stopwatch.GetTimestamp());
+                }
+                else if (randomSeedMethod == EmitterRandomSeedMethod.Position)
+                {
+                    // Different float have different uint representation so randomness should be good
+                    // The only problem occurs when the three position components are the same
+                    var posX = parentSystem.Translation.X;
+                    var posY = parentSystem.Translation.Y;
+                    var posZ = parentSystem.Translation.Z;
+
+                    var uintX = *((UInt32*)(&posX));
+                    var uintY = *((UInt32*)(&posY));
+                    var uintZ = *((UInt32*)(&posZ));
+
+                    // Add some randomness to prevent glitches when positions are the same (diagonal)
+                    uintX ^= (uintX >> 19);
+                    uintY ^= (uintY >> 8);
+
+                    rngSeed = uintX ^ uintY ^ uintZ;
+                }
+
+                RandomSeedGenerator = new ParticleRandomSeedGenerator(rngSeed);
+            }
+
         }
 
         /// <summary>
@@ -404,6 +459,24 @@ namespace SiliconStudio.Xenko.Particles
 
                 Dirty = true;
                 particleMaxLifetime = value;
+            }
+        }
+
+        private EmitterRandomSeedMethod randomSeedMethod = EmitterRandomSeedMethod.Time;
+
+        [DataMember(11)]
+        [Display("Random seed base")]
+        public EmitterRandomSeedMethod RandomSeedMethod
+        {
+            get
+            {
+                return randomSeedMethod;
+            }
+
+            set
+            {
+                randomSeedMethod = value;
+                delayInit = false;
             }
         }
 
