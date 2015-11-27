@@ -6,11 +6,11 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
-    [DataContract("OldPositionUpdater")]
+    [DataContract("UpdaterOldPosition")]
     [Display("OldPosition")]
-    public class OldPositionUpdater : UpdaterBase
+    public class UpdaterOldPosition : UpdaterBase
     {
-        public OldPositionUpdater()
+        public UpdaterOldPosition()
         {
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.OldPosition);

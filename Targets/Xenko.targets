@@ -84,6 +84,9 @@
         <Reference Include="SiliconStudio.Xenko.Graphics">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Graphics.dll</HintPath>
         </Reference>
+        <Reference Include="SiliconStudio.Xenko.Particles">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Particles.dll</HintPath>
+        </Reference>
         <Reference Include="SiliconStudio.Xenko.Input">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Input.dll</HintPath>
         </Reference>
@@ -130,8 +133,8 @@
       <!-- If building user solutions (not unit tests), provide assembly processor with ProjectReferences paths so that they can be readded to assembly references for serialization module initializer (otherwise .exe don't have real reference on Game assemblies with auto load scene game) -->
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioUnitTest)' != 'true'">$(SiliconStudioAssemblyProcessorOptions) @(_ResolvedProjectReferencePaths->'--add-reference=%22%(Identity)%22',' ')</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(DocumentationFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --docfile="$(DocumentationFile)"</SiliconStudioAssemblyProcessorOptions>
-      <!-- Physics and SpriteStudio assembly is actually hard coded/referenced here, remove once a better system is in place! -->
-      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Physics.dll" --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll" --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
+      <!-- Physics, Particles and SpriteStudio assembly is actually hard coded/referenced here, remove once a better system is in place! -->
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Physics.dll" --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Particles.dll" --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll" --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)"</SiliconStudioAssemblyProcessorCommand>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorCommand) --signkeyfile="$(AssemblyOriginatorKeyFile)" --delete-on-error</SiliconStudioAssemblyProcessorCommand>
     </PropertyGroup>

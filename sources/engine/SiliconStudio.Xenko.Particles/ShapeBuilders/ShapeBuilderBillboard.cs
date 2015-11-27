@@ -8,9 +8,9 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
-    [DataContract("BillboardBuilder")]
+    [DataContract("ShapeBuilderBillboard")]
     [Display("Billboard")]
-    public class BillboardBuilder : ShapeBuilderBase
+    public class ShapeBuilderBillboard : ShapeBuilderBase
     {
         public override unsafe int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity, ParticlePool pool)
         {
