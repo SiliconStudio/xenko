@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets.Analysis
     /// <summary>
     /// Allows to perform asset templating at load time when a base asset could change in one branch, while another branch as already derived a new asset from the base asset.
     /// </summary>
-    internal class PackageAssetTemplatingAnalysis
+    public class PackageAssetTemplatingAnalysis
     {
         // TODO: The current code doesn't perform skip optimization and always tries to merge assets base/derived, even things didn't change from base.
         // In order to support this skip optimization, we will have to add a content hash when loading assets, this hash will be used to check if content has changed.
@@ -42,7 +42,7 @@ namespace SiliconStudio.Assets.Analysis
             foreach (var assetItem in package.Assets)
             {
                 // If an asset doesn't have any base for templating, we can skip this part
-                if (assetItem.Asset.Base == null && (assetItem.Asset.BaseParts == null || assetItem.Asset.BaseParts.Count == 0))
+                if ((assetItem.Asset.Base == null || assetItem.Asset.Base.IsRootImport) && (assetItem.Asset.BaseParts == null || assetItem.Asset.BaseParts.Count == 0))
                 {
                     assetsProcessed.Add(assetItem.Id, assetItem);
                     continue;
@@ -130,12 +130,23 @@ namespace SiliconStudio.Assets.Analysis
 
         private void MergeAsset(AssetItem item, AssetItem newBase)
         {
-            var result = AssetMerge.Merge(item.Asset.Base.Asset, AssetCloner.Clone(item.Asset), newBase, MergePolicy);
-            
-            // TODO: Handle errors...etc.
+            var diff = new AssetDiff(AssetCloner.Clone(item.Asset.Base.Asset), item.Asset, AssetCloner.Clone(newBase.Asset))
+            {
+                UseOverrideMode = true
+            };
 
-            item.Asset = (Asset)result.Asset;
-            item.IsDirty = true;
+            var result = AssetMerge.Merge(diff, MergePolicy);
+            if (result.HasErrors)
+            {
+                result.CopyTo(log);
+            }
+            else
+            {
+                item.Asset = (Asset)result.Asset;
+                // Fixup newbase
+                item.Asset.Base =  new AssetBase(item.Asset.Base.Location, (Asset)diff.Asset2);
+                item.IsDirty = true;
+            }
         }
 
         private Diff3ChangeType MergePolicy(Diff3Node node)

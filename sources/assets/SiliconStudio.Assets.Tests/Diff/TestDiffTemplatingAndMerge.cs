@@ -5,10 +5,11 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using NUnit.Framework;
-
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
@@ -314,5 +315,37 @@ namespace SiliconStudio.Assets.Tests.Diff
                 }
             }
         }
-   }
+
+
+        [Test]
+        public void TestPackageLoading()
+        {
+            var package = new Package();
+
+            var baseAsset = new TestDiffAsset() { Name = "Red", Value = 1 };
+            var baseItem = new AssetItem("base", baseAsset);
+
+            var childAsset = (TestDiffAsset)baseItem.CreateChildAsset();
+            var childItem = new AssetItem("child", childAsset);
+
+            var newBaseAsset = (TestDiffAsset)AssetCloner.Clone(baseAsset);
+            newBaseAsset.Name = "Green";
+            var newBaseItem = new AssetItem("base", newBaseAsset);
+
+            package.Assets.Add(newBaseItem);
+            package.Assets.Add(childItem);
+
+            var session = new PackageSession();
+            session.Packages.Add(package);
+
+            var result = new LoggerResult();
+            var analysis = new PackageAssetTemplatingAnalysis(package, result);
+            analysis.Run();
+
+            Assert.False(result.HasErrors);
+
+            var assetModified = (TestDiffAsset)package.Assets.Find("child").Asset;
+            Assert.AreEqual("Green", assetModified.Name);
+        }
+    }
 }
