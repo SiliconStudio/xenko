@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -151,7 +152,7 @@ namespace SiliconStudio.Presentation.Controls
             if (listBox == null)
                 throw new InvalidOperationException($"A part named '{ListBoxPartName}' must be present in the ControlTemplate, and must be of type '{nameof(ListBox)}'.");
             
-            editableTextBox.LostKeyboardFocus += EditableTextBoxLostFocus;
+            editableTextBox.LostFocus += EditableTextBoxLostFocus;
             editableTextBox.PreviewKeyDown += EditableTextBoxPreviewKeyDown;
             editableTextBox.PreviewKeyUp += EditableTextBoxPreviewKeyUp;
             editableTextBox.Validated += EditableTextBoxValidated;
@@ -184,6 +185,22 @@ namespace SiliconStudio.Presentation.Controls
             {
                 IsAlternative = false;
             }
+        }
+
+        protected override void OnLostKeyboardFocus(KeyboardFocusChangedEventArgs e)
+        {
+            base.OnLostKeyboardFocus(e);
+
+            var el = e.NewFocus as UIElement;
+            if (el != null)
+            {
+                // The user probably clicked (MouseDown) somewhere on our dropdown listbox, so we won't clear to be able to
+                // get the MouseUp event (<see cref="ListBoxMouseUp">).
+                if (listBox.FindVisualChildrenOfType<UIElement>().Contains(el))
+                    return;
+            }
+
+            Clear();
         }
 
         private void EditableTextBoxLostFocus(object sender, RoutedEventArgs e)
