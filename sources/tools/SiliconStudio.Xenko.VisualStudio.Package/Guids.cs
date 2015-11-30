@@ -6,16 +6,16 @@ namespace SiliconStudio.Xenko.VisualStudio
 {
     internal static class GuidList
     {
-        public const string guidXenko_VisualStudio_PackagePkgString = "B0B8FEB1-7B83-43FC-9FC0-70065DDB80A1";
-        public const string guidXenko_VisualStudio_PackageCmdSetString = "9428DB93-BFEA-4115-8D4A-40B047166E61";
+        public const string guidXenko_VisualStudio_PackagePkgString = "b0b8feb1-7b83-43fc-9fc0-70065ddb80a1";
+        public const string guidXenko_VisualStudio_PackageCmdSetString = "9428db93-bfea-4115-8d4a-40b047166e61";
         public const string guidToolWindowPersistanceString = "ddd10155-9f63-4694-95ce-c7ba2d74ad46";
 
-        public const string guidXenko_VisualStudio_ShaderKeyFileGenerator = "B50E6ECE-B11F-477B-A8E1-1E60E0531A53";
+        public const string guidXenko_VisualStudio_ShaderKeyFileGenerator = "b50e6ece-b11f-477b-a8e1-1e60e0531a53";
 
-        public const string guidXenko_VisualStudio_DataCodeGenerator = "22555301-D58A-4D71-9DAB-B2552CC3DE0E";
+        public const string guidXenko_VisualStudio_DataCodeGenerator = "22555301-d58a-4d71-9dab-b2552cc3de0e";
 
         public static readonly Guid guidXenko_VisualStudio_PackageCmdSet = new Guid(guidXenko_VisualStudio_PackageCmdSetString);
 
-        public const string vsContextGuidVCSProject = "{FAE04EC1-301F-11D3-BF4B-00C04F79EFBC}";
+        public const string vsContextGuidVCSProject = "{fae04ec1-301f-11d3-bf4b-00c04f79efbc}";
     };
 }
