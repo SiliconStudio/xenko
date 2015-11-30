@@ -115,40 +115,15 @@ namespace SiliconStudio.Assets.Analysis
 
             // For simple merge (base, newAsset, newBase) => newObject
             // For multi-part prefabs merge (base, newAsset, newBase) + baseParts + newBaseParts => newObject
-            MergeAsset(assetItem, existingAssetBase, existingBaseParts);
+            if (!MergeAsset(assetItem, existingAssetBase, existingBaseParts))
+            {
+                return false;
+            }
 
             assetsProcessed.Add(assetItem.Id, assetItem);
             assetsToProcess.Remove(assetItem.Id);
 
             return true;
-        }
-
-        private void MergeAsset(AssetItem item, AssetItem existingBase, List<AssetItem> existingBaseParts)
-        {
-            var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base?.Asset);
-            var newBase = (Asset)AssetCloner.Clone(existingBase?.Asset);
-            var merger = item.Asset ?? newBase ?? baseCopy;
-
-            var result = merger.Merge(baseCopy, item.Asset, newBase, existingBaseParts);
-
-            if (result.HasErrors)
-            {
-                result.CopyTo(log);
-            }
-            else
-            {
-                item.Asset = (Asset)result.Asset;
-                // Fixup newbase
-                item.Asset.Base =  new AssetBase(item.Asset.Base.Location, newBase);
-                item.IsDirty = true;
-            }
-        }
-
-        private Diff3ChangeType MergePolicy(Diff3Node node)
-        {
-            // TODO: Handle merge with overrides...etc.
-
-            return AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1(node);
         }
 
         private bool ProcessMergeAssetBase(AssetBase assetBase, HashSet<Guid> beingProcessed, out AssetItem existingAsset)
@@ -176,6 +151,27 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
 
+            return true;
+        }
+
+        private bool MergeAsset(AssetItem item, AssetItem existingBase, List<AssetItem> existingBaseParts)
+        {
+            var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base?.Asset);
+            var newBase = (Asset)AssetCloner.Clone(existingBase?.Asset);
+            var merger = item.Asset ?? newBase ?? baseCopy;
+
+            var result = merger.Merge(baseCopy, item.Asset, newBase, existingBaseParts);
+
+            if (result.HasErrors)
+            {
+                result.CopyTo(log);
+                return false;
+            }
+
+            item.Asset = (Asset)result.Asset;
+            // Fixup newbase
+            item.Asset.Base = new AssetBase(item.Asset.Base.Location, newBase);
+            item.IsDirty = true;
             return true;
         }
     }
