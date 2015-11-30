@@ -12,7 +12,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [Display("Billboard")]
     public class ShapeBuilderBillboard : ShapeBuilderBase
     {
-        public override unsafe int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity, ParticlePool pool)
+        public override unsafe int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity,
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticlePool pool)
         {
             var numberOfParticles = Math.Min(remainingCapacity / 4, pool.LivingParticles);
             if (numberOfParticles <= 0)
@@ -41,7 +42,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 vertex.Color = colorField.IsValid() ? (uint)particle.Get(colorField).ToRgba() : 0xFFFFFFFF;
 
-                var centralPos = particle.Get(positionField); // TODO Local vs World emitters
+                var centralPos = particle.Get(positionField);
+                spaceRotation.Rotate(ref centralPos);
+                centralPos = centralPos * spaceScale + spaceTranslation;
 
                 var particleSize = sizeField.IsValid() ? particle.Get(sizeField) : 1f;
                 var unitX = invViewX * particleSize; // TODO Rotation

@@ -26,6 +26,12 @@ namespace SiliconStudio.Xenko.Particles
         Position = 2,        
     }
 
+    public enum EmitterSimulationSpace : byte
+    {
+        World = 0,
+        Local = 1,
+    }
+
     [DataContract("ParticleEmitter")]
     public class ParticleEmitter
     {
@@ -104,15 +110,38 @@ namespace SiliconStudio.Xenko.Particles
                 DelayedInitialization(parentSystem);
             }
 
-            // Update sub-systems
-            foreach (var initializer in Initializers)
+            if (simulationSpace == EmitterSimulationSpace.World)
             {
-                initializer.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
-            }
+                // Update sub-systems
+                foreach (var initializer in Initializers)
+                {
+                    initializer.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                }
 
-            foreach (var updater in Updaters)
+                foreach (var updater in Updaters)
+                {
+                    updater.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                }
+            }
+            else
             {
-                updater.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                var posIdentity = new Vector3(0, 0, 0);
+                var rotIdentity = new Quaternion(0, 0, 0, 1);
+
+                drawPosition = parentSystem.Translation;
+                drawRotation = parentSystem.Rotation;
+                drawScale    = parentSystem.UniformScale;
+
+                // Update sub-systems
+                foreach (var initializer in Initializers)
+                {
+                    initializer.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
+                }
+
+                foreach (var updater in Updaters)
+                {
+                    updater.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
+                }
             }
 
             EnsurePoolCapacity();
@@ -384,7 +413,7 @@ namespace SiliconStudio.Xenko.Particles
             if (ShapeBuilder == null)
                 ShapeBuilder = new ShapeBuilderBillboard();
 
-            return ShapeBuilder.BuildVertexBuffer(vertexBuffer, invViewX, invViewY, ref remainingCapacity, pool);
+            return ShapeBuilder.BuildVertexBuffer(vertexBuffer, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
         }
 
         #endregion
@@ -462,9 +491,34 @@ namespace SiliconStudio.Xenko.Particles
             }
         }
 
-        private EmitterRandomSeedMethod randomSeedMethod = EmitterRandomSeedMethod.Time;
+        private EmitterSimulationSpace simulationSpace = EmitterSimulationSpace.World;
 
         [DataMember(11)]
+        [Display("Simulation Space")]
+        public EmitterSimulationSpace SimulationSpace
+        {
+            get { return simulationSpace; }
+            set
+            {
+                simulationSpace = value;
+
+                if (value == EmitterSimulationSpace.Local)
+                    return;
+
+                drawPosition    = new Vector3(0, 0, 0);
+                drawRotation    = new Quaternion(0, 0, 0, 1);
+                drawScale       = 1f;                    
+            }
+        }
+
+        private Vector3 drawPosition        = new Vector3(0, 0, 0);
+        private Quaternion drawRotation     = new Quaternion(0, 0, 0, 1);
+        private float drawScale             = 1f;
+
+
+        private EmitterRandomSeedMethod randomSeedMethod = EmitterRandomSeedMethod.Time;
+
+        [DataMember(12)]
         [Display("Random seed base")]
         public EmitterRandomSeedMethod RandomSeedMethod
         {

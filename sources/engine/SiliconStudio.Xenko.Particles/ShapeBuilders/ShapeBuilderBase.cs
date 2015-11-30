@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [DataContract("ShapeBuilderBase")]
     public abstract class ShapeBuilderBase
     {
-        public abstract int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity, ParticlePool pool);
+        public abstract int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity, 
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticlePool pool);
     }
 }
