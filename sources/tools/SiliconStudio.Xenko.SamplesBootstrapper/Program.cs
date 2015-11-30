@@ -14,6 +14,8 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
     {
         private static void Main(string[] args)
         {
+            Console.WriteLine(@"Bootstrapping: " + args[0]);
+
             var xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
             var xenkoPkgPath = UPath.Combine(xenkoDir, new UFile("Xenko.xkpkg"));
 
@@ -25,11 +27,14 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
 
             var parameters = new TemplateGeneratorParameters { Session = session.Session };
 
+            var outputPath = UPath.Combine(new UDirectory(xenkoDir), new UDirectory("samplesGenerated"));
+            outputPath = UPath.Combine(outputPath, new UDirectory(args[0]));
+
             var xenkoTemplates = session.Session.Packages.First().Templates;
-            parameters.Description = xenkoTemplates.Last(x => x.Group.StartsWith("Samples"));
-            parameters.Name = "BootstrapTest";
-            parameters.Namespace = "BootstrapTest";
-            parameters.OutputDirectory = Directory.GetCurrentDirectory();
+            parameters.Description = xenkoTemplates.First(x => x.Group.StartsWith("Samples") && x.Id == new Guid(args[1]));
+            parameters.Name = args[0];
+            parameters.Namespace = args[0];
+            parameters.OutputDirectory = outputPath;
             parameters.Logger = logger;
 
             generator.Generate(parameters);
