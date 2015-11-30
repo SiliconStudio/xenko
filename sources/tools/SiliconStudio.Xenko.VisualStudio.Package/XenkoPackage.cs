@@ -384,7 +384,7 @@ namespace SiliconStudio.Xenko.VisualStudio
                 if (xenkoPackageInfo.ExpectedVersion < XenkoCommandsProxy.MinimumVersion)
                 {
                     // The package version is deprecated
-                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not initialize Xenko extension for package with version {0}. Versions earlier than {1} are not supported. Loading latest version {2} instead.\r\n",  xenkoPackageInfo.ExpectedVersion, XenkoCommandsProxy.MinimumVersion, xenkoPackageInfo.LoadedVersion));
+                    generalOutputPane.OutputStringThreadSafe($"Could not initialize Xenko extension for package with version {xenkoPackageInfo.ExpectedVersion}. Versions earlier than {XenkoCommandsProxy.MinimumVersion} are not supported. Loading latest version {xenkoPackageInfo.LoadedVersion} instead.\r\n");
                     generalOutputPane.Activate();
                 }
                 else if (xenkoPackageInfo.LoadedVersion == null)
@@ -399,7 +399,7 @@ namespace SiliconStudio.Xenko.VisualStudio
                 else
                 {
                     // The package version was not found
-                    generalOutputPane.OutputStringThreadSafe(string.Format("Could not find SDK directory for Xenko version {0}. Loading latest version {1} instead.\r\n", xenkoPackageInfo.ExpectedVersion, xenkoPackageInfo.LoadedVersion));
+                    generalOutputPane.OutputStringThreadSafe($"Could not find SDK directory for Xenko version {xenkoPackageInfo.ExpectedVersion}. Loading latest version {xenkoPackageInfo.LoadedVersion} instead.\r\n");
                     generalOutputPane.Activate();
                 }
             }
@@ -428,7 +428,7 @@ namespace SiliconStudio.Xenko.VisualStudio
                 }
                 catch (Exception e)
                 {
-                    generalOutputPane.OutputStringThreadSafe(string.Format("Error loading Xenko SDK: {0}\r\n", e));
+                    generalOutputPane.OutputStringThreadSafe($"Error loading Xenko SDK: {e}\r\n");
                     generalOutputPane.Activate();
 
                     // Unload domain right away
@@ -447,7 +447,7 @@ namespace SiliconStudio.Xenko.VisualStudio
                     }
                     catch (Exception ex)
                     {
-                        generalOutputPane.OutputStringThreadSafe(string.Format("Error Initializing Xenko Language Service: {0}\r\n", ex.InnerException ?? ex));
+                        generalOutputPane.OutputStringThreadSafe($"Error Initializing Xenko Language Service: {ex.InnerException ?? ex}\r\n");
                         generalOutputPane.Activate();
                         errorListProvider.Tasks.Add(new ErrorTask(ex.InnerException ?? ex));
                     }
