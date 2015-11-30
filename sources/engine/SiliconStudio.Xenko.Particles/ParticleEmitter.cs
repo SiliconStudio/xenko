@@ -36,8 +36,10 @@ namespace SiliconStudio.Xenko.Particles
     public class ParticleEmitter
     {
         [DataMember(30)]
-        [NotNull]
-        public SpawnerBase ParticleSpawner { get; set; }
+        [Display("Spawners", Expand = ExpandRule.Always)]
+        [NotNullItems]
+        [MemberCollection(CanReorderItems = true)]
+        public readonly TrackingCollection<SpawnerBase> Spawners;
 
         // Exposing for debug drawing
         [DataMemberIgnore]
@@ -61,8 +63,8 @@ namespace SiliconStudio.Xenko.Particles
             Updaters = new TrackingCollection<UpdaterBase>();
             Updaters.CollectionChanged += ModulesChanged;
 
-            ParticleSpawner = new SpawnerPerSecond();
-            
+            Spawners = new TrackingCollection<SpawnerBase>();
+            Spawners.CollectionChanged += SpawnersChanged;            
         }
 
         #region Modules
@@ -92,8 +94,12 @@ namespace SiliconStudio.Xenko.Particles
                     module?.RequiredFields.ForEach(RemoveRequiredField);
                     break;
             }
-        }      
+        }
 
+        private void SpawnersChanged(object sender, TrackingCollectionChangedEventArgs e)
+        {
+            Dirty = true;
+        }
         #endregion
 
         #region Update
@@ -204,13 +210,6 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         private void EnsurePoolCapacity()
         {
-            // Serializer workaround. ParticleSpawner = new SpawnerPerSecond(); cannot be initialized in the constructor because it causes problems with the serialization
-            if (ParticleSpawner == null)
-            {
-                ParticleSpawner = new SpawnerPerSecond();
-                ParticleSpawner.SpawnNew(0, this);
-            }
-
             if (!Dirty)
                 return;
 
@@ -223,7 +222,12 @@ namespace SiliconStudio.Xenko.Particles
                 return;
             }
 
-            var particlesPerSecond = ParticleSpawner.GetMaxParticlesPerSecond();
+            var particlesPerSecond = 0;
+
+            foreach (var spawnerBase in Spawners)
+            {
+                particlesPerSecond += spawnerBase.GetMaxParticlesPerSecond();
+            }
 
             MaxParticles = (int)Math.Ceiling(ParticleMaxLifetime * particlesPerSecond);
 
@@ -293,14 +297,28 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>
         private unsafe void SpawnNewParticles(float dt)
         {
-            ParticleSpawner.SpawnNew(dt, this);
-
-            particlesToSpawn = Math.Min(pool.AvailableParticles, particlesToSpawn);
+            foreach (var spawnerBase in Spawners)
+            {
+                spawnerBase.SpawnNew(dt, this);
+            }
 
             var capacity = pool.ParticleCapacity;
-            if (capacity <= 0 || particlesToSpawn <= 0)
+            if (capacity <= 0)
             {
                 particlesToSpawn = 0;
+                return;
+            }
+
+            // Sometimes particles will be spawned when there is no available space
+            // In such occasions we have to buffer them and spawn them when space becomes available
+            var waitingToSpawn = particlesToSpawn;
+            particlesToSpawn = Math.Min(pool.AvailableParticles, particlesToSpawn);
+            waitingToSpawn -= particlesToSpawn;
+            waitingToSpawn = Math.Min(waitingToSpawn, capacity);
+
+            if (particlesToSpawn <= 0)
+            {
+                particlesToSpawn = waitingToSpawn;
                 return;
             }
 
@@ -332,7 +350,7 @@ namespace SiliconStudio.Xenko.Particles
                 capacity++; // Prevent looping
             }
 
-            particlesToSpawn = 0;
+            particlesToSpawn = waitingToSpawn;
 
             foreach (var initializer in Initializers)
             {
