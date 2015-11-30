@@ -122,6 +122,20 @@ namespace SiliconStudio.Assets.Diff
         public List<Diff3Node> Items { get; set; }
 
         /// <summary>
+        /// Applies the override calculated by the merge for the current member.
+        /// </summary>
+        public void ApplyOverride()
+        {
+            if (!FinalOverride.HasValue)
+            {
+                return;
+            }
+
+            var member = Asset1Node as DataVisitMember;
+            member?.Parent?.Instance?.SetOverride(member.MemberDescriptor, FinalOverride.Value);
+        }
+
+        /// <summary>
         /// Replace the value for the asset1 for this data node.
         /// </summary>
         /// <param name="dataInstance">The data instance.</param>

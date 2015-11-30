@@ -159,6 +159,34 @@ namespace SiliconStudio.Assets.Tests.Diff
             Assert.AreEqual(2, ((DiffValueTypeB)childAsset.Dynamic).Value);
         }
 
+        [Test]
+        public void TestChangeOverrideToBaseSealed()
+        {
+            var baseAsset = new TestDiffAsset() { Name = "Red", Value = 1 };
+            var newBaseAsset = (TestDiffAsset)AssetCloner.Clone(baseAsset);
+            newBaseAsset.Value = 3;
+
+            var baseItem = new AssetItem("/base", baseAsset);
+            var childAsset = (TestDiffAsset)baseItem.CreateChildAsset();
+
+            // Change base: Name to Base|Sealed
+            // This should result into a reset of the value overriden in child
+
+            // Make New on Name value on first element
+            var objDesc = TypeDescriptorFactory.Default.Find(typeof(TestDiffAsset));
+            var memberDesc = objDesc.Members.First(t => t.Name == "Value");
+            newBaseAsset.SetOverride(memberDesc, OverrideType.Base|OverrideType.Sealed);
+
+            var diff = new AssetDiff(baseAsset, childAsset, newBaseAsset) { UseOverrideMode = true };
+
+            var diffResult = diff.Compute();
+
+            // Check that merged result on Dynamic property is instance from asset2
+            var mergeResult = AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
+            Assert.AreEqual(3, childAsset.Value); // Value is coming from base
+            Assert.AreEqual(OverrideType.Base|OverrideType.Sealed, childAsset.GetOverride(memberDesc)); // Value is coming from base
+        }
+
         /// <summary>
         /// Test diff using <see cref="AssetDiff.UseOverrideMode"/>. Check that lists with ids are correctly handled
         /// </summary>

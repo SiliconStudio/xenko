@@ -138,6 +138,9 @@ namespace SiliconStudio.Assets.Diff
                     // Sets the value on the node
                     if (replaceValue)
                         diff3Node.ReplaceValue(dataInstance, node => node.Asset1Node);
+
+                    // Applies the override for this node
+                    diff3Node.ApplyOverride();
                 }
                 catch (Exception ex)
                 {
