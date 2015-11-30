@@ -51,7 +51,7 @@ namespace SiliconStudio.Assets.Analysis
                 assetsToProcess.Add(assetItem.Id, assetItem);
             }
 
-            // Process assets
+            // Because inheritance can happen into the current package, we need to process base assets first before trying to process child asset
             var beingProcessed = new HashSet<Guid>();
             while (assetsToProcess.Count > 0)
             {
@@ -60,8 +60,9 @@ namespace SiliconStudio.Assets.Analysis
                 // Process templating for assets
                 foreach (var assetIt in assetsToProcess.Values.ToList())
                 {
+                    // Use beingProcessed list to verify that we don't have circular references
                     beingProcessed.Clear();
-                    ProcessMergeAssetItemFromBase(assetIt, beingProcessed);
+                    ProcessMergeAssetItem(assetIt, beingProcessed);
                 }
 
                 // We have to make sure that we have been processing at least one asset during the previous loop
@@ -75,7 +76,7 @@ namespace SiliconStudio.Assets.Analysis
             }
         }
 
-        private bool ProcessMergeAssetItemFromBase(AssetItem assetItem, HashSet<Guid> beingProcessed)
+        private bool ProcessMergeAssetItem(AssetItem assetItem, HashSet<Guid> beingProcessed)
         {
             if (beingProcessed.Contains(assetItem.Id))
             {
@@ -90,7 +91,7 @@ namespace SiliconStudio.Assets.Analysis
             // Process asset base
             if (assetItem.Asset.Base != null)
             {
-                if (!ProcessAssetBase(assetItem.Asset.Base, beingProcessed, out existingAssetBase))
+                if (!ProcessMergeAssetBase(assetItem.Asset.Base, beingProcessed, out existingAssetBase))
                 {
                     return false;
                 }
@@ -104,7 +105,7 @@ namespace SiliconStudio.Assets.Analysis
                 foreach (var assetBase in assetItem.Asset.BaseParts)
                 {
                     AssetItem existingAssetBasePart;
-                    if (!ProcessAssetBase(assetBase, beingProcessed, out existingAssetBasePart))
+                    if (!ProcessMergeAssetBase(assetBase, beingProcessed, out existingAssetBasePart))
                     {
                         return false;
                     }
@@ -156,7 +157,7 @@ namespace SiliconStudio.Assets.Analysis
             return AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1(node);
         }
 
-        private bool ProcessAssetBase(AssetBase assetBase, HashSet<Guid> beingProcessed, out AssetItem existingAsset)
+        private bool ProcessMergeAssetBase(AssetBase assetBase, HashSet<Guid> beingProcessed, out AssetItem existingAsset)
         {
             var baseId = assetBase.Id;
 
@@ -174,7 +175,7 @@ namespace SiliconStudio.Assets.Analysis
                 // If asset is in the same package, we can process it right away
                 if (existingAsset.Package == package)
                 {
-                    if (!ProcessMergeAssetItemFromBase(existingAsset, beingProcessed))
+                    if (!ProcessMergeAssetItem(existingAsset, beingProcessed))
                     {
                         return false;
                     }
