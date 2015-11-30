@@ -114,14 +114,8 @@ namespace SiliconStudio.Assets.Analysis
             }
 
             // For simple merge (base, newAsset, newBase) => newObject
-            if (existingAssetBase != null && existingBaseParts == null)
-            {
-                MergeAsset(assetItem, existingAssetBase);
-            }
-            else
-            {
-                // For multi-part prefabs merge (base, newAsset, newBase) + baseParts + newBaseParts => newObject
-            }
+            // For multi-part prefabs merge (base, newAsset, newBase) + baseParts + newBaseParts => newObject
+            MergeAsset(assetItem, existingAssetBase, existingBaseParts);
 
             assetsProcessed.Add(assetItem.Id, assetItem);
             assetsToProcess.Remove(assetItem.Id);
@@ -129,14 +123,14 @@ namespace SiliconStudio.Assets.Analysis
             return true;
         }
 
-        private void MergeAsset(AssetItem item, AssetItem newBase)
+        private void MergeAsset(AssetItem item, AssetItem existingBase, List<AssetItem> existingBaseParts)
         {
-            var diff = new AssetDiff(AssetCloner.Clone(item.Asset.Base.Asset), item.Asset, AssetCloner.Clone(newBase.Asset))
-            {
-                UseOverrideMode = true
-            };
+            var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base.Asset);
+            var newBase = (Asset)AssetCloner.Clone(existingBase?.Asset);
+            var merger = item.Asset ?? newBase ?? baseCopy;
 
-            var result = AssetMerge.Merge(diff, MergePolicy);
+            var result = merger.Merge(baseCopy, item.Asset, newBase, existingBaseParts);
+
             if (result.HasErrors)
             {
                 result.CopyTo(log);
@@ -145,7 +139,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 item.Asset = (Asset)result.Asset;
                 // Fixup newbase
-                item.Asset.Base =  new AssetBase(item.Asset.Base.Location, (Asset)diff.Asset2);
+                item.Asset.Base =  new AssetBase(item.Asset.Base.Location, newBase);
                 item.IsDirty = true;
             }
         }
