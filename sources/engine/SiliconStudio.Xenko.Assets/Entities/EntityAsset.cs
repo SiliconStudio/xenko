@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     }
 
     [DataContract()]
-    public abstract class EntityAssetBase : Asset, IDiffResolver, IAssetPartContainer
+    public abstract class EntityAssetBase : Asset, IAssetPartContainer
     {
         protected EntityAssetBase()
         {
@@ -86,37 +86,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
 
             return newAsset;
-        }
-
-        void IDiffResolver.BeforeDiff(Asset baseAsset, Asset asset1, Asset asset2)
-        {
-            var baseEntityAsset = (EntityAsset)baseAsset;
-            var entityAsset1 = (EntityAsset)asset1;
-            var entityAsset2 = (EntityAsset)asset2;
-
-            // Let's remap IDs in asset2 (if it comes from a FBX or such, we need to do that)
-            var oldBaseTree = new EntityTreeAsset(baseEntityAsset.Hierarchy);
-            var newBaseTree = new EntityTreeAsset(entityAsset2.Hierarchy);
-
-            var idRemapping = new Dictionary<Guid, Guid>();
-
-            // Try to transfer ID from old base to new base
-            var mergeResult = AssetMerge.Merge(oldBaseTree, newBaseTree, oldBaseTree, node =>
-            {
-                if (typeof(Guid).IsAssignableFrom(node.InstanceType) && node.BaseNode != null && node.Asset1Node != null)
-                {
-                    idRemapping.Add((Guid)node.Asset1Node.Instance, (Guid)node.BaseNode.Instance);
-                }
-
-                return AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1(node);
-            });
-
-            if (mergeResult.HasErrors)
-            {
-                //mergeResult.CopyTo();
-            }
-
-            EntityAnalysis.RemapEntitiesId(entityAsset2.Hierarchy, idRemapping);
         }
 
         public IEnumerable<AssetPart> CollectParts()

@@ -107,7 +107,6 @@
     <Compile Include="Diff\DiffMemberAttribute.cs" />
     <Compile Include="Diff\IDiffKey.cs" />
     <Compile Include="Diff\IDiffProxy.cs" />
-    <Compile Include="Diff\IDiffResolver.cs" />
     <Compile Include="DirectoryHelper.cs" />
     <Compile Include="EmptyAssetUpgrader.cs" />
     <Compile Include="FileVersionManager.cs" />
