@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
 {
     internal class Program
     {
-        private static void Main(string[] args)
+        private static int Main(string[] args)
         {
             Console.WriteLine(@"Bootstrapping: " + args[0]);
 
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
 
             var generator = TemplateSampleGenerator.Default;
 
-            var logger = GlobalLogger.GetLogger("SamplesBootstrapper");
+            var logger = new LoggerResult();
 
             var parameters = new TemplateGeneratorParameters { Session = session.Session };
 
@@ -55,6 +55,10 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
             };
 
             updater.Generate(updateParams);
+
+            Console.WriteLine(logger.ToText());
+
+            return logger.HasErrors ? 1 : 0;
         }
     }
 }
