@@ -160,6 +160,7 @@ namespace SiliconStudio.Assets.Analysis
             var newBase = (Asset)AssetCloner.Clone(existingBase?.Asset);
             var merger = item.Asset ?? newBase ?? baseCopy;
 
+            // Delegates actual merge to the asset implem
             var result = merger.Merge(baseCopy, item.Asset, newBase, existingBaseParts);
 
             if (result.HasErrors)
@@ -169,8 +170,10 @@ namespace SiliconStudio.Assets.Analysis
             }
 
             item.Asset = (Asset)result.Asset;
-            // Fixup newbase
-            item.Asset.Base = new AssetBase(item.Asset.Base.Location, newBase);
+            if (item.Asset.Base != null)
+            {
+                item.Asset.Base = newBase != null ? new AssetBase(item.Asset.Base.Location, newBase) : null;
+            }
             item.IsDirty = true;
             return true;
         }
