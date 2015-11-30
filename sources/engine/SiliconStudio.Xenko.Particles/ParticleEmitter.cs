@@ -110,6 +110,10 @@ namespace SiliconStudio.Xenko.Particles
                 DelayedInitialization(parentSystem);
             }
 
+            drawPosition = parentSystem.Translation;
+            drawRotation = parentSystem.Rotation;
+            drawScale    = parentSystem.UniformScale;
+
             if (simulationSpace == EmitterSimulationSpace.World)
             {
                 // Update sub-systems
@@ -127,10 +131,6 @@ namespace SiliconStudio.Xenko.Particles
             {
                 var posIdentity = new Vector3(0, 0, 0);
                 var rotIdentity = new Quaternion(0, 0, 0, 1);
-
-                drawPosition = parentSystem.Translation;
-                drawRotation = parentSystem.Rotation;
-                drawScale    = parentSystem.UniformScale;
 
                 // Update sub-systems
                 foreach (var initializer in Initializers)
@@ -413,7 +413,12 @@ namespace SiliconStudio.Xenko.Particles
             if (ShapeBuilder == null)
                 ShapeBuilder = new ShapeBuilderBillboard();
 
-            return ShapeBuilder.BuildVertexBuffer(vertexBuffer, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
+            if (simulationSpace == EmitterSimulationSpace.Local)
+                return ShapeBuilder.BuildVertexBuffer(vertexBuffer, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
+
+            var posIdentity = new Vector3(0, 0, 0);
+            var rotIdentity = new Quaternion(0, 0, 0, 1);
+            return ShapeBuilder.BuildVertexBuffer(vertexBuffer, invViewX, invViewY, ref remainingCapacity, ref posIdentity, ref rotIdentity, 1f, pool);
         }
 
         #endregion
@@ -500,21 +505,171 @@ namespace SiliconStudio.Xenko.Particles
             get { return simulationSpace; }
             set
             {
-                simulationSpace = value;
-
-                if (value == EmitterSimulationSpace.Local)
+                if (value == simulationSpace)
                     return;
 
-                drawPosition    = new Vector3(0, 0, 0);
-                drawRotation    = new Quaternion(0, 0, 0, 1);
-                drawScale       = 1f;                    
+                simulationSpace = value;
+
+                SimulationSpaceChanged();
             }
         }
 
-        private Vector3 drawPosition        = new Vector3(0, 0, 0);
-        private Quaternion drawRotation     = new Quaternion(0, 0, 0, 1);
-        private float drawScale             = 1f;
+        private Vector3 drawPosition    = new Vector3(0, 0, 0);
+        private Quaternion drawRotation = new Quaternion(0, 0, 0, 1);
+        private float drawScale         = 1f;
 
+        /// <summary>
+        /// Changes the particle fields whenever the simulation space changes (World to Local or Local to World)
+        /// This is a strictly debug feature so it (probably) won't be invoked during the game (unless changing the simulation space is intended?)
+        /// </summary>
+        private void SimulationSpaceChanged()
+        {
+            if (simulationSpace == EmitterSimulationSpace.Local)
+            {
+                // World -> Local
+
+                var negativeTranslation = -drawPosition;
+                var negativeScale = (drawScale > 0) ? 1f/drawScale : 1f;
+                var negativeRotation = drawRotation;
+                negativeRotation.Conjugate();
+
+                if (pool.FieldExists(ParticleFields.Position))
+                {
+                    var posField = pool.GetField(ParticleFields.Position);
+
+                    foreach (var particle in pool)
+                    {
+                        var position = particle.Get(posField);
+
+                        position = position + negativeTranslation;
+                        position = position * negativeScale;
+
+                        negativeRotation.Rotate(ref position);
+
+                        particle.Set(posField, position);
+                    }
+                }
+
+                if (pool.FieldExists(ParticleFields.OldPosition))
+                {
+                    var posField = pool.GetField(ParticleFields.OldPosition);
+
+                    foreach (var particle in pool)
+                    {
+                        var position = particle.Get(posField);
+
+                        position = position + negativeTranslation;
+                        position = position * negativeScale;
+
+                        negativeRotation.Rotate(ref position);
+
+                        particle.Set(posField, position);
+                    }
+                }
+
+                if (pool.FieldExists(ParticleFields.Velocity))
+                {
+                    var velField = pool.GetField(ParticleFields.Velocity);
+
+                    foreach (var particle in pool)
+                    {
+                        var velocity = particle.Get(velField);
+
+                        velocity = velocity * negativeScale;
+
+                        negativeRotation.Rotate(ref velocity);
+
+                        particle.Set(velField, velocity);
+                    }
+                }
+
+                if (pool.FieldExists(ParticleFields.Size))
+                {
+                    var sizeField = pool.GetField(ParticleFields.Size);
+
+                    foreach (var particle in pool)
+                    {
+                        var size = particle.Get(sizeField);
+
+                        size = size * negativeScale;
+
+                        particle.Set(sizeField, size);
+                    }
+                }
+
+                // TODO Rotation
+
+            }
+            else
+            {
+                // Local -> World
+
+                if (pool.FieldExists(ParticleFields.Position))
+                {
+                    var posField = pool.GetField(ParticleFields.Position);
+
+                    foreach (var particle in pool)
+                    {
+                        var position = particle.Get(posField);
+
+                        drawRotation.Rotate( ref position );
+
+                        position = position * drawScale + drawPosition;
+
+                        particle.Set(posField, position);
+                    }
+                }
+
+                if (pool.FieldExists(ParticleFields.OldPosition))
+                {
+                    var posField = pool.GetField(ParticleFields.OldPosition);
+
+                    foreach (var particle in pool)
+                    {
+                        var position = particle.Get(posField);
+
+                        drawRotation.Rotate(ref position);
+
+                        position = position * drawScale + drawPosition;
+
+                        particle.Set(posField, position);
+                    }
+                }
+
+                if (pool.FieldExists(ParticleFields.Velocity))
+                {
+                    var velField = pool.GetField(ParticleFields.Velocity);
+
+                    foreach (var particle in pool)
+                    {
+                        var velocity = particle.Get(velField);
+
+                        drawRotation.Rotate(ref velocity);
+
+                        velocity = velocity * drawScale;
+
+                        particle.Set(velField, velocity);
+                    }
+                }
+
+                if (pool.FieldExists(ParticleFields.Size))
+                {
+                    var sizeField = pool.GetField(ParticleFields.Size);
+
+                    foreach (var particle in pool)
+                    {
+                        var size = particle.Get(sizeField);
+
+                        size = size * drawScale;
+
+                        particle.Set(sizeField, size);
+                    }
+                }
+
+                // TODO Rotation
+
+            }
+        }
 
         private EmitterRandomSeedMethod randomSeedMethod = EmitterRandomSeedMethod.Time;
 
