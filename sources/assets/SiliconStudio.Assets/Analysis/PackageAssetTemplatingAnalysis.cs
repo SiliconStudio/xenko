@@ -125,7 +125,7 @@ namespace SiliconStudio.Assets.Analysis
 
         private void MergeAsset(AssetItem item, AssetItem existingBase, List<AssetItem> existingBaseParts)
         {
-            var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base.Asset);
+            var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base?.Asset);
             var newBase = (Asset)AssetCloner.Clone(existingBase?.Asset);
             var merger = item.Asset ?? newBase ?? baseCopy;
 

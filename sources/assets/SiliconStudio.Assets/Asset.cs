@@ -143,9 +143,9 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Merge an asset with its base, new instance and new base and parts.
         /// </summary>
-        /// <param name="baseAsset">A copy of the base asset.</param>
+        /// <param name="baseAsset">A copy of the base asset. Can be null if no base asset for newAsset</param>
         /// <param name="newAsset">The asset to merge into</param>
-        /// <param name="newBase">A copy of the next base asset</param>
+        /// <param name="newBase">A copy of the next base asset. Can be null if no base asset for newAsset.</param>
         /// <param name="newBaseParts">A copy of the new base parts</param>
         /// <returns>The result of the merge</returns>
         /// <remarks>The this instance is not used by this method.</remarks>
