@@ -392,6 +392,9 @@ namespace SiliconStudio.Xenko.VisualStudio
                     // No version found
                     generalOutputPane.OutputStringThreadSafe("Could not find Xenko SDK directory.");
                     generalOutputPane.Activate();
+
+                    // Don't try to create any services
+                    return;
                 }
                 else
                 {
