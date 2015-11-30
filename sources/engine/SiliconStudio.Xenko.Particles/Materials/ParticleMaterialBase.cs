@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
 
-            graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.None);
+            graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.DepthRead);
 
             // This is correct. We invert the value to reduce calculations on the shader side.
             Parameters.Set(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);

@@ -22,9 +22,15 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var positionField = pool.GetField(ParticleFields.Position);
             if (!positionField.IsValid())
                 return 0;
-            
-            var colorField = pool.GetField(ParticleFields.Color);
-            var sizeField = pool.GetField(ParticleFields.Size);
+
+            // Check if the draw space is identity - in this case we don't need to transform the position, scale and rotation vectors
+            var trsIdentity = (spaceScale == 1f);
+            trsIdentity = trsIdentity && (spaceTranslation.Equals(new Vector3(0, 0, 0)));
+            trsIdentity = trsIdentity && (spaceRotation.Equals(new Quaternion(0, 0, 0, 1)));
+
+
+            var colorField  = pool.GetField(ParticleFields.Color);
+            var sizeField   = pool.GetField(ParticleFields.Size);
 
 //            var vertices = (ParticleVertex*)vertexBuffer.DataBox.DataPointer;
             var vertices = (ParticleVertex*)vertexBuffer;
@@ -43,10 +49,17 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 vertex.Color = colorField.IsValid() ? (uint)particle.Get(colorField).ToRgba() : 0xFFFFFFFF;
 
                 var centralPos = particle.Get(positionField);
-                spaceRotation.Rotate(ref centralPos);
-                centralPos = centralPos * spaceScale + spaceTranslation;
 
                 var particleSize = sizeField.IsValid() ? particle.Get(sizeField) : 1f;
+
+                if (!trsIdentity)
+                {
+                    spaceRotation.Rotate(ref centralPos);
+                    centralPos = centralPos * spaceScale + spaceTranslation;
+                    particleSize *= spaceScale;
+                    // TODO Rotation
+                }
+
                 var unitX = invViewX * particleSize; // TODO Rotation
                 var unitY = invViewY * particleSize; // TODO Rotation
 
@@ -57,9 +70,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 vertex.TexCoord = new Vector2(0, 0);
                 *vertices++ = vertex;
 
-                // 0f 1f
-                vertex.Position = centralPos - unitX - unitY;
-                vertex.TexCoord = new Vector2(0, 1);
+                // 1f 0f
+                vertex.Position = centralPos + unitX + unitY;
+                vertex.TexCoord = new Vector2(1, 0);
                 *vertices++ = vertex;
 
                 // 1f 1f
@@ -67,9 +80,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 vertex.TexCoord = new Vector2(1, 1);
                 *vertices++ = vertex;
 
-                // 1f 0f
-                vertex.Position = centralPos + unitX + unitY;
-                vertex.TexCoord = new Vector2(1, 0);
+                // 0f 1f
+                vertex.Position = centralPos - unitX - unitY;
+                vertex.TexCoord = new Vector2(0, 1);
                 *vertices++ = vertex;
 
                 remainingCapacity -= 4;
