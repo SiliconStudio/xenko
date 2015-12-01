@@ -55,7 +55,9 @@ namespace SiliconStudio.Xenko.Particles.Spawners
 
         public override void SpawnNew(float dt, ParticleEmitter emitter)
         {
-            base.SpawnNew(dt, emitter);
+            var spawnerState = GetUpdatedState(dt, emitter);
+            if (spawnerState != SpawnerState.Active)
+                return;
 
             var toSpawn = spawnCount + carryOver;
 
