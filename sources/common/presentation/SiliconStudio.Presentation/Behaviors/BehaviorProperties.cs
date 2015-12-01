@@ -97,33 +97,29 @@ namespace SiliconStudio.Presentation.Behaviors
         private static void KeepTaskbarWhenMaximizedChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var window = d as Window;
-            if (window != null)
+            if (window == null)
+                return;
+
+            if (window.IsLoaded)
             {
-                if (window.IsLoaded)
+                var hwnd = new WindowInteropHelper(window).Handle;
+                var source = HwndSource.FromHwnd(hwnd);
+                source?.AddHook(
+                    (IntPtr h, int msg, IntPtr wparam, IntPtr lparam, ref bool handled) => WindowProc(window, h, msg, wparam, lparam, ref handled));
+            }
+            else
+            {
+                window.SourceInitialized += (sender, arg) =>
                 {
                     var hwnd = new WindowInteropHelper(window).Handle;
                     var source = HwndSource.FromHwnd(hwnd);
-                    if (source != null)
-                    {
-                        source.AddHook(WindowProc);
-                    }
-                }
-                else
-                {
-                window.SourceInitialized += (sender, arg) =>
-                    {
-                        var hwnd = new WindowInteropHelper(window).Handle;
-                        var source = HwndSource.FromHwnd(hwnd);
-                        if (source != null)
-                        {
-                            source.AddHook(WindowProc);
-                        }
-                    };
-                }
+                    source?.AddHook(
+                        (IntPtr h, int msg, IntPtr wparam, IntPtr lparam, ref bool handled) => WindowProc(window, h, msg, wparam, lparam, ref handled));
+                };
             }
         }
 
-        private static IntPtr WindowProc(IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
+        private static IntPtr WindowProc(Window window, IntPtr hwnd, int msg, IntPtr wparam, IntPtr lparam, ref bool handled)
         {
             switch (msg)
             {
@@ -139,8 +135,12 @@ namespace SiliconStudio.Presentation.Behaviors
                         NativeHelper.RECT rcMonitorArea = monitorInfo.rcMonitor;
                         mmi.ptMaxPosition.X = Math.Abs(rcWorkArea.Left - rcMonitorArea.Left);
                         mmi.ptMaxPosition.Y = Math.Abs(rcWorkArea.Top - rcMonitorArea.Top);
-                        mmi.ptMaxSize.X = Math.Abs(rcWorkArea.Right - rcWorkArea.Left);
-                        mmi.ptMaxSize.Y = Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top);
+                        var maxWidth = double.IsInfinity(window.MaxWidth) ? int.MaxValue : (int)window.MaxWidth;
+                        var maxHeight = double.IsInfinity(window.MaxHeight) ? int.MaxValue : (int)window.MaxWidth;
+                        mmi.ptMaxSize.X = Math.Min(maxWidth, Math.Abs(rcWorkArea.Right - rcWorkArea.Left));
+                        mmi.ptMaxSize.Y = Math.Min(maxHeight, Math.Abs(rcWorkArea.Bottom - rcWorkArea.Top));
+                        mmi.ptMaxTrackSize.X = mmi.ptMaxSize.X;
+                        mmi.ptMaxTrackSize.Y = mmi.ptMaxSize.Y;
                     }
 
                     Marshal.StructureToPtr(mmi, lparam, true);
