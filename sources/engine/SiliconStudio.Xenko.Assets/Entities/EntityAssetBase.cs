@@ -64,8 +64,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public override MergeResult Merge(Asset baseAsset, Asset newAsset, Asset newBase, List<AssetItem> newBaseParts)
         {
-            var entityMerge = new EntityAssetMerge();
-            return entityMerge.Merge((EntityAssetBase)baseAsset, (EntityAssetBase)newAsset, (EntityAssetBase)newBase, newBaseParts);
+            var entityMerge = new EntityAssetMerge((EntityAssetBase)baseAsset, (EntityAssetBase)newAsset, (EntityAssetBase)newBase, newBaseParts);
+            return entityMerge.Merge();
         }
 
         public IEnumerable<AssetPart> CollectParts()

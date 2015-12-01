@@ -13,20 +13,75 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
+    /// <summary>
+    /// This class is responsible for merging entities (according to base, new base, and new version of the entity)
+    /// </summary>
     internal class EntityAssetMerge
     {
-        public EntityAssetMerge()
+        private readonly Dictionary<Guid, EntityRemapEntry> baseEntities;
+        private readonly Dictionary<Guid, EntityRemapEntry> newBaseEntities;
+        private readonly Dictionary<Guid, EntityRemapEntry> newEntities;
+        private readonly HashSet<Guid> entitiesAddedByNewBase;
+        private readonly HashSet<Guid> entitiesRemovedInNewBase;
+        private readonly HashSet<Entity> entitiesToRemoveFromNew;
+        private readonly EntityAssetBase baseAsset;
+        private readonly EntityAssetBase newAsset;
+        private readonly EntityAssetBase newBase;
+        private readonly List<AssetItem> newBaseParts;
+        private MergeResult result;
+
+        /// <summary>
+        /// Initialize a new instance of <see cref="EntityAssetMerge"/>
+        /// </summary>
+        /// <param name="baseAsset">The base asset used for merge (can be null).</param>
+        /// <param name="newAsset">The new asset (cannot be null)</param>
+        /// <param name="newBase">The new base asset (can be null)</param>
+        /// <param name="newBaseParts">The new base parts (can be null)</param>
+        public EntityAssetMerge(EntityAssetBase baseAsset, EntityAssetBase newAsset, EntityAssetBase newBase, List<AssetItem> newBaseParts)
         {
+            if (newAsset == null) throw new ArgumentNullException(nameof(newAsset));
+
+            // We expect to have at least a baseAsset+newBase or newBaseParts
+            if (baseAsset == null && newBase == null && (newBaseParts == null || newBaseParts.Count == 0)) throw new InvalidOperationException("Cannot merge from base. No bases found");
+
+            this.newAsset = newAsset;
+            this.newBase = newBase;
+            this.newBaseParts = newBaseParts;
+            this.baseAsset = baseAsset;
+            baseEntities = new Dictionary<Guid, EntityRemapEntry>();
+            newEntities = new Dictionary<Guid, EntityRemapEntry>();
+            newBaseEntities = new Dictionary<Guid, EntityRemapEntry>();
+            entitiesAddedByNewBase = new HashSet<Guid>();
+            entitiesRemovedInNewBase = new HashSet<Guid>();
+            entitiesToRemoveFromNew = new HashSet<Entity>(ReferenceEqualityComparer<Entity>.Default);
         }
 
-        public MergeResult Merge(EntityAssetBase baseAsset, EntityAssetBase newAsset, EntityAssetBase newBase, List<AssetItem> newBaseParts)
+        /// <summary>
+        /// Merges the entities.
+        /// </summary>
+        /// <returns>The results of the merge.</returns>
+        public MergeResult Merge()
+        {
+            result = new MergeResult(newAsset);
+
+            PrepareMerge();
+
+            MergeEntities();
+
+            MergeHierarchy();
+
+            return result;
+        }
+
+        /// <summary>
+        /// Prepare the merge by computing internal dictionaries
+        /// </summary>
+        private void PrepareMerge()
         {
             // Prepare mappings for base
-            var baseEntities = new Dictionary<Guid, EntityRemapEntry>();
             MapEntities(baseAsset?.Hierarchy, baseEntities);
 
             // Prepare mapping for new asset
-            var newEntities = new Dictionary<Guid, EntityRemapEntry>();
             MapEntities(newAsset.Hierarchy, newEntities);
             if (newAsset.BaseParts != null)
             {
@@ -38,7 +93,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
 
             // Prepare mapping for new base
-            var newBaseEntities = new Dictionary<Guid, EntityRemapEntry>();
             MapEntities(newBase?.Hierarchy, newBaseEntities);
             if (newBaseParts != null)
             {
@@ -50,7 +104,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
 
             // Compute Entities Added by newbase (not present in base)
-            var entitiesAddedByNewBase = new HashSet<Guid>();
             foreach (var entityFromNewBase in newBaseEntities)
             {
                 var entityId = entityFromNewBase.Value.EntityDesign.Entity.Id;
@@ -61,7 +114,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
 
             // Compute Entities Removed in newbase (present in base)
-            var entitiesRemovedInNewBase = new HashSet<Guid>();
             foreach (var entityFromBase in baseEntities)
             {
                 var entityId = entityFromBase.Value.EntityDesign.Entity.Id;
@@ -72,8 +124,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
 
             // Prebuild the list of entities that we will have to remove
-            var entitiesToRemoveFromNew = new HashSet<Entity>(ReferenceEqualityComparer<Entity>.Default);
-            foreach (var entityEntry in newEntities.ToList())
+            foreach (var entityEntry in newEntities.ToList()) // use ToList so we can modify the dictionary while iterating
             {
                 var entityDesign = entityEntry.Value.EntityDesign;
                 var newEntity = entityDesign.Entity;
@@ -90,11 +141,18 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     }
                 }
             }
+        }
 
-            var result = new MergeResult(newAsset);
+        /// <summary>
+        /// This method will merge all entities without taking into account hierarchy that will be handled by <see cref="MergeHierarchy"/>
+        /// </summary>
+        private void MergeEntities()
+        {
+            // Clear all entities
+            newAsset.Hierarchy.Entities.Clear();
 
             // Visit all existing entities on asset
-            foreach (var entityEntry in newEntities) // use ToList as we can modify the list while iterating
+            foreach (var entityEntry in newEntities)
             {
                 var entityDesign = entityEntry.Value.EntityDesign;
                 var newEntity = entityDesign.Entity;
@@ -131,6 +189,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         // Merge assets
                         var localResult = AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
                         localResult.CopyTo(result);
+
+                        // Merge folder
+                        // If folder was not changed compare to the base, always take the version coming from the new base, otherwise leave the modified version
+                        if (baseRemap.EntityDesign.Design.Folder == entityDesign.Design.Folder)
+                        {
+                            entityDesign.Design.Folder = newBaseRemap.EntityDesign.Design.Folder;
+                        }
                     }
                     else
                     {
@@ -139,36 +204,50 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 }
 
                 // If we have any entities to remove, we need to go through all references and remove them
-                if (entitiesToRemoveFromNew.Count > 0)
+                // Remove references to components that were removed
+                var entityVisitor = new SingleLevelVisitor(typeof(Entity), true);
+                var entityComponentVisitor = new SingleLevelVisitor(typeof(EntityComponent), true);
+
+                DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, newEntity, new List<IDataCustomVisitor>()
                 {
-                    // Remove references to components that were removed
-                    var entityVisitor = new SingleLevelVisitor(typeof(Entity), true);
-                    var entityComponentVisitor = new SingleLevelVisitor(typeof(EntityComponent), true);
+                    entityVisitor,
+                    entityComponentVisitor
+                });
 
-                    DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, newEntity, new List<IDataCustomVisitor>()
+                foreach (var entityToRemove in entitiesToRemoveFromNew)
+                {
+                    List<DataVisitNode> nodes;
+                    if (entityVisitor.References.TryGetValue(entityToRemove.Id, out nodes))
                     {
-                        entityVisitor,
-                        entityComponentVisitor
-                    });
-
-
-                    foreach (var entityToRemove in entitiesToRemoveFromNew)
-                    {
-                        List<DataVisitNode> nodes;
-                        if (entityVisitor.References.TryGetValue(entityToRemove.Id, out nodes))
+                        foreach (var node in nodes)
                         {
-                            foreach (var node in nodes)
-                            {
-                                node.RemoveValue();
-                            }
+                            node.RemoveValue();
                         }
                     }
                 }
+
+                // Add the entity
+                newAsset.Hierarchy.Entities.Add(entityDesign);
             }
 
-            // TODO: Merge entity hierarchy
+            // New entities will get a new guid
+            foreach (var entityIdToAdd in entitiesAddedByNewBase)
+            {
+                var item = newBaseEntities[entityIdToAdd];
 
-            return result;
+                // The new entity added by the newbase
+                var baseId = item.EntityDesign.Entity.Id;
+                item.EntityDesign.Entity.Id = Guid.NewGuid();
+                item.EntityDesign.Design.BaseId = baseId;
+
+                // Add the entity
+                newAsset.Hierarchy.Entities.Add(item.EntityDesign);
+            }
+        }
+
+        private void MergeHierarchy()
+        {
+            // TODO: Merge entity hierarchy
         }
 
         private void MapEntities(EntityHierarchyData hierarchyData, Dictionary<Guid, EntityRemapEntry> entities)
