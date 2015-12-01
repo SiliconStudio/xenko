@@ -20,5 +20,6 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public static readonly ParameterKey<Matrix> MatrixTransform = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<float> AlphaAdditive = ParameterKeys.New<float>();
+        public static readonly ParameterKey<Vector4> ColorScale = ParameterKeys.New<Vector4>();
     }
 }

@@ -25,12 +25,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         protected static Effect GetEffect(GraphicsDevice device)
         {
-            return effect ?? (effect = new Effect(device, ParticleBatch.Bytecode));
+            return effect ?? (effect = new Effect(device, ParticleBatch.BytecodeTex0));
         }
 
         protected static Effect GetEffectSRgb(GraphicsDevice device)
         {
-            return effectSRgb ?? (effectSRgb = new Effect(device, ParticleBatch.BytecodeSRgb));
+            return effectSRgb ?? (effectSRgb = new Effect(device, ParticleBatch.BytecodeSRgbTex0));
         }
 
         protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
