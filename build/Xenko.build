@@ -43,7 +43,7 @@ Example of use:
   -->
   <Target Name="PackageLauncher">
     <ItemGroup>
-      <FilesToDeleteLauncher Include="$(MSBuildThisFileDirectory)SiliconStudio.LauncherApp*.nupkg"/>
+      <FilesToDeleteLauncher Include="$(MSBuildThisFileDirectory)SiliconStudio.Launcher*.nupkg"/>
     </ItemGroup>
 
     <Delete Files="@(FilesToDeleteLauncher)"/>
@@ -113,7 +113,7 @@ Example of use:
   -->
   <Target Name="PublishLauncher">
     <Error Condition="'$(SiliconStudioStoreApiKey)' == ''" Text="Missing env variable SiliconStudioStoreApiKey"/>
-    <Exec Command='"$(NuGetPath)" push SiliconStudio.LauncherApp*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
+    <Exec Command='"$(NuGetPath)" push SiliconStudio.Launcher*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
   </Target>
 
   <!--
