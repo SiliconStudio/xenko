@@ -169,6 +169,6 @@ Example of use:
     <PackageGetVersionTask File="$(XenkoPackage)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
     </PackageGetVersionTask>
-    <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/paradox -s releases/$(XenkoPackageVersion)" />
+    <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/xenko -s releases/$(XenkoPackageVersion)" />
   </Target>
 </Project>
