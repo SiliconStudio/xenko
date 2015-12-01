@@ -89,13 +89,17 @@ namespace SiliconStudio.Xenko.Engine
         {
             get
             {
-                if (modelViewHierarchyDirty)
-                {
-                    ModelUpdated();
-                    modelViewHierarchyDirty = false;
-                }
-
+                CheckSkeleton();
                 return skeleton;
+            }
+        }
+
+        private void CheckSkeleton()
+        {
+            if (modelViewHierarchyDirty)
+            {
+                ModelUpdated();
+                modelViewHierarchyDirty = false;
             }
         }
 
@@ -158,7 +162,7 @@ namespace SiliconStudio.Xenko.Engine
 
         internal void Update(TransformComponent transformComponent, ref Matrix worldMatrix)
         {
-            if (!Enabled || Skeleton == null || model == null)
+            if (!Enabled || model == null)
                 return;
 
             // Check if scaling is negative
@@ -170,10 +174,16 @@ namespace SiliconStudio.Xenko.Engine
                     isScalingNegative = scale.X*scale.Y*scale.Z < 0.0f;
             }
 
-            // Update model view hierarchy node matrices
-            skeleton.NodeTransformations[0].LocalMatrix = worldMatrix;
-            skeleton.NodeTransformations[0].IsScalingNegative = isScalingNegative;
-            skeleton.UpdateMatrices();
+            // Make sure skeleton is up to date
+            CheckSkeleton();
+
+            if (skeleton != null)
+            {
+                // Update model view hierarchy node matrices
+                skeleton.NodeTransformations[0].LocalMatrix = worldMatrix;
+                skeleton.NodeTransformations[0].IsScalingNegative = isScalingNegative;
+                skeleton.UpdateMatrices();
+            }
 
             // Update the bounding sphere / bounding box in world space
             var meshes = Model.Meshes;
@@ -185,7 +195,10 @@ namespace SiliconStudio.Xenko.Engine
             {
                 var meshBoundingSphere = mesh.BoundingSphere;
 
-                skeleton.GetWorldMatrix(mesh.NodeIndex, out world);
+                if (skeleton != null)
+                    skeleton.GetWorldMatrix(mesh.NodeIndex, out world);
+                else
+                    world = worldMatrix;
                 Vector3.TransformCoordinate(ref meshBoundingSphere.Center, ref world, out meshBoundingSphere.Center);
                 BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
 
