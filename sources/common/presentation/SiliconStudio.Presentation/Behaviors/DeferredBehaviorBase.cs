@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.Behaviors
     {
         private bool isClean;
 
-        protected override sealed void OnAttached()
+        protected sealed override void OnAttached()
         {
             base.OnAttached();
 
@@ -34,7 +34,7 @@ namespace SiliconStudio.Presentation.Behaviors
             }
         }
 
-        protected override sealed void OnDetaching()
+        protected sealed override void OnDetaching()
         {
             base.OnDetaching();
 
@@ -58,11 +58,11 @@ namespace SiliconStudio.Presentation.Behaviors
                 return;
 
             isClean = true;
-
+            
             var element = AssociatedObject as FrameworkElement;
             if (element != null)
             {
-                element.Loaded += OnAssociatedObjectLoaded;
+                element.Loaded -= OnAssociatedObjectLoaded;
                 element.Unloaded -= OnAssociatedObjectUnloaded;
             }
 

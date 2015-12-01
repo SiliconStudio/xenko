@@ -14,6 +14,7 @@
                     xmlns:me="clr-namespace:SiliconStudio.Presentation.MarkupExtensions"
                     xmlns:behaviors="clr-namespace:SiliconStudio.Presentation.Behaviors"
                     xmlns:i="http://schemas.microsoft.com/expression/2010/interactivity"
+                    xmlns:interactivity="clr-namespace:SiliconStudio.Presentation.Interactivity"
                     xmlns:commands="clr-namespace:SiliconStudio.Presentation.Controls.Commands"
                     xmlns:wnd="clr-namespace:SiliconStudio.Presentation.Windows"
                     xmlns:local="clr-namespace:SiliconStudio.Presentation"
@@ -146,7 +147,7 @@
   <BitmapImage x:Key="ImageWarningDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/warning-32.png" />
 
   <!--  WINDOWS  -->
-  <Style TargetType="Window" x:Key="WindowChromeStyle">
+  <Style TargetType="{x:Type Window}" x:Key="WindowChromeStyle">
     <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
     <Setter Property="WindowChrome.WindowChrome">
       <Setter.Value>
@@ -274,14 +275,19 @@
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
-    <Setter Property="MinHeight" Value="120" />
-    <Setter Property="MinWidth" Value="320" />
-    <!-- begin FIXME: create and add behavior to keep aspect ratio (and also screen resolution independent) -->
-    <Setter Property="MaxHeight" Value="768" />
-    <Setter Property="MaxWidth" Value="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" />
+    <!--<Setter Property="MinHeight" Value="120" />-->
+    <!--<Setter Property="MinWidth" Value="320" />-->
+    <!--<Setter Property="MaxHeight" Value="768" />-->
+    <Setter Property="MaxWidth" Value="10000" />
     <Setter Property="SizeToContent" Value="WidthAndHeight" />
-    <!-- end FIXME -->
     <Setter Property="ResizeMode" Value="NoResize" />
+    <Setter Property="interactivity:Interaction.Behaviors">
+      <Setter.Value>
+        <interactivity:BehaviorCollection>
+          <behaviors:ResizeBehavior SizeRatio="4,3" />
+        </interactivity:BehaviorCollection>
+      </Setter.Value>
+    </Setter>
     <Setter Property="MessageTemplate">
       <Setter.Value>
         <DataTemplate>
