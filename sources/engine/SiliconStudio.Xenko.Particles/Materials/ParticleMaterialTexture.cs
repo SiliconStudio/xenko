@@ -7,6 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Internals;
+using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles.Materials
@@ -64,6 +65,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
 
         }
+
+        [DataMemberIgnore]
+        public override ParticleVertexLayout VertexLayout { get; protected set; } = new ParticleVertexLayoutTextured();
 
     }
 }

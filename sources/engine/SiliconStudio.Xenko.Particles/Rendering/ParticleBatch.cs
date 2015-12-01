@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Internals;
+using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
 
 
@@ -20,7 +21,7 @@ namespace SiliconStudio.Xenko.Particles
 //        private Vector4 vector4UnitY = -Vector4.UnitY;
 
         public ParticleBatch(GraphicsDevice device, int bufferElementCount = 1024, int batchCapacity = 64)
-            : base(device, ParticleBatch.Bytecode, ParticleBatch.BytecodeSRgb, StaticQuadBufferInfo.CreateQuadBufferInfo("ParticleBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), ParticleVertex.Layout)
+            : base(device, ParticleBatch.Bytecode, ParticleBatch.BytecodeSRgb, StaticQuadBufferInfo.CreateQuadBufferInfo("ParticleBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), ParticleVertexLayoutTextured.VertexDeclaration)
         {
             SortMode = SpriteSortMode.Immediate;
         }

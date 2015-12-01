@@ -6,6 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles.Materials
@@ -45,6 +46,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <param name="viewMatrix">The camera's View matrix</param>
         /// <param name="projMatrix">The camera's Projection matrix</param>
         public abstract void Setup(GraphicsDevice GraphicsDevice, Matrix viewMatrix, Matrix projMatrix);
+
+        [DataMemberIgnore]
+        public abstract ParticleVertexLayout VertexLayout { get; protected set; }
 
         protected void SetupBase(GraphicsDevice graphicsDevice)
         {

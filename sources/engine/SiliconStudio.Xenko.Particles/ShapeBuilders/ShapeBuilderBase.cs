@@ -5,13 +5,14 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
     [DataContract("ShapeBuilderBase")]
     public abstract class ShapeBuilderBase
     {
-        public abstract int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity,
+        public abstract int BuildVertexBuffer(IntPtr vertexBuffer, ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticlePool pool);
 
     }
