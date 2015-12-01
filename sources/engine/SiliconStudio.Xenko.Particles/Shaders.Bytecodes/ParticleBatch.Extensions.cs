@@ -9,6 +9,8 @@ namespace SiliconStudio.Xenko.Particles
     {
         private static EffectBytecode bytecode = null;
         private static EffectBytecode bytecodeSRgb = null;
+        private static EffectBytecode bytecodeTex0 = null;
+        private static EffectBytecode bytecodeSRgbTex0 = null;
 
         internal static EffectBytecode Bytecode
         {
@@ -23,6 +25,22 @@ namespace SiliconStudio.Xenko.Particles
             get
             {
                 return bytecodeSRgb ?? (bytecodeSRgb = EffectBytecode.FromBytesSafe(binaryBytecodeSRgb));
+            }
+        }
+
+        internal static EffectBytecode BytecodeTex0
+        {
+            get
+            {
+                return bytecodeTex0 ?? (bytecodeTex0 = EffectBytecode.FromBytesSafe(binaryBytecodeTex0));
+            }
+        }
+
+        internal static EffectBytecode BytecodeSRgbTex0
+        {
+            get
+            {
+                return bytecodeSRgbTex0 ?? (bytecodeSRgbTex0 = EffectBytecode.FromBytesSafe(binaryBytecodeSRgbTex0));
             }
         }
     }

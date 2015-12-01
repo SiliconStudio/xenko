@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-class ParticleBatchShader<bool TSRgb> : ParticleBase
+class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
 {
     // -------------------------------------
     // streams
@@ -26,7 +26,8 @@ class ParticleBatchShader<bool TSRgb> : ParticleBase
        // float4 swizzleColor = streams.Swizzle == 0 ? base.Shading() : base.Shading().rrrr;
        // float4 finalColor = swizzleColor * streams.Color;
 
-        float4 finalColor = base.Shading() * streams.Color;
+        float4 finalColor = (THasTexture) ? 
+            (SampleTex0() * streams.Color) : streams.Color;
 
         // DEBUG
         finalColor.rgb *= 12;
@@ -35,5 +36,10 @@ class ParticleBatchShader<bool TSRgb> : ParticleBase
         finalColor.a *= AlphaAdditive;
 
         return finalColor;
+    }
+
+    stage float4 SampleTex0()
+    {
+        return Texture0.Sample(Sampler, streams.TexCoord);
     }
 };

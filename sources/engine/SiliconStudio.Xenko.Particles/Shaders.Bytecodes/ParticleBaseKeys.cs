@@ -16,5 +16,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         public static readonly ParameterKey<bool> ColorIsSRgb = ParameterKeys.New(false);
+
+        public static readonly ParameterKey<bool> HasTexture = ParameterKeys.New(true);
     }
 }

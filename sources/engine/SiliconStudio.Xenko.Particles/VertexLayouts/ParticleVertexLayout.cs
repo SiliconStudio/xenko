@@ -11,7 +11,6 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
     public abstract class ParticleVertexLayout
     {
         protected IntPtr vertexBuffer = IntPtr.Zero;
-        protected int vertexOffset = 0;
 
         public abstract VertexDeclaration GetVertexDeclaration();
 
@@ -22,13 +21,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public void StartBuffer(IntPtr vtxBuff)
         {
             vertexBuffer = vtxBuff;
-            vertexOffset = 0;
         }
 
         public void EndBuffer()
         {
             vertexBuffer = IntPtr.Zero;
-            vertexOffset = 0;
         }
 
         public void NextVertex()
@@ -52,5 +49,23 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public virtual void SetUvCoords(IntPtr ptr) { }
 
         public virtual void SetColor(IntPtr ptr) { }
+
+        /// <summary>
+        /// Sets the same position for all vertices created from the same particle.
+        /// Assumes offset is at the first vertex of the particle.
+        /// </summary>
+        /// <param name="position">Position vector to assign</param>
+        public virtual void SetPositionForParticle(ref Vector3 position) { }
+
+        public virtual void SetUvCoordsForParticle(ref Vector2 uvCoords) { }
+
+        public virtual void SetColorForParticle(ref Color4 color) { }
+
+        public virtual void SetPositionForParticle(IntPtr ptr) { }
+
+        public virtual void SetUvCoordsForParticle(IntPtr ptr) { }
+
+        public virtual void SetColorForParticle(IntPtr ptr) { }
+
     }
 }

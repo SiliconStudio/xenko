@@ -66,5 +66,34 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             *((uint*)(vertexBuffer + OffsetColor)) = (uint)(*((Color4*)color)).ToRgba();
         }
 
+
+
+
+        public override void SetColorForParticle(ref Color4 color)
+        {
+            var oldPtr = vertexBuffer;
+
+            for (var i = 0; i < VerticesPerParticle; i++)
+            {
+                SetColor(ref color);
+                NextVertex();
+            }
+
+            vertexBuffer = oldPtr;
+        }
+
+        public override void SetColorForParticle(IntPtr color)
+        {
+            var oldPtr = vertexBuffer;
+
+            for (var i = 0; i < VerticesPerParticle; i++)
+            {
+                SetColor(color);
+                NextVertex();
+            }
+
+            vertexBuffer = oldPtr;
+
+        }
     }
 }

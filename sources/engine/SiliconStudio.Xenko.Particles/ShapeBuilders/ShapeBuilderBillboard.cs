@@ -38,12 +38,11 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var whiteColor = new Color4(1, 1, 1, 1);
             var renderedParticles = 0;
 
+            // TODO Sorting
+
             foreach (var particle in pool)
             {
-                // TODO Sorting
-
-//                // TODO: Set for all vertices
-//                vtxBuilder.SetColor(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
+                vtxBuilder.SetColorForParticle(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
 
                 var centralPos = particle.Get(positionField);
 
@@ -67,7 +66,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 // 0f 0f
                 vtxBuilder.SetPosition(ref particlePos);
                 vtxBuilder.SetUvCoords(ref uvCoord);
-                vtxBuilder.SetColor(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
                 vtxBuilder.NextVertex();
 
 
@@ -76,7 +74,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 uvCoord.X = 1;
                 vtxBuilder.SetPosition(ref particlePos);
                 vtxBuilder.SetUvCoords(ref uvCoord);
-                vtxBuilder.SetColor(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
                 vtxBuilder.NextVertex();
 
 
@@ -85,7 +82,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 uvCoord.Y = 1;
                 vtxBuilder.SetPosition(ref particlePos);
                 vtxBuilder.SetUvCoords(ref uvCoord);
-                vtxBuilder.SetColor(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
                 vtxBuilder.NextVertex();
 
 
@@ -94,7 +90,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 uvCoord.X = 0;
                 vtxBuilder.SetPosition(ref particlePos);
                 vtxBuilder.SetUvCoords(ref uvCoord);
-                vtxBuilder.SetColor(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
                 vtxBuilder.NextVertex();
 
 
