@@ -59,6 +59,11 @@ namespace SiliconStudio.Assets.Visitors
             return string.Format("{0} = {1}", MemberDescriptor.Name, Instance ?? "null");
         }
 
+        public override void RemoveValue()
+        {
+            SetValue(null);
+        }
+
         public override DataVisitNode CreateWithEmptyInstance()
         {
             return new DataVisitMember(null, MemberDescriptor);

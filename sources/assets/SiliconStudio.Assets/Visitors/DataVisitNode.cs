@@ -75,6 +75,13 @@ namespace SiliconStudio.Assets.Visitors
             }
         }
 
+        /// <summary>
+        /// Removes this node where it is used.
+        /// </summary>
+        public virtual void RemoveValue()
+        {
+        }
+
         public virtual DataVisitNode CreateWithEmptyInstance()
         {
             throw new NotImplementedException();

@@ -59,6 +59,15 @@ namespace SiliconStudio.Assets.Visitors
             }
         }
 
+        public override void RemoveValue()
+        {
+            var array = Array;
+            if (array != null)
+            {
+                array.SetValue(null, index);
+            }
+        }
+
         public override string ToString()
         {
             return string.Format("[{0}] = {1}", index, Instance ?? "null");

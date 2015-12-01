@@ -89,6 +89,15 @@ namespace SiliconStudio.Assets.Visitors
             }
         }
 
+        public override void RemoveValue()
+        {
+            var descriptor = Descriptor;
+            if (descriptor != null)
+            {
+                descriptor.Remove(Instance, Key);
+            }
+        }
+
         public override string ToString()
         {
             return string.Format("{0} => {1}", key, Instance ?? "null");

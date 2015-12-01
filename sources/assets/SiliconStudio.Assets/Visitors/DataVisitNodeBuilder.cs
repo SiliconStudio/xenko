@@ -50,6 +50,17 @@ namespace SiliconStudio.Assets.Visitors
         }
 
         /// <summary>
+        /// Gets the root object visited by this instance.
+        /// </summary>
+        public object RootInstance
+        {
+            get
+            {
+                return rootInstance;
+            }
+        }
+
+        /// <summary>
         /// Creates <see cref="DataVisitNode"/> from the specified instance.
         /// </summary>
         /// <param name="typeDescriptorFactory">The type descriptor factory.</param>
