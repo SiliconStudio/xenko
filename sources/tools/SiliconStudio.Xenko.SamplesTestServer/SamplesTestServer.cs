@@ -30,17 +30,6 @@ namespace SiliconStudio.Xenko.SamplesTestServer
         {
         }
 
-        private static SecureString MakeSecureString(string text)
-        {
-            SecureString secure = new SecureString();
-            foreach (char c in text)
-            {
-                secure.AppendChar(c);
-            }
-
-            return secure;
-        }
-
         protected override async void HandleClient(SimpleSocket clientSocket, string url)
         {
             await AcceptConnection(clientSocket);
