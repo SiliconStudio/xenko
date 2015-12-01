@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
@@ -24,6 +25,16 @@ namespace SiliconStudio.Xenko.Particles
     [DataContract("PaticleModuleBase")]
     public abstract class ParticleModuleBase
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="ParticleModuleBase"/> is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if enabled; otherwise, <c>false</c>.
+        /// </value>
+        [DataMember(-10)]
+        [DefaultValue(true)]
+        public bool Enabled { get; set; } = true;
+
         /// <summary>
         /// A list of fields required by the module to operate properly.
         /// Please fill it during construction time.

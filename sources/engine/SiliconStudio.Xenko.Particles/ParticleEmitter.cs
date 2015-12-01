@@ -35,6 +35,16 @@ namespace SiliconStudio.Xenko.Particles
     [DataContract("ParticleEmitter")]
     public class ParticleEmitter
     {
+        /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="ParticleEmitter"/> is enabled.
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if enabled; otherwise, <c>false</c>.
+        /// </value>
+        [DataMember(-10)]
+        [DefaultValue(true)]
+        public bool Enabled { get; set; } = true;
+
         [DataMember(30)]
         [Display("Spawners", Expand = ExpandRule.Always)]
         [NotNullItems]
@@ -46,7 +56,7 @@ namespace SiliconStudio.Xenko.Particles
         public readonly ParticlePool pool;
          
         [DataMemberIgnore]
-        protected ParticleRandomSeedGenerator RandomSeedGenerator;
+        internal ParticleRandomSeedGenerator RandomSeedGenerator;
 
         public ParticleEmitter()
         {
@@ -287,7 +297,8 @@ namespace SiliconStudio.Xenko.Particles
         {
             foreach (var updater in Updaters)
             {
-                updater.Update(dt, pool);
+                if (updater.Enabled)
+                    updater.Update(dt, pool);
             }
         }
 
@@ -299,7 +310,8 @@ namespace SiliconStudio.Xenko.Particles
         {
             foreach (var spawnerBase in Spawners)
             {
-                spawnerBase.SpawnNew(dt, this);
+                if (spawnerBase.Enabled)
+                    spawnerBase.SpawnNew(dt, this);
             }
 
             var capacity = pool.ParticleCapacity;
@@ -354,7 +366,8 @@ namespace SiliconStudio.Xenko.Particles
 
             foreach (var initializer in Initializers)
             {
-                initializer.Initialize(pool, startIndex, endIndex, capacity);
+                if (initializer.Enabled)
+                    initializer.Initialize(pool, startIndex, endIndex, capacity);
             }
         }
 

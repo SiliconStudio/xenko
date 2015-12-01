@@ -37,14 +37,14 @@ namespace SiliconStudio.Xenko.Particles.Components
             {
                 if (particleSystemStateKeyPair.Value.ParticleSystemComponent.Enabled)
                 {
-                    // TODO Update the particle system here
-
                     // Exposed variables
                     var speed = particleSystemStateKeyPair.Value.ParticleSystemComponent.Speed;
-
                     
                     var transformComponent = particleSystemStateKeyPair.Value.TransformComponent;
                     var particleSystem = particleSystemStateKeyPair.Value.ParticleSystemComponent.ParticleSystem;
+
+                    if (!particleSystem.Enabled)
+                        continue;
 
                     // We must update the TRS location of the particle system prior to updating the system itself.
                     // Particles only handle uniform scale.

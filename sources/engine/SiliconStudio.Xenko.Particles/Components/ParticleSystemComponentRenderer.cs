@@ -100,19 +100,12 @@ namespace SiliconStudio.Xenko.Particles.Components
                 var particleSystemState = (ParticleSystemProcessor.ParticleSystemComponentState)renderItem.DrawContext;
                 var particleSystemComponent = particleSystemState.ParticleSystemComponent;
 
-                // TODO Use transform component? Or no?
-                var transformComponent = particleSystemState.TransformComponent;
-          
+                //// TODO Use transform component? Or no?
+                //var transformComponent = particleSystemState.TransformComponent;
                 
                 particleBatch.Begin(viewMat, projMat, viewInv);
 
-                // TODO Use color scale? Or no?
-                var color = particleSystemComponent.Color;
-
-                foreach (var emitter in particleSystemComponent.ParticleSystem.Emitters)
-                {
-                    particleBatch.Draw(emitter);
-                }
+                particleSystemComponent.ParticleSystem.Draw(particleBatch, particleSystemComponent.Color);
 
                 particleBatch.End();
             }
