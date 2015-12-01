@@ -5,6 +5,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
@@ -12,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [Display("Billboard")]
     public class ShapeBuilderBillboard : ShapeBuilderBase
     {
-        public override unsafe int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity,
+        public override unsafe int BuildVertexBuffer(IntPtr vertexBuffer, ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticlePool pool)
         {
             var numberOfParticles = Math.Min(remainingCapacity / 4, pool.LivingParticles);
@@ -32,8 +33,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var colorField  = pool.GetField(ParticleFields.Color);
             var sizeField   = pool.GetField(ParticleFields.Size);
 
-//            var vertices = (ParticleVertex*)vertexBuffer.DataBox.DataPointer;
-            var vertices = (ParticleVertex*)vertexBuffer;
+            vtxBuilder.StartBuffer(vertexBuffer);
 
             var whiteColor = new Color4(1, 1, 1, 1);
             var renderedParticles = 0;
@@ -42,11 +42,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             {
                 // TODO Sorting
 
-                var vertex = new ParticleVertex();
-                
-                //vertex.Color = colorField.IsValid() ? particle.Get(colorField) : whiteColor;
-
-                vertex.Color = colorField.IsValid() ? (uint)particle.Get(colorField).ToRgba() : 0xFFFFFFFF;
+//                // TODO: Set for all vertices
+//                vtxBuilder.SetColor(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
 
                 var centralPos = particle.Get(positionField);
 
@@ -63,34 +60,54 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 var unitX = invViewX * particleSize; // TODO Rotation
                 var unitY = invViewY * particleSize; // TODO Rotation
 
-               // vertex.Size = particleSize;
+                // vertex.Size = particleSize;
 
+                var particlePos = centralPos - unitX + unitY;
+                var uvCoord = new Vector2(0, 0);
                 // 0f 0f
-                vertex.Position = centralPos - unitX + unitY;
-                vertex.TexCoord = new Vector2(0, 0);
-                *vertices++ = vertex;
+                vtxBuilder.SetPosition(ref particlePos);
+                vtxBuilder.SetUvCoords(ref uvCoord);
+                vtxBuilder.SetColor(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
+                vtxBuilder.NextVertex();
+
 
                 // 1f 0f
-                vertex.Position = centralPos + unitX + unitY;
-                vertex.TexCoord = new Vector2(1, 0);
-                *vertices++ = vertex;
+                particlePos += unitX * 2;
+                uvCoord.X = 1;
+                vtxBuilder.SetPosition(ref particlePos);
+                vtxBuilder.SetUvCoords(ref uvCoord);
+                vtxBuilder.SetColor(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
+                vtxBuilder.NextVertex();
+
 
                 // 1f 1f
-                vertex.Position = centralPos + unitX - unitY;
-                vertex.TexCoord = new Vector2(1, 1);
-                *vertices++ = vertex;
+                particlePos -= unitY * 2;
+                uvCoord.Y = 1;
+                vtxBuilder.SetPosition(ref particlePos);
+                vtxBuilder.SetUvCoords(ref uvCoord);
+                vtxBuilder.SetColor(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
+                vtxBuilder.NextVertex();
+
 
                 // 0f 1f
-                vertex.Position = centralPos - unitX - unitY;
-                vertex.TexCoord = new Vector2(0, 1);
-                *vertices++ = vertex;
+                particlePos -= unitX * 2;
+                uvCoord.X = 0;
+                vtxBuilder.SetPosition(ref particlePos);
+                vtxBuilder.SetUvCoords(ref uvCoord);
+                vtxBuilder.SetColor(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
+                vtxBuilder.NextVertex();
+
 
                 remainingCapacity -= 4;
 
                 if (++renderedParticles >= numberOfParticles)
+                {
+                    vtxBuilder.EndBuffer();
                     return renderedParticles;
+                }
             }
 
+            vtxBuilder.EndBuffer();
             return renderedParticles;
         }
     }

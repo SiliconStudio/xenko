@@ -444,12 +444,15 @@ namespace SiliconStudio.Xenko.Particles
             if (ShapeBuilder == null)
                 ShapeBuilder = new ShapeBuilderBillboard();
 
+            if (Material == null)
+                Material = new ParticleMaterialTexture();
+
             if (simulationSpace == EmitterSimulationSpace.Local)
-                return ShapeBuilder.BuildVertexBuffer(vertexBuffer, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
+                return ShapeBuilder.BuildVertexBuffer(vertexBuffer, Material.VertexLayout, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
 
             var posIdentity = new Vector3(0, 0, 0);
             var rotIdentity = new Quaternion(0, 0, 0, 1);
-            return ShapeBuilder.BuildVertexBuffer(vertexBuffer, invViewX, invViewY, ref remainingCapacity, ref posIdentity, ref rotIdentity, 1f, pool);
+            return ShapeBuilder.BuildVertexBuffer(vertexBuffer, Material.VertexLayout, invViewX, invViewY, ref remainingCapacity, ref posIdentity, ref rotIdentity, 1f, pool);
         }
 
         #endregion

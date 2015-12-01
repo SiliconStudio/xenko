@@ -29,7 +29,7 @@ class ParticleBatchShader<bool TSRgb> : ParticleBase
         float4 finalColor = base.Shading() * streams.Color;
 
         // DEBUG
-        //finalColor.rgb *= 13;
+        finalColor.rgb *= 12;
 
 //        finalColor.a = 1;
         finalColor.a *= AlphaAdditive;
