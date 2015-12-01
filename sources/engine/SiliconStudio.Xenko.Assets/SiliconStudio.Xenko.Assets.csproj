@@ -203,6 +203,8 @@
     <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityAnalysis.cs" />
     <Compile Include="Entities\EntityAsset.cs" />
+    <Compile Include="Entities\EntityAssetBase.cs" />
+    <Compile Include="Entities\EntityAssetMerge.cs" />
     <Compile Include="Entities\EntityHierarchyData.cs" />
     <Compile Include="Entities\SceneAssetCompiler.cs" />
     <Compile Include="Entities\EntityAssetOperations.cs" />

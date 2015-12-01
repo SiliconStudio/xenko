@@ -36,7 +36,9 @@ namespace SiliconStudio.Assets.Diff
             this.asset1 = asset1;
             this.asset2 = asset2;
             this.equalityComparer = new NodeEqualityComparer(this);
-            CustomVisitors = new List<IDataCustomVisitor>();
+            CustomVisitorsBase = new List<IDataCustomVisitor>();
+            CustomVisitorsAsset1 = new List<IDataCustomVisitor>();
+            CustomVisitorsAsset2 = new List<IDataCustomVisitor>();
         }
 
         public object BaseAsset
@@ -71,7 +73,9 @@ namespace SiliconStudio.Assets.Diff
         /// <summary>
         /// Custom visitors that can be registered when visiting object tree.
         /// </summary>
-        public List<IDataCustomVisitor> CustomVisitors { get; private set; }
+        public List<IDataCustomVisitor> CustomVisitorsBase { get; private set; }
+        public List<IDataCustomVisitor> CustomVisitorsAsset1 { get; private set; }
+        public List<IDataCustomVisitor> CustomVisitorsAsset2 { get; private set; }
 
         public void Reset()
         {
@@ -96,9 +100,9 @@ namespace SiliconStudio.Assets.Diff
             //    ((IDiffResolver)baseAsset).BeforeDiff(baseAsset, asset1, asset2);
             //}
 
-            var baseNodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, baseAsset, CustomVisitors);
-            var asset1Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset1, CustomVisitors);
-            var asset2Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset2, CustomVisitors);
+            var baseNodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, baseAsset, CustomVisitorsBase);
+            var asset1Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset1, CustomVisitorsAsset1);
+            var asset2Nodes = DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, asset2, CustomVisitorsAsset2);
             computed =  DiffNode(baseNodes, asset1Nodes, asset2Nodes);
             return computed;
         }

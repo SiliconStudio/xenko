@@ -109,7 +109,10 @@ namespace SiliconStudio.Assets.Analysis
                     {
                         return false;
                     }
-                    existingBaseParts.Add(existingAssetBasePart);
+
+                    // Make a copy of base asset
+                    var assetCopy = (Asset)AssetCloner.Clone(existingAssetBasePart.Asset);
+                    existingBaseParts.Add(new AssetItem(existingAssetBasePart.Location, assetCopy, existingAssetBasePart.Package));
                 }
             }
 
@@ -156,6 +159,7 @@ namespace SiliconStudio.Assets.Analysis
 
         private bool MergeAsset(AssetItem item, AssetItem existingBase, List<AssetItem> existingBaseParts)
         {
+            // No need to clone existingBaseParts as they are already cloned
             var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base?.Asset);
             var newBase = (Asset)AssetCloner.Clone(existingBase?.Asset);
             var merger = item.Asset ?? newBase ?? baseCopy;
