@@ -1,9 +1,0 @@
-{Create and setup new game}{Create a new empty game or create a game from a sample.}{page:HOWTO%3a+Create+and+setup+new+game}
-{Create or import asset}{Create a procedural model, material and put them in a scene.}{page:HOWTO%3a+Create+or+import+asset+data}
-{Setup a basic scene}{Create entities, move around the scene and graphics pipeline setup.}{page:HOWTO%3a+Setup+a+basic+scene}
-{Scripting}{How to use scripting to animate an entity or add gameplay logic.}{page:HOWTO%3a+Use+scripts}
-{Animate a model}{How to animate a model with assets and scripting.}{page:HOWTO%3a+Animate+a+model}
-{Create an UI}{How to create an UI and add it to your game.}{page:HOWTO%3A+Create+an+UI}
-{Add post-effects}{How to enable and customize post-effects such as depth-of-field, bloom, tonemapping, etc...}{page:HOWTO%3a+Add+post-effects}
-{Execute a game}{Let's run our game from either Xenko Studio or Visual Studio}{page:HOWTO%3A+Execute+a+game}
-{Generate effects on mobile devices}{Let's generate all effects our game needs so that it can run seamlessly on mobile devices}{page:HOWTO%3A+Generate+effects+on+mobile+devices}
