@@ -26,6 +26,7 @@
     <Compile Include="Initializers\InitialPositionSeed.cs" />
     <Compile Include="Initializers\InitialSizeSeed.cs" />
     <Compile Include="Initializers\InitialVelocitySeed.cs" />
+    <Compile Include="Materials\ParticleEffect.cs" />
     <Compile Include="Materials\ParticleMaterialBase.cs" />
     <Compile Include="Materials\ParticleMaterialTexture.cs" />
     <Compile Include="Module.cs" />
@@ -89,6 +90,7 @@
     <Compile Include="Spawners\SpawnerPerFrame.cs" />
     <Compile Include="Spawners\SpawnerPerSecond.cs" />
     <Compile Include="VertexLayouts\ParticleVertexLayout.cs" />
+    <Compile Include="VertexLayouts\ParticleVertexLayoutPlain.cs" />
     <Compile Include="VertexLayouts\ParticleVertexLayoutTextured.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Particles
 //        private Vector4 vector4UnitY = -Vector4.UnitY;
 
         public ParticleBatch(GraphicsDevice device, int bufferElementCount = 1024, int batchCapacity = 64)
-            : base(device, ParticleBatch.Bytecode, ParticleBatch.BytecodeSRgb, StaticQuadBufferInfo.CreateQuadBufferInfo("ParticleBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), ParticleVertexLayoutTextured.VertexDeclaration)
+            : base(device, ParticleBatch.Bytecode(ParticleEffectVariation.None), ParticleBatch.Bytecode(ParticleEffectVariation.IsSrgb), StaticQuadBufferInfo.CreateQuadBufferInfo("ParticleBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), ParticleVertexLayoutTextured.VertexDeclaration)
         {
             SortMode = SpriteSortMode.Immediate;
         }
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Particles
 
 
 
-            emitter.Material?.Setup(GraphicsDevice, viewMatrix, projMatrix);
+            emitter.Setup(GraphicsDevice, viewMatrix, projMatrix);
             
 
 

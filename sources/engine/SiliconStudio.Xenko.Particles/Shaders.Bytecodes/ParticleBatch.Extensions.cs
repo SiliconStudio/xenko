@@ -12,13 +12,13 @@ namespace SiliconStudio.Xenko.Particles
         private static EffectBytecode bytecodeTex0 = null;
         private static EffectBytecode bytecodeSRgbTex0 = null;
 
-        internal static EffectBytecode Bytecode
-        {
-            get
-            {
-                return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode));
-            }
-        }
+        //internal static EffectBytecode Bytecode
+        //{
+        //    get
+        //    {
+        //        return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode));
+        //    }
+        //}
 
         internal static EffectBytecode BytecodeSRgb
         {
