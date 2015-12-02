@@ -32,7 +32,7 @@
       <HintPath>..\..\common\deps\SharpYaml\SharpYaml.dll</HintPath>
     </Reference>
     <Reference Include="System.ServiceModel" />
-    <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS'))" Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="WindowsBase" />
