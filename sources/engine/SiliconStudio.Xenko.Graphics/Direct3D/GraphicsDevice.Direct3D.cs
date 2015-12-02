@@ -186,7 +186,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="name">The name.</param>
         public unsafe void BeginProfile(Color4 profileColor, string name)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF)
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
             if (nativeDeviceProfiler != null)
             {
                 nativeDeviceProfiler.BeginEvent(name);
@@ -527,7 +527,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="enabledFlag">if set to <c>true</c> [enabled flag].</param>
         public void EnableProfile(bool enabledFlag)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF)
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
             SharpDX.Direct3D.PixHelper.AllowProfiling(enabledFlag);
 #endif
         }
@@ -544,7 +544,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void EndProfile()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF)
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
             if (nativeDeviceProfiler != null)
             {
                 nativeDeviceProfiler.EndEvent();

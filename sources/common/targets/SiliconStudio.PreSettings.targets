@@ -56,9 +56,9 @@
   </Target>
 
   <ItemGroup>
-    <SiliconStudioUIListDefines Include="SDL"><Argument>SILICONSTUDIO_UI_SDL</Argument></SiliconStudioUIListDefines>
-    <SiliconStudioUIListDefines Include="WINFORMS"><Argument>SILICONSTUDIO_UI_WINFORMS</Argument></SiliconStudioUIListDefines>
-    <SiliconStudioUIListDefines Include="WPF"><Argument>SILICONSTUDIO_UI_WPF</Argument></SiliconStudioUIListDefines>
+    <SiliconStudioUIListDefines Include="SDL"><Argument>SILICONSTUDIO_XENKO_UI_SDL</Argument></SiliconStudioUIListDefines>
+    <SiliconStudioUIListDefines Include="WINFORMS"><Argument>SILICONSTUDIO_XENKO_UI_WINFORMS</Argument></SiliconStudioUIListDefines>
+    <SiliconStudioUIListDefines Include="WPF"><Argument>SILICONSTUDIO_XENKO_UI_WPF</Argument></SiliconStudioUIListDefines>
   </ItemGroup>
  
   <Target Name="SiliconStudioForceUI" AfterTargets="SiliconStudioForcePlatform">

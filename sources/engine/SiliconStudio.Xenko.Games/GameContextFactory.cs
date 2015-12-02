@@ -99,9 +99,9 @@ namespace SiliconStudio.Xenko.Games
     #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             return new GameContextOpenTk(null);
     #else
-        #if SILICONSTUDIO_UI_SDL && !SILICONSTUDIO_UI_WINFORMS && !SILICONSTUDIO_UI_WPF
+        #if SILICONSTUDIO_XENKO_UI_SDL && !SILICONSTUDIO_XENKO_UI_WINFORMS && !SILICONSTUDIO_XENKO_UI_WPF
             return new GameContextSdl(null);
-        #elif (SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF)
+        #elif (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
             return new GameContextWinforms(null);
         #else
             return null;
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Games
 
         public static GameContext NewGameContextSdl()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_UI_SDL
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_UI_SDL
             return new GameContextSdl(null);
 #else
             return null;

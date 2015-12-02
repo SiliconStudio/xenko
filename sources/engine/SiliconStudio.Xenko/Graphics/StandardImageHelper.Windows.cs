@@ -2,11 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
-#if (SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF)
+#if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System.Drawing;
 using System.Drawing.Imaging;
 #endif
-#if SILICONSTUDIO_UI_SDL
+#if SILICONSTUDIO_XENKO_UI_SDL
 using SDL2;
 #endif
 using System.IO;
@@ -16,7 +16,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Graphics
 {
 
-#if SILICONSTUDIO_UI_SDL && (!SILICONSTUDIO_UI_WINFORMS && !SILICONSTUDIO_UI_WPF)
+#if SILICONSTUDIO_XENKO_UI_SDL && (!SILICONSTUDIO_XENKO_UI_WINFORMS && !SILICONSTUDIO_XENKO_UI_WPF)
     public sealed class ImageFormat
     {
         // Format IDs
@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         public unsafe static Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
-#if SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF
+#if SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF
             using (var memoryStream = new UnmanagedMemoryStream((byte*)pSource, size))
             using (var bitmap = (Bitmap)System.Drawing.Image.FromStream(memoryStream))
             {
@@ -171,7 +171,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static void SaveFromMemory(PixelBuffer[] pixelBuffers, int count, ImageDescription description, Stream imageStream, ImageFormat imageFormat)
         {
-#if (SILICONSTUDIO_UI_WINFORMS || SILICONSTUDIO_UI_WPF)
+#if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
             using (var bitmap = new Bitmap(description.Width, description.Height))
             {
                 var sourceArea = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
