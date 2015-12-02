@@ -59,6 +59,7 @@ class ParticleBase : ShaderBase, Texturing
 
     stage float4 Shading()
     {
-        return Texture0.Sample(Sampler, streams.TexCoord);
+    return float4(1,1,1,1);
+//        return Texture0.Sample(Sampler, streams.TexCoord);
     }
 };

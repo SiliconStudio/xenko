@@ -50,9 +50,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <param name="projMatrix">The camera's Projection matrix</param>
         public abstract void Setup(GraphicsDevice GraphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix);
 
-        [DataMemberIgnore]
-        public abstract ParticleVertexLayout VertexLayout { get; protected set; }
-
         protected void SetupBase(GraphicsDevice graphicsDevice)
         {
             if (FaceCulling == ParticleMaterialCulling.CullNone)   graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
@@ -62,6 +59,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
             graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
 
             graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.DepthRead);
+
+            // TODO Maybe replicate ResourceContext and have all vtx, idx buffers and binding to be on the material or shapebuilder side
+            // graphicsDevice.SetVertexArrayObject(ResourceContext.VertexArrayObject);
 
             // This is correct. We invert the value to reduce calculations on the shader side.
             Parameters.Set(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);

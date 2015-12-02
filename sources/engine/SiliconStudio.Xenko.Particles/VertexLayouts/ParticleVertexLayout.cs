@@ -10,13 +10,38 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 {
     public abstract class ParticleVertexLayout
     {
+        // This region will become abstract if the vertex buffers and binding is moved away from the ParticleBatch and into the ShapeBuilders directly
+        #region Vertex Declaration
+
+        /// <summary>
+        /// This is the common vertex declaration the ParticleBatch uses.
+        /// Later it might change to depend on the shape builder, in which case the vertex and index buffers and
+        ///     bindings should be per shape as well.
+        /// </summary>
+        public static VertexDeclaration VertexDeclaration { get; }
+            = new VertexDeclaration(
+            VertexElement.Position<Vector3>(),
+            VertexElement.TextureCoordinate<Vector2>(),
+            VertexElement.Color<Color>()
+            //            new VertexElement("BATCH_SWIZZLE", PixelFormat.R32_Float)
+            );
+
+        protected const int OffsetPosition  = 0;
+        protected const int OffsetUv        = 12;
+        protected const int OffsetColor     = 20;
+
+        public VertexDeclaration GetVertexDeclaration() => VertexDeclaration;
+//        public abstract VertexDeclaration GetVertexDeclaration();
+
+        public int Size { get; private set; } = 24;
+//        public abstract int Size { get; protected set; }
+
+        public int VerticesPerParticle { get; private set; } = 4;
+//        public abstract int VerticesPerParticle { get; internal set; } // Will depend on the builder
+
+        #endregion
+
         protected IntPtr vertexBuffer = IntPtr.Zero;
-
-        public abstract VertexDeclaration GetVertexDeclaration();
-
-        public abstract int Size { get; protected set; }
-
-        public abstract int VerticesPerParticle { get; internal set; } // Will depend on the builder
 
         public void StartBuffer(IntPtr vtxBuff)
         {

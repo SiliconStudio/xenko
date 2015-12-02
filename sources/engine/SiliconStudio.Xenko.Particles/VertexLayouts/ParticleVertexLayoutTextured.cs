@@ -11,28 +11,6 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 {
     public class ParticleVertexLayoutTextured : ParticleVertexLayout
     {
-        /// <summary>
-        /// The vertex layout of this struct.
-        /// </summary>
-        public static VertexDeclaration VertexDeclaration { get; } 
-            = new VertexDeclaration(
-            VertexElement.Position<Vector3>(),
-            VertexElement.TextureCoordinate<Vector2>(),
-            VertexElement.Color<Color>()
-            //            new VertexElement("BATCH_SWIZZLE", PixelFormat.R32_Float)
-            );
-
-        // TODO Dynamic
-        private const int OffsetPosition   = 0;
-        private const int OffsetUv         = 12;
-        private const int OffsetColor      = 20;
-
-        public override int Size { get; protected set; } = 24;
-
-        public override int VerticesPerParticle { get; internal set; } = 4;
-
-        public override VertexDeclaration GetVertexDeclaration() => VertexDeclaration;
-
         public unsafe override void SetPosition(ref Vector3 position)
         {
             // TODO Not hardcoded offset
