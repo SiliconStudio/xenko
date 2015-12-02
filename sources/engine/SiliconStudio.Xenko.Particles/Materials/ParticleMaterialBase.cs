@@ -26,9 +26,17 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("Emissive power")]
         public float AlphaAdditive { get; set; } = 1f;
 
+        [DataMember(30)]
+        [DataMemberRange(0, 100, 0.01, 1)]
+        [Display("Intensity")]
+        public float ColorIntensity { get; set; } = 1f;
+
         [DataMember(40)]
         [Display("Face culling")]
         public ParticleMaterialCulling FaceCulling;
+
+        [DataMemberIgnore]
+        protected uint TextureSwizzle = 0;
 
         [DataMemberIgnore]
         public ParticleEffectVariation MandatoryVariation { get; protected set; } = ParticleEffectVariation.None;
@@ -48,7 +56,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <param name="GraphicsDevice">Graphics device to setup</param>
         /// <param name="viewMatrix">The camera's View matrix</param>
         /// <param name="projMatrix">The camera's Projection matrix</param>
-        public abstract void Setup(GraphicsDevice GraphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix);
+        public abstract void Setup(GraphicsDevice GraphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix, Color4 color);
 
         protected void SetupBase(GraphicsDevice graphicsDevice)
         {
@@ -65,6 +73,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             // This is correct. We invert the value to reduce calculations on the shader side.
             Parameters.Set(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
+
+            // Scale up the color intensity - might depend on the eye adaptation later
+            Parameters.Set(ParticleBaseKeys.ColorIntensity, ColorIntensity);
+
+            Parameters.Set(ParticleBaseKeys.RenderFlagSwizzle, TextureSwizzle);
         }
     }
 }

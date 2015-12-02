@@ -37,9 +37,54 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
         }
 
+        // TODO: Distribution
+        private Color4 colorMin = new Color4(1, 1, 1, 1);
+        private Color4 colorMax = new Color4(1, 1, 1, 1);
+        private bool hasIndividualColor = false;
+
+        [DataMember(110)]
+        [Display("Color Min")]
+        public Color4 ColorMin
+        {
+            get { return colorMin; }
+            set
+            {
+                colorMin = value;
+                UpdateColorVariation();
+            }
+        }
+
+        [DataMember(120)]
+        [Display("Color Max")]
+        public Color4 ColorMax
+        {
+            get { return colorMax; }
+            set
+            {
+                colorMax = value;
+                UpdateColorVariation();
+            }
+        }
+
+        private void UpdateColorVariation()
+        {
+            if (ColorMin.Equals(colorMax))
+            {
+                // Particles don't have individual color - it is passed as an uniform through the constant buffer
+                MandatoryVariation &= ~ParticleEffectVariation.HasColor;
+                hasIndividualColor = false;
+            }
+            else
+            {
+                // Particles do have individual color - vertex buffer should be patched
+                MandatoryVariation |= ParticleEffectVariation.HasColor;
+                hasIndividualColor = true;
+            }
+        }
+
         protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
 
-        public override void Setup(GraphicsDevice graphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix)
+        public override void Setup(GraphicsDevice graphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
             variation |= MandatoryVariation;    // Should be the same but still
 
@@ -53,10 +98,21 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 ParameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, new[] { Parameters });
             }
 
+            TextureSwizzle = (texture?.Format == PixelFormat.R32_Float ||
+                              texture?.Format == PixelFormat.A8_UNorm ||
+                              texture?.Format == PixelFormat.BC4_UNorm) ? (uint)1 : 0;
+
             SetupBase(graphicsDevice);
 
             // This should be CB0 - view/proj matrices don't change per material
             Parameters.Set(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
+
+            // If particles don't have individual color, we can pass the color tint as part of the uniform color scale
+            if (!hasIndividualColor)
+            {
+                color *= colorMax;
+            }
+            Parameters.Set(ParticleBaseKeys.ColorScale, color);
 
             effect.Apply(graphicsDevice, ParameterCollectionGroup, applyEffectStates: false);
 

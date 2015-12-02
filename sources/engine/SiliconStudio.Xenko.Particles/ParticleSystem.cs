@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.Particles
             {
                 if (particleEmitter.Enabled)
                 {
-                    particleBatch.Draw(particleEmitter);
+                    particleBatch.Draw(particleEmitter, color);
                 }
             }
         }
