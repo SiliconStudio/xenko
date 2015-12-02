@@ -461,12 +461,20 @@ namespace SiliconStudio.Xenko.Particles
             if (Material == null)
                 Material = new ParticleMaterialTexture();
 
+            // TODO Save variations
+            var variation = ParticleEffectVariation.None; // TODO Should depend on fields
+            variation |= Material.MandatoryVariation;
+            var vertexLayoutBuilder = ParticleBatch.GetVertexLayout(variation);
+
             if (simulationSpace == EmitterSimulationSpace.Local)
-                return ShapeBuilder.BuildVertexBuffer(vertexBuffer, Material.VertexLayout, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
+                return ShapeBuilder.BuildVertexBuffer(vertexBuffer, vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
 
             var posIdentity = new Vector3(0, 0, 0);
             var rotIdentity = new Quaternion(0, 0, 0, 1);
-            return ShapeBuilder.BuildVertexBuffer(vertexBuffer, Material.VertexLayout, invViewX, invViewY, ref remainingCapacity, ref posIdentity, ref rotIdentity, 1f, pool);
+            return ShapeBuilder.BuildVertexBuffer(vertexBuffer, vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref posIdentity, ref rotIdentity, 1f, pool);
+
+            // TODO Material.BuildVertexBuffer
+
         }
 
         #endregion

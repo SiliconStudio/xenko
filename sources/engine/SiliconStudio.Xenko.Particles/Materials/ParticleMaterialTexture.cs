@@ -67,9 +67,5 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
 
         }
-
-        [DataMemberIgnore]
-        public override ParticleVertexLayout VertexLayout { get; protected set; } = new ParticleVertexLayoutTextured();
-
     }
 }

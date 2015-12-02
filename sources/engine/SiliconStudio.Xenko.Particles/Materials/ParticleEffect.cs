@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Particles
@@ -54,5 +55,12 @@ namespace SiliconStudio.Xenko.Particles
             return effect[(int)variation] ?? (effect[(int)variation] = new Effect(device, Bytecode(variation)));
         }
 
+        public static ParticleVertexLayout GetVertexLayout(ParticleEffectVariation variation)
+        {
+            if (variation.HasFlag(ParticleEffectVariation.HasTex0))
+                return new ParticleVertexLayoutTextured();
+
+            return new ParticleVertexLayoutPlain();
+        }
     }
 }
