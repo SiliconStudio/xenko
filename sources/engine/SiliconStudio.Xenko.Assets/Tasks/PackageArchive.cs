@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
@@ -21,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
             // Override version with task SpecialVersion (if specified by user)
             if (specialVersion != null)
             {
-                meta.Version = new PackageVersion(package.Meta.Version.Version, specialVersion).ToString();
+                meta.Version = new PackageVersion(package.Meta.Version.ToString().Split('-').First() + "-" + specialVersion).ToString();
             }
 
             var builder = new NuGet.PackageBuilder();

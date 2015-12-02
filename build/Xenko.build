@@ -169,6 +169,7 @@ Example of use:
     <PackageGetVersionTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
     </PackageGetVersionTask>
+    <Delete Files="$(MSBuildThisFileDirectory)Xenko.version"/>
     <WriteLinesToFile File="$(MSBuildThisFileDirectory)Xenko.version" Lines="$(XenkoPackageVersion)" />
   </Target>
   

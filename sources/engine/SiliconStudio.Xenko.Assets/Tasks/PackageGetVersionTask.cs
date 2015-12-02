@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Linq;
 using Microsoft.Build.Framework;
 using Microsoft.Build.Utilities;
 using SiliconStudio.Assets;
@@ -58,7 +60,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
             // Override version with task SpecialVersion (if specified by user)
             if (!string.IsNullOrEmpty(SpecialVersion))
             {
-                version = new PackageVersion(version.Version, SpecialVersion);
+                version = new PackageVersion(version.ToString().Split('-').First() + "-" + SpecialVersion);
             }
 
             Version = version.ToString();
