@@ -8,6 +8,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Updater;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -23,7 +24,7 @@ namespace SiliconStudio.Xenko.Engine
         public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
 
         private Model model;
-        private ModelViewHierarchyUpdater modelViewHierarchy;
+        private SkeletonUpdater skeleton;
         private bool modelViewHierarchyDirty = true;
         private readonly List<Material> materials = new List<Material>();
 
@@ -82,18 +83,23 @@ namespace SiliconStudio.Xenko.Engine
             get { return materials; }
         }
 
-        [DataMemberIgnore]
-        public ModelViewHierarchyUpdater ModelViewHierarchy
+        [DataMemberIgnore, DataMemberUpdatable]
+        [DataMember]
+        public SkeletonUpdater Skeleton
         {
             get
             {
-                if (modelViewHierarchyDirty)
-                {
-                    ModelUpdated();
-                    modelViewHierarchyDirty = false;
-                }
+                CheckSkeleton();
+                return skeleton;
+            }
+        }
 
-                return modelViewHierarchy;
+        private void CheckSkeleton()
+        {
+            if (modelViewHierarchyDirty)
+            {
+                ModelUpdated();
+                modelViewHierarchyDirty = false;
             }
         }
 
@@ -142,21 +148,21 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (model != null)
             {
-                if (modelViewHierarchy != null)
+                if (skeleton != null)
                 {
                     // Reuse previous ModelViewHierarchy
-                    modelViewHierarchy.Initialize(model);
+                    skeleton.Initialize(model.Skeleton);
                 }
                 else
                 {
-                    modelViewHierarchy = new ModelViewHierarchyUpdater(model);
+                    skeleton = new SkeletonUpdater(model.Skeleton);
                 }
             }
         }
 
         internal void Update(TransformComponent transformComponent, ref Matrix worldMatrix)
         {
-            if (!Enabled || ModelViewHierarchy == null || model == null)
+            if (!Enabled || model == null)
                 return;
 
             // Check if scaling is negative
@@ -168,10 +174,16 @@ namespace SiliconStudio.Xenko.Engine
                     isScalingNegative = scale.X*scale.Y*scale.Z < 0.0f;
             }
 
-            // Update model view hierarchy node matrices
-            modelViewHierarchy.NodeTransformations[0].LocalMatrix = worldMatrix;
-            modelViewHierarchy.NodeTransformations[0].IsScalingNegative = isScalingNegative;
-            modelViewHierarchy.UpdateMatrices();
+            // Make sure skeleton is up to date
+            CheckSkeleton();
+
+            if (skeleton != null)
+            {
+                // Update model view hierarchy node matrices
+                skeleton.NodeTransformations[0].LocalMatrix = worldMatrix;
+                skeleton.NodeTransformations[0].IsScalingNegative = isScalingNegative;
+                skeleton.UpdateMatrices();
+            }
 
             // Update the bounding sphere / bounding box in world space
             var meshes = Model.Meshes;
@@ -183,7 +195,10 @@ namespace SiliconStudio.Xenko.Engine
             {
                 var meshBoundingSphere = mesh.BoundingSphere;
 
-                modelViewHierarchy.GetWorldMatrix(mesh.NodeIndex, out world);
+                if (skeleton != null)
+                    skeleton.GetWorldMatrix(mesh.NodeIndex, out world);
+                else
+                    world = worldMatrix;
                 Vector3.TransformCoordinate(ref meshBoundingSphere.Center, ref world, out meshBoundingSphere.Center);
                 BoundingSphere.Merge(ref modelBoundingSphere, ref meshBoundingSphere, out modelBoundingSphere);
 

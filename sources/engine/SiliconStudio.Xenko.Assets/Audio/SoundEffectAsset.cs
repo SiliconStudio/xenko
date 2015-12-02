@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Audio
     [AssetDescription(FileExtension)]
     [ObjectFactory(typeof(SoundEffectFactory))]
     [AssetCompiler(typeof(SoundAssetCompiler))]
-    [Display(120, "Sound Effect", "A sound effect")]
+    [Display(120, "Sound Effect")]
     public class SoundEffectAsset : SoundAsset
     {
         private class SoundEffectFactory : IObjectFactory

@@ -250,7 +250,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
             Console.WriteLine("Total calculation time: {0}", sw.Elapsed);
 #else
-            GraphicsTestBase.TestGameLogger.Info("Total calculation time: {0}", sw.Elapsed);
+            GameTestBase.TestGameLogger.Info("Total calculation time: {0}", sw.Elapsed);
 #endif
             //writer.Write(pixels, 0, pixels.Length);
         }

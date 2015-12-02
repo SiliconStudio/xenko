@@ -68,12 +68,10 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             //check if the sheet name dictionary has already been populated
             if (spriteStudioComponent.Sheet.Sprites == null)
             {
-                spriteStudioComponent.Sheet.Sprites = new Dictionary<int, Sprite>();
-                var index = 0;
-                foreach (var sprite in spriteStudioComponent.Sheet.SpriteSheet.Sprites)
+                spriteStudioComponent.Sheet.Sprites = new Sprite[spriteStudioComponent.Sheet.SpriteSheet.Sprites.Count];
+                for (int i = 0; i < spriteStudioComponent.Sheet.SpriteSheet.Sprites.Count; i++)
                 {
-                    spriteStudioComponent.Sheet.Sprites.Add(index, sprite);
-                    index++;
+                    spriteStudioComponent.Sheet.Sprites[i] = spriteStudioComponent.Sheet.SpriteSheet.Sprites[i];
                 }
             }
 
@@ -96,8 +94,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     BlendFactor = node.BaseState.BlendFactor
                 };
 
-                Sprite sprite;
-                nodeState.Sprite = spriteStudioComponent.Sheet.Sprites.TryGetValue(nodeState.SpriteId, out sprite) ? sprite : null;
+                nodeState.Sprite = nodeState.SpriteId != -1 ? spriteStudioComponent.Sheet.Sprites[nodeState.SpriteId] : null;
 
                 spriteStudioComponent.Nodes.Add(nodeState);
             }
@@ -126,14 +123,11 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             return rootNode;
         }
 
-        private static unsafe void UpdateNodes(IEnumerable<SpriteStudioNodeState> nodes, Data data)
+        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
+        // Enumerables are Evil
+        private static unsafe void UpdateNodes(List<SpriteStudioNodeState> nodes, Data data)
         {
-            //foreach (var node in nodes)
-            //{
-            //    node.CurrentXyPrioAngle = node.BaseNode.BaseXyPrioAngle;
-            //}
-
-            var animComp = data.AnimationComponent;
+            /*var animComp = data.AnimationComponent;
             if (animComp != null && animComp.PlayingAnimations.Count > 0 && animComp.CurrentFrameResult != null)
             {
                 fixed (byte* bytes = animComp.CurrentFrameResult.Data)
@@ -142,9 +136,11 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     {
                         //Process animations
                         var results = animComp.CurrentFrameResult;
-                        var channels = results.Channels.Where(x => x.NodeName == node.BaseNode.Name);
-                        foreach (var channel in channels)
+                        var channels = results.Channels.Where(x => x.PropertyName == node.BaseNode.Name);
+                        foreach (var channel in results.Channels)
                         {
+                            if(channel.NodeName != node.BaseNode.Name) continue;
+
                             var structureData = (float*)(bytes + channel.Offset);
                             if(structureData == null) continue;
                             if (structureData[0] == 0.0f) continue;
@@ -196,8 +192,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                             {
                                 var spriteIndex = valueInt;
                                 node.SpriteId = spriteIndex;
-                                Sprite sprite;
-                                node.Sprite = data.SpriteStudioComponent.Sheet.Sprites.TryGetValue(spriteIndex, out sprite) ? sprite : null;
+                                node.Sprite = spriteIndex != -1 ? data.SpriteStudioComponent.Sheet.Sprites[spriteIndex] : null;
                             }
                             else if (channel.PropertyName.StartsWith("colb"))
                             {
@@ -214,17 +209,19 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                         }
                     }
                 }
-            }
+            }*/
         }
 
-        private static void SortNodes(Data data, IEnumerable<SpriteStudioNodeState> nodes)
+        // ReSharper disable once ParameterTypeCanBeEnumerable.Local
+        // Enumerables are Evil
+        private static void SortNodes(Data data, List<SpriteStudioNodeState> nodes)
         {
-//            data.SpriteStudioComponent.SortedNodes.Sort((x, y) =>
-//            {
-//                if (x.Priority > y.Priority) return -1;
-//                return x.Priority == y.Priority ? 0 : 1;
-//            });
-            data.SpriteStudioComponent.SortedNodes = nodes.OrderBy(x => x.Priority).ToList();
+            data.SpriteStudioComponent.SortedNodes.Clear();
+            var sortedNodes = nodes.OrderBy(x => x.Priority);
+            foreach (var node in sortedNodes)
+            {
+                data.SpriteStudioComponent.SortedNodes.Add(node);
+            }
         }
 
         public override void Draw(RenderContext context)

@@ -108,6 +108,22 @@ namespace SiliconStudio.Core.Storage
             Write(unchecked((uint)data));
         }
 
+        /// <summary>
+        /// Writes the specified data to this builder. Size of data must be multiple of 4 bytes.
+        /// </summary>
+        /// <typeparam name="T">Struct type with a size multiple of 4 bytes</typeparam>
+        /// <param name="data">The data to add to this builder</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Write<T>(T data) where T : struct
+        {
+            var pData = (int*)Interop.Fixed(ref data);
+            int count = Utilities.SizeOf<T>() >> 2;
+            for (int i = 0; i < count; i++)
+            {
+                Write(*pData++);
+            }
+        }
+
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Write(uint data)
         {

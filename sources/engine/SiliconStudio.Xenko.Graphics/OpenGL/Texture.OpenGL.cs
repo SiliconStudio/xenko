@@ -306,6 +306,8 @@ namespace SiliconStudio.Xenko.Graphics
 
                     InitializePixelBufferObject();
                 }
+
+                GraphicsDevice.TextureMemory += (Depth * DepthStride) / (float)0x100000;
             }
         }
 
@@ -328,6 +330,8 @@ namespace SiliconStudio.Xenko.Graphics
                         GL.DeleteRenderbuffers(1, ref resourceId);
                     else
                         GL.DeleteTextures(1, ref resourceId);
+
+                    GraphicsDevice.TextureMemory -= (Depth * DepthStride) / (float)0x100000;
                 }
 
                 if (resourceIdStencil != 0)

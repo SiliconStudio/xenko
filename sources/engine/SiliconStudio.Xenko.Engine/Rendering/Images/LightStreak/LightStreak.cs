@@ -27,9 +27,23 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         private int tapsPerIteration;
         private int streakCount;
+        private int iterationCount;
         private bool isAnamorphic;
 
         private Vector2[] tapOffsetsWeights;
+
+        readonly List<string> lightStreakDebugStrings = new List<string>();
+
+        private void GenerateDebugStrings()
+        {
+            for (var i = 0; i < StreakCount; i++)
+            {
+                for (var y = 0; y < IterationCount; y++)
+                {
+                    lightStreakDebugStrings.Add($"Light streak {i} iteration {y}");
+                }
+            }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="LightStreak"/> class.
@@ -45,6 +59,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             ColorAberrationStrength = 0.2f;
             ColorAberrationCoefficients = new Vector3(1.2f, 1.8f, 2.8f);
             IsAnamorphic = false;
+
+            GenerateDebugStrings();
         }
 
         protected override void InitializeCore()
@@ -83,6 +99,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 if (value <= 0) value = 0;
                 if (value > STREAK_MAX_COUNT) value = STREAK_MAX_COUNT;
                 streakCount = value;
+                GenerateDebugStrings();
             }
         }
 
@@ -93,7 +110,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Each iteration rises the length of the light streak to the next power of <see cref="TapsPerIteration"/>.
         /// </remarks>
         [DataMemberIgnore]
-        public int IterationCount { get; set; }
+        public int IterationCount
+        {
+            get
+            {
+                return iterationCount;
+            }
+            set
+            {
+                iterationCount = value;
+                GenerateDebugStrings();
+            }
+        }
 
         /// <summary>
         /// Number of texture taps for each iteration of light streak extension.
@@ -269,7 +297,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     lightStreakEffect.Parameters.Set(LightStreakShaderKeys.Direction, direction);
                     lightStreakEffect.SetInput(0, currentInput);
                     lightStreakEffect.SetOutput(currentOutput);
-                    lightStreakEffect.Draw(contextParameters, "Light streak {0} iteration {0}", streak, level);
+                    lightStreakEffect.Draw(contextParameters, lightStreakDebugStrings[(streak * IterationCount) + level]);
 
                     writeToScratchA = !writeToScratchA;
                 }

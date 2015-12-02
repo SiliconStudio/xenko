@@ -3,7 +3,7 @@ using System;
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
-    /// Updates <see cref="ModelComponent.ModelViewHierarchy"/>.
+    /// Updates <see cref="ModelComponent.Skeleton"/>.
     /// </summary>
     public class ModelViewHierarchyTransformOperation : TransformOperation
     {

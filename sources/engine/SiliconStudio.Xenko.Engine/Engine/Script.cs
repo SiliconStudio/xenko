@@ -16,12 +16,6 @@ namespace SiliconStudio.Xenko.Engine
         [DataMemberIgnore]
         internal ScriptComponent ScriptComponent;
 
-        /// <summary>
-        /// The script identifier.
-        /// </summary>
-        [Browsable(false)]
-        public new Guid Id;
-
         private int priority;
 
         /// <summary>
@@ -43,12 +37,10 @@ namespace SiliconStudio.Xenko.Engine
 
         protected Script()
         {
-            Id = Guid.NewGuid();
         }
 
         protected Script(IServiceRegistry registry) : base(registry)
         {
-            Id = Guid.NewGuid();
         }
 
         /// <summary>

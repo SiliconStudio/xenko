@@ -6,8 +6,6 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Diagnostics;
-using System.Collections.Concurrent;
-using System.Linq;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -26,12 +24,6 @@ namespace SiliconStudio.Xenko.Physics
         private readonly BulletSharp.DispatcherInfo dispatchInfo;
 
         private readonly bool canCcd;
-
-        public static ProfilingKey SimulationProfilingKey = new ProfilingKey("Physics.Simulation");
-        private ProfilingState simulationProfilingState;
-
-        public static ProfilingKey ContactsProfilingKey = new ProfilingKey("Physics.Contacts");
-        private ProfilingState contactsProfilingState;
 
         public bool ContinuousCollisionDetection
         {
@@ -81,9 +73,6 @@ namespace SiliconStudio.Xenko.Physics
                     flags = OnSimulationCreation();
                 }
             }
-
-            simulationProfilingState = Profiler.New(SimulationProfilingKey);
-            contactsProfilingState = Profiler.New(ContactsProfilingKey);
 
             MaxSubSteps = 1;
             FixedTimeStep = 1.0f / 60.0f;
@@ -154,7 +143,7 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void ProcessContacts()
         {
-            contactsProfilingState.Begin();
+            var contactsProfiler = Profiler.Begin(PhysicsProfilingKeys.ContactsProfilingKey);
 
             processedPairsFastCache.Clear();
             var numManifolds = collisionWorld.Dispatcher.NumManifolds;
@@ -244,7 +233,7 @@ namespace SiliconStudio.Xenko.Physics
                         break;
                     }
 
-                    contactsProfilingState.Mark();
+                    //contactsProfilingState.Mark();
 
                     if (newContact)
                     {
@@ -434,7 +423,7 @@ namespace SiliconStudio.Xenko.Physics
                 }
             }
 
-            contactsProfilingState.End();
+            contactsProfiler.End("Contacts: {0}", alivePairsFastCache.Count);
         }
 
         /// <summary>
@@ -1148,22 +1137,28 @@ namespace SiliconStudio.Xenko.Physics
             handler?.Invoke(this, e);
         }
 
+        internal int UpdatedRigidbodies;
+
         readonly SimulationArgs simulationArgs = new SimulationArgs();
-       
+
+        internal ProfilingState SimulationProfiler;
+
         internal void Simulate(float deltaTime)
         {
             if (collisionWorld == null) return;
 
             simulationArgs.DeltaTime = deltaTime;
 
+            UpdatedRigidbodies = 0;
+
             OnSimulationBegin(simulationArgs);
 
-            simulationProfilingState.Begin();
+            SimulationProfiler = Profiler.Begin(PhysicsProfilingKeys.SimulationProfilingKey);
 
             if (discreteDynamicsWorld != null) discreteDynamicsWorld.StepSimulation(deltaTime, MaxSubSteps, FixedTimeStep);
             else collisionWorld.PerformDiscreteCollisionDetection();
 
-            simulationProfilingState.End();
+            SimulationProfiler.End("Alive rigidbodies: {0}", UpdatedRigidbodies);
 
             OnSimulationEnd(simulationArgs);
         }

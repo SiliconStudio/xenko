@@ -1,6 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization.Assets;
@@ -41,6 +43,7 @@ namespace SiliconStudio.Xenko.Engine
     public abstract class ScriptContext : ComponentBase, IScriptContext
     {
         private IGraphicsDeviceService graphicsDeviceService;
+        private Logger logger;
 
         protected ScriptContext()
         {
@@ -65,6 +68,13 @@ namespace SiliconStudio.Xenko.Engine
             EffectSystem = Services.GetSafeServiceAs<EffectSystem>();
             Audio = Services.GetSafeServiceAs<AudioSystem>();
             SpriteAnimation = Services.GetSafeServiceAs<SpriteAnimationSystem>();
+        }
+
+        [DataMember(-10), Display(Browsable = false)]
+        public override Guid Id
+        {
+            get { return base.Id; }
+            set { base.Id = value; }
         }
 
         [DataMemberIgnore]
@@ -106,8 +116,6 @@ namespace SiliconStudio.Xenko.Engine
         protected override void Destroy()
         {
         }
-
-        static private Logger logger;
 
         [DataMemberIgnore]
         protected Logger Log

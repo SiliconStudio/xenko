@@ -1,7 +1,8 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Threading;
+using System;
+using System.ComponentModel;
 using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Core
@@ -12,7 +13,6 @@ namespace SiliconStudio.Core
     [DataContract]
     public abstract class ComponentBase : DisposeBase, IComponent
     {
-        private static int globalCounterId;
         private string name;
 
         /// <summary>
@@ -30,13 +30,17 @@ namespace SiliconStudio.Core
         protected ComponentBase(string name)
         {
             Name = name ?? GetType().Name;
-            Id = Interlocked.Increment(ref globalCounterId);
+            Id = Guid.NewGuid();
 
             // Track this component
             if (ComponentTracker.Enable) ComponentTracker.Track(this);
         }
 
-        public int Id { get; private set; }
+        /// <summary>
+        /// Gets a unique identifier attached to this object.
+        /// </summary>
+        [DataMemberIgnore, Display(Browsable = false)] // By default don't store it, unless derived class are overriding this member
+        public virtual Guid Id { get; set; }
 
         /// <summary>
         /// Gets or sets the name of this component.
@@ -56,6 +60,7 @@ namespace SiliconStudio.Core
                 if (value == name) return;
 
                 name = value;
+
                 OnNameChanged();
             }
         }
@@ -80,7 +85,7 @@ namespace SiliconStudio.Core
 
         public override string ToString()
         {
-            return string.Format("{0}: {1}", this.GetType().Name, Name);
+            return $"{GetType().Name}: {name}";
         }
 
         protected override void OnAddReference()

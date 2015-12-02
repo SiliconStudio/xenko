@@ -347,8 +347,13 @@ namespace SiliconStudio.Xenko.Graphics
                     else
 #endif
                     {
+#if SILICONSTUDIO_PLATFORM_IOS
+                        internalFormat = PixelInternalFormat.Luminance;
+                        format = PixelFormatGl.Luminance;
+#else
                         internalFormat = R8;
                         format = PixelFormatGl.Red;
+#endif
                     }
                     type = PixelType.UnsignedByte;
                     pixelSize = 1;
@@ -546,4 +551,4 @@ namespace SiliconStudio.Xenko.Graphics
     }
 }
  
-#endif 
+#endif

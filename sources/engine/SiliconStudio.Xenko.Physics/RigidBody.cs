@@ -133,6 +133,8 @@ namespace SiliconStudio.Xenko.Physics
             set { InternalRigidBody.Gravity = value; }
         }
 
+        private bool overrideGravity;
+
         /// <summary>
         /// If you want to override gravity using the Gravity property setter, first set this value to true
         /// </summary>
@@ -141,10 +143,7 @@ namespace SiliconStudio.Xenko.Physics
         /// </value>
         public bool OverrideGravity
         {
-            get
-            {
-                return (InternalRigidBody.Flags.HasFlag(BulletSharp.RigidBodyFlags.DisableWorldGravity));
-            }
+            get { return overrideGravity; }
             set
             {
                 if (value)
@@ -153,6 +152,7 @@ namespace SiliconStudio.Xenko.Physics
                     {
                         // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
                         InternalRigidBody.Flags |= BulletSharp.RigidBodyFlags.DisableWorldGravity;
+                        overrideGravity = true;
                     }
                 }
                 else
@@ -161,6 +161,7 @@ namespace SiliconStudio.Xenko.Physics
                     {
                         // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
                         InternalRigidBody.Flags ^= BulletSharp.RigidBodyFlags.DisableWorldGravity;
+                        overrideGravity = false;
                     }
                 }
             }

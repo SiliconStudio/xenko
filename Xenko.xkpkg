@@ -3,12 +3,12 @@ Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
 SerializedVersion: {Assets: 0.0.2}
 Meta:
     Name: Xenko
-    Version: 1.5.0-alpha01
+    Version: 1.5.0-alpha02
     Owners:
       - Silicon Studio
     Authors: 
       - Silicon Studio
-    Copyright: © Silicon Studio All rights reserved.
+    Copyright: © Silicon Studio. All rights reserved.
     Description: Xenko Game Package
     LicenseUrl: http://xenko.com/license.txt
     ProjectUrl: http://xenko.com
@@ -36,6 +36,7 @@ TemplateFolders:
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/BasicAsyncScript.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/BasicSyncScript.xktpl
         - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Physics/DebugShapesRender.xktpl
+        - sources/editor/SiliconStudio.Xenko.Assets.Presentation/Templates/Assets/Scripts/Utility/GameProfiler.xktpl
     - Path: sources/data/images/NewGame
       Group: Core
       Exclude: "**/*.psd;**/*.md"
@@ -69,3 +70,5 @@ TemplateFolders:
         - samples\Physics\VolumeTrigger\VolumeTrigger.xktpl
         - samples\UI\GameMenu\GameMenu.xktpl
         - samples\Others\NativeLinking\NativeLinking.xktpl
+RootAssets:
+    - c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont

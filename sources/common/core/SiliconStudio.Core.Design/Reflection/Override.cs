@@ -27,8 +27,8 @@ namespace SiliconStudio.Core.Reflection
         /// </exception>
         public static OverrideType GetOverride(this object instance, IMemberDescriptor memberDescriptor)
         {
-            if (instance == null) throw new ArgumentNullException("instance");
-            if (memberDescriptor == null) throw new ArgumentNullException("memberDescriptor");
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            if (memberDescriptor == null) throw new ArgumentNullException(nameof(memberDescriptor));
             OverrideType overrideType;
             return instance.TryGetDynamicProperty(memberDescriptor, OverrideKey, out overrideType) ? overrideType : OverrideType.Base;
         }
@@ -46,9 +46,29 @@ namespace SiliconStudio.Core.Reflection
         /// </exception>
         public static void SetOverride(this object instance, IMemberDescriptor memberDescriptor, OverrideType overrideType)
         {
-            if (instance == null) throw new ArgumentNullException("instance");
-            if (memberDescriptor == null) throw new ArgumentNullException("memberDescriptor");
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            if (memberDescriptor == null) throw new ArgumentNullException(nameof(memberDescriptor));
             instance.SetDynamicProperty(memberDescriptor, OverrideKey, overrideType);
+        }
+
+        /// <summary>
+        /// Remove all overrides information attached to an instance (Note that this method is not recursive and must be applied on all object).
+        /// </summary>
+        /// <param name="instance">An object instance</param>
+        public static void RemoveFrom(object instance)
+        {
+            if (instance == null) throw new ArgumentNullException(nameof(instance));
+            var shadow = ShadowObject.GetShadow(instance);
+            if (shadow == null)
+            {
+                return;
+            }
+
+            // Remove override information from an object
+            foreach (var attributes in shadow.Members)
+            {
+                attributes.Attributes.Remove(OverrideKey);
+            }
         }
     }
 }

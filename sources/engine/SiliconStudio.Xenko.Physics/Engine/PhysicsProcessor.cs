@@ -31,15 +31,11 @@ namespace SiliconStudio.Xenko.Physics
         private Bullet2PhysicsSystem physicsSystem;
         private Simulation simulation;
 
-        public static ProfilingKey CharactersProfilingKey = new ProfilingKey(Simulation.SimulationProfilingKey, "Characters");
-        private ProfilingState charactersProfilingState;
-
         private PhysicsDebugShapeRendering debugShapeRendering;
 
         public PhysicsProcessor()
             : base(PhysicsComponent.Key, TransformComponent.Key)
         {
-            charactersProfilingState = Profiler.New(CharactersProfilingKey);
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -68,6 +64,9 @@ namespace SiliconStudio.Xenko.Physics
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
         private static void RigidBodySetWorldTransform(PhysicsElementBase element, ref Matrix physicsTransform)
         {
+            element.Data.PhysicsComponent.Simulation.SimulationProfiler.Mark();
+            element.Data.PhysicsComponent.Simulation.UpdatedRigidbodies++;
+
             if (element.BoneIndex == -1)
             {
                 element.UpdateTransformationComponent(ref physicsTransform);
@@ -90,6 +89,9 @@ namespace SiliconStudio.Xenko.Physics
         //and Kinematic rigidbodies, called every simulation tick (if body not sleeping) to let the physics engine know where the kinematic body is.
         private static void RigidBodyGetWorldTransform(PhysicsElementBase element, out Matrix physicsTransform)
         {
+            element.Data.PhysicsComponent.Simulation.SimulationProfiler.Mark();
+            element.Data.PhysicsComponent.Simulation.UpdatedRigidbodies++;
+
             if (element.BoneIndex == -1)
             {
                 element.DerivePhysicsTransformation(out physicsTransform);
@@ -122,7 +124,7 @@ namespace SiliconStudio.Xenko.Physics
             element.BoneIndex = -1;
 
             var skinnedElement = element as PhysicsSkinnedElementBase;
-            if (skinnedElement != null && !skinnedElement.NodeName.IsNullOrEmpty() && data.ModelComponent?.ModelViewHierarchy != null)
+            if (skinnedElement != null && !skinnedElement.NodeName.IsNullOrEmpty() && data.ModelComponent?.Skeleton != null)
             {
                 if (!data.BoneMatricesUpdated)
                 {
@@ -130,20 +132,20 @@ namespace SiliconStudio.Xenko.Physics
                     Quaternion rotation;
                     entity.Transform.WorldMatrix.Decompose(out scaling, out rotation, out position);
                     var isScalingNegative = scaling.X * scaling.Y * scaling.Z < 0.0f;
-                    data.ModelComponent.ModelViewHierarchy.NodeTransformations[0].LocalMatrix = entity.Transform.WorldMatrix;
-                    data.ModelComponent.ModelViewHierarchy.NodeTransformations[0].IsScalingNegative = isScalingNegative;
-                    data.ModelComponent.ModelViewHierarchy.UpdateMatrices();
+                    data.ModelComponent.Skeleton.NodeTransformations[0].LocalMatrix = entity.Transform.WorldMatrix;
+                    data.ModelComponent.Skeleton.NodeTransformations[0].IsScalingNegative = isScalingNegative;
+                    data.ModelComponent.Skeleton.UpdateMatrices();
                     data.BoneMatricesUpdated = true;
                 }
 
-                skinnedElement.BoneIndex = data.ModelComponent.ModelViewHierarchy.Nodes.IndexOf(x => x.Name == skinnedElement.NodeName);
+                skinnedElement.BoneIndex = data.ModelComponent.Skeleton.Nodes.IndexOf(x => x.Name == skinnedElement.NodeName);
 
                 if (element.BoneIndex == -1)
                 {
                     throw new Exception("The specified NodeName doesn't exist in the model hierarchy.");
                 }
 
-                element.BoneWorldMatrixOut = element.BoneWorldMatrix = data.ModelComponent.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix;
+                element.BoneWorldMatrixOut = element.BoneWorldMatrix = data.ModelComponent.Skeleton.NodeTransformations[element.BoneIndex].WorldMatrix;
             }
 
             var defaultGroups = element.CanCollideWith == 0 || element.CollisionGroup == 0;
@@ -432,14 +434,11 @@ namespace SiliconStudio.Xenko.Physics
 
             simulation = physicsSystem.Create(this);
 
-            if (Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice != null)
+            var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice;
+            if (gfxDevice != null)
             {
-                debugShapeRendering = new PhysicsDebugShapeRendering(Services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice);
+                debugShapeRendering = new PhysicsDebugShapeRendering(gfxDevice);
             }
-
-            //setup debug device and debug shader
-            //var gfxDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>();
-            //Simulation.DebugGraphicsDevice = gfxDevice.GraphicsDevice;
         }
 
         protected override void OnSystemRemove()
@@ -455,7 +454,8 @@ namespace SiliconStudio.Xenko.Physics
 
         internal void UpdateCharacters()
         {
-            charactersProfilingState.Begin();
+            var charactersProfilingState = Profiler.Begin(PhysicsProfilingKeys.CharactersProfilingKey);
+            var activeCharacters = 0;
             //characters need manual updating
             foreach (var element in characters)
             {
@@ -474,12 +474,9 @@ namespace SiliconStudio.Xenko.Physics
                 }
 
                 charactersProfilingState.Mark();
-            charactersProfilingState.Begin();
-                if(!element.Collider.Enabled) continue;
-
-                charactersProfilingState.Mark();
+                activeCharacters++;
             }
-            charactersProfilingState.End();
+            charactersProfilingState.End("Active characters: {0}", activeCharacters);
         }
 
         public override void Draw(RenderContext context)
@@ -492,7 +489,7 @@ namespace SiliconStudio.Xenko.Physics
                 var model = element.Data.ModelComponent;
                 if ((element.Collider as RigidBody) != null && element.RigidBody.Type == RigidBodyTypes.Dynamic)
                 {
-                    model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix = element.BoneWorldMatrixOut;
+                    model.Skeleton.NodeTransformations[element.BoneIndex].WorldMatrix = element.BoneWorldMatrixOut;
 
                     if (element.DebugEntity != null)
                     {
@@ -514,7 +511,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 //read from ModelViewHierarchy
                 var model = element.Data.ModelComponent;
-                element.BoneWorldMatrix = model.ModelViewHierarchy.NodeTransformations[element.BoneIndex].WorldMatrix;
+                element.BoneWorldMatrix = model.Skeleton.NodeTransformations[element.BoneIndex].WorldMatrix;
             }
         }
     }

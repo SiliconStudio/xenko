@@ -50,10 +50,11 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Animations\AnimationCurveEvaluatorDirectIntGroup.cs" />
+    <Compile Include="Animations\AnimationCurveEvaluatorDirectBlittableGroup.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorDirectVector4Group.cs" />
-    <Compile Include="Animations\AnimationCurveEvaluatorOptimizedIntGroup.cs" />
+    <Compile Include="Animations\AnimationCurveEvaluatorOptimizedBlittableGroup.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedVector4Group.cs" />
+    <Compile Include="Animations\AnimationUpdater.cs" />
     <Compile Include="Engine\ActivableEntityComponent.cs" />
     <Compile Include="Engine\AsyncScript.cs" />
     <Compile Include="Animations\AnimationBlendOperation.cs" />
@@ -79,6 +80,8 @@
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="Animations\Interpolator.cs" />
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
+    <Compile Include="Engine\Design\EntityChildPropertyResolver.cs" />
+    <Compile Include="Engine\Design\ExecutionMode.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
@@ -102,6 +105,8 @@
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
     <Compile Include="Engine\TransformOperation.cs" />
+    <Compile Include="Profiling\GameProfilerSystem.cs" />
+    <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
@@ -2177,12 +2182,11 @@
     <Compile Include="Rendering\MeshSkinningUpdater.cs" />
     <Compile Include="Rendering\MeshSkinningDefinition.cs" />
     <Compile Include="Rendering\ModelNodeFlags.cs" />
-    <Compile Include="Rendering\ModelViewHierarchyUpdater.cs" />
-    <Compile Include="Rendering\ModelViewHierarchyDefinition.cs" />
+    <Compile Include="Rendering\SkeletonUpdater.cs" />
+    <Compile Include="Rendering\Skeleton.cs" />
     <Compile Include="Rendering\ModelNodeDefinition.cs" />
     <Compile Include="Rendering\ModelNodeTransformation.cs" />
     <Compile Include="Rendering\EffectSystemExtensions.cs" />
-    <Compile Include="Rendering\MeshAnimationUpdater.cs" />
     <Compile Include="Rendering\RenderModelEffectSlotManager.cs" />
     <Compile Include="Rendering\ProfilingKeys.cs" />
     <Compile Include="Rendering\RendererExtensions.cs" />
@@ -2279,6 +2283,27 @@
     </Compile>
     <Compile Include="Rendering\Shaders\TransformationKeys.cs" />
     <Compile Include="Engine\SyncScript.cs" />
+    <Compile Include="Updater\ArrayUpdateResolver.cs" />
+    <Compile Include="Updater\BlittableHelper.cs" />
+    <Compile Include="Updater\CompiledUpdate.cs" />
+    <Compile Include="Updater\DataMemberUpdatableAttribute.cs" />
+    <Compile Include="Updater\ListUpdateResolver.cs" />
+    <Compile Include="Updater\UpdatableCustomAccessor.cs" />
+    <Compile Include="Updater\UpdatableField.cs" />
+    <Compile Include="Updater\UpdatableFieldT.cs" />
+    <Compile Include="Updater\UpdatableListAccessor.cs" />
+    <Compile Include="Updater\UpdatableMember.cs" />
+    <Compile Include="Updater\UpdatableProperty.cs" />
+    <Compile Include="Updater\UpdatablePropertyBase.cs" />
+    <Compile Include="Updater\UpdatablePropertyObject.cs" />
+    <Compile Include="Updater\UpdatablePropertyT.cs" />
+    <Compile Include="Updater\UpdateEngine.cs" />
+    <Compile Include="Updater\UpdateEngineHelper.cs" />
+    <Compile Include="Updater\UpdateMemberInfo.cs" />
+    <Compile Include="Updater\UpdateMemberResolver.cs" />
+    <Compile Include="Updater\UpdateObjectData.cs" />
+    <Compile Include="Updater\UpdateOperation.cs" />
+    <Compile Include="Updater\UpdateOperationType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Starter\XenkoApplicationDelegate.iOS.cs" />

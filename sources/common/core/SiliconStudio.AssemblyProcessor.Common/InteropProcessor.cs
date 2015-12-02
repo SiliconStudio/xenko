@@ -342,6 +342,18 @@ namespace SiliconStudio.AssemblyProcessor
             ilProcessor.InsertAfter(sizeOfInst, ilProcessor.Create(OpCodes.Add));
         }
 
+        private void ReplaceAddPinnedStructGeneric(MethodDefinition method, ILProcessor ilProcessor, Instruction incrementPinnedToPatch)
+        {
+            var paramT = ((GenericInstanceMethod)incrementPinnedToPatch.Operand).GenericArguments[0];
+
+            var sizeOfInst = ilProcessor.Create(OpCodes.Sizeof, paramT);
+
+            ilProcessor.Replace(incrementPinnedToPatch, sizeOfInst);
+            var instructionAdd = ilProcessor.Create(OpCodes.Add);
+            ilProcessor.InsertAfter(sizeOfInst, instructionAdd);
+            ilProcessor.InsertBefore(instructionAdd, ilProcessor.Create(OpCodes.Mul));
+        }
+
         /// <summary>
         /// Creates the cast  method with the following signature:
         /// <code>
@@ -832,6 +844,10 @@ namespace SiliconStudio.AssemblyProcessor
                                 else if (methodDescription.Name.StartsWith("IncrementPinned"))
                                 {
                                     this.ReplaceIncrementPinnedStructGeneric(method, ilProcessor, instruction);
+                                }
+                                else if (methodDescription.Name.StartsWith("AddPinned"))
+                                {
+                                    this.ReplaceAddPinnedStructGeneric(method, ilProcessor, instruction);
                                 }
                             }
                         }

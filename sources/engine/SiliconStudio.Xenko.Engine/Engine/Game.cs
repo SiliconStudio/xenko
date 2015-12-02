@@ -17,6 +17,7 @@ using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Font;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Profiling;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Fonts;
 using SiliconStudio.Xenko.Rendering.Sprites;
@@ -81,6 +82,11 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <value>The sprite animation system.</value>
         public SpriteAnimationSystem SpriteAnimation { get; private set; }
+
+        /// <summary>
+        /// Gets the game profiler system
+        /// </summary>
+        public GameProfilingSystem ProfilerSystem { get; private set; }
 
         /// <summary>
         /// Gets the font system.
@@ -168,6 +174,7 @@ namespace SiliconStudio.Xenko.Engine
             UI = new UISystem(Services);
             gameFontSystem = new GameFontSystem(Services);
             SpriteAnimation = new SpriteAnimationSystem(Services);
+            ProfilerSystem = new GameProfilingSystem(Services);
 
             // ---------------------------------------------------------
             // Add common GameSystems - Adding order is important 
@@ -200,6 +207,8 @@ namespace SiliconStudio.Xenko.Engine
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
 
+            GameSystems.Add(ProfilerSystem);
+
             AutoLoadDefaultSettings = true;
         }
 
@@ -220,14 +229,27 @@ namespace SiliconStudio.Xenko.Engine
             {
                 InitializeAssetDatabase();
 
-                if(Asset.Exists(GameSettings.AssetUrl))
+                if (Asset.Exists(GameSettings.AssetUrl))
+                {
                     gameSettings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
+
+                    // Set ShaderProfile even if AutoLoadDefaultSettings is false (because that is what shaders in effect logs are compiled against, even if actual instantiated profile is different)
+                    if (gameSettings.DefaultGraphicsProfileUsed > 0)
+                    {
+                        var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+                        if (!deviceManager.ShaderProfile.HasValue)
+                            deviceManager.ShaderProfile = gameSettings.DefaultGraphicsProfileUsed;
+                    }
+                }
 
                 // Load several default settings
                 if (AutoLoadDefaultSettings)
                 {
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                    if (gameSettings.DefaultGraphicsProfileUsed > 0) deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
+                    if (gameSettings.DefaultGraphicsProfileUsed > 0)
+                    {
+                        deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
+                    }
                     if (gameSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = gameSettings.DefaultBackBufferWidth;
                     if (gameSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = gameSettings.DefaultBackBufferHeight;
                     deviceManager.PreferredColorSpace = gameSettings.ColorSpace;

@@ -229,6 +229,10 @@ namespace SiliconStudio.Presentation.Behaviors
                 if (e.Action == NotifyCollectionChangedAction.Reset)
                 {
                     SelectedItemsInAssociatedObject.Clear();
+                    foreach (var addedItem in SelectedItems)
+                    {
+                        SelectedItemsInAssociatedObject.Add(addedItem);
+                    }
                 }
                 
                 if (e.NewItems != null)

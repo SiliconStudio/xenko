@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
+
 using System.Collections.Generic;
 
 namespace SiliconStudio.Core.Diagnostics
@@ -45,16 +45,37 @@ namespace SiliconStudio.Core.Diagnostics
         /// </summary>
         public readonly Dictionary<object, object> Attributes;
 
+        public readonly ProfilingCustomValue? Custom0;
+        public readonly ProfilingCustomValue? Custom1;
+        public readonly ProfilingCustomValue? Custom2;
+        public readonly ProfilingCustomValue? Custom3;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ProfilingEvent" /> struct.
         /// </summary>
         /// <param name="profileId">The profile identifier.</param>
         /// <param name="profilingKey">The profiling key.</param>
         /// <param name="profilingType">Type of the profiling.</param>
+        /// <param name="timeStamp"></param>
         /// <param name="elapsedTime">The elapsed time.</param>
         /// <param name="text">The text.</param>
         /// <param name="attributes">The attributes.</param>
-        public ProfilingEvent(int profileId, ProfilingKey profilingKey, ProfilingMessageType profilingType, long timeStamp, long elapsedTime, string text, Dictionary<object, object> attributes)
+        /// <param name="value0"></param>
+        /// <param name="value1"></param>
+        /// <param name="value2"></param>
+        /// <param name="value3"></param>
+        public ProfilingEvent(
+            int profileId, 
+            ProfilingKey profilingKey, 
+            ProfilingMessageType profilingType, 
+            long timeStamp, 
+            long elapsedTime, 
+            string text, 
+            Dictionary<object, object> attributes,
+            ProfilingCustomValue? value0 = null,
+            ProfilingCustomValue? value1 = null,
+            ProfilingCustomValue? value2 = null,
+            ProfilingCustomValue? value3 = null)
         {
             Id = profileId;
             Key = profilingKey;
@@ -63,6 +84,10 @@ namespace SiliconStudio.Core.Diagnostics
             ElapsedTime = elapsedTime;
             Text = text;
             Attributes = attributes;
+            Custom0 = value0;
+            Custom1 = value1;
+            Custom2 = value2;
+            Custom3 = value3;
         }
     }
 }

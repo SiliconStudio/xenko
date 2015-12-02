@@ -183,6 +183,9 @@
     <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Windows\FileLock.cs">
       <Link>Core\Design\Windows\FileLock.cs</Link>
     </Compile>
+    <Compile Include="..\..\common\core\SiliconStudio.Core.Design\Yaml\IDynamicYamlNode.cs">
+      <Link>Core\Design\Yaml\IDynamicYamlNode.cs</Link>
+    </Compile>
     <Compile Include="..\..\common\core\SiliconStudio.Core.Serialization\IO\NativeLockFile.cs">
       <Link>Core\Design\Windows\NativeLockFile.cs</Link>
     </Compile>
@@ -228,7 +231,6 @@
     <Compile Include="CodeGenerator\BaseCodeGenerator.cs" />
     <Compile Include="CodeGenerator\BaseCodeGeneratorWithSite.cs" />
     <Compile Include="Commands\BuildMonitorCallback.cs" />
-    <Compile Include="Commands\IParadoxCommands.cs" />
     <Compile Include="Commands\IXenkoCommands.cs" />
     <Compile Include="Commands\XenkoCommandsProxy.cs" />
     <Compile Include="MyControl.xaml.cs">

@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
@@ -10,35 +11,66 @@ using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Xenko.Engine.Design
 {
-    [DataContract]
+    /// <summary>
+    /// Contains design data used by an <see cref="Entity"/>
+    /// </summary>
+    [DataContract("EntityDesignData")]
     public class EntityDesignData
     {
+        /// <summary>
+        /// Gets or sets the folder where the entity is attached (folder is relative to parent folder). If null, the entity doesn't belong to a folder.
+        /// </summary>
         [DataMember(10)]
+        [DefaultValue(null)]
         public string Folder { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the base entity in case of prefabs. If null, the entity is not a prefab.
+        /// </summary>
+        [DataMember(20)]
+        [DefaultValue(null)]
+        public Guid? BaseId { get; set; }
     }
 
-    [DataContract]
+    /// <summary>
+    /// Associate an <see cref="Entity"/> with <see cref="EntityDesignData"/>.
+    /// </summary>
+    [DataContract("EntityDesign")]
     public class EntityDesign
     {
+        /// <summary>
+        /// Initializes a new instance of <see cref="EntityDesign"/>.
+        /// </summary>
         public EntityDesign()
         {
             Design = new EntityDesignData();
         }
 
+        /// <summary>
+        /// Initializes a new instance of <see cref="EntityDesign"/>.
+        /// </summary>
+        /// <param name="entity">The entity</param>
+        /// <param name="designData">The design data.</param>
         public EntityDesign(Entity entity, EntityDesignData designData)
         {
             Entity = entity;
             Design = designData;
         }
 
+        /// <summary>
+        /// Gets or sets the entity
+        /// </summary>
         [DataMember(10)]
         public Entity Entity { get; set; }
 
+        /// <summary>
+        /// Gets or sets the design data.
+        /// </summary>
         [DataMember(20)]
         public EntityDesignData Design { get; }
     }
 
-    [DataContract]
+    [DataContract("EntityHierarchyData")]
     //[ContentSerializer(typeof(DataContentWithEntityReferenceSerializer))]
     public class EntityHierarchyData
     {
@@ -48,15 +80,10 @@ namespace SiliconStudio.Xenko.Engine.Design
         [DataMember(20)]
         public EntityCollection Entities { get; private set; }
 
-        // Note: only for SceneAsset; need a better split (we can review that when implementing entity prefabs)
-        [DataMember(30)]
-        public SceneSettings SceneSettings { get; private set; }
-
         public EntityHierarchyData()
         {
             RootEntities = new List<Guid>();
             Entities = new EntityCollection(this);
-            SceneSettings = new SceneSettings();
         }
 
         [DataSerializer(typeof(KeyedSortedListSerializer<EntityCollection, Guid, EntityDesign>))]

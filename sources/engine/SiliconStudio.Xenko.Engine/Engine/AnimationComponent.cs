@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Engine.Design;
@@ -12,14 +13,14 @@ using SiliconStudio.Xenko.Engine.Design;
 namespace SiliconStudio.Xenko.Engine
 {
     /// <summary>
-    /// Add animation capabilities to an <see cref="Entity"/>. It will usually apply to <see cref="ModelComponent.ModelViewHierarchy"/>
+    /// Add animation capabilities to an <see cref="Entity"/>. It will usually apply to <see cref="ModelComponent.Skeleton"/>
     /// </summary>
     /// <remarks>
     /// Data is stored as in http://altdevblogaday.com/2011/10/23/low-level-animation-part-2/.
     /// </remarks>
     [DataContract("AnimationComponent")]
     [Display(2000, "Animation", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentProcessor(typeof(AnimationProcessor))]
+    [DefaultEntityComponentProcessor(typeof(AnimationProcessor), ExecutionMode = ExecutionMode.Runtime | ExecutionMode.Thumbnail)]
     public sealed class AnimationComponent : EntityComponent
     {
         private readonly Dictionary<string, AnimationClip> animations;
@@ -85,7 +86,7 @@ namespace SiliconStudio.Xenko.Engine
         public PlayingAnimation Play(string name)
         {
             PlayingAnimations.Clear();
-            var playingAnimation = new PlayingAnimation(this, name) { CurrentTime = TimeSpan.Zero, Weight = 1.0f };
+            var playingAnimation = new PlayingAnimation(name, Animations[name]) { CurrentTime = TimeSpan.Zero, Weight = 1.0f };
             PlayingAnimations.Add(playingAnimation);
             return playingAnimation;
         }
@@ -124,7 +125,7 @@ namespace SiliconStudio.Xenko.Engine
             if (!Animations.ContainsKey(name))
                 throw new ArgumentException("name");
 
-            var playingAnimation = new PlayingAnimation(this, name) { CurrentTime = TimeSpan.Zero, Weight = 0.0f };
+            var playingAnimation = new PlayingAnimation(name, Animations[name]) { CurrentTime = TimeSpan.Zero, Weight = 0.0f };
             PlayingAnimations.Add(playingAnimation);
 
             if (fadeTimeSpan > TimeSpan.Zero)
@@ -142,14 +143,17 @@ namespace SiliconStudio.Xenko.Engine
 
         public PlayingAnimation NewPlayingAnimation(string name)
         {
-            return new PlayingAnimation(this, name);
+            return new PlayingAnimation(name, Animations[name]);
         }
 
-        [DataMemberIgnore]
-        public TrackingCollection<PlayingAnimation> PlayingAnimations
-        {
-            get { return playingAnimations; }
-        }
+        /// <summary>
+        /// Gets list of active animations. Use this to customize startup animations.
+        /// </summary>
+        /// <userdoc>
+        /// Active animations. Use this to customize startup animations.
+        /// </userdoc>
+        [MemberCollection(CanReorderItems = true)]
+        public TrackingCollection<PlayingAnimation> PlayingAnimations => playingAnimations;
 
         public override PropertyKey GetDefaultKey()
         {

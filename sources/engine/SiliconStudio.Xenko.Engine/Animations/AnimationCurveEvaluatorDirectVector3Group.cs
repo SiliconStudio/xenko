@@ -6,7 +6,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public class AnimationCurveEvaluatorDirectVector3Group : AnimationCurveEvaluatorDirectGroup<Vector3>
+    public class AnimationCurveEvaluatorDirectVector3Group : AnimationCurveEvaluatorDirectBlittableGroupBase<Vector3>
     {
         protected unsafe override void ProcessChannel(ref Channel channel, CompressedTimeSpan newTime, IntPtr location)
         {

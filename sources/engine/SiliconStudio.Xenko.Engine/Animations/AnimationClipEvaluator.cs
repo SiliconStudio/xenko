@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 
@@ -16,17 +17,7 @@ namespace SiliconStudio.Xenko.Animations
         private AnimationClip clip;
         internal List<AnimationBlender.Channel> BlenderChannels;
 
-        private AnimationCurveEvaluatorDirectFloatGroup curveEvaluatorFloat = new AnimationCurveEvaluatorDirectFloatGroup();
-        private AnimationCurveEvaluatorDirectVector3Group curveEvaluatorVector3 = new AnimationCurveEvaluatorDirectVector3Group();
-        private AnimationCurveEvaluatorDirectQuaternionGroup curveEvaluatorQuaternion = new AnimationCurveEvaluatorDirectQuaternionGroup();
-        private AnimationCurveEvaluatorDirectIntGroup curveEvaluatorInt = new AnimationCurveEvaluatorDirectIntGroup();
-        private AnimationCurveEvaluatorDirectVector4Group curveEvaluatorVector4 = new AnimationCurveEvaluatorDirectVector4Group();
-
-        private AnimationCurveEvaluatorOptimizedFloatGroup curveEvaluatorOptimizedFloat;
-        private AnimationCurveEvaluatorOptimizedVector3Group curveEvaluatorOptimizedVector3;
-        private AnimationCurveEvaluatorOptimizedQuaternionGroup curveEvaluatorOptimizedQuaternion;
-        private AnimationCurveEvaluatorOptimizedIntGroup curveEvaluatorOptimizedInt;
-        private AnimationCurveEvaluatorOptimizedVector4Group curveEvaluatorOptimizedVector4;
+        private FastListStruct<AnimationCurveEvaluatorGroup> curveEvaluatorGroups = new FastListStruct<AnimationCurveEvaluatorGroup>(4);
 
         // Temporarily exposed for MeshAnimationUpdater
         internal FastListStruct<EvaluatorChannel> Channels = new FastListStruct<EvaluatorChannel>(4);
@@ -47,40 +38,19 @@ namespace SiliconStudio.Xenko.Animations
             this.clip = clip;
             clip.Freeze();
 
-            // If there are optimized curve data, instantiate appropriate evaluators
-            if (clip.OptimizedCurvesFloat != null)
+            // If there are optimized curve data, instantiate (first time) and initialize appropriate evaluators
+            if (clip.OptimizedAnimationDatas != null)
             {
-                if (curveEvaluatorOptimizedFloat == null)
-                    curveEvaluatorOptimizedFloat = new AnimationCurveEvaluatorOptimizedFloatGroup();
-                curveEvaluatorOptimizedFloat.Initialize(clip.OptimizedCurvesFloat);
-            }
-
-            if (clip.OptimizedCurvesVector3 != null)
-            {
-                if (curveEvaluatorOptimizedVector3 == null)
-                    curveEvaluatorOptimizedVector3 = new AnimationCurveEvaluatorOptimizedVector3Group();
-                curveEvaluatorOptimizedVector3.Initialize(clip.OptimizedCurvesVector3);
-            }
-
-            if (clip.OptimizedCurvesQuaternion != null)
-            {
-                if (curveEvaluatorOptimizedQuaternion == null)
-                    curveEvaluatorOptimizedQuaternion = new AnimationCurveEvaluatorOptimizedQuaternionGroup();
-                curveEvaluatorOptimizedQuaternion.Initialize(clip.OptimizedCurvesQuaternion);
-            }
-
-            if (clip.OptimizedCurvesInt != null)
-            {
-                if (curveEvaluatorOptimizedInt == null)
-                    curveEvaluatorOptimizedInt = new AnimationCurveEvaluatorOptimizedIntGroup();
-                curveEvaluatorOptimizedInt.Initialize(clip.OptimizedCurvesInt);
-            }
-
-            if (clip.OptimizedCurvesVector4 != null)
-            {
-                if (curveEvaluatorOptimizedVector4 == null)
-                    curveEvaluatorOptimizedVector4 = new AnimationCurveEvaluatorOptimizedVector4Group();
-                curveEvaluatorOptimizedVector4.Initialize(clip.OptimizedCurvesVector4);
+                foreach (var optimizedData in clip.OptimizedAnimationDatas)
+                {
+                    var optimizedEvaluatorGroup = curveEvaluatorGroups.OfType<AnimationCurveEvaluatorOptimizedGroup>().FirstOrDefault(x => x.ElementType == optimizedData.ElementType);
+                    if (optimizedEvaluatorGroup == null)
+                    {
+                        optimizedEvaluatorGroup = optimizedData.CreateEvaluator();
+                        curveEvaluatorGroups.Add(optimizedEvaluatorGroup);
+                    }
+                    optimizedEvaluatorGroup.Initialize(optimizedData);
+                }
             }
 
             // Add already existing channels
@@ -93,11 +63,10 @@ namespace SiliconStudio.Xenko.Animations
 
         internal void Cleanup()
         {
-            curveEvaluatorOptimizedFloat?.Cleanup();
-            curveEvaluatorOptimizedVector3?.Cleanup();
-            curveEvaluatorOptimizedQuaternion?.Cleanup();
-            curveEvaluatorOptimizedInt?.Cleanup();
-            curveEvaluatorOptimizedVector4?.Cleanup();
+            foreach (var curveEvaluatorGroup in curveEvaluatorGroups)
+            {
+                curveEvaluatorGroup.Cleanup();
+            }
 
             Channels.Clear();
             BlenderChannels = null;
@@ -114,24 +83,26 @@ namespace SiliconStudio.Xenko.Animations
                     // For now, objects are not supported, so treat everything as a blittable struct.
                     var channel = Channels.Items[index];
 
-                    var structureStart = (float*)(structures + channel.Offset);
+                    if (channel.BlendType == AnimationBlender.BlendType.Object)
+                    {
+                        // Non-blittable (note: 0.0f representation is 0 and that's what UpdateEngine checks against)
+                        result.Objects[channel.Offset].Condition = *(int*)&channel.Factor;
+                    }
+                    else
+                    {
+                        // Blittable
+                        var structureStart = (float*)(structures + channel.Offset);
 
-                    // Write a float specifying channel factor (1 if exists, 0 if doesn't exist)
-                    *structureStart = channel.Factor;
+                        // Write a float specifying channel factor (1 if exists, 0 if doesn't exist)
+                        *structureStart = channel.Factor;
+                    }
                 }
 
-                curveEvaluatorOptimizedFloat?.Evaluate(newTime, (IntPtr)structures);
-                curveEvaluatorOptimizedVector3?.Evaluate(newTime, (IntPtr)structures);
-                curveEvaluatorOptimizedQuaternion?.Evaluate(newTime, (IntPtr)structures);
-                curveEvaluatorOptimizedInt?.Evaluate(newTime, (IntPtr)structures);
-                curveEvaluatorOptimizedVector4?.Evaluate(newTime, (IntPtr)structures);
-
-                // Write interpolated data
-                curveEvaluatorFloat.Evaluate(newTime, (IntPtr)structures);
-                curveEvaluatorVector3.Evaluate(newTime, (IntPtr)structures);
-                curveEvaluatorQuaternion.Evaluate(newTime, (IntPtr)structures);
-                curveEvaluatorInt.Evaluate(newTime, (IntPtr)structures);
-                curveEvaluatorVector4.Evaluate(newTime, (IntPtr)structures);
+                // Update values
+                foreach (var curveEvaluatorGroup in curveEvaluatorGroups)
+                {
+                    curveEvaluatorGroup.Evaluate(newTime, (IntPtr)structures, result.Objects);
+                }
             }
         }
 
@@ -160,43 +131,43 @@ namespace SiliconStudio.Xenko.Animations
 
             if (itemFound)
             {
+                var offset = channel.Offset;
+
+                // Object uses array indices, but blittable types are placed after a float that specify if it should be copied
+                if (channel.BlendType != AnimationBlender.BlendType.Object)
+                    offset += sizeof(float);
+
                 if (clipChannel.CurveIndex != -1)
                 {
                     curve = clip.Curves[clipChannel.CurveIndex];
-                    if (clipChannel.ElementType == typeof(float))
-                        curveEvaluatorFloat.AddChannel(curve, channel.Offset + sizeof(float));
-                    else if (clipChannel.ElementType == typeof(Vector3))
-                        curveEvaluatorVector3.AddChannel(curve, channel.Offset + sizeof(float));
-                    else if (clipChannel.ElementType == typeof(Quaternion))
-                        curveEvaluatorQuaternion.AddChannel(curve, channel.Offset + sizeof(float));
-                    else if (clipChannel.ElementType == typeof(int))
-                        curveEvaluatorInt.AddChannel(curve, channel.Offset + sizeof(float));
-                    else if (clipChannel.ElementType == typeof(Vector4))
-                        curveEvaluatorVector4.AddChannel(curve, channel.Offset + sizeof(float));
-                    else
-                        throw new NotImplementedException("Can't create evaluator with this type of curve channel.");
+
+                    // TODO: Optimize this search?
+                    var curveEvaluatorGroup = curveEvaluatorGroups.OfType<AnimationCurveEvaluatorDirectGroup>().FirstOrDefault(x => x.ElementType == clipChannel.ElementType);
+                    if (curveEvaluatorGroup == null)
+                    {
+                        // First time, let's create it
+                        curveEvaluatorGroup = curve.CreateEvaluator();
+                        curveEvaluatorGroups.Add(curveEvaluatorGroup);
+                    }
+
+                    curveEvaluatorGroup.AddChannel(curve, offset);
                 }
                 else
                 {
-                    if (clipChannel.ElementType == typeof(float))
-                        curveEvaluatorOptimizedFloat.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
-                    else if (clipChannel.ElementType == typeof(Vector3))
-                        curveEvaluatorOptimizedVector3.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
-                    else if (clipChannel.ElementType == typeof(Quaternion))
-                        curveEvaluatorOptimizedQuaternion.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
-                    else if(clipChannel.ElementType == typeof(int))
-                        curveEvaluatorOptimizedInt.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
-                    else if (clipChannel.ElementType == typeof(Vector4))
-                        curveEvaluatorOptimizedVector4.AddChannel(channel.PropertyName, channel.Offset + sizeof(float));
+                    // TODO: Optimize this search?
+                    var curveEvaluatorGroup = curveEvaluatorGroups.OfType<AnimationCurveEvaluatorOptimizedGroup>().First(x => x.ElementType == clipChannel.ElementType);
+
+                    curveEvaluatorGroup.SetChannelOffset(channel.PropertyName, offset);
                 }
             }
 
-            Channels.Add(new EvaluatorChannel { Offset = channel.Offset, Curve = curve, Factor = itemFound ? 1.0f : 0.0f });
+            Channels.Add(new EvaluatorChannel { Offset = channel.Offset, BlendType = channel.BlendType, Curve = curve, Factor = itemFound ? 1.0f : 0.0f });
         }
 
         internal struct EvaluatorChannel
         {
             public int Offset;
+            public AnimationBlender.BlendType BlendType;
             public AnimationCurve Curve;
             public float Factor;
         }
