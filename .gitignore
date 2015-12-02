@@ -44,6 +44,7 @@ obj/
 setup-cache*/
 setup-SetupFiles*/
 /doc/xenko_doc_output/
+/build/Xenko.version
 /externals/
 /sources/tools/Xenko.ShaderKeyGenerator/build/
 /sources/tools/Xenko.ProjectGenerator/build/
