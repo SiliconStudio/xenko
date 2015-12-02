@@ -79,3 +79,4 @@ sources/engine/SiliconStudio.Xenko.Graphics/Shaders.Bytecodes/log/
 log
 x64Debug
 x64Release
+*.opendb
