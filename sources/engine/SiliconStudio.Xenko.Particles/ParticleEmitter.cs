@@ -439,6 +439,20 @@ namespace SiliconStudio.Xenko.Particles
         [NotNull]
         public ParticleMaterialBase Material;
 
+        public void Setup(GraphicsDevice graphicsDevice, Matrix viewMatrix, Matrix projMatrix)
+        {
+            if (Material == null)
+                return;
+
+            var variation = ParticleEffectVariation.None; // TODO Should depend on fields
+            if (graphicsDevice.ColorSpace == ColorSpace.Linear)
+                variation |= ParticleEffectVariation.IsSrgb;
+
+            variation |= Material.MandatoryVariation;
+
+            Material.Setup(graphicsDevice, variation, viewMatrix, projMatrix);
+        }
+
         public int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)
         {
             if (ShapeBuilder == null)

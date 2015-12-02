@@ -16,32 +16,34 @@ namespace SiliconStudio.Xenko.Particles.Materials
     [Display("StaticTexture")]
     public class ParticleMaterialTexture : ParticleMaterialBase
     {
+        private Texture texture = null;
+
         [DataMember(100)]
         [Display("Texture")]
-        public Texture Texture;
-
-        private static Effect effect = null;
-        private static Effect effectSRgb = null;
-
-        protected static Effect GetEffect(GraphicsDevice device)
+        public Texture Texture
         {
-            return effect ?? (effect = new Effect(device, ParticleBatch.BytecodeTex0));
-        }
-
-        protected static Effect GetEffectSRgb(GraphicsDevice device)
-        {
-            return effectSRgb ?? (effectSRgb = new Effect(device, ParticleBatch.BytecodeSRgbTex0));
+            get { return texture; }
+            set
+            {
+                texture = value;
+                if (value != null)
+                {
+                    MandatoryVariation |= ParticleEffectVariation.HasTex0;
+                }
+                else
+                {
+                    MandatoryVariation &= ~ParticleEffectVariation.HasTex0;
+                }
+            }
         }
 
         protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
 
-        public override void Setup(GraphicsDevice graphicsDevice, Matrix viewMatrix, Matrix projMatrix)
+        public override void Setup(GraphicsDevice graphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix)
         {
-            var effect = (graphicsDevice.ColorSpace == ColorSpace.Linear ? GetEffectSRgb(graphicsDevice) : GetEffect(graphicsDevice));
+            variation |= MandatoryVariation;    // Should be the same but still
 
-            // This is a textured material, so if we don't have a texture parameter we can't draw it
-            if (!effect.HasParameter(TexturingKeys.Texture0))
-                return;
+            var effect = ParticleBatch.GetEffect(graphicsDevice, variation);
 
             // Get or create parameter collection
             if (ParameterCollectionGroup == null || ParameterCollectionGroup.Effect != effect)
@@ -56,13 +58,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // This should be CB0 - view/proj matrices don't change per material
             Parameters.Set(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
 
-
             effect.Apply(graphicsDevice, ParameterCollectionGroup, applyEffectStates: false);
 
-            // TODO Is it ok if EffectParameterResourceBinding is not internal anymore?
-            var textureUpdater = effect.GetParameterFastUpdater(TexturingKeys.Texture0);
-            textureUpdater.ApplyParameter(graphicsDevice, Texture);
-
+            if (effect.HasParameter(TexturingKeys.Texture0))
+            {
+                var textureUpdater = effect.GetParameterFastUpdater(TexturingKeys.Texture0);
+                textureUpdater.ApplyParameter(graphicsDevice, texture);
+            }
 
         }
 

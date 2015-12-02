@@ -9,25 +9,22 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Particles.VertexLayouts
 {
-    public class ParticleVertexLayoutTextured : ParticleVertexLayout
+    public class ParticleVertexLayoutPlain : ParticleVertexLayout
     {
         /// <summary>
         /// The vertex layout of this struct.
         /// </summary>
-        public static VertexDeclaration VertexDeclaration { get; } 
+        public static VertexDeclaration VertexDeclaration { get; }
             = new VertexDeclaration(
             VertexElement.Position<Vector3>(),
-            VertexElement.TextureCoordinate<Vector2>(),
             VertexElement.Color<Color>()
-            //            new VertexElement("BATCH_SWIZZLE", PixelFormat.R32_Float)
             );
 
         // TODO Dynamic
-        private const int OffsetPosition   = 0;
-        private const int OffsetUv         = 12;
-        private const int OffsetColor      = 20;
+        private const int OffsetPosition = 0;
+        private const int OffsetColor = 12;
 
-        public override int Size { get; protected set; } = 24;
+        public override int Size { get; protected set; } = 16;
 
         public override int VerticesPerParticle { get; internal set; } = 4;
 
@@ -36,13 +33,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public unsafe override void SetPosition(ref Vector3 position)
         {
             // TODO Not hardcoded offset
-            * ((Vector3*)(vertexBuffer + OffsetPosition)) = position;
-        }
-
-        public unsafe override void SetUvCoords(ref Vector2 uvCoords)
-        {
-            // TODO Not hardcoded offset
-            *((Vector2*)(vertexBuffer + OffsetUv)) = uvCoords;
+            *((Vector3*)(vertexBuffer + OffsetPosition)) = position;
         }
 
         public unsafe override void SetColor(ref Color4 color)
@@ -54,11 +45,6 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public unsafe override void SetPosition(IntPtr position)
         {
             *((Vector3*)(vertexBuffer + OffsetPosition)) = (*((Vector3*)position));
-        }
-
-        public unsafe override void SetUvCoords(IntPtr uv)
-        {
-            *((Vector2*)(vertexBuffer + OffsetUv)) = (*((Vector2*)uv));
         }
 
         public unsafe override void SetColor(IntPtr color)

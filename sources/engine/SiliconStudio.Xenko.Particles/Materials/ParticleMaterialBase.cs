@@ -30,6 +30,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("Face culling")]
         public ParticleMaterialCulling FaceCulling;
 
+        [DataMemberIgnore]
+        public ParticleEffectVariation MandatoryVariation { get; protected set; } = ParticleEffectVariation.None;
+
         /// <summary>
         /// Parameters should be divided into several groups later.
         /// CB0 - Parameters like camera position, viewProjMatrix, Screen size, FOV, etc. which persist for all materials/emitters in the same stage
@@ -45,7 +48,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <param name="GraphicsDevice">Graphics device to setup</param>
         /// <param name="viewMatrix">The camera's View matrix</param>
         /// <param name="projMatrix">The camera's Projection matrix</param>
-        public abstract void Setup(GraphicsDevice GraphicsDevice, Matrix viewMatrix, Matrix projMatrix);
+        public abstract void Setup(GraphicsDevice GraphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix);
 
         [DataMemberIgnore]
         public abstract ParticleVertexLayout VertexLayout { get; protected set; }
