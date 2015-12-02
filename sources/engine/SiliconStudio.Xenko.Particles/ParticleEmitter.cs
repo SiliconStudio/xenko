@@ -439,7 +439,7 @@ namespace SiliconStudio.Xenko.Particles
         [NotNull]
         public ParticleMaterialBase Material;
 
-        public void Setup(GraphicsDevice graphicsDevice, Matrix viewMatrix, Matrix projMatrix)
+        public void Setup(GraphicsDevice graphicsDevice, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
             if (Material == null)
                 return;
@@ -450,7 +450,7 @@ namespace SiliconStudio.Xenko.Particles
 
             variation |= Material.MandatoryVariation;
 
-            Material.Setup(graphicsDevice, variation, viewMatrix, projMatrix);
+            Material.Setup(graphicsDevice, variation, viewMatrix, projMatrix, color);
         }
 
         public int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)

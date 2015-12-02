@@ -20,7 +20,9 @@ namespace SiliconStudio.Xenko.Particles
 //        private Vector4 vector4UnitX = Vector4.UnitX;
 //        private Vector4 vector4UnitY = -Vector4.UnitY;
 
-        public ParticleBatch(GraphicsDevice device, int bufferElementCount = 1024, int batchCapacity = 64)
+        private const int maxQuadCount = 1024 * 16;
+
+        public ParticleBatch(GraphicsDevice device, int bufferElementCount = maxQuadCount, int batchCapacity = 64)
             : base(device, ParticleBatch.Bytecode(ParticleEffectVariation.None), ParticleBatch.Bytecode(ParticleEffectVariation.IsSrgb), StaticQuadBufferInfo.CreateQuadBufferInfo("ParticleBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), ParticleVertexLayout.VertexDeclaration)
         {
             SortMode = SpriteSortMode.Immediate;
@@ -31,26 +33,27 @@ namespace SiliconStudio.Xenko.Particles
             // TODO Setup material - here is also ok
 
             var emitter = elementInfo.DrawInfo.Emitter;
+            var color = elementInfo.DrawInfo.Color;
 
 
 
-
-            emitter.Setup(GraphicsDevice, viewMatrix, projMatrix);
+            emitter.Setup(GraphicsDevice, viewMatrix, projMatrix, color);
             
 
 
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
             var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
 
-            var remainingCapacity = 2000;
+            var remainingCapacity = maxQuadCount;
             emitter.BuildVertexBuffer(vertexPointer, unitX, unitY, ref remainingCapacity);
         }
 
-        public void Draw(ParticleEmitter emitter)
+        public void Draw(ParticleEmitter emitter, Color4 color)
         {
             var drawInfo = new ParticleDrawInfo
             {
                 Emitter = emitter,
+                Color = color,
             };
 
             // TODO Sort by depth
@@ -105,6 +108,7 @@ namespace SiliconStudio.Xenko.Particles
         public struct ParticleDrawInfo
         {
             public ParticleEmitter Emitter;
+            public Color4 Color;
         }
     }
 }

@@ -11,13 +11,24 @@ class ParticleBase : ShaderBase, Texturing
     // -------------------------------------
     // uniforms
     // -------------------------------------
+
+    // !When a bigger structure (float4) follow a smaller structure (float) the binding seems off
+    // Declare the uniforms in the order float4x4 > float4 > float > uint
+
     // A general transformation matrix
     stage float4x4 MatrixTransform;
 
+    stage float4 ColorScale;
+
     // When the value is 0 there is no occlusion (100% emissive), when it is 1 there is 100% occlusion (still limited by alpha)
     stage float AlphaAdditive;
+    
+    stage float ColorIntensity;
 
-    stage float4 ColorScale;
+    stage uint RenderFlagSwizzle;
+
+    // Unfortunately Dx9.1 and OpenGlES2.0 do not support bitwise operations
+    // static const uint RenderFlagSwizzle = 0x01;
 
 //    stage float4x4 ViewMatrix;
 //    stage float4x4 ProjectionMatrix;
