@@ -226,7 +226,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             if (baseAsset != null && newBaseAsset != null)
             {
-                // TODO: Merge top-level hiearchy into newAsset
+                var diff = new AssetDiff(baseAsset.Hierarchy.RootEntities, newAsset.Hierarchy.RootEntities, newBaseAsset.Hierarchy.RootEntities)
+                {
+                    UseOverrideMode = true,
+                };
+                // Merge collections
+                var localResult = AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
+                localResult.CopyTo(result);
             }
 
             // Add known entities in hierarchy
