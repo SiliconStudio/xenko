@@ -58,6 +58,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <param name="projMatrix">The camera's Projection matrix</param>
         public abstract void Setup(GraphicsDevice GraphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix, Color4 color);
 
+        public abstract void PatchVertexBuffer(IntPtr vertexBuffer, ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int remainingCapacity, ParticlePool pool);
+
         protected void SetupBase(GraphicsDevice graphicsDevice)
         {
             if (FaceCulling == ParticleMaterialCulling.CullNone)   graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);

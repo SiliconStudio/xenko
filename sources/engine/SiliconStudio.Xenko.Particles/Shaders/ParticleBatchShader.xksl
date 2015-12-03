@@ -23,7 +23,7 @@ class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
     // Shading of the sprite
     stage override float4 Shading()
     {
-        float4 finalColor = ColorScale;
+        float4 finalColor = ColorScale * streams.Color;
         if (THasTexture)
         {
             finalColor *= ((RenderFlagSwizzle == 0) ? SampleTex0() : SampleTex0().rrrr);
