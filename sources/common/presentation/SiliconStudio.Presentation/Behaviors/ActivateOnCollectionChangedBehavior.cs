@@ -7,14 +7,14 @@ namespace SiliconStudio.Presentation.Behaviors
     /// <summary>
     /// The base class for a behavior that allows to activate the associated object when an observable collection changes.
     /// </summary>
-    /// <typeparam name="T">The type the <see cref="ActivateOnCollectionChanged{T}"/> can be attached to.</typeparam>
-    public abstract class ActivateOnCollectionChanged<T> : Behavior<T> where T : DependencyObject
+    /// <typeparam name="T">The type the <see cref="ActivateOnCollectionChangedBehavior{T}"/> can be attached to.</typeparam>
+    public abstract class ActivateOnCollectionChangedBehavior<T> : Behavior<T> where T : DependencyObject
     {
         /// <summary>
         /// Identifies the <see cref="Collection"/> dependency property.
         /// </summary>
         public static DependencyProperty CollectionProperty = DependencyProperty.Register("Collection", typeof(INotifyCollectionChanged),
-            typeof(ActivateOnCollectionChanged<T>), new FrameworkPropertyMetadata(OnCollectionChanged));
+            typeof(ActivateOnCollectionChangedBehavior<T>), new FrameworkPropertyMetadata(OnCollectionChanged));
 
         /// <summary>
         /// Gets or sets the collection to observe in order to trigger activation of the associated control.
@@ -27,7 +27,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private static void OnCollectionChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            var behavior = (ActivateOnCollectionChanged<T>)d;
+            var behavior = (ActivateOnCollectionChangedBehavior<T>)d;
             if (e.OldValue != null)
             {
                 var oldValue = (INotifyCollectionChanged)e.OldValue;

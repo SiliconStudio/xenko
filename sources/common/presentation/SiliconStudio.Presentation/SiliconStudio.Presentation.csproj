@@ -36,7 +36,7 @@
   <ItemGroup>
     <Compile Include="Adorners\HighlightBorderAdorner.cs" />
     <Compile Include="Adorners\HighlightAdornerState.cs" />
-    <Compile Include="Behaviors\ActivateOnCollectionChanged.cs" />
+    <Compile Include="Behaviors\ActivateOnCollectionChangedBehavior.cs" />
     <Compile Include="Behaviors\BehaviorProperties.cs" />
     <Compile Include="Behaviors\BindableSelectedItemsBehavior.cs" />
     <Compile Include="Behaviors\BindCurrentToolTipStringBehavior.cs" />
