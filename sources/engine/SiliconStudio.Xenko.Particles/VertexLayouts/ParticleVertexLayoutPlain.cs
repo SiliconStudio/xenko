@@ -28,6 +28,13 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             *((Vector3*)(vertexBuffer + OffsetPosition)) = (*((Vector3*)position));
         }
 
+        public unsafe override void AddColor(ref Color4 color)
+        {
+            var addeedColor = color * new Color4(*((uint*)(vertexBuffer + OffsetColor)));
+
+            *((uint*)(vertexBuffer + OffsetColor)) = (uint)(addeedColor.ToRgba());
+        }
+
         public unsafe override void SetColor(IntPtr color)
         {
             *((uint*)(vertexBuffer + OffsetColor)) = (uint)(*((Color4*)color)).ToRgba();
@@ -59,5 +66,19 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             vertexBuffer = oldPtr;
 
         }
+
+        public override void AddColorForParticle(ref Color4 color)
+        {
+            var oldPtr = vertexBuffer;
+
+            for (var i = 0; i < VerticesPerParticle; i++)
+            {
+                AddColor(ref color);
+                NextVertex();
+            }
+
+            vertexBuffer = oldPtr;
+        }
+
     }
 }

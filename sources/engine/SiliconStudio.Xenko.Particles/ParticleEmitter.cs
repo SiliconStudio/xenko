@@ -16,6 +16,7 @@ using SiliconStudio.Xenko.Particles.Materials;
 using SiliconStudio.Xenko.Particles.Modules;
 using SiliconStudio.Xenko.Particles.ShapeBuilders;
 using SiliconStudio.Xenko.Particles.Spawners;
+using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles
 {
@@ -466,15 +467,24 @@ namespace SiliconStudio.Xenko.Particles
             variation |= Material.MandatoryVariation;
             var vertexLayoutBuilder = ParticleBatch.GetVertexLayout(variation);
 
+            var maxDrawn = remainingCapacity;
+
             if (simulationSpace == EmitterSimulationSpace.Local)
-                return ShapeBuilder.BuildVertexBuffer(vertexBuffer, vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
+            {
+                ShapeBuilder.BuildVertexBuffer(vertexBuffer, vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
+            }
+            else
+            {
+                var posIdentity = new Vector3(0, 0, 0);
+                var rotIdentity = new Quaternion(0, 0, 0, 1);
+                ShapeBuilder.BuildVertexBuffer(vertexBuffer, vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref posIdentity, ref rotIdentity, 1f, pool);
+            }
 
-            var posIdentity = new Vector3(0, 0, 0);
-            var rotIdentity = new Quaternion(0, 0, 0, 1);
-            return ShapeBuilder.BuildVertexBuffer(vertexBuffer, vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref posIdentity, ref rotIdentity, 1f, pool);
+            maxDrawn -= remainingCapacity;
 
-            // TODO Material.BuildVertexBuffer
+            Material.PatchVertexBuffer(vertexBuffer, vertexLayoutBuilder, invViewX, invViewY, maxDrawn, pool);
 
+            return maxDrawn;
         }
 
         #endregion
