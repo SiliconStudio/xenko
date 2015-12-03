@@ -15,7 +15,7 @@ namespace SiliconStudio.BuildEngine
     /// </summary>
     public class FileVersionTracker : IDisposable
     {
-        private const string DefaultFileVersionTrackerFile = @"Silicon Studio Corp\FileVersionTracker.cache";
+        private const string DefaultFileVersionTrackerFile = @"Silicon Studio\FileVersionTracker.cache";
         private readonly FileVersionStorage storage;
         private readonly Dictionary<FileVersionKey, object> locks;
         private static readonly Logger log = GlobalLogger.GetLogger("FileVersionTracker");
