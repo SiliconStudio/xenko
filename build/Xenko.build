@@ -43,7 +43,7 @@ Example of use:
   -->
   <Target Name="PackageLauncher">
     <ItemGroup>
-      <FilesToDeleteLauncher Include="$(MSBuildThisFileDirectory)SiliconStudio.LauncherApp*.nupkg"/>
+      <FilesToDeleteLauncher Include="$(MSBuildThisFileDirectory)SiliconStudio.Launcher*.nupkg"/>
     </ItemGroup>
 
     <Delete Files="@(FilesToDeleteLauncher)"/>
@@ -113,7 +113,7 @@ Example of use:
   -->
   <Target Name="PublishLauncher">
     <Error Condition="'$(SiliconStudioStoreApiKey)' == ''" Text="Missing env variable SiliconStudioStoreApiKey"/>
-    <Exec Command='"$(NuGetPath)" push SiliconStudio.LauncherApp*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
+    <Exec Command='"$(NuGetPath)" push SiliconStudio.Launcher*.nupkg -ApiKey $(SiliconStudioStoreApiKey) -Source $(SiliconStudioStoreUrl) "'/>
   </Target>
 
   <!--
@@ -165,10 +165,18 @@ Example of use:
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).WindowsPhone.sln" Properties="$(BuildProperties);Platform=WindowsPhone"/>
   </Target>
   
-  <Target Name="GitLinkPdb">
-    <PackageGetVersionTask File="$(XenkoPackage)">
+  <Target Name="WritePackageVersionToFile">
+    <PackageGetVersionTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
     </PackageGetVersionTask>
-    <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/paradox -s releases/$(XenkoPackageVersion)" />
+    <Delete Files="$(MSBuildThisFileDirectory)Xenko.version"/>
+    <WriteLinesToFile File="$(MSBuildThisFileDirectory)Xenko.version" Lines="$(XenkoPackageVersion)" />
+  </Target>
+  
+  <Target Name="GitLinkPdb">
+    <PackageGetVersionTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)">
+      <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
+    </PackageGetVersionTask>
+    <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/xenko -s releases/$(XenkoPackageVersion)" />
   </Target>
 </Project>
