@@ -447,10 +447,18 @@ namespace SiliconStudio.Assets.Diff
             var firstItem = baseItems.FirstOrDefault() ?? asset1Items.FirstOrDefault() ?? asset2Items.FirstOrDefault();
 
             // For now, in the context of UseOverrideMode and we have identifiers per item, use DiffCollectionByIds instead
-            if (UseOverrideMode && firstItem != null && IdentifiableHelper.HasId(firstItem.Instance))
+            if (UseOverrideMode && firstItem != null)
             {
-                DiffCollectionByIds(diff3, baseNode, asset1Node, asset2Node);
-                return;
+                if (IdentifiableHelper.HasId(firstItem.Instance))
+                {
+                    DiffCollectionByIds(diff3, baseNode, asset1Node, asset2Node);
+                    return;
+                }
+                else if (firstItem.Instance is Guid)
+                {
+                    DiffCollectionByGuids(diff3, baseNode, asset1Node, asset2Node);
+                    return;
+                }
             }
 
             // If we have a DiffUseAsset1Attribute, list of Asset1Node becomes authoritative.
@@ -584,6 +592,11 @@ namespace SiliconStudio.Assets.Diff
 
         private void DiffCollectionByIds(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
         {
+            DiffCollectionByIdsGeneric(diff3, baseNode, asset1Node, asset2Node, IdentifiableHelper.GetId, DiffNode);
+        }
+
+        private void DiffCollectionByIdsGeneric(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node, Func<object, Guid> idGetter, Func<DataVisitNode, DataVisitNode, DataVisitNode, Diff3Node> diff3Getter)
+        {
             var baseItems = baseNode != null ? baseNode.Items ?? EmptyNodes : EmptyNodes;
             var asset1Items = asset1Node != null ? asset1Node.Items ?? EmptyNodes : EmptyNodes;
             var asset2Items = asset2Node != null ? asset2Node.Items ?? EmptyNodes : EmptyNodes;
@@ -594,7 +607,7 @@ namespace SiliconStudio.Assets.Diff
             for (int i = 0; i < baseItems.Count; i++)
             {
                 var item = baseItems[i];
-                var id = IdentifiableHelper.GetId(item.Instance);
+                var id = idGetter(item.Instance);
                 Diff3CollectionByIdItem entry;
                 items.TryGetValue(id, out entry);
                 entry.BaseIndex = i;
@@ -603,7 +616,7 @@ namespace SiliconStudio.Assets.Diff
             for (int i = 0; i < asset1Items.Count; i++)
             {
                 var item = asset1Items[i];
-                var id = IdentifiableHelper.GetId(item.Instance);
+                var id = idGetter(item.Instance);
                 Diff3CollectionByIdItem entry;
                 items.TryGetValue(id, out entry);
                 entry.Asset1Index = i;
@@ -612,7 +625,7 @@ namespace SiliconStudio.Assets.Diff
             for (int i = 0; i < asset2Items.Count; i++)
             {
                 var item = asset2Items[i];
-                var id = IdentifiableHelper.GetId(item.Instance);
+                var id = idGetter(item.Instance);
                 Diff3CollectionByIdItem entry;
                 items.TryGetValue(id, out entry);
                 entry.Asset2Index = i;
@@ -634,7 +647,7 @@ namespace SiliconStudio.Assets.Diff
                 if (hasBase && hasAsset1 && hasAsset2)
                 {
                     // If asset was already in base and is still valid for asset1 and asset2
-                    var diff3Node = DiffNode(baseNode.Items[baseIndex], asset1Node.Items[asset1Index], asset2Node.Items[asset2Index]);
+                    var diff3Node = diff3Getter(baseNode.Items[baseIndex], asset1Node.Items[asset1Index], asset2Node.Items[asset2Index]);
                     // Use index from asset2 if baseIndex = asset1Index, else use from asset1 index
                     AddItemByPosition(diff3, diff3Node, baseIndex == asset1Index ? asset2Index : asset1Index, true);
                 }
@@ -664,7 +677,7 @@ namespace SiliconStudio.Assets.Diff
 
             // Cleanup any hole in the list
             // If new items are found, just cleanup
-            if (diff3.Items == null)
+            if (diff3.Items != null)
             {
                 // Because in the previous loop, we can add some hole while trying to merge index (null nodes), we need to remove them from here.
                 for (int i = diff3.Items.Count - 1; i >= 0; i--)
@@ -675,6 +688,18 @@ namespace SiliconStudio.Assets.Diff
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Diff a collection of Guid (supposed to be unique)
+        /// </summary>
+        /// <param name="diff3"></param>
+        /// <param name="baseNode"></param>
+        /// <param name="asset1Node"></param>
+        /// <param name="asset2Node"></param>
+        private void DiffCollectionByGuids(Diff3Node diff3, DataVisitNode baseNode, DataVisitNode asset1Node, DataVisitNode asset2Node)
+        {
+            DiffCollectionByIdsGeneric(diff3, baseNode, asset1Node, asset2Node, o => (Guid)o, (a1, a2, a3) => new Diff3Node(a1, a2, a3) { InstanceType = typeof(Guid), ChangeType = Diff3ChangeType.MergeFromAsset1 });
         }
 
         private static DataVisitNode GetSafeFromList(List<DataVisitNode> nodes, ref int index, ref Span span)
@@ -864,7 +889,8 @@ namespace SiliconStudio.Assets.Diff
 
             if (position >= thisObject.Items.Count)
             {
-                for (int i = 0; i < (position - thisObject.Items.Count + 1); i++)
+                int count = (position - thisObject.Items.Count + 1);
+                for (int i = 0; i < count; i++)
                 {
                     thisObject.Items.Add(null);
                 }

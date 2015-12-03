@@ -344,6 +344,52 @@ namespace SiliconStudio.Assets.Tests.Diff
             }
         }
 
+
+        [Test]
+        public void TestMergeListGuids()
+        {
+            var item0 = new Guid("9a656db2-d387-4805-a18d-7727d26c0a7a");
+            var item1 = new Guid("3d22a49d-d891-451f-8e2d-f7cabb11a602");
+            var item2 = new Guid("3a0c78e7-a961-48ac-870f-3a8cdc6b2c4b");
+            var newItem = new Guid("481331cc-b3ea-4d48-bdb6-f7741d853eaf");
+
+            var baseList = new List<Guid>()
+            {
+                item0,
+                item1,
+                item2,
+            };
+
+            var asset1List = new List<Guid>()
+            {
+                item0,
+                item1,
+                item2,
+                newItem, // new Item from 1
+            };
+
+            var asset2List = new List<Guid>()
+            {
+                // new Guid("9a656db2-d387-4805-a18d-7727d26c0a7a"), Item deleted
+                item2, // Item[2] -> Item[0]
+                item1, // Item[1] -> Item[1]
+            };
+
+
+            // Final list must be: item2, item1, newItem
+            var diff = new AssetDiff(baseList, asset1List, asset2List) { UseOverrideMode = true };
+
+            var result = AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
+            Assert.False(result.HasErrors);
+
+            Assert.AreEqual(3, asset1List.Count);
+
+            Assert.AreEqual(item2, asset1List[0]);
+            Assert.AreEqual(item1, asset1List[1]);
+            Assert.AreEqual(newItem, asset1List[2]);
+        }
+
+
         [Test]
         public void TestPackageAnalysis()
         {
