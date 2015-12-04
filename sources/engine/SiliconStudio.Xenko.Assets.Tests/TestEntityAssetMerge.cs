@@ -13,10 +13,59 @@ namespace SiliconStudio.Xenko.Assets.Tests
     public class TestEntityAssetMerge
     {
 
+        [Test]
+        public void TestChildAsset()
+        {
+            // Create an Entity child asset
+
+            // base: EA, EB, EC
+            // newAsset: EA'(base: EA), EB'(base: EB), EC'(base: EC)
+
+            var entityA = new Entity() { Name = "A" };
+            var entityB = new Entity() { Name = "B" };
+            var entityC = new Entity() { Name = "C" };
+
+            // Create Base Asset
+            var baseAsset = new EntityAsset();
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityC, new EntityDesignData()));
+            baseAsset.Hierarchy.RootEntities.Add(entityA.Id);
+            baseAsset.Hierarchy.RootEntities.Add(entityB.Id);
+            baseAsset.Hierarchy.RootEntities.Add(entityC.Id);
+
+            var baseAssetItem = new AssetItem("base", baseAsset);
+
+            // Create new Asset (from base)
+            var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
+
+            // On a derive asset all entities must have a base value and base must come from baseAsset
+            Assert.True(newAsset.Hierarchy.Entities.All(item => item.Design.BaseId.HasValue && baseAsset.Hierarchy.Entities.ContainsKey(item.Design.BaseId.Value)));
+
+            // Verify that we have exactly the same number of entities
+            Assert.AreEqual(baseAsset.Hierarchy.RootEntities.Count, newAsset.Hierarchy.RootEntities.Count);
+            Assert.AreEqual(baseAsset.Hierarchy.Entities.Count, newAsset.Hierarchy.Entities.Count);
+
+            // Verify that baseId and newId is correctly setup
+            var entityAInNew = newAsset.Hierarchy.Entities.FirstOrDefault(item => item.Design.BaseId.Value == entityA.Id && item.Entity.Id != item.Design.BaseId.Value);
+            Assert.NotNull(entityAInNew);
+
+            var entityBInNew = newAsset.Hierarchy.Entities.FirstOrDefault(item => item.Design.BaseId.Value == entityB.Id && item.Entity.Id != item.Design.BaseId.Value);
+            Assert.NotNull(entityBInNew);
+
+            var entityCInNew = newAsset.Hierarchy.Entities.FirstOrDefault(item => item.Design.BaseId.Value == entityC.Id && item.Entity.Id != item.Design.BaseId.Value);
+            Assert.NotNull(entityCInNew);
+
+            // Verify that RootEntities are also correctly mapped
+            Assert.AreEqual(entityAInNew.Entity.Id, newAsset.Hierarchy.RootEntities[0]);
+            Assert.AreEqual(entityBInNew.Entity.Id, newAsset.Hierarchy.RootEntities[1]);
+            Assert.AreEqual(entityCInNew.Entity.Id, newAsset.Hierarchy.RootEntities[2]);
+        }
 
         [Test]
         public void TestSimpleMerge()
         {
+            // Test merging a simple Entity Asset that has 3 entities
             // base: EA, EB, EC
             // newBase: EA, EB, EC, ED
             // newAsset: EA, EB, EC
@@ -47,14 +96,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             // Create new Asset (from base)
             var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
 
-            // On a derive asset all entities must have a base value and base must come from baseAsset
-            Assert.True(newAsset.Hierarchy.Entities.All(item => item.Design.BaseId.HasValue && baseAsset.Hierarchy.Entities.ContainsKey(item.Design.BaseId.Value)));
-
-            Assert.AreEqual(1, newAsset.Hierarchy.Entities.Count(item => item.Design.BaseId.Value == entityA.Id));
-            Assert.AreEqual(1, newAsset.Hierarchy.Entities.Count(item => item.Design.BaseId.Value == entityB.Id));
-            Assert.AreEqual(1, newAsset.Hierarchy.Entities.Count(item => item.Design.BaseId.Value == entityC.Id));
-
-            // Merge entities
+            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
             var entityMerge = new EntityAssetMerge((EntityAssetBase)AssetCloner.Clone(baseAsset), newAsset, (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
             entityMerge.Merge();
 
