@@ -63,9 +63,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
         }
 
         [Test]
-        public void TestSimpleMerge()
+        public void TestSimpleEntity()
         {
             // Test merging a simple Entity Asset that has 3 entities
+            //
             // base: EA, EB, EC
             // newBase: EA, EB, EC, ED
             // newAsset: EA, EB, EC
@@ -122,6 +123,67 @@ namespace SiliconStudio.Xenko.Assets.Tests
             Assert.AreEqual(entityBInNewAsset.Id, newAsset.Hierarchy.RootEntities[1]);
             Assert.AreEqual(entityCInNewAsset.Id, newAsset.Hierarchy.RootEntities[2]);
             Assert.AreEqual(entityDInNewAsset.Id, newAsset.Hierarchy.RootEntities[3]);
+        }
+
+        [Test]
+        public void TestEntityWithChildren()
+        {
+            // Test merging an EntityAsset with a root entity EA, and 3 child entities
+            // - Add a child entity to NewBase
+            // - Remove a child entity from NewAsset
+            //
+            //       Base         NewBase       NewAsset                  NewAsset (Merged)
+            // 
+            //       EA           EA            EA'(base: EA)             EA'(base: EA)
+            //        |-EA1       |-EA1         |-EA1'(base: EA1)         |-EA1'(base: EA1)
+            //        |-EA2       |-EA2         |                         |
+            //        |-EA3       |-EA3         |-EA3'(base: EA3)         |-EA3'(base: EA3)
+            //                    |-EA4                                   |-EA4'(base: EA4)
+            //
+
+            var eA = new Entity() { Name = "A" };
+            var eA1 = new Entity() { Name = "A1" };
+            var eA2 = new Entity() { Name = "A2" };
+            var eA3 = new Entity() { Name = "A3" };
+            eA.Transform.Children.Add(eA1.Transform);
+            eA.Transform.Children.Add(eA2.Transform);
+            eA.Transform.Children.Add(eA3.Transform);
+
+            // Create Base Asset
+            var baseAsset = new EntityAsset();
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA3, new EntityDesignData()));
+            baseAsset.Hierarchy.RootEntities.Add(eA.Id);
+
+            var baseAssetItem = new AssetItem("base", baseAsset);
+
+            // Create new Base Asset
+            var newBaseAsset = (EntityAsset)AssetCloner.Clone(baseAsset);
+            var eA2FromNewBase = newBaseAsset.Hierarchy.Entities.First(item => item.Entity.Id == eA2.Id);
+            newBaseAsset.Hierarchy.Entities[eA.Id].Entity.Transform.Children.Remove(eA2FromNewBase.Entity.Transform);
+
+            // Create new Asset (from base)
+            var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
+            var eA4 = new Entity() { Name = "A4" };
+            newAsset.Hierarchy.Entities.Add(new EntityDesign(eA4, new EntityDesignData()));
+            newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()].Entity.Transform.Children.Add(eA4.Transform);
+
+            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
+            var entityMerge = new EntityAssetMerge((EntityAssetBase)AssetCloner.Clone(baseAsset), newAsset, (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            entityMerge.Merge();
+
+            Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
+            Assert.AreEqual(4, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA3', EA4'
+
+            var rootEntity = newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()];
+
+            Assert.AreEqual(3, rootEntity.Entity.Transform.Children.Count);
+
+            Assert.AreEqual("A1", rootEntity.Entity.Transform.Children[0].Entity.Name);
+            Assert.AreEqual("A3", rootEntity.Entity.Transform.Children[1].Entity.Name);
+            Assert.AreEqual("A4", rootEntity.Entity.Transform.Children[2].Entity.Name);
         }
     }
 }
