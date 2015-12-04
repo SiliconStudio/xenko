@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -40,7 +36,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
         // TODO: Distribution
         private Color4 colorMin = new Color4(1, 1, 1, 1);
         private Color4 colorMax = new Color4(1, 1, 1, 1);
-        private bool hasIndividualColor = false;
 
         [DataMember(110)]
         [Display("Color Min")]
@@ -66,19 +61,22 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
         }
 
+
+        [DataMember(130)]
+        [Display("Color Random Seed")]
+        public UInt32 ColorRandomOffset { get; set; } = 1;
+
         private void UpdateColorVariation()
         {
             if (ColorMin.Equals(colorMax))
             {
                 // Particles don't have individual color - it is passed as an uniform through the constant buffer
             //    MandatoryVariation &= ~ParticleEffectVariation.HasColor;
-                hasIndividualColor = false;
             }
             else
             {
                 // Particles do have individual color - vertex buffer should be patched
             //    MandatoryVariation |= ParticleEffectVariation.HasColor;
-                hasIndividualColor = true;
             }
         }
 
@@ -110,7 +108,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // If particles don't have individual color, we can pass the color tint as part of the uniform color scale
             Parameters.Set(ParticleBaseKeys.ColorScaleMin, color * colorMin);
             Parameters.Set(ParticleBaseKeys.ColorScaleMax, color * colorMax);
-            Parameters.Set(ParticleBaseKeys.ColorScaleOffset, (uint)2);
+            Parameters.Set(ParticleBaseKeys.ColorScaleOffset, ColorRandomOffset);
 
             effect.Apply(graphicsDevice, ParameterCollectionGroup, applyEffectStates: false);
 
@@ -123,32 +121,34 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         // TODO Make some sort of accessor or enumerator around ParticlePool which can also sort particles
-        public override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool)
+        public unsafe override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool)
         {
             var vtxPerParticle = vtxBuilder.VerticesPerParticle;
             var numberOfParticles = Math.Min(maxVertices / vtxPerParticle, pool.LivingParticles);
             if (numberOfParticles <= 0)
                 return;
 
-            var lifeField = pool.GetField(ParticleFields.RemainingLife);
-            var randField = pool.GetField(ParticleFields.RandomSeed);
+            var lifeField  = pool.GetField(ParticleFields.RemainingLife);
+            var randField  = pool.GetField(ParticleFields.RandomSeed);
 
-            // This is very slow! Deterministic generation will be moved to the GPU asap!
-            if (!hasIndividualColor || !randField.IsValid() || !lifeField.IsValid())
+            if (!randField.IsValid() || !lifeField.IsValid())
                 return;
 
+            var colorField = pool.GetField(ParticleFields.Color);
+            var hasColorField = colorField.IsValid();
+
             var whiteColor = new Color4(1, 1, 1, 1);
+
             var renderedParticles = 0;
 
             // TODO Fetch sorted particles
             foreach (var particle in pool)
             {
-                var randSeed = particle.Get(randField);
+                vtxBuilder.SetColorForParticle(hasColorField ? particle[colorField] : (IntPtr)(&whiteColor));
 
-                uint SeedOffset = 2;
+                vtxBuilder.SetLifetimeForParticle(particle[lifeField]);
 
-              //  var colorScale = Color4.Lerp(ColorMin, ColorMax, randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset));
-              //  vtxBuilder.AddColorForParticle(ref colorScale);
+                vtxBuilder.SetRandomSeedForParticle(particle[randField]);
 
                 vtxBuilder.NextParticle();
 
@@ -159,6 +159,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
                     return;
                 }
             }
+
 
         }
 
