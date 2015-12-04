@@ -169,8 +169,16 @@ Example of use:
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).WindowsPhone.sln" Properties="$(BuildProperties);Platform=WindowsPhone"/>
   </Target>
   
+  <Target Name="WritePackageVersionToFile">
+    <PackageGetVersionTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)">
+      <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
+    </PackageGetVersionTask>
+    <Delete Files="$(MSBuildThisFileDirectory)Xenko.version"/>
+    <WriteLinesToFile File="$(MSBuildThisFileDirectory)Xenko.version" Lines="$(XenkoPackageVersion)" />
+  </Target>
+  
   <Target Name="GitLinkPdb">
-    <PackageGetVersionTask File="$(XenkoPackage)">
+    <PackageGetVersionTask File="$(XenkoPackage)" SpecialVersion="$(XenkoPackageSpecialVersion)">
       <Output TaskParameter="Version" PropertyName="XenkoPackageVersion"/>
     </PackageGetVersionTask>
     <Exec ContinueOnError="true" Command="$(XenkoRoot)deps\GitLink\GitLink.exe $(XenkoRoot) -f build\Xenko.sln -u https://github.com/SiliconStudio/xenko -s releases/$(XenkoPackageVersion)" />
