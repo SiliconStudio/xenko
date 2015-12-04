@@ -108,11 +108,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
             Parameters.Set(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
 
             // If particles don't have individual color, we can pass the color tint as part of the uniform color scale
-            if (!hasIndividualColor)
-            {
-                color *= colorMax;
-            }
-            Parameters.Set(ParticleBaseKeys.ColorScale, color);
+            Parameters.Set(ParticleBaseKeys.ColorScaleMin, color * colorMin);
+            Parameters.Set(ParticleBaseKeys.ColorScaleMax, color * colorMax);
+            Parameters.Set(ParticleBaseKeys.ColorScaleOffset, (uint)2);
 
             effect.Apply(graphicsDevice, ParameterCollectionGroup, applyEffectStates: false);
 
@@ -125,7 +123,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         // TODO Make some sort of accessor or enumerator around ParticlePool which can also sort particles
-        public override void PatchVertexBuffer(IntPtr vertexBuffer, ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool)
+        public override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool)
         {
             var vtxPerParticle = vtxBuilder.VerticesPerParticle;
             var numberOfParticles = Math.Min(maxVertices / vtxPerParticle, pool.LivingParticles);
@@ -135,10 +133,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
             var lifeField = pool.GetField(ParticleFields.RemainingLife);
             var randField = pool.GetField(ParticleFields.RandomSeed);
 
+            // This is very slow! Deterministic generation will be moved to the GPU asap!
             if (!hasIndividualColor || !randField.IsValid() || !lifeField.IsValid())
                 return;
-
-            vtxBuilder.StartBuffer(vertexBuffer);
 
             var whiteColor = new Color4(1, 1, 1, 1);
             var renderedParticles = 0;
@@ -150,8 +147,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
                 uint SeedOffset = 2;
 
-                var colorScale = Color4.Lerp(ColorMin, ColorMax, randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset));
-                vtxBuilder.AddColorForParticle(ref colorScale);
+              //  var colorScale = Color4.Lerp(ColorMin, ColorMax, randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset));
+              //  vtxBuilder.AddColorForParticle(ref colorScale);
 
                 vtxBuilder.NextParticle();
 
@@ -159,12 +156,10 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
                 if (++renderedParticles >= numberOfParticles)
                 {
-                    vtxBuilder.EndBuffer();
                     return;
                 }
             }
 
-            vtxBuilder.EndBuffer();
         }
 
     }

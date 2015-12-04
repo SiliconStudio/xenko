@@ -21,6 +21,10 @@ namespace SiliconStudio.Core.Mathematics
         private const double GelfondSchneiderConst = 2.6651441426902251;    // 2 to the power of sqrt(2)
         private const double Numerator = 123456789;
 
+        // When casting UInt32 to double it works fine, but when casting it to float it might cause underflow errors (loss of precision)
+        // We want to limit the maximum settable value to prevent such errors.
+        private const UInt32 UnderflowGuard = 0xFFFF;
+
         private readonly UInt32 seed;
 
         /// <summary>
@@ -29,7 +33,7 @@ namespace SiliconStudio.Core.Mathematics
         /// <param name="seed"></param>
         public RandomSeed(UInt32 seed)
         {
-            this.seed = seed;
+            this.seed = (seed & UnderflowGuard);
         }
 
         /// <summary>

@@ -466,23 +466,28 @@ namespace SiliconStudio.Xenko.Particles
             var variation = ParticleEffectVariation.None; // TODO Should depend on fields
             variation |= Material.MandatoryVariation;
             var vertexLayoutBuilder = ParticleBatch.GetVertexLayout(variation);
+            vertexLayoutBuilder.StartBuffer(vertexBuffer);
 
             var maxDrawn = remainingCapacity;
 
             if (simulationSpace == EmitterSimulationSpace.Local)
             {
-                ShapeBuilder.BuildVertexBuffer(vertexBuffer, vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
+                ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
             }
             else
             {
                 var posIdentity = new Vector3(0, 0, 0);
                 var rotIdentity = new Quaternion(0, 0, 0, 1);
-                ShapeBuilder.BuildVertexBuffer(vertexBuffer, vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref posIdentity, ref rotIdentity, 1f, pool);
+                ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref posIdentity, ref rotIdentity, 1f, pool);
             }
+
+            vertexLayoutBuilder.RestartBuffer();
 
             maxDrawn -= remainingCapacity;
 
-            Material.PatchVertexBuffer(vertexBuffer, vertexLayoutBuilder, invViewX, invViewY, maxDrawn, pool);
+            Material.PatchVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, maxDrawn, pool);
+
+            vertexLayoutBuilder.EndBuffer();
 
             return maxDrawn;
         }

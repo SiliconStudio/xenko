@@ -22,18 +22,22 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             = new VertexDeclaration(
             VertexElement.Position<Vector3>(),
             VertexElement.TextureCoordinate<Vector2>(),
-            VertexElement.Color<Color>()
-            //            new VertexElement("BATCH_SWIZZLE", PixelFormat.R32_Float)
+            VertexElement.Color<Color>(),
+            new VertexElement("BATCH_LIFETIME",   PixelFormat.R32_Float),
+            new VertexElement("BATCH_RANDOMSEED", PixelFormat.R32_Float)
             );
 
         protected const int OffsetPosition  = 0;
-        protected const int OffsetUv        = 12;
-        protected const int OffsetColor     = 20;
+        protected const int OffsetUv        = 12 + OffsetPosition;
+        protected const int OffsetColor     = 8  + OffsetUv;
+        protected const int OffsetLifetime  = 4  + OffsetColor;
+        protected const int OffsetRandom    = 4  + OffsetLifetime;
+        protected const int OffsetMax       = 4  + OffsetRandom;
 
         public VertexDeclaration GetVertexDeclaration() => VertexDeclaration;
 //        public abstract VertexDeclaration GetVertexDeclaration();
 
-        public int Size { get; private set; } = 24;
+        public int Size { get; private set; } = OffsetMax; 
 //        public abstract int Size { get; protected set; }
 
         public int VerticesPerParticle { get; private set; } = 4;
@@ -42,15 +46,22 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         #endregion
 
         protected IntPtr vertexBuffer = IntPtr.Zero;
+        protected IntPtr vertexBufferOrigin = IntPtr.Zero;
 
         public void StartBuffer(IntPtr vtxBuff)
         {
-            vertexBuffer = vtxBuff;
+            vertexBufferOrigin = vertexBuffer = vtxBuff;
+        }
+
+        public void RestartBuffer()
+        {
+            vertexBuffer = vertexBufferOrigin;
         }
 
         public void EndBuffer()
         {
             vertexBuffer = IntPtr.Zero;
+            vertexBufferOrigin = IntPtr.Zero;
         }
 
         public void NextVertex()
@@ -76,6 +87,14 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         public virtual void SetColor(IntPtr ptr) { }
 
+        public virtual void SetLifetime(float lifetime) { }
+
+        public virtual void SetLifetime(IntPtr lifetime) { }
+
+        public virtual void SetRandomSeed(UInt32 randSeed) { }
+
+        public virtual void SetRandomSeed(IntPtr randSeed) { }
+
         /// <summary>
         /// Sets the same position for all vertices created from the same particle.
         /// Assumes offset is at the first vertex of the particle.
@@ -94,6 +113,10 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public virtual void SetUvCoordsForParticle(IntPtr ptr) { }
 
         public virtual void SetColorForParticle(IntPtr ptr) { }
+
+        public virtual void SetLifetimeForParticle(IntPtr ptr) { }
+
+        public virtual void SetRandomSeedForParticle(IntPtr ptr) { }
 
     }
 }

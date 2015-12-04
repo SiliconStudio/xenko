@@ -1,47 +1,66 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
+using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Particles
 {
+    [Flags]
+    public enum ParticleEffectVariation
+    {
+        None = 0x00,
+        IsSrgb = 0x01,
+        HasTex0 = 0x02,
+        HasColor = 0x04,
+    }
+
     public partial class ParticleBatch
     {
-        private static EffectBytecode bytecode = null;
-        private static EffectBytecode bytecodeSRgb = null;
-        private static EffectBytecode bytecodeTex0 = null;
-        private static EffectBytecode bytecodeSRgbTex0 = null;
+        private const int MaxEffectVariations =
+            (int)(ParticleEffectVariation.IsSrgb |
+                  ParticleEffectVariation.HasTex0 |
+                  ParticleEffectVariation.HasColor) + 1;
 
-        //internal static EffectBytecode Bytecode
-        //{
-        //    get
-        //    {
-        //        return bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode));
-        //    }
-        //}
+        private static Effect[] effect = new Effect[MaxEffectVariations];
+        private static EffectBytecode[] effectBytecode = new EffectBytecode[MaxEffectVariations];
 
-        internal static EffectBytecode BytecodeSRgb
+        private static EffectBytecode Bytecode(ParticleEffectVariation variation)
         {
-            get
+            switch (variation)
             {
-                return bytecodeSRgb ?? (bytecodeSRgb = EffectBytecode.FromBytesSafe(binaryBytecodeSRgb));
+                case ParticleEffectVariation.IsSrgb:
+                    return effectBytecode[(int)ParticleEffectVariation.IsSrgb] ??
+                          (effectBytecode[(int)ParticleEffectVariation.IsSrgb] = EffectBytecode.FromBytes(binaryBytecodeSRgb));
+
+                case ParticleEffectVariation.HasTex0:
+                    return effectBytecode[(int)ParticleEffectVariation.HasTex0] ??
+                          (effectBytecode[(int)ParticleEffectVariation.HasTex0] = EffectBytecode.FromBytes(binaryBytecodeTex0));
+
+                case ParticleEffectVariation.IsSrgb | ParticleEffectVariation.HasTex0:
+                    return effectBytecode[(int)(ParticleEffectVariation.IsSrgb | ParticleEffectVariation.HasTex0)] ??
+                          (effectBytecode[(int)(ParticleEffectVariation.IsSrgb | ParticleEffectVariation.HasTex0)] = EffectBytecode.FromBytes(binaryBytecodeSRgbTex0));
+
+                default:
+                    return effectBytecode[(int)ParticleEffectVariation.None] ??
+                          (effectBytecode[(int)ParticleEffectVariation.None] = EffectBytecode.FromBytes(binaryBytecode));
             }
         }
 
-        internal static EffectBytecode BytecodeTex0
+        public static Effect GetEffect(GraphicsDevice device, ParticleEffectVariation variation)
         {
-            get
-            {
-                return bytecodeTex0 ?? (bytecodeTex0 = EffectBytecode.FromBytesSafe(binaryBytecodeTex0));
-            }
+            return effect[(int)variation] ?? (effect[(int)variation] = new Effect(device, Bytecode(variation)));
         }
 
-        internal static EffectBytecode BytecodeSRgbTex0
+        public static ParticleVertexLayout GetVertexLayout(ParticleEffectVariation variation)
         {
-            get
-            {
-                return bytecodeSRgbTex0 ?? (bytecodeSRgbTex0 = EffectBytecode.FromBytesSafe(binaryBytecodeSRgbTex0));
-            }
+            if (variation.HasFlag(ParticleEffectVariation.HasTex0))
+                return new ParticleVertexLayoutTextured();
+
+            return new ParticleVertexLayoutPlain();
         }
     }
 }

@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [Display("Billboard")]
     public class ShapeBuilderBillboard : ShapeBuilderBase
     {
-        public override unsafe int BuildVertexBuffer(IntPtr vertexBuffer, ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity,
+        public override unsafe int BuildVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticlePool pool)
         {
             var numberOfParticles = Math.Min(remainingCapacity / 4, pool.LivingParticles);
@@ -33,7 +33,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var colorField  = pool.GetField(ParticleFields.Color);
             var sizeField   = pool.GetField(ParticleFields.Size);
 
-            vtxBuilder.StartBuffer(vertexBuffer);
+            var randField   = pool.GetField(ParticleFields.RandomSeed);
+            var lifeField   = pool.GetField(ParticleFields.RemainingLife);
 
             var whiteColor = new Color4(1, 1, 1, 1);
             var renderedParticles = 0;
@@ -42,7 +43,14 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
             foreach (var particle in pool)
             {
+                // Some attributes only need to be set once for the entire particle
                 vtxBuilder.SetColorForParticle(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
+
+                vtxBuilder.SetLifetimeForParticle(particle[lifeField]);
+
+                vtxBuilder.SetRandomSeedForParticle(particle[randField]);
+
+
 
                 var centralPos = particle.Get(positionField);
 
@@ -97,12 +105,10 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 if (++renderedParticles >= numberOfParticles)
                 {
-                    vtxBuilder.EndBuffer();
                     return renderedParticles;
                 }
             }
 
-            vtxBuilder.EndBuffer();
             return renderedParticles;
         }
     }

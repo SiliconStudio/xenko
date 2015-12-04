@@ -38,18 +38,20 @@ namespace SiliconStudio.Xenko.Particles.Components
         }
 
         /// <summary>
-        /// The tint color to apply to all particles.
+        /// The color shade will be applied to all particles (via their materials) during rendering.
+        /// The shade acts as a color scale multiplication, making the color darker. White shade is neutral.
         /// </summary>
         [DataMember(4)]
-        [Display("Test Tint")]
+        [Display("Color Shade")]
         public Color4 Color = Color4.White;
 
         /// <summary>
-        /// The speed scale at which the particle simulation runs.
+        /// The speed scale at which the particle simulation runs. Increasing the scale increases the simulation speed,
+        /// while setting it to 0 effectively pauses the simulation.
         /// </summary>
         [DataMember(5)]
         [DataMemberRange(0, 10, 0.01, 1)]
-        [Display("Time speed")]
+        [Display("Speed Scale")]
         public float Speed { get; set; } = 1f;
 
         [DataMemberIgnore]

@@ -13,13 +13,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
     {
         public unsafe override void SetPosition(ref Vector3 position)
         {
-            // TODO Not hardcoded offset
             *((Vector3*)(vertexBuffer + OffsetPosition)) = position;
         }
 
         public unsafe override void SetColor(ref Color4 color)
         {
-            // TODO Not hardcoded offset
             *((uint*)(vertexBuffer + OffsetColor)) = (uint)color.ToRgba();
         }
 
@@ -67,6 +65,34 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         }
 
+        public override void SetLifetimeForParticle(IntPtr lifetime)
+        {
+            var oldPtr = vertexBuffer;
+
+            for (var i = 0; i < VerticesPerParticle; i++)
+            {
+                SetLifetime(lifetime);
+                NextVertex();
+            }
+
+            vertexBuffer = oldPtr;
+        }
+
+        public override void SetRandomSeedForParticle(IntPtr seed)
+        {
+            var oldPtr = vertexBuffer;
+
+            for (var i = 0; i < VerticesPerParticle; i++)
+            {
+                SetRandomSeed(seed);
+                NextVertex();
+            }
+
+            vertexBuffer = oldPtr;
+        }
+
+
+
         public override void AddColorForParticle(ref Color4 color)
         {
             var oldPtr = vertexBuffer;
@@ -78,6 +104,27 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             }
 
             vertexBuffer = oldPtr;
+        }
+
+
+        public unsafe override void SetLifetime(float lifetime)
+        {
+            *((float*)(vertexBuffer + OffsetLifetime)) = lifetime;
+        }
+
+        public unsafe override void SetLifetime(IntPtr lifetime)
+        {
+            *((float*)(vertexBuffer + OffsetLifetime)) = (*((float*)lifetime));
+        }
+
+        public unsafe override void SetRandomSeed(UInt32 randSeed)
+        {
+            *((float*)(vertexBuffer + OffsetRandom)) = 0.5f + (float) randSeed;
+        }
+
+        public unsafe override void SetRandomSeed(IntPtr randSeed)
+        {
+            *((float*)(vertexBuffer + OffsetRandom)) = 0.5f + (float) (*((UInt32*)randSeed));
         }
 
     }
