@@ -8,7 +8,6 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Assets.Visitors;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Shaders.Utility;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Entities
@@ -131,9 +130,28 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entityFromBase in baseEntities)
             {
                 var entityId = entityFromBase.Value.EntityDesign.Entity.Id;
-                if (newBaseEntities.ContainsKey(entityId))
+                if (!newBaseEntities.ContainsKey(entityId))
                 {
                     entitiesRemovedInNewBase.Add(entityId);
+                }
+            }
+
+            var baseRootEntities = new Dictionary<Guid, int>();
+            if (baseAsset != null)
+            {
+                for (int i = 0; i < baseAsset.Hierarchy.RootEntities.Count; i++)
+                {
+                    var id = baseAsset.Hierarchy.RootEntities[i];
+                    baseRootEntities.Add(id, i);
+                }
+            }
+            var newBaseRootEntities = new Dictionary<Guid, int>();
+            if (newBaseAsset != null)
+            {
+                for (int i = 0; i < newBaseAsset.Hierarchy.RootEntities.Count; i++)
+                {
+                    var id = newBaseAsset.Hierarchy.RootEntities[i];
+                    newBaseRootEntities.Add(id, i);
                 }
             }
 
@@ -153,6 +171,19 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     newBaseEntities.TryGetValue(baseId, out newBaseRemap);
                     entityEntry.Value.Base = baseRemap;
                     entityEntry.Value.NewBase = newBaseRemap;
+
+                    int index;
+                    if (baseAsset != null && baseRootEntities.TryGetValue(baseId, out index))
+                    {
+                        baseRootEntities.Remove(baseId);
+                        baseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
+                    }
+
+                    if (newBaseAsset != null && newBaseRootEntities.TryGetValue(baseId, out index))
+                    {
+                        newBaseRootEntities.Remove(baseId);
+                        newBaseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
+                    }
 
                     if (entitiesRemovedInNewBase.Contains(baseId))
                     {
@@ -190,6 +221,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     {
                         UseOverrideMode = true,
                     };
+
+                    // Remap ids to new entity
+                    baseEntity.Id = newEntity.Id;
+                    newBaseEntity.Id = newEntity.Id;
 
                     // For entities and components, we will visit only the members of the first level (first entity, or first component) 
                     // but not recursive one (in case a component reference another entity or component)
@@ -236,14 +271,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
 
             // Add known entities in hierarchy
-            foreach (var rootEntity in newAsset.Hierarchy.RootEntities)
+            var newHierarchy = newAsset.Hierarchy;
+            foreach (var rootEntity in newHierarchy.RootEntities)
             {
                 entitiesInHierarchy.Add(rootEntity);
             }
 
             // Process hierarchy level by level
             // This way, we give higher importance to top levels
-            var newHierarchy = newAsset.Hierarchy;
             var entityIdsToProcess = new List<Guid>(newHierarchy.RootEntities);
             while (entityIdsToProcess.Count > 0)
             {
@@ -256,14 +291,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         private void PurgeEntitiesNotInHierarchy()
         { 
-            var allEntities = newAsset.Hierarchy.Entities.ToDictionary(entityDesign => entityDesign.Entity.Id);
+            var entitiesNotInHierarchy = newAsset.Hierarchy.Entities.ToDictionary(entityDesign => entityDesign.Entity.Id);
             foreach (var entityId in entitiesInHierarchy)
             {
-                allEntities.Remove(entityId);
+                entitiesNotInHierarchy.Remove(entityId);
             }
 
             // Add to the existing list of entities removed and remove from current entities
-            foreach (var entityEntry in allEntities)
+            foreach (var entityEntry in entitiesNotInHierarchy)
             {
                 var entityId = entityEntry.Key;
                 entitiesToRemoveFromNew.Add(entityId);
@@ -380,6 +415,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private class EntityRemapEntry
         {
+
             public EntityRemapEntry(EntityDesign entityDesign)
             {
                 if (entityDesign == null) throw new ArgumentNullException(nameof(entityDesign));
