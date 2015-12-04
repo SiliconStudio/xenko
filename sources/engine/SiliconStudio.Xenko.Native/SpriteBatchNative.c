@@ -12,15 +12,15 @@ void UpdateBufferValuesFromElementInfoNative(SpriteDrawInfo* drawInfo, VertexPos
 	rotation.X = 1;
 	rotation.Y = 0;
 
-	if (npLolFabs(drawInfo->Rotation) > 1e-6f)
+	if (acos(drawInfo->Rotation) > 1e-6f)
 	{
 		rotation.X = npLolCos(drawInfo->Rotation);
 		rotation.Y = npLolSin(drawInfo->Rotation);
 	}
 
 	Vector2 origin = drawInfo->Origin;
-	origin.X /= npFmax(1e-6f, drawInfo->Source.width);
-	origin.Y /= npFmax(1e-6f, drawInfo->Source.height);
+	origin.X /= fmaxf(1e-6f, drawInfo->Source.width);
+	origin.Y /= fmaxf(1e-6f, drawInfo->Source.height);
 
 	const Vector2 cornerOffsets[] =
 	{
@@ -48,7 +48,7 @@ void UpdateBufferValuesFromElementInfoNative(SpriteDrawInfo* drawInfo, VertexPos
 		vertexPointer->TextureCoordinate.Y = (drawInfo->Source.y + corner.Y * drawInfo->Source.height) * deltaY;
 
 		vertexPointer->Swizzle = (int)drawInfo->Swizzle;
-
+		
 		vertexPointer++;
 	}
 }

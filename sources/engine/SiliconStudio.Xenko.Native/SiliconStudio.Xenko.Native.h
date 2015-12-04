@@ -3,8 +3,10 @@
 
 #pragma once
 
+#include <NativePath.h>
 #include <NativeMath.h>
 #include <NativeMemory.h>
+#include <NativeTime.h>
 
 #pragma pack(push, 4)
 typedef struct Vector2
