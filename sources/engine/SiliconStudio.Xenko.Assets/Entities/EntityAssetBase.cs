@@ -39,11 +39,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             var newAsset = (EntityAssetBase)base.CreateChildAsset(location);
 
+            // CAUTION: We need to re-add entities to the list as we are going to change their ids
+            // (and the Hierarchy.Entities list is ordered by Id, so they should not be changed after the entity has been added)
+            var newEntities = new List<EntityDesign>(newAsset.Hierarchy.Entities);
+            newAsset.Hierarchy.Entities.Clear();
+
             // Process entities to create new ids for entities and base id
             for (int i = 0; i < Hierarchy.Entities.Count; i++)
             {
                 var oldEntityDesign = Hierarchy.Entities[i];
-                var newEntityDesign = newAsset.Hierarchy.Entities[i];
+                var newEntityDesign = newEntities[i];
                 // Assign a new guid
                 newEntityDesign.Entity.Id = Guid.NewGuid();
 
@@ -57,6 +62,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     newAsset.Hierarchy.RootEntities[indexRoot] = newEntityDesign.Entity.Id;
                 }
+
+                newAsset.Hierarchy.Entities.Add(newEntityDesign);
             }
 
             return newAsset;
