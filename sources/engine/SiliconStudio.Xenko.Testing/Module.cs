@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Testing
         public void Initialize(Game game)
         {
             TestClient = new TestClient(game.Services);
-            TestClient.StartClient(game).Wait();
+            var foo = TestClient.StartClient(game);
         }
 
         public void Destroy(Game game)

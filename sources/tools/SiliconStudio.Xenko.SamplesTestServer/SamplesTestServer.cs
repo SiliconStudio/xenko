@@ -7,7 +7,6 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Security;
 using System.Threading.Tasks;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
@@ -40,14 +39,14 @@ namespace SiliconStudio.Xenko.SamplesTestServer
             {
                 if (request.Cmd == null) return;
 
-                var filename = Path.GetFileName(request.Cmd);
-
                 if (request.Tester)
                 {
                     switch (request.Platform)
                     {
                         case (int)PlatformType.Windows:
                             {
+                                var filename = Path.GetFileName(request.Cmd);
+
                                 Process process = null;
                                 string debugInfo = "";
                                 try
@@ -62,7 +61,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
                                     debugInfo = "Starting process " + start.FileName + " with path " + start.WorkingDirectory;
                                     socketMessageLayer.Send(new LogRequest { Message = debugInfo }).Wait();
-                                    process = Process.Start(start);                                   
+                                    process = Process.Start(start);
                                 }
                                 catch (Exception ex)
                                 {
@@ -78,6 +77,11 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                     processes[filename] = new TestProcess { Process = process, TesterSocket = socketMessageLayer, Filename = filename };
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
+                                break;
+                            }
+                        case (int)PlatformType.Android:
+                            {
+
                                 break;
                             }
                     }

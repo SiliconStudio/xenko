@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
@@ -80,7 +82,12 @@ namespace SiliconStudio.Xenko.Testing
             Task.Run(() => socketMessageLayer.MessageLoop());
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
-            await socketMessageLayer.Send(new TestRegistrationRequest { Cmd = AppDomain.CurrentDomain.FriendlyName, Tester = false, Platform = (int)Platform.Type });
+            var assemblyTitleAttribute = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute)).First() as AssemblyTitleAttribute;
+            if (assemblyTitleAttribute != null)
+            {
+                var name = assemblyTitleAttribute.Title;
+                await socketMessageLayer.Send(new TestRegistrationRequest { Cmd = name, Tester = false, Platform = (int)Platform.Type });
+            }
 #endif
         }
 
