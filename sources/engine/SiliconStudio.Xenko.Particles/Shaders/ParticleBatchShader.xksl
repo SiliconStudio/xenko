@@ -44,7 +44,6 @@ class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
 
     stage float4 GenerateRandomColor()
     {
-//        float fSeed = (float) (streams.RandomSeed + streams.Lifetime + ColorScaleOffset);
         float fSeed = (float) (streams.RandomSeed + ColorScaleOffset);
 
         return lerp(ColorScaleMin, ColorScaleMax, GetRandom(fSeed));

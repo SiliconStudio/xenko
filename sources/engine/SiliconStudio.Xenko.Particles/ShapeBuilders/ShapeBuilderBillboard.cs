@@ -29,29 +29,14 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             trsIdentity = trsIdentity && (spaceTranslation.Equals(new Vector3(0, 0, 0)));
             trsIdentity = trsIdentity && (spaceRotation.Equals(new Quaternion(0, 0, 0, 1)));
 
-
-            var colorField  = pool.GetField(ParticleFields.Color);
             var sizeField   = pool.GetField(ParticleFields.Size);
 
-            var randField   = pool.GetField(ParticleFields.RandomSeed);
-            var lifeField   = pool.GetField(ParticleFields.RemainingLife);
-
-            var whiteColor = new Color4(1, 1, 1, 1);
             var renderedParticles = 0;
 
             // TODO Sorting
 
             foreach (var particle in pool)
             {
-                // Some attributes only need to be set once for the entire particle
-                vtxBuilder.SetColorForParticle(colorField.IsValid() ? particle[colorField] : (IntPtr)(&whiteColor));
-
-                vtxBuilder.SetLifetimeForParticle(particle[lifeField]);
-
-                vtxBuilder.SetRandomSeedForParticle(particle[randField]);
-
-
-
                 var centralPos = particle.Get(positionField);
 
                 var particleSize = sizeField.IsValid() ? particle.Get(sizeField) : 1f;
