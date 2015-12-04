@@ -9,11 +9,11 @@ using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
-    [DataContract("ShapeBuilderBillboard")]
-    [Display("Billboard")]
-    public class ShapeBuilderBillboard : ShapeBuilderBase
+    [DataContract("ShapeBuilderHexagon")]
+    [Display("Hexagon")]
+    public class ShapeBuilderHexagon : ShapeBuilderBase
     {
-        public override int QuadsPerParticle { get; protected set; } = 1;
+        public override int QuadsPerParticle { get; protected set; } = 2;
 
         public override unsafe int BuildVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticlePool pool)
@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             trsIdentity = trsIdentity && (spaceTranslation.Equals(new Vector3(0, 0, 0)));
             trsIdentity = trsIdentity && (spaceRotation.Equals(new Quaternion(0, 0, 0, 1)));
 
-            var sizeField   = pool.GetField(ParticleFields.Size);
+            var sizeField = pool.GetField(ParticleFields.Size);
 
             var renderedParticles = 0;
 
@@ -58,8 +58,49 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 // vertex.Size = particleSize;
 
-                var particlePos = centralPos - unitX + unitY;
-                var uvCoord = new Vector2(0, 0);
+                const float Sqrt3Half = 0.86602540378f;
+                unitY *= Sqrt3Half;
+                var halfX = unitX * 0.5f;
+
+                var particlePos = centralPos - halfX + unitY;
+                var uvCoord = new Vector2(0.25f, 0.5f - Sqrt3Half * 0.5f);
+
+
+                // Upper half
+
+                // 0f 0f
+                vtxBuilder.SetPosition(ref particlePos);
+                vtxBuilder.SetUvCoords(ref uvCoord);
+                vtxBuilder.NextVertex();
+
+
+                // 1f 0f
+                particlePos += unitX;
+                uvCoord.X = 0.75f;
+                vtxBuilder.SetPosition(ref particlePos);
+                vtxBuilder.SetUvCoords(ref uvCoord);
+                vtxBuilder.NextVertex();
+
+
+                // 1f 1f
+                particlePos += halfX;
+                particlePos -= unitY;
+                uvCoord.X = 1;
+                uvCoord.Y = 0.5f;
+                vtxBuilder.SetPosition(ref particlePos);
+                vtxBuilder.SetUvCoords(ref uvCoord);
+                vtxBuilder.NextVertex();
+
+
+                // 0f 1f
+                particlePos -= unitX * 2;
+                uvCoord.X = 0;
+                vtxBuilder.SetPosition(ref particlePos);
+                vtxBuilder.SetUvCoords(ref uvCoord);
+                vtxBuilder.NextVertex();
+
+                // Upper half
+
                 // 0f 0f
                 vtxBuilder.SetPosition(ref particlePos);
                 vtxBuilder.SetUvCoords(ref uvCoord);
@@ -75,7 +116,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
 
                 // 1f 1f
-                particlePos -= unitY * 2;
+                particlePos -= halfX;
+                particlePos -= unitY;
+                uvCoord.X = 0.75f;
                 uvCoord.Y = 1;
                 vtxBuilder.SetPosition(ref particlePos);
                 vtxBuilder.SetUvCoords(ref uvCoord);
@@ -83,12 +126,11 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
 
                 // 0f 1f
-                particlePos -= unitX * 2;
-                uvCoord.X = 0;
+                particlePos -= unitX;
+                uvCoord.X = 0.25f;
                 vtxBuilder.SetPosition(ref particlePos);
                 vtxBuilder.SetUvCoords(ref uvCoord);
                 vtxBuilder.NextVertex();
-
 
                 remainingCapacity -= vtxPerShape;
 

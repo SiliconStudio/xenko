@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Internals;
+using SiliconStudio.Xenko.Particles.ShapeBuilders;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
 
@@ -59,11 +60,11 @@ namespace SiliconStudio.Xenko.Particles
             // TODO Sort by depth
             float depthSprite = 1f;
 
-            var totalParticles = emitter.pool.LivingParticles;
+            var requiredQuads = emitter.GetRequiredQuadCount();
 
             var elementInfo = new ElementInfo(
-                StaticQuadBufferInfo.VertexByElement * totalParticles, 
-                StaticQuadBufferInfo.IndicesByElement * totalParticles, 
+                StaticQuadBufferInfo.VertexByElement  * requiredQuads, 
+                StaticQuadBufferInfo.IndicesByElement * requiredQuads, 
                 ref drawInfo, 
                 depthSprite);
 

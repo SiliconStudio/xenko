@@ -35,6 +35,7 @@
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.OpenGLES.Level_9_1.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
     <Compile Include="Updaters\UpdaterOldPosition.cs" />
     <Compile Include="Updaters\UpdaterBase.cs" />

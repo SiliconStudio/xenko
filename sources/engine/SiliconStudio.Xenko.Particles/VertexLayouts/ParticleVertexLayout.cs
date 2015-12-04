@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public int Size { get; private set; } = OffsetMax; 
 //        public abstract int Size { get; protected set; }
 
-        public int VerticesPerParticle { get; private set; } = 4;
+        public int VerticesPerParticle { get; set; } = 4;
 //        public abstract int VerticesPerParticle { get; internal set; } // Will depend on the builder
 
         #endregion

@@ -15,5 +15,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         public abstract int BuildVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity,
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticlePool pool);
 
+        public abstract int QuadsPerParticle { get; protected set; }
     }
 }
