@@ -139,6 +139,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AutoAlphaTests.cs" />
+    <Compile Include="TestEntityAssetMerge.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

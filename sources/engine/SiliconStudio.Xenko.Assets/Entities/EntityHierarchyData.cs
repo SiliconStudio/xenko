@@ -19,6 +19,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [NonIdentifitable]
     public class EntityDesignData
     {
+        public EntityDesignData()
+        {
+        }
+
+        public EntityDesignData(string folder)
+        {
+            Folder = folder;
+        }
+
         /// <summary>
         /// Gets or sets the folder where the entity is attached (folder is relative to parent folder). If null, the entity doesn't belong to a folder.
         /// </summary>
