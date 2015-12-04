@@ -12,8 +12,8 @@ namespace SiliconStudio.Xenko.SamplesTestServer
     {
         static void Main(string[] args)
         {
-            var effectCompilerServer = new SamplesTestServer();
-            effectCompilerServer.TryConnect("127.0.0.1", RouterClient.DefaultPort);
+            var samplesServer = new SamplesTestServer();
+            samplesServer.TryConnect("127.0.0.1", RouterClient.DefaultPort);
 
             // Forbid process to terminate (unless ctrl+c)
             while (true)
