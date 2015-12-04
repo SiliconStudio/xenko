@@ -59,13 +59,18 @@ namespace SiliconStudio.Assets.Visitors
             }
         }
 
-        public override void RemoveValue()
+        public override void SetValue(object instance)
         {
             var array = Array;
             if (array != null)
             {
-                array.SetValue(null, index);
+                array.SetValue(instance, index);
             }
+        }
+
+        public override void RemoveValue()
+        {
+            SetValue(null);
         }
 
         public override string ToString()

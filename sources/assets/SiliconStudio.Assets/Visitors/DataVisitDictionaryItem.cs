@@ -89,6 +89,15 @@ namespace SiliconStudio.Assets.Visitors
             }
         }
 
+        public override void SetValue(object instance)
+        {
+            var descriptor = Descriptor;
+            if (descriptor != null)
+            {
+                descriptor.SetValue(Instance, Key, instance);
+            }
+        }
+
         public override void RemoveValue()
         {
             var descriptor = Descriptor;

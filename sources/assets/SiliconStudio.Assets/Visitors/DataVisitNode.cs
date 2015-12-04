@@ -75,12 +75,12 @@ namespace SiliconStudio.Assets.Visitors
             }
         }
 
+        public abstract void SetValue(object instance);
+
         /// <summary>
         /// Removes this node where it is used.
         /// </summary>
-        public virtual void RemoveValue()
-        {
-        }
+        public abstract void RemoveValue();
 
         public virtual DataVisitNode CreateWithEmptyInstance()
         {

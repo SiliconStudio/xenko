@@ -60,6 +60,15 @@ namespace SiliconStudio.Assets.Visitors
             return string.Format("[{0}] = {1}", index, Instance ?? "null");
         }
 
+        public override void SetValue(object instance)
+        {
+            var descriptor = Descriptor;
+            if (descriptor != null)
+            {
+                descriptor.SetValue(Instance, Index, instance);
+            }
+        }
+
         public override void RemoveValue()
         {
             var descriptor = Descriptor;

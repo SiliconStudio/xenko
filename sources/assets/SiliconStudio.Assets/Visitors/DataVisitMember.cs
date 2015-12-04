@@ -43,7 +43,7 @@ namespace SiliconStudio.Assets.Visitors
             }
         }
 
-        public void SetValue(object newValue)
+        public override void SetValue(object newValue)
         {
             MemberDescriptor.Set(Parent.Instance, newValue);
             Instance = newValue;
