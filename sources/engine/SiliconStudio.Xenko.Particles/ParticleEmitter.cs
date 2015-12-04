@@ -324,14 +324,11 @@ namespace SiliconStudio.Xenko.Particles
 
             // Sometimes particles will be spawned when there is no available space
             // In such occasions we have to buffer them and spawn them when space becomes available
-            var waitingToSpawn = particlesToSpawn;
             particlesToSpawn = Math.Min(pool.AvailableParticles, particlesToSpawn);
-            waitingToSpawn -= particlesToSpawn;
-            waitingToSpawn = Math.Min(waitingToSpawn, capacity);
 
             if (particlesToSpawn <= 0)
             {
-                particlesToSpawn = waitingToSpawn;
+                particlesToSpawn = 0;
                 return;
             }
 
@@ -363,7 +360,7 @@ namespace SiliconStudio.Xenko.Particles
                 capacity++; // Prevent looping
             }
 
-            particlesToSpawn = waitingToSpawn;
+            particlesToSpawn = 0;
 
             foreach (var initializer in Initializers)
             {
@@ -454,6 +451,14 @@ namespace SiliconStudio.Xenko.Particles
             Material.Setup(graphicsDevice, variation, viewMatrix, projMatrix, color);
         }
 
+        public int GetRequiredQuadCount()
+        {
+            if (ShapeBuilder == null)
+                ShapeBuilder = new ShapeBuilderBillboard();
+
+            return ShapeBuilder.QuadsPerParticle*pool.LivingParticles;
+        }
+
         public int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)
         {
             if (ShapeBuilder == null)
@@ -466,6 +471,7 @@ namespace SiliconStudio.Xenko.Particles
             var variation = ParticleEffectVariation.None; // TODO Should depend on fields
             variation |= Material.MandatoryVariation;
             var vertexLayoutBuilder = ParticleBatch.GetVertexLayout(variation);
+            vertexLayoutBuilder.VerticesPerParticle = ShapeBuilder.QuadsPerParticle * 4;
             vertexLayoutBuilder.StartBuffer(vertexBuffer);
 
             var maxDrawn = remainingCapacity;
