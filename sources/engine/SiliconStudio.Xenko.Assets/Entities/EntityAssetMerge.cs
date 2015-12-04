@@ -306,17 +306,39 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 newAsset.Hierarchy.Entities.Remove(entityId);
             }
 
+            // Collect baseId => newId
+            var finalMapBaseIdToNewId = new Dictionary<Guid, Guid>();
+            foreach (var entityEntry in newAsset.Hierarchy.Entities)
+            {
+                if (entityEntry.Design.BaseId.HasValue)
+                {
+                    var baseId = entityEntry.Design.BaseId.Value;
+                    finalMapBaseIdToNewId[baseId] = entityEntry.Entity.Id;
+                }
+            }
+
             // If there were any references to entities that have been removed, we need to clean them
             foreach (var entityEntry in newAsset.Hierarchy.Entities)
             {
-                CleanupReferencesToEntityRemoved(entityEntry.Entity);
+                FixReferencesToEntities(entityEntry.Entity, finalMapBaseIdToNewId);
             }
         }
 
-        private void CleanupReferencesToEntityRemoved(Entity newEntity)
+        private void FixReferencesToEntities(Entity newEntity, Dictionary<Guid, Guid> mapBaseIdToNewId)
         {
-            // If we have any entities to remove, we need to go through all references and remove them
-            // Remove references to components that were removed
+            // We need to visit all references to entities/components in order to fix references
+            // (e.g entities removed, entity added from base referencing an entity from base that we have to redirect to the new child entity...)
+            // Suppose for example that:
+            // 
+            // base   newBase                                      newAsset
+            // EA       EA                                           EA'
+            // EB       EB                                           EB'
+            // EC       EC                                           EC'
+            //          ED (+link to EA via script or whather)       ED' + link to EA' (we need to change from EA to EA')
+            //
+            // So in the example above, when merging ED into newAsset, all references to entities declared in newBase are not automatically 
+            // remapped to the new entities in newAsset. This is the purpose of this whole method
+
             var entityVisitor = new SingleLevelVisitor(typeof(Entity), true);
             var entityComponentVisitor = new SingleLevelVisitor(typeof(EntityComponent), true);
 
@@ -326,16 +348,45 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     entityComponentVisitor
                 });
 
-            foreach (var entityId in entitiesToRemoveFromNew)
+            // Fix Entity and EntityComponent references 
+            foreach (var idNodes in entityVisitor.References.Concat(entityComponentVisitor.References))
             {
-                List<DataVisitNode> nodes;
-                if (entityVisitor.References.TryGetValue(entityId, out nodes))
+                var id = idNodes.Key;
+                var nodes = idNodes.Value;
+
+                // If entity id is not in the current list, it is more likely that it was a link to a base entity
+                if (!newAsset.Hierarchy.Entities.ContainsKey(id))
                 {
-                    foreach (var node in nodes)
+                    // We are trying to remap the base id to the new id from known entities from newAsset
+                    Guid newId;
+                    if (mapBaseIdToNewId.TryGetValue(id, out newId))
                     {
-                        node.RemoveValue();
-                        
+                        var linkedEntity = newAsset.Hierarchy.Entities[newId].Entity;
+                        foreach (var node in nodes)
+                        {
+                            var entityComponent = node.Instance as EntityComponent;
+                            if (entityComponent != null)
+                            {
+                                // TODO: In case of a DataVisitMember node, we need to set an OverrideType to New if we are actually removing a base value
+                                var newEntityComponent = (EntityComponent)linkedEntity.Components.Get(entityComponent.GetDefaultKey());
+                                node.SetValue(newEntityComponent);
+                            }
+                            else
+                            {
+                                // TODO: In case of a DataVisitMember node, we need to set an OverrideType to New if we are actually removing a base value
+                                // Else the node applies to an entity
+                                node.SetValue(linkedEntity);
+                            }
+                        }
+                    }
+                    else
+                    {
                         // TODO: In case of a DataVisitMember node, we need to set an OverrideType to New if we are actually removing a base value
+                        // If we are trying to link to an entity/component that was removed, we need to remove it
+                        foreach (var node in nodes)
+                        {
+                            node.RemoveValue();
+                        }
                     }
                 }
             }
