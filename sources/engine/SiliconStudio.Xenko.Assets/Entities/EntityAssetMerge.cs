@@ -82,27 +82,27 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private void PrepareMerge()
         {
             // Prepare mappings for base
-            MapEntities(baseAsset?.Hierarchy, baseEntities);
+            MapEntities(baseAsset?.Hierarchy, baseEntities, false);
 
             // Prepare mapping for new asset
-            MapEntities(newAsset.Hierarchy, newEntities);
+            MapEntities(newAsset.Hierarchy, newEntities, false);
             if (newAsset.BaseParts != null)
             {
                 foreach (var partItem in newAsset.BaseParts)
                 {
                     var assetPart = (EntityAssetBase)partItem.Asset;
-                    MapEntities(assetPart.Hierarchy, baseEntities);
+                    MapEntities(assetPart.Hierarchy, baseEntities, true);
                 }
             }
 
             // Prepare mapping for new base
-            MapEntities(newBaseAsset?.Hierarchy, newBaseEntities);
+            MapEntities(newBaseAsset?.Hierarchy, newBaseEntities, false);
             if (newBaseParts != null)
             {
                 foreach (var partItem in newBaseParts)
                 {
                     var assetPart = (EntityAssetBase)partItem.Asset;
-                    MapEntities(assetPart.Hierarchy, newBaseEntities);
+                    MapEntities(assetPart.Hierarchy, newBaseEntities, true);
                 }
             }
 
@@ -216,6 +216,18 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var newBaseRemap = entityEntry.Value.NewBase;
                     var baseEntity = baseRemap.EntityDesign.Entity;
                     var newBaseEntity = newBaseRemap.EntityDesign.Entity;
+
+                    // If base is coming from a basePart, then we need to clone it as It may be used in multiple places
+                    if (baseRemap.IsPart)
+                    {
+                        baseEntity = (Entity)AssetCloner.Clone(baseEntity);
+                    }
+
+                    // If newBase is coming from a basePart, then we need to clone it as It may be used in multiple places
+                    if (newBaseRemap.IsPart)
+                    {
+                        newBaseEntity = (Entity)AssetCloner.Clone(newBaseEntity);
+                    }
 
                     var diff = new AssetDiff(baseEntity, newEntity, newBaseEntity)
                     {
@@ -450,7 +462,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return nextEntityIds;
         }
 
-        private void MapEntities(EntityHierarchyData hierarchyData, Dictionary<Guid, EntityRemapEntry> entities)
+        private void MapEntities(EntityHierarchyData hierarchyData, Dictionary<Guid, EntityRemapEntry> entities, bool isPart)
         {
             if (hierarchyData == null)
             {
@@ -464,7 +476,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     continue;
                 }
 
-                var remap = new EntityRemapEntry(entity);
+                var remap = new EntityRemapEntry(entity, isPart);
                 // We are removing children from transform component for the diff
                 remap.PushChildren();
                 entities[entity.Entity.Id] = remap;
@@ -474,13 +486,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private class EntityRemapEntry
         {
 
-            public EntityRemapEntry(EntityDesign entityDesign)
+            public EntityRemapEntry(EntityDesign entityDesign, bool isPart)
             {
                 if (entityDesign == null) throw new ArgumentNullException(nameof(entityDesign));
                 EntityDesign = entityDesign;
+                this.IsPart = isPart;
             }
 
             public readonly EntityDesign EntityDesign;
+
+            public readonly bool IsPart;
 
             public List<TransformComponent> Children;
 
