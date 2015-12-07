@@ -116,7 +116,6 @@ namespace SiliconStudio.Xenko.Graphics
         private GraphicsDevice immediateContext;
         private GraphicsAdapter _adapter;
         private SwapChainBackend _defaultSwapChainBackend;
-        private Viewport[] _currentViewports = new Viewport[MaxBoundRenderTargets];
         private Rectangle[] _currentScissorRectangles = new Rectangle[MaxBoundRenderTargets];
         private int contextBeginCounter = 0;
 
@@ -581,7 +580,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-                GL.Viewport((int)_currentViewports[0].X, (int)_currentViewports[0].Y, (int)_currentViewports[0].Width, (int)_currentViewports[0].Height);
+                GL.Viewport((int)currentState.Viewports[0].X, (int)currentState.Viewports[0].Y, (int)currentState.Viewports[0].Width, (int)currentState.Viewports[0].Height);
                 return;
             }
 
@@ -694,7 +693,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.ColorMask(enabledColors[0], enabledColors[1], enabledColors[2], enabledColors[3]);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-            GL.Viewport((int)_currentViewports[0].X, (int)_currentViewports[0].Y, (int)_currentViewports[0].Width, (int)_currentViewports[0].Height);
+            GL.Viewport((int)currentState.Viewports[0].X, (int)currentState.Viewports[0].Y, (int)currentState.Viewports[0].Width, (int)currentState.Viewports[0].Height);
         }
 
         private int CreateCopyProgram(bool srgb, out int offsetLocation, out int scaleLocation)
@@ -1774,7 +1773,7 @@ namespace SiliconStudio.Xenko.Graphics
                 boundFBOHeight = 0;
 
             // TODO: support multiple viewports and scissors?
-            UpdateViewport(_currentViewports[0]);
+            UpdateViewport(currentState.Viewports[0]);
             UpdateScissor(_currentScissorRectangles[0]);
         }
 
@@ -1850,8 +1849,6 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO: Check all non-empty viewports are identical and match what is active in FBO!
             UpdateViewport(currentState.Viewports[0]);
 #else
-            if (currentState.Viewports.Length >= _currentViewports.Length)
-                throw new IndexOutOfRangeException("The viewport index is higher than the number of available viewports.");
             UpdateViewports();
 #endif
         }
@@ -1864,10 +1861,10 @@ namespace SiliconStudio.Xenko.Graphics
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private void UpdateViewports()
         {
-            int nbViewports = _currentViewports.Length;
+            int nbViewports = currentState.Viewports.Length;
             for (int i = 0; i < nbViewports; ++i)
             {
-                var currViewport = _currentViewports[i];
+                var currViewport = currentState.Viewports[i];
                 _currentViewportsSetBuffer[4 * i] = currViewport.X;
                 _currentViewportsSetBuffer[4 * i + 1] = GetViewportY(currViewport);
                 _currentViewportsSetBuffer[4 * i + 2] = currViewport.Width;
