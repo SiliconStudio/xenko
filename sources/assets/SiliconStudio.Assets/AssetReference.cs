@@ -13,7 +13,6 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    [Obsolete("This type of reference will be removed in a future version")]
     public abstract class AssetReference : ITypedContentReference, IEquatable<AssetReference>
     {
         private readonly UFile location;
@@ -200,7 +199,6 @@ namespace SiliconStudio.Assets
     [DataContract("aref")]
     [DataStyle(DataStyle.Compact)]
     [DataSerializer(typeof(AssetReferenceDataSerializer<>), Mode = DataSerializerGenericMode.GenericArguments)]
-    [Obsolete("This type of reference will be removed in a future version")]
     public sealed class AssetReference<T> : AssetReference where T : Asset
     {
         /// <summary>

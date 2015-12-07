@@ -288,6 +288,11 @@ namespace SiliconStudio.Xenko.Rendering
             foreach (var renderModel in renderModels)
             {
                 var modelComponent = renderModel.ModelComponent;
+                if (modelComponent.Model == null)
+                {
+                    continue;
+                }
+
                 var meshes = modelComponent.Model.Meshes;
                 int meshCount = meshes.Count;
                 if (meshCount == 0)
