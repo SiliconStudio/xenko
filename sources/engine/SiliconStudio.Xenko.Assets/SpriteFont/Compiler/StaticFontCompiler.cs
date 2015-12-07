@@ -125,7 +125,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
             //}
 
             // Convert to pre-multiplied alpha format.
-            if (!fontAsset.NoPremultiply)
+            if (!fontAsset.IsNotPremultiply)
             {
                 if (fontAsset.AntiAlias == FontAntiAliasMode.ClearType)
                 {
