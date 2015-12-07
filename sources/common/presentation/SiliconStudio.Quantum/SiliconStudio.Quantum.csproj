@@ -41,7 +41,7 @@
     <Compile Include="NodeConstructingArgs.cs" />
     <Compile Include="QuantumConsistencyException.cs" />
     <Compile Include="ModelConsistencyCheckVisitor.cs" />
-    <Compile Include="ModelNodePath.cs" />
+    <Compile Include="GraphNodePath.cs" />
     <Compile Include="Contents\BoxedContent.cs" />
     <Compile Include="References\IReference.cs" />
     <Compile Include="Commands\INodeCommand.cs" />
@@ -55,12 +55,12 @@
     <Compile Include="References\Reference.cs" />
     <Compile Include="References\ReferenceEnumerable.cs" />
     <Compile Include="Commands\RemoveItemCommand.cs" />
-    <Compile Include="DefaultModelBuilder.cs" />
-    <Compile Include="ModelContainer.cs" />
+    <Compile Include="DefaultNodeBuilder.cs" />
+    <Compile Include="NodeContainer.cs" />
     <Compile Include="DebugExtensions.cs" />
-    <Compile Include="ModelNodeExtensions.cs" />
+    <Compile Include="GraphNodeExtensions.cs" />
     <Compile Include="GuidContainer.cs" />
-    <Compile Include="ModelNode.cs" />
+    <Compile Include="GraphNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">

@@ -8,7 +8,7 @@ using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
-    public static class ModelNodeExtensions
+    public static class GraphNodeExtensions
     {
         /// <summary>
         /// Retrieve the child node of the given <see cref="IGraphNode"/> that matches the given name.

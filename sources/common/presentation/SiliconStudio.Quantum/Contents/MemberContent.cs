@@ -15,8 +15,8 @@ namespace SiliconStudio.Quantum.Contents
     public class MemberContent : ContentBase, IUpdatableContent
     {
         protected IContent Container;
-        private readonly ModelContainer modelContainer;
-        private IGraphNode modelNode;
+        private readonly NodeContainer nodeContainer;
+        private IGraphNode node;
 
         public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
             : base(nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
@@ -24,7 +24,7 @@ namespace SiliconStudio.Quantum.Contents
             if (container == null) throw new ArgumentNullException(nameof(container));
             Member = member;
             Container = container;
-            modelContainer = nodeBuilder.ModelContainer;
+            nodeContainer = nodeBuilder.NodeContainer;
         }
 
         /// <summary>
@@ -32,7 +32,7 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         public IMemberDescriptor Member { get; protected set; }
 
-        public string Name => modelNode?.Name;
+        public string Name => node?.Name;
 
         /// <inheritdoc/>
         public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
@@ -73,15 +73,15 @@ namespace SiliconStudio.Quantum.Contents
         private void UpdateReferences()
         {
             // TODO: move this out of the content to avoid referencing the node (and delete IUpdatableContent)
-            if (modelContainer != null && modelNode != null)
+            if (nodeContainer != null && node != null)
             {
-                modelContainer.UpdateReferences(modelNode);
+                nodeContainer.UpdateReferences(node);
             }
         }
 
         void IUpdatableContent.RegisterOwner(IGraphNode node)
         {
-            modelNode = node;
+            this.node = node;
         }
     }
 }

@@ -12,7 +12,7 @@ namespace SiliconStudio.Quantum
     /// A class describing the path of a node, relative to a root node. The path can cross references, array, etc.
     /// </summary>
     /// <remarks>This class is immutable.</remarks>
-    public class ModelNodePath
+    public class GraphNodePath
     {
         /// <summary>
         /// An enum that describes the type of an item of a model node path.
@@ -57,18 +57,18 @@ namespace SiliconStudio.Quantum
         private readonly IGraphNode rootNode;
         private readonly bool targetIsRootNode;
 
-        private ModelNodePath(IGraphNode rootNode, bool targetIsRootNode)
+        private GraphNodePath(IGraphNode rootNode, bool targetIsRootNode)
         {
             this.rootNode = rootNode;
             this.targetIsRootNode = targetIsRootNode;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="ModelNodePath"/> with the given root node.
+        /// Initializes a new instance of the <see cref="GraphNodePath"/> with the given root node.
         /// </summary>
-        /// <param name="rootNode">The root node to represent with this instance of <see cref="ModelNodePath"/>.</param>
+        /// <param name="rootNode">The root node to represent with this instance of <see cref="GraphNodePath"/>.</param>
         /// <remarks>This constructor should be used for path to a root node only. To create a path to a child node, use <see cref="GetChildPath"/>.</remarks>
-        public ModelNodePath(IGraphNode rootNode)
+        public GraphNodePath(IGraphNode rootNode)
             : this(rootNode, true)
         {
         }
@@ -135,12 +135,12 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Computes a <see cref="ModelNodePath"/> corresponding to the given <see cref="target"/> node, which must be a direct child or a direct reference of the <see cref="parentNode"/>.
+        /// Computes a <see cref="GraphNodePath"/> corresponding to the given <see cref="target"/> node, which must be a direct child or a direct reference of the <see cref="parentNode"/>.
         /// </summary>
         /// <param name="parentNode">The parent node which must be a direct child or a direct reference of the <see cref="target"/>.</param>
-        /// <param name="target">The target node for which to build a <see cref="ModelNodePath"/> instance.</param>
+        /// <param name="target">The target node for which to build a <see cref="GraphNodePath"/> instance.</param>
         /// <returns></returns>
-        public ModelNodePath GetChildPath(IGraphNode parentNode, IGraphNode target)
+        public GraphNodePath GetChildPath(IGraphNode parentNode, IGraphNode target)
         {
             if (parentNode == target)
                 return Clone();
@@ -205,17 +205,17 @@ namespace SiliconStudio.Quantum
             return IsValid ? "(root)" + path.Select(x => x.ToString()).Aggregate((current, next) => current + next) : "(invalid)";
         }
 
-        public ModelNodePath Clone(IGraphNode newRoot)
+        public GraphNodePath Clone(IGraphNode newRoot)
         {
             return Clone(newRoot, targetIsRootNode);
         }
 
-        public ModelNodePath Clone()
+        public GraphNodePath Clone()
         {
             return Clone(rootNode, targetIsRootNode);
         }
 
-        public ModelNodePath PushElement(object elementValue, ElementType type)
+        public GraphNodePath PushElement(object elementValue, ElementType type)
         {
             var result = Clone();
             switch (type)
@@ -236,9 +236,9 @@ namespace SiliconStudio.Quantum
             return result;
         }
 
-        private ModelNodePath Clone(IGraphNode newRoot, bool newTargetIsRootNode)
+        private GraphNodePath Clone(IGraphNode newRoot, bool newTargetIsRootNode)
         {
-            var clone = new ModelNodePath(newRoot, newTargetIsRootNode);
+            var clone = new GraphNodePath(newRoot, newTargetIsRootNode);
             clone.path.AddRange(path);
             return clone;
         }

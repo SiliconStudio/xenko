@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -11,20 +10,20 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// A container used to store models and resolve references between them.
+    /// A container used to store nodes and resolve references between them.
     /// </summary>
-    public class ModelContainer
+    public class NodeContainer
     {
-        private readonly Dictionary<Guid, IGraphNode> modelsByGuid = new Dictionary<Guid, IGraphNode>();
+        private readonly Dictionary<Guid, IGraphNode> nodesByGuid = new Dictionary<Guid, IGraphNode>();
         private readonly IGuidContainer guidContainer;
         private readonly object lockObject = new object();
-        private readonly Dictionary<IContent, WeakReference<IGraphNode>> modelsByContent = new Dictionary<IContent, WeakReference<IGraphNode>>();
+        private readonly Dictionary<IContent, WeakReference<IGraphNode>> nodesByContent = new Dictionary<IContent, WeakReference<IGraphNode>>();
 
         /// <summary>
-        /// Create a new instance of <see cref="ModelContainer"/>.
+        /// Create a new instance of <see cref="NodeContainer"/>.
         /// </summary>
-        /// <param name="instantiateGuidContainer">Indicate whether to create a <see cref="GuidContainer"/> to store Guid per data object. This can be useful to retrieve an existing model from a data object.</param>
-        public ModelContainer(bool instantiateGuidContainer = true)
+        /// <param name="instantiateGuidContainer">Indicate whether to create a <see cref="GuidContainer"/> to store Guid per data object. This can be useful to retrieve an existing nodes for a data object.</param>
+        public NodeContainer(bool instantiateGuidContainer = true)
         {
             if (instantiateGuidContainer)
                 guidContainer = new GuidContainer();
@@ -32,11 +31,11 @@ namespace SiliconStudio.Quantum
         }
         
         /// <summary>
-        /// Create a new instance of <see cref="ModelContainer"/>. This constructor allows to provide a <see cref="IGuidContainer"/>,
-        /// in order to share object <see cref="Guid"/> between different <see cref="ModelContainer"/>.
+        /// Create a new instance of <see cref="NodeContainer"/>. This constructor allows to provide a <see cref="IGuidContainer"/>,
+        /// in order to share object <see cref="Guid"/> between different <see cref="NodeContainer"/>.
         /// </summary>
         /// <param name="guidContainer">A <see cref="IGuidContainer"/> to use to ensure the unicity of guid associated to data objects. Cannot be <c>null</c></param>
-        public ModelContainer(IGuidContainer guidContainer)
+        public NodeContainer(IGuidContainer guidContainer)
         {
             if (guidContainer == null) throw new ArgumentNullException(nameof(guidContainer));
             this.guidContainer = guidContainer;
@@ -44,41 +43,46 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Gets an enumerable of the registered models.
+        /// Gets an enumerable of the registered nodes.
         /// </summary>
-        public IEnumerable<IGraphNode> Models => modelsByGuid.Values;
+        public IEnumerable<IGraphNode> Nodes => nodesByGuid.Values;
 
         /// <summary>
-        /// Gets an enumerable of the registered models.
+        /// Gets an enumerable of the registered node guids.
         /// </summary>
-        public IEnumerable<Guid> Guids => modelsByGuid.Keys;
+        public IEnumerable<Guid> Guids => nodesByGuid.Keys;
 
         /// <summary>
-        /// Gets or set the visitor to use to create models. Default value is a <see cref="DefaultModelBuilder"/> constructed with default parameters.
+        /// Gets or set the visitor to use to create nodes. Default value is a <see cref="DefaultNodeBuilder"/> constructed with default parameters.
         /// </summary>
         public INodeBuilder NodeBuilder { get; set; }
 
         /// <summary>
-        /// Gets the model associated to a data object, if it exists. If the ModelContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
+        /// Gets the <see cref="IGraphNode"/> associated to a data object, if it exists. If the NodeContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
         /// <returns>The <see cref="IGraphNode"/> associated to the given object if available, or <c>null</c> otherwise.</returns>
-        public IGraphNode GetModelNode(object rootObject)
+        public IGraphNode GetNode(object rootObject)
         {
             lock (lockObject)
             {
-                if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
-                Guid guid = guidContainer.GetGuid(rootObject);
-                return guid == Guid.Empty ? null : GetModelNode(guid);
+                if (guidContainer == null) throw new InvalidOperationException("This NodeContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
+                var guid = guidContainer.GetGuid(rootObject);
+                return guid == Guid.Empty ? null : GetNode(guid);
             }
         }
 
-        public IGraphNode GetModelNode(IContent content)
+        /// <summary>
+        /// Gets the <see cref="IGraphNode"/> associated to a <see cref="IContent"/>, if it exists.
+        /// </summary>
+        /// <param name="content">The <see cref="IContent"/> instance for which to retrieve the corresponding <see cref="IGraphNode"/></param>
+        /// <returns>An instance of <see cref="IGraphNode"/> that corresponds to the given content if available, <c>null</c> otherwise.</returns>
+        public IGraphNode GetNode(IContent content)
         {
             lock (lockObject)
             {
                 WeakReference<IGraphNode> reference;
-                modelsByContent.TryGetValue(content, out reference);
+                nodesByContent.TryGetValue(content, out reference);
                 if (reference != null)
                 {
                     IGraphNode node;
@@ -90,11 +94,11 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Gets the model associated to the given Guid, if it exists.
+        /// Gets the <see cref="IGraphNode"/> associated to the given guid, if it exists.
         /// </summary>
-        /// <param name="guid">The Guid.</param>
+        /// <param name="guid">The guid for which to retrieve a <see cref="IGraphNode"/>.</param>
         /// <returns>The <see cref="IGraphNode"/> associated to the given Guid if available, or <c>null</c> otherwise.</returns>
-        public IGraphNode GetModelNode(Guid guid)
+        public IGraphNode GetNode(Guid guid)
         {
             if (guid == Guid.Empty)
                 return null;
@@ -102,7 +106,7 @@ namespace SiliconStudio.Quantum
             lock (lockObject)
             {
                 IGraphNode result;
-                if (modelsByGuid.TryGetValue(guid, out result))
+                if (nodesByGuid.TryGetValue(guid, out result))
                 {
                     if (result != null)
                         UpdateReferences(result);
@@ -112,7 +116,7 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Gets the <see cref="Guid"/> associated to a data object, if it exists. If the ModelContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
+        /// Gets the <see cref="Guid"/> associated to a data object, if it exists. If the NodeContainer has been constructed without <see cref="IGuidContainer"/>, this method will throw an exception.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
         /// <returns>The <see cref="Guid"/> associated to the given object if available, or <see cref="Guid.Empty"/> otherwise.</returns>
@@ -120,17 +124,17 @@ namespace SiliconStudio.Quantum
         {
             lock (lockObject)
             {
-                if (guidContainer == null) throw new InvalidOperationException("This ModelContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
+                if (guidContainer == null) throw new InvalidOperationException("This NodeContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
                 return guidContainer.GetGuid(rootObject);
             }
         }
 
         /// <summary>
-        /// Gets the model associated to a data object, if it exists, or create a new model for the object otherwise.
+        /// Gets the node associated to a data object, if it exists, otherwise creates a new node for the object and its member recursively.
         /// </summary>
         /// <param name="rootObject">The data object.</param>
         /// <returns>The <see cref="IGraphNode"/> associated to the given object.</returns>
-        public IGraphNode GetOrCreateModelNode(object rootObject)
+        public IGraphNode GetOrCreateNode(object rootObject)
         {
             if (rootObject == null)
                 return null;
@@ -140,27 +144,27 @@ namespace SiliconStudio.Quantum
                 IGraphNode result = null;
                 if (guidContainer != null && !rootObject.GetType().IsValueType)
                 {
-                    result = GetModelNode(rootObject);
+                    result = GetNode(rootObject);
                 }
 
-                return result ?? CreateModelNode(rootObject);
+                return result ?? CreateNode(rootObject);
             }
         }
 
         /// <summary>
-        /// Removes all models that were previously registered.
+        /// Removes all nodes that were previously registered.
         /// </summary>
         public void Clear()
         {
             lock (lockObject)
             {
                 guidContainer?.Clear();
-                modelsByGuid.Clear();
+                nodesByGuid.Clear();
             }
         }
 
         /// <summary>
-        /// Refresh all references contained in the given node, creating new models for newly referenced objects.
+        /// Refresh all references contained in the given node, creating new nodes for newly referenced objects.
         /// </summary>
         /// <param name="node">The node to update</param>
         internal void UpdateReferences(IGraphNode node)
@@ -186,12 +190,12 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
-        /// Creates the model node.
+        /// Creates a graph node.
         /// </summary>
         /// <param name="rootObject">The root object.</param>
         /// <returns></returns>
         /// <exception cref="System.ArgumentException">@The given type does not match the given object.;rootObject</exception>
-        private IGraphNode CreateModelNode(object rootObject)
+        private IGraphNode CreateNode(object rootObject)
         {
             if (rootObject == null) throw new ArgumentNullException(nameof(rootObject));
 
@@ -201,31 +205,31 @@ namespace SiliconStudio.Quantum
             if (guidContainer != null && !rootObject.GetType().IsValueType)
                 guid = guidContainer.GetOrCreateGuid(rootObject);
 
-            var result = (ModelNode)NodeBuilder.Build(rootObject, guid);
+            var result = (GraphNode)NodeBuilder.Build(rootObject, guid);
 
             if (result != null)
             {
                 // Register reference objects
-                modelsByGuid.Add(result.Guid, result);
-                modelsByContent.Add(result.Content, new WeakReference<IGraphNode>(result));
+                nodesByGuid.Add(result.Guid, result);
+                nodesByContent.Add(result.Content, new WeakReference<IGraphNode>(result));
                 foreach (var child in result.Children.SelectDeep(x => x.Children))
                 {
-                    modelsByContent.Add(child.Content, new WeakReference<IGraphNode>(child));
+                    nodesByContent.Add(child.Content, new WeakReference<IGraphNode>(child));
                 }
 
-                // Create or update model for referenced objects
+                // Create or update nodes of referenced objects
                 UpdateReferences(result);
             }
 
             return result;
         }
 
-        private void UpdateOrCreateReferenceTarget(IReference reference, IGraphNode modelNode, Stack<object> indices = null)
+        private void UpdateOrCreateReferenceTarget(IReference reference, IGraphNode node, Stack<object> indices = null)
         {
             if (reference == null) throw new ArgumentNullException(nameof(reference));
-            if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
+            if (node == null) throw new ArgumentNullException(nameof(node));
 
-            var content = (ContentBase)modelNode.Content;
+            var content = (ContentBase)node.Content;
 
             var referenceEnumerable = reference as ReferenceEnumerable;
             if (referenceEnumerable != null)
@@ -236,7 +240,7 @@ namespace SiliconStudio.Quantum
                 foreach (var itemReference in referenceEnumerable)
                 {
                     indices.Push(itemReference.Index);
-                    UpdateOrCreateReferenceTarget(itemReference, modelNode, indices);
+                    UpdateOrCreateReferenceTarget(itemReference, node, indices);
                     indices.Pop();
                 }
             }
@@ -253,10 +257,10 @@ namespace SiliconStudio.Quantum
                     if (singleReference.TargetNode == null && reference.ObjectValue != null)
                     {
                         // This call will recursively update the references.
-                        IGraphNode node = singleReference.SetTarget(this);
-                        if (node != null)
+                        var target = singleReference.SetTarget(this);
+                        if (target != null)
                         {                 
-                            var structContent = node.Content as BoxedContent;
+                            var structContent = target.Content as BoxedContent;
                             if (structContent != null)
                             {
                                 structContent.BoxedStructureOwner = content;
@@ -274,7 +278,7 @@ namespace SiliconStudio.Quantum
 
         private INodeBuilder CreateDefaultNodeBuilder()
         {
-            var nodeBuilder = new DefaultModelBuilder(this);
+            var nodeBuilder = new DefaultNodeBuilder(this);
             return nodeBuilder;
         }
     }

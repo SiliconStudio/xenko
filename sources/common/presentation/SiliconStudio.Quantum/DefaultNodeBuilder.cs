@@ -16,24 +16,20 @@ namespace SiliconStudio.Quantum
     /// <summary>
     /// The default <see cref="INodeBuilder"/> implementation that construct a model from a data object.
     /// </summary>
-    internal class DefaultModelBuilder : DataVisitorBase, INodeBuilder
+    internal class DefaultNodeBuilder : DataVisitorBase, INodeBuilder
     {
-        private readonly Stack<ModelNode> contextStack = new Stack<ModelNode>();
+        private readonly Stack<GraphNode> contextStack = new Stack<GraphNode>();
         private readonly HashSet<IContent> referenceContents = new HashSet<IContent>();
-        private ModelNode rootNode;
+        private GraphNode rootNode;
         private Guid rootGuid;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultModelBuilder"/> class that can be used to construct a model for a data object.
-        /// </summary>
-        /// <param name="modelContainer"></param>
-        public DefaultModelBuilder(ModelContainer modelContainer)
+        public DefaultNodeBuilder(NodeContainer nodeContainer)
         {
-            ModelContainer = modelContainer;
+            NodeContainer = nodeContainer;
         }
 
         /// <inheritdoc/>
-        public ModelContainer ModelContainer { get; }
+        public NodeContainer NodeContainer { get; }
         
         /// <inheritdoc/>
         public ICollection<Type> PrimitiveTypes { get; } = new List<Type>();
@@ -45,7 +41,7 @@ namespace SiliconStudio.Quantum
         public IContentFactory ContentFactory { get; set; } = new DefaultContentFactory();
 
         /// <inheritdoc/>
-        public Func<string, IContent, Guid, IGraphNode> NodeFactory { get; set; } = (name, content, guid) => new ModelNode(name, content, guid);
+        public Func<string, IContent, Guid, IGraphNode> NodeFactory { get; set; } = (name, content, guid) => new GraphNode(name, content, guid);
 
         /// <inheritdoc/>
         public event EventHandler<NodeConstructingArgs> NodeConstructing;
@@ -94,7 +90,7 @@ namespace SiliconStudio.Quantum
                 IContent content = descriptor.Type.IsStruct() ? ContentFactory.CreateBoxedContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type))
                                                 : ContentFactory.CreateObjectContent(this, obj, descriptor, IsPrimitiveType(descriptor.Type), shouldProcessReference);
                 currentDescriptor = content.Descriptor;
-                rootNode = (ModelNode)NodeFactory(currentDescriptor.Type.Name, content, rootGuid);
+                rootNode = (GraphNode)NodeFactory(currentDescriptor.Type.Name, content, rootGuid);
                 if (content.IsReference && currentDescriptor.Type.IsStruct())
                     throw new QuantumConsistencyException("A collection type", "A structure type", rootNode);
 
@@ -211,9 +207,9 @@ namespace SiliconStudio.Quantum
                 return;
 
             // If this member should contains a reference, create it now.
-            ModelNode containerNode = GetContextNode();
+            GraphNode containerNode = GetContextNode();
             IContent content = ContentFactory.CreateMemberContent(this, containerNode.Content, member, IsPrimitiveType(member.Type), value, shouldProcessReference);
-            var node = (ModelNode)NodeFactory(member.Name, content, Guid.NewGuid());
+            var node = (GraphNode)NodeFactory(member.Name, content, Guid.NewGuid());
             containerNode.AddChild(node);
 
             if (content.IsReference)
@@ -249,7 +245,7 @@ namespace SiliconStudio.Quantum
             return null;
         }
         
-        private void PushContextNode(ModelNode node)
+        private void PushContextNode(GraphNode node)
         {
             contextStack.Push(node);
         }
@@ -259,7 +255,7 @@ namespace SiliconStudio.Quantum
             contextStack.Pop();
         }
 
-        private ModelNode GetContextNode()
+        private GraphNode GetContextNode()
         {
             return contextStack.Peek();
         }

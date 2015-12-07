@@ -25,12 +25,12 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        public readonly ModelNodePath NodePath;
-        protected readonly ModelContainer ModelContainer;
+        public readonly GraphNodePath NodePath;
+        protected readonly NodeContainer NodeContainer;
         protected readonly ObservableViewModelService Service;
         protected readonly ObservableViewModelIdentifier Identifier;
 
-        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModel owner, ModelNodePath nodePath, IEnumerable<IDirtiable> dirtiables)
+        public ModelNodeCommandWrapper(IViewModelServiceProvider serviceProvider, INodeCommand nodeCommand, string observableNodePath, ObservableViewModel owner, GraphNodePath nodePath, IEnumerable<IDirtiable> dirtiables)
             : base(serviceProvider, dirtiables)
         {
             if (nodeCommand == null) throw new ArgumentNullException(nameof(nodeCommand));
@@ -38,7 +38,7 @@ namespace SiliconStudio.Presentation.Quantum
             NodePath = nodePath;
             // Note: the owner should not be stored in the command because we want it to be garbage collectable
             Identifier = owner.Identifier;
-            ModelContainer = owner.ModelContainer;
+            NodeContainer = owner.NodeContainer;
             NodeCommand = nodeCommand;
             Service = serviceProvider.Get<ObservableViewModelService>();
             ObservableNodePath = observableNodePath;

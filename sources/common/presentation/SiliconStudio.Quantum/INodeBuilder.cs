@@ -15,9 +15,9 @@ namespace SiliconStudio.Quantum
     public interface INodeBuilder
     {
         /// <summary>
-        /// Gets the instance of <see cref="ModelContainer"/> associated to this node builder.
+        /// Gets the instance of <see cref="NodeContainer"/> associated to this node builder.
         /// </summary>
-        ModelContainer ModelContainer { get; }
+        NodeContainer NodeContainer { get; }
 
         /// <summary>
         /// Gets the collection of structure types that represents custom primitive types. Primitive structures won't have node created for each of their members.
