@@ -38,12 +38,6 @@ namespace SiliconStudio.Core.Reflection
             return result;
         }
 
-        public static bool HasId(object instance)
-        {
-            var shadow = ShadowObject.TryGetShadow(instance);
-            return shadow?.HasId(instance) ?? false;
-        }
-
         public static Guid GetId(object instance)
         {
             var shadow = ShadowObject.GetShadow(instance);

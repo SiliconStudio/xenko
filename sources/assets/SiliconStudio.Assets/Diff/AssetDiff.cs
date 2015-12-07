@@ -444,12 +444,12 @@ namespace SiliconStudio.Assets.Diff
             bool recurseDiff = false;
 
             // Find an item in any of the list
-            var firstItem = baseItems.FirstOrDefault() ?? asset1Items.FirstOrDefault() ?? asset2Items.FirstOrDefault();
+            var firstItem = baseItems.FirstOrDefault(item => item.Instance != null) ?? asset1Items.FirstOrDefault(item => item.Instance != null) ?? asset2Items.FirstOrDefault(item => item.Instance != null);
 
             // For now, in the context of UseOverrideMode and we have identifiers per item, use DiffCollectionByIds instead
             if (UseOverrideMode && firstItem != null)
             {
-                if (IdentifiableHelper.HasId(firstItem.Instance))
+                if (IdentifiableHelper.IsIdentifiable(firstItem.Instance.GetType()))
                 {
                     DiffCollectionByIds(diff3, baseNode, asset1Node, asset2Node);
                     return;
@@ -773,7 +773,10 @@ namespace SiliconStudio.Assets.Diff
                     //   a       null     c     MergeFrom1 (unchanged)
                     //  null     null     c     MergeFrom2
                     //   a       null    null   MergeFrom1 (unchanged)
-                    diffValue = new Diff3Node(valueNode.Base, null, valueNode.Asset2) { ChangeType = valueNode.Base == null ? Diff3ChangeType.MergeFromAsset2 : Diff3ChangeType.MergeFromAsset1 };
+                    diffValue = new Diff3Node(valueNode.Base, null, valueNode.Asset2)
+                    {
+                        ChangeType = valueNode.Base == null ? Diff3ChangeType.MergeFromAsset2 : Diff3ChangeType.MergeFromAsset1,
+                    };
                 }
                 else
                 {
