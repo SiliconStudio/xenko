@@ -41,6 +41,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
         [DataMember(20)]
         [DefaultValue(null)]
         public Guid? BaseId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the part group in case of prefabs. If null, the entity doesn't belong to a part.
+        /// </summary>
+        [DataMember(30)]
+        [DefaultValue(null)]
+        public Guid? PartGroupId { get; set; }
     }
 
     /// <summary>

@@ -319,26 +319,30 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 newAsset.Hierarchy.Entities.Remove(entityId);
             }
 
-            // Collect baseId => newId
-            var finalMapBaseIdToNewId = new Dictionary<Guid, Guid>();
+            // Collect groupPartId,baseId => newId
+            // If no group part (plain base), use the empty Guid
+            var finalMapBaseIdToNewId = new Dictionary<GroupPartKey, Guid>();
             foreach (var entityEntry in newAsset.Hierarchy.Entities)
             {
                 if (entityEntry.Design.BaseId.HasValue)
                 {
                     var baseId = entityEntry.Design.BaseId.Value;
-                    finalMapBaseIdToNewId[baseId] = entityEntry.Entity.Id;
+                    var groupKey = new GroupPartKey(entityEntry.Design.PartGroupId.GetValueOrDefault(), baseId);
+                    finalMapBaseIdToNewId[groupKey] = entityEntry.Entity.Id;
                 }
             }
 
             // If there were any references to entities that have been removed, we need to clean them
             foreach (var entityEntry in newAsset.Hierarchy.Entities)
             {
-                FixReferencesToEntities(entityEntry.Entity, finalMapBaseIdToNewId);
+                FixReferencesToEntities(entityEntry, finalMapBaseIdToNewId);
             }
         }
 
-        private void FixReferencesToEntities(Entity newEntity, Dictionary<Guid, Guid> mapBaseIdToNewId)
+        private void FixReferencesToEntities(EntityDesign newEntityDesign, Dictionary<GroupPartKey, Guid> mapBaseIdToNewId)
         {
+            var newEntity = newEntityDesign.Entity;
+
             // We need to visit all references to entities/components in order to fix references
             // (e.g entities removed, entity added from base referencing an entity from base that we have to redirect to the new child entity...)
             // Suppose for example that:
@@ -370,9 +374,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 // If entity id is not in the current list, it is more likely that it was a link to a base entity
                 if (!newAsset.Hierarchy.Entities.ContainsKey(id))
                 {
+                    var groupKey = new GroupPartKey(newEntityDesign.Design.PartGroupId.GetValueOrDefault(), id);
+
                     // We are trying to remap the base id to the new id from known entities from newAsset
                     Guid newId;
-                    if (mapBaseIdToNewId.TryGetValue(id, out newId))
+                    if (mapBaseIdToNewId.TryGetValue(groupKey, out newId))
                     {
                         var linkedEntity = newAsset.Hierarchy.Entities[newId].Entity;
                         foreach (var node in nodes)
@@ -523,6 +529,49 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     EntityDesign.Entity.Transform.Children.AddRange(Children);
                     Children.Clear();
                 }
+            }
+        }
+
+        private struct GroupPartKey : IEquatable<GroupPartKey>
+        {
+            public GroupPartKey(Guid groupPartId, Guid baseId)
+            {
+                GroupPartId = groupPartId;
+                BaseId = baseId;
+            }
+
+
+            public readonly Guid GroupPartId;
+
+            public readonly Guid BaseId;
+
+            public bool Equals(GroupPartKey other)
+            {
+                return GroupPartId.Equals(other.GroupPartId) && BaseId.Equals(other.BaseId);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is GroupPartKey && Equals((GroupPartKey)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return (GroupPartId.GetHashCode()*397) ^ BaseId.GetHashCode();
+                }
+            }
+
+            public static bool operator ==(GroupPartKey left, GroupPartKey right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(GroupPartKey left, GroupPartKey right)
+            {
+                return !left.Equals(right);
             }
         }
 
