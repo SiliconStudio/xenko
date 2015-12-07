@@ -481,19 +481,21 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void ContentChanging(object sender, ContentChangeEventArgs e)
         {
-            if (!isUpdating)
+            if (!isUpdating && Equals(e.Index, Index))
                 OnPropertyChanging(nameof(TypedValue));
         }
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
-            if (!IsPrimitive)
+            if (!isUpdating && Equals(e.Index, Index))
             {
-                Refresh();
-            }
+                if (!IsPrimitive)
+                {
+                    Refresh();
+                }
 
-            if (!isUpdating)
                 OnPropertyChanged(nameof(TypedValue));
+            }
         }
 
     }
