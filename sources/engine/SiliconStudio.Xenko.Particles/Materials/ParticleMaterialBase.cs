@@ -36,9 +36,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
         public ParticleMaterialCulling FaceCulling;
 
         [DataMemberIgnore]
-        protected uint TextureSwizzle = 0;
-
-        [DataMemberIgnore]
         public ParticleEffectVariation MandatoryVariation { get; protected set; } = ParticleEffectVariation.None;
 
         /// <summary>
@@ -78,8 +75,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             // Scale up the color intensity - might depend on the eye adaptation later
             Parameters.Set(ParticleBaseKeys.ColorIntensity, ColorIntensity);
-
-            Parameters.Set(ParticleBaseKeys.RenderFlagSwizzle, TextureSwizzle);
         }
     }
 }
