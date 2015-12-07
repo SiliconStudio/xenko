@@ -155,21 +155,41 @@ namespace SiliconStudio.Assets.Diff
             }
             else if (node is DataVisitListItem)
             {
-                var descriptor = ((DataVisitListItem)node).Descriptor;
-                descriptor.SetValue(selector(parentNode).Instance, Index, dataInstance);
+                var listItem= (DataVisitListItem)node;
+                var descriptor = listItem.Descriptor;
+                var parentVisitNode = selector(parentNode);
+
+                var parentInstance = parentVisitNode.Instance;
+                descriptor.SetValue(parentInstance, Index, dataInstance);
+
+                // Update parent in case the member is a struct
+                var member = parentVisitNode as DataVisitMember;
+                if (member != null)
+                {
+                    member.UpdateInstance();
+                }
             }
             else if (node is DataVisitDictionaryItem)
             {
                 var dictItem = (DataVisitDictionaryItem)node;
-                var descriptor = dictItem.Descriptor;
 
+                var descriptor = dictItem.Descriptor;
+                var parentVisitNode = selector(parentNode);
+                var parentInstance = parentVisitNode.Instance;
                 if (dataInstance == null)
                 {
-                    descriptor.Remove(selector(parentNode).Instance, dictItem.Key);
+                    descriptor.Remove(parentInstance, dictItem.Key);
                 }
                 else
                 {
-                    descriptor.SetValue(selector(parentNode).Instance, dictItem.Key, dataInstance);
+                    descriptor.SetValue(parentInstance, dictItem.Key, dataInstance);
+                }
+
+                // Update parent in case the member is a struct
+                var member = parentVisitNode as DataVisitMember;
+                if (member != null)
+                {
+                    member.UpdateInstance();
                 }
             }
             else if (node is DataVisitArrayItem)

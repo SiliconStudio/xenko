@@ -70,6 +70,8 @@ namespace SiliconStudio.Assets.Tests.Diff
         [DataContract]
         public class DiffComponent
         {
+            public static readonly PropertyKey<DiffComponent> Key = new PropertyKey<DiffComponent>("Key", typeof(DiffComponent));
+
             [DataMember(0)]
             public string Name { get; set; }
 
@@ -81,6 +83,25 @@ namespace SiliconStudio.Assets.Tests.Diff
         public class DiffComponentSub : DiffComponent
         {
             public int Value { get; set; }
+        }
+
+        [DataContract]
+        public class DictionaryContainer
+        {
+            public DictionaryContainer()
+            {
+                Items = new Dictionary<string, string>();
+            }
+
+            public Dictionary<string, string> Items;
+        }
+
+        [DataContract]
+        public class ObjectWithPropertyContainer
+        {
+            public PropertyContainer Items;
+
+            public List<Guid> Ids;
         }
 
         [Test]
@@ -377,7 +398,7 @@ namespace SiliconStudio.Assets.Tests.Diff
 
 
             // Final list must be: item2, item1, newItem
-            var diff = new AssetDiff(baseList, asset1List, asset2List) { UseOverrideMode = true };
+            var diff = new AssetDiff(AssetCloner.Clone(baseList), asset1List, AssetCloner.Clone(asset2List)) { UseOverrideMode = true };
 
             var result = AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
             Assert.False(result.HasErrors);
@@ -389,6 +410,65 @@ namespace SiliconStudio.Assets.Tests.Diff
             Assert.AreEqual(newItem, asset1List[2]);
         }
 
+        [Test]
+        public void TestMergeDictionaryNewKeyValue()
+        {
+            var baseDic = new DictionaryContainer()
+            {
+                Items = new Dictionary<string, string>()
+                {
+                    { "A", "AValue" },
+                    { "B", "BValue" },
+                    { "C", "CValue" },
+                }
+            };
+
+            var newDic = new DictionaryContainer()
+            {
+                Items = new Dictionary<string, string>(baseDic.Items)
+            };
+
+            var newBaseDic = new DictionaryContainer()
+            {
+                Items = new Dictionary<string, string>()
+                {
+                    { "A", "AValue" },
+                    { "B", "BValue" },
+                    { "C", "CValue" },
+                    { "D", "DValue" },
+                }
+            };
+
+            var diff = new AssetDiff(AssetCloner.Clone(baseDic), newDic, AssetCloner.Clone(newBaseDic)) { UseOverrideMode = true };
+
+            var result = AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
+            Assert.False(result.HasErrors);
+
+            Assert.AreEqual(4, newDic.Items.Count);
+        }
+
+        [Test]
+        public void TestMergePropertyContainer()
+        {
+            var baseDic = new ObjectWithPropertyContainer();
+
+            var newDic = new ObjectWithPropertyContainer();
+
+            var newBaseDic = new ObjectWithPropertyContainer()
+            {
+                Items = new PropertyContainer()
+                {
+                    { DiffComponent.Key, new DiffComponent() { Name = "NewComponent"} },
+                }
+            };
+
+            var diff = new AssetDiff(AssetCloner.Clone(baseDic), newDic, AssetCloner.Clone(newBaseDic)) { UseOverrideMode = true };
+
+            var result = AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
+            Assert.False(result.HasErrors);
+
+            Assert.AreEqual(1, newDic.Items.Count);
+        }
 
         [Test]
         public void TestPackageAnalysis()

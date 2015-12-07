@@ -91,19 +91,29 @@ namespace SiliconStudio.Assets.Visitors
 
         public override void SetValue(object instance)
         {
+            SetValue(Key, instance);
+        }
+
+        public void SetValue(object keyLocal, object value)
+        {
             var descriptor = Descriptor;
             if (descriptor != null)
             {
-                descriptor.SetValue(Instance, Key, instance);
+                descriptor.SetValue(Instance, keyLocal, value);
             }
         }
 
         public override void RemoveValue()
         {
+            RemoveValue(Key);
+        }
+
+        public void RemoveValue(object keyLocal)
+        {
             var descriptor = Descriptor;
             if (descriptor != null)
             {
-                descriptor.Remove(Instance, Key);
+                descriptor.Remove(Instance, keyLocal);
             }
         }
 

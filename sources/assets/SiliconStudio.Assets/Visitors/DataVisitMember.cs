@@ -47,10 +47,18 @@ namespace SiliconStudio.Assets.Visitors
         {
             MemberDescriptor.Set(Parent.Instance, newValue);
             Instance = newValue;
-
-            if (Parent.InstanceType.IsStruct() && Parent is DataVisitMember)
+            var parentMember = Parent as DataVisitMember;
+            if (parentMember != null)
             {
-                ((DataVisitMember)Parent).SetValue(Parent.Instance);
+                parentMember.UpdateInstance();
+            }
+        }
+
+        public void UpdateInstance()
+        {
+            if (this.InstanceType.IsStruct())
+            {
+                this.SetValue(this.Instance);
             }
         }
 
