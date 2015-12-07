@@ -146,7 +146,11 @@ namespace SiliconStudio.Quantum
                 return Clone();
 
             var result = Clone(rootNode, false);
-            
+
+            // TODO: Would make more sense to return null in this case but a lot of code here and there should be fixed then
+            if (target == null)
+                return result;
+
             var member = parentNode.Children.FirstOrDefault(x => x == target);
             if (member != null)
             {
