@@ -7,7 +7,7 @@ using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Graphics.Font;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
@@ -15,6 +15,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [DataContract("PregeneratedSpriteFont")]
     [AssetDescription(FileExtension, false)]
     [AssetCompiler(typeof(PrecompiledSpriteFontAssetCompiler))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha09")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
     [Display(105, "Sprite Font (Precompiled)")]
     public class PrecompiledSpriteFontAsset : Asset
     {
@@ -46,7 +48,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
         [DefaultValue(false)]
         [Display(Browsable = false)]
-        public bool IsNotPremultiplied; // Note: this field is used only for thumbnail / preview.
+        public bool IsPremultiplied; // Note: this field is used only for thumbnail / preview.
 
         /// <summary>
         /// The size in points (pt).
@@ -77,5 +79,17 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [DefaultValue(' ')]
         [Display(Browsable = false)]
         public char DefaultCharacter;
+
+        class PremultiplyUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                if (asset.IsNotPremultiplied != null)
+                {
+                    asset.IsPremultiplied = !(bool)asset.IsNotPremultiplied;
+                    asset.IsNotPremultiplied = DynamicYamlEmpty.Default;
+                }
+            }
+        }
     }
 }
