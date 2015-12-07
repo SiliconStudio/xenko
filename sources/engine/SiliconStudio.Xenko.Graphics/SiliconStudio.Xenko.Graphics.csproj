@@ -132,9 +132,6 @@
     <Compile Include="SDL\Cursor.cs" />
     <Compile Include="SDL\FormBorderStyle.cs" />
     <Compile Include="SDL\FormWindowState.cs" />
-    <Compile Include="SDL\Point.cs" />
-    <Compile Include="SDL\Rect.cs" />
-    <Compile Include="SDL\Size.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />

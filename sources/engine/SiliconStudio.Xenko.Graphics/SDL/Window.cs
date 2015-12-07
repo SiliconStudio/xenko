@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_XENKO_UI_SDL
 using System;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Graphics.SDL
 {
@@ -200,13 +201,13 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <summary>
         /// Size of window.
         /// </summary>
-        public Size Size
+        public Size2 Size
         {
             get
             {
                 int w, h;
                 SDL.SDL_GetWindowSize(SdlHandle, out w, out h);
-                return new Size(w, h);
+                return new Size2(w, h);
             }
             set { SDL.SDL_SetWindowSize(SdlHandle, value.Width, value.Height); }
         }
@@ -214,12 +215,12 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <summary>
         /// Size of the client area of a window.
         /// </summary>
-        public unsafe Size ClientSize
+        public unsafe Size2 ClientSize
         {
             get
             {
                 SDL.SDL_Surface *surfPtr = (SDL.SDL_Surface *) SDL.SDL_GetWindowSurface(SdlHandle);
-                return new Size(surfPtr->w, surfPtr->h);
+                return new Size2(surfPtr->w, surfPtr->h);
             }
             set
             {
@@ -232,12 +233,12 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <summary>
         /// Size of client area expressed as a rectangle.
         /// </summary>
-        public unsafe Rect ClientRectangle
+        public unsafe Rectangle ClientRectangle
         {
             get
             {
                 SDL.SDL_Surface *surfPtr = (SDL.SDL_Surface *) SDL.SDL_GetWindowSurface(SdlHandle);
-                return new Rect(0, 0, surfPtr->w, surfPtr->h);
+                return new Rectangle(0, 0, surfPtr->w, surfPtr->h);
             }
             set
             {

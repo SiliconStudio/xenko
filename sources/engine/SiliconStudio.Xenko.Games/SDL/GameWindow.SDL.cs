@@ -28,6 +28,7 @@ using System.Diagnostics;
 using SDL2;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.SDL;
+using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -123,7 +124,7 @@ namespace SiliconStudio.Xenko.Games
 
             if (window != null)
             {
-                window.ClientSize = new Size(clientWidth, clientHeight);
+                window.ClientSize = new Size2(clientWidth, clientHeight);
             }
 
             // Notifies the GameForm about the fullscreen state
@@ -158,7 +159,7 @@ namespace SiliconStudio.Xenko.Games
 
             windowHandle = new WindowHandle(AppContextType.Desktop, window);
 
-            window.ClientSize = new Size(width, height);
+            window.ClientSize = new Size2(width, height);
 
             window.MouseEnterActions +=WindowOnMouseEnterActions;   
             window.MouseLeaveActions += WindowOnMouseLeaveActions;
@@ -275,14 +276,14 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        public override Core.Mathematics.Int2 Position
+        public override Int2 Position
         {
             get
             {
                 if (window == null)
                     return base.Position;
 
-                return new Core.Mathematics.Int2(window.Location.X, window.Location.Y);
+                return new Int2(window.Location.X, window.Location.Y);
             }
             set
             {
@@ -303,7 +304,7 @@ namespace SiliconStudio.Xenko.Games
 
         internal override void Resize(int width, int height)
         {
-            window.ClientSize = new Size(width, height);
+            window.ClientSize = new Size2(width, height);
         }
 
         public override bool AllowUserResizing
@@ -353,12 +354,12 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        public override SiliconStudio.Core.Mathematics.Rectangle ClientBounds
+        public override Rectangle ClientBounds
         {
             get
             {
                 // Ensure width and height are at least 1 to avoid divisions by 0
-                return new SiliconStudio.Core.Mathematics.Rectangle(0, 0, Math.Max(window.ClientSize.Width, 1), Math.Max(window.ClientSize.Height, 1));
+                return new Rectangle(0, 0, Math.Max(window.ClientSize.Width, 1), Math.Max(window.ClientSize.Height, 1));
             }
         }
 

@@ -4,6 +4,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_UI_SDL
 using System;
 using SiliconStudio.Xenko.Graphics.SDL;
+using SiliconStudio.Core.Mathematics;
 using SDL2;
 
 namespace SiliconStudio.Xenko.Games
@@ -28,7 +29,7 @@ namespace SiliconStudio.Xenko.Games
         /// <param name="text">The text.</param>
         public GameFormSdl(String text) : base(text)
         {
-            Size = new Size(800, 600);
+            Size = new Size2(800, 600);
             ResizeBeginActions += GameForm_ResizeBeginActions;
             ResizeEndActions += GameForm_ResizeEndActions;
             ActivateActions += GameForm_ActivateActions;
@@ -71,7 +72,7 @@ namespace SiliconStudio.Xenko.Games
 //
 // TODO: The code below is taken from GameForm.cs of the Windows Desktop implementation. This needs reviewing
 //
-        private Size cachedSize;
+        private Size2 cachedSize;
         private FormWindowState previousWindowState;
         //private DisplayMonitor monitor;
         private bool isUserResizing;
@@ -108,7 +109,7 @@ namespace SiliconStudio.Xenko.Games
                 previousWindowState = FormWindowState.Normal;
 
                 // Only update when cachedSize is != 0
-                if (!cachedSize.IsEmpty)
+                if (cachedSize != Size2.Empty)
                 {
                     isSizeChangedWithoutResizeBegin = true;
                 }

@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics.SDL;
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
@@ -64,7 +65,7 @@ namespace SiliconStudio.Xenko.Input
             if (IsMousePositionLocked)
             {
                 IsMousePositionLocked = false;
-                _capturedPosition = Point.Empty;
+                _capturedPosition = Point.Zero;
                 Game.IsMouseVisible = _wasMouseVisibleBeforeCapture;
             }
         }
