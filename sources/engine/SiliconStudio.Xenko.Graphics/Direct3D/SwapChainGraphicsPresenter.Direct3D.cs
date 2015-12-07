@@ -23,9 +23,7 @@
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
-using System.Windows.Forms;
-#endif
+using System.Reflection;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
@@ -299,25 +297,25 @@ namespace SiliconStudio.Xenko.Graphics
             return swapChain;
         }
 #else
+        /// <summary>
+        /// Create the SwapChain on Windows. To avoid any hard dependency on a actual windowing system
+        /// we assume that the <c>Description.DeviceWindowHandle.NativeHandle</c> holds
+        /// a window type that exposes the <code>Handle</code> property of type <see cref="IntPtr"/>.
+        /// </summary>
+        /// <returns></returns>
         private SwapChain CreateSwapChainForWindows()
         {
+            IntPtr hwndPtr = IntPtr.Zero;
             var nativeHandle = Description.DeviceWindowHandle.NativeHandle;
-
-#if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
-            // Dynamically test if we are handling a Winform or a SDL window.
-            var control = nativeHandle as Control;
-            if (control != null)
+            var handleProperty = nativeHandle.GetType().GetProperty("Handle", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (handleProperty != null && handleProperty.PropertyType == typeof(IntPtr))
             {
-                return CreateSwapChainForDesktop(control.Handle);
+                hwndPtr = (IntPtr)handleProperty.GetValue(nativeHandle);
+                if (hwndPtr != IntPtr.Zero)
+                {
+                    return CreateSwapChainForDesktop(hwndPtr);
+                }
             }
-#endif
-
-            var window = nativeHandle as SiliconStudio.Xenko.Graphics.SDL.Window;
-            if (window != null)
-            {
-                return CreateSwapChainForDesktop(window.Handle);
-            }
-
             throw new NotSupportedException(string.Format("Form of type [{0}] is not supported. Only System.Windows.Control or SDL2.Window are supported",
                 Description.DeviceWindowHandle != null ? Description.DeviceWindowHandle.GetType().Name : "null"));
         }
