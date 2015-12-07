@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Testing
 
         }
 
-        public async Task StartClient(Game game)
+        public async Task StartClient(Game game, string gameName)
         {
             game.GameSystems.Add(this);
 
@@ -80,14 +80,14 @@ namespace SiliconStudio.Xenko.Testing
                 });
             });
 
+            socketMessageLayer.AddPacketHandler<TestEndedRequest>(request =>
+            {
+                game.Exit();
+            });
+
             Task.Run(() => socketMessageLayer.MessageLoop());
 
-            var assemblyTitleAttribute = Assembly.GetEntryAssembly().CustomAttributes.First(x => x.AttributeType == typeof(AssemblyTitleAttribute));
-            if (assemblyTitleAttribute != null)
-            {
-                var name = (string)assemblyTitleAttribute.ConstructorArguments[0].Value;
-                await socketMessageLayer.Send(new TestRegistrationRequest { GameAssembly = name, Tester = false, Platform = (int)Platform.Type });
-            }
+            await socketMessageLayer.Send(new TestRegistrationRequest { GameAssembly = gameName, Tester = false, Platform = (int)Platform.Type });
         }
 
         private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>(); 

@@ -76,6 +76,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                             }
                         case (int)PlatformType.Android:
                             {
+                                processes[request.GameAssembly] = new TestProcess { Process = null, TesterSocket = socketMessageLayer };
                                 break;
                             }
                     }
@@ -112,10 +113,9 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
             socketMessageLayer.AddPacketHandler<TestEndedRequest>(request =>
             {
-                var proc = processes.First(x => x.Value.TesterSocket == socketMessageLayer);
-                proc.Value.Process.Kill();
-                processes.Remove(proc.Key);
-                testerToGame.Remove(proc.Value.TesterSocket);
+                var game = testerToGame[socketMessageLayer];
+                game.Send(request).Wait();
+                testerToGame.Remove(socketMessageLayer);
             });
 
             Task.Run(() => socketMessageLayer.MessageLoop());

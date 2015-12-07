@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Engine
 {
     public interface IGamePlugin
     {
-        void Initialize(Game game);
+        void Initialize(Game game, string packageName);
 
         void Destroy(Game game);
     }
@@ -220,11 +220,6 @@ namespace SiliconStudio.Xenko.Engine
             GameSystems.Add(ProfilerSystem);
 
             AutoLoadDefaultSettings = true;
-
-            foreach (var gamePlugin in GamePlugins)
-            {
-                gamePlugin.Initialize(this);
-            }
         }
 
         protected override void Destroy()
@@ -301,6 +296,14 @@ namespace SiliconStudio.Xenko.Engine
 
             // enable multi-touch by default
             Input.MultiTouchEnabled = true;
+
+            foreach (var gamePlugin in GamePlugins)
+            {
+                if (gameSettings != null)
+                {
+                    gamePlugin.Initialize(this, gameSettings.PackageName);
+                }
+            }
         }
 
         internal static void InitializeAssetDatabase()
