@@ -11,8 +11,6 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.ViewModel;
-using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 using Expression = System.Linq.Expressions.Expression;
 
@@ -24,11 +22,11 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
+        private bool isDisposed;
         private bool isVisible;
         private bool isReadOnly;
         private string displayName;
         private int visibleChildrenCount;
-        
         private List<IObservableNode> initializingChildren = new List<IObservableNode>();
 
         static ObservableNode()
@@ -157,7 +155,7 @@ namespace SiliconStudio.Presentation.Quantum
         
         /// <inheritdoc/>
         public event EventHandler<EventArgs> IsVisibleChanged;
-        
+
         /// <summary>
         /// Indicates whether the given name is reserved for the name of a property in an <see cref="ObservableNode"/>. Any children node with a colliding name will
         /// be escaped with the <see cref="EscapeName"/> method.
@@ -178,6 +176,13 @@ namespace SiliconStudio.Presentation.Quantum
         public static string EscapeName(string name)
         {
             return !IsReserved(name) ? name : name + "_";
+        }
+
+        /// <inheritdoc/>
+        public virtual void Dispose()
+        {
+            EnsureNotDisposed();
+            isDisposed = true;
         }
 
         /// <inheritdoc/>
@@ -341,6 +346,14 @@ namespace SiliconStudio.Presentation.Quantum
         public void NotifyPropertyChanged(string propertyName)
         {
             OnPropertyChanged(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
+        }
+
+        protected void EnsureNotDisposed()
+        {
+            if (isDisposed)
+            {
+                throw new ObjectDisposedException(Name);
+            }
         }
 
         protected void FinalizeChildrenInitialization()

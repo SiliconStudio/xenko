@@ -372,8 +372,13 @@ namespace SiliconStudio.Presentation.Quantum
 
             // Clean the current node so it can be re-initialized (associatedData are overwritten in Initialize)
             ClearCommands();
+
+            // Dispose all children and remove them
+            Children.SelectDeep(x => x.Children).ForEach(x => x.Dispose());
             foreach (var child in Children.Cast<ObservableNode>().ToList())
+            {
                 RemoveChild(child);
+            }
 
             Initialize();
 
@@ -479,6 +484,13 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
 
+        public override void Dispose()
+        {
+            SourceNode.Content.Changing -= ContentChanging;
+            SourceNode.Content.Changed -= ContentChanged;
+            base.Dispose();
+        }
+
         private void ContentChanging(object sender, ContentChangeEventArgs e)
         {
             if (!isUpdating && Equals(e.Index, Index))
@@ -489,6 +501,8 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (!isUpdating && Equals(e.Index, Index))
             {
+                EnsureNotDisposed();
+
                 if (!IsPrimitive)
                 {
                     Refresh();

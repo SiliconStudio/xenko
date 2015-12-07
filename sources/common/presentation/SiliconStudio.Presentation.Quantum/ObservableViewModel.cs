@@ -83,6 +83,8 @@ namespace SiliconStudio.Presentation.Quantum
         public void Dispose()
         {
             Dirtiables.ForEach(x => x.DirtinessUpdated -= DirtinessUpdated);
+            RootNode.Children.SelectDeep(x => x.Children).ForEach(x => x.Dispose());
+            RootNode.Dispose();
         }
 
         public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, NodeContainer nodeContainer, IReadOnlyCollection<ObservableViewModel> viewModels)

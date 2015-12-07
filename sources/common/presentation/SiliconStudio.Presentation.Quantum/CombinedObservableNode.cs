@@ -156,6 +156,15 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override sealed bool HasDictionary => CombinedNodes.First().HasDictionary;
 
+        public override void Dispose()
+        {
+            foreach (var node in CombinedNodes)
+            {
+                node.Dispose();
+            }
+            base.Dispose();
+        }
+
         public void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can be a root node.");
@@ -170,8 +179,12 @@ namespace SiliconStudio.Presentation.Quantum
                 {
                     ClearCommands();
 
+                    // Dispose all children and remove them
+                    Children.SelectDeep(x => x.Children).ForEach(x => x.Dispose());
                     foreach (var child in Children.Cast<ObservableNode>().ToList())
+                    {
                         RemoveChild(child);
+                    }
 
                     foreach (var modelNode in CombinedNodes.OfType<ObservableModelNode>())
                         modelNode.ForceSetValue(modelNode.Value);

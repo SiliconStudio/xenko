@@ -15,7 +15,6 @@ namespace SiliconStudio.Quantum
     {
         private readonly List<IGraphNode> children = new List<IGraphNode>();
         private readonly List<INodeCommand> commands = new List<INodeCommand>();
-        private IContent content;
         private bool isSealed;
 
         /// <summary>
@@ -29,7 +28,7 @@ namespace SiliconStudio.Quantum
             if (name == null) throw new ArgumentNullException(nameof(name));
             if (content == null) throw new ArgumentNullException(nameof(content));
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(content));
-            this.content = content;
+            this.Content = content;
             Name = name;
             Guid = guid;
 
@@ -44,7 +43,7 @@ namespace SiliconStudio.Quantum
         public Guid Guid { get; }
 
         /// <inheritdoc/>
-        public virtual IContent Content { get { return content; } set { content = value; } }
+        public virtual IContent Content { get; }
 
         /// <inheritdoc/>
         public virtual IGraphNode Parent { get; private set; }
