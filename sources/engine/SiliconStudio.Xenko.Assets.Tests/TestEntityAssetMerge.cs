@@ -4,17 +4,33 @@
 using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Assets;
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Tests
 {
+    [DataContract("TestEntityComponent")]
+    public class TestEntityComponent : EntityComponent
+    {
+        public static readonly PropertyKey<TestEntityComponent> Key = new PropertyKey<TestEntityComponent>("Key", typeof(TestEntityComponent));
+
+        public Entity EntityLink { get; set; }
+
+        public EntityComponent EntityComponentLink { get; set; }
+
+        public override PropertyKey GetDefaultKey()
+        {
+            return Key;
+        }
+    }
+
     [TestFixture]
     public class TestEntityAssetMerge
     {
 
         [Test]
-        public void TestChildAsset()
+        public void TestCreateChildAsset()
         {
             // Create an Entity child asset
 
@@ -63,7 +79,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         }
 
         [Test]
-        public void TestSimpleEntity()
+        public void TestMergeSimpleHierarchy()
         {
             // Test merging a simple Entity Asset that has 3 entities
             //
@@ -126,7 +142,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         }
 
         [Test]
-        public void TestEntityWithChildren()
+        public void TestMergeEntityWithChildren()
         {
             // Test merging an EntityAsset with a root entity EA, and 3 child entities
             // - Add a child entity to NewBase
@@ -185,5 +201,169 @@ namespace SiliconStudio.Xenko.Assets.Tests
             Assert.AreEqual("A3", rootEntity.Entity.Transform.Children[1].Entity.Name);
             Assert.AreEqual("A4", rootEntity.Entity.Transform.Children[2].Entity.Name);
         }
+
+
+        [Test]
+        public void TestMergeAddEntityWithLinks()
+        {
+            // Test merging an EntityAsset with a root entity EA, and 3 child entities
+            // - Add a child entity to NewBase that has a link to an another entity + a link to the component of another entity
+            //
+            //       Base         NewBase                      NewAsset                  NewAsset (Merged)
+            //                                                 
+            //       EA           EA                           EA'(base: EA)             EA'(base: EA)
+            //        |-EA1       |-EA1                        |-EA1'(base: EA1)         |-EA1'(base: EA1)
+            //        |-EA2       |-EA2                        |-EA2'(base: EA2)         |-EA2'(base: EA2)
+            //        |-EA3       |-EA3                        |-EA3'(base: EA3)         |-EA3'(base: EA3)
+            //                    |-EA4 + link EA1 + link EA2                            |-EA4'(base: EA4) + link EA1' + link EA2'
+            //
+
+            var eA = new Entity() { Name = "A" };
+            var eA1 = new Entity() { Name = "A1" };
+            var eA2 = new Entity() { Name = "A2" };
+            var eA3 = new Entity() { Name = "A3" };
+            eA.Transform.Children.Add(eA1.Transform);
+            eA.Transform.Children.Add(eA2.Transform);
+            eA.Transform.Children.Add(eA3.Transform);
+
+            // Create Base Asset
+            var baseAsset = new EntityAsset();
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA3, new EntityDesignData()));
+            baseAsset.Hierarchy.RootEntities.Add(eA.Id);
+
+            var baseAssetItem = new AssetItem("base", baseAsset);
+
+            // Create new Base Asset
+            var newBaseAsset = (EntityAsset)AssetCloner.Clone(baseAsset);
+            var eA4 = new Entity() { Name = "A4" };
+            var rootInNewBase = newBaseAsset.Hierarchy.Entities[newBaseAsset.Hierarchy.RootEntities.First()];
+            var eA1InNewBaseTransform = rootInNewBase.Entity.Transform.Children.FirstOrDefault(item => item.Entity.Id == eA1.Id);
+            Assert.NotNull(eA1InNewBaseTransform);
+
+            var eA2InNewBaseTransform = rootInNewBase.Entity.Transform.Children.FirstOrDefault(item => item.Entity.Id == eA2.Id);
+            Assert.NotNull(eA2InNewBaseTransform);
+
+            // Add EA4 with link to EA1 entity and EA2 component
+            var testComponent = new TestEntityComponent
+            {
+                EntityLink = eA1InNewBaseTransform.Entity,
+                EntityComponentLink = eA2InNewBaseTransform
+            };
+
+            eA4.Add(testComponent);
+            newBaseAsset.Hierarchy.Entities.Add(new EntityDesign(eA4, new EntityDesignData()));
+            rootInNewBase.Entity.Transform.Children.Add(eA4.Transform);
+
+            // Create new Asset (from base)
+            var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
+
+            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
+            var entityMerge = new EntityAssetMerge((EntityAssetBase)AssetCloner.Clone(baseAsset), newAsset, (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            entityMerge.Merge();
+
+            Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
+            Assert.AreEqual(5, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA2', EA3', EA4'
+
+            var rootEntity = newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()];
+
+            Assert.AreEqual(4, rootEntity.Entity.Transform.Children.Count);
+
+            var eA1Merged = rootEntity.Entity.Transform.Children[0].Entity;
+            var eA2Merged = rootEntity.Entity.Transform.Children[1].Entity;
+            var eA4Merged = rootEntity.Entity.Transform.Children[3].Entity;
+            Assert.AreEqual("A1", eA1Merged.Name);
+            Assert.AreEqual("A2", eA2Merged.Name);
+            Assert.AreEqual("A3", rootEntity.Entity.Transform.Children[2].Entity.Name);
+            Assert.AreEqual("A4", eA4Merged.Name);
+
+            var testComponentMerged = eA4Merged.Get<TestEntityComponent>();
+
+            Assert.AreEqual(eA1Merged, testComponentMerged.EntityLink);
+            Assert.AreEqual(eA2Merged.Transform, testComponentMerged.EntityComponentLink);
+        }
+
+
+        [Test]
+        public void TestMergeRemoveEntityWithLinks()
+        {
+            // Test merging an EntityAsset with a root entity EA, and 3 child entities
+            // - Remove a child entity from NewBase (EA2)
+            // - Add a child entity (EA4) to NewBase that has a link to the EA2 entity
+            //
+            //       Base         NewBase     NewAsset                         NewAsset (Merged)
+            //                                                                 
+            //       EA           EA          EA'(base: EA)                    EA'(base: EA)
+            //        |-EA1       |-EA1       |-EA1'(base: EA1)                |-EA1'(base: EA1)
+            //        |-EA2       |           |-EA2'(base: EA2)                |
+            //        |-EA3       |-EA3       |-EA3'(base: EA3)                |-EA3'(base: EA3)
+            //                                |-EA4' + link EA2'               |-EA4'(base: EA4) + no more links
+            //
+
+            var eA = new Entity() { Name = "A" };
+            var eA1 = new Entity() { Name = "A1" };
+            var eA2 = new Entity() { Name = "A2" };
+            var eA3 = new Entity() { Name = "A3" };
+            eA.Transform.Children.Add(eA1.Transform);
+            eA.Transform.Children.Add(eA2.Transform);
+            eA.Transform.Children.Add(eA3.Transform);
+
+            // Create Base Asset
+            var baseAsset = new EntityAsset();
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
+            baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA3, new EntityDesignData()));
+            baseAsset.Hierarchy.RootEntities.Add(eA.Id);
+
+            var baseAssetItem = new AssetItem("base", baseAsset);
+
+            // Create new Base Asset
+            var newBaseAsset = (EntityAsset)AssetCloner.Clone(baseAsset);
+            var eA2FromNewBase = newBaseAsset.Hierarchy.Entities.First(item => item.Entity.Id == eA2.Id);
+            newBaseAsset.Hierarchy.Entities[eA.Id].Entity.Transform.Children.Remove(eA2FromNewBase.Entity.Transform);
+
+            // Create new Asset (from base)
+            var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
+
+            var eA4 = new Entity() { Name = "A4" };
+
+            var rootInNew = newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()];
+            var eA2InNewTransform = rootInNew.Entity.Transform.Children.FirstOrDefault(item => item.Entity.Name == "A2");
+            Assert.NotNull(eA2InNewTransform);
+
+            // Add EA4 with link to EA1 entity and EA2 component
+            var testComponent = new TestEntityComponent
+            {
+                EntityLink = eA2InNewTransform.Entity,
+            };
+
+            eA4.Add(testComponent);
+            newAsset.Hierarchy.Entities.Add(new EntityDesign(eA4, new EntityDesignData()));
+            rootInNew.Entity.Transform.Children.Add(eA4.Transform);
+
+            // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
+            var entityMerge = new EntityAssetMerge((EntityAssetBase)AssetCloner.Clone(baseAsset), newAsset, (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            entityMerge.Merge();
+
+            Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
+            Assert.AreEqual(4, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA3', EA4'
+
+            var rootEntity = newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()];
+
+            Assert.AreEqual(3, rootEntity.Entity.Transform.Children.Count);
+
+            var eA4Merged = rootEntity.Entity.Transform.Children[2].Entity;
+            Assert.AreEqual("A1", rootEntity.Entity.Transform.Children[0].Entity.Name);
+            Assert.AreEqual("A3", rootEntity.Entity.Transform.Children[1].Entity.Name);
+            Assert.AreEqual("A4", eA4Merged.Name);
+
+            var testComponentMerged = eA4Merged.Get<TestEntityComponent>();
+
+            Assert.Null(testComponentMerged.EntityLink);
+        }
+
     }
 }
