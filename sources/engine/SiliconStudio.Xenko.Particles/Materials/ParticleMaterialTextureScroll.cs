@@ -8,9 +8,9 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
-    [DataContract("ParticleMaterialTexture")]
-    [Display("StaticTexture")]
-    public class ParticleMaterialTexture : ParticleMaterialBase
+    [DataContract("ParticleMaterialTextureScroll")]
+    [Display("Scrolling Texture")]
+    public class ParticleMaterialTextureScroll : ParticleMaterialBase
     {
         private Texture texture0 = null;
 
@@ -54,7 +54,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMemberIgnore]
         private bool dirtySamplerState0 = true;
 
-
         [DataMemberIgnore]
         protected uint TextureSwizzle = 0;
 
@@ -72,7 +71,15 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMember(130)]
         [Display("Color Random Seed")]
         public UInt32 ColorRandomOffset { get; set; } = 1;
-        
+
+        [DataMember(200)]
+        [Display("Start frame")]
+        public Vector4 StartFrame { get; set; } = new Vector4(0, 0, 1, 1);
+
+        [DataMember(240)]
+        [Display("End frame")]
+        public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);
+
         public override void Setup(GraphicsDevice graphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
             PrepareEffect(graphicsDevice, variation);
@@ -80,7 +87,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // This should be CB0 - view/proj matrices don't change per material
             SetParameter(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
 
-            // Texture swizzle - fi the texture is grayscale, sample it like Tex.rrrr rather than Tex.rgba
+            // Texture swizzle - if the texture is grayscale, sample it like Tex.rrrr rather than Tex.rgba
             TextureSwizzle = (texture0?.Format == PixelFormat.R32_Float ||
                               texture0?.Format == PixelFormat.A8_UNorm ||
                               texture0?.Format == PixelFormat.BC4_UNorm) ? (uint)1 : 0;
@@ -111,11 +118,15 @@ namespace SiliconStudio.Xenko.Particles.Materials
             if (numberOfParticles <= 0)
                 return;
 
-            var lifeField  = pool.GetField(ParticleFields.RemainingLife);
-            var randField  = pool.GetField(ParticleFields.RandomSeed);
+            var lifeField = pool.GetField(ParticleFields.RemainingLife);
+            var randField = pool.GetField(ParticleFields.RandomSeed);
 
             if (!randField.IsValid() || !lifeField.IsValid())
                 return;
+
+            var lifeMin = emitter?.ParticleMinLifetime ?? 1;
+            var lifeMax = emitter?.ParticleMaxLifetime ?? 1;
+            var lifeStep = lifeMax - lifeMin;
 
             var colorField = pool.GetField(ParticleFields.Color);
             var hasColorField = colorField.IsValid();
@@ -127,13 +138,26 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // TODO Fetch sorted particles
             foreach (var particle in pool)
             {
+                vtxBuilder.SetRandomSeedForParticle(particle[randField]);
+                var randSeed = *(RandomSeed*)(particle[randField]);
+
+                var remainingLife = *(float*)(particle[lifeField]);
+                var startingLife = lifeMin + lifeStep * randSeed.GetFloat(0);
+                var normalizedTimeline = 1f - remainingLife / startingLife;
+                // vtxBuilder.SetLifetimeForParticle(normalizedTimeline);   // To check - do we need normalized life or absolute?
+                vtxBuilder.SetLifetimeForParticle(particle[lifeField]);     // To check - do we need normalized life or absolute?
+
                 vtxBuilder.SetColorForParticle(hasColorField ? particle[colorField] : (IntPtr)(&whiteColor));
 
-                vtxBuilder.SetLifetimeForParticle(particle[lifeField]);
+                var uvTransform = Vector4.Lerp(StartFrame, EndFrame, normalizedTimeline);
+                uvTransform.Z -= uvTransform.X;
+                uvTransform.W -= uvTransform.Y;
 
-                vtxBuilder.SetRandomSeedForParticle(particle[randField]);
-
-                vtxBuilder.NextParticle();
+                for (int i = 0; i < vtxBuilder.VerticesPerParticle; i++)
+                {
+                    vtxBuilder.TransformUvCoords(ref uvTransform);
+                    vtxBuilder.NextVertex();
+                }
 
                 maxVertices -= vtxPerParticle;
 

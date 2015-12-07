@@ -21,5 +21,13 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             *((Vector2*)(vertexBuffer + OffsetUv)) = (*((Vector2*)uv));
         }
 
+        public unsafe override void TransformUvCoords(ref Vector4 OffsetScale)
+        {
+            var uvCoords = *((Vector2*)(vertexBuffer + OffsetUv));
+            uvCoords.X = OffsetScale.X + OffsetScale.Z * uvCoords.X;
+            uvCoords.Y = OffsetScale.Y + OffsetScale.W * uvCoords.Y;
+            *((Vector2*)(vertexBuffer + OffsetUv)) = uvCoords;
+        }
+
     }
 }

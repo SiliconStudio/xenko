@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <param name="projMatrix">The camera's Projection matrix</param>
         public abstract void Setup(GraphicsDevice GraphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix, Color4 color);
 
-        public abstract void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int remainingCapacity, ParticlePool pool);
+        public abstract void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int remainingCapacity, ParticlePool pool, ParticleEmitter emitter = null);
 
         [DataMemberIgnore]
         private Effect effect = null;
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
 
             graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.DepthRead);
-
+                            
             // TODO Maybe replicate ResourceContext and have all vtx, idx buffers and binding to be on the material or shapebuilder side
             // graphicsDevice.SetVertexArrayObject(ResourceContext.VertexArrayObject);
 
