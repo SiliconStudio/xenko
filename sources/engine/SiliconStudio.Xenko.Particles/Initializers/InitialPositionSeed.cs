@@ -9,6 +9,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialPositionSeed")]
+    [Display("Initial Position by seed")]
     public class InitialPositionSeed : InitializerBase
     {
         public InitialPositionSeed()

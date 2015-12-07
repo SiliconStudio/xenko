@@ -9,6 +9,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialSizeSeed")]
+    [Display("Initial Size by seed")]
     public class InitialSizeSeed : InitializerBase
     {
         public InitialSizeSeed()
