@@ -227,6 +227,9 @@
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
     <Compile Include="IModelAsset.cs" />
+    <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
+    <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
+    <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
     <Compile Include="Tasks\PackageArchive.cs" />
     <Compile Include="Tasks\PackageArchiveTask.cs" />
     <Compile Include="Tasks\PackageGetVersionTask.cs" />

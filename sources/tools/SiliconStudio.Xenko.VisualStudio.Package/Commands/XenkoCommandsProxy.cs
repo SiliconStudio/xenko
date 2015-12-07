@@ -9,7 +9,6 @@ using System.Reflection;
 using NShader;
 using NuGet;
 using SiliconStudio.Assets;
-using SiliconStudio.Paradox.VisualStudio.Commands;
 
 namespace SiliconStudio.Xenko.VisualStudio.Commands
 {
@@ -18,9 +17,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
     /// </summary>
     public class XenkoCommandsProxy : MarshalByRefObject
     {
-        public static readonly Version MinimumVersion = new Version(1, 1);
-
-        public static readonly Version NonLegacyVersion = new Version(1, 4);
+        public static readonly Version MinimumVersion = new Version(1, 4);
 
         public struct PackageInfo
         {
@@ -29,8 +26,6 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
             public Version ExpectedVersion;
 
             public Version LoadedVersion;
-
-            public bool IsLegacy => LoadedVersion != null && LoadedVersion < NonLegacyVersion;
         }
 
         private static readonly object computedPackageInfoLock = new object();
@@ -43,7 +38,6 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
         private static AppDomain currentAppDomain;
 
         private readonly IXenkoCommands remote;
-        private readonly IParadoxCommands legacyRemote;
         private readonly List<Tuple<string, DateTime>> assembliesLoaded = new List<Tuple<string, DateTime>>();
 
         static XenkoCommandsProxy()
@@ -57,16 +51,8 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
         {
             AppDomain.CurrentDomain.AssemblyResolve += XenkoDomainAssemblyResolve;
 
-            if (CurrentPackageInfo.IsLegacy)
-            {
-                var assembly = Assembly.Load("SiliconStudio.Paradox.VisualStudio.Commands");
-                legacyRemote = (IParadoxCommands)assembly.CreateInstance("SiliconStudio.Paradox.VisualStudio.Commands.ParadoxCommands");
-            }
-            else
-            {
-                var assembly = Assembly.Load("SiliconStudio.Xenko.VisualStudio.Commands");
-                remote = (IXenkoCommands)assembly.CreateInstance("SiliconStudio.Xenko.VisualStudio.Commands.XenkoCommands");
-            }
+            var assembly = Assembly.Load("SiliconStudio.Xenko.VisualStudio.Commands");
+            remote = (IXenkoCommands)assembly.CreateInstance("SiliconStudio.Xenko.VisualStudio.Commands.XenkoCommands");
         }
 
         public static PackageInfo CurrentPackageInfo
@@ -155,7 +141,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
                         }
                         catch (Exception ex)
                         {
-                            Trace.WriteLine(string.Format("Unexpected exception when unloading AppDomain for XenkoCommandsProxy: {0}", ex));
+                            Trace.WriteLine($"Unexpected exception when unloading AppDomain for XenkoCommandsProxy: {ex}");
                         }
                     }
 
@@ -185,25 +171,13 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
         /// <returns>XenkoCommandsProxy.</returns>
         public static XenkoCommandsProxy CreateProxy(AppDomain domain)
         {
-            if (domain == null) throw new ArgumentNullException("domain");
+            if (domain == null) throw new ArgumentNullException(nameof(domain));
             return (XenkoCommandsProxy)domain.CreateInstanceFromAndUnwrap(typeof(XenkoCommandsProxy).Assembly.Location, typeof(XenkoCommandsProxy).FullName);
-        }
-
-        public void Initialize(string xenkoSdkDir)
-        {
-            Initialize();
         }
 
         public void Initialize()
         {
-            if (remote != null)
-            {
-                remote.Initialize(CurrentPackageInfo.SdkPath);
-            }
-            else
-            {
-                legacyRemote.Initialize(CurrentPackageInfo.SdkPath);
-            }
+            remote.Initialize(CurrentPackageInfo.SdkPath);
         }
 
         public bool ShouldReload()
@@ -231,39 +205,18 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
 
         public void StartRemoteBuildLogServer(BuildMonitorCallback buildMonitorCallback, string logPipeUrl)
         {
-            if (remote != null)
-            {
-                remote.StartRemoteBuildLogServer(buildMonitorCallback, logPipeUrl);
-            }
-            else
-            {
-                legacyRemote.StartRemoteBuildLogServer(buildMonitorCallback, logPipeUrl);
-            }
+            remote.StartRemoteBuildLogServer(buildMonitorCallback, logPipeUrl);
         }
 
         public byte[] GenerateShaderKeys(string inputFileName, string inputFileContent)
         {
-            if (remote != null)
-            {
-                return remote.GenerateShaderKeys(inputFileName, inputFileContent);
-            }
-            else
-            {
-                return legacyRemote.GenerateShaderKeys(inputFileName, inputFileContent);
-            }
+            return remote.GenerateShaderKeys(inputFileName, inputFileContent);
         }
 
         public RawShaderNavigationResult AnalyzeAndGoToDefinition(string sourceCode, RawSourceSpan span)
         {
             // TODO: We need to know which package is currently selected in order to query all valid shaders
-            if (remote != null)
-            {
-                return remote.AnalyzeAndGoToDefinition(sourceCode, span);
-            }
-            else
-            {
-                return legacyRemote.AnalyzeAndGoToDefinition(sourceCode, span);
-            }
+            return remote.AnalyzeAndGoToDefinition(sourceCode, span);
         }
 
         private static Assembly DefaultDomainAssemblyResolve(object sender, ResolveEventArgs args)
@@ -274,7 +227,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
 
             // Redirect requests for earlier package versions to the current one
             var assemblyName = new AssemblyName(args.Name);
-            if (assemblyName.Name == executingAssembly.GetName().Name || assemblyName.Name.StartsWith("SiliconStudio.Paradox.VisualStudio.Package"))
+            if (assemblyName.Name == executingAssembly.GetName().Name)
                 return executingAssembly;
 
             return null;
@@ -335,7 +288,7 @@ namespace SiliconStudio.Xenko.VisualStudio.Commands
             var packageInfo = new PackageInfo { ExpectedVersion = PackageSessionHelper.GetPackageVersion(solution) };
 
             // TODO: Maybe move it in some common class somewhere? (in this case it would be included with "Add as link" in VSPackage)
-            var xenkoSdkDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") ?? Environment.GetEnvironmentVariable("SiliconStudioParadoxDir");
+            var xenkoSdkDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
 
             // Failed to locate xenko
             if (xenkoSdkDir == null)

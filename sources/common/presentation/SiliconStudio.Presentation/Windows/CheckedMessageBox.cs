@@ -1,5 +1,8 @@
 ﻿// Copyright (c) 2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
 
 namespace SiliconStudio.Presentation.Windows
@@ -36,14 +39,18 @@ namespace SiliconStudio.Presentation.Windows
 
         public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton button, MessageBoxImage image, string checkedMessage, ref bool? isChecked)
         {
-            var buttons = GetButtons(button);
+            return Show(owner, message, caption, GetButtons(button), image, checkedMessage, ref isChecked);
+        }
+        
+        public static MessageBoxResult Show(Window owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image, string checkedMessage, ref bool? isChecked)
+        {
             var messageBox = new CheckedMessageBox
             {
                 Owner = owner,
                 WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen,
                 Title = caption,
                 Content = message,
-                ButtonsSource = buttons,
+                ButtonsSource = buttons.ToList(),
                 CheckedMessage = checkedMessage,
                 IsChecked = isChecked,
             };
