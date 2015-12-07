@@ -39,7 +39,8 @@ class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
 
     stage float4 SampleTex0()
     {
-        return Texture0.Sample(Sampler, streams.TexCoord);
+        return Texture0.Sample(Sampler0, streams.TexCoord);                     // User-defined sampler state
+        // return Texture0.Sample(AnisotropicRepeatSampler, streams.TexCoord);  // Predefined sampler state
     }
 
     stage float4 GenerateRandomColor()

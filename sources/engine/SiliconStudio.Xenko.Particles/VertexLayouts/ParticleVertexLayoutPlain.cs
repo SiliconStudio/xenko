@@ -71,6 +71,19 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             vertexBuffer = oldPtr;
         }
 
+        public override void SetLifetimeForParticle(float lifetime)
+        {
+            var oldPtr = vertexBuffer;
+
+            for (var i = 0; i < VerticesPerParticle; i++)
+            {
+                SetLifetime(lifetime);
+                NextVertex();
+            }
+
+            vertexBuffer = oldPtr;
+        }
+
         public override void SetRandomSeedForParticle(IntPtr seed)
         {
             var oldPtr = vertexBuffer;

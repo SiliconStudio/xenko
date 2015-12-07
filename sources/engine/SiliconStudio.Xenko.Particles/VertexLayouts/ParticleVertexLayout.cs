@@ -78,6 +78,8 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         public virtual void SetUvCoords(ref Vector2 uvCoords) { }
 
+        public virtual void TransformUvCoords(ref Vector4 OffsetScale) { }
+
         public virtual void SetColor(ref Color4 color) { }
 
         public virtual void SetPosition(IntPtr ptr) { }
@@ -112,6 +114,8 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         public virtual void SetColorForParticle(IntPtr ptr) { }
 
         public virtual void SetLifetimeForParticle(IntPtr ptr) { }
+
+        public virtual void SetLifetimeForParticle(float lifetime) { }
 
         public virtual void SetRandomSeedForParticle(IntPtr ptr) { }
 

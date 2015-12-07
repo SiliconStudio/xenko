@@ -30,6 +30,7 @@
     <Compile Include="Initializers\InitialVelocitySeed.cs" />
     <Compile Include="Materials\ParticleMaterialBase.cs" />
     <Compile Include="Materials\ParticleMaterialTexture.cs" />
+    <Compile Include="Materials\ParticleMaterialTextureScroll.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.OpenGL.Level_9_1.cs" />
