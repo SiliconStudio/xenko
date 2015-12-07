@@ -37,92 +37,42 @@ namespace SiliconStudio.Xenko.Particles.Materials
         protected uint TextureSwizzle = 0;
 
         // TODO: Distribution
-        private Color4 colorMin = new Color4(1, 1, 1, 1);
-        private Color4 colorMax = new Color4(1, 1, 1, 1);
 
         [DataMember(110)]
         [Display("Color Min")]
-        public Color4 ColorMin
-        {
-            get { return colorMin; }
-            set
-            {
-                colorMin = value;
-                UpdateColorVariation();
-            }
-        }
+        public Color4 ColorMin { get; set; } = new Color4(1, 1, 1, 1);
 
         [DataMember(120)]
         [Display("Color Max")]
-        public Color4 ColorMax
-        {
-            get { return colorMax; }
-            set
-            {
-                colorMax = value;
-                UpdateColorVariation();
-            }
-        }
+        public Color4 ColorMax { get; set; } = new Color4(1, 1, 1, 1);
 
 
         [DataMember(130)]
         [Display("Color Random Seed")]
         public UInt32 ColorRandomOffset { get; set; } = 1;
-
-        private void UpdateColorVariation()
-        {
-            if (ColorMin.Equals(colorMax))
-            {
-                // Particles don't have individual color - it is passed as an uniform through the constant buffer
-            //    MandatoryVariation &= ~ParticleEffectVariation.HasColor;
-            }
-            else
-            {
-                // Particles do have individual color - vertex buffer should be patched
-            //    MandatoryVariation |= ParticleEffectVariation.HasColor;
-            }
-        }
-
-        protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
-
+        
         public override void Setup(GraphicsDevice graphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
-            variation |= MandatoryVariation;    // Should be the same but still
+            PrepareEffect(graphicsDevice, variation);
 
-            var effect = ParticleBatch.GetEffect(graphicsDevice, variation);
+            // This should be CB0 - view/proj matrices don't change per material
+            SetParameter(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
 
-            // Get or create parameter collection
-            if (ParameterCollectionGroup == null || ParameterCollectionGroup.Effect != effect)
-            {
-                // If ParameterCollectionGroup is not specified (using default one), let's make sure it is updated to matches effect
-                // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
-                ParameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, new[] { Parameters });
-            }
-
+            // Texture swizzle - fi the texture is grayscale, sample it like Tex.rrrr rather than Tex.rgba
             TextureSwizzle = (texture?.Format == PixelFormat.R32_Float ||
                               texture?.Format == PixelFormat.A8_UNorm ||
                               texture?.Format == PixelFormat.BC4_UNorm) ? (uint)1 : 0;
+            SetParameter(ParticleBaseKeys.RenderFlagSwizzle, TextureSwizzle);
 
-            SetupBase(graphicsDevice);
-
-            // This should be CB0 - view/proj matrices don't change per material
-            Parameters.Set(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
-
-            Parameters.Set(ParticleBaseKeys.RenderFlagSwizzle, TextureSwizzle);
 
             // If particles don't have individual color, we can pass the color tint as part of the uniform color scale
-            Parameters.Set(ParticleBaseKeys.ColorScaleMin, color * colorMin);
-            Parameters.Set(ParticleBaseKeys.ColorScaleMax, color * colorMax);
-            Parameters.Set(ParticleBaseKeys.ColorScaleOffset, ColorRandomOffset);
+            SetParameter(ParticleBaseKeys.ColorScaleMin, color * ColorMin);
+            SetParameter(ParticleBaseKeys.ColorScaleMax, color * ColorMax);
+            SetParameter(ParticleBaseKeys.ColorScaleOffset, ColorRandomOffset);
 
-            effect.Apply(graphicsDevice, ParameterCollectionGroup, applyEffectStates: false);
+            SetParameter(TexturingKeys.Texture0, texture);
 
-            if (effect.HasParameter(TexturingKeys.Texture0))
-            {
-                var textureUpdater = effect.GetParameterFastUpdater(TexturingKeys.Texture0);
-                textureUpdater.ApplyParameter(graphicsDevice, texture);
-            }
-
+            ApplyEffect(graphicsDevice);
         }
 
         // TODO Make some sort of accessor or enumerator around ParticlePool which can also sort particles
