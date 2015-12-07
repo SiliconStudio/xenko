@@ -217,12 +217,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var baseEntity = baseRemap.EntityDesign.Entity;
                     var newBaseEntity = newBaseRemap.EntityDesign.Entity;
 
-                    // If base is coming from a basePart, then we need to clone it as It may be used in multiple places
-                    if (baseRemap.IsPart)
-                    {
-                        baseEntity = (Entity)AssetCloner.Clone(baseEntity);
-                    }
-
                     // If newBase is coming from a basePart, then we need to clone it as It may be used in multiple places
                     if (newBaseRemap.IsPart)
                     {

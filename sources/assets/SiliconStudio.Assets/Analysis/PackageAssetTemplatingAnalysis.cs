@@ -110,9 +110,7 @@ namespace SiliconStudio.Assets.Analysis
                         return false;
                     }
 
-                    // Make a copy of base asset
-                    var assetCopy = (Asset)AssetCloner.Clone(existingAssetBasePart.Asset);
-                    existingBaseParts.Add(new AssetItem(existingAssetBasePart.Location, assetCopy, existingAssetBasePart.Package));
+                    existingBaseParts.Add(new AssetItem(existingAssetBasePart.Location, existingAssetBasePart.Asset, existingAssetBasePart.Package));
                 }
             }
 
