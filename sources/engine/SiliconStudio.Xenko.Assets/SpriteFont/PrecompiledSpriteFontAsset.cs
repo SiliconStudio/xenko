@@ -46,9 +46,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         [Display(Browsable = false)]
         public FontStyle Style; // Note: this field is used only for thumbnail.
 
-        [DefaultValue(false)]
+        [DefaultValue(true)]
         [Display(Browsable = false)]
-        public bool IsPremultiplied; // Note: this field is used only for thumbnail / preview.
+        public bool IsPremultiplied = true; // Note: this field is used only for thumbnail / preview.
 
         /// <summary>
         /// The size in points (pt).
