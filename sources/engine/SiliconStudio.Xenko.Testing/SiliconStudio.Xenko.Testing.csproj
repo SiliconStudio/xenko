@@ -24,7 +24,9 @@
     <Compile Include="LogRequest.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="ScreenShotPayload.cs" />
     <Compile Include="ScreenshotRequest.cs" />
+    <Compile Include="ScreenshotStored.cs" />
     <Compile Include="StatusMessageRequest.cs" />
     <Compile Include="TapSimulationRequest.cs" />
     <Compile Include="TestClient.cs" />
@@ -48,6 +50,10 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
       <Project>{42780cbd-3fe7-48e3-bd5b-59945ea20137}</Project>
       <Name>SiliconStudio.Xenko.Games</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.csproj">
+      <Project>{d002feb1-00a6-4ab1-a83f-1f253465e64d}</Project>
+      <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>

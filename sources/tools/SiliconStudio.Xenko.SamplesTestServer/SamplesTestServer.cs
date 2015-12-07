@@ -8,6 +8,8 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
 {
@@ -23,6 +25,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
         private readonly Dictionary<string, TestProcess> processes = new Dictionary<string, TestProcess>();
 
         private readonly Dictionary<SocketMessageLayer, SocketMessageLayer> testerToGame = new Dictionary<SocketMessageLayer, SocketMessageLayer>();
+        private readonly Dictionary<SocketMessageLayer, SocketMessageLayer> gameToTester = new Dictionary<SocketMessageLayer, SocketMessageLayer>();
 
         public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
@@ -43,7 +46,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                         case (int)PlatformType.Windows:
                             {
                                 Process process = null;
-                                string debugInfo = "";
+                                var debugInfo = "";
                                 try
                                 {
                                     var start = new ProcessStartInfo
@@ -76,7 +79,26 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                             }
                         case (int)PlatformType.Android:
                             {
-                                processes[request.GameAssembly] = new TestProcess { Process = null, TesterSocket = socketMessageLayer };
+                                Process process = null;                                
+                                var debugInfo = "";
+                                try
+                                {
+                                    process = Process.Start("cmd.exe", $"/C adb shell monkey -p {request.GameAssembly}.{request.GameAssembly} -c android.intent.category.LAUNCHER 1");
+                                }
+                                catch (Exception ex)
+                                {
+                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Launch exception: " + ex.Message }).Wait();
+                                }
+
+                                if (process == null)
+                                {
+                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game process. " + debugInfo }).Wait();
+                                }
+                                else
+                                {
+                                    processes[request.GameAssembly] = new TestProcess { Process = process, TesterSocket = socketMessageLayer };
+                                    socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
+                                }
                                 break;
                             }
                     }
@@ -88,6 +110,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                     {
                         process.GameSocket = socketMessageLayer;
                         testerToGame[process.TesterSocket] = process.GameSocket;
+                        gameToTester[process.GameSocket] = process.TesterSocket;
                         process.TesterSocket.Send(new StatusMessageRequest { Error = false, Message = "Start" }).Wait();
                     }
                 }
@@ -116,6 +139,21 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 var game = testerToGame[socketMessageLayer];
                 game.Send(request).Wait();
                 testerToGame.Remove(socketMessageLayer);
+            });
+
+            socketMessageLayer.AddPacketHandler<ScreenShotPayload>(request =>
+            {
+                var tester = gameToTester[socketMessageLayer];
+
+                var imageData = new TestResultImage();
+                var stream = new MemoryStream(request.Data);
+                imageData.Read(new BinaryReader(stream));
+                stream.Dispose();
+                var resultFileStream = File.OpenWrite(request.FileName);
+                imageData.Image.Save(resultFileStream, ImageFileType.Png);
+                resultFileStream.Dispose();
+
+                tester.Send(new ScreenshotStored()).Wait();
             });
 
             Task.Run(() => socketMessageLayer.MessageLoop());

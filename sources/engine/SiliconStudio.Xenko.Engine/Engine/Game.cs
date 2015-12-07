@@ -26,13 +26,6 @@ using SiliconStudio.Xenko.UI;
 
 namespace SiliconStudio.Xenko.Engine
 {
-    public interface IGamePlugin
-    {
-        void Initialize(Game game, string packageName);
-
-        void Destroy(Game game);
-    }
-
     /// <summary>
     /// Main Game class system.
     /// </summary>

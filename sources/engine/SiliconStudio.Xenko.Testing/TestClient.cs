@@ -1,17 +1,16 @@
-﻿using System;
-using System.Collections.Concurrent;
-using System.Diagnostics;
-using System.IO;
-using System.Linq;
-using System.Reflection;
-using System.Threading.Tasks;
-using SiliconStudio.Core;
+﻿using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Input.Extensions;
+using System;
+using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.IO;
+using System.Threading.Tasks;
+using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.Testing
 {
@@ -29,10 +28,33 @@ namespace SiliconStudio.Xenko.Testing
                 }
 #elif SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
                 //Send to server and store to disk
+                var imageData = new TestResultImage { CurrentVersion = "1.0", Frame = "0", Image = image, TestName = "" };
+                var payload = new ScreenShotPayload { FileName = filename };
+                var resultFileStream = new MemoryStream();
+                var writer = new BinaryWriter(resultFileStream);
+                imageData.Write(writer);
+
+                Task.Run(() =>
+                {
+                    payload.Data = resultFileStream.ToArray();
+                    payload.Size = payload.Data.Length;
+                    socketMessageLayer.Send(payload).Wait();
+                    resultFileStream.Dispose();
+                });
 #endif
             }
-
         }
+
+        private static void Quit(Game game)
+        {
+            game.Exit();
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            Android.OS.Process.KillProcess(Android.OS.Process.MyPid());
+#endif
+        }
+
+        private SocketMessageLayer socketMessageLayer;
 
         public async Task StartClient(Game game, string gameName)
         {
@@ -42,8 +64,8 @@ namespace SiliconStudio.Xenko.Testing
 
             var socketContext = await RouterClient.RequestServer(url);
 
-            var socketMessageLayer = new SocketMessageLayer(socketContext, false);
-            
+            socketMessageLayer = new SocketMessageLayer(socketContext, false);
+
             socketMessageLayer.AddPacketHandler<KeySimulationRequest>(request =>
             {
                 if (request.Down)
@@ -63,9 +85,11 @@ namespace SiliconStudio.Xenko.Testing
                     case PointerState.Down:
                         game.Input.SimulateTapDown(request.Coords);
                         break;
+
                     case PointerState.Up:
                         game.Input.SimulateTapUp(request.Coords, request.CoordsDelta, request.Delta);
                         break;
+
                     case PointerState.Move:
                         game.Input.SimulateTapMove(request.Coords, request.CoordsDelta, request.Delta);
                         break;
@@ -82,15 +106,22 @@ namespace SiliconStudio.Xenko.Testing
 
             socketMessageLayer.AddPacketHandler<TestEndedRequest>(request =>
             {
-                game.Exit();
+                Quit(game);
             });
 
             Task.Run(() => socketMessageLayer.MessageLoop());
 
             await socketMessageLayer.Send(new TestRegistrationRequest { GameAssembly = gameName, Tester = false, Platform = (int)Platform.Type });
+
+            //Quit after 1 minute anyway!
+            Task.Run(async () =>
+            {
+                await Task.Delay(60000);
+                Quit(game);
+            });
         }
 
-        private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>(); 
+        private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>();
 
         public TestClient(IServiceRegistry registry) : base(registry)
         {

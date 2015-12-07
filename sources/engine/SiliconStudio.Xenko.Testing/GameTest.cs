@@ -16,12 +16,39 @@ namespace SiliconStudio.Xenko.Testing
         private readonly SocketMessageLayer socketMessageLayer;
         private readonly string xenkoDir;
         private readonly string gameName;
+        private readonly string platformName;
         private int screenShots;
+
+        private AutoResetEvent screenshotEvent = new AutoResetEvent(false);
 
         public GameTest(string gamePath, PlatformType platform)
         {
             xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
             gameName = Path.GetFileNameWithoutExtension(gamePath);
+            switch (platform)
+            {
+                case PlatformType.Windows:
+                    platformName = "Windows";
+                    break;
+                case PlatformType.WindowsPhone:
+                    platformName = "WindowsPhone";
+                    break;
+                case PlatformType.WindowsStore:
+                    platformName = "WindowsStore";
+                    break;
+                case PlatformType.Android:
+                    platformName = "Android";
+                    break;
+                case PlatformType.iOS:
+                    platformName = "iOS";
+                    break;
+                case PlatformType.Windows10:
+                    platformName = "Windows10";
+                    break;
+                default:
+                    platformName = "";
+                    break;
+            }
 
             var url = $"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe";
 
@@ -40,9 +67,11 @@ namespace SiliconStudio.Xenko.Testing
                 ev.Set();
             });
 
-            socketMessageLayer.AddPacketHandler<LogRequest>(request =>
+            socketMessageLayer.AddPacketHandler<LogRequest>(request => { Console.WriteLine(request.Message); });
+
+            socketMessageLayer.AddPacketHandler<ScreenshotStored>(request =>
             {
-                Console.WriteLine(request.Message);
+                screenshotEvent.Set();
             });
 
             var runTask = Task.Run(() => socketMessageLayer.MessageLoop());
@@ -51,13 +80,10 @@ namespace SiliconStudio.Xenko.Testing
 
             socketMessageLayer.Send(new TestRegistrationRequest
             {
-                Platform = (int)platform,
-                Tester = true,
-                Cmd = cmd,
-                GameAssembly = gameName
+                Platform = (int)platform, Tester = true, Cmd = cmd, GameAssembly = gameName
             }).Wait();
 
-            if (!ev.WaitOne(10000))
+            if (!ev.WaitOne(platform == PlatformType.Windows ? 10000 : 20000))
             {
                 throw new Exception("Time out while launching the game");
             }
@@ -110,7 +136,7 @@ namespace SiliconStudio.Xenko.Testing
                     break;
                 }
 
-                float factor = (watch.Elapsed.Ticks - start.Ticks) / (float)(end.Ticks - start.Ticks);
+                float factor = (watch.Elapsed.Ticks - start.Ticks)/(float)(end.Ticks - start.Ticks);
 
                 var current = Vector2.Lerp(from, target, factor);
 
@@ -132,9 +158,13 @@ namespace SiliconStudio.Xenko.Testing
 
         public void TakeScreenshot()
         {
-            socketMessageLayer.Send(new ScreenshotRequest { Filename = xenkoDir + "\\screenshots\\" + gameName + screenShots + ".png" }).Wait();
+            socketMessageLayer.Send(new ScreenshotRequest { Filename = xenkoDir + "\\screenshots\\" + gameName + "_" + platformName + "_" + screenShots + ".png" }).Wait();
             Console.WriteLine(@"Screenshot requested.");
             screenShots++;
+            if (!screenshotEvent.WaitOne(10000))
+            {
+                throw new Exception(@"Failed to store screenshot.");
+            }
         }
 
         public void Wait(TimeSpan sleepTime)
@@ -144,8 +174,10 @@ namespace SiliconStudio.Xenko.Testing
 
         public void Dispose()
         {
+            Console.WriteLine(@"Ending the test.");
             socketMessageLayer.Send(new TestEndedRequest()).Wait();
         }
     }
 }
+
 #endif
