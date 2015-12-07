@@ -20,11 +20,11 @@ namespace SiliconStudio.Presentation.Quantum
     /// <param name="baseName">The base name of this node. Can be null if <see paramref="index"/> is not. If so a name will be automatically generated from the index.</param>
     /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
     /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
-    /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given node.</param>
+    /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
     /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
     /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
     /// <returns>A new instance of <see cref="ObservableModelNode"/> corresponding to the given parameters.</returns>
-    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, ModelNodePath modelNodePath, Type contentType, object index);
+    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index);
 
     public class ObservableViewModel : EditableViewModel, IDisposable
     {
@@ -47,14 +47,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// Initializes a new instance of the <see cref="ObservableViewModel"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
-        /// <param name="modelContainer">A <see cref="ModelContainer"/> to use to build view model nodes.</param>
+        /// <param name="nodeContainer">A <see cref="NodeContainer"/> to use to build view model nodes.</param>
         /// <param name="dirtiables">The list of <see cref="IDirtiable"/> objects linked to this view model.</param>
-        private ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IEnumerable<IDirtiable> dirtiables)
+        private ObservableViewModel(IViewModelServiceProvider serviceProvider, NodeContainer nodeContainer, IEnumerable<IDirtiable> dirtiables)
             : base(serviceProvider)
         {
-            if (modelContainer == null) throw new ArgumentNullException(nameof(modelContainer));
+            if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
             if (dirtiables == null) throw new ArgumentNullException(nameof(dirtiables));
-            ModelContainer = modelContainer;
+            NodeContainer = nodeContainer;
             this.dirtiables = dirtiables;
             this.dirtiables.ForEach(x => x.DirtinessUpdated += DirtinessUpdated);
             ObservableViewModelService = serviceProvider.Get<ObservableViewModelService>();
@@ -65,14 +65,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// Initializes a new instance of the <see cref="ObservableViewModel"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
-        /// <param name="modelContainer">A <see cref="ModelContainer"/> to use to build view model nodes.</param>
+        /// <param name="nodeContainer">A <see cref="NodeContainer"/> to use to build view model nodes.</param>
         /// <param name="modelNode">The root model node of the view model to generate.</param>
         /// <param name="dirtiables">The list of <see cref="IDirtiable"/> objects linked to this view model.</param>
-        public ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IGraphNode modelNode, IEnumerable<IDirtiable> dirtiables)
-            : this(serviceProvider, modelContainer, dirtiables.SafeArgument("dirtiables").ToList())
+        public ObservableViewModel(IViewModelServiceProvider serviceProvider, NodeContainer nodeContainer, IGraphNode modelNode, IEnumerable<IDirtiable> dirtiables)
+            : this(serviceProvider, nodeContainer, dirtiables.SafeArgument("dirtiables").ToList())
         {
             if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
-            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", modelNode.Content.IsPrimitive, modelNode, new ModelNodePath(modelNode), modelNode.Content.Type, null);
+            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", modelNode.Content.IsPrimitive, modelNode, new GraphNodePath(modelNode), modelNode.Content.Type, null);
             Identifier = new ObservableViewModelIdentifier(node.ModelGuid);
             node.Initialize();
             RootNode = node;
@@ -85,10 +85,10 @@ namespace SiliconStudio.Presentation.Quantum
             Dirtiables.ForEach(x => x.DirtinessUpdated -= DirtinessUpdated);
         }
 
-        public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IReadOnlyCollection<ObservableViewModel> viewModels)
+        public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, NodeContainer nodeContainer, IReadOnlyCollection<ObservableViewModel> viewModels)
         {
             if (viewModels == null) throw new ArgumentNullException(nameof(viewModels));
-            var combinedViewModel = new ObservableViewModel(serviceProvider, modelContainer, viewModels.SelectMany(x => x.Dirtiables));
+            var combinedViewModel = new ObservableViewModel(serviceProvider, nodeContainer, viewModels.SelectMany(x => x.Dirtiables));
 
             var rootNodes = new List<ObservableModelNode>();
             foreach (var viewModel in viewModels)
@@ -147,9 +147,9 @@ namespace SiliconStudio.Presentation.Quantum
         public ObservableViewModelIdentifier Identifier { get; private set; }
 
         /// <summary>
-        /// Gets the <see cref="ModelContainer"/> used to store Quantum objects.
+        /// Gets the <see cref="NodeContainer"/> used to store Quantum objects.
         /// </summary>
-        public ModelContainer ModelContainer { get; }
+        public NodeContainer NodeContainer { get; }
 
         /// <summary>
         /// Gets the <see cref="Logger"/> associated to this view model.
@@ -215,9 +215,9 @@ namespace SiliconStudio.Presentation.Quantum
             nodeChangeList.Clear();
         }
 
-        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
+        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index)
         {
-            return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, modelNodePath, contentType, index);
+            return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, graphNodePath, contentType, index);
         }
     }
 }

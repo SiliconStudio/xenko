@@ -16,7 +16,7 @@ namespace SiliconStudio.Presentation.Quantum
     {
         private readonly bool isPrimitive;
         protected readonly IGraphNode SourceNode;
-        protected readonly ModelNodePath SourceNodePath;
+        protected readonly GraphNodePath SourceNodePath;
         private bool isInitialized;
         private int? customOrder;
 
@@ -32,9 +32,9 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
         /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
-        /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
+        /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
-        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, ModelNodePath modelNodePath, object index = null)
+        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, object index = null)
             : base(ownerViewModel, baseName, index)
         {
             if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
@@ -45,7 +45,7 @@ namespace SiliconStudio.Presentation.Quantum
             SourceNode = modelNode;
             // By default we will always combine items of list of primitive items.
             CombineMode = index != null && isPrimitive ? CombineMode.AlwaysCombine : CombineMode.CombineOnlyForAll;
-            SourceNodePath = modelNodePath;
+            SourceNodePath = graphNodePath;
 
             // Override display name if available
             var memberDescriptor = GetMemberDescriptor() as MemberDescriptorBase;
@@ -70,13 +70,13 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
         /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
-        /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given node.</param>
+        /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
         /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
         /// <returns>A new instance of <see cref="ObservableModelNode{T}"/> instanced with the given content type as generic argument.</returns>
-        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
+        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index)
         {
-            var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, modelNode, modelNodePath, index);
+            var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index);
             return node;
         }
 
@@ -91,7 +91,7 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 // When the references are not processed or when the value is null, there is no actual target node.
                 // However, the commands need the index to be able to properly set the modified value
-                targetNodePath = targetNodePath.PushElement(Index, ModelNodePath.ElementType.Index);
+                targetNodePath = targetNodePath.PushElement(Index, GraphNodePath.ElementType.Index);
             }
 
             foreach (var command in (targetNode ?? SourceNode).Commands)
@@ -280,7 +280,7 @@ namespace SiliconStudio.Presentation.Quantum
             return false;
         }
 
-        private void GenerateChildren(IGraphNode modelNode, ModelNodePath modelNodePath)
+        private void GenerateChildren(IGraphNode modelNode, GraphNodePath graphNodePath)
         {
             if (modelNode.Content.IsReference && modelNode.Content.ShouldProcessReference)
             {
@@ -301,7 +301,7 @@ namespace SiliconStudio.Presentation.Quantum
                             // In this case, we must set the actual type to have type converter working, since they usually can't convert
                             // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                             var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, modelNode, modelNodePath, type, reference.Index);
+                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, modelNode, graphNodePath, type, reference.Index);
                             AddChild(observableNode);
                             observableNode.Initialize();
                         }
@@ -317,7 +317,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // Dictionary of primitive objects
                     foreach (var key in dictionary.GetKeys(modelNode.Content.Value))
                     {
-                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, modelNodePath, dictionary.ValueType, key);
+                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, dictionary.ValueType, key);
                         AddChild(observableChild);
                         observableChild.Initialize();
                     }
@@ -327,7 +327,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // List of primitive objects
                     for (int i = 0; i < list.GetCollectionCount(modelNode.Content.Value); ++i)
                     {
-                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, modelNodePath, list.ElementType, i);
+                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, list.ElementType, i);
                         AddChild(observableChild);
                         observableChild.Initialize();
                     }
@@ -337,7 +337,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // Single non-reference primitive object
                     foreach (var child in modelNode.Children)
                     {
-                        var childPath = modelNodePath.GetChildPath(modelNode, child);
+                        var childPath = graphNodePath.GetChildPath(modelNode, child);
                         var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, null);
                         AddChild(observableChild);
                         observableChild.Initialize();
@@ -418,10 +418,10 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
         /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
-        /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
+        /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
-        public ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, ModelNodePath modelNodePath, object index)
-            : base(ownerViewModel, baseName, isPrimitive, modelNode, modelNodePath, index)
+        public ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, object index)
+            : base(ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index)
         {
             // ReSharper disable once DoNotCallOverridableMethodsInConstructor
             DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });

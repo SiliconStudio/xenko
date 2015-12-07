@@ -9,14 +9,14 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ValueChangedActionItem : DirtiableActionItem
     {
-        protected ModelNodePath NodePath;
+        protected GraphNodePath NodePath;
         protected object Index;
         protected object PreviousValue;
         private readonly ObservableViewModelIdentifier identifier;
         private ObservableViewModelService service;
 
 
-        public ValueChangedActionItem(string name, ObservableViewModelService service, ModelNodePath nodePath, string observableNodePath, ObservableViewModelIdentifier identifier, object index, IEnumerable<IDirtiable> dirtiables, object previousValue)
+        public ValueChangedActionItem(string name, ObservableViewModelService service, GraphNodePath nodePath, string observableNodePath, ObservableViewModelIdentifier identifier, object index, IEnumerable<IDirtiable> dirtiables, object previousValue)
             : base(name, dirtiables)
         {
             if (service == null) throw new ArgumentNullException(nameof(service));
