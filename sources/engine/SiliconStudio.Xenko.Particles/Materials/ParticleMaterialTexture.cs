@@ -33,6 +33,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
         }
 
+        [DataMemberIgnore]
+        protected uint TextureSwizzle = 0;
+
         // TODO: Distribution
         private Color4 colorMin = new Color4(1, 1, 1, 1);
         private Color4 colorMax = new Color4(1, 1, 1, 1);
@@ -104,6 +107,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             // This should be CB0 - view/proj matrices don't change per material
             Parameters.Set(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
+
+            Parameters.Set(ParticleBaseKeys.RenderFlagSwizzle, TextureSwizzle);
 
             // If particles don't have individual color, we can pass the color tint as part of the uniform color scale
             Parameters.Set(ParticleBaseKeys.ColorScaleMin, color * colorMin);

@@ -21,6 +21,7 @@
     <Compile Include="Components\ParticleSystemComponent.cs" />
     <Compile Include="Components\ParticleSystemComponentRenderer.cs" />
     <Compile Include="Components\ParticleSystemProcessor.cs" />
+    <Compile Include="Initializers\Initial3DRotationSeed.cs" />
     <Compile Include="Initializers\InitialColorSeed.cs" />
     <Compile Include="Initializers\InitializerBase.cs" />
     <Compile Include="Initializers\InitialPositionSeed.cs" />
@@ -36,6 +37,7 @@
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.OpenGLES.Level_9_1.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
     <Compile Include="Updaters\UpdaterOldPosition.cs" />
     <Compile Include="Updaters\UpdaterBase.cs" />
