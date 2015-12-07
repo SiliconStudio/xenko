@@ -35,6 +35,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
             var sizeField = pool.GetField(ParticleFields.Size);
 
+            var angleField = pool.GetField(ParticleFields.Angle);
+            var hasAngle = angleField.IsValid();
+
             var renderedParticles = 0;
 
             // TODO Sorting
@@ -53,8 +56,19 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     // TODO Rotation
                 }
 
-                var unitX = invViewX * particleSize; // TODO Rotation
-                var unitY = invViewY * particleSize; // TODO Rotation
+                var unitX = invViewX * particleSize; 
+                var unitY = invViewY * particleSize; 
+
+                // Particle rotation. Positive value means clockwise rotation.
+                if (hasAngle)
+                {
+                    var rotationAngle = particle.Get(angleField);
+                    var cosA = (float)Math.Cos(rotationAngle);
+                    var sinA = (float)Math.Sin(rotationAngle);
+                    var tempX = unitX * cosA - unitY * sinA;
+                    unitY = unitY * cosA + unitX * sinA;
+                    unitX = tempX;
+                }
 
                 // vertex.Size = particleSize;
 

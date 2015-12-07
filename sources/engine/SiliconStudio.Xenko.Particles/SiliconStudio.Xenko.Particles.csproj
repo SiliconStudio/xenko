@@ -25,6 +25,7 @@
     <Compile Include="Initializers\InitialColorSeed.cs" />
     <Compile Include="Initializers\InitializerBase.cs" />
     <Compile Include="Initializers\InitialPositionSeed.cs" />
+    <Compile Include="Initializers\InitialRotationSeed.cs" />
     <Compile Include="Initializers\InitialSizeSeed.cs" />
     <Compile Include="Initializers\InitialVelocitySeed.cs" />
     <Compile Include="Materials\ParticleMaterialBase.cs" />

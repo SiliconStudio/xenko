@@ -9,6 +9,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialColorSeed")]
+    [Display("Initial Color by seed")]
     public class InitialColorSeed : InitializerBase
     {
         public InitialColorSeed()
