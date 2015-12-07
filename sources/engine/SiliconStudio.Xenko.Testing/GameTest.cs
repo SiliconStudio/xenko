@@ -20,6 +20,9 @@ namespace SiliconStudio.Xenko.Testing
 
         public GameTest(string gamePath, PlatformType platform)
         {
+            xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
+            gameName = Path.GetFileNameWithoutExtension(gamePath);
+
             var url = $"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe";
 
             var socketContext = RouterClient.RequestServer(url).Result;
@@ -44,15 +47,14 @@ namespace SiliconStudio.Xenko.Testing
 
             var runTask = Task.Run(() => socketMessageLayer.MessageLoop());
 
-            xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
-
-            gameName = Path.GetFileNameWithoutExtension(gamePath);
+            var cmd = platform == PlatformType.Windows ? xenkoDir + "\\" + gamePath : "";
 
             socketMessageLayer.Send(new TestRegistrationRequest
             {
                 Platform = (int)platform,
                 Tester = true,
-                Cmd = xenkoDir + "\\" + gamePath
+                Cmd = cmd,
+                GameAssembly = gameName
             }).Wait();
 
             if (!ev.WaitOne(10000))

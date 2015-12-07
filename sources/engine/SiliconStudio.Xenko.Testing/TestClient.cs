@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
@@ -81,14 +82,12 @@ namespace SiliconStudio.Xenko.Testing
 
             Task.Run(() => socketMessageLayer.MessageLoop());
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
-            var assemblyTitleAttribute = Assembly.GetExecutingAssembly().GetCustomAttributes(typeof(AssemblyTitleAttribute)).First() as AssemblyTitleAttribute;
+            var assemblyTitleAttribute = Assembly.GetEntryAssembly().CustomAttributes.First(x => x.AttributeType == typeof(AssemblyTitleAttribute));
             if (assemblyTitleAttribute != null)
             {
-                var name = assemblyTitleAttribute.Title;
-                await socketMessageLayer.Send(new TestRegistrationRequest { Cmd = name, Tester = false, Platform = (int)Platform.Type });
+                var name = (string)assemblyTitleAttribute.ConstructorArguments[0].Value;
+                await socketMessageLayer.Send(new TestRegistrationRequest { GameAssembly = name, Tester = false, Platform = (int)Platform.Type });
             }
-#endif
         }
 
         private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>(); 

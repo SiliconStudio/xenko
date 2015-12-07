@@ -18,7 +18,6 @@ namespace SiliconStudio.Xenko.SamplesTestServer
             public Process Process;
             public SocketMessageLayer TesterSocket;
             public SocketMessageLayer GameSocket;
-            public string Filename;
         }
 
         private readonly Dictionary<string, TestProcess> processes = new Dictionary<string, TestProcess>();
@@ -37,16 +36,12 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
             socketMessageLayer.AddPacketHandler<TestRegistrationRequest>(request =>
             {
-                if (request.Cmd == null) return;
-
                 if (request.Tester)
                 {
                     switch (request.Platform)
                     {
                         case (int)PlatformType.Windows:
                             {
-                                var filename = Path.GetFileName(request.Cmd);
-
                                 Process process = null;
                                 string debugInfo = "";
                                 try
@@ -74,14 +69,13 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 else
                                 {
-                                    processes[filename] = new TestProcess { Process = process, TesterSocket = socketMessageLayer, Filename = filename };
+                                    processes[request.GameAssembly] = new TestProcess { Process = process, TesterSocket = socketMessageLayer };
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
                                 break;
                             }
                         case (int)PlatformType.Android:
                             {
-
                                 break;
                             }
                     }
@@ -89,11 +83,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 else //Game process
                 {
                     TestProcess process;
-                    if (!processes.TryGetValue(request.Cmd, out process))
-                    {
-                        socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to find test process." }).Wait();
-                    }
-                    else
+                    if (processes.TryGetValue(request.GameAssembly, out process))
                     {
                         process.GameSocket = socketMessageLayer;
                         testerToGame[process.TesterSocket] = process.GameSocket;

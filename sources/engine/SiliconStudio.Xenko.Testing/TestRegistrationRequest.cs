@@ -6,6 +6,7 @@ namespace SiliconStudio.Xenko.Testing
     internal class TestRegistrationRequest
     {
         public string Cmd;
+        public string GameAssembly;
         public int Platform;
         public bool Tester;
     }
