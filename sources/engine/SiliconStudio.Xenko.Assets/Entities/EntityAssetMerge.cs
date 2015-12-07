@@ -222,6 +222,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         UseOverrideMode = true,
                     };
 
+                    var previousBaseId = baseEntity.Id;
+                    var previousNewBaseId = newBaseEntity.Id;
+
                     // Remap ids to new entity
                     baseEntity.Id = newEntity.Id;
                     newBaseEntity.Id = newEntity.Id;
@@ -247,6 +250,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     {
                         entityDesign.Design.Folder = newBaseRemap.EntityDesign.Design.Folder;
                     }
+
+                    // Restore Ids
+                    baseEntity.Id = previousBaseId;
+                    newBaseEntity.Id = previousNewBaseId;
                 }
 
                 // Add the entity
