@@ -6,6 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
 
@@ -45,7 +46,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// CB2 - (Maybe) Per-emitter attributes.
         /// </summary>
         [DataMemberIgnore]
-        protected readonly ParameterCollection Parameters = new ParameterCollection();
+        private readonly ParameterCollection Parameters = new ParameterCollection();
+
+        protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
 
         /// <summary>
         /// Setups the current material using the graphics device.
@@ -57,8 +60,23 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         public abstract void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int remainingCapacity, ParticlePool pool);
 
-        protected void SetupBase(GraphicsDevice graphicsDevice)
+        [DataMemberIgnore]
+        private Effect effect = null;
+
+        protected void PrepareEffect(GraphicsDevice graphicsDevice, ParticleEffectVariation variation)
         {
+            variation |= MandatoryVariation; 
+
+            effect = ParticleBatch.GetEffect(graphicsDevice, variation);
+
+            // Get or create parameter collection
+            if (ParameterCollectionGroup == null || ParameterCollectionGroup.Effect != effect)
+            {
+                // If ParameterCollectionGroup is not specified (using default one), let's make sure it is updated to matches effect
+                // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
+                ParameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, new[] { Parameters });
+            }
+
             if (FaceCulling == ParticleMaterialCulling.CullNone)   graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
             if (FaceCulling == ParticleMaterialCulling.CullBack)   graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullBack);
             if (FaceCulling == ParticleMaterialCulling.CullFront)  graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullFront);
@@ -75,6 +93,14 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             // Scale up the color intensity - might depend on the eye adaptation later
             Parameters.Set(ParticleBaseKeys.ColorIntensity, ColorIntensity);
+        }
+
+        public void SetParameter<T>(ParameterKey<T> key, T value) => Parameters.Set(key, value);
+
+
+        protected void ApplyEffect(GraphicsDevice graphicsDevice)
+        {
+            effect.Apply(graphicsDevice, ParameterCollectionGroup, applyEffectStates: false);
         }
     }
 }

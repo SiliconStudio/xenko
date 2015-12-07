@@ -30,24 +30,22 @@ namespace SiliconStudio.Xenko.Particles
 
         private static EffectBytecode Bytecode(ParticleEffectVariation variation)
         {
-            switch (variation)
+            if (variation.HasFlag(ParticleEffectVariation.IsSrgb))
             {
-                case ParticleEffectVariation.IsSrgb:
-                    return effectBytecode[(int)ParticleEffectVariation.IsSrgb] ??
-                          (effectBytecode[(int)ParticleEffectVariation.IsSrgb] = EffectBytecode.FromBytes(binaryBytecodeSRgb));
-
-                case ParticleEffectVariation.HasTex0:
-                    return effectBytecode[(int)ParticleEffectVariation.HasTex0] ??
-                          (effectBytecode[(int)ParticleEffectVariation.HasTex0] = EffectBytecode.FromBytes(binaryBytecodeTex0));
-
-                case ParticleEffectVariation.IsSrgb | ParticleEffectVariation.HasTex0:
+                if (variation.HasFlag(ParticleEffectVariation.HasTex0))
                     return effectBytecode[(int)(ParticleEffectVariation.IsSrgb | ParticleEffectVariation.HasTex0)] ??
                           (effectBytecode[(int)(ParticleEffectVariation.IsSrgb | ParticleEffectVariation.HasTex0)] = EffectBytecode.FromBytes(binaryBytecodeSRgbTex0));
 
-                default:
-                    return effectBytecode[(int)ParticleEffectVariation.None] ??
-                          (effectBytecode[(int)ParticleEffectVariation.None] = EffectBytecode.FromBytes(binaryBytecode));
+                return effectBytecode[(int)ParticleEffectVariation.IsSrgb] ??
+                      (effectBytecode[(int)ParticleEffectVariation.IsSrgb] = EffectBytecode.FromBytes(binaryBytecodeSRgb));
             }
+
+            if (variation.HasFlag(ParticleEffectVariation.HasTex0))
+                return effectBytecode[(int)ParticleEffectVariation.HasTex0] ??
+                          (effectBytecode[(int)ParticleEffectVariation.HasTex0] = EffectBytecode.FromBytes(binaryBytecodeTex0));
+
+            return effectBytecode[(int)ParticleEffectVariation.None] ??
+                  (effectBytecode[(int)ParticleEffectVariation.None] = EffectBytecode.FromBytes(binaryBytecode));
         }
 
         public static Effect GetEffect(GraphicsDevice device, ParticleEffectVariation variation)

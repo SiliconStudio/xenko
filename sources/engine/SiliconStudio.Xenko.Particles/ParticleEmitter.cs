@@ -59,6 +59,9 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         internal ParticleRandomSeedGenerator RandomSeedGenerator;
 
+        [DataMemberIgnore]
+        private ParticleEffectVariation defaultVariation = ParticleEffectVariation.None;
+
         public ParticleEmitter()
         {
             pool = new ParticlePool(0, 0);
@@ -376,6 +379,20 @@ namespace SiliconStudio.Xenko.Particles
         private readonly Dictionary<ParticleFieldDescription, int> requiredFields;
 
         /// <summary>
+        /// Updates the mandatory required variations depending on what particle fields are available
+        /// </summary>
+        private void UpdateDefalutEffectVariations()
+        {
+            // Check fields to see the mandatory shader variation
+            defaultVariation = ParticleEffectVariation.None;
+            foreach (var requiredField in requiredFields.Keys)
+            {
+                if (requiredField == ParticleFields.Color)
+                    defaultVariation |= ParticleEffectVariation.HasColor;
+            }
+        }
+
+        /// <summary>
         /// Add a particle field required by some dependent module. If the module already exists in the pool, only its reference counter is increased.
         /// </summary>
         /// <param name="description"></param>
@@ -397,6 +414,8 @@ namespace SiliconStudio.Xenko.Particles
                 return;
 
             requiredFields.Add(description, 1);
+
+            UpdateDefalutEffectVariations();
         }
 
         /// <summary>
@@ -417,7 +436,8 @@ namespace SiliconStudio.Xenko.Particles
                 pool.RemoveField(description);
 
                 requiredFields.Remove(description);
-                return;
+
+                UpdateDefalutEffectVariations();
             }
 
             // This line can be reached when a AddModule was unsuccessful and the required fields should be cleaned up
@@ -442,13 +462,15 @@ namespace SiliconStudio.Xenko.Particles
             if (Material == null)
                 return;
 
-            var variation = ParticleEffectVariation.None; // TODO Should depend on fields
+            var variation = defaultVariation;
             if (graphicsDevice.ColorSpace == ColorSpace.Linear)
                 variation |= ParticleEffectVariation.IsSrgb;
 
             variation |= Material.MandatoryVariation;
 
             Material.Setup(graphicsDevice, variation, viewMatrix, projMatrix, color);
+
+            // Emitter parameters ?
         }
 
         public int GetRequiredQuadCount()
@@ -467,8 +489,7 @@ namespace SiliconStudio.Xenko.Particles
             if (Material == null)
                 Material = new ParticleMaterialTexture();
 
-            // TODO Save variations
-            var variation = ParticleEffectVariation.None; // TODO Should depend on fields
+            var variation = defaultVariation;
             variation |= Material.MandatoryVariation;
             var vertexLayoutBuilder = ParticleBatch.GetVertexLayout(variation);
             vertexLayoutBuilder.VerticesPerParticle = ShapeBuilder.QuadsPerParticle * 4;
