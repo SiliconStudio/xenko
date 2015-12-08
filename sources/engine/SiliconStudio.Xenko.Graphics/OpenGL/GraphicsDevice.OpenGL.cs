@@ -1604,6 +1604,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The value of flipRenderTarget.</returns>
         private bool ChooseFlipRenderTarget(Texture depthStencilBuffer, params Texture[] renderTargets)
         {
+            // TODO: Only OpenGL renders to backbuffer directly and uses defaultRenderTarget, right now
+            if (defaultRenderTarget != null)
+                return true;
+
             if (renderTargets != null && renderTargets.Length > 0)
             {
                 foreach (var rt in renderTargets)
