@@ -13,13 +13,13 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
-    /// This class is responsible for merging entities (according to base, new base, and new version of the entity)
+    /// This class is responsible for merging and handling asset templating for entities (according to base, new base, and new version of the entity)
     /// </summary>
     internal class EntityAssetMerge
     {
         private readonly Dictionary<GroupPartKey, EntityRemapEntry> baseEntities;
         private readonly Dictionary<GroupPartKey, EntityRemapEntry> newBaseEntities;
-        private readonly Dictionary<GroupPartKey, EntityRemapEntry> newEntities;
+        private readonly Dictionary<GroupPartKey, EntityRemapEntry> newEntities; // specific to this instance, GroupPartKey.PartInstanceId is always Guid.Empty
         private readonly HashSet<Guid> entitiesRemovedInNewBase;
         private readonly HashSet<Guid> entitiesToRemoveFromNew;
         private readonly EntityAssetBase baseAsset;
@@ -131,6 +131,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     item.EntityDesign.Design.BasePartInstanceId = basePartInstanceId;
 
                     // Add this to the list of entities from newAsset
+                    // Specific to the newEntities, GroupPartKey.PartInstanceId is always Guid.Empty
                     newEntities.Add(new GroupPartKey(Guid.Empty, newId), item);
                 }
             }
@@ -185,6 +186,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     entityEntry.Value.Base = baseRemap;
                     entityEntry.Value.NewBase = newBaseRemap;
 
+                    // Remap ids in the RootEntities for base
                     int index;
                     if (baseAsset != null && baseRootEntities.TryGetValue(baseId, out index))
                     {
@@ -192,6 +194,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         baseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
                     }
 
+                    // Remap ids in the RootEntities for newBase
                     if (newBaseAsset != null && newBaseRootEntities.TryGetValue(baseId, out index))
                     {
                         newBaseRootEntities.Remove(baseId);
@@ -476,6 +479,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 return;
             }
 
+            // Important, if the hierarchy is coming from a part, we need to clone it entirely
+            // and associate correctly the instancePartId with each entities that it is composed of.
             if (instancePartIdArg.HasValue)
             {
                 hierarchyData = (EntityHierarchyData)AssetCloner.Clone(hierarchyData);
@@ -500,6 +505,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 var remap = new EntityRemapEntry(entityDesign);
                 // We are removing children from transform component for the diff
                 remap.PushChildren();
+
                 entities[key] = remap;
             }
         }
