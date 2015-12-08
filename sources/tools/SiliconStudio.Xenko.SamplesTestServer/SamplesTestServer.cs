@@ -6,10 +6,8 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
 {
