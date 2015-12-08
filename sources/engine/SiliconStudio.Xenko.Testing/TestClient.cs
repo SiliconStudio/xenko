@@ -18,13 +18,6 @@ namespace SiliconStudio.Xenko.Testing
         {
             using (var image = texture.GetDataAsImage())
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                //Directly save to disk
-                using (var resultFileStream = File.OpenWrite(filename))
-                {
-                    image.Save(resultFileStream, ImageFileType.Png);
-                }
-#else
                 //Send to server and store to disk
                 var imageData = new TestResultImage { CurrentVersion = "1.0", Frame = "0", Image = image, TestName = "" };
                 var payload = new ScreenShotPayload { FileName = filename };
@@ -39,7 +32,6 @@ namespace SiliconStudio.Xenko.Testing
                     socketMessageLayer.Send(payload).Wait();
                     resultFileStream.Dispose();
                 });
-#endif
             }
         }
 
