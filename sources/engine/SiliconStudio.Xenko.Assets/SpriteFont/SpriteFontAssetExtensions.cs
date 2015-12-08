@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 ExtraLineSpacing = staticFont.ExtraLineSpacing,
                 DefaultCharacter = asset.DefaultCharacter,
                 FontName = asset.Source != null ? (asset.Source.GetFileName() ?? "") : asset.FontName,
-                IsNotPremultiplied = asset.IsNotPremultiply,
+                IsPremultiplied = asset.IsPremultiplied,
             };
 
             return precompiledAsset;

@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public static class EntityAssetOperations
     {
-        public static EntityAsset ExtractSceneClone(EntityAssetBase source, Guid sourceRootEntity)
+        public static EntityAssetBase ExtractSceneClone(EntityAssetBase source, Guid sourceRootEntity)
         {
             if (source == null) throw new ArgumentNullException("source");
 
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             source.Hierarchy = null;
 
             // clone asset without hierarchy
-            var clonedAsset = (EntityAsset)AssetCloner.Clone(source);
+            var clonedAsset = (EntityAssetBase)AssetCloner.Clone(source);
             clonedAsset.Hierarchy = clonedHierarchy;
 
             // revert the source hierarchy
