@@ -30,7 +30,7 @@
     <Compile Include="IObservableNode.cs" />
     <Compile Include="LCS.cs" />
     <Compile Include="NodeCommandWrapperBase.cs" />
-    <Compile Include="ObservableViewModelDirtinessUpdatedArgs.cs" />
+    <Compile Include="ObservableViewModelNodeValueChangedArgs.cs" />
     <Compile Include="NodeInitializedEventArgs.cs" />
     <Compile Include="ObservableModelNode.cs" />
     <Compile Include="ObservableNode.cs" />

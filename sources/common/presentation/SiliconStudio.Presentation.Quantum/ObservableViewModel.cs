@@ -33,8 +33,7 @@ namespace SiliconStudio.Presentation.Quantum
         public const string HasCommandPrefix = "HasCommand_";
         public const string HasAssociatedDataPrefix = "HasAssociatedData_";
 
-        private readonly IEnumerable<IDirtiable> dirtiables;
-        private readonly HashSet<string> nodeChangeList = new HashSet<string>();
+        private readonly HashSet<string> combinedNodeChanges = new HashSet<string>();
         private IObservableNode rootNode;
         private ObservableViewModel parent;
 
@@ -55,8 +54,7 @@ namespace SiliconStudio.Presentation.Quantum
             if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
             if (dirtiables == null) throw new ArgumentNullException(nameof(dirtiables));
             NodeContainer = nodeContainer;
-            this.dirtiables = dirtiables;
-            this.dirtiables.ForEach(x => x.DirtinessUpdated += DirtinessUpdated);
+            Dirtiables = dirtiables;
             ObservableViewModelService = serviceProvider.Get<ObservableViewModelService>();
             Logger = GlobalLogger.GetLogger(DefaultLoggerName);
         }
@@ -82,7 +80,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public void Dispose()
         {
-            Dirtiables.ForEach(x => x.DirtinessUpdated -= DirtinessUpdated);
             RootNode.Children.SelectDeep(x => x.Children).ForEach(x => x.Dispose());
             RootNode.Dispose();
         }
@@ -119,7 +116,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<IDirtiable> Dirtiables => dirtiables;
+        public override IEnumerable<IDirtiable> Dirtiables { get; }
 
         /// <summary>
         /// Gets the root node of this observable view model.
@@ -159,9 +156,10 @@ namespace SiliconStudio.Presentation.Quantum
         public Logger Logger { get; private set; }
 
         /// <summary>
-        /// Raised when the dirtiness of the related <see cref="Dirtiables"/> is updated after a property change.
+        /// Raised when the value of an <see cref="IObservableNode"/> contained into this view model has changed.
         /// </summary>
-        public event EventHandler<ObservableViewModelDirtinessUpdatedArgs> ViewModelDirtinessUpdated;
+        /// <remarks>If this view model contains <see cref="CombinedObservableNode"/> instances, this event will be raised only once, at the end of the transaction.</remarks>
+        public event EventHandler<ObservableViewModelNodeValueChangedArgs> NodeValueChanged;
 
         [Pure]
         public IObservableNode ResolveObservableNode(string path)
@@ -182,10 +180,8 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void NotifyNodeChanged(string observableNodePath)
         {
-            if (parent != null)
-                parent.nodeChangeList.Add(observableNodePath);
-            else
-                nodeChangeList.Add(observableNodePath);
+            parent?.combinedNodeChanges.Add(observableNodePath);
+            NodeValueChanged?.Invoke(this, new ObservableViewModelNodeValueChangedArgs(this, observableNodePath));
         }
 
         internal void BeginCombinedAction()
@@ -195,20 +191,16 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void EndCombinedAction(string displayName, string observableNodePath, object value)
         {
-            ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, ObservableViewModelService, observableNodePath, Identifier, x));
-        }
-
-        private void DirtinessUpdated(object sender, DirtinessUpdatedEventArgs e)
-        {
-            var handler = ViewModelDirtinessUpdated;
-            if (handler != null && nodeChangeList.Count > 0)
+            var handler = NodeValueChanged;
+            if (handler != null)
             {
-                foreach (var nodeChange in nodeChangeList)
+                foreach (var nodeChange in combinedNodeChanges)
                 {
-                    handler(this, new ObservableViewModelDirtinessUpdatedArgs(this, nodeChange));
+                    handler(this, new ObservableViewModelNodeValueChangedArgs(this, nodeChange));
                 }
             }
-            nodeChangeList.Clear();
+            combinedNodeChanges.Clear();
+            ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, ObservableViewModelService, observableNodePath, Identifier, x));
         }
 
         private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index)

@@ -30,7 +30,9 @@
     <Compile Include="Commands\UncancellableCommand.cs" />
     <Compile Include="Contents\ContentChangeEventArgs.cs" />
     <Compile Include="Contents\OverridableMemberContent.cs" />
+    <Compile Include="ActionStack\ContentValueChangedActionItem.cs" />
     <Compile Include="DefaultContentFactory.cs" />
+    <Compile Include="GraphNodeChangeListener.cs" />
     <Compile Include="IContentFactory.cs" />
     <Compile Include="IContentNode.cs" />
     <Compile Include="IModelBuilderPlugin.cs" />
@@ -84,9 +86,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="ActionStack\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
