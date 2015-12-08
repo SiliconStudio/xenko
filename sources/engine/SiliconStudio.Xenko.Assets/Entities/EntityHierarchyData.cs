@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         [DataMember(30)]
         [DefaultValue(null)]
-        public Guid? PartGroupId { get; set; }
+        public Guid? BasePartInstanceId { get; set; }
     }
 
     /// <summary>

@@ -86,7 +86,7 @@ namespace SiliconStudio.Assets.Analysis
             beingProcessed.Add(assetItem.Id);
 
             AssetItem existingAssetBase = null;
-            List<AssetItem> existingBaseParts = null;
+            List<AssetBasePart> existingBaseParts = null;
 
             // Process asset base
             if (assetItem.Asset.Base != null)
@@ -100,17 +100,21 @@ namespace SiliconStudio.Assets.Analysis
             // Process asset base parts
             if (assetItem.Asset.BaseParts != null && assetItem.Asset.BaseParts.Count > 0)
             {
-                existingBaseParts = new List<AssetItem>(assetItem.Asset.BaseParts.Count);
+                existingBaseParts = new List<AssetBasePart>();
 
-                foreach (var assetBase in assetItem.Asset.BaseParts)
+                foreach (var assetGroupPart in assetItem.Asset.BaseParts)
                 {
                     AssetItem existingAssetBasePart;
-                    if (!ProcessMergeAssetBase(assetBase, beingProcessed, out existingAssetBasePart))
+                    if (!ProcessMergeAssetBase(assetGroupPart.Base, beingProcessed, out existingAssetBasePart))
                     {
                         return false;
                     }
 
-                    existingBaseParts.Add(new AssetItem(existingAssetBasePart.Location, existingAssetBasePart.Asset, existingAssetBasePart.Package));
+                    // Replicate the group with the list of ids
+                    var groupPart = new AssetBasePart(new AssetBase(existingAssetBasePart.Location, existingAssetBasePart.Asset));
+                    groupPart.InstanceIds.AddRange(assetGroupPart.InstanceIds);
+
+                    existingBaseParts.Add(groupPart);
                 }
             }
 
@@ -155,7 +159,7 @@ namespace SiliconStudio.Assets.Analysis
             return true;
         }
 
-        private bool MergeAsset(AssetItem item, AssetItem existingBase, List<AssetItem> existingBaseParts)
+        private bool MergeAsset(AssetItem item, AssetItem existingBase, List<AssetBasePart> existingBaseParts)
         {
             // No need to clone existingBaseParts as they are already cloned
             var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base?.Asset);
