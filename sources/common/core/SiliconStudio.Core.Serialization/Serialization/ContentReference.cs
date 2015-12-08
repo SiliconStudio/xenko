@@ -154,11 +154,6 @@ namespace SiliconStudio.Core.Serialization
             Location = location;
         }
 
-        public static explicit operator T (ContentReference<T> contentReference)
-        {
-            return contentReference?.Value;
-        }
-
         public static implicit operator ContentReference<T>(T value)
         {
             return new ContentReference<T>() { Value = value };
