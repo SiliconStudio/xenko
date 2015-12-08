@@ -102,19 +102,21 @@ namespace SiliconStudio.Assets.Analysis
             {
                 existingBaseParts = new List<AssetBasePart>();
 
-                foreach (var assetGroupPart in assetItem.Asset.BaseParts)
+                foreach (var basePart in assetItem.Asset.BaseParts)
                 {
                     AssetItem existingAssetBasePart;
-                    if (!ProcessMergeAssetBase(assetGroupPart.Base, beingProcessed, out existingAssetBasePart))
+                    if (!ProcessMergeAssetBase(basePart.Base, beingProcessed, out existingAssetBasePart))
                     {
                         return false;
                     }
 
                     // Replicate the group with the list of ids
-                    var groupPart = new AssetBasePart(new AssetBase(existingAssetBasePart.Location, existingAssetBasePart.Asset));
-                    groupPart.InstanceIds.AddRange(assetGroupPart.InstanceIds);
+                    var newBasePart = new AssetBasePart(new AssetBase(existingAssetBasePart.Location, existingAssetBasePart.Asset));
 
-                    existingBaseParts.Add(groupPart);
+                    // Instancing ids are copied from existing base part
+                    newBasePart.InstanceIds.AddRange(basePart.InstanceIds);
+                     
+                    existingBaseParts.Add(newBasePart);
                 }
             }
 
