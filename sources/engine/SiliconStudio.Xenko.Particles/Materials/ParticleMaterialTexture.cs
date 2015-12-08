@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMemberIgnore]
         private TextureAddressMode address0 = TextureAddressMode.Wrap;
 
-        [DataMember(110)]
+        [DataMember(102)]
         [Display("Address mode")]
         public TextureAddressMode AddressMode0
         {
