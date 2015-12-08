@@ -43,7 +43,6 @@
     <Compile Include="ObservableViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="ModelNodeCommandWrapper.cs" />
-    <Compile Include="ValueChangedActionItem.cs" />
     <Compile Include="View\ObservableNodeTemplateProvider.cs" />
     <Compile Include="View\RangedValueTemplateProvider.cs" />
     <Compile Include="View\TypeMatchTemplateProvider.cs" />

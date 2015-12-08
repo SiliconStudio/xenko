@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Linq;
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
@@ -389,12 +388,6 @@ namespace SiliconStudio.Presentation.Quantum
             OnPropertyChanged(nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
         }
 
-        protected virtual DirtiableActionItem CreateValueChangedActionItem(object previousValue, object newValue)
-        {
-            string displayName = Owner.FormatSingleUpdateMessage(this, newValue);
-            return new ValueChangedActionItem(displayName, Owner.ObservableViewModelService, SourceNodePath, Path, Owner.Identifier, Index, Owner.Dirtiables, previousValue);
-        }
-
         protected static IGraphNode GetTargetNode(IGraphNode sourceNode, object index)
         {
             if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
@@ -472,7 +465,7 @@ namespace SiliconStudio.Presentation.Quantum
                     if (parent != null)
                         ((ObservableNode)Parent).NotifyPropertyChanged(Name);
 
-                    RegisterValueChangedAction(Path, CreateValueChangedActionItem(previousValue, value));
+                    Owner.NotifyNodeChanged(Path);
                 }
                 isUpdating = false;
             }
