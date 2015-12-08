@@ -389,6 +389,7 @@ namespace SiliconStudio.Xenko.Graphics
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
                 case PixelFormat.B8G8R8A8_UNorm_SRgb:
                     // TODO: Check on iOS/Android and OpenGL 3
                     internalFormat = graphicsDevice.currentVersionMajor < 3 ? SrgbAlpha : Srgb8Alpha8;
@@ -396,6 +397,7 @@ namespace SiliconStudio.Xenko.Graphics
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
+#endif
                 case PixelFormat.R16_Float:
                     internalFormat = R16f;
                     format = PixelFormatGl.Red;
