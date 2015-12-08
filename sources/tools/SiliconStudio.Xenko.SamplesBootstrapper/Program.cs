@@ -1,4 +1,5 @@
 ﻿using SiliconStudio.Assets;
+using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Assets.Templates;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.IO;
@@ -44,13 +45,15 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
 
             var updater = UpdatePlatformsTemplateGenerator.Default;
 
+            var gameSettingsAsset = session.Session.Packages.Last().GetGameSettingsAsset();
+
             var updateParams = new GameTemplateParameters
             {
                 Common = parameters,
                 ForcePlatformRegeneration = true,
-                GraphicsProfile = GraphicsProfile.Level_9_1,
+                GraphicsProfile = gameSettingsAsset.DefaultGraphicsProfile,
                 IsHDR = false,
-                Orientation = DisplayOrientation.Default,
+                Orientation = gameSettingsAsset.DisplayOrientation,
                 Platforms = AssetRegistry.SupportedPlatforms.ToList()
             };
 

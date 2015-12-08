@@ -51,6 +51,10 @@
       <Project>{550c1b7c-b7ad-46df-acf3-c36aef35d5ff}</Project>
       <Name>SiliconStudio.Xenko.Assets.Presentation</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Assets\SiliconStudio.Xenko.Assets.csproj">
+      <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
+      <Name>SiliconStudio.Xenko.Assets</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
       <Name>SiliconStudio.Xenko.Engine</Name>
