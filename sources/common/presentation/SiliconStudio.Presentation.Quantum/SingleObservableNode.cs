@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.ActionStack;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
@@ -82,11 +81,6 @@ namespace SiliconStudio.Presentation.Quantum
                     DisplayName = DisplayNameProvider();
                 }
             }
-        }
-
-        protected void RegisterValueChangedAction(string path, DirtiableActionItem actionItem)
-        {
-            Owner.RegisterAction(path);
         }
 
         private void SetName(string nodeName)
