@@ -165,11 +165,10 @@ namespace SiliconStudio.Assets.Analysis
         {
             // No need to clone existingBaseParts as they are already cloned
             var baseCopy = (Asset)AssetCloner.Clone(item.Asset.Base?.Asset);
-            var newBase = (Asset)AssetCloner.Clone(existingBase?.Asset);
-            var merger = item.Asset ?? newBase ?? baseCopy;
+            var newBaseCopy = (Asset)AssetCloner.Clone(existingBase?.Asset);
 
             // Delegates actual merge to the asset implem
-            var result = merger.Merge(baseCopy, item.Asset, newBase, existingBaseParts);
+            var result = item.Asset.Merge(baseCopy, newBaseCopy, existingBaseParts);
 
             if (result.HasErrors)
             {
@@ -180,8 +179,15 @@ namespace SiliconStudio.Assets.Analysis
             item.Asset = (Asset)result.Asset;
             if (item.Asset.Base != null)
             {
-                item.Asset.Base = newBase != null ? new AssetBase(item.Asset.Base.Location, newBase) : null;
+                item.Asset.Base = newBaseCopy != null ? new AssetBase(item.Asset.Base.Location, newBaseCopy) : null;
             }
+
+            // Use new existing base parts
+            if (existingBaseParts != null)
+            {
+                item.Asset.BaseParts = existingBaseParts;
+            }
+
             item.IsDirty = true;
             return true;
         }

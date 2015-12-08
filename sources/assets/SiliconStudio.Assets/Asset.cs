@@ -141,17 +141,16 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
-        /// Merge an asset with its base, new instance and new base and parts.
+        /// Merge an asset with its base, and new base and parts into this instance.
         /// </summary>
         /// <param name="baseAsset">A copy of the base asset. Can be null if no base asset for newAsset</param>
-        /// <param name="newAsset">The asset to merge into</param>
         /// <param name="newBase">A copy of the next base asset. Can be null if no base asset for newAsset.</param>
         /// <param name="newBaseParts">A copy of the new base parts</param>
         /// <returns>The result of the merge</returns>
         /// <remarks>The this instance is not used by this method.</remarks>
-        public virtual MergeResult Merge(Asset baseAsset, Asset newAsset, Asset newBase, List<AssetBasePart> newBaseParts)
+        public virtual MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBasePart> newBaseParts)
         {
-            var diff = new AssetDiff(baseAsset, newAsset, newBase)
+            var diff = new AssetDiff(baseAsset, this, newBase)
             {
                 UseOverrideMode = true
             };
