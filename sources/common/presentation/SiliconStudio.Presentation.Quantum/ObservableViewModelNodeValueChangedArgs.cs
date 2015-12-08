@@ -4,9 +4,9 @@ using System;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public class ObservableViewModelDirtinessUpdatedArgs : EventArgs
+    public class ObservableViewModelNodeValueChangedArgs : EventArgs
     {
-        public ObservableViewModelDirtinessUpdatedArgs(ObservableViewModel viewModel, string nodePath)
+        public ObservableViewModelNodeValueChangedArgs(ObservableViewModel viewModel, string nodePath)
         {
             ViewModel = viewModel;
             NodePath = nodePath;
