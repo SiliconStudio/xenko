@@ -29,6 +29,7 @@
     <Compile Include="Initializers\InitialSizeSeed.cs" />
     <Compile Include="Initializers\InitialVelocitySeed.cs" />
     <Compile Include="Materials\ParticleMaterialBase.cs" />
+    <Compile Include="Materials\ParticleMaterialFlipbook.cs" />
     <Compile Include="Materials\ParticleMaterialTexture.cs" />
     <Compile Include="Materials\ParticleMaterialTextureScroll.cs" />
     <Compile Include="Module.cs" />

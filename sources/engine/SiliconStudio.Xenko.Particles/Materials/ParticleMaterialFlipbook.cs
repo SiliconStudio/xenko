@@ -8,9 +8,9 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
-    [DataContract("ParticleMaterialTextureScroll")]
-    [Display("Scrolling Texture")]
-    public class ParticleMaterialTextureScroll : ParticleMaterialBase
+    [DataContract("ParticleMaterialTextureFlipbook")]
+    [Display("Flipbook")]
+    public class ParticleMaterialTextureFlipbook : ParticleMaterialBase
     {
         private Texture texture0 = null;
 
@@ -72,13 +72,64 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("Color Random Seed")]
         public UInt32 ColorRandomOffset { get; set; } = 1;
 
+        #region Flipbook
+
+        private UInt32 xDivisions = 4;
+        private UInt32 yDivisions = 4;
+        private float  xStep = 0.25f;
+        private float  yStep = 0.25f;
+        private UInt32 totalFrames = 16;
+        private UInt32 startingFrame = 0;
+        private UInt32 animationSpeedOverLife = 16;
+
         [DataMember(200)]
-        [Display("Start frame")]
-        public Vector4 StartFrame { get; set; } = new Vector4(0, 0, 1, 1);
+        [Display("X divisions")]
+        public UInt32 XDivisions
+        {
+            get { return xDivisions; }
+            set
+            {
+                xDivisions = (value > 0) ? value : 1;
+                xStep = (1f / xDivisions);
+                totalFrames = xDivisions * yDivisions;
+                startingFrame = Math.Min(startingFrame, totalFrames);
+            }
+        }
 
         [DataMember(240)]
-        [Display("End frame")]
-        public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);
+        [Display("Y divisions")]
+        public UInt32 YDivisions
+        {
+            get { return yDivisions; }
+            set
+            {
+                yDivisions = (value > 0) ? value : 1;
+                yStep = (1f / yDivisions);
+                totalFrames = xDivisions * yDivisions;
+                startingFrame = Math.Min(startingFrame, totalFrames);
+            }
+        }
+
+        [DataMember(280)]
+        [Display("Starting frame")]
+        public UInt32 StartingFrame
+        {
+            get { return startingFrame; }
+            set
+            {
+                startingFrame = value;
+                startingFrame = Math.Min(startingFrame, totalFrames);
+            }
+        }
+
+        [DataMember(320)]
+        [Display("Animation speed")]
+        public UInt32 AnimationSpeed
+        {
+            get { return animationSpeedOverLife; }
+            set { animationSpeedOverLife = value; }
+        }
+        #endregion
 
         public override void Setup(GraphicsDevice graphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
@@ -149,9 +200,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
                 vtxBuilder.SetColorForParticle(hasColorField ? particle[colorField] : (IntPtr)(&whiteColor));
 
-                var uvTransform = Vector4.Lerp(StartFrame, EndFrame, normalizedTimeline);
-                uvTransform.Z -= uvTransform.X;
-                uvTransform.W -= uvTransform.Y;
+                var spriteId = startingFrame + (int) (normalizedTimeline * animationSpeedOverLife);
+
+                var uvTransform = new Vector4((spriteId % xDivisions) * xStep, (spriteId / yDivisions) * yStep, xStep, yStep);
 
                 for (int i = 0; i < vtxBuilder.VerticesPerParticle; i++)
                 {
