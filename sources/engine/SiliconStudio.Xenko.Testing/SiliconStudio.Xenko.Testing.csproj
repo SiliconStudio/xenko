@@ -20,6 +20,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="BlockingBufferStream.cs" />
     <Compile Include="KeySimulationRequest.cs" />
     <Compile Include="LogRequest.cs" />
     <Compile Include="Module.cs" />
@@ -33,11 +34,16 @@
     <Compile Include="TestEndedRequest.cs" />
     <Compile Include="GameTest.cs" />
     <Compile Include="TestRegistrationRequest.cs" />
+    <Compile Include="TestResultImage.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj">
+      <Project>{5210fb81-b807-49bb-af0d-31fb6a83a572}</Project>
+      <Name>SiliconStudio.Core.Serialization</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
@@ -50,10 +56,6 @@
     <ProjectReference Include="..\SiliconStudio.Xenko.Games\SiliconStudio.Xenko.Games.csproj">
       <Project>{42780cbd-3fe7-48e3-bd5b-59945ea20137}</Project>
       <Name>SiliconStudio.Xenko.Games</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.Graphics.Regression\SiliconStudio.Xenko.Graphics.Regression.csproj">
-      <Project>{d002feb1-00a6-4ab1-a83f-1f253465e64d}</Project>
-      <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
     </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj">
       <Project>{fb06c76a-6bb7-40be-9afa-fec13b045fb5}</Project>

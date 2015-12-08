@@ -7,10 +7,8 @@ using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Input.Extensions;
 using System;
 using System.Collections.Concurrent;
-using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
-using SiliconStudio.Xenko.Graphics.Regression;
 
 namespace SiliconStudio.Xenko.Testing
 {
@@ -26,7 +24,7 @@ namespace SiliconStudio.Xenko.Testing
                 {
                     image.Save(resultFileStream, ImageFileType.Png);
                 }
-#elif SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_IOS
+#else
                 //Send to server and store to disk
                 var imageData = new TestResultImage { CurrentVersion = "1.0", Frame = "0", Image = image, TestName = "" };
                 var payload = new ScreenShotPayload { FileName = filename };
