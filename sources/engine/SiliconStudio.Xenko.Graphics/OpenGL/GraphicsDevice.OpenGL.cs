@@ -2339,11 +2339,11 @@ namespace SiliconStudio.Xenko.Graphics
             windowProvidedFrameBuffer = gameWindow.Framebuffer;
 
             // Scale for Retina display
-            var width = (int)(gameWindow.Size.Width * gameWindow.ContentScaleFactor);
-            var height = (int)(gameWindow.Size.Height * gameWindow.ContentScaleFactor);
+            var width = (int)(gameWindow.ClientSize.Width * gameWindow.ContentScaleFactor);
+            var height = (int)(gameWindow.ClientSize.Height * gameWindow.ContentScaleFactor);
 #else
-            var width = gameWindow.Size.Width;
-            var height = gameWindow.Size.Height;
+            var width = gameWindow.ClientSize.Width;
+            var height = gameWindow.ClientSize.Height;
             windowProvidedFrameBuffer = 0;
 #endif
 
@@ -2351,8 +2351,12 @@ namespace SiliconStudio.Xenko.Graphics
             windowProvidedRenderTexture = Texture.New2D(this, width, height, 1,
                 // TODO: As a workaround, because OpenTK(+OpenGLES) doesn't support to create SRgb backbuffer, we fake it by creating a non-SRgb here and CopyScaler2D is responsible to transform it to non SRgb
                 presentationParameters.BackBufferFormat.IsSRgb() ? presentationParameters.BackBufferFormat.ToNonSRgb() : presentationParameters.BackBufferFormat, TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
-            windowProvidedRenderTexture.Reload = (graphicsResource) => { };
+            windowProvidedRenderTexture.Reload = graphicsResource => { };
 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
+            windowProvidedDepthTexture = Texture.New2D(this, width, height, 1, presentationParameters.DepthStencilFormat, TextureFlags.DepthStencil | Texture.TextureFlagsCustomResourceId);
+            windowProvidedDepthTexture.Reload = graphicsResource => { };
+#endif
             boundFBO = windowProvidedFrameBuffer;
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, windowProvidedFrameBuffer);
@@ -2361,12 +2365,10 @@ namespace SiliconStudio.Xenko.Graphics
             int renderTargetTextureId;
             GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
             windowProvidedRenderTexture.resourceId = renderTargetTextureId;
-            windowProvidedRenderTexture.Reload = (graphicsResource) => { };
 
             // Extract FBO depth target
             GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
-            //windowProvidedDepthTexture.resourceId = renderTargetTextureId;
-            //windowProvidedDepthTexture.Reload = (graphicsResource) => { };
+            windowProvidedDepthTexture.resourceId = renderTargetTextureId;
 
             RootDevice.existingFBOs[new FBOKey(windowProvidedDepthTexture, new[] { windowProvidedRenderTexture })] = windowProvidedFrameBuffer;
 
@@ -2375,7 +2377,9 @@ namespace SiliconStudio.Xenko.Graphics
             // - No blitting, but default RenderTarget won't work with a custom FBO
             // - Later we should be able to detect that automatically?
             //defaultRenderTarget = Texture.New2D(this, presentationParameters.BackBufferWidth, presentationParameters.BackBufferHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
             defaultRenderTarget = windowProvidedRenderTexture;
+#endif
         }
 
         public GraphicsDevice ImmediateContext
@@ -2421,10 +2425,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the default render target associated with this graphics device.
         /// </summary>
         /// <value>The default render target.</value>
-        internal Texture DefaultRenderTarget
-        {
-            get { return defaultRenderTarget; }
-        }
+        internal Texture DefaultRenderTarget => defaultRenderTarget;
 
         /// <summary>
         /// Presents the display with the contents of the next buffer in the sequence of back buffers owned by the GraphicsDevice.
