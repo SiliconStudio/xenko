@@ -365,9 +365,8 @@ namespace SiliconStudio.Assets.Tests.Diff
             }
         }
 
-
         [Test]
-        public void TestMergeListGuids()
+        public void TestMergeListGuidsWithSwapItems()
         {
             var item0 = new Guid("9a656db2-d387-4805-a18d-7727d26c0a7a");
             var item1 = new Guid("3d22a49d-d891-451f-8e2d-f7cabb11a602");
@@ -409,6 +408,50 @@ namespace SiliconStudio.Assets.Tests.Diff
             Assert.AreEqual(item1, asset1List[1]);
             Assert.AreEqual(newItem, asset1List[2]);
         }
+
+        [Test]
+        public void TestMergeListGuids2()
+        {
+            var item0 = new Guid("9a656db2-d387-4805-a18d-7727d26c0a7a");
+            var item1 = new Guid("3d22a49d-d891-451f-8e2d-f7cabb11a602");
+            var item2 = new Guid("3a0c78e7-a961-48ac-870f-3a8cdc6b2c4b");
+            var newItem = new Guid("481331cc-b3ea-4d48-bdb6-f7741d853eaf");
+
+            var baseList = new List<Guid>()
+            {
+                item0,
+                item1,
+                item2,
+            };
+
+            var asset1List = new List<Guid>()
+            {
+                item0,
+                item1,
+                item2,
+                newItem,
+            };
+
+            var asset2List = new List<Guid>()
+            {
+                item0,
+                item2, 
+            };
+
+
+            // Final list must be: item0, item2, newItem
+            var diff = new AssetDiff(AssetCloner.Clone(baseList), asset1List, AssetCloner.Clone(asset2List)) { UseOverrideMode = true };
+
+            var result = AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
+            Assert.False(result.HasErrors);
+
+            Assert.AreEqual(3, asset1List.Count);
+
+            Assert.AreEqual(item0, asset1List[0]);
+            Assert.AreEqual(item2, asset1List[1]);
+            Assert.AreEqual(newItem, asset1List[2]);
+        }
+
 
         [Test]
         public void TestMergeDictionaryNewKeyValue()

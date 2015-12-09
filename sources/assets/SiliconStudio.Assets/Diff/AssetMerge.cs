@@ -117,15 +117,22 @@ namespace SiliconStudio.Assets.Diff
                         continue;
                     }
 
-                    object dataInstance;
-                    bool replaceValue;
+                    object dataInstance = null;
+                    bool replaceValue = false;
 
                     switch (changeType)
                     {
                         case Diff3ChangeType.MergeFromAsset2:
-                            // As we are merging into asset1, the only relevant changes can only come from asset2
-                            dataInstance = diff3Node.Asset2Node != null ? diff3Node.Asset2Node.Instance : null;
-                            replaceValue = true;
+
+                            // Because for collection, the merge is performed by the MergeContainer
+                            // Skip any merge for individual items, as they should have been merged by MergeContainer
+                            // TODO: This is a workaround as FindDifferences().ToList() is giving changes inside collection while we rebuild collection with MergeContainer
+                            if (diff3Node.Parent == null || diff3Node.Parent.Type != Diff3NodeType.Collection)
+                            {
+                                // As we are merging into asset1, the only relevant changes can only come from asset2
+                                dataInstance = diff3Node.Asset2Node?.Instance;
+                                replaceValue = true;
+                            }
                             break;
                         case Diff3ChangeType.Children:
                             MergeContainer(diff3Node, out dataInstance);
