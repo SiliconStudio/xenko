@@ -256,20 +256,26 @@ namespace SiliconStudio.Xenko.Particles
         private unsafe void MoveAndDeleteParticles(float dt)
         {
             // Hardcoded life update
-            if (pool.FieldExists(ParticleFields.RemainingLife))
+            if (pool.FieldExists(ParticleFields.RemainingLife) && pool.FieldExists(ParticleFields.RandomSeed))
             {
                 var lifeField = pool.GetField(ParticleFields.RemainingLife);
+                var randField = pool.GetField(ParticleFields.RandomSeed);
+                var lifeStep = ParticleMaxLifetime - ParticleMinLifetime;
 
                 var particleEnumerator = pool.GetEnumerator();
                 while (particleEnumerator.MoveNext())
                 {
                     var particle = particleEnumerator.Current;
+
+                    var randSeed = *(RandomSeed*)(particle[randField]);
                     var life = (float*)particle[lifeField];
 
-                    if (*life > particleMaxLifetime)
-                        *life = particleMaxLifetime;
+                    if (*life > 1)
+                        *life = 1;
 
-                    if (*life <= 0 || (*life -= dt) <= 0)
+                    var startingLife = ParticleMinLifetime + lifeStep * randSeed.GetFloat(0);
+
+                    if (*life <= 0 || (*life -= (dt / startingLife)) <= 0)
                     {
                         particleEnumerator.RemoveCurrent(ref particle);
                     }
@@ -339,8 +345,6 @@ namespace SiliconStudio.Xenko.Particles
             var lifeField = pool.GetField(ParticleFields.RemainingLife);
             var randField = pool.GetField(ParticleFields.RandomSeed);
 
-            var lifetimeGap = particleMaxLifetime - particleMinLifetime;
-
             var startIndex = pool.NextFreeIndex % capacity;
 
             for (var i = 0; i < particlesToSpawn; i++)
@@ -351,7 +355,7 @@ namespace SiliconStudio.Xenko.Particles
 
                 *((RandomSeed*)particle[randField]) = randSeed;
 
-                *((float*)particle[lifeField]) = particleMinLifetime + lifetimeGap * randSeed.GetFloat(RandomOffset.Lifetime);                
+                *((float*)particle[lifeField]) = 1; // Start at 100% normalized lifetime                
             }
 
             var endIndex = pool.NextFreeIndex % capacity;
