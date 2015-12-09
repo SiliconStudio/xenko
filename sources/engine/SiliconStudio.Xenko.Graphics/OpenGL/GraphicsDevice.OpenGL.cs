@@ -2339,6 +2339,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)
         {
+// TODO: Provide unified ClientSize from GameWindow
 #if SILICONSTUDIO_PLATFORM_IOS
             windowProvidedFrameBuffer = gameWindow.Framebuffer;
 
@@ -2346,10 +2347,18 @@ namespace SiliconStudio.Xenko.Graphics
             var width = (int)(gameWindow.Size.Width * gameWindow.ContentScaleFactor);
             var height = (int)(gameWindow.Size.Height * gameWindow.ContentScaleFactor);
 #else
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
             var width = gameWindow.ClientSize.Width;
             var height = gameWindow.ClientSize.Height;
+#else
+            var width = gameWindow.Size.Width;
+            var height = gameWindow.Size.Height;
+#endif
             windowProvidedFrameBuffer = 0;
 #endif
+
+            boundFBO = windowProvidedFrameBuffer;
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, windowProvidedFrameBuffer);
 
             // TODO: iOS (and possibly other platforms): get real render buffer ID for color/depth?
             windowProvidedRenderTexture = Texture.New2D(this, width, height, 1,
@@ -2357,22 +2366,19 @@ namespace SiliconStudio.Xenko.Graphics
                 presentationParameters.BackBufferFormat.IsSRgb() ? presentationParameters.BackBufferFormat.ToNonSRgb() : presentationParameters.BackBufferFormat, TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
             windowProvidedRenderTexture.Reload = graphicsResource => { };
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
-            windowProvidedDepthTexture = Texture.New2D(this, width, height, 1, presentationParameters.DepthStencilFormat, TextureFlags.DepthStencil | Texture.TextureFlagsCustomResourceId);
-            windowProvidedDepthTexture.Reload = graphicsResource => { };
-#endif
-            boundFBO = windowProvidedFrameBuffer;
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, windowProvidedFrameBuffer);
-
             // Extract FBO render target
             int renderTargetTextureId;
             GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
             windowProvidedRenderTexture.resourceId = renderTargetTextureId;
 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
+            windowProvidedDepthTexture = Texture.New2D(this, width, height, 1, presentationParameters.DepthStencilFormat, TextureFlags.DepthStencil | Texture.TextureFlagsCustomResourceId);
+            windowProvidedDepthTexture.Reload = graphicsResource => { };
+
             // Extract FBO depth target
             GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
             windowProvidedDepthTexture.resourceId = renderTargetTextureId;
+#endif
 
             RootDevice.existingFBOs[new FBOKey(windowProvidedDepthTexture, new[] { windowProvidedRenderTexture })] = windowProvidedFrameBuffer;
 
