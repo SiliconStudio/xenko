@@ -41,8 +41,7 @@ namespace SiliconStudio.Presentation.Commands
         /// </summary>
         /// <param name="parameter">The command parameter.</param>
         /// <returns>An <see cref="UndoToken"/> that can be used to undo the command.</returns>
-        [Obsolete("This method will become private soon")]
-        public IActionItem Invoke(object parameter)
+        public UndoToken Invoke(object parameter)
         {
             // TODO: Improve this - we're discarding any change made directly by the command invoke and create a CommandActionItem after.
             // NOTE: PickupAssetCommand is currently assuming that there's such a transaction in progress, be sure to check it if changing this.
@@ -51,7 +50,8 @@ namespace SiliconStudio.Presentation.Commands
             transactionalActionStack?.BeginTransaction();
             var token = Do(parameter);
             transactionalActionStack?.DiscardTransaction();
-            return CreateActionItem(token);
+            CreateActionItem(token);
+            return token;
         }
 
         public abstract RedoToken Undo(UndoToken undoToken);
