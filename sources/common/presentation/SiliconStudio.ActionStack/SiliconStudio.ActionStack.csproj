@@ -32,6 +32,7 @@
     <Compile Include="ITransactionalActionStack.cs" />
     <Compile Include="NullTransactionalActionStack.cs" />
     <Compile Include="PropertyChangedActionItem.cs" />
+    <Compile Include="RedoToken.cs" />
     <Compile Include="SavePoint.cs" />
     <Compile Include="ActionStack.cs" />
     <Compile Include="AggregateActionItem.cs" />

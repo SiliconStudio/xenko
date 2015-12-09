@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.ActionStack;
@@ -10,6 +12,7 @@ namespace SiliconStudio.Presentation.Commands
     /// <summary>
     /// A command that supports undo/redo
     /// </summary>
+    [Obsolete("CancellableCommandBase should be used instead")]
     public abstract class CancellableCommand : CommandBase
     {
         private readonly IViewModelServiceProvider serviceProvider;
@@ -32,7 +35,7 @@ namespace SiliconStudio.Presentation.Commands
         /// </summary>
         public abstract string Name { get; }
 
-        protected IEnumerable<IDirtiable> Dirtiables { get; private set; }
+        protected IEnumerable<IDirtiable> Dirtiables { get; }
 
         /// <summary>
         /// Choose whether transaction is discarded (true) or ended (false) during <see cref="ExecuteCommand"/>.
@@ -44,7 +47,7 @@ namespace SiliconStudio.Presentation.Commands
         /// </summary>
         protected bool AllowReentrancy { get; set; } = true;
 
-        private IActionStack ActionStack { get { return serviceProvider.Get<IActionStack>(); } }
+        private IActionStack ActionStack => serviceProvider.Get<IActionStack>();
 
         /// <inheritdoc/>
         public override void Execute(object parameter)
@@ -92,8 +95,7 @@ namespace SiliconStudio.Presentation.Commands
             // TODO: Improve this - we're discarding any change made directly by the command invoke and create a CommandActionItem after.
             // NOTE: PickupAssetCommand is currently assuming that there's such a transaction in progress, be sure to check it if changing this.
             var transactionalActionStack = ActionStack as ITransactionalActionStack;
-            if (transactionalActionStack != null)
-                transactionalActionStack.BeginTransaction();
+            transactionalActionStack?.BeginTransaction();
 
             UndoToken token = Redo(parameter, createActionItem);
             

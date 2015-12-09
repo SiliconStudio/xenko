@@ -1,13 +1,14 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.ActionStack;
-using SiliconStudio.Presentation.ViewModel;
-using SiliconStudio.Presentation.ViewModel.ActionStack;
 
 namespace SiliconStudio.Presentation.Commands
 {
+    [Obsolete("CancellableCommandActionItem should be used instead")]
     public class CommandActionItem : DirtiableActionItem
     {
         private CancellableCommand command;
