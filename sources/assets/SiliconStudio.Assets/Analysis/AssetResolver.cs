@@ -20,9 +20,6 @@ namespace SiliconStudio.Assets.Analysis
         /// <returns><c>true</c> if an asset id is already used, <c>false</c> otherwise.</returns>
         public delegate bool ContainsAssetWithIdDelegate(Guid guid);
 
-        private readonly HashSet<Guid> existingIds;
-        private readonly HashSet<string> existingLocations;
-
         private readonly NamingHelper.ContainsLocationDelegate containsLocation;
 
         private readonly ContainsAssetWithIdDelegate containsId;
@@ -41,8 +38,8 @@ namespace SiliconStudio.Assets.Analysis
         /// <param name="containsAssetWithId">The delegate used to check if an asset identifier is already used.</param>
         public AssetResolver(NamingHelper.ContainsLocationDelegate containsLocation, ContainsAssetWithIdDelegate containsAssetWithId)
         {
-            existingIds = new HashSet<Guid>();
-            existingLocations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+            ExistingIds = new HashSet<Guid>();
+            ExistingLocations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             ContainsLocation = containsLocation;
             ContainsAssetWithId = containsAssetWithId;
             this.containsLocation = DefaultContainsLocation;
@@ -53,25 +50,13 @@ namespace SiliconStudio.Assets.Analysis
         /// Gets the locations already used.
         /// </summary>
         /// <value>The locations.</value>
-        public HashSet<string> ExistingLocations
-        {
-            get
-            {
-                return existingLocations;
-            }
-        }
+        public HashSet<string> ExistingLocations { get; }
 
         /// <summary>
         /// Gets the asset ids already used.
         /// </summary>
         /// <value>The existing ids.</value>
-        public HashSet<Guid> ExistingIds
-        {
-            get
-            {
-                return existingIds;
-            }
-        }
+        public HashSet<Guid> ExistingIds { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether to always generate a new id on <see cref="RegisterId"/>.
@@ -131,7 +116,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <exception cref="System.ArgumentNullException">package</exception>
         public static AssetResolver FromPackage(Package package)
         {
-            if (package == null) throw new ArgumentNullException("package");
+            if (package == null) throw new ArgumentNullException(nameof(package));
 
             var packagesForLocation = package.FindDependencies(true);
             var packagesForIds = package.Session != null ? package.Session.Packages : packagesForLocation;
@@ -147,7 +132,7 @@ namespace SiliconStudio.Assets.Analysis
         /// <exception cref="System.ArgumentNullException">package</exception>
         public static AssetResolver FromPackage(IList<Package> packages)
         {
-            if (packages == null) throw new ArgumentNullException("packages");
+            if (packages == null) throw new ArgumentNullException(nameof(packages));
             return new AssetResolver(packages.ContainsAsset, packages.ContainsAsset);
         }
 
@@ -160,11 +145,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 return true;
             }
-            if (ContainsLocation != null)
-            {
-                return ContainsLocation(location);
-            }
-            return false;
+            return ContainsLocation?.Invoke(location) ?? false;
         }
 
         /// <summary>
@@ -176,11 +157,7 @@ namespace SiliconStudio.Assets.Analysis
             {
                 return true;
             }
-            if (ContainsAssetWithId != null)
-            {
-                return ContainsAssetWithId(guid);
-            }
-            return false;
+            return ContainsAssetWithId?.Invoke(guid) ?? false;
         }
     }
 }

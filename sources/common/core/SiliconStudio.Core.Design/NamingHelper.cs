@@ -98,6 +98,7 @@ namespace SiliconStudio.Core
         public static string ComputeNewName(string baseName, ContainsLocationDelegate containsDelegate, string namePattern = null)
         {
             if (baseName == null) throw new ArgumentNullException(nameof(baseName));
+            if (containsDelegate == null) throw new ArgumentNullException(nameof(containsDelegate));
             if (namePattern == null) namePattern = DefaultNamePattern;
             if (!namePattern.Contains("{0}") || !namePattern.Contains("{1}")) throw new ArgumentException(@"This parameter must be a formattable string containing '{0}' and '{1}' tokens", nameof(namePattern));
 
@@ -109,7 +110,7 @@ namespace SiliconStudio.Core
             {
                 // if so, extract the base name and the current counter
                 baseName = match.Groups[1].Value;
-                counter = Int32.Parse(match.Groups[2].Value);
+                counter = int.Parse(match.Groups[2].Value);
             }
             // Compute name
             var result = baseName;
