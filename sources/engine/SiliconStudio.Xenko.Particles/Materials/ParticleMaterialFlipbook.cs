@@ -176,24 +176,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
             base.PatchVertexBuffer(vtxBuilder, invViewX, invViewY, maxVertices, pool, emitter);
 
             var lifeField = pool.GetField(ParticleFields.RemainingLife);
-            var randField = pool.GetField(ParticleFields.RandomSeed);
 
-            if (!randField.IsValid() || !lifeField.IsValid())
+            if (!lifeField.IsValid())
                 return;
 
-            var lifeMin = emitter?.ParticleMinLifetime ?? 1;
-            var lifeMax = emitter?.ParticleMaxLifetime ?? 1;
-            var lifeStep = lifeMax - lifeMin;
-
-            // TODO Fetch sorted particles
             foreach (var particle in pool)
             {
-                vtxBuilder.SetRandomSeedForParticle(particle[randField]);
-                var randSeed = *(RandomSeed*)(particle[randField]);
-
-                var remainingLife = *(float*)(particle[lifeField]);
-                var startingLife = lifeMin + lifeStep * randSeed.GetFloat(0);
-                var normalizedTimeline = 1f - remainingLife / startingLife;
+                var normalizedTimeline = 1f - *(float*)(particle[lifeField]);
 
                 var spriteId = startingFrame + (int) (normalizedTimeline * animationSpeedOverLife);
 
