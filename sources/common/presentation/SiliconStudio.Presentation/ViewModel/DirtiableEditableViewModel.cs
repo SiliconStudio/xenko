@@ -22,7 +22,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Initializes a new instance of the <see cref="DirtiableEditableViewModel"/> class.
         /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ITransactionalActionStack"/> to use for this view model.</param>
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> and an <see cref="SiliconStudio.ActionStack.ITransactionalActionStack"/> to use for this view model.</param>
         protected DirtiableEditableViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
@@ -32,7 +32,7 @@ namespace SiliconStudio.Presentation.ViewModel
         public bool IsDirty { get { return isDirty; } protected set { var oldValue = isDirty; SetValueUncancellable(ref isDirty, value); OnDirtyFlagSet(oldValue, value); } }
 
         /// <inheritdoc/>
-        public override IEnumerable<IDirtiableViewModel> Dirtiables { get { return this.Yield(); } }
+        public override IEnumerable<IDirtiableViewModel> Dirtiables => this.Yield();
 
         /// <inheritdoc/>
         public event EventHandler<DirtinessUpdatedEventArgs> DirtinessUpdated;
@@ -47,15 +47,15 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <inheritdoc/>
         public virtual void RegisterActionItem(ViewModelActionItem actionItem)
         {
-            if (changes.Contains(actionItem)) throw new ArgumentException(@"The given action item is already registered.", "actionItem");
+            if (changes.Contains(actionItem)) throw new ArgumentException(@"The given action item is already registered.", nameof(actionItem));
             changes.Add(actionItem);
         }
 
         /// <inheritdoc/>
         public virtual void DiscardActionItem(ViewModelActionItem actionItem)
         {
-            bool removed = changes.Remove(actionItem);
-            if (!removed) throw new ArgumentException(@"The given action item was not registered.", "actionItem");
+            var removed = changes.Remove(actionItem);
+            if (!removed) throw new ArgumentException(@"The given action item was not registered.", nameof(actionItem));
         }
 
         /// <inheritdoc/>
@@ -70,7 +70,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <inheritdoc/>
         public void RegisterDirtiableDependency(IDirtiableViewModel dirtiable)
         {
-            if (dependencies.Contains(dirtiable)) throw new ArgumentException(@"The given dirtiable object is already registered as a dependency.", "dirtiable");
+            if (dependencies.Contains(dirtiable)) throw new ArgumentException(@"The given dirtiable object is already registered as a dependency.", nameof(dirtiable));
             dependencies.Add(dirtiable);
             dirtiable.DirtinessUpdated += DependencyDirtinessUpdated;
         }
@@ -79,8 +79,8 @@ namespace SiliconStudio.Presentation.ViewModel
         public void UnregisterDirtiableDependency(IDirtiableViewModel dirtiable)
         {
             dirtiable.DirtinessUpdated -= DependencyDirtinessUpdated;
-            bool removed = dependencies.Remove(dirtiable);
-            if (!removed) throw new ArgumentException(@"The given dirtiable object was not registered as a dependency.", "dirtiable");
+            var removed = dependencies.Remove(dirtiable);
+            if (!removed) throw new ArgumentException(@"The given dirtiable object was not registered as a dependency.", nameof(dirtiable));
         }
 
         protected virtual void OnDirtyFlagSet(bool oldValue, bool newValue)
@@ -95,13 +95,9 @@ namespace SiliconStudio.Presentation.ViewModel
         
         private void UpdateDirtiness()
         {
-            bool previousValue = IsDirty;
+            var previousValue = IsDirty;
             IsDirty = changes.Any(x => x.IsSaved != x.IsDone) || dependencies.Any(x => x.IsDirty);
-            var handler = DirtinessUpdated;
-            if (handler != null)
-            {
-                handler(this, new DirtinessUpdatedEventArgs(previousValue, IsDirty));
-            }
+            DirtinessUpdated?.Invoke(this, new DirtinessUpdatedEventArgs(previousValue, IsDirty));
         }
     }
 }
