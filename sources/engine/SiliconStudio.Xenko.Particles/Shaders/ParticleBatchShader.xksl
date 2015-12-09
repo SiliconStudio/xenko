@@ -32,6 +32,8 @@ class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
         }
 
         finalColor.rgb *= ColorIntensity;
+        // Test - for dynamic shaders
+        // finalColor.b *= 200;
         finalColor.a   *= AlphaAdditive;
 
         return finalColor;

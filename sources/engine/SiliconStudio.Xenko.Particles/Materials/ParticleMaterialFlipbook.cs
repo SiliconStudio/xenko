@@ -131,12 +131,18 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
         #endregion
 
-        public override void Setup(GraphicsDevice graphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix, Color4 color)
+        public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
-            PrepareEffect(graphicsDevice, variation);
+            PrepareEffect(graphicsDevice, context);
+
+            SetParameter(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
 
             // This should be CB0 - view/proj matrices don't change per material
-            SetParameter(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
+            SetParameter(ParticleBaseKeys.HasTexture, texture0 != null);
+
+            SetParameter(ParticleBaseKeys.ColorIsSRgb, graphicsDevice.ColorSpace == ColorSpace.Linear);
+
+
 
             // Texture swizzle - if the texture is grayscale, sample it like Tex.rrrr rather than Tex.rgba
             TextureSwizzle = (texture0?.Format == PixelFormat.R32_Float ||

@@ -73,9 +73,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("Color Random Seed")]
         public UInt32 ColorRandomOffset { get; set; } = 1;
         
-        public override void Setup(GraphicsDevice graphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix, Color4 color)
+        public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
-            PrepareEffect(graphicsDevice, variation);
+            PrepareEffect(graphicsDevice, context);
 
             // This should be CB0 - view/proj matrices don't change per material
             SetParameter(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);

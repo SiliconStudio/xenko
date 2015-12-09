@@ -9,6 +9,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles
 {
@@ -97,7 +98,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// Draws the particles
         /// </summary>
-        public void Draw(ParticleBatch particleBatch, Color4 color)
+        public void Draw(ParticleBatch particleBatch, RenderContext context, Color4 color)
         {
             // TODO Use color4 tint
 
@@ -105,7 +106,7 @@ namespace SiliconStudio.Xenko.Particles
             {
                 if (particleEmitter.Enabled)
                 {
-                    particleBatch.Draw(particleEmitter, color);
+                    particleBatch.Draw(particleEmitter, context, color);
                 }
             }
         }
