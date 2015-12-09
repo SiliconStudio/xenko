@@ -82,7 +82,7 @@
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
     <Compile Include="Engine\Design\EntityChildPropertyResolver.cs" />
     <Compile Include="Engine\Design\ExecutionMode.cs" />
-    <Compile Include="Engine\IGamePlugin.cs" />
+    <Compile Include="Engine\GameEventArgs.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />

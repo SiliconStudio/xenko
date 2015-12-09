@@ -21,19 +21,20 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="BlockingBufferStream.cs" />
-    <Compile Include="KeySimulationRequest.cs" />
-    <Compile Include="LogRequest.cs" />
+    <Compile Include="Requests\KeySimulationRequest.cs" />
+    <Compile Include="Requests\LogRequest.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="ScreenShotPayload.cs" />
-    <Compile Include="ScreenshotRequest.cs" />
-    <Compile Include="ScreenshotStored.cs" />
-    <Compile Include="StatusMessageRequest.cs" />
-    <Compile Include="TapSimulationRequest.cs" />
-    <Compile Include="TestClient.cs" />
-    <Compile Include="TestEndedRequest.cs" />
+    <Compile Include="Requests\ScreenShotPayload.cs" />
+    <Compile Include="Requests\ScreenshotRequest.cs" />
+    <Compile Include="Requests\ScreenshotStored.cs" />
+    <Compile Include="Requests\StatusMessageRequest.cs" />
+    <Compile Include="Requests\TapSimulationRequest.cs" />
+    <Compile Include="Requests\TestRequestBase.cs" />
+    <Compile Include="GameTestingSystem.cs" />
+    <Compile Include="Requests\TestEndedRequest.cs" />
     <Compile Include="GameTest.cs" />
-    <Compile Include="TestRegistrationRequest.cs" />
+    <Compile Include="Requests\TestRegistrationRequest.cs" />
     <Compile Include="TestResultImage.cs" />
   </ItemGroup>
   <ItemGroup>

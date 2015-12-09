@@ -31,12 +31,21 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     public class Game : GameBase
     {
+        /// <summary>
+        /// Static event that will be fired when a game is initialized
+        /// </summary>
+        public static event EventHandler<GameEventArgs> GameStarted;
+
+        /// <summary>
+        /// Static event that will be fired when a game is destroyed
+        /// </summary>
+        public static event EventHandler<GameEventArgs> GameDestroyed;
+
         private readonly GameFontSystem gameFontSystem;
 
         private readonly LogListener logListener;
-        private GameSettings gameSettings; // for easy transfer from PrepareContext to Initialize
 
-        public static List<IGamePlugin> GamePlugins = new List<IGamePlugin>();
+        public GameSettings Settings { get; private set; } // for easy transfer from PrepareContext to Initialize
 
         /// <summary>
         /// Gets the graphics device manager.
@@ -189,10 +198,7 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void Destroy()
         {
-            foreach (var gamePlugin in GamePlugins)
-            {
-                gamePlugin.Destroy(this);
-            }
+            OnGameDestroyed(new GameEventArgs { Game = this });
 
             base.Destroy();
             
@@ -211,14 +217,14 @@ namespace SiliconStudio.Xenko.Engine
 
                 if (Asset.Exists(GameSettings.AssetUrl))
                 {
-                    gameSettings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
+                    Settings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
 
                     // Set ShaderProfile even if AutoLoadDefaultSettings is false (because that is what shaders in effect logs are compiled against, even if actual instantiated profile is different)
-                    if (gameSettings.DefaultGraphicsProfileUsed > 0)
+                    if (Settings.DefaultGraphicsProfileUsed > 0)
                     {
                         var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
                         if (!deviceManager.ShaderProfile.HasValue)
-                            deviceManager.ShaderProfile = gameSettings.DefaultGraphicsProfileUsed;
+                            deviceManager.ShaderProfile = Settings.DefaultGraphicsProfileUsed;
                     }
                 }
 
@@ -226,14 +232,14 @@ namespace SiliconStudio.Xenko.Engine
                 if (AutoLoadDefaultSettings)
                 {
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                    if (gameSettings.DefaultGraphicsProfileUsed > 0)
+                    if (Settings.DefaultGraphicsProfileUsed > 0)
                     {
-                        deviceManager.PreferredGraphicsProfile = new[] { gameSettings.DefaultGraphicsProfileUsed };
+                        deviceManager.PreferredGraphicsProfile = new[] { Settings.DefaultGraphicsProfileUsed };
                     }
-                    if (gameSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = gameSettings.DefaultBackBufferWidth;
-                    if (gameSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = gameSettings.DefaultBackBufferHeight;
-                    deviceManager.PreferredColorSpace = gameSettings.ColorSpace;
-                    SceneSystem.InitialSceneUrl = gameSettings.DefaultSceneUrl;
+                    if (Settings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = Settings.DefaultBackBufferWidth;
+                    if (Settings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = Settings.DefaultBackBufferHeight;
+                    deviceManager.PreferredColorSpace = Settings.ColorSpace;
+                    SceneSystem.InitialSceneUrl = Settings.DefaultSceneUrl;
                 }
             }
         }
@@ -274,9 +280,9 @@ namespace SiliconStudio.Xenko.Engine
             EffectSystem = new EffectSystem(Services);
 
             // If requested in game settings, compile effects remotely and/or notify new shader requests
-            if (gameSettings != null)
+            if (Settings != null)
             {
-                EffectSystem.Compiler = EffectSystem.CreateEffectCompiler(EffectSystem, gameSettings.PackageId, gameSettings.EffectCompilation, gameSettings.RecordUsedEffects);
+                EffectSystem.Compiler = EffectSystem.CreateEffectCompiler(EffectSystem, Settings.PackageId, Settings.EffectCompilation, Settings.RecordUsedEffects);
             }
 
             GameSystems.Add(EffectSystem);
@@ -291,13 +297,7 @@ namespace SiliconStudio.Xenko.Engine
             // enable multi-touch by default
             Input.MultiTouchEnabled = true;
 
-            foreach (var gamePlugin in GamePlugins)
-            {
-                if (gameSettings != null)
-                {
-                    gamePlugin.Initialize(this, gameSettings.PackageName);
-                }
-            }
+            OnGameStarted(new GameEventArgs { Game = this });
         }
 
         internal static void InitializeAssetDatabase()
@@ -359,6 +359,16 @@ namespace SiliconStudio.Xenko.Engine
         protected virtual LogListener GetLogListener()
         {
             return new ConsoleLogListener();
+        }
+
+        private static void OnGameStarted(GameEventArgs e)
+        {
+            GameStarted?.Invoke(null, e);
+        }
+
+        private static void OnGameDestroyed(GameEventArgs e)
+        {
+            GameDestroyed?.Invoke(null, e);
         }
     }
 }

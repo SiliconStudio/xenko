@@ -1,3 +1,6 @@
+// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.Diagnostics;
@@ -8,9 +11,14 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Testing.Requests;
 
 namespace SiliconStudio.Xenko.Testing
 {
+    /// <summary>
+    /// This class is to be consumed by Unit tests, see samples/Tests/Tests.sln
+    /// It will send requests to the router which in turn will route them to the running game
+    /// </summary>
     public class GameTest : IDisposable
     {
         private readonly SocketMessageLayer socketMessageLayer;
@@ -19,7 +27,7 @@ namespace SiliconStudio.Xenko.Testing
         private readonly string platformName;
         private int screenShots;
 
-        private AutoResetEvent screenshotEvent = new AutoResetEvent(false);
+        private readonly AutoResetEvent screenshotEvent = new AutoResetEvent(false);
 
         public GameTest(string gamePath, PlatformType platform)
         {

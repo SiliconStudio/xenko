@@ -1,35 +1,26 @@
-﻿using System.Threading.Tasks;
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Testing
 {
-    class TestingPlugin : IGamePlugin
-    {
-        public static TestClient TestClient;
-
-        public void Initialize(Game game, string gameName)
-        {
-            TestClient = new TestClient(game.Services);
-            var foo = TestClient.StartClient(game, gameName);
-        }
-
-        public void Destroy(Game game)
-        {
-        }
-    }
-
+    //This is how we inject the assembly to run automatically at game start, paired with Xenko.targets and the msbuild property SiliconStudioAutoTesting
     internal class Module
     {
-        public static TestClient TestClient;
+        public static GameTestingSystem TestClient;
 
         [ModuleInitializer]
         public static void Initialize()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            if (System.AppDomain.CurrentDomain.FriendlyName.StartsWith("SiliconStudio.Assets.CompilerApp")) return;
-#endif
-            Game.GamePlugins.Add(new TestingPlugin());
+            Game.GameStarted += (sender, args) =>
+            {              
+                var game = args.Game;
+                TestClient = new GameTestingSystem(game.Services);
+                TestClient.StartClient(game);
+            };
         }
     }
 }

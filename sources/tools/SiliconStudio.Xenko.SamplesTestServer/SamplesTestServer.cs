@@ -8,6 +8,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Testing.Requests;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
 {

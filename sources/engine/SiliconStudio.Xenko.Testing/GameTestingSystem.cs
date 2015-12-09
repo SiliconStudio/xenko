@@ -1,10 +1,14 @@
-﻿using SiliconStudio.Core;
+﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Network;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Input.Extensions;
+using SiliconStudio.Xenko.Testing.Requests;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
@@ -12,43 +16,26 @@ using System.Threading.Tasks;
 
 namespace SiliconStudio.Xenko.Testing
 {
-    public class TestClient : GameSystemBase
+    internal class GameTestingSystem : GameSystemBase
     {
-        protected void SaveTexture(Texture texture, string filename)
-        {
-            using (var image = texture.GetDataAsImage())
-            {
-                //Send to server and store to disk
-                var imageData = new TestResultImage { CurrentVersion = "1.0", Frame = "0", Image = image, TestName = "" };
-                var payload = new ScreenShotPayload { FileName = filename };
-                var resultFileStream = new MemoryStream();
-                var writer = new BinaryWriter(resultFileStream);
-                imageData.Write(writer);
-
-                Task.Run(() =>
-                {
-                    payload.Data = resultFileStream.ToArray();
-                    payload.Size = payload.Data.Length;
-                    socketMessageLayer.Send(payload).Wait();
-                    resultFileStream.Dispose();
-                });
-            }
-        }
-
-        private static void Quit(Game game)
-        {
-            game.Exit();
-
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            Android.OS.Process.KillProcess(Android.OS.Process.MyPid());
-#endif
-        }
-
+        private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>();
         private SocketMessageLayer socketMessageLayer;
 
-        public async Task StartClient(Game game, string gameName)
+        public GameTestingSystem(IServiceRegistry registry) : base(registry)
         {
-            game.GameSystems.Add(this);
+            DrawOrder = int.MaxValue;
+            Enabled = true;
+            Visible = true;
+        }
+
+        public async Task StartClient(Game game)
+        {
+            //Quit after 1 minute anyway!
+            Task.Run(async () =>
+            {
+                await Task.Delay(60000);
+                Quit(game);
+            });
 
             var url = $"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe";
 
@@ -101,23 +88,12 @@ namespace SiliconStudio.Xenko.Testing
 
             Task.Run(() => socketMessageLayer.MessageLoop());
 
-            await socketMessageLayer.Send(new TestRegistrationRequest { GameAssembly = gameName, Tester = false, Platform = (int)Platform.Type });
-
-            //Quit after 1 minute anyway!
-            Task.Run(async () =>
+            drawActions.Enqueue(async () =>
             {
-                await Task.Delay(60000);
-                Quit(game);
+                await socketMessageLayer.Send(new TestRegistrationRequest { GameAssembly = game.Settings.PackageName, Tester = false, Platform = (int)Platform.Type });
             });
-        }
 
-        private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>();
-
-        public TestClient(IServiceRegistry registry) : base(registry)
-        {
-            DrawOrder = int.MaxValue;
-            Enabled = true;
-            Visible = true;
+            game.GameSystems.Add(this);          
         }
 
         public override void Draw(GameTime gameTime)
@@ -128,5 +104,35 @@ namespace SiliconStudio.Xenko.Testing
                 action();
             }
         }
+
+        private void SaveTexture(Texture texture, string filename)
+        {
+            using (var image = texture.GetDataAsImage())
+            {
+                //Send to server and store to disk
+                var imageData = new TestResultImage { CurrentVersion = "1.0", Frame = "0", Image = image, TestName = "" };
+                var payload = new ScreenShotPayload { FileName = filename };
+                var resultFileStream = new MemoryStream();
+                var writer = new BinaryWriter(resultFileStream);
+                imageData.Write(writer);
+
+                Task.Run(() =>
+                {
+                    payload.Data = resultFileStream.ToArray();
+                    payload.Size = payload.Data.Length;
+                    socketMessageLayer.Send(payload).Wait();
+                    resultFileStream.Dispose();
+                });
+            }
+        }
+
+        private static void Quit(Game game)
+        {
+            game.Exit();
+
+#if SILICONSTUDIO_PLATFORM_ANDROID
+            Android.OS.Process.KillProcess(Android.OS.Process.MyPid());
+#endif
+        }  
     }
 }
