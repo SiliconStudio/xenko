@@ -45,14 +45,14 @@ namespace SiliconStudio.Xenko.Starter
             var xenkoGameController = new XenkoGameController { View = xenkoGameView };
 
             // create the game context
-            var gameContext = new GameContext(MainWindow, xenkoGameView, xenkoGameController);
+            var gameContext = new GameContextiOS(new iOSWindow(MainWindow, xenkoGameView, xenkoGameController));
 
             // Force fullscreen
             UIApplication.SharedApplication.SetStatusBarHidden(true, false);
 
             // Added UINavigationController to switch between UIViewController because the game is killed if the FinishedLaunching (in the AppDelegate) method doesn't return true in 10 sec.
             var navigationController = new UINavigationController {NavigationBarHidden = true};
-            navigationController.PushViewController(gameContext.GameViewController, false);
+            navigationController.PushViewController(gameContext.Control.GameViewController, false);
             MainWindow.RootViewController = navigationController;
 
             // launch the main window

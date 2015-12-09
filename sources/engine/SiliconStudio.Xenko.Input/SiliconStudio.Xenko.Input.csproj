@@ -18,6 +18,10 @@
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Condition="$(SiliconStudioUI.Contains('SDL'))" Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -69,15 +73,19 @@
     <Compile Include="InputManager.Android.cs" />
     <Compile Include="InputManager.cs" />
     <Compile Include="InputManager.iOS.cs" />
-    <Compile Include="InputManager.OpenTK.cs" />
+    <Compile Include="InputManager.SDL.cs" />
+    <Compile Include="InputManager.Windows.cs" />
     <Compile Include="InputManager.Windows.Desktop.cs" />
     <Compile Include="InputManager.Windows.DirectInput.cs" />
+    <Compile Include="InputManager.Windows.OpenTK.cs" />
     <Compile Include="InputManager.Windows.RawInput.Keyboard.cs" />
-    <Compile Include="InputManager.Windows.WindowsRuntime.cs" />
-    <Compile Include="InputManager.Windows.WindowsRuntime.Keys.cs" />
+    <Compile Include="InputManager.Windows.Store.cs" />
+    <Compile Include="InputManager.Windows.Store.Keys.cs" />
+    <Compile Include="InputManager.Windows.WPF.cs" />
     <Compile Include="InputManager.Windows.XInput.cs" />
     <Compile Include="InputManagerBase.cs" />
     <Compile Include="InputManagerExtensions.cs" />
+    <Compile Include="InputManagerFactory.cs" />
     <Compile Include="IVirtualButton.cs" />
     <Compile Include="KeyEvent.cs" />
     <Compile Include="KeyEventType.cs" />

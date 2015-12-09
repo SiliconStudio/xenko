@@ -21,9 +21,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-
 using System;
-
 using Windows.UI.Xaml.Controls;
 
 namespace SiliconStudio.Xenko.Games
@@ -31,12 +29,11 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
     /// </summary>
-    public partial class GameContext 
+    public partial class GameContextWindowsRuntime : GameContextWindows<SwapChainPanel>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameContext" /> class to run a Game on WinRT.
-        /// </summary>
-        public GameContext()
+        /// <inheritDoc/>
+        public GameContextWindowsRuntime(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
+            : base (control ?? new SwapChainPanel(), requestedWidth, requestedHeight)
         {
             ContextType = AppContextType.WindowsRuntime;
         }

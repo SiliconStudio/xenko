@@ -169,8 +169,8 @@ namespace SiliconStudio.Xenko.Engine
             if (logListener != null)
                 GlobalLogger.GlobalMessageLogged += logListener;
 
-            // Create and register all core services
-            Input = new InputManager(Services);
+            // Create all core services, except Input which is created during `Initialize'.
+            // Registration takes place in `Initialize'.
             Script = new ScriptSystem(Services);
             SceneSystem = new SceneSystem(Services);
             Audio = new AudioSystem(Services);
@@ -179,38 +179,10 @@ namespace SiliconStudio.Xenko.Engine
             SpriteAnimation = new SpriteAnimationSystem(Services);
             ProfilerSystem = new GameProfilingSystem(Services);
 
-            // ---------------------------------------------------------
-            // Add common GameSystems - Adding order is important 
-            // (Unless overriden by gameSystem.UpdateOrder)
-            // ---------------------------------------------------------
-
-            // Add the input manager
-            GameSystems.Add(Input);
-
-            // Add the scheduler system
-            // - Must be after Input, so that scripts are able to get latest input
-            // - Must be before Entities/Camera/Audio/UI, so that scripts can apply 
-            // changes in the same frame they will be applied
-            GameSystems.Add(Script);
-
-            // Add the UI System
-            GameSystems.Add(UI);
-
-            // Add the Audio System
-            GameSystems.Add(Audio);
-
-            // Add the Font system
-            GameSystems.Add(gameFontSystem);
-
-            //Add the sprite animation System
-            GameSystems.Add(SpriteAnimation);
-
             Asset.Serializer.LowLevelSerializerSelector = ParameterContainerExtensions.DefaultSceneSerializerSelector;
 
             // Creates the graphics device manager
             GraphicsDeviceManager = new GraphicsDeviceManager(this);
-
-            GameSystems.Add(ProfilerSystem);
 
             AutoLoadDefaultSettings = true;
         }
@@ -269,6 +241,35 @@ namespace SiliconStudio.Xenko.Engine
         protected override void Initialize()
         {
             base.Initialize();
+
+            // ---------------------------------------------------------
+            // Add common GameSystems - Adding order is important
+            // (Unless overriden by gameSystem.UpdateOrder)
+            // ---------------------------------------------------------
+
+            // Add the input manager
+            Input = InputManagerFactory.NewInputManager(Services, Context);
+            GameSystems.Add(Input);
+
+            // Add the scheduler system
+            // - Must be after Input, so that scripts are able to get latest input
+            // - Must be before Entities/Camera/Audio/UI, so that scripts can apply
+            // changes in the same frame they will be applied
+            GameSystems.Add(Script);
+
+            // Add the UI System
+            GameSystems.Add(UI);
+
+            // Add the Audio System
+            GameSystems.Add(Audio);
+
+            // Add the Font system
+            GameSystems.Add(gameFontSystem);
+
+            //Add the sprite animation System
+            GameSystems.Add(SpriteAnimation);
+
+            GameSystems.Add(ProfilerSystem);
 
             EffectSystem = new EffectSystem(Services);
 

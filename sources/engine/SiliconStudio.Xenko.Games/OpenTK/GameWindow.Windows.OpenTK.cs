@@ -1,6 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Diagnostics;
 using System.Threading;
@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowOpenTK : GameWindow
+    internal class GameWindowOpenTK : GameWindow<OpenTK.GameWindow>
     {
         private bool isMouseVisible;
 
@@ -71,16 +71,9 @@ namespace SiliconStudio.Xenko.Games
             // Desktop doesn't have orientation (unless on Windows 8?)
         }
 
-        internal override bool CanHandle(GameContext gameContext)
+        protected override void Initialize(GameContext<OpenTK.GameWindow> gameContext)
         {
-            return gameContext.ContextType == AppContextType.DesktopOpenTK;
-        }
-
-        internal override void Initialize(GameContext gameContext)
-        {
-            this.GameContext = gameContext;
-
-            gameForm = (OpenTK.GameWindow)gameContext.Control;
+            gameForm = gameContext.Control;
             nativeWindow = new WindowHandle(AppContextType.DesktopOpenTK, gameForm);
 
             // Setup the initial size of the window
