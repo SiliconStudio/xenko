@@ -27,6 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private readonly EntityAssetBase newBaseAsset;
         private readonly List<AssetBasePart> newBaseParts;
         private readonly HashSet<Guid> entitiesInHierarchy;
+        private readonly List<Guid> rootEntitiesToAdd;
         private MergeResult result;
 
         /// <summary>
@@ -53,6 +54,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             entitiesRemovedInNewBase = new HashSet<Guid>();
             entitiesToRemoveFromNew = new HashSet<Guid>();
             entitiesInHierarchy = new HashSet<Guid>();
+            rootEntitiesToAdd = new List<Guid>();
         }
 
         /// <summary>
@@ -133,6 +135,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     // Add this to the list of entities from newAsset
                     // Specific to the newEntities, GroupPartKey.PartInstanceId is always Guid.Empty
                     newEntities.Add(new GroupPartKey(Guid.Empty, newId), item);
+
+                    // If the entity is coming from a part and is from root Entities, we need to add it to the rootEntities by default
+                    if (basePartInstanceId.HasValue && entityFromNewBase.Value.Hierarchy.RootEntities.Contains(baseId))
+                    {
+                        rootEntitiesToAdd.Add(newId);
+                    }
                 }
             }
 
@@ -295,6 +303,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             // Add known entities in hierarchy
             var newHierarchy = newAsset.Hierarchy;
+
+            // Add entities coming from parts that are roots
+            newHierarchy.RootEntities.AddRange(rootEntitiesToAdd);
+
             foreach (var rootEntity in newHierarchy.RootEntities)
             {
                 entitiesInHierarchy.Add(rootEntity);
@@ -502,7 +514,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     continue;
                 }
 
-                var remap = new EntityRemapEntry(entityDesign);
+                var remap = new EntityRemapEntry(entityDesign, hierarchyData);
                 // We are removing children from transform component for the diff
                 remap.PushChildren();
 
@@ -513,11 +525,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private class EntityRemapEntry
         {
 
-            public EntityRemapEntry(EntityDesign entityDesign)
+            public EntityRemapEntry(EntityDesign entityDesign, EntityHierarchyData hierarchy)
             {
+                Hierarchy = hierarchy;
                 if (entityDesign == null) throw new ArgumentNullException(nameof(entityDesign));
                 EntityDesign = entityDesign;
             }
+
+            public EntityHierarchyData Hierarchy { get; }
 
             public readonly EntityDesign EntityDesign;
 
