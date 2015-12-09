@@ -40,35 +40,111 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMemberIgnore]
         public ParticleEffectVariation MandatoryVariation { get; protected set; } = ParticleEffectVariation.None;
 
+        // Parameters should be divided into several groups later.
+        // CB0 - Parameters like camera position, viewProjMatrix, Screen size, FOV, etc. which persist for all materials/emitters in the same stage
+        // CB1 - Material attributes which persist for all batched together emitters
+        // CB2 - (Maybe) Per-emitter attributes.
+
         /// <summary>
-        /// Parameters should be divided into several groups later.
-        /// CB0 - Parameters like camera position, viewProjMatrix, Screen size, FOV, etc. which persist for all materials/emitters in the same stage
-        /// CB1 - Material attributes which persist for all batched together emitters
-        /// CB2 - (Maybe) Per-emitter attributes.
+        /// Shader parameters collection for the effect
         /// </summary>
         [DataMemberIgnore]
-        private readonly ParameterCollection Parameters = new ParameterCollection();
+        private readonly ParameterCollection parameters = new ParameterCollection();
 
-        protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; } // Will move to effect instance
+        [DataMemberIgnore]
+        private EffectParameterCollectionGroup parameterCollectionGroup;
+
+        [DataMemberIgnore]
+        private List<ParameterCollection> parameterCollections;
 
         /// <summary>
-        /// Setups the current material using the graphics device.
+        /// Sets the name of the effect or shader which the material will use
         /// </summary>
-        /// <param name="GraphicsDevice">Graphics device to setup</param>
-        /// <param name="viewMatrix">The camera's View matrix</param>
-        /// <param name="projMatrix">The camera's Projection matrix</param>
-        public abstract void Setup(GraphicsDevice GraphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color);
-
-        public abstract void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int remainingCapacity, ParticlePool pool, ParticleEmitter emitter = null);
+        [DataMemberIgnore]
+        protected abstract string EffectName { get; set; }
 
         [DataMemberIgnore]
         private Effect effect = null;
 
-        private List<ParameterCollection> parameterCollections;
+        [DataMemberIgnore]
+        private DefaultEffectInstance effectInstance;
 
-        private const string EffectName = "ParticleBatch";
+        [DataMemberIgnore]
+        private DynamicEffectCompiler effectCompiler;
 
+        /// <summary>
+        /// True if <see cref="ParticleMaterialBase.InitializeCore"/> has been called
+        /// </summary>
+        [DataMemberIgnore]
         private bool isInitialized = false;
+
+
+        /// <summary>
+        /// Setups the current material using the graphics device.
+        /// </summary>
+        /// <param name="graphicsDevice">Graphics device to setup</param>
+        /// <param name="viewMatrix">The camera's View matrix</param>
+        /// <param name="projMatrix">The camera's Projection matrix</param>
+        public virtual void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
+        {
+            InitializeCore(context);
+
+            // Setup graphics device - culling, blend states and depth testing
+
+            if (FaceCulling == ParticleMaterialCulling.CullNone) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
+            if (FaceCulling == ParticleMaterialCulling.CullBack) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullBack);
+            if (FaceCulling == ParticleMaterialCulling.CullFront) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullFront);
+
+            graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
+
+            graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.DepthRead);
+
+
+            // Setup the parameters
+
+            SetParameter(ParticleBaseKeys.ColorIsSRgb, graphicsDevice.ColorSpace == ColorSpace.Linear);
+
+            // This is correct. We invert the value here to reduce calculations on the shader side later
+            SetParameter(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
+
+            // Scale up the color intensity - might depend on the eye adaptation later
+            SetParameter(ParticleBaseKeys.ColorIntensity, ColorIntensity);
+            SetParameter(ParticleBaseKeys.ColorScaleMin, color);
+            SetParameter(ParticleBaseKeys.ColorScaleMax, color);
+
+            ///////////////
+            // This should be CB0 - view/proj matrices don't change per material
+            SetParameter(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
+
+        }
+
+        public virtual unsafe void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool, ParticleEmitter emitter = null)
+        {
+            var lifeField = pool.GetField(ParticleFields.RemainingLife);
+            var randField = pool.GetField(ParticleFields.RandomSeed);
+
+            if (!randField.IsValid() || !lifeField.IsValid())
+                return;
+
+            var colorField = pool.GetField(ParticleFields.Color);
+            var hasColorField = colorField.IsValid();
+
+            var whiteColor = new Color4(1, 1, 1, 1);
+
+            // TODO Fetch sorted particles
+            foreach (var particle in pool)
+            {
+                vtxBuilder.SetColorForParticle(hasColorField ? particle[colorField] : (IntPtr)(&whiteColor));
+
+                vtxBuilder.SetLifetimeForParticle(particle[lifeField]);
+
+                vtxBuilder.SetRandomSeedForParticle(particle[randField]);
+
+                vtxBuilder.NextParticle();
+            }
+
+            vtxBuilder.RestartBuffer();
+        }
 
         private void InitializeCore(RenderContext context)
         {
@@ -78,66 +154,36 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
-            parameterCollections = new List<ParameterCollection> { Parameters };
+            parameterCollections = new List<ParameterCollection> { parameters };
 
             // Setup the effect compiler
-            EffectInstance = new DefaultEffectInstance(parameterCollections);
+            effectInstance = new DefaultEffectInstance(parameterCollections);
             effectCompiler = new DynamicEffectCompiler(context.Services, EffectName, -1); // Image effects are compiled with higher priority
-
         }
 
-        protected void PrepareEffect(GraphicsDevice graphicsDevice, RenderContext context)
-        {
-            InitializeCore(context);
-
-            if (FaceCulling == ParticleMaterialCulling.CullNone)   graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
-            if (FaceCulling == ParticleMaterialCulling.CullBack)   graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullBack);
-            if (FaceCulling == ParticleMaterialCulling.CullFront)  graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullFront);
-
-            graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
-
-            graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.DepthRead);
-                            
-            // TODO Maybe replicate ResourceContext and have all vtx, idx buffers and binding to be on the material or shapebuilder side
-            // graphicsDevice.SetVertexArrayObject(ResourceContext.VertexArrayObject);
-
-            // This is correct. We invert the value to reduce calculations on the shader side.
-            Parameters.Set(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
-
-            // Scale up the color intensity - might depend on the eye adaptation later
-            Parameters.Set(ParticleBaseKeys.ColorIntensity, ColorIntensity);
-        }
-
-        public void SetParameter<T>(ParameterKey<T> key, T value) => Parameters.Set(key, value);
+        public void SetParameter<T>(ParameterKey<T> key, T value) => parameters.Set(key, value);
 
 
         protected void ApplyEffect(GraphicsDevice graphicsDevice)
         {
             UpdateEffect(graphicsDevice);
 
-            effect.Apply(graphicsDevice, ParameterCollectionGroup, applyEffectStates: false);
+            effect.Apply(graphicsDevice, parameterCollectionGroup, applyEffectStates: false);
         }
-
-        #region Dynamic effect
-        protected DefaultEffectInstance EffectInstance;
-
-        private DynamicEffectCompiler effectCompiler;
 
         private void UpdateEffect(GraphicsDevice graphicsDevice)
         {
-            effectCompiler.Update(EffectInstance, null);
+            effectCompiler.Update(effectInstance, null);
 
-            effect = EffectInstance.Effect;
+            effect = effectInstance.Effect;
 
             // Get or create parameter collection
-            if (ParameterCollectionGroup == null || ParameterCollectionGroup.Effect != effect)
+            if (parameterCollectionGroup == null || parameterCollectionGroup.Effect != effect)
             {
                 // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
-                ParameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, parameterCollections);
+                parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, parameterCollections);
             }
         }
-
-        #endregion
 
     }
 }

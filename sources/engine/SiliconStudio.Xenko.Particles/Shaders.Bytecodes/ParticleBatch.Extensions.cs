@@ -20,6 +20,9 @@ namespace SiliconStudio.Xenko.Particles
 
     public partial class ParticleBatch
     {
+        // TODO We need static bytecode to initialize the ParticleBatch, but they are not actually being used
+        // After the ParticleBatch has been refactored to not use BatchBase, we can remove the static bytecode as well
+
         private const int MaxEffectVariations =
             (int)(ParticleEffectVariation.IsSrgb |
                   ParticleEffectVariation.HasTex0 |

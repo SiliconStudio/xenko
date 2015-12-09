@@ -12,6 +12,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
     [Display("StaticTexture")]
     public class ParticleMaterialTexture : ParticleMaterialBase
     {
+        [DataMemberIgnore]
+        protected override string EffectName { get; set; } = "ParticleBatch";
         private Texture texture0 = null;
 
         [DataMember(100)]
@@ -75,11 +77,14 @@ namespace SiliconStudio.Xenko.Particles.Materials
         
         public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
-            PrepareEffect(graphicsDevice, context);
+            base.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
 
-            // This should be CB0 - view/proj matrices don't change per material
-            SetParameter(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
+            ///////////////
+            // Shader permutations parameters - shaders will change dynamically based on those parameters
+            SetParameter(ParticleBaseKeys.HasTexture, texture0 != null);
 
+
+            ///////////////
             // Texture swizzle - fi the texture is grayscale, sample it like Tex.rrrr rather than Tex.rgba
             TextureSwizzle = (texture0?.Format == PixelFormat.R32_Float ||
                               texture0?.Format == PixelFormat.A8_UNorm ||
@@ -101,49 +106,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
             SetParameter(TexturingKeys.Sampler0, sampler0);
 
             ApplyEffect(graphicsDevice);
-        }
-
-        // TODO Make some sort of accessor or enumerator around ParticlePool which can also sort particles
-        public unsafe override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool, ParticleEmitter emitter = null)
-        {
-            var vtxPerParticle = vtxBuilder.VerticesPerParticle;
-            var numberOfParticles = Math.Min(maxVertices / vtxPerParticle, pool.LivingParticles);
-            if (numberOfParticles <= 0)
-                return;
-
-            var lifeField  = pool.GetField(ParticleFields.RemainingLife);
-            var randField  = pool.GetField(ParticleFields.RandomSeed);
-
-            if (!randField.IsValid() || !lifeField.IsValid())
-                return;
-
-            var colorField = pool.GetField(ParticleFields.Color);
-            var hasColorField = colorField.IsValid();
-
-            var whiteColor = new Color4(1, 1, 1, 1);
-
-            var renderedParticles = 0;
-
-            // TODO Fetch sorted particles
-            foreach (var particle in pool)
-            {
-                vtxBuilder.SetColorForParticle(hasColorField ? particle[colorField] : (IntPtr)(&whiteColor));
-
-                vtxBuilder.SetLifetimeForParticle(particle[lifeField]);
-
-                vtxBuilder.SetRandomSeedForParticle(particle[randField]);
-
-                vtxBuilder.NextParticle();
-
-                maxVertices -= vtxPerParticle;
-
-                if (++renderedParticles >= numberOfParticles)
-                {
-                    return;
-                }
-            }
-
-
         }
 
     }
