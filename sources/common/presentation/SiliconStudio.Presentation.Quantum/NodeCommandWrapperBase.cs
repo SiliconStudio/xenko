@@ -11,9 +11,9 @@ using SiliconStudio.Quantum.Commands;
 namespace SiliconStudio.Presentation.Quantum
 {
     /// <summary>
-    /// A base class to wrap one or multiple <see cref="INodeCommand"/> instances into a <see cref="CancellableCommand"/>.
+    /// A base class to wrap one or multiple <see cref="INodeCommand"/> instances into a <see cref="CancellableCommandBase"/>.
     /// </summary>
-    public abstract class NodeCommandWrapperBase : CancellableCommand, INodeCommandWrapper
+    public abstract class NodeCommandWrapperBase : CancellableCommandBase, INodeCommandWrapper
     {
         /// <summary>
         /// Gets the how to combine a set of <see cref="NodeCommandWrapperBase"/> in a <see cref="CombinedObservableNode"/>
@@ -26,7 +26,7 @@ namespace SiliconStudio.Presentation.Quantum
         public string ObservableNodePath { get; set; }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CancellableCommand"/> class.
+        /// Initializes a new instance of the <see cref="NodeCommandWrapperBase"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IActionStack"/> to use for this view model.</param>
         /// <param name="dirtiables">The <see cref="IDirtiable"/> instances associated to this command.</param>

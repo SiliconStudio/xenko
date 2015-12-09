@@ -13,15 +13,17 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private class ModelNodeToken
+        private class TokenData<TToken>
         {
-            public readonly UndoToken Token;
-            public readonly UndoToken AdditionalToken;
+            public readonly TToken Token;
+            public readonly TToken AdditionalToken;
+            public readonly object Parameter;
 
-            public ModelNodeToken(UndoToken token, UndoToken additionalToken)
+            public TokenData(TToken token, TToken additionalToken, object parameter)
             {
                 Token = token;
                 AdditionalToken = additionalToken;
+                Parameter = parameter;
             }
         }
 
@@ -48,11 +50,51 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override CombineMode CombineMode => NodeCommand.CombineMode;
 
-        public virtual CancellableCommand AdditionalCommand { get; set; }
+        public virtual CancellableCommandBase AdditionalCommand { get; set; }
         
         public INodeCommand NodeCommand { get; }
 
-        protected override UndoToken Redo(object parameter, bool creatingActionItem)
+        public override RedoToken Undo(UndoToken undoToken)
+        {
+            object index;
+            var modelNode = NodePath.GetSourceNode(out index);
+            if (modelNode == null)
+                throw new InvalidOperationException("Unable to retrieve the node on which to apply the undo operation.");
+
+            var nodeToken = (TokenData<UndoToken>)undoToken.TokenValue;
+            var currentValue = modelNode.Content.Retrieve(index);
+            RedoToken redoToken;
+            var newValue = NodeCommand.Undo(currentValue, nodeToken.Token, out redoToken);
+            modelNode.Content.Update(newValue, index);
+            Refresh(modelNode, index);
+
+            var additionalToken = AdditionalCommand?.Undo(nodeToken.AdditionalToken) ?? default(RedoToken);
+            return new RedoToken(new TokenData<RedoToken>(redoToken, additionalToken, nodeToken.Parameter));
+        }
+
+        public override UndoToken Redo(RedoToken redoToken)
+        {
+            var tokenData = (TokenData<RedoToken>)redoToken.TokenValue;
+            UndoToken token;
+            object index;
+            var modelNode = NodePath.GetSourceNode(out index);
+            if (modelNode == null)
+                throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
+
+            var currentValue = modelNode.Content.Retrieve(index);
+            var newValue = NodeCommand.Redo(currentValue, tokenData.Token, out token);
+            modelNode.Content.Update(newValue, index);
+            Refresh(modelNode, index);
+
+            var additionalToken = new UndoToken();
+            if (AdditionalCommand != null)
+            {
+                additionalToken = AdditionalCommand.Redo(tokenData.AdditionalToken);
+            }
+            return new UndoToken(token.CanUndo, new TokenData<UndoToken>(token, additionalToken, tokenData.Parameter));
+        }
+
+        protected override UndoToken Do(object parameter)
         {
             UndoToken token;
             object index;
@@ -68,26 +110,9 @@ namespace SiliconStudio.Presentation.Quantum
             var additionalToken = new UndoToken();
             if (AdditionalCommand != null)
             {
-                additionalToken = AdditionalCommand.ExecuteCommand(null, false);
+                additionalToken = AdditionalCommand.Invoke(null);
             }
-            return new UndoToken(token.CanUndo, new ModelNodeToken(token, additionalToken));
-        }
-
-        protected override void Undo(object parameter, UndoToken token)
-        {
-            object index;
-            var modelNode = NodePath.GetSourceNode(out index);
-            if (modelNode == null)
-                throw new InvalidOperationException("Unable to retrieve the node on which to apply the undo operation.");
-
-            var modelNodeToken = (ModelNodeToken)token.TokenValue;
-            var currentValue = modelNode.Content.Retrieve(index);
-            RedoToken unused;
-            var newValue = NodeCommand.Undo(currentValue, modelNodeToken.Token, out unused);
-            modelNode.Content.Update(newValue, index);
-            Refresh(modelNode, index);
-
-            AdditionalCommand?.UndoCommand(null, modelNodeToken.AdditionalToken);
+            return new UndoToken(token.CanUndo, new TokenData<UndoToken>(token, additionalToken, parameter));
         }
 
         /// <summary>

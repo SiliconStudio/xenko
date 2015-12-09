@@ -8,16 +8,16 @@ namespace SiliconStudio.Quantum.Commands
     /// </summary>
     public abstract class NodeCommandBase : INodeCommand
     {
-        protected struct TokenData
+        public struct TokenData
         {
+            public readonly object Parameter;
+            public readonly UndoToken Token;
+
             public TokenData(object parameter, UndoToken token)
             {
                 Parameter = parameter;
                 Token = token;
             }
-
-            public readonly object Parameter;
-            public readonly UndoToken Token;
         }
 
         /// <inheritdoc/>
