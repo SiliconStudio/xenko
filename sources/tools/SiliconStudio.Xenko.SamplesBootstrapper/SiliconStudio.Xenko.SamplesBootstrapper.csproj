@@ -34,34 +34,42 @@
     <ProjectReference Include="..\..\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj">
       <Project>{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}</Project>
       <Name>SiliconStudio.Assets</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
       <Project>{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2}</Project>
       <Name>SiliconStudio.Core.Design</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.IO\SiliconStudio.Core.IO.csproj">
       <Project>{1de01410-22c9-489b-9796-1addab1f64e5}</Project>
       <Name>SiliconStudio.Core.IO</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}</Project>
       <Name>SiliconStudio.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\editor\SiliconStudio.Xenko.Assets.Presentation\SiliconStudio.Xenko.Assets.Presentation.csproj">
       <Project>{550c1b7c-b7ad-46df-acf3-c36aef35d5ff}</Project>
       <Name>SiliconStudio.Xenko.Assets.Presentation</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Assets\SiliconStudio.Xenko.Assets.csproj">
       <Project>{39ae9c77-e94b-404f-8768-b6261b3c1e0e}</Project>
       <Name>SiliconStudio.Xenko.Assets</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj">
       <Project>{c121a566-555e-42b9-9b0a-1696529a9088}</Project>
       <Name>SiliconStudio.Xenko.Engine</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\engine\SiliconStudio.Xenko\SiliconStudio.Xenko.csproj">
       <Project>{72390339-B2A1-4F61-A800-31ED0975B515}</Project>
       <Name>SiliconStudio.Xenko</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
