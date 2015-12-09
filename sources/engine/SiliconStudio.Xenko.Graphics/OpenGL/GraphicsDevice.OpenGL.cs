@@ -2343,8 +2343,8 @@ namespace SiliconStudio.Xenko.Graphics
             windowProvidedFrameBuffer = gameWindow.Framebuffer;
 
             // Scale for Retina display
-            var width = (int)(gameWindow.ClientSize.Width * gameWindow.ContentScaleFactor);
-            var height = (int)(gameWindow.ClientSize.Height * gameWindow.ContentScaleFactor);
+            var width = (int)(gameWindow.Size.Width * gameWindow.ContentScaleFactor);
+            var height = (int)(gameWindow.Size.Height * gameWindow.ContentScaleFactor);
 #else
             var width = gameWindow.ClientSize.Width;
             var height = gameWindow.ClientSize.Height;
