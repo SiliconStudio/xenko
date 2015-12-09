@@ -45,33 +45,33 @@ namespace SiliconStudio.Presentation.Collections
             return GetEnumerator();
         }
 
-        public void Add(T item)
+        public void Add(T value)
         {
-            AddLast(item);
+            AddLast(value);
         }
 
-        public void AddFirst(T item)
+        public void AddFirst(T value)
         {
-            list.AddFirst(item);
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, 0);
+            list.AddFirst(value);
+            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value, 0);
             OnCollectionChanged(arg);
         }
 
-        public void AddLast(T item)
+        public void AddLast(T value)
         {
-            list.AddLast(item);
-            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, item, Count - 1);
+            list.AddLast(value);
+            var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, value, Count - 1);
             OnCollectionChanged(arg);
         }
 
-        public void AddRange(IEnumerable<T> items)
+        public void AddRange(IEnumerable<T> values)
         {
-            AddRangeLast(items);
+            AddRangeLast(values);
         }
 
-        public void AddRangeFirst(IEnumerable<T> items)
+        public void AddRangeFirst(IEnumerable<T> values)
         {
-            var itemList = items.Reverse().ToList();
+            var itemList = values.Reverse().ToList();
             if (itemList.Count > 0)
             {
                 foreach (var item in itemList)
@@ -84,9 +84,9 @@ namespace SiliconStudio.Presentation.Collections
             }
         }
 
-        public void AddRangeLast(IEnumerable<T> items)
+        public void AddRangeLast(IEnumerable<T> values)
         {
-            var itemList = items.ToList();
+            var itemList = values.ToList();
             if (itemList.Count > 0)
             {
                 foreach (var item in itemList)
@@ -120,13 +120,24 @@ namespace SiliconStudio.Presentation.Collections
             list.CopyTo(array, arrayIndex);
         }
 
+        public int IndexOf(T item)
+        {
+            var index = 0;
+            foreach (var e in this)
+            {
+                if (EqualityComparer<T>.Default.Equals(item, e)) return index;
+                index++;
+            }
+            return -1;
+        }
+
         public bool Remove(T item)
         {
+            var index = IndexOf(item);
             var success = list.Remove(item);
             if (success)
             {
-                // HACK: getting the correct index requires iterating over the whole collection, instead we use the Reset action
-                var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset);
+                var arg = new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Remove, item, index);
                 OnCollectionChanged(arg);
             }
             return success;
