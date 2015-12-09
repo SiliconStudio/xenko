@@ -20,10 +20,6 @@ namespace SiliconStudio.Assets.Analysis
         /// <returns><c>true</c> if an asset id is already used, <c>false</c> otherwise.</returns>
         public delegate bool ContainsAssetWithIdDelegate(Guid guid);
 
-        private readonly NamingHelper.ContainsLocationDelegate containsLocation;
-
-        private readonly ContainsAssetWithIdDelegate containsId;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AssetResolver"/> class.
         /// </summary>
@@ -42,8 +38,6 @@ namespace SiliconStudio.Assets.Analysis
             ExistingLocations = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
             ContainsLocation = containsLocation;
             ContainsAssetWithId = containsAssetWithId;
-            this.containsLocation = DefaultContainsLocation;
-            containsId = DefaultContainsId;
         }
 
         /// <summary>
@@ -86,9 +80,9 @@ namespace SiliconStudio.Assets.Analysis
         public bool RegisterLocation(UFile location, out UFile newLocation)
         {
             newLocation = location;
-            if (containsLocation(location))
+            if (IsContainingLocation(location))
             {
-                newLocation = NamingHelper.ComputeNewName(location, containsLocation);
+                newLocation = NamingHelper.ComputeNewName(location, IsContainingLocation);
             }
             ExistingLocations.Add(newLocation);
             return newLocation != location;
@@ -103,7 +97,7 @@ namespace SiliconStudio.Assets.Analysis
         public bool RegisterId(Guid assetId, out Guid newGuid)
         {
             newGuid = assetId;
-            var result = AlwaysCreateNewId || containsId(assetId);
+            var result = AlwaysCreateNewId || IsContainingId(assetId);
             if (result)
             {
                 newGuid = Guid.NewGuid();
@@ -141,27 +135,27 @@ namespace SiliconStudio.Assets.Analysis
         }
 
         /// <summary>
-        /// Default delegate for location.
+        /// Checks whether the <paramref name="guid"/> is already contained.
         /// </summary>
-        private bool DefaultContainsLocation(UFile location)
-        {
-            if (ExistingLocations.Contains(location))
-            {
-                return true;
-            }
-            return ContainsLocation?.Invoke(location) ?? false;
-        }
-
-        /// <summary>
-        /// Default delegate for ids.
-        /// </summary>
-        private bool DefaultContainsId(Guid guid)
+        private bool IsContainingId(Guid guid)
         {
             if (ExistingIds.Contains(guid))
             {
                 return true;
             }
             return ContainsAssetWithId?.Invoke(guid) ?? false;
+        }
+
+        /// <summary>
+        /// Checks whether the <paramref name="location"/> is already contained.
+        /// </summary>
+        private bool IsContainingLocation(UFile location)
+        {
+            if (ExistingLocations.Contains(location))
+            {
+                return true;
+            }
+            return ContainsLocation?.Invoke(location) ?? false;
         }
     }
 }
