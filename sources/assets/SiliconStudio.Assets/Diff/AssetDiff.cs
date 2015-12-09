@@ -367,9 +367,23 @@ namespace SiliconStudio.Assets.Diff
                 }
             }
 
-            var baseAsset1Equals = Equals(baseNodeDesc.Instance, asset1NodeDesc.Instance);
-            var baseAsset2Equals = Equals(baseNodeDesc.Instance, asset2NodeDesc.Instance);
-            var asset1And2Equals = Equals(asset1NodeDesc.Instance, asset2NodeDesc.Instance);
+            var instanceType = asset1NodeDesc.Instance?.GetType() ?? asset2NodeDesc.Instance?.GetType();
+
+            object baseInstance = baseNodeDesc.Instance;
+            object asset1Instance = asset1NodeDesc.Instance;
+            object asset2Instance = asset2NodeDesc.Instance;
+
+            // If this is an identifiable type (but we are for example not visiting its member), compare only the Ids instead
+            if (UseOverrideMode && instanceType != null && IdentifiableHelper.IsIdentifiable(instanceType))
+            {
+                baseInstance = IdentifiableHelper.GetId(baseInstance);
+                asset1Instance = IdentifiableHelper.GetId(asset1Instance);
+                asset2Instance = IdentifiableHelper.GetId(asset2Instance);
+            }
+
+            var baseAsset1Equals = Equals(baseInstance, asset1Instance);
+            var baseAsset2Equals = Equals(baseInstance, asset2Instance);
+            var asset1And2Equals = Equals(asset1Instance, asset2Instance);
 
             diff3.ChangeType = baseAsset1Equals && baseAsset2Equals
                 ? Diff3ChangeType.None
