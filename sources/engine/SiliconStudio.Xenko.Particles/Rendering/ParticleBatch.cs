@@ -37,11 +37,8 @@ namespace SiliconStudio.Xenko.Particles
             var context = elementInfo.DrawInfo.Context;
             var color = elementInfo.DrawInfo.Color;
 
-            
-
 
             emitter.Setup(GraphicsDevice, context, viewMatrix, projMatrix, color);
-            
 
 
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);

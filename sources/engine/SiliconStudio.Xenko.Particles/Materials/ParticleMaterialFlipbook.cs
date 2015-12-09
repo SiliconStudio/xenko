@@ -12,6 +12,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
     [Display("Flipbook")]
     public class ParticleMaterialTextureFlipbook : ParticleMaterialBase
     {
+        [DataMemberIgnore]
+        protected override string EffectName { get; set;} = "ParticleBatch";
+
         private Texture texture0 = null;
 
         [DataMember(100)]
@@ -133,17 +136,15 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
-            PrepareEffect(graphicsDevice, context);
+            base.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
 
-            SetParameter(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
 
-            // This should be CB0 - view/proj matrices don't change per material
+            ///////////////
+            // Shader permutations parameters - shaders will change dynamically based on those parameters
             SetParameter(ParticleBaseKeys.HasTexture, texture0 != null);
 
-            SetParameter(ParticleBaseKeys.ColorIsSRgb, graphicsDevice.ColorSpace == ColorSpace.Linear);
 
-
-
+            ///////////////
             // Texture swizzle - if the texture is grayscale, sample it like Tex.rrrr rather than Tex.rgba
             TextureSwizzle = (texture0?.Format == PixelFormat.R32_Float ||
                               texture0?.Format == PixelFormat.A8_UNorm ||
@@ -152,6 +153,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
 
             // If particles don't have individual color, we can pass the color tint as part of the uniform color scale
+
             SetParameter(ParticleBaseKeys.ColorScaleMin, color * ColorMin);
             SetParameter(ParticleBaseKeys.ColorScaleMax, color * ColorMax);
             SetParameter(ParticleBaseKeys.ColorScaleOffset, ColorRandomOffset);
@@ -170,10 +172,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
         // TODO Make some sort of accessor or enumerator around ParticlePool which can also sort particles
         public unsafe override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool, ParticleEmitter emitter = null)
         {
-            var vtxPerParticle = vtxBuilder.VerticesPerParticle;
-            var numberOfParticles = Math.Min(maxVertices / vtxPerParticle, pool.LivingParticles);
-            if (numberOfParticles <= 0)
-                return;
+            // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
+            base.PatchVertexBuffer(vtxBuilder, invViewX, invViewY, maxVertices, pool, emitter);
 
             var lifeField = pool.GetField(ParticleFields.RemainingLife);
             var randField = pool.GetField(ParticleFields.RandomSeed);
@@ -185,13 +185,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
             var lifeMax = emitter?.ParticleMaxLifetime ?? 1;
             var lifeStep = lifeMax - lifeMin;
 
-            var colorField = pool.GetField(ParticleFields.Color);
-            var hasColorField = colorField.IsValid();
-
-            var whiteColor = new Color4(1, 1, 1, 1);
-
-            var renderedParticles = 0;
-
             // TODO Fetch sorted particles
             foreach (var particle in pool)
             {
@@ -201,10 +194,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 var remainingLife = *(float*)(particle[lifeField]);
                 var startingLife = lifeMin + lifeStep * randSeed.GetFloat(0);
                 var normalizedTimeline = 1f - remainingLife / startingLife;
-                // vtxBuilder.SetLifetimeForParticle(normalizedTimeline);   // To check - do we need normalized life or absolute?
-                vtxBuilder.SetLifetimeForParticle(particle[lifeField]);     // To check - do we need normalized life or absolute?
-
-                vtxBuilder.SetColorForParticle(hasColorField ? particle[colorField] : (IntPtr)(&whiteColor));
 
                 var spriteId = startingFrame + (int) (normalizedTimeline * animationSpeedOverLife);
 
@@ -215,17 +204,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
                     vtxBuilder.TransformUvCoords(ref uvTransform);
                     vtxBuilder.NextVertex();
                 }
-
-                maxVertices -= vtxPerParticle;
-
-                if (++renderedParticles >= numberOfParticles)
-                {
-                    return;
-                }
             }
-
-
         }
-
     }
 }
