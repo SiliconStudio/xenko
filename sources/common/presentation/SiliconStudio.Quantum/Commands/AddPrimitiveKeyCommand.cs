@@ -10,7 +10,7 @@ using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class AddPrimitiveKeyCommand : NodeCommand
+    public class AddPrimitiveKeyCommand : SimpleNodeCommand
     {
         /// <inheritdoc/>
         public override string Name { get { return "AddPrimitiveKey"; } }
@@ -35,7 +35,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
+        protected override object Do(object currentValue, object parameter, out UndoToken undoToken)
         {
             var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
             var newKey = dictionaryDescriptor.KeyType != typeof(string) ? Activator.CreateInstance(dictionaryDescriptor.KeyType) : GenerateStringKey(currentValue, dictionaryDescriptor, parameter);
@@ -47,9 +47,9 @@ namespace SiliconStudio.Quantum.Commands
             undoToken = new UndoToken(true, newKey);
             return currentValue;
         }
-        
+
         /// <inheritdoc/>
-        public override object Undo(object currentValue, UndoToken undoToken)
+        protected override object Undo(object currentValue, UndoToken undoToken)
         {
             var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
             var key = undoToken.TokenValue;

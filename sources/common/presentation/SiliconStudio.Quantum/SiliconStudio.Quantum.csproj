@@ -25,7 +25,8 @@
     <Compile Include="CombineMode.cs" />
     <Compile Include="Commands\CreateNewInstanceCommand.cs" />
     <Compile Include="Commands\ChangeValueCommand.cs" />
-    <Compile Include="Commands\NodeCommand.cs" />
+    <Compile Include="Commands\NodeCommandBase.cs" />
+    <Compile Include="Commands\SimpleNodeCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="Commands\UncancellableCommand.cs" />
     <Compile Include="Contents\ContentChangeEventArgs.cs" />

@@ -7,16 +7,16 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public abstract class UncancellableCommand : NodeCommand
+    public abstract class UncancellableCommand : SimpleNodeCommand
     {
-        public sealed override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
+        protected sealed override object Do(object currentValue, object parameter, out UndoToken undoToken)
         {
             undoToken = new UndoToken(false);
             InvokeUncancellable(currentValue, parameter);
             return currentValue;
         }
 
-        public sealed override object Undo(object currentValue, UndoToken undoToken)
+        protected sealed override object Undo(object currentValue, UndoToken undoToken)
         {
             throw new NotSupportedException("This command is not cancellable.");
         }

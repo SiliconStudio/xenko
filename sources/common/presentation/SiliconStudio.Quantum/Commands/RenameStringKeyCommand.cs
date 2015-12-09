@@ -8,7 +8,7 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class RenameStringKeyCommand : NodeCommand
+    public class RenameStringKeyCommand : SimpleNodeCommand
     {
         private struct UndoTokenData
         {
@@ -49,7 +49,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
+        protected override object Do(object currentValue, object parameter, out UndoToken undoToken)
         {
             var dictionaryDescriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType()) as DictionaryDescriptor;
             var tuple = parameter as Tuple<object, object>;
@@ -65,7 +65,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Undo(object currentValue, UndoToken undoToken)
+        protected override object Undo(object currentValue, UndoToken undoToken)
         {
             var dictionaryDescriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType()) as DictionaryDescriptor;
             var undoData = (UndoTokenData)undoToken.TokenValue;

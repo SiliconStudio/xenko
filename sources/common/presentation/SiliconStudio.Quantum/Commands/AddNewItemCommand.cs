@@ -16,13 +16,13 @@ namespace SiliconStudio.Quantum.Commands
     /// or an exception will be thrown if T could not be determinated or has no parameterless constructor.
     /// </summary>
     /// <remarks>No parameter is required when invoking this command.</remarks>
-    public class AddNewItemCommand : NodeCommand
+    public class AddNewItemCommand : SimpleNodeCommand
     {
         /// <inheritdoc/>
-        public override string Name { get { return "AddNewItem"; } }
+        public override string Name => "AddNewItem";
 
         /// <inheritdoc/>
-        public override CombineMode CombineMode { get { return CombineMode.DoNotCombine; } }
+        public override CombineMode CombineMode => CombineMode.DoNotCombine;
 
         /// <inheritdoc/>
         public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
@@ -43,7 +43,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
+        protected override object Do(object currentValue, object parameter, out UndoToken undoToken)
         {
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
             // TODO: Find a better solution for ContentSerializerAttribute that doesn't require to reference Core.Serialization (and unreference this assembly)
@@ -51,7 +51,7 @@ namespace SiliconStudio.Quantum.Commands
             {
                 // If the parameter is a type instead of an instance, try to construct an instance of this type
                 var type = parameter as Type;
-                if (type != null && type.GetConstructor(Type.EmptyTypes) != null)
+                if (type?.GetConstructor(Type.EmptyTypes) != null)
                     parameter = Activator.CreateInstance(type);
                 undoToken = new UndoToken(true, collectionDescriptor.GetCollectionCount(currentValue));
                 collectionDescriptor.Add(currentValue, parameter);
@@ -71,7 +71,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Undo(object currentValue, UndoToken undoToken)
+        protected override object Undo(object currentValue, UndoToken undoToken)
         {
             var index = (int)undoToken.TokenValue;
             var collectionDescriptor = (CollectionDescriptor)TypeDescriptorFactory.Default.Find(currentValue.GetType());
