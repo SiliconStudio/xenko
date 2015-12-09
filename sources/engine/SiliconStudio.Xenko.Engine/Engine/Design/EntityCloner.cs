@@ -26,7 +26,6 @@ namespace SiliconStudio.Xenko.Engine.Design
     [DataSerializerGlobal(typeof(CloneSerializer<Model>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<AnimationClip>), Profile = "Clone")]
     [DataSerializerGlobal(typeof(CloneSerializer<string>), Profile = "Clone")]
-    [DataSerializerGlobal(typeof(ContentReferenceCloneDataSerializer<>), typeof(ContentReference<>), DataSerializerGenericMode.GenericArguments, Profile = "Clone")]
     class EntityCloner
     {
         private static CloneContext cloneContext = new CloneContext();
@@ -123,7 +122,6 @@ namespace SiliconStudio.Xenko.Engine.Design
                 MemoryStream.SetLength(0);
                 MappedObjects = null;
                 SerializedObjects.Clear();
-                ContentReferences.Clear();
                 ClonedObjects = null;
                 SharedObjects.Clear();
                 EntitySerializerSelector = null;
@@ -134,8 +132,6 @@ namespace SiliconStudio.Xenko.Engine.Design
             public TryGetValueFunction<object, object> MappedObjects;
 
             public readonly HashSet<object> SerializedObjects = new HashSet<object>();
-
-            public readonly List<ContentReference> ContentReferences = new List<ContentReference>();
 
             /// <summary>
             /// Lists objects that should be cloned.
