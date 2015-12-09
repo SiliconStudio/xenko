@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Engine.Network
                     if (!socketContextTCS.Task.Wait(TimeSpan.FromSeconds(5)))
                         throw new InvalidOperationException("Connection router did not connect back to our listen socket");
 
-                    return socketContext;
+                    return socketContextTCS.Task.Result;
                 }
                 catch (Exception e)
                 {
