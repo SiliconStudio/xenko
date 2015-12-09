@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Graphics.OpenGL
             return int.TryParse(versionText.Substring(dotIndex + 1), out versionMinor);
 #else
             GL.GetInteger(GetPName.MajorVersion, out versionMajor);
-            GL.GetInteger(GetPName.MinorVersion, out versionMajor);
+            GL.GetInteger(GetPName.MinorVersion, out versionMinor);
             return true;
 #endif
         }

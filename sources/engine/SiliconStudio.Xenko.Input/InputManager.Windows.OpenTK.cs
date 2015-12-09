@@ -1,23 +1,49 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 
 using System;
 using OpenTK.Input;
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Games;
 using GameWindow = OpenTK.GameWindow;
 using Vector2 = SiliconStudio.Core.Mathematics.Vector2;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    internal class InputManagerOpenTK : InputManagerWindows<OpenTK.GameWindow>
     {
         private GameWindow gameWindow;
 
-        public void InitializeFromOpenTK(GameContext gameContext)
+        public InputManagerOpenTK(IServiceRegistry registry) : base(registry)
         {
-            gameWindow = (OpenTK.GameWindow)gameContext.Control;
+            HasKeyboard = true;
+            HasMouse = true;
+            HasPointer = true;
+
+            GamePadFactories.Add(new XInputGamePadFactory());
+        }
+
+        public override void Initialize(GameContext<OpenTK.GameWindow> context)
+        {
+            switch (context.ContextType)
+            {
+                case AppContextType.DesktopOpenTK:
+                    InitializeFromOpenTK(context);
+                    break;
+
+                default:
+                    throw new ArgumentException(string.Format("WindowContext [{0}] not supported", Game.Context.ContextType));
+            }
+
+            // Scan all registered inputs
+            Scan();
+        }
+
+        public void InitializeFromOpenTK(GameContext<OpenTK.GameWindow> gameContext)
+        {
+            gameWindow = gameContext.Control;
 
             gameWindow.Keyboard.KeyDown += Keyboard_KeyDown;
             gameWindow.Keyboard.KeyUp += Keyboard_KeyUp;
@@ -186,6 +212,9 @@ namespace SiliconStudio.Xenko.Input
             }
             return (MouseButton)(-1);
         }
+
+        // There is no multi-touch on windows, so there is nothing specific to do.
+        public override bool MultiTouchEnabled { get; set; }
     }
 }
 #endif

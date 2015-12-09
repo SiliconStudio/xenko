@@ -42,12 +42,16 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        internal override GameWindow[] GetSupportedGameWindows()
+        internal override GameWindow GetSupportedGameWindow(AppContextType type)
         {
-            return new GameWindow[]
+            if (type == AppContextType.WindowsRuntime)
             {
-                new GameWindowWindowsRuntimeSwapChainPanel(),
-            };
+                return new GameWindowWindowsRuntimeSwapChainPanel();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public override List<GraphicsDeviceInformation> FindBestDevices(GameGraphicsParameters preferredParameters)

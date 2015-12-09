@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -20,51 +20,51 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
-
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
-
-using Windows.UI.Xaml.Controls;
+using System.Windows.Forms;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
     /// </summary>
-    public partial class GameContext 
+    public class GameContextWinforms : GameContextWindows<Control>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameContext" /> class.
-        /// </summary>
-        /// <param name="control">The control.</param>
-        /// <param name="requestedWidth">Width of the requested.</param>
-        /// <param name="requestedHeight">Height of the requested.</param>
-        public GameContext(SwapChainPanel control, int requestedWidth = 0, int requestedHeight = 0)
+        /// <inheritDoc/>
+        /// <param name="isUserManagingRun">Is user managing event processing of <paramref name="control"/>?</param>
+        public GameContextWinforms(Control control, int requestedWidth = 0, int requestedHeight = 0, bool isUserManagingRun = false)
+            : base(control ?? CreateForm(), requestedWidth, requestedHeight)
         {
-            if (control == null)
-            {
-                throw new ArgumentNullException("control");
-            }
-
-            Control = control;
-            RequestedWidth = requestedWidth;
-            RequestedHeight = requestedHeight;
-            ContextType = AppContextType.WindowsRuntime;
+            ContextType = AppContextType.Desktop;
+            IsUserManagingRun = isUserManagingRun;
         }
 
         /// <summary>
-        /// The control used as a GameWindow context (either an instance of <see cref="System.Windows.Forms.Control"/> or <see cref="System.Windows.Controls.Control"/>.
+        /// The is running delegate
         /// </summary>
-        public readonly object Control;
+        public bool IsUserManagingRun { get; protected set; }
 
         /// <summary>
-        /// Performs an implicit conversion from <see cref="Control"/> to <see cref="GameContext"/>.
+        /// Gets the run loop to be called when <see cref="IsUserManagingRun"/> is true.
         /// </summary>
-        /// <param name="control">The control.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator GameContext(SwapChainPanel control)
+        /// <value>The run loop.</value>
+        public Action RunCallback { get; internal set; }
+
+        /// <summary>
+        /// Gets the exit callback to be called when <see cref="IsUserManagingRun"/> is true when exiting the game.
+        /// </summary>
+        /// <value>The run loop.</value>
+        public Action ExitCallback { get; internal set; }
+
+        private static Form CreateForm()
         {
-            return new GameContext(control);
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+            return new GameForm();
+#else
+            // Not Reachable.
+            return null;
+#endif
         }
     }
 }
