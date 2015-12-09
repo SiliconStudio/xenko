@@ -85,7 +85,11 @@ namespace SiliconStudio.Assets.Analysis
         /// <returns><c>true</c> if there is a new location, <c>false</c> otherwise.</returns>
         public bool RegisterLocation(UFile location, out UFile newLocation)
         {
-            newLocation = NamingHelper.ComputeNewName(location, containsLocation);
+            newLocation = location;
+            if (containsLocation(location))
+            {
+                newLocation = NamingHelper.ComputeNewName(location, containsLocation);
+            }
             ExistingLocations.Add(newLocation);
             return newLocation != location;
         }
