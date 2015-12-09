@@ -61,7 +61,7 @@ namespace SiliconStudio.Presentation.Quantum
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
             var currentValue = modelNode.Content.Retrieve(index);
-            var newValue = NodeCommand.Invoke(currentValue, parameter, out token);
+            var newValue = NodeCommand.Execute(currentValue, parameter, out token);
             modelNode.Content.Update(newValue, index);
             Refresh(modelNode, index);
 
@@ -82,7 +82,8 @@ namespace SiliconStudio.Presentation.Quantum
 
             var modelNodeToken = (ModelNodeToken)token.TokenValue;
             var currentValue = modelNode.Content.Retrieve(index);
-            var newValue = NodeCommand.Undo(currentValue, modelNodeToken.Token);
+            RedoToken unused;
+            var newValue = NodeCommand.Undo(currentValue, modelNodeToken.Token, out unused);
             modelNode.Content.Update(newValue, index);
             Refresh(modelNode, index);
 

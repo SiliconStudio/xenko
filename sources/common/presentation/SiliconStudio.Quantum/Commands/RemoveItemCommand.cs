@@ -8,7 +8,7 @@ using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class RemoveItemCommand : NodeCommand
+    public class RemoveItemCommand : SimpleNodeCommand
     {
         private struct UndoTokenData
         {
@@ -54,7 +54,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
+        protected override object Do(object currentValue, object parameter, out UndoToken undoToken)
         {
             var descriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType());
             var collectionDescriptor = descriptor as CollectionDescriptor;
@@ -79,7 +79,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override object Undo(object currentValue, UndoToken undoToken)
+        protected override object Undo(object currentValue, UndoToken undoToken)
         {
             var descriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType());
             var collectionDescriptor = descriptor as CollectionDescriptor;
