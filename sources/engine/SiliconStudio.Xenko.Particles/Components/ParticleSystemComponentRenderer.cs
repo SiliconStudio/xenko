@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                 
                 particleBatch.Begin(viewMat, projMat, viewInv);
 
-                particleSystemComponent.ParticleSystem.Draw(particleBatch, particleSystemComponent.Color);
+                particleSystemComponent.ParticleSystem.Draw(particleBatch, context, particleSystemComponent.Color);
 
                 particleBatch.End();
             }

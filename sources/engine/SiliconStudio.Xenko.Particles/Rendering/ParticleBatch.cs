@@ -34,11 +34,13 @@ namespace SiliconStudio.Xenko.Particles
             // TODO Setup material - here is also ok
 
             var emitter = elementInfo.DrawInfo.Emitter;
+            var context = elementInfo.DrawInfo.Context;
             var color = elementInfo.DrawInfo.Color;
 
+            
 
 
-            emitter.Setup(GraphicsDevice, viewMatrix, projMatrix, color);
+            emitter.Setup(GraphicsDevice, context, viewMatrix, projMatrix, color);
             
 
 
@@ -49,11 +51,12 @@ namespace SiliconStudio.Xenko.Particles
             emitter.BuildVertexBuffer(vertexPointer, unitX, unitY, ref remainingCapacity);
         }
 
-        public void Draw(ParticleEmitter emitter, Color4 color)
+        public void Draw(ParticleEmitter emitter, RenderContext context, Color4 color)
         {
             var drawInfo = new ParticleDrawInfo
             {
                 Emitter = emitter,
+                Context = context,
                 Color = color,
             };
 
@@ -109,6 +112,7 @@ namespace SiliconStudio.Xenko.Particles
         public struct ParticleDrawInfo
         {
             public ParticleEmitter Emitter;
+            public RenderContext Context;
             public Color4 Color;
         }
     }

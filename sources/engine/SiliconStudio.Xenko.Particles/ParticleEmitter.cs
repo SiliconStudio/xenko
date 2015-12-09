@@ -17,6 +17,7 @@ using SiliconStudio.Xenko.Particles.Modules;
 using SiliconStudio.Xenko.Particles.ShapeBuilders;
 using SiliconStudio.Xenko.Particles.Spawners;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
+using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles
 {
@@ -457,7 +458,7 @@ namespace SiliconStudio.Xenko.Particles
         [NotNull]
         public ParticleMaterialBase Material;
 
-        public void Setup(GraphicsDevice graphicsDevice, Matrix viewMatrix, Matrix projMatrix, Color4 color)
+        public void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
             if (Material == null)
                 return;
@@ -468,7 +469,7 @@ namespace SiliconStudio.Xenko.Particles
 
             variation |= Material.MandatoryVariation;
 
-            Material.Setup(graphicsDevice, variation, viewMatrix, projMatrix, color);
+            Material.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
 
             // Emitter parameters ?
         }

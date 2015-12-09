@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -48,7 +49,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMemberIgnore]
         private readonly ParameterCollection Parameters = new ParameterCollection();
 
-        protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
+        protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; } // Will move to effect instance
 
         /// <summary>
         /// Setups the current material using the graphics device.
@@ -56,26 +57,38 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <param name="GraphicsDevice">Graphics device to setup</param>
         /// <param name="viewMatrix">The camera's View matrix</param>
         /// <param name="projMatrix">The camera's Projection matrix</param>
-        public abstract void Setup(GraphicsDevice GraphicsDevice, ParticleEffectVariation variation, Matrix viewMatrix, Matrix projMatrix, Color4 color);
+        public abstract void Setup(GraphicsDevice GraphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color);
 
         public abstract void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int remainingCapacity, ParticlePool pool, ParticleEmitter emitter = null);
 
         [DataMemberIgnore]
         private Effect effect = null;
 
-        protected void PrepareEffect(GraphicsDevice graphicsDevice, ParticleEffectVariation variation)
+        private List<ParameterCollection> parameterCollections;
+
+        private const string EffectName = "ParticleBatch";
+
+        private bool isInitialized = false;
+
+        private void InitializeCore(RenderContext context)
         {
-            variation |= MandatoryVariation; 
+            if (isInitialized)
+                return;
+            isInitialized = true;
 
-            effect = ParticleBatch.GetEffect(graphicsDevice, variation);
+            if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
-            // Get or create parameter collection
-            if (ParameterCollectionGroup == null || ParameterCollectionGroup.Effect != effect)
-            {
-                // If ParameterCollectionGroup is not specified (using default one), let's make sure it is updated to matches effect
-                // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
-                ParameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, new[] { Parameters });
-            }
+            parameterCollections = new List<ParameterCollection> { Parameters };
+
+            // Setup the effect compiler
+            EffectInstance = new DefaultEffectInstance(parameterCollections);
+            effectCompiler = new DynamicEffectCompiler(context.Services, EffectName, -1); // Image effects are compiled with higher priority
+
+        }
+
+        protected void PrepareEffect(GraphicsDevice graphicsDevice, RenderContext context)
+        {
+            InitializeCore(context);
 
             if (FaceCulling == ParticleMaterialCulling.CullNone)   graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
             if (FaceCulling == ParticleMaterialCulling.CullBack)   graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullBack);
@@ -100,7 +113,31 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         protected void ApplyEffect(GraphicsDevice graphicsDevice)
         {
+            UpdateEffect(graphicsDevice);
+
             effect.Apply(graphicsDevice, ParameterCollectionGroup, applyEffectStates: false);
         }
+
+        #region Dynamic effect
+        protected DefaultEffectInstance EffectInstance;
+
+        private DynamicEffectCompiler effectCompiler;
+
+        private void UpdateEffect(GraphicsDevice graphicsDevice)
+        {
+            effectCompiler.Update(EffectInstance, null);
+
+            effect = EffectInstance.Effect;
+
+            // Get or create parameter collection
+            if (ParameterCollectionGroup == null || ParameterCollectionGroup.Effect != effect)
+            {
+                // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
+                ParameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, parameterCollections);
+            }
+        }
+
+        #endregion
+
     }
 }
