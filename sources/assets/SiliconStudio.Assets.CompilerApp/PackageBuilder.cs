@@ -60,6 +60,12 @@ namespace SiliconStudio.Assets.CompilerApp
 
         private BuildResultCode BuildMaster()
         {
+            // Only querying graphics platform, let's load package, print it and exit
+            if (builderOptions.GetGraphicsPlatform)
+            {
+                return BuildGetGraphicsPlatform();
+            }
+
             assetLogger = new RemoteLogForwarder(builderOptions.Logger, builderOptions.LogPipeNames);
             GlobalLogger.GlobalMessageLogged += assetLogger;
             PackageSession projectSession = null;
@@ -74,12 +80,6 @@ namespace SiliconStudio.Assets.CompilerApp
                     AutoCompileProjects = builderOptions.Platform != PlatformType.Windows || !builderOptions.DisableAutoCompileProjects,
                     ExtraCompileProperties = builderOptions.ExtraCompileProperties,
                 };
-
-                if (builderOptions.GetGraphicsPlatform)
-                {
-                    sessionLoadParameters.AutoCompileProjects = false;
-                    sessionLoadParameters.LoadAssemblyReferences = false;
-                }
 
                 // Loads the root Package
                 var projectSessionResult = PackageSession.Load(builderOptions.PackageFile, sessionLoadParameters);
@@ -124,12 +124,9 @@ namespace SiliconStudio.Assets.CompilerApp
                 context.SetGameSettingsAsset(gameSettingsAsset);
 
                 // Copy properties from shared profiles to context properties
-                sharedProfile?.Properties.CopyTo(context.PackageProperties, true);
-
-                if (builderOptions.GetGraphicsPlatform)
+                if (sharedProfile != null)
                 {
-                    Console.WriteLine(context.GetGraphicsPlatform());
-                    return BuildResultCode.Successful;
+                    sharedProfile.Properties.CopyTo(context.PackageProperties, true);
                 }
 
                 // Copy properties from build profile
@@ -179,6 +176,32 @@ namespace SiliconStudio.Assets.CompilerApp
                 GlobalLogger.GlobalMessageLogged -= assetLogger;
                 assetLogger.Dispose();
             }
+        }
+
+        private BuildResultCode BuildGetGraphicsPlatform()
+        {
+            var localLogger = new LoggerResult();
+            var simplePackage = Package.Load(localLogger, builderOptions.PackageFile, new PackageLoadParameters { AutoLoadTemporaryAssets = false, LoadAssemblyReferences = false, AutoCompileProjects = false });
+            if (simplePackage == null
+                || localLogger.HasErrors)
+            {
+                localLogger.CopyTo(builderOptions.Logger);
+                return BuildResultCode.BuildError;
+            }
+
+            var buildProfile = simplePackage.Profiles.FirstOrDefault(pair => pair.Name == builderOptions.BuildProfile);
+            if (buildProfile == null)
+            {
+                builderOptions.Logger.Error("Package {0} did not contain platform {1}", builderOptions.PackageFile, builderOptions.BuildProfile);
+                return BuildResultCode.BuildError;
+            }
+
+            // For now, graphics platform is implicit.
+            // It will need to be readded to GameSettingsAsset at some point.
+            var graphicsPlatform = builderOptions.Platform.GetDefaultGraphicsPlatform();
+
+            Console.WriteLine(graphicsPlatform);
+            return BuildResultCode.Successful;
         }
 
         private void RegisterBuildStepProcessedHandler(object sender, AssetCompiledArgs e)
