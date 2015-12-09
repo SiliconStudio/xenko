@@ -11,10 +11,6 @@ namespace SiliconStudio.ActionStack
     /// <remarks>This object is immutable.</remarks>
     public struct UndoToken
     {
-        private readonly Guid guid;
-        private readonly bool canUndo;
-        private readonly object tokenValue;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="UndoToken"/> structure with some parameters.
         /// </summary>
@@ -22,24 +18,24 @@ namespace SiliconStudio.ActionStack
         /// <param name="tokenValue">The object stored in this token which can be used to undo the associated action (such as previous value of a property).</param>
         public UndoToken(bool canUndo, object tokenValue = null)
         {
-            guid = Guid.NewGuid();
-            this.canUndo = canUndo;
-            this.tokenValue = tokenValue;
+            Guid = Guid.NewGuid();
+            CanUndo = canUndo;
+            TokenValue = tokenValue;
         }
 
         /// <summary>
         /// Gets a unique identifier for the token.
         /// </summary>
-        public Guid Guid { get { return guid; } }
+        public Guid Guid { get; }
 
         /// <summary>
         /// Gets whether this token represents an action that can actually be undone.
         /// </summary>
-        public bool CanUndo { get { return canUndo; } }
+        public bool CanUndo { get; }
 
         /// <summary>
         /// Gets a user-defined object hosted by the token that should store all information needed to undo a command.
         /// </summary>
-        public object TokenValue { get { return tokenValue; } }
+        public object TokenValue { get; }
     }
 }

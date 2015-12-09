@@ -23,8 +23,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="redo">The do/redo function.</param>
         /// <param name="undo">The undo action, if the command can be undone.</param>
         /// <param name="dirtiables">The <see cref="IDirtiable"/> instances associated to this command.</param>
-        /// <param name="discardTransactions">The transaction will be discarded if true, otherwise it is ended.</param>
-        public AnonymousCommandWrapper(IViewModelServiceProvider serviceProvider, string name, CombineMode combineMode, Func<object, UndoToken> redo, Action<object, UndoToken> undo, IEnumerable<IDirtiable> dirtiables, bool discardTransactions = true)
+        public AnonymousCommandWrapper(IViewModelServiceProvider serviceProvider, string name, CombineMode combineMode, Func<object, UndoToken> redo, Action<object, UndoToken> undo, IEnumerable<IDirtiable> dirtiables)
             : base(serviceProvider, dirtiables)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
@@ -33,7 +32,6 @@ namespace SiliconStudio.Presentation.Quantum
             CombineMode = combineMode;
             this.redo = (parameter, creatingActionItem) => redo(parameter);
             this.undo = undo;
-            DiscardTransactions = discardTransactions;
         }
 
         /// <summary>
@@ -45,8 +43,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="redo">The do/redo function.</param>
         /// <param name="undo">The undo action, if the command can be undone.</param>
         /// <param name="dirtiables">The <see cref="IDirtiable"/> instances associated to this command.</param>
-        /// <param name="discardTransactions">The transaction will be discarded if true, otherwise it is ended.</param>
-        public AnonymousCommandWrapper(IViewModelServiceProvider serviceProvider, string name, CombineMode combineMode, Func<object, bool, UndoToken> redo, Action<object, UndoToken> undo, IEnumerable<IDirtiable> dirtiables, bool discardTransactions = true)
+        public AnonymousCommandWrapper(IViewModelServiceProvider serviceProvider, string name, CombineMode combineMode, Func<object, bool, UndoToken> redo, Action<object, UndoToken> undo, IEnumerable<IDirtiable> dirtiables)
             : base(serviceProvider, dirtiables)
         {
             if (name == null) throw new ArgumentNullException(nameof(name));
@@ -55,7 +52,6 @@ namespace SiliconStudio.Presentation.Quantum
             CombineMode = combineMode;
             this.redo = redo;
             this.undo = undo;
-            DiscardTransactions = discardTransactions;
             AllowReentrancy = false;
         }
 
