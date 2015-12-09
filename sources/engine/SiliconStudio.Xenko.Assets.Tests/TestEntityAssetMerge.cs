@@ -116,8 +116,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = new EntityAssetMerge((EntityAssetBase)AssetCloner.Clone(baseAsset), newAsset, (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
-            entityMerge.Merge();
+            var result = newAsset.Merge((EntityAssetBase)AssetCloner.Clone(baseAsset), (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            Assert.False(result.HasErrors);
 
             // Both root and entities must be the same
             Assert.AreEqual(4, newAsset.Hierarchy.RootEntities.Count);
@@ -189,8 +189,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()].Entity.Transform.Children.Add(eA4.Transform);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = new EntityAssetMerge((EntityAssetBase)AssetCloner.Clone(baseAsset), newAsset, (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
-            entityMerge.Merge();
+            var result = newAsset.Merge((EntityAssetBase)AssetCloner.Clone(baseAsset), (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
             Assert.AreEqual(4, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA3', EA4'
@@ -262,8 +262,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = new EntityAssetMerge((EntityAssetBase)AssetCloner.Clone(baseAsset), newAsset, (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
-            entityMerge.Merge();
+            var result = newAsset.Merge((EntityAssetBase)AssetCloner.Clone(baseAsset), (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
             Assert.AreEqual(5, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA2', EA3', EA4'
@@ -346,8 +346,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             rootInNew.Entity.Transform.Children.Add(eA4.Transform);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = new EntityAssetMerge((EntityAssetBase)AssetCloner.Clone(baseAsset), newAsset, (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
-            entityMerge.Merge();
+            var result = newAsset.Merge((EntityAssetBase)AssetCloner.Clone(baseAsset), (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
             Assert.AreEqual(4, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA3', EA4'
@@ -421,8 +421,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = new EntityAssetMerge((EntityAssetBase)AssetCloner.Clone(baseAsset), newAsset, (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
-            entityMerge.Merge();
+            var result = newAsset.Merge((EntityAssetBase)AssetCloner.Clone(baseAsset), (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
             Assert.AreEqual(5, newAsset.Hierarchy.Entities.Count); // EA, EA1', EA2', EA3', EA4'
@@ -519,8 +519,8 @@ namespace SiliconStudio.Xenko.Assets.Tests
             asset.Hierarchy.RootEntities.Add(entityC2.Id);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = new EntityAssetMerge(null, asset, null, new List<AssetBasePart>() { new AssetBasePart(new AssetBase("part", part2)) { InstanceIds = { instanceId1, instanceId2 }}} );
-            entityMerge.Merge();
+            var entityMerge = asset.Merge(null, null, new List<AssetBasePart>() { new AssetBasePart(new AssetBase("part", part2)) { InstanceIds = { instanceId1, instanceId2 }}} );
+            Assert.False(entityMerge.HasErrors);
 
             // EntityD must be now part of the new asset
             Assert.AreEqual(8, asset.Hierarchy.RootEntities.Count);

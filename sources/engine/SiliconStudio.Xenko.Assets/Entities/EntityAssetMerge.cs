@@ -73,8 +73,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             FixHierarchy();
 
-            // TODO: Add cleanup for BaseParts/InstanceIds
-
             return result;
         }
 
