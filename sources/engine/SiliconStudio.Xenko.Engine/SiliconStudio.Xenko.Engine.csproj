@@ -1127,7 +1127,7 @@
     <Compile Include="Rendering\Materials\MaterialSpecularMicrofacetVisibilitySmithSchlickGGX.cs" />
     <Compile Include="Rendering\Materials\MaterialStreamType.cs" />
     <Compile Include="Rendering\Materials\MaterialUtility.cs" />
-    <Compile Include="Rendering\Materials\ShaderGeneratorContextBase.cs" />
+    <Compile Include="Rendering\Materials\ShaderGeneratorContext.cs" />
     <Compile Include="Rendering\Materials\Shaders\ComputeColorMaterialAlphaBlend.cs">
       <DependentUpon>ComputeColorMaterialAlphaBlend.xksl</DependentUpon>
       <AutoGen>True</AutoGen>

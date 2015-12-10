@@ -5,6 +5,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
@@ -165,6 +166,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
             SetParameter(TexturingKeys.Texture0, texture0);
             SetParameter(TexturingKeys.Sampler0, sampler0);
+
+           // SetParameter(ParticleBaseKeys.ComputeColor0, new ShaderClassSource("ComputeColorBlue"));
 
             ApplyEffect(graphicsDevice);
         }

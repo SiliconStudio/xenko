@@ -1,7 +1,20 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering
+{
+
 class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
 {
+    // -------------------------------------
+    // streams
+    // -------------------------------------
+    //compose IComputeColor computeColor0;
+
+    //compose IComputeColor computeColor1;
+
+    compose ComputeColor  baseColor;
+
     // -------------------------------------
     // streams
     // -------------------------------------
@@ -25,7 +38,7 @@ class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
     // Shading of the sprite
     stage override float4 Shading()
     {
-        float4 finalColor = GenerateRandomColor() * streams.Color;
+        float4 finalColor = GenerateRandomColor() * streams.Color ;//* baseColor.Compute();
         if (THasTexture)
         {
             finalColor *= ((RenderFlagSwizzle == 0) ? SampleTex0() : SampleTex0().rrrr);
@@ -33,7 +46,7 @@ class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
 
         finalColor.rgb *= ColorIntensity;
         // Test - for dynamic shaders
-        // finalColor.b *= 200;
+        //finalColor.b *= 200;
         finalColor.a   *= AlphaAdditive;
 
         return finalColor;
@@ -82,3 +95,5 @@ class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
     /////////////////////////////////////////////////////////////////
 
 };
+
+}

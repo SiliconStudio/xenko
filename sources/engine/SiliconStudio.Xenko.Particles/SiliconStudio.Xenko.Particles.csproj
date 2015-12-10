@@ -29,6 +29,7 @@
     <Compile Include="Initializers\InitialSizeSeed.cs" />
     <Compile Include="Initializers\InitialVelocitySeed.cs" />
     <Compile Include="Materials\ParticleMaterialBase.cs" />
+    <Compile Include="Materials\ParticleMaterialComputeColor.cs" />
     <Compile Include="Materials\ParticleMaterialFlipbook.cs" />
     <Compile Include="Materials\ParticleMaterialTexture.cs" />
     <Compile Include="Materials\ParticleMaterialTextureScroll.cs" />
@@ -39,6 +40,18 @@
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeTex0.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders\ComputeColorBlue.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ComputeColorBlue.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\IComputeColor.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>IComputeColor.xksl</DependentUpon>
+    </Compile>
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
@@ -136,6 +149,14 @@
     <None Include="Shaders.Bytecodes\CompileShaders.cmd" />
     <None Include="Shaders.Bytecodes\Graphics.xkpkg" />
     <None Include="Shaders.Bytecodes\Shaders.xkeffectlog" />
+    <None Include="Shaders\ComputeColorBlue.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ComputeColorBlue.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\IComputeColor.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>IComputeColor.cs</LastGenOutput>
+    </None>
     <None Include="Shaders\ParticleBase.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleBase.cs</LastGenOutput>
