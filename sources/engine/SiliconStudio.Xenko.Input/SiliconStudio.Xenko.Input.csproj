@@ -84,6 +84,7 @@
     <Compile Include="InputManager.Windows.WPF.cs" />
     <Compile Include="InputManager.Windows.XInput.cs" />
     <Compile Include="InputManagerBase.cs" />
+    <Compile Include="InputManagerExtensions.cs" />
     <Compile Include="InputManagerFactory.cs" />
     <Compile Include="IVirtualButton.cs" />
     <Compile Include="KeyEvent.cs" />

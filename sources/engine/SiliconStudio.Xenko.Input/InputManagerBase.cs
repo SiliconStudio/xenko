@@ -707,6 +707,14 @@ namespace SiliconStudio.Xenko.Input
         {
         }
 
+        internal void InjectPointerEvent(PointerEvent e)
+        {
+            lock (pointerEvents)
+            {
+                pointerEvents.Add(e);
+            }
+        }
+
         private void UpdateGestureEvents(TimeSpan elapsedGameTime)
         {
             currentGestureEvents.Clear();

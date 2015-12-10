@@ -38,15 +38,6 @@ namespace SiliconStudio.Xenko.Games
             ContextType = AppContextType.WindowsRuntime;
         }
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="SwapChainPanel"/> to <see cref="GameContextWindowsRuntime"/>.
-        /// </summary>
-        /// <param name="panel">SwapChainPanel</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator GameContextWindowsRuntime(SwapChainPanel panel)
-        {
-            return new GameContextWindowsRuntime(panel);
-        }
     }
 }
 #endif

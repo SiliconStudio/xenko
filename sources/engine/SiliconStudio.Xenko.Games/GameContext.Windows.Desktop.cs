@@ -67,15 +67,6 @@ namespace SiliconStudio.Xenko.Games
 #endif
         }
 
-        /// <summary>
-        /// Performs an implicit conversion from <see cref="Control"/> to <see cref="GameContextWinforms"/>.
-        /// </summary>
-        /// <param name="control">Winform control</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator GameContextWinforms(Control control)
-        {
-            return new GameContextWinforms(control);
-        }
     }
 }
 #endif
