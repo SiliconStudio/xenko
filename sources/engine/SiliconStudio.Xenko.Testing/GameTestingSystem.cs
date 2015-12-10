@@ -1,10 +1,6 @@
 ﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Concurrent;
-using System.IO;
-using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Network;
@@ -12,6 +8,10 @@ using SiliconStudio.Xenko.Games.Testing.Requests;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Input;
 using SiliconStudio.Xenko.Input.Extensions;
+using System;
+using System.Collections.Concurrent;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace SiliconStudio.Xenko.Games.Testing
 {
@@ -134,8 +134,8 @@ namespace SiliconStudio.Xenko.Games.Testing
             game.Exit();
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
-            Android.OS.Process.KillProcess(Android.OS.Process.MyPid());
+            global::Android.OS.Process.KillProcess(global::Android.OS.Process.MyPid());
 #endif
-        }  
+        }
     }
 }
