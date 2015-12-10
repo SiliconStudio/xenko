@@ -54,7 +54,7 @@
       <Name>SiliconStudio.Xenko.Input</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Testing\SiliconStudio.Xenko.Games.Testing.csproj">
+    <ProjectReference Include="..\..\engine\SiliconStudio.Xenko.Games.Testing\SiliconStudio.Xenko.Games.Testing.csproj">
       <Project>{b84ecb15-5e3f-4bd1-ab87-333bae9b70f9}</Project>
       <Name>SiliconStudio.Xenko.Games.Testing</Name>
       <Private>False</Private>
