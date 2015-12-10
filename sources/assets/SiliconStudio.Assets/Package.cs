@@ -534,7 +534,7 @@ namespace SiliconStudio.Assets
                                 session.DependencyManager.AddFileBeingSaveDuringSessionSave(assetPath);
                             }
 
-                            // Incject a copy of the base into the current asset when saving
+                            // Inject a copy of the base into the current asset when saving
                             var assetBase = asset.Asset.Base;
                             if (assetBase != null && !assetBase.IsRootImport)
                             {
@@ -790,12 +790,26 @@ namespace SiliconStudio.Assets
                 resolver.AlwaysCreateNewId = alwaysGenerateNewAssetId;
 
                 // Clean assets
-                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, false);
+                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, true);
 
                 // Add them back to the package
                 foreach (var item in outputItems)
                 {
                     Assets.Add(item);
+                }
+
+                var dirtyAssets = outputItems.Where(o => o.IsDirty)
+                    .Join(TemporaryAssets, o => o.Id, t => t.Id, (o, t) => t)
+                    .ToList();
+                // Dirty assets (except in system package) should be mark as deleted so that are properly saved again later.
+                if (!IsSystem && dirtyAssets.Count > 0)
+                {
+                    IsDirty = true;
+
+                    lock (filesToDelete)
+                    {
+                        filesToDelete.AddRange(dirtyAssets.Select(a => a.FullPath));
+                    }
                 }
 
                 TemporaryAssets.Clear();
