@@ -13,9 +13,9 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class ObservableModelNode : SingleObservableNode
     {
-        private readonly bool isPrimitive;
-        protected readonly IGraphNode SourceNode;
+        public readonly IGraphNode SourceNode;
         protected readonly GraphNodePath SourceNodePath;
+        private readonly bool isPrimitive;
         private bool isInitialized;
         private int? customOrder;
 
@@ -95,7 +95,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             foreach (var command in (targetNode ?? SourceNode).Commands)
             {
-                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, Path, Owner, targetNodePath, Owner.Dirtiables);
+                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, targetNodePath, Owner.Dirtiables);
                 AddCommand(commandWrapper);
             }
 
@@ -347,17 +347,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public virtual void ForceSetValue(object newValue)
         {
-            bool hasChanged = !Equals(Value, newValue);
-            if (!hasChanged)
-                OnPropertyChanging(nameof(ObservableModelNode<int>.TypedValue));
-
             Value = newValue;
-
-            if (!hasChanged)
-            {
-                OnPropertyChanged(nameof(ObservableModelNode<int>.TypedValue));
-                OnValueChanged();
-            }
         }
 
         /// <summary>
@@ -447,7 +437,6 @@ namespace SiliconStudio.Presentation.Quantum
                 {
                     if (parent != null)
                         ((ObservableNode)Parent).NotifyPropertyChanging(Name);
-                    OnPropertyChanging(nameof(TypedValue));
                 }
                 
                 // We set the value even if it has not changed in case it's a reference value and a refresh might be required (new node in a list, etc.)
@@ -460,8 +449,6 @@ namespace SiliconStudio.Presentation.Quantum
 
                 if (hasChanged)
                 {
-                    OnPropertyChanged(nameof(TypedValue));
-                    OnValueChanged();
                     if (parent != null)
                         ((ObservableNode)Parent).NotifyPropertyChanged(Name);
 
@@ -502,6 +489,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
 
                 OnPropertyChanged(nameof(TypedValue));
+                OnValueChanged();
             }
         }
 

@@ -24,7 +24,6 @@
     <Compile Include="AnonymousCommandWrapper.cs" />
     <Compile Include="CombinedNodeCommandWrapper.cs" />
     <Compile Include="CombinedObservableNode.cs" />
-    <Compile Include="CombinedValueChangedActionItem.cs" />
     <Compile Include="Controls\AsyncContentControl.cs" />
     <Compile Include="INodeCommandWrapper.cs" />
     <Compile Include="IObservableNode.cs" />

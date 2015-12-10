@@ -10,13 +10,14 @@ namespace SiliconStudio.Presentation.Commands
         private readonly IViewModelServiceProvider serviceProvider;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CancellableCommand"/> class.
+        /// Initializes a new instance of the <see cref="CancellableCommandBase"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IActionStack"/> to use for this view model.</param>
         /// <param name="dirtiables">The <see cref="IDirtiable"/> instances associated to this command.</param>
         protected CancellableCommandBase(IViewModelServiceProvider serviceProvider, IEnumerable<IDirtiable> dirtiables)
             : base(serviceProvider)
         {
+            if (dirtiables == null) throw new ArgumentNullException(nameof(dirtiables));
             this.serviceProvider = serviceProvider;
             Dirtiables = dirtiables;
         }
@@ -26,7 +27,7 @@ namespace SiliconStudio.Presentation.Commands
         /// </summary>
         public abstract string Name { get; }
 
-        protected IEnumerable<IDirtiable> Dirtiables { get; }
+        public IEnumerable<IDirtiable> Dirtiables { get; }
 
         private IActionStack ActionStack => serviceProvider.Get<IActionStack>();
 
