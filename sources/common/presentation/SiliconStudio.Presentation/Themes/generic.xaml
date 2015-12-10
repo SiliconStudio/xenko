@@ -454,6 +454,42 @@
         </Setter>
     </Style>
 
+  <!-- TODO: if possible, merge style and template with FilteringComboBox -->
+  <Style TargetType="{x:Type ctrl:SearchComboBox}">
+    <Setter Property="SnapsToDevicePixels" Value="True"/>
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:SearchComboBox}">
+          <Grid>
+            <ctrl:TextBox x:Name="PART_EditableTextBox" VerticalAlignment="Center" Focusable="True" WatermarkContent="{TemplateBinding WatermarkContent}"
+                          ValidateOnLostFocus="False" ValidateWithEnter="False" UseTimedValidation="True"
+                          Text="{Binding SearchText, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}, Mode=OneWayToSource}"
+                          IsEnabled="{TemplateBinding IsEnabled}" CancelWithEscape="False" />
+            <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
+              <Grid>
+                <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"
+                         FocusManager.IsFocusScope="True"
+                         ItemsSource="{Binding ItemsSource, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}}"
+                         SelectedIndex="{Binding SelectedIndex, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+                         SelectedItem="{Binding SelectedItem, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+                         SelectedValue="{Binding SelectedValue, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}, Mode=OneWayToSource, UpdateSourceTrigger=PropertyChanged}"
+                         SelectedValuePath="{Binding SelectedValuePath, RelativeSource={RelativeSource AncestorType=ctrl:SearchComboBox}, Mode=OneWay}"
+                         ItemTemplate="{TemplateBinding ItemTemplate}" ItemTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                         ItemStringFormat="{TemplateBinding ItemStringFormat}"
+                         Visibility="{Binding Items.Count, RelativeSource={RelativeSource Self}, Converter={cvt:VisibleOrCollapsed}}" />
+              </Grid>
+            </Popup>
+          </Grid>
+          <ControlTemplate.Triggers>
+            <Trigger Property="IsGrouping" Value="True">
+              <Setter Property="ScrollViewer.CanContentScroll" Value="false" />
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
     <Style x:Key="DefaultLogViewerStyle" TargetType="ctrl:TextLogViewer">
         <Setter Property="Focusable" Value="False"/>
         <Setter Property="Template">

@@ -3,7 +3,6 @@
 using System;
 using System.Collections;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -89,6 +88,11 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty SortProperty = DependencyProperty.Register("Sort", typeof(FilteringComboBoxSort), typeof(FilteringComboBox), new FrameworkPropertyMetadata(OnItemsSourceRefresh));
 
         /// <summary>
+        /// Identifies the <see cref="SortMemberPath"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty SortMemberPathProperty = DependencyProperty.Register("SortMemberPath", typeof(string), typeof(FilteringComboBox));
+
+        /// <summary>
         /// Identifies the <see cref="ValidatedValue"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ValidatedValueProperty = DependencyProperty.Register("ValidatedValue", typeof(object), typeof(FilteringComboBox));
@@ -152,9 +156,14 @@ namespace SiliconStudio.Presentation.Controls
         public IEnumerable ItemsToExclude { get { return (IEnumerable)GetValue(ItemsToExcludeProperty); } set { SetValue(ItemsToExcludeProperty, value); } }
 
         /// <summary>
-        /// Defines how choices are sorted.
+        /// Gets or sets the comparer used to sort items.
         /// </summary>
         public FilteringComboBoxSort Sort { get { return (FilteringComboBoxSort)GetValue(SortProperty); } set { SetValue(SortProperty, value); } }
+
+        /// <summary>
+        /// Gets or sets the name of the member to use to sort items.
+        /// </summary>
+        public string SortMemberPath { get { return (string)GetValue(SortMemberPathProperty); } set { SetValue(SortMemberPathProperty, value); } }
 
         public object ValidatedValue { get { return GetValue(ValidatedValueProperty); } set { SetValue(ValidatedValueProperty, value); } }
 
@@ -492,7 +501,7 @@ namespace SiliconStudio.Presentation.Controls
             var value = obj;
             try
             {
-                SetBinding(InternalValuePathProperty, new Binding(DisplayMemberPath) { Source = obj });
+                SetBinding(InternalValuePathProperty, new Binding(SortMemberPath) { Source = obj });
                 value = GetValue(InternalValuePathProperty);
             }
             catch (Exception e)

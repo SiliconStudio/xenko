@@ -288,7 +288,7 @@
           <DockPanel LastChildFill="True">
             <Image DockPanel.Dock="Left" Source="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}}"
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"
-                   Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelHeight}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.PixelWidth}"
+                   Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}"
                    Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
             <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
           </DockPanel>
@@ -367,6 +367,7 @@
 
   <Style TargetType="{x:Type ScrollViewer}" BasedOn="{StaticResource NuclearScrollViewer}"/>
 
+  <!--  COMBO BOXES  -->
   <ControlTemplate x:Key="ComboBoxToggleButton" TargetType="{x:Type ToggleButton}">
     <Grid x:Name="grid">
       <Grid.ColumnDefinitions>
@@ -686,6 +687,7 @@
     </Setter>
   </Style>
 
+  <!--  BUTTONS  -->
   <Style x:Key="VectorEditorToggleButtonStyle" TargetType="ToggleButton">
     <!--<Setter Property="Background" Value="{DynamicResource NormalBrush}"/>-->
     <Setter Property="Background" Value="Transparent"/>
@@ -2115,6 +2117,7 @@
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
   </Style>
 
+  <!--  MENUS  -->
   <Style TargetType="{x:Type Menu}">
     <Setter Property="Background" Value="{StaticResource BackgroundBrush}"/>
     <Setter Property="BorderBrush" Value="{DynamicResource NormalBorderBrush}" />
@@ -2169,7 +2172,7 @@
       </Grid>
     </Border>
     <ControlTemplate.Triggers>
-      <Trigger Property="IsSuspendingPopupAnimation" Value="true">
+      <Trigger Property="IsSuspendingPopupAnimation" Value="True">
         <Setter Property="PopupAnimation" Value="None" TargetName="SubMenuPopup" />
       </Trigger>
       <Trigger Property="Icon" Value="{x:Null}">
@@ -2239,7 +2242,7 @@
                 <Path x:Name="GlyphPanelpath" VerticalAlignment="Center" Fill="{TemplateBinding Foreground}" Data="M0,2 L0,4.8 L2.5,7.4 L7.1,2.8 L7.1,0 L2.5,4.6 z" FlowDirection="LeftToRight" />
               </Grid>
               <ContentPresenter Grid.Column="1" x:Name="HeaderHost" RecognizesAccessKey="True" ContentSource="Header" Margin="4,2,16,2" VerticalAlignment="Center" HorizontalAlignment="Stretch" SnapsToDevicePixels="True"/>
-              <TextBlock x:Name="IGTTextBlock" Grid.Column="3" Text="{TemplateBinding MenuItem.InputGestureText}" IsEnabled="{TemplateBinding IsEnabled}" Margin="{TemplateBinding Control.Padding}" Visibility="Visible"/>
+              <TextBlock x:Name="IGTTextBlock" Grid.Column="3" Text="{TemplateBinding MenuItem.InputGestureText}" IsEnabled="{TemplateBinding IsEnabled}" Margin="{TemplateBinding Control.Padding}" VerticalAlignment="Center" Visibility="Visible"/>
               <Grid Grid.Column="4" Margin="4,2" x:Name="ArrowPanel" VerticalAlignment="Center">
                 <Path x:Name="ArrowPanelPath" VerticalAlignment="Center" Fill="{TemplateBinding Foreground}" Data="M0,0 L0,8 L4,4 z" />
               </Grid>
@@ -3287,6 +3290,7 @@
     </Setter>
   </Style>
 
+  <!--  TOOLBARS  -->
   <Style x:Key="{x:Static ToolBar.ButtonStyleKey}" TargetType="{x:Type Button}" BasedOn="{x:Null}">
     <Setter Property="FocusVisualStyle" Value="{DynamicResource NuclearButtonFocusVisual}" />
     <Setter Property="Background" Value="Transparent" />
@@ -3295,7 +3299,6 @@
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
     <Setter Property="Margin" Value="2,0,2,0"/>
     <Setter Property="BorderThickness" Value="0"/>
-    <Setter Property="FontSize" Value="10"/>
     <Setter Property="MinHeight" Value="20"/>
     <Setter Property="MinWidth" Value="20"/>
     <Style.Triggers>
@@ -3306,7 +3309,6 @@
   </Style>
 
   <Style x:Key="{x:Static ToolBar.CheckBoxStyleKey}" TargetType="{x:Type CheckBox}">
-    <Setter Property="FontSize" Value="10"/>
     <Setter Property="SnapsToDevicePixels" Value="true" />
     <Setter Property="FocusVisualStyle" Value="{DynamicResource CheckBoxFocusVisual}" />
     <Setter Property="Background" Value="Transparent" />
@@ -3317,7 +3319,6 @@
   </Style>
 
   <Style x:Key="{x:Static ToolBar.RadioButtonStyleKey}" TargetType="{x:Type RadioButton}">
-    <Setter Property="FontSize" Value="10"/>
     <Setter Property="SnapsToDevicePixels" Value="true" />
     <Setter Property="FocusVisualStyle" Value="{DynamicResource RadioButtonFocusVisual}" />
     <Setter Property="Background" Value="Transparent" />
@@ -3353,7 +3354,6 @@
   </Style>
 
   <Style x:Key="{x:Static ToolBar.ComboBoxStyleKey}" TargetType="{x:Type ComboBox}">
-    <Setter Property="FontSize" Value="10"/>
     <Setter Property="SnapsToDevicePixels" Value="true" />
     <Setter Property="Background" Value="{DynamicResource LightBrush}"/>
     <Setter Property="Template" Value="{DynamicResource ComboBoxTemplate}" />
@@ -3365,7 +3365,6 @@
   </Style>
 
   <Style x:Key="{x:Static ToolBar.TextBoxStyleKey}" TargetType="{x:Type TextBox}">
-    <Setter Property="FontSize" Value="10"/>
     <Setter Property="KeyboardNavigation.TabNavigation" Value="None" />
     <Setter Property="FocusVisualStyle" Value="{x:Null}" />
     <Setter Property="AllowDrop" Value="true" />
@@ -3562,6 +3561,44 @@
     </Setter>
     <Setter Property="Foreground" Value="{DynamicResource TextBrush}" />
   </Style>
+  <Style x:Key="TagToolBarStyle" TargetType="{x:Type ToolBar}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ToolBar}">
+          <DockPanel SnapsToDevicePixels="true">
+            <Grid DockPanel.Dock="Right" x:Name="OverflowGrid">
+              <ToggleButton Margin="2" Visibility="{TemplateBinding HasOverflowItems, Converter={cvt:VisibleOrCollapsed}}" x:Name="OverflowButton" ClickMode="Press" IsChecked="{Binding IsOverflowOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}" Background="{StaticResource TagBackgroundBrush}" Padding="2,0">
+                <ToggleButton.Template>
+                  <ControlTemplate>
+                    <Border Background="{StaticResource TagBackgroundBrush}" CornerRadius="3">
+                      <TextBlock Margin="2,0" Text="…"/>
+                    </Border>
+                  </ControlTemplate>
+                </ToggleButton.Template>
+              </ToggleButton>
+              <Border VerticalAlignment="Bottom" HorizontalAlignment="Right" x:Name="PopupPlacementTarget"/>
+              <Popup Focusable="false" AllowsTransparency="true" IsOpen="{Binding IsOverflowOpen, RelativeSource={RelativeSource TemplatedParent}}" Placement="Left" PlacementTarget="{Binding ElementName=PopupPlacementTarget}"  PopupAnimation="{StaticResource {x:Static SystemParameters.ComboBoxPopupAnimationKey}}" StaysOpen="True" x:Name="OverflowPopup">
+                <Border BorderThickness="1,1,1,1" Background="{DynamicResource LightBrush}" BorderBrush="{DynamicResource LightBrush}">
+                  <ToolBarOverflowPanel Focusable="true" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" FocusVisualStyle="{x:Null}" Margin="2" x:Name="PART_ToolBarOverflowPanel" WrapWidth="200" KeyboardNavigation.DirectionalNavigation="Cycle" KeyboardNavigation.TabNavigation="Cycle"/>
+                </Border>
+              </Popup>
+            </Grid>
+            <Border Margin="0,0,2,0" x:Name="MainPanelBorder" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" Padding="{TemplateBinding Padding}">
+              <ToolBarPanel SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" Margin="0,0,2,0" x:Name="PART_ToolBarPanel" IsItemsHost="true" Background="Transparent"/>
+            </Border>
+          </DockPanel>
+          <ControlTemplate.Triggers>
+            <Trigger Property="HasOverflowItems" Value="False">
+              <Setter Property="Margin" TargetName="MainPanelBorder" Value="0"/>
+            </Trigger>
+            <Trigger Property="IsEnabled" Value="false">
+              <Setter Property="Foreground" Value="{DynamicResource {x:Static SystemColors.GrayTextBrushKey}}"/>
+            </Trigger>
+          </ControlTemplate.Triggers>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
   <ControlTemplate x:Key="PropertyGridExpander" TargetType="{x:Type ToggleButton}">
     <Grid SnapsToDevicePixels="False" Background="Transparent" Focusable="False">
       <Grid.ColumnDefinitions>
@@ -3657,7 +3694,38 @@
       </DataTrigger>
     </Style.Triggers>
   </Style>
+  
+  <SolidColorBrush x:Key="TagBackgroundBrush" Color="#FF708090"/>
+  <Style TargetType="{x:Type ctrl:TagControl}">
+    <Setter Property="Background" Value="{StaticResource TagBackgroundBrush}" />
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:TagControl}">
+          <DockPanel Background="{x:Null}">
+            <Border DockPanel.Dock="Left" Margin="0,0,-2,0">
+              <Path Stretch="Uniform" Fill="{TemplateBinding Background}" Stroke="{TemplateBinding Background}" StrokeThickness="4" StrokeLineJoin="Round"
+                    Data="F1 M 35,25L 46,14L 46,53L 35,42L 35,25 Z " />
+            </Border>
+            <Border Background="{TemplateBinding Background}" CornerRadius="0,3,3,0">
+              <DockPanel>
+                <Button DockPanel.Dock="Right" Background="Transparent" Width="12" Height="12" Margin="2"
+                        Command="{Binding CloseTagCommand, RelativeSource={RelativeSource AncestorType={x:Type ctrl:TagControl}}}"
+                        CommandParameter="{Binding}"
+                        Visibility="{Binding CloseTagCommand.IsEnabled, RelativeSource={RelativeSource AncestorType={x:Type ctrl:TagControl}}, Converter={cvt:VisibleOrHidden}, FallbackValue=Hidden}">
+                  <Path Width="8" Height="8" Stretch="Fill" Fill="{DynamicResource TextBrush}"
+                        Data="F1 M 26.9166,22.1667L 37.9999,33.25L 49.0832,22.1668L 53.8332,26.9168L 42.7499,38L 53.8332,49.0834L 49.0833,53.8334L 37.9999,42.75L 26.9166,53.8334L 22.1666,49.0833L 33.25,38L 22.1667,26.9167L 26.9166,22.1667 Z "/>
+                </Button>
+                <ContentPresenter Content="{TemplateBinding Content}" Margin="{TemplateBinding Padding}"
+                                  ContentTemplate="{TemplateBinding ContentTemplate}" ContentTemplateSelector="{TemplateBinding ContentTemplateSelector}"
+                                  HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}" />
 
+              </DockPanel>
+            </Border>
+          </DockPanel>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
 
   <Style TargetType="{x:Type GridSplitter}">
     <Setter Property="Background" Value="{DynamicResource BackgroundBrush}"/>
@@ -3666,6 +3734,7 @@
     <Setter Property="VerticalAlignment" Value="Stretch"/>
   </Style>
 
+  <!--  EDITORS  -->
   <Style TargetType="ctrl:Vector2Editor">
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="Template">
@@ -4354,6 +4423,7 @@
     <Setter Property="SnapsToDevicePixels" Value="True"/>
   </Style>
 
+  <!--  TREE VIEWS  -->
   <Style TargetType="{x:Type ctrl:TreeView}">
     <Style.Resources>
       <ResourceDictionary />
