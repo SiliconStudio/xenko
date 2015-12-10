@@ -22,7 +22,19 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("Color map")]
         public IComputeColor ComputeColor;
 
-        
+        [DataMemberIgnore]
+        private ShaderGeneratorContext shaderGeneratorContext;
+
+        protected override void InitializeCore(RenderContext context)
+        {
+            base.InitializeCore(context);
+
+            shaderGeneratorContext = new ShaderGeneratorContext();
+            ParameterCollections.Add(shaderGeneratorContext.Parameters);
+
+            MandatoryVariation |= ParticleEffectVariation.HasTex0;
+        }
+
         public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
             base.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
@@ -44,15 +56,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // var materialContext = new MaterialGeneratorContext(); // Shared for the particle system
             // VisitFeature(materialContext);
 
-            if (false)
             {
-                var shaderGeneratorContext = new ShaderGeneratorContext();
+                shaderGeneratorContext.Parameters.Clear();
 
                 var shaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue, Color.White));
 
                 shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
-
-                // TODO Add shaderGeneratorContext.Parameters to the parameter collection
             }
 
             ApplyEffect(graphicsDevice);
