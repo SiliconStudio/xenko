@@ -79,8 +79,6 @@
     <Compile Include="Collections\IObservableCollection.cs" />
     <Compile Include="Collections\IReadOnlyObservableCollection.cs" />
     <Compile Include="Collections\NonGenericObservableListWrapper.cs" />
-    <Compile Include="Commands\CancellableCommand.cs" />
-    <Compile Include="Commands\CommandActionItem.cs" />
     <Compile Include="Commands\DisabledCommand.cs" />
     <Compile Include="Commands\SystemCommand.cs" />
     <Compile Include="Commands\SystemCommands.cs" />
