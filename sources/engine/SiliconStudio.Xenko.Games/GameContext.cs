@@ -68,6 +68,48 @@ namespace SiliconStudio.Xenko.Games
         /// Indicate whether the game must initialize the default database when it starts running.
         /// </summary>
         public bool InitializeDatabase = true;
+
+        // This code is for backward compatibility only where the generated games
+        // would not explicitly create the context, but would just use a Winform
+        // or a SwapChainPanel.
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Control"/> to <see cref="GameContextWinforms"/>.
+        /// </summary>
+        /// <param name="control">Winform control</param>
+        /// <returns>The result of the conversion.</returns>
+        [Obsolete ("Use new GameContextWinforms(control) instead.")]
+        public static implicit operator GameContext(System.Windows.Forms.Control control)
+        {
+            return new GameContextWinforms(control);
+        }
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="OpenTK.GameWindow"/> to <see cref="GameContextOpenTk"/>.
+        /// </summary>
+        /// <param name="gameWindow">OpenTK GameWindow</param>
+        /// <returns>The result of the conversion.</returns>
+        [Obsolete ("Use new GameContextOpenTk(gameWindow) instead.")]
+        public static implicit operator GameContext(OpenTK.GameWindow gameWindow)
+        {
+            return new GameContextOpenTk(gameWindow);
+        }
+#endif
+#endif
+#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Windows.UI.Xaml.Controls.SwapChainPanel"/> to <see cref="GameContextWindowsRuntime"/>.
+        /// </summary>
+        /// <param name="panel">SwapChainPanel</param>
+        /// <returns>The result of the conversion.</returns>
+        [Obsolete ("Use new GameContextWindowsRuntime(panel) instead.")]
+        public static implicit operator GameContext(Windows.UI.Xaml.Controls.SwapChainPanel panel)
+        {
+            return new GameContextWindowsRuntime(panel);
+        }
+#endif
     }
 
     /// <summary>
