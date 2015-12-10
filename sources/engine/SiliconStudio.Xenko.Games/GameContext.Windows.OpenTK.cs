@@ -121,6 +121,16 @@ namespace SiliconStudio.Xenko.Games
             }
 
         }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="OpenTK.GameWindow"/> to <see cref="GameContextOpenTk"/>.
+        /// </summary>
+        /// <param name="gameWindow">OpenTK GameWindow</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GameContextOpenTk(OpenTK.GameWindow gameWindow)
+        {
+            return new GameContextOpenTk(gameWindow);
+        }
     }
 }
 #endif
