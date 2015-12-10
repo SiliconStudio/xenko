@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         private EffectParameterCollectionGroup parameterCollectionGroup;
 
         [DataMemberIgnore]
-        private List<ParameterCollection> parameterCollections;
+        protected List<ParameterCollection> ParameterCollections;
 
         /// <summary>
         /// Sets the name of the effect or shader which the material will use
@@ -148,9 +148,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             vtxBuilder.RestartBuffer();
         }
 
-        ParameterKey<ShaderMixinSource> key = new ParameterKey<ShaderMixinSource>("MyKey"); 
-
-        private void InitializeCore(RenderContext context)
+        protected virtual void InitializeCore(RenderContext context)
         {
             if (isInitialized)
                 return;
@@ -158,11 +156,10 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
-            parameters.Add(key, new ShaderMixinSource());
-            parameterCollections = new List<ParameterCollection> { parameters };
+            ParameterCollections = new List<ParameterCollection> { parameters };
 
             // Setup the effect compiler
-            effectInstance = new DefaultEffectInstance(parameterCollections);
+            effectInstance = new DefaultEffectInstance(ParameterCollections);
             effectCompiler = new DynamicEffectCompiler(context.Services, EffectName, -1); // Image effects are compiled with higher priority
 
         }
@@ -187,7 +184,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             if (parameterCollectionGroup == null || parameterCollectionGroup.Effect != effect)
             {
                 // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
-                parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, parameterCollections);
+                parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, ParameterCollections);
             }
         }
 
