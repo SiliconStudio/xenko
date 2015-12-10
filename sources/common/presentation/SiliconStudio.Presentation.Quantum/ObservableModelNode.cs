@@ -397,8 +397,6 @@ namespace SiliconStudio.Presentation.Quantum
 
     public class ObservableModelNode<T> : ObservableModelNode
     {
-        private bool isUpdating;
-
         /// <summary>
         /// Construct a new <see cref="ObservableModelNode"/>.
         /// </summary>
@@ -429,7 +427,6 @@ namespace SiliconStudio.Presentation.Quantum
             set
             {
                 AssertInit();
-                isUpdating = true;
                 var previousValue = (T)GetModelContentValue();
                 bool hasChanged = !Equals(previousValue, value);
                 var parent = Parent;
@@ -454,7 +451,6 @@ namespace SiliconStudio.Presentation.Quantum
 
                     Owner.NotifyNodeChanged(Path);
                 }
-                isUpdating = false;
             }
         }
 
@@ -473,13 +469,13 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void ContentChanging(object sender, ContentChangeEventArgs e)
         {
-            if (!isUpdating && Equals(e.Index, Index))
+            if (Equals(e.Index, Index))
                 OnPropertyChanging(nameof(TypedValue));
         }
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
-            if (!isUpdating && Equals(e.Index, Index))
+            if (Equals(e.Index, Index))
             {
                 EnsureNotDisposed();
 
