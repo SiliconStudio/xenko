@@ -51,7 +51,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-
+using System.Reflection;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -100,7 +100,14 @@ namespace SiliconStudio.Xenko.Games
             ResizeRedraw = true;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
 
-            Icon = Resources.GameResources.Logo;
+            try
+            {
+                Icon = Icon.ExtractAssociatedIcon(Assembly.GetEntryAssembly().Location);
+            }
+            catch
+            {
+                Icon = SystemIcons.Application;
+            }
 
             previousWindowState = FormWindowState.Normal;
         }
