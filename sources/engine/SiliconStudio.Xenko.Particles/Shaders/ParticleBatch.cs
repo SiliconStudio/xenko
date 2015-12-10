@@ -23,6 +23,17 @@ namespace SiliconStudio.Xenko.Rendering
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
                 context.Mixin(mixin, "ParticleBatchShader", context.GetParam(ParticleBaseKeys.ColorIsSRgb), context.GetParam(ParticleBaseKeys.HasTexture));
+                if (context.GetParam(ParticleBaseKeys.BaseColor) != null)
+                {
+
+                    {
+                        var __mixinToCompose__ = context.GetParam(ParticleBaseKeys.BaseColor);
+                        var __subMixin = new ShaderMixinSource();
+                        context.PushComposition(mixin, "baseColor", __subMixin);
+                        context.Mixin(__subMixin, __mixinToCompose__);
+                        context.PopComposition();
+                    }
+                }
             }
 
             [ModuleInitializer]

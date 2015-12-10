@@ -13,13 +13,14 @@ using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Data;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 
 namespace SiliconStudio.Xenko.Assets
 {
     /// <summary>
     /// Base class for generating shader class source with associated parameters.
     /// </summary>
-    public abstract class ShaderGeneratorContextBase : ComponentBase
+    public class ShaderGeneratorContext : ComponentBase
     {
         // TODO: Document this class
 
@@ -28,6 +29,10 @@ namespace SiliconStudio.Xenko.Assets
         private readonly Dictionary<SamplerStateDescription, ParameterKey<SamplerState>> declaredSamplerStates;
 
         private readonly Dictionary<Color4, Texture> singleColorTextures = new Dictionary<Color4, Texture>();
+
+        private MaterialOverrides currentOverrides;
+        private Stack<MaterialOverrides> overridesStack = new Stack<MaterialOverrides>();
+
 
         public delegate object FindAssetDelegate(object asset);
 
@@ -47,14 +52,34 @@ namespace SiliconStudio.Xenko.Assets
         /// </value>
         public AssetManager Assets { get; set; }
 
-        protected ShaderGeneratorContextBase()
+        public ShaderGeneratorContext()
         {
             Parameters = new ParameterCollection();
             parameterKeyIndices = new Dictionary<ParameterKey, int>();
             declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
+            currentOverrides = new MaterialOverrides();
         }
 
         public ParameterCollection Parameters { get; set; }
+
+        public MaterialOverrides CurrentOverrides
+        {
+            get
+            {
+                return currentOverrides;
+            }
+        }
+
+        public ColorSpace ColorSpace { get; set; }
+        public bool IsNotPixelStage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether materials will be optimized (textures blended together, generate optimized shader permutations, etc...).
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if [materials are optimized]; otherwise, <c>false</c>.
+        /// </value>
+        public bool OptimizeMaterials { get; set; }
 
         public ParameterKey GetParameterKey(ParameterKey key)
         {
@@ -126,6 +151,47 @@ namespace SiliconStudio.Xenko.Assets
             var samplerState = SamplerState.NewFake(samplerStateDesc);
             Parameters.Set(key, samplerState);
             return key;
+        }
+
+        public ParameterKey<Texture> GetTextureKey(ComputeTextureBase computeTexture, MaterialComputeColorKeys baseKeys)
+        {
+            var keyResolved = (ParameterKey<Texture>)(computeTexture.Key ?? baseKeys.TextureBaseKey ?? MaterialKeys.GenericTexture);
+            return GetTextureKey(computeTexture.Texture, keyResolved, baseKeys.DefaultTextureValue);
+        }
+
+        public ParameterKey<SamplerState> GetSamplerKey(ComputeColorParameterSampler sampler)
+        {
+            if (sampler == null) throw new ArgumentNullException("sampler");
+
+            var samplerStateDesc = new SamplerStateDescription(sampler.Filtering, sampler.AddressModeU)
+            {
+                AddressV = sampler.AddressModeV,
+                AddressW = TextureAddressMode.Wrap
+            };
+            return GetSamplerKey(samplerStateDesc);
+        }
+
+        public void PushOverrides(MaterialOverrides overrides)
+        {
+            if (overrides == null) throw new ArgumentNullException("overrides");
+            overridesStack.Push(overrides);
+            UpdateOverrides();
+        }
+
+        public void PopOverrides()
+        {
+            overridesStack.Pop();
+            UpdateOverrides();
+        }
+
+        private void UpdateOverrides()
+        {
+            // Update overrides by squashing them using multiplication
+            currentOverrides = new MaterialOverrides();
+            foreach (var current in overridesStack)
+            {
+                currentOverrides *= current;
+            }
         }
     }
 }

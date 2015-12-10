@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -18,5 +19,11 @@ namespace SiliconStudio.Xenko.Rendering
         public static readonly ParameterKey<bool> ColorIsSRgb = ParameterKeys.New(false);
 
         public static readonly ParameterKey<bool> HasTexture = ParameterKeys.New(true);
+
+        //public static readonly ParameterKey<ShaderSource> ComputeColor0 = ParameterKeys.New<ShaderSource>();
+
+        //public static readonly ParameterKey<ShaderSource> ComputeColor1 = ParameterKeys.New<ShaderSource>();
+
+        public static readonly ParameterKey<ShaderSource> BaseColor  = ParameterKeys.New<ShaderSource>();
     }
 }

@@ -8,6 +8,23 @@ namespace SiliconStudio.Xenko.Rendering
     partial shader ParticleBatch
     {
         using params ParticleBaseKeys;
+
         mixin ParticleBatchShader<ParticleBaseKeys.ColorIsSRgb, ParticleBaseKeys.HasTexture>;
+
+        
+        //if (ParticleBaseKeys.ComputeColor0 != null)
+        //{
+        //    mixin compose computeColor0 = ParticleBaseKeys.ComputeColor0;
+        //}
+
+        //if (ParticleBaseKeys.ComputeColor1 != null)
+        //{
+        //    mixin compose computeColor1 = ParticleBaseKeys.ComputeColor1;
+        //}
+
+        if (ParticleBaseKeys.BaseColor != null)
+        {
+            mixin compose baseColor = ParticleBaseKeys.BaseColor;
+        }
    };
 }

@@ -10,6 +10,8 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
@@ -31,7 +33,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMember(30)]
         [DataMemberRange(0, 100, 0.01, 1)]
         [Display("Intensity")]
-        public float ColorIntensity { get; set; } = 1f;
+        public float ColorIntensity { get; set; } = 1f; // TODO switch to IComputeScalar
 
         [DataMember(40)]
         [Display("Face culling")]
@@ -146,6 +148,8 @@ namespace SiliconStudio.Xenko.Particles.Materials
             vtxBuilder.RestartBuffer();
         }
 
+        ParameterKey<ShaderMixinSource> key = new ParameterKey<ShaderMixinSource>("MyKey"); 
+
         private void InitializeCore(RenderContext context)
         {
             if (isInitialized)
@@ -154,11 +158,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
+            parameters.Add(key, new ShaderMixinSource());
             parameterCollections = new List<ParameterCollection> { parameters };
 
             // Setup the effect compiler
             effectInstance = new DefaultEffectInstance(parameterCollections);
             effectCompiler = new DynamicEffectCompiler(context.Services, EffectName, -1); // Image effects are compiled with higher priority
+
         }
 
         public void SetParameter<T>(ParameterKey<T> key, T value) => parameters.Set(key, value);
