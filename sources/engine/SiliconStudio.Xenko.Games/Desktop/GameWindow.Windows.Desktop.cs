@@ -1,4 +1,5 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -21,23 +22,24 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Diagnostics;
-using System.Drawing;
-using System.Threading;
-using System.Windows.Forms;
-
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using System.Drawing;
+using System.Windows.Forms;
+using System.Threading;
 using Point = System.Drawing.Point;
+using Form = System.Windows.Forms.Form;
+using Size = System.Drawing.Size;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowDesktop : GameWindow
+    internal class GameWindowWinforms : GameWindow<Control>
     {
         private bool isMouseVisible;
 
@@ -58,7 +60,7 @@ namespace SiliconStudio.Xenko.Games
         private bool allowUserResizing;
         private bool isBorderLess;
 
-        internal GameWindowDesktop()
+        internal GameWindowWinforms()
         {
         }
 
@@ -84,7 +86,9 @@ namespace SiliconStudio.Xenko.Games
                 Visible = false;
 
                 if (form != null)
+                {
                     form.SendToBack();
+                }
             }
             else
             {
@@ -143,16 +147,9 @@ namespace SiliconStudio.Xenko.Games
             // Desktop doesn't have orientation (unless on Windows 8?)
         }
 
-        internal override bool CanHandle(GameContext gameContext)
+        protected override void Initialize(GameContext<Control> gameContext)
         {
-            return gameContext.ContextType == AppContextType.Desktop;
-        }
-
-        internal override void Initialize(GameContext gameContext)
-        {
-            this.GameContext = gameContext;
-
-            Control = (Control)gameContext.Control;
+            Control = gameContext.Control;
 
             // Setup the initial size of the window
             var width = gameContext.RequestedWidth;
@@ -169,7 +166,7 @@ namespace SiliconStudio.Xenko.Games
 
             windowHandle = new WindowHandle(AppContextType.Desktop, Control);
 
-            Control.ClientSize = new System.Drawing.Size(width, height);
+            Control.ClientSize = new Size(width, height);
 
             Control.MouseEnter += GameWindowForm_MouseEnter;
             Control.MouseLeave += GameWindowForm_MouseLeave;
@@ -196,10 +193,12 @@ namespace SiliconStudio.Xenko.Games
             // Initialize the init callback
             InitCallback();
 
-            if (GameContext.IsUserManagingRun)
+            Debug.Assert(GameContext is GameContextWinforms, "There is only one possible descendant of GameContext<Control>.");
+            var context = (GameContextWinforms) GameContext;
+            if (context.IsUserManagingRun)
             {
-                GameContext.RunCallback = RunCallback;
-                GameContext.ExitCallback = ExitCallback;
+                context.RunCallback = RunCallback;
+                context.ExitCallback = ExitCallback;
             }
             else
             {
@@ -211,11 +210,7 @@ namespace SiliconStudio.Xenko.Games
                     {
                         if (Exiting)
                         {
-                            if (Control != null)
-                            {
-                                Control.Dispose();
-                                Control = null;
-                            }
+                            Destroy();
                             return;
                         }
 
@@ -397,7 +392,6 @@ namespace SiliconStudio.Xenko.Games
                 {
                     return form.WindowState == FormWindowState.Minimized;
                 }
-
                 // Check for non-form control
                 return false;
             }

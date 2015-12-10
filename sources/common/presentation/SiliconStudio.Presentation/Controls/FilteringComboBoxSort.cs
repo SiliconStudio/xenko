@@ -19,8 +19,8 @@ namespace SiliconStudio.Presentation.Controls
             var a = x.ToString();
             var b = y.ToString();
 
-            if (String.IsNullOrWhiteSpace(token))
-                return String.Compare(a, b, StringComparison.InvariantCultureIgnoreCase);
+            if (string.IsNullOrWhiteSpace(token))
+                return string.Compare(a, b, StringComparison.InvariantCultureIgnoreCase);
 
             var indexA = a.IndexOf(tokenLowercase, StringComparison.InvariantCultureIgnoreCase);
             var indexB = b.IndexOf(tokenLowercase, StringComparison.InvariantCultureIgnoreCase);
@@ -30,7 +30,7 @@ namespace SiliconStudio.Presentation.Controls
             if (indexB == 0 && indexA > 0)
                 return 1;
 
-            return String.Compare(a, b, StringComparison.InvariantCultureIgnoreCase);
+            return string.Compare(a, b, StringComparison.InvariantCultureIgnoreCase);
         }
     }
 }

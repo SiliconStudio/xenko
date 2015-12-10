@@ -46,7 +46,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             mapFeaturesPerFormat = new FeaturesPerFormat[256];
 
-            IsProfiled = false;
             HasSRgb = true;
 
             using (deviceRoot.UseOpenGLCreationContext())

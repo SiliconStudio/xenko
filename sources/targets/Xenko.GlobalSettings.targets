@@ -10,8 +10,13 @@
   <!-- 
     Global Settings per project
   -->
+  <PropertyGroup Condition="'$(SiliconStudioBuildDirectory)' == ''">
+    <!-- Define the location where to build assemblies. -->
+    <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUIDir)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUIDir)</SiliconStudioBuildDirectory>
+  </PropertyGroup>
+
   <PropertyGroup>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == ''">$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
     <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\..\deps\</XenkoDependenciesDir>
     <XenkoDependenciesDir Condition="'$(XenkoDependenciesDir)' != '' and !HasTrailingSlash('$(XenkoDependenciesDir)')">$(XenkoDependenciesDir)\</XenkoDependenciesDir>
   </PropertyGroup>

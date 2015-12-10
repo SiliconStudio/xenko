@@ -3,41 +3,22 @@
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using Android.Widget;
 using OpenTK.Platform.Android;
+using SiliconStudio.Xenko.Games.Android;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
     /// </summary>
-    public partial class GameContext 
+    public partial class GameContextAndroid : GameContext<AndroidXenkoGameView>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameContext" /> class with null control and edit text layout.
-        /// </summary>
-        public GameContext() : this(null, null)
+        /// <inheritDoc/>
+        public GameContextAndroid(AndroidXenkoGameView control, RelativeLayout editTextLayout, int requestedWidth = 0, int requestedHeight = 0)
+            : base(control, requestedWidth, requestedHeight)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameContext" /> class.
-        /// </summary>
-        /// <param name="control">The control.</param>
-        /// <param name="editTextLayout">The layout to use in order to display android <see cref="EditText"/></param>
-        /// <param name="requestedWidth">Width of the requested.</param>
-        /// <param name="requestedHeight">Height of the requested.</param>
-        public GameContext(AndroidGameView control, RelativeLayout editTextLayout, int requestedWidth = 0, int requestedHeight = 0)
-        {
-            Control = control;
             EditTextLayout = editTextLayout;
-            RequestedWidth = requestedWidth;
-            RequestedHeight = requestedHeight;
             ContextType = AppContextType.Android;
         }
-
-        /// <summary>
-        /// The control used as a GameWindow context.
-        /// </summary>
-        public readonly AndroidGameView Control;
 
         /// <summary>
         /// The layout used to add the <see cref="EditText"/>s.

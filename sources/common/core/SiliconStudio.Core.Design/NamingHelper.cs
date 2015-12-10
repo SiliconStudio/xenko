@@ -104,7 +104,7 @@ namespace SiliconStudio.Core
             // Initialize counter
             var counter = 1;
             // Checks whether baseName already 'implements' the namePattern
-            var match = Regex.Match(baseName, Regex.Escape(namePattern).Replace(@"\{0}", @"(.*)").Replace(@"\{1}", @"(\d+)"));
+            var match = Regex.Match(baseName, $"^{Regex.Escape(namePattern).Replace(@"\{0}", @"(.*)").Replace(@"\{1}", @"(\d+)")}$");
             if (match.Success && match.Groups.Count >= 3)
             {
                 // if so, extract the base name and the current counter

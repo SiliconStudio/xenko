@@ -50,12 +50,6 @@ namespace SiliconStudio.Xenko.Graphics
             // Set back the real GraphicsProfile that is used
             Profile = GraphicsProfileHelper.FromFeatureLevel(nativeDevice.FeatureLevel);
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-            IsProfiled = PixHelper.IsCurrentlyProfiled;
-#else
-            IsProfiled = false;
-#endif
-
             HasComputeShaders = nativeDevice.CheckFeatureSupport(Feature.ComputeShaders);
             HasDoublePrecision = nativeDevice.CheckFeatureSupport(Feature.ShaderDoubles);
             nativeDevice.CheckThreadingSupport(out HasMultiThreadingConcurrentResources, out this.HasDriverCommandLists);

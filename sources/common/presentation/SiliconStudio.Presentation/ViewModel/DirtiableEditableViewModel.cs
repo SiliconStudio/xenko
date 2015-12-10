@@ -19,7 +19,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// <summary>
         /// Initializes a new instance of the <see cref="DirtiableEditableViewModel"/> class.
         /// </summary>
-        /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ITransactionalActionStack"/> to use for this view model.</param>
+        /// <param name="serviceProvider">A service provider that can provide a <see cref="Services.IDispatcherService"/> and an <see cref="SiliconStudio.ActionStack.ITransactionalActionStack"/> to use for this view model.</param>
         protected DirtiableEditableViewModel(IViewModelServiceProvider serviceProvider)
             : base(serviceProvider)
         {
@@ -48,7 +48,7 @@ namespace SiliconStudio.Presentation.ViewModel
         
         void IDirtiable.UpdateDirtiness(bool value)
         {
-            bool previousValue = IsDirty;
+            var previousValue = IsDirty;
             IsDirty = value;
             DirtinessUpdated?.Invoke(this, new DirtinessUpdatedEventArgs(previousValue, IsDirty));
         }
