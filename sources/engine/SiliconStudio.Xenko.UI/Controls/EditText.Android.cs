@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using SiliconStudio.Xenko.Games;
 #if SILICONSTUDIO_PLATFORM_ANDROID
 using Android.Content;
 using Android.Text;
@@ -67,7 +68,7 @@ namespace SiliconStudio.Xenko.UI.Controls
 
                 var editLayoutParams = new RelativeLayout.LayoutParams(ViewGroup.LayoutParams.MatchParent, ViewGroup.LayoutParams.WrapContent);
                 editLayoutParams.SetMargins(75, 200, 75, 0);
-                game.Context.EditTextLayout.AddView(staticEditText, editLayoutParams);
+                ((GameContextAndroid) game.Context).EditTextLayout.AddView(staticEditText, editLayoutParams);
             }
         }
 
@@ -163,7 +164,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             editText.AfterTextChanged += AndroidEditTextOnAfterTextChanged;
 
             // add the edit to the overlay layout and show the layout
-            game.Context.EditTextLayout.Visibility = ViewStates.Visible;
+            ((GameContextAndroid) game.Context).EditTextLayout.Visibility = ViewStates.Visible;
 
             // set the focus to the edit box
             editText.RequestFocus();
@@ -188,7 +189,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             activeEditText = null;
 
             // remove the edit text from the layout and hide the layout
-            game.Context.EditTextLayout.Visibility = ViewStates.Gone;
+            ((GameContextAndroid) game.Context).EditTextLayout.Visibility = ViewStates.Gone;
 
             // deactivate the ime (hide the keyboard)
             if (staticEditText != null) // staticEditText can be null if window have already been detached.

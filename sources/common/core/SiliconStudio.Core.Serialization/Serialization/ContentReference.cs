@@ -1,10 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Reflection;
-using SiliconStudio.Core.IO;
-using SiliconStudio.Core.Serialization.Serializers;
-using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Core.Serialization
 {
@@ -12,17 +8,6 @@ namespace SiliconStudio.Core.Serialization
     public abstract class ContentReference : ITypedContentReference, IEquatable<ContentReference>
     {
         internal const int NullIdentifier = -1;
-
-        /// <summary>
-        /// Creates a content reference with the specified value..
-        /// </summary>
-        /// <typeparam name="T">Type of the value</typeparam>
-        /// <param name="value">The value.</param>
-        /// <returns>ContentReference{``0}.</returns>
-        public static ContentReference<T> Create<T>(T value) where T : class
-        {
-            return new ContentReference<T>() { Value = value };
-        }
 
         /// <summary>
         /// Gets or sets the asset unique identifier.
@@ -44,7 +29,6 @@ namespace SiliconStudio.Core.Serialization
 
         public abstract object ObjectValue { get; set; }
 
-
         public bool Equals(ContentReference other)
         {
             if (ReferenceEquals(null, other)) return false;
@@ -60,29 +44,11 @@ namespace SiliconStudio.Core.Serialization
             return Equals((ContentReference)obj);
         }
 
-        /// <summary>
-        /// Creates a new reference of the specified type with given id and location.
-        /// </summary>
-        /// <param name="referenceType">Type of the reference.</param>
-        /// <param name="id">The identifier.</param>
-        /// <param name="location">The location.</param>
-        /// <returns></returns>
-        /// <exception cref="System.ArgumentNullException">referenceType</exception>
-        /// <exception cref="System.ArgumentException">Reference must inherit from ContentReference;referenceType</exception>
-        public static ContentReference New(Type referenceType, Guid id, string location)
-        {
-            if (referenceType == null) throw new ArgumentNullException("referenceType");
-            if (!typeof(ContentReference).GetTypeInfo().IsAssignableFrom(referenceType.GetTypeInfo())) throw new ArgumentException("Reference must inherit from ContentReference", "referenceType");
-
-            return (ContentReference)Activator.CreateInstance(referenceType, id, location);
-        }
-
-
         public override int GetHashCode()
         {
             unchecked
             {
-                return (Id.GetHashCode()*397) ^ (Location != null ? Location.GetHashCode() : 0);
+                return (Id.GetHashCode()*397) ^ (Location?.GetHashCode() ?? 0);
             }
         }
 
@@ -99,7 +65,7 @@ namespace SiliconStudio.Core.Serialization
 
         public override string ToString()
         {
-            return string.Format("{0}:{1}", Id, Location);
+            return $"{Id}:{Location}";
         }
     }
 
@@ -111,10 +77,7 @@ namespace SiliconStudio.Core.Serialization
         private T value;
         private string url;
 
-        public override Type Type
-        {
-            get { return typeof(T); }
-        }
+        public override Type Type => typeof(T);
 
         /// <summary>
         /// Gets or sets the value.
@@ -147,7 +110,7 @@ namespace SiliconStudio.Core.Serialization
             {
                 State = ContentReferenceState.Modified;
                 this.value = value;
-                this.url = null;
+                url = null;
             }
         }
 
@@ -189,13 +152,6 @@ namespace SiliconStudio.Core.Serialization
         {
             Id = id;
             Location = location;
-        }
-
-        public static explicit operator T (ContentReference<T> contentReference)
-        {
-            if (contentReference == null)
-                return null;
-            return contentReference.Value;
         }
 
         public static implicit operator ContentReference<T>(T value)

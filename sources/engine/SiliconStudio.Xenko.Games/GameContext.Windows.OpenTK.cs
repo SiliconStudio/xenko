@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -20,7 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using OpenTK;
 using OpenTK.Graphics;
@@ -31,34 +31,23 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
     /// </summary>
-    public partial class GameContext 
+    public partial class GameContextOpenTk : GameContextWindows<OpenTK.GameWindow>
     {
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameContext" /> class with a default <see cref="GameForm"/>.
-        /// </summary>
-        public GameContext() : this(null)
+        /// <inheritDoc/>
+        public GameContextOpenTk(OpenTK.GameWindow control, int requestedWidth = 0, int requestedHeight = 0)
+            : base(control, requestedWidth, requestedHeight)
         {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameContext" /> class.
-        /// </summary>
-        /// <param name="control">The control.</param>
-        /// <param name="requestedWidth">Width of the requested.</param>
-        /// <param name="requestedHeight">Height of the requested.</param>
-        public GameContext(OpenTK.GameWindow control, int requestedWidth = 0, int requestedHeight = 0)
-        {
-            var creationFlags = GraphicsContextFlags.Default;
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            creationFlags |= GraphicsContextFlags.Embedded;
-#endif
-
+            ContextType = AppContextType.DesktopOpenTK;
             if (requestedWidth == 0 || requestedHeight == 0)
             {
                 requestedWidth = 1280;
                 requestedHeight = 720;
             }
 
+            var creationFlags = GraphicsContextFlags.Default;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+            creationFlags |= GraphicsContextFlags.Embedded;
+#endif
             // force the stencil buffer to be not null.
             var defaultMode = GraphicsMode.Default;
             var graphicMode = new GraphicsMode(defaultMode.ColorFormat, defaultMode.Depth, 8, defaultMode.Samples, defaultMode.AccumulatorFormat, defaultMode.Buffers, defaultMode.Stereo);
@@ -95,30 +84,11 @@ namespace SiliconStudio.Xenko.Games
                     }
                 }
             }
-            else
-                Control = control;
 
             if (Control == null)
+            {
                 throw new Exception("Unable to initialize graphics context.");
-
-            RequestedWidth = requestedWidth;
-            RequestedHeight = requestedHeight;
-            ContextType = AppContextType.DesktopOpenTK;
-        }
-
-        /// <summary>
-        /// The control used as a GameWindow context (either an instance of <see cref="System.Windows.Forms.Control"/> or <see cref="System.Windows.Controls.Control"/>.
-        /// </summary>
-        public readonly object Control;
-
-        /// <summary>
-        /// Performs an implicit conversion from OpenTK.GameWindow to <see cref="GameContext"/>.
-        /// </summary>
-        /// <param name="gameWindow">The GameWindow.</param>
-        /// <returns>The result of the conversion.</returns>
-        public static implicit operator GameContext(OpenTK.GameWindow gameWindow)
-        {
-            return new GameContext(gameWindow);
+            }
         }
 
         /// <summary>
@@ -150,6 +120,16 @@ namespace SiliconStudio.Xenko.Games
                 return null;
             }
 
+        }
+
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="OpenTK.GameWindow"/> to <see cref="GameContextOpenTk"/>.
+        /// </summary>
+        /// <param name="gameWindow">OpenTK GameWindow</param>
+        /// <returns>The result of the conversion.</returns>
+        public static implicit operator GameContextOpenTk(OpenTK.GameWindow gameWindow)
+        {
+            return new GameContextOpenTk(gameWindow);
         }
     }
 }

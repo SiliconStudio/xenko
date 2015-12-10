@@ -9,13 +9,14 @@ using OpenGLES;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.OpenGL;
 using Rectangle = SiliconStudio.Core.Mathematics.Rectangle;
+using UIKit;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowiOS : GameWindow
+    internal class GameWindowiOS : GameWindow<iOSWindow>
     {
         private bool hasBeenInitialized;
         private iPhoneOSGameView gameForm;
@@ -44,16 +45,9 @@ namespace SiliconStudio.Xenko.Games
             // Desktop doesn't have orientation (unless on Windows 8?)
         }
 
-        internal override bool CanHandle(GameContext gameContext)
+        protected override void Initialize(GameContext<iOSWindow> gameContext)
         {
-            return gameContext.ContextType == AppContextType.iOS;
-        }
-
-        internal override void Initialize(GameContext gameContext)
-        {
-            GameContext = gameContext;
-
-            gameForm = gameContext.GameView;
+            gameForm = gameContext.Control.GameView;
             nativeWindow = new WindowHandle(AppContextType.iOS, gameForm);
 
             gameForm.Load += gameForm_Load;

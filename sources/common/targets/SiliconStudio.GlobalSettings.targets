@@ -16,7 +16,9 @@
   <PropertyGroup>
     <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' == ''">$(MSBuildThisFileDirectory)..\deps\</SiliconStudioDependenciesDir>
     <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' != '' and !HasTrailingSlash('$(SiliconStudioDependenciesDir)')">$(SiliconStudioDependenciesDir)\</SiliconStudioDependenciesDir>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirectory)' == ''">$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
+    <!-- Define the location where to build assemblies. -->
+    <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioBuildDirExtension)</SiliconStudioBuildDirectory>
     <BaseIntermediateOutputPath Condition=" $(BaseIntermediateOutputPath) == '' ">obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath Condition=" $(IntermediateOutputPath) == '' ">$(BaseIntermediateOutputPath)$(SiliconStudioBuildDirectory)\</IntermediateOutputPath>
     <DefaultOutputPath>Bin\$(SiliconStudioBuildDirectory)\</DefaultOutputPath>
@@ -124,7 +126,15 @@
     <MtouchLink>SdkOnly</MtouchLink>
   </PropertyGroup>
 
+  <!-- 
+    Settings SiliconStudioUI specific defines.
+    The computation of SiliconStudioUIDefineConstants is done in SiliconStudio.PreSettings.targets.
+  -->
 
+  <PropertyGroup>
+    <SiliconStudioUIDefines>@(SiliconStudioUIDefineConstants->'%(Argument)')</SiliconStudioUIDefines>
+  </PropertyGroup>
+ 
   <!-- 
     Global Defines
   -->
@@ -143,6 +153,10 @@
     <DefineConstants>TRACE;$(SiliconStudioPlatformDefines)</DefineConstants>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <DefineConstants Condition="'$(SiliconStudioUIDefines)' != ''">$(DefineConstants);$(SiliconStudioUIDefines)</DefineConstants>
   </PropertyGroup>
   
   <!-- Signing -->
