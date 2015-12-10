@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Input;
 
-namespace SiliconStudio.Xenko.Testing.Requests
+namespace SiliconStudio.Xenko.Games.Testing.Requests
 {
     [DataContract]
     internal class TapSimulationRequest : TestRequestBase

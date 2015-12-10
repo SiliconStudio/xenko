@@ -3,7 +3,7 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.Testing.Requests
+namespace SiliconStudio.Xenko.Games.Testing.Requests
 {
     [DataContract]
     internal class LogRequest : TestRequestBase

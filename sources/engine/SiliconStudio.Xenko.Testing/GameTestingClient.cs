@@ -8,18 +8,19 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Network;
+using SiliconStudio.Xenko.Games.Testing.Requests;
 using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Testing.Requests;
 
-namespace SiliconStudio.Xenko.Testing
+namespace SiliconStudio.Xenko.Games.Testing
 {
     /// <summary>
     /// This class is to be consumed by Unit tests, see samples/Tests/Tests.sln
     /// It will send requests to the router which in turn will route them to the running game
     /// </summary>
-    public class GameTest : IDisposable
+    public class GameTestingClient : IDisposable
     {
         private readonly SocketMessageLayer socketMessageLayer;
         private readonly string xenkoDir;
@@ -29,9 +30,13 @@ namespace SiliconStudio.Xenko.Testing
 
         private readonly AutoResetEvent screenshotEvent = new AutoResetEvent(false);
 
-        public GameTest(string gamePath, PlatformType platform)
+        public GameTestingClient(string gamePath, PlatformType platform)
         {
+            if(gamePath == null) throw new ArgumentNullException(nameof(gamePath));
+
             xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
+            if(xenkoDir.IsNullOrEmpty()) throw new NullReferenceException("Could not find SiliconStudioXenkoDir, make sure the environment variable is set.");
+
             gameName = Path.GetFileNameWithoutExtension(gamePath);
             switch (platform)
             {

@@ -3,7 +3,7 @@
 
 using System.IO;
 
-namespace SiliconStudio.Xenko.Testing
+namespace SiliconStudio.Xenko.Games.Testing
 {
     class BlockingBufferStream : Stream
     {

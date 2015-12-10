@@ -34,12 +34,12 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Static event that will be fired when a game is initialized
         /// </summary>
-        public static event EventHandler<GameEventArgs> GameStarted;
+        public static event EventHandler GameStarted;
 
         /// <summary>
         /// Static event that will be fired when a game is destroyed
         /// </summary>
-        public static event EventHandler<GameEventArgs> GameDestroyed;
+        public static event EventHandler GameDestroyed;
 
         private readonly GameFontSystem gameFontSystem;
 
@@ -198,7 +198,7 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void Destroy()
         {
-            OnGameDestroyed(new GameEventArgs { Game = this });
+            OnGameDestroyed(this);
 
             base.Destroy();
             
@@ -297,7 +297,7 @@ namespace SiliconStudio.Xenko.Engine
             // enable multi-touch by default
             Input.MultiTouchEnabled = true;
 
-            OnGameStarted(new GameEventArgs { Game = this });
+            OnGameStarted(this);
         }
 
         internal static void InitializeAssetDatabase()
@@ -361,14 +361,14 @@ namespace SiliconStudio.Xenko.Engine
             return new ConsoleLogListener();
         }
 
-        private static void OnGameStarted(GameEventArgs e)
+        private static void OnGameStarted(Game game)
         {
-            GameStarted?.Invoke(null, e);
+            GameStarted?.Invoke(game, null);
         }
 
-        private static void OnGameDestroyed(GameEventArgs e)
+        private static void OnGameDestroyed(Game game)
         {
-            GameDestroyed?.Invoke(null, e);
+            GameDestroyed?.Invoke(game, null);
         }
     }
 }

@@ -7,7 +7,7 @@ using System.Runtime.InteropServices;
 using SiliconStudio.Core.LZ4;
 using SiliconStudio.Xenko.Graphics;
 
-namespace SiliconStudio.Xenko.Testing
+namespace SiliconStudio.Xenko.Games.Testing
 {
     class TestResultImage
     {

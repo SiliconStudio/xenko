@@ -4,8 +4,8 @@
   <PropertyGroup>
     <ProjectGuid>{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <RootNamespace>SiliconStudio.Xenko.Testing</RootNamespace>
-    <AssemblyName>SiliconStudio.Xenko.Testing</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Games.Testing</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Games.Testing</AssemblyName>
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
@@ -33,7 +33,7 @@
     <Compile Include="Requests\TestRequestBase.cs" />
     <Compile Include="GameTestingSystem.cs" />
     <Compile Include="Requests\TestEndedRequest.cs" />
-    <Compile Include="GameTest.cs" />
+    <Compile Include="GameTestingClient.cs" />
     <Compile Include="Requests\TestRegistrationRequest.cs" />
     <Compile Include="TestResultImage.cs" />
   </ItemGroup>

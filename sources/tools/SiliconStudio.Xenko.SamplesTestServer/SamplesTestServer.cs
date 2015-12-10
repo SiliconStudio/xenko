@@ -1,14 +1,17 @@
+// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.ConnectionRouter;
 using SiliconStudio.Xenko.Engine.Network;
-using SiliconStudio.Xenko.Testing;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using SiliconStudio.Xenko.Games.Testing;
+using SiliconStudio.Xenko.Games.Testing.Requests;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Testing.Requests;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
 {

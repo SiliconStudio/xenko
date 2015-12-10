@@ -1,21 +1,24 @@
 ﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using SiliconStudio.Core;
-using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Network;
-using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Input.Extensions;
-using SiliconStudio.Xenko.Testing.Requests;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
 using System.Threading.Tasks;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Network;
+using SiliconStudio.Xenko.Games.Testing.Requests;
+using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Input;
+using SiliconStudio.Xenko.Input.Extensions;
 
-namespace SiliconStudio.Xenko.Testing
+namespace SiliconStudio.Xenko.Games.Testing
 {
+    /// <summary>
+    /// This game system will be automatically injected by the Module initialized when included in the build processing via msbuild
+    /// The purpose is to simulate events within the game process and report errors and such to the GameTestingClient
+    /// </summary>
     internal class GameTestingSystem : GameSystemBase
     {
         private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>();
@@ -28,8 +31,10 @@ namespace SiliconStudio.Xenko.Testing
             Visible = true;
         }
 
-        public async Task StartClient(Game game)
+        public override async void Initialize()
         {
+            var game = (Game)Game;
+
             //Quit after 1 minute anyway!
             Task.Run(async () =>
             {
@@ -92,8 +97,6 @@ namespace SiliconStudio.Xenko.Testing
             {
                 await socketMessageLayer.Send(new TestRegistrationRequest { GameAssembly = game.Settings.PackageName, Tester = false, Platform = (int)Platform.Type });
             });
-
-            game.GameSystems.Add(this);          
         }
 
         public override void Draw(GameTime gameTime)
