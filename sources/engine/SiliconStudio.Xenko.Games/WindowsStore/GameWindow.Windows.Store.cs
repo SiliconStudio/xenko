@@ -23,10 +23,13 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
 
 using System;
+using System.Diagnostics;
 using Windows.Graphics.Display;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
+#if SILICONSTUDIO_PLATFORM_WINDOWS_10
 using Windows.Foundation;
+#endif
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -38,7 +41,7 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowWindowsRuntimeSwapChainPanel : GameWindow
+    internal class GameWindowWindowsRuntimeSwapChainPanel : GameWindow<SwapChainPanel>
     {
 #region Fields
         private const DisplayOrientations PortraitOrientations = DisplayOrientations.Portrait | DisplayOrientations.PortraitFlipped;
@@ -185,32 +188,21 @@ namespace SiliconStudio.Xenko.Games
 
 #region Methods
 
-        internal override bool CanHandle(GameContext windowContext)
+        protected override void Initialize(GameContext<SwapChainPanel> windowContext)
         {
-            return windowContext.ContextType == AppContextType.WindowsRuntime;
-        }
-
-        internal override void Initialize(GameContext windowContext)
-        {
-            if (windowContext != null)
-            {
-                swapChainPanel = windowContext.Control as SwapChainPanel;
-                if (swapChainPanel == null)
-                {
-                    throw new NotSupportedException(string.Format("Unsupported window context [{0}]. Only SwapChainPanel",  windowContext.Control.GetType().FullName));
-                }
-                windowHandle = new WindowHandle(AppContextType.WindowsRuntime, swapChainPanel);
+            Debug.Assert(windowContext is GameContextWindowsRuntime, "By design only one descendant of GameContext<SwapChainPanel>");
+            swapChainPanel = windowContext.Control;
+            windowHandle = new WindowHandle(AppContextType.WindowsRuntime, swapChainPanel);
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_10
-                var appView = ApplicationView.GetForCurrentView();
-                if (appView != null && windowContext.RequestedWidth != 0 && windowContext.RequestedHeight != 0)
-                    appView.TryResizeView(new Size(windowContext.RequestedWidth, windowContext.RequestedHeight));
+            var appView = ApplicationView.GetForCurrentView();
+            if (appView != null && windowContext.RequestedWidth != 0 && windowContext.RequestedHeight != 0)
+                appView.TryResizeView(new Size(windowContext.RequestedWidth, windowContext.RequestedHeight));
 #endif
 
-                //clientBounds = new DrawingRectangle(0, 0, (int)swapChainPanel.ActualWidth, (int)swapChainPanel.ActualHeight);
-                swapChainPanel.SizeChanged += swapChainPanel_SizeChanged;
-                swapChainPanel.CompositionScaleChanged += swapChainPanel_CompositionScaleChanged;
-            }
+            //clientBounds = new DrawingRectangle(0, 0, (int)swapChainPanel.ActualWidth, (int)swapChainPanel.ActualHeight);
+            swapChainPanel.SizeChanged += swapChainPanel_SizeChanged;
+            swapChainPanel.CompositionScaleChanged += swapChainPanel_CompositionScaleChanged;
         }
 
         void swapChainPanel_CompositionScaleChanged(SwapChainPanel sender, object args)

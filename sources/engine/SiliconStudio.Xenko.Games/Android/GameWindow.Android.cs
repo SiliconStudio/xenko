@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowAndroid : GameWindow
+    internal class GameWindowAndroid : GameWindow<AndroidXenkoGameView>
     {
         private AndroidXenkoGameView xenkoGameForm;
         private WindowHandle nativeWindow;
@@ -45,16 +45,9 @@ namespace SiliconStudio.Xenko.Games
             // Desktop doesn't have orientation (unless on Windows 8?)
         }
 
-        internal override bool CanHandle(GameContext gameContext)
+        protected override void Initialize(GameContext<AndroidXenkoGameView> gameContext)
         {
-            return gameContext.ContextType == AppContextType.Android;
-        }
-
-        internal override void Initialize(GameContext gameContext)
-        {
-            GameContext = gameContext;
-
-            xenkoGameForm = (AndroidXenkoGameView)gameContext.Control;
+            xenkoGameForm = gameContext.Control;
             nativeWindow = new WindowHandle(AppContextType.Android, xenkoGameForm);
 
             xenkoGameForm.Load += gameForm_Resume;
@@ -121,7 +114,7 @@ namespace SiliconStudio.Xenko.Games
 
             if (xenkoGameForm.GraphicsContext != null)
             {
-                throw new NotImplementedException("Only supports not yet initialized AndroidGameView.");
+                throw new NotImplementedException("Only supports not yet initialized AndroidXenkoGameView.");
             }
         }
 

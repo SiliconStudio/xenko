@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Games
 {
-    internal class GamePlatformiOS : GamePlatform, IGraphicsDeviceFactory
+    internal class GamePlatformiOS : GamePlatform<iOSWindow>, IGraphicsDeviceFactory
     {
         public GamePlatformiOS(GameBase game) : base(game)
         {
@@ -24,9 +24,16 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        internal override GameWindow[] GetSupportedGameWindows()
+        internal override GameWindow GetSupportedGameWindow(AppContextType type)
         {
-            return new GameWindow[] { new GameWindowiOS() };
+            if (type == AppContextType.iOS)
+            {
+                return new GameWindowiOS();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public override List<GraphicsDeviceInformation> FindBestDevices(GameGraphicsParameters preferredParameters)

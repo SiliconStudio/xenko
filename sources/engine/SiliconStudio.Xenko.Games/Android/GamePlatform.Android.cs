@@ -24,9 +24,16 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        internal override GameWindow[] GetSupportedGameWindows()
+        internal override GameWindow GetSupportedGameWindow(AppContextType type)
         {
-            return new GameWindow[] { new GameWindowAndroid() };
+            if (type == AppContextType.Android)
+            {
+                return new GameWindowAndroid();
+            }
+            else
+            {
+                return null;
+            }
         }
 
         public override List<GraphicsDeviceInformation> FindBestDevices(GameGraphicsParameters preferredParameters)

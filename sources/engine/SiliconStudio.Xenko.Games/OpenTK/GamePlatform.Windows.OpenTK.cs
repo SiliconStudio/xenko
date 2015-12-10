@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -9,24 +9,10 @@ using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Games
 {
-    internal class GamePlatformOpenTK : GamePlatform, IGraphicsDeviceFactory
+    internal class GamePlatformOpenTK : GamePlatformWindows, IGraphicsDeviceFactory
     {
         public GamePlatformOpenTK(GameBase game) : base(game)
         {
-        }
-
-        public override string DefaultAppDirectory
-        {
-            get
-            {
-                var assemblyUri = new Uri(Assembly.GetEntryAssembly().CodeBase);
-                return Path.GetDirectoryName(assemblyUri.LocalPath);
-            }
-        }
-
-        internal override GameWindow[] GetSupportedGameWindows()
-        {
-            return new GameWindow[] { new GameWindowOpenTK() };
         }
 
         public virtual void DeviceChanged(GraphicsDevice currentDevice, GraphicsDeviceInformation deviceInformation)

@@ -49,10 +49,10 @@ namespace SiliconStudio.Xenko.Games
         /// </summary>
         /// <param name="registry">The registry.</param>
         /// <param name="gameContext">The window context.</param>
-        public GameWindowRenderer(IServiceRegistry registry, GameContext gameContext = null)
+        public GameWindowRenderer(IServiceRegistry registry, GameContext gameContext)
             : base(registry)
         {
-            GameContext = gameContext ?? new GameContext();
+            GameContext = gameContext;
         }
 
         /// <summary>

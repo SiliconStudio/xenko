@@ -67,11 +67,6 @@ namespace SiliconStudio.Xenko.Graphics
         public readonly bool HasSRgb;
 
         /// <summary>
-        /// Is the device being profiled.
-        /// </summary>
-        public readonly bool IsProfiled;
-
-        /// <summary>
         /// Gets the <see cref="FeaturesPerFormat" /> for the specified <see cref="SharpDX.DXGI.Format" />.
         /// </summary>
         /// <param name="dxgiFormat">The dxgi format.</param>

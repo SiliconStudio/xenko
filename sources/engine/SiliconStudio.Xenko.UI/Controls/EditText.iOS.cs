@@ -8,6 +8,7 @@ using Foundation;
 using UIKit;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.UI.Events;
+using System.Diagnostics;
 
 namespace SiliconStudio.Xenko.UI.Controls
 {
@@ -20,7 +21,7 @@ namespace SiliconStudio.Xenko.UI.Controls
         private static EditText currentActiveEditText;
         private static UIView barView;
         private static UIView overlayView;
-        private static GameContext gameContext;
+        private static GameContextiOS gameContext;
 
         private static void InitializeStaticImpl()
         {
@@ -65,8 +66,9 @@ namespace SiliconStudio.Xenko.UI.Controls
         {
             if (gameContext == null)
             {
-                gameContext = game.Context;
-                gameContext.GameView.AddSubview(overlayView);
+                Debug.Assert(game.Context is GameContextiOS, "There is only one possible descendant of GameContext for iOS.");
+                gameContext = (GameContextiOS)game.Context;
+                gameContext.Control.GameView.AddSubview(overlayView);
 
                 NSNotificationCenter.DefaultCenter.AddObserver(UIDevice.OrientationDidChangeNotification, OnScreenRotated);
 
@@ -90,7 +92,7 @@ namespace SiliconStudio.Xenko.UI.Controls
             const int buttonHeight = 35;
             const int barHeight = buttonHeight + 2*spaceY;
 
-            var viewFrame = gameContext.GameView.Frame;
+            var viewFrame = gameContext.Control.GameView.Frame;
 
             barView.Frame = new RectangleF(0, 0, (int)viewFrame.Width, barHeight);
             overlayView.Frame = new RectangleF((int)viewFrame.X, (int)viewFrame.Y, 2 * (int)viewFrame.Width, (int)viewFrame.Height); // if we don't over-set width background can be seen during rotation...

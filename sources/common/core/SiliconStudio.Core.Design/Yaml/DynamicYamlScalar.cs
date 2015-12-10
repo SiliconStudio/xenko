@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Dynamic;
+using System.Globalization;
 using System.Linq.Expressions;
 using SharpYaml.Serialization;
 
@@ -33,7 +34,7 @@ namespace SiliconStudio.Core.Yaml
         {
             result = binder.Type.IsEnum
                 ? Enum.Parse(binder.Type, node.Value)
-                : Convert.ChangeType(node.Value, binder.Type);
+                : Convert.ChangeType(node.Value, binder.Type, CultureInfo.InvariantCulture);
 
             return true;
         }

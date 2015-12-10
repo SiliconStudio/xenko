@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -27,11 +27,15 @@ using System.Reflection;
 
 namespace SiliconStudio.Xenko.Games
 {
-    internal class GamePlatformDesktop : GamePlatform
+    internal class GamePlatformWindows : GamePlatform
     {
-        public GamePlatformDesktop(GameBase game) : base(game)
+        public GamePlatformWindows(GameBase game) : base(game)
         {
             IsBlockingRun = true;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+                // This is required by the Audio subsystem of SharpDX.
+            Win32Native.CoInitialize(IntPtr.Zero);
+#endif
         }
 
         public override string DefaultAppDirectory
@@ -43,16 +47,38 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        internal override GameWindow[] GetSupportedGameWindows()
+        internal override GameWindow GetSupportedGameWindow(AppContextType type)
         {
-            return new GameWindow[]
-                {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
-                    new GameWindowDesktop(),
-#elif SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-                    new GameWindowOpenTK(),
+            switch (type)
+            {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                case AppContextType.DesktopOpenTK:
+                    return new GameWindowOpenTK();
 #endif
-                };
+
+#if SILICONSTUDIO_XENKO_UI_SDL
+                 case AppContextType.DesktopSDL:
+                    return new GameWindowSdl();
+#endif
+
+                 case AppContextType.Desktop:
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && SILICONSTUDIO_XENKO_UI_WINFORMS
+                     return new GameWindowWinforms();
+#elif SILICONSTUDIO_XENKO_UI_SDL
+                    return new GameWindowSdl();
+#else
+                    return null;
+#endif
+
+#if SILICONSTUDIO_XENKO_UI_WPF
+                case AppContextType.DesktopWpf:
+                    // WPF is not supported yet.
+                    return null;
+#endif
+
+                default:
+                    return null;
+            }
         }
     }
 }
