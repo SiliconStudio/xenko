@@ -16,16 +16,6 @@ namespace SiliconStudio.Presentation.Quantum
     public abstract class NodeCommandWrapperBase : CancellableCommandBase, INodeCommandWrapper
     {
         /// <summary>
-        /// Gets the how to combine a set of <see cref="NodeCommandWrapperBase"/> in a <see cref="CombinedObservableNode"/>
-        /// </summary>
-        public abstract CombineMode CombineMode { get; }
-
-        /// <summary>
-        /// Gets or sets the path to the <see cref="ObservableNode"/> related to this command.
-        /// </summary>
-        public string ObservableNodePath { get; set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="NodeCommandWrapperBase"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IActionStack"/> to use for this view model.</param>
@@ -34,5 +24,10 @@ namespace SiliconStudio.Presentation.Quantum
             : base(serviceProvider, dirtiables)
         {
         }
+
+        /// <summary>
+        /// Gets the how to combine a set of <see cref="NodeCommandWrapperBase"/> in a <see cref="CombinedObservableNode"/>
+        /// </summary>
+        public abstract CombineMode CombineMode { get; }
     }
 }

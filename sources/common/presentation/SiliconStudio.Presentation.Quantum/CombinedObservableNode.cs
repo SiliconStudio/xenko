@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.Linq;
 
 using SiliconStudio.Core.Extensions;
@@ -29,6 +28,7 @@ namespace SiliconStudio.Presentation.Quantum
         protected CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
             : base(ownerViewModel, index)
         {
+            DependentProperties.Add(nameof(Value), new[] { nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary) });
             this.combinedNodes = new List<SingleObservableNode>(combinedNodes);
             Name = name;
             DisplayName = this.combinedNodes.First().DisplayName;
@@ -42,6 +42,9 @@ namespace SiliconStudio.Presentation.Quantum
 
             foreach (var node in this.combinedNodes)
             {
+                if (node.IsDisposed)
+                    throw new InvalidOperationException("One of the combined node is already disposed.");
+
                 if (node.IsReadOnly)
                     isReadOnly = true;
 
@@ -56,7 +59,6 @@ namespace SiliconStudio.Presentation.Quantum
 
                 combinedNodeInitialValues.Add(node.Value);
                 distinctCombinedNodeInitialValues.Add(node.Value);
-                node.PropertyChanged += NodePropertyChanged;
             }
             IsReadOnly = isReadOnly;
             IsVisible = isVisible;
@@ -69,6 +71,9 @@ namespace SiliconStudio.Presentation.Quantum
             var commandGroups = new Dictionary<string, List<ModelNodeCommandWrapper>>();
             foreach (var node in combinedNodes)
             {
+                if (node.IsDisposed)
+                    throw new InvalidOperationException("One of the combined node is already disposed.");
+
                 foreach (var command in node.Commands)
                 {
                     var list = commandGroups.GetOrCreateValue(command.Name);
@@ -86,7 +91,7 @@ namespace SiliconStudio.Presentation.Quantum
 
                 if (shouldCombine)
                 {
-                    var command = new CombinedNodeCommandWrapper(ServiceProvider, commandGroup.Key, Path, Owner.Identifier, commandGroup.Value);
+                    var command = new CombinedNodeCommandWrapper(ServiceProvider, commandGroup.Key, commandGroup.Value);
                     AddCommand(command);
                 }
             }
@@ -121,14 +126,6 @@ namespace SiliconStudio.Presentation.Quantum
             CheckDynamicMemberConsistency();
         }
 
-        private void NodePropertyChanged(object sender, PropertyChangedEventArgs e)
-        {
-            if (ChangeInProgress && e.PropertyName == "Value")
-            {
-                ChangedNodes.Add(this);
-            }
-        }
-
         internal static CombinedObservableNode Create(ObservableViewModel ownerViewModel, string name, CombinedObservableNode parent, Type contentType, IEnumerable<SingleObservableNode> combinedNodes, object index)
         {
             var node = (CombinedObservableNode)Activator.CreateInstance(typeof(CombinedObservableNode<>).MakeGenericType(contentType), ownerViewModel, name, combinedNodes, index);
@@ -158,7 +155,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override void Dispose()
         {
-            foreach (var node in CombinedNodes)
+            foreach (var node in CombinedNodes.Where(x => !x.IsDisposed))
             {
                 node.Dispose();
             }
@@ -173,8 +170,8 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 var parent = (CombinedObservableNode)Parent;
                 parent.NotifyPropertyChanging(Name);
-                NotifyNodeUpdating();
-
+                OnPropertyChanging(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
+                
                 if (AreCombinable(CombinedNodes))
                 {
                     ClearCommands();
@@ -186,13 +183,10 @@ namespace SiliconStudio.Presentation.Quantum
                         RemoveChild(child);
                     }
 
-                    foreach (var modelNode in CombinedNodes.OfType<ObservableModelNode>())
-                        modelNode.ForceSetValue(modelNode.Value);
-
                     Initialize();
                 }
 
-                NotifyNodeUpdated();
+                OnPropertyChanged(nameof(HasMultipleValues), nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
                 parent.NotifyPropertyChanged(Name);
             }
         }
@@ -225,10 +219,6 @@ namespace SiliconStudio.Presentation.Quantum
             }
             return true;
         }
-
-        protected abstract void NotifyNodeUpdating();
-
-        protected abstract void NotifyNodeUpdated();
 
         private void GenerateChildren(IEnumerable<KeyValuePair<string, List<SingleObservableNode>>> commonChildren)
         {
@@ -382,10 +372,38 @@ namespace SiliconStudio.Presentation.Quantum
 
     public class CombinedObservableNode<T> : CombinedObservableNode
     {
+        private bool refreshQueued;
+
         public CombinedObservableNode(ObservableViewModel ownerViewModel, string name, IEnumerable<SingleObservableNode> combinedNodes, object index)
             : base(ownerViewModel, name, combinedNodes, index)
         {
-            DependentProperties.Add("TypedValue", new[] { "Value" });
+            DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
+            foreach (var node in CombinedNodes)
+            {
+                node.ValueChanged += CombinedNodeValueChanged;
+            }
+        }
+
+        private void CombinedNodeValueChanged(object sender, EventArgs e)
+        {
+            refreshQueued = true;
+            // Defer the refresh of one frame and ensure we execute it only once.
+            Dispatcher.BeginInvoke(TriggerRefresh);
+        }
+
+        private void TriggerRefresh()
+        {
+            Dispatcher.EnsureAccess();
+
+            if (!refreshQueued)
+                return;
+
+            if (!IsPrimitive)
+            {
+                Refresh();
+            }
+
+            refreshQueued = false;
         }
 
         /// <summary>
@@ -400,18 +418,18 @@ namespace SiliconStudio.Presentation.Quantum
             set
             {
                 Owner.BeginCombinedAction();
-                NotifyNodeUpdating();
-                ChangeInProgress = true;
+                OnPropertyChanging(nameof(TypedValue));
+                //ChangeInProgress = true;
                 CombinedNodes.ForEach(x => x.Value = value);
-                var changedNodes = ChangedNodes.Where(x => x != this).ToList();
-                ChangedNodes.Clear();
-                ChangeInProgress = false;
-                if (!IsPrimitive)
-                {
-                    Refresh();
-                }
-                changedNodes.ForEach(x => x.Refresh());
-                NotifyNodeUpdated();
+                OnPropertyChanged(nameof(TypedValue));
+                //var changedNodes = ChangedNodes.Where(x => x != this).ToList();
+                //ChangedNodes.Clear();
+                //ChangeInProgress = false;
+                //if (!IsPrimitive)
+                //{
+                //    Refresh();
+                //}
+                //changedNodes.ForEach(x => x.Refresh());
                 string displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 Owner.EndCombinedAction(displayName, Path, value);
             }
@@ -422,17 +440,5 @@ namespace SiliconStudio.Presentation.Quantum
 
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
-
-        // TODO: use DependentProperties property
-        protected override void NotifyNodeUpdating()
-        {
-            OnPropertyChanging("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
-        }
-
-        protected override void NotifyNodeUpdated()
-        {
-            OnPropertyChanged("TypedValue", "HasMultipleValues", "IsPrimitive", "HasList", "HasDictionary");
-            OnValueChanged();
-        }
     }
 }

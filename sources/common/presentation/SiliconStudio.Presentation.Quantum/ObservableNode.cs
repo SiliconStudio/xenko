@@ -22,7 +22,6 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren), nameof(Name), nameof(Index), nameof(Order));
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
-        private bool isDisposed;
         private bool isVisible;
         private bool isReadOnly;
         private string displayName;
@@ -132,6 +131,11 @@ namespace SiliconStudio.Presentation.Quantum
         public int Level => Parent?.Level + 1 ?? 0;
 
         /// <summary>
+        /// Gets whether this node has been disposed.
+        /// </summary>
+        public bool IsDisposed { get; private set; }
+     
+        /// <summary>
         /// Gets the order number of this node in its parent.
         /// </summary>
         public abstract int? Order { get; }
@@ -182,7 +186,7 @@ namespace SiliconStudio.Presentation.Quantum
         public virtual void Dispose()
         {
             EnsureNotDisposed();
-            isDisposed = true;
+            IsDisposed = true;
         }
 
         /// <inheritdoc/>
@@ -285,7 +289,6 @@ namespace SiliconStudio.Presentation.Quantum
                 Name = newName;
             }
             ((ObservableNode)newParent).AddChild(this);
-            UpdateCommandPath();
         }
         
         /// <summary>
@@ -350,7 +353,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         protected void EnsureNotDisposed()
         {
-            if (isDisposed)
+            if (IsDisposed)
             {
                 throw new ObjectDisposedException(Name);
             }
@@ -513,17 +516,6 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             base.OnPropertyChanged(propertyNames);
-        }
-        private void UpdateCommandPath()
-        {
-            foreach (var commandWrapper in Commands.OfType<NodeCommandWrapperBase>())
-            {
-                commandWrapper.ObservableNodePath = Path;
-            }
-            foreach (var child in Children.OfType<ObservableNode>())
-            {
-                child.UpdateCommandPath();
-            }
         }
 
         private void ChildVisibilityChanged(object sender, EventArgs e)

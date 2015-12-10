@@ -200,7 +200,7 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             combinedNodeChanges.Clear();
-            ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, ObservableViewModelService, observableNodePath, Identifier, x));
+            ActionStack.EndTransaction(displayName, x => new AggregateActionItem(displayName, x.ToArray()));
         }
 
         private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index)
