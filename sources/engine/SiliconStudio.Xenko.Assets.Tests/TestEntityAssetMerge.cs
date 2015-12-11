@@ -449,14 +449,14 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void TestMergeSimpleWithBasePartsAndLinks()
         {
             // part1:                part2:                  newAsset (BaseParts: part1):       newAssetMerged (BaseParts: part2):
-            //   EA                    EA                      EA1 (base: EA)                     EA1' (base: EA) 
-            //   EB                    EB                      EB1 (base: EB)                     EB1' (base: EB)
-            //   EC + link: EA         EC + link: EA           EC1 (base: EC) + link: EA1         EC1' (base: EC) + link: EA1'
-            //                         ED + link: EB           EA2 (base: EA)                     EA2' (base: EA)
-            //                                                 EB2 (base: EB)                     EB2' (base: EB)
-            //                                                 EC2 (base: EC) + link: EA2         EC2' (base: EC) + link: EA2'
-            //                                                                                    ED1' (base: ED) + link: EB1'
-            //                                                                                    ED2' (base: ED) + link: EB2'
+            //   EA                    EA                      EA1 (base: EA)                     [0] EA1' (base: EA) 
+            //   EB                    EB                      EB1 (base: EB)                     [1] EB1' (base: EB)
+            //   EC + link: EA         EC + link: EA           EC1 (base: EC) + link: EA1         [2] EC1' (base: EC) + link: EA1'
+            //                         ED + link: EB           EA2 (base: EA)                     [3] EA2' (base: EA)
+            //                                                 EB2 (base: EB)                     [4] EB2' (base: EB)
+            //                                                 EC2 (base: EC) + link: EA2         [5] EC2' (base: EC) + link: EA2'
+            //                                                                                    [6] ED1' (base: ED) + link: EB1'
+            //                                                                                    [7] ED2' (base: ED) + link: EB2'
             var entityA = new Entity() { Name = "A" };
             var entityB = new Entity() { Name = "B" };
             var entityC = new Entity() { Name = "C" };
@@ -464,62 +464,37 @@ namespace SiliconStudio.Xenko.Assets.Tests
             entityC.Add(new TestEntityComponent() { EntityLink = entityA });
 
             // part1 Asset
-            var part1 = new EntityAsset();
-            part1.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
-            part1.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
-            part1.Hierarchy.Entities.Add(new EntityDesign(entityC, new EntityDesignData()));
-            part1.Hierarchy.RootEntities.Add(entityA.Id);
-            part1.Hierarchy.RootEntities.Add(entityB.Id);
-            part1.Hierarchy.RootEntities.Add(entityC.Id);
+            var basePart = new EntityAsset();
+            basePart.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
+            basePart.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
+            basePart.Hierarchy.Entities.Add(new EntityDesign(entityC, new EntityDesignData()));
+            basePart.Hierarchy.RootEntities.Add(entityA.Id);
+            basePart.Hierarchy.RootEntities.Add(entityB.Id);
+            basePart.Hierarchy.RootEntities.Add(entityC.Id);
 
-            // part2 Asset
-            var part2 = (EntityAsset)AssetCloner.Clone(part1);
+            // Create part1 asset
+            var part1 = (EntityAsset)basePart.CreateChildAsset("part");
+            var entityB1 = part1.Hierarchy.Entities.First(it => it.Entity.Name == "B").Entity;
+            var part12 = (EntityAsset)basePart.CreateChildAsset("part");
+            var entityB2 = part12.Hierarchy.Entities.First(it => it.Entity.Name == "B").Entity;
+
+            // create part2 assset
             var entityD = new Entity() { Name = "D" };
-
+            basePart.Hierarchy.Entities.Add(new EntityDesign(entityD, new EntityDesignData()));
+            basePart.Hierarchy.RootEntities.Add(entityD.Id);
             // ED + link: EB
-            var entityBFrom2 = part2.Hierarchy.Entities.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
+            var entityBFrom2 = basePart.Hierarchy.Entities.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
             entityD.Add(new TestEntityComponent() { EntityLink = entityBFrom2 });
 
-            part2.Hierarchy.Entities.Add(new EntityDesign(entityD, new EntityDesignData()));
-            part2.Hierarchy.RootEntities.Add(entityD.Id);
+            var part2 = (EntityAsset)basePart.CreateChildAsset("part");
 
             // originalAsset: Add a new instanceId for this part
-            var asset = new EntityAsset { BaseParts = new List<AssetBasePart>() };
-            var assetBasePart = new AssetBasePart(new AssetBase("part", part1));
-            asset.BaseParts.Add(assetBasePart);
-            var instanceId1 = Guid.NewGuid();
-            var instanceId2 = Guid.NewGuid();
-            assetBasePart.InstanceIds.Add(instanceId1);
-            assetBasePart.InstanceIds.Add(instanceId2);
-
-            var entityA1 = new Entity() { Name = "A" };
-            var entityB1 = new Entity() { Name = "B" };
-            var entityC1 = new Entity() { Name = "C" };
-            // EC + link: EA
-            entityC1.Add(new TestEntityComponent() { EntityLink = entityA1 });
-
-            var entityA2 = new Entity() { Name = "A" };
-            var entityB2 = new Entity() { Name = "B" };
-            var entityC2 = new Entity() { Name = "C" };
-            // EC + link: EA
-            entityC2.Add(new TestEntityComponent() { EntityLink = entityA2 });
-
-            asset.Hierarchy.Entities.Add(new EntityDesign(entityA1, new EntityDesignData() { BaseId = entityA.Id, BasePartInstanceId = instanceId1 } ));
-            asset.Hierarchy.Entities.Add(new EntityDesign(entityB1, new EntityDesignData() { BaseId = entityB.Id, BasePartInstanceId = instanceId1 } ));
-            asset.Hierarchy.Entities.Add(new EntityDesign(entityC1, new EntityDesignData() { BaseId = entityC.Id, BasePartInstanceId = instanceId1 } ));
-            asset.Hierarchy.RootEntities.Add(entityA1.Id);
-            asset.Hierarchy.RootEntities.Add(entityB1.Id);
-            asset.Hierarchy.RootEntities.Add(entityC1.Id);
-
-            asset.Hierarchy.Entities.Add(new EntityDesign(entityA2, new EntityDesignData() { BaseId = entityA.Id, BasePartInstanceId = instanceId2 }));
-            asset.Hierarchy.Entities.Add(new EntityDesign(entityB2, new EntityDesignData() { BaseId = entityB.Id, BasePartInstanceId = instanceId2 }));
-            asset.Hierarchy.Entities.Add(new EntityDesign(entityC2, new EntityDesignData() { BaseId = entityC.Id, BasePartInstanceId = instanceId2 }));
-            asset.Hierarchy.RootEntities.Add(entityA2.Id);
-            asset.Hierarchy.RootEntities.Add(entityB2.Id);
-            asset.Hierarchy.RootEntities.Add(entityC2.Id);
+            var asset = new EntityAsset();
+            asset.AddPart(part1);
+            asset.AddPart(part12);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = asset.Merge(null, null, new List<AssetBasePart>() { new AssetBasePart(new AssetBase("part", part2)) { InstanceIds = { instanceId1, instanceId2 }}} );
+            var entityMerge = asset.Merge(null, null, new List<AssetBasePart>() { new AssetBasePart(part2.Base) { InstanceIds = { part1.Id, part12.Id }}} );
             Assert.False(entityMerge.HasErrors);
 
             // EntityD must be now part of the new asset
@@ -539,13 +514,13 @@ namespace SiliconStudio.Xenko.Assets.Tests
             }
 
             var entityDesignD1 = asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[6]];
-            Assert.AreEqual(instanceId1, entityDesignD1.Design.BasePartInstanceId);
+            Assert.AreEqual(part1.Id, entityDesignD1.Design.BasePartInstanceId);
             var testComponentD1 = entityDesignD1.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD1);
             Assert.AreEqual(entityB1, testComponentD1.EntityLink);
 
             var entityDesignD2 = asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[7]];
-            Assert.AreEqual(instanceId2, entityDesignD2.Design.BasePartInstanceId);
+            Assert.AreEqual(part12.Id, entityDesignD2.Design.BasePartInstanceId);
             var testComponentD2 = entityDesignD2.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD2);
             Assert.AreEqual(entityB2, testComponentD2.EntityLink);
@@ -605,28 +580,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var asset = new EntityAsset { BaseParts = new List<AssetBasePart>() };
             var assetBasePart = new AssetBasePart(new AssetBase("part", part1));
             asset.BaseParts.Add(assetBasePart);
-            var instanceId1 = Guid.NewGuid();
-            var instanceId2 = Guid.NewGuid();
-            assetBasePart.InstanceIds.Add(instanceId1);
-            assetBasePart.InstanceIds.Add(instanceId2);
 
+            // Create derived parts
             var eRoot1Asset = (EntityAsset)part1.CreateChildAsset("part");
             var eRoot2Asset = (EntityAsset)part1.CreateChildAsset("part");
-
-            foreach (var entityDesign in eRoot1Asset.Hierarchy.Entities)
-            {
-                entityDesign.Design.BasePartInstanceId = instanceId1;
-                asset.Hierarchy.Entities.Add(entityDesign);
-            }
-            asset.Hierarchy.RootEntities.AddRange(eRoot1Asset.Hierarchy.RootEntities);
-
-
-            foreach (var entityDesign in eRoot2Asset.Hierarchy.Entities)
-            {
-                entityDesign.Design.BasePartInstanceId = instanceId2;
-                asset.Hierarchy.Entities.Add(entityDesign);
-            }
-            asset.Hierarchy.RootEntities.AddRange(eRoot2Asset.Hierarchy.RootEntities);
+            asset.AddPart(eRoot1Asset);
+            asset.AddPart(eRoot2Asset);
 
             var eRoot2 = asset.Hierarchy.Entities[eRoot2Asset.Hierarchy.RootEntities[0]];
 
@@ -635,7 +594,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             asset.Hierarchy.Entities.Remove(entityToRemove.Entity.Id);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = asset.Merge(null, null, new List<AssetBasePart>() { new AssetBasePart(new AssetBase("part", part2)) { InstanceIds = { instanceId1, instanceId2 } } });
+            var entityMerge = asset.Merge(null, null, new List<AssetBasePart>() { new AssetBasePart(new AssetBase("part", part2)) { InstanceIds = { eRoot1Asset.Id, eRoot2Asset.Id } } });
             Assert.False(entityMerge.HasErrors);
 
             // EntityD must be now part of the new asset
@@ -653,7 +612,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             var entityDesignD1 = asset.Hierarchy.Entities[asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[0]].Entity.Transform.Children.Where(it => it.Entity.Name == "D").Select(it => it.Entity.Id).FirstOrDefault()];
             Assert.NotNull(entityDesignD1);
-            Assert.AreEqual(instanceId1, entityDesignD1.Design.BasePartInstanceId);
+            Assert.AreEqual(eRoot1Asset.Id, entityDesignD1.Design.BasePartInstanceId);
             var testComponentD1 = entityDesignD1.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD1);
             var entityB1 = asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[0]].Entity.Transform.Children.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
@@ -661,7 +620,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             var entityDesignD2 = asset.Hierarchy.Entities[asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[1]].Entity.Transform.Children.Where(it => it.Entity.Name == "D").Select(it => it.Entity.Id).FirstOrDefault()];
             Assert.NotNull(entityDesignD2);
-            Assert.AreEqual(instanceId2, entityDesignD2.Design.BasePartInstanceId);
+            Assert.AreEqual(eRoot2Asset.Id, entityDesignD2.Design.BasePartInstanceId);
             var testComponentD2 = entityDesignD2.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD2);
             Assert.AreEqual(null, testComponentD2.EntityLink);
