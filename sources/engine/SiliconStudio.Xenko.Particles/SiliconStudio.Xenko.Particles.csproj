@@ -52,6 +52,24 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorWhite.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Shaders\ParticleBaseShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ParticleBaseShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\ParticleComputeColorShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ParticleComputeColorShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Shaders\ParticleEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ParticleEffect.xkfx</DependentUpon>
+    </Compile>
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
@@ -95,12 +113,6 @@
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleBatchShader.xksl</DependentUpon>
-    </Compile>
-    <Compile Include="Shaders\ParticleEffect.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ParticleEffect.xksl</DependentUpon>
     </Compile>
     <Compile Include="ShapeBuilders\ShapeBuilderBillboard.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderBase.cs" />
@@ -161,6 +173,10 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleBase.cs</LastGenOutput>
     </None>
+    <None Include="Shaders\ParticleBaseShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ParticleBaseShader.cs</LastGenOutput>
+    </None>
     <None Include="Shaders\ParticleBatch.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleBatch.cs</LastGenOutput>
@@ -169,7 +185,11 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleBatchShader.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\ParticleEffect.xksl">
+    <None Include="Shaders\ParticleComputeColorShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ParticleComputeColorShader.cs</LastGenOutput>
+    </None>
+    <None Include="Shaders\ParticleEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleEffect.cs</LastGenOutput>
     </None>

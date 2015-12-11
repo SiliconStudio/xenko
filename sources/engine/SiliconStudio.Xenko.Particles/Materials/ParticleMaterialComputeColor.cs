@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
     public class ParticleMaterialComputeColor : ParticleMaterialBase
     {
         [DataMemberIgnore]
-        protected override string EffectName { get; set; } = "ParticleBatch";
+        protected override string EffectName { get; set; } = "ParticleEffect";
 
         [DataMember(100)]
         [Display("Emissive")]
