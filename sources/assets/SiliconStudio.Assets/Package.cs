@@ -538,12 +538,15 @@ namespace SiliconStudio.Assets
                             var assetBase = asset.Asset.Base;
                             if (assetBase != null && !assetBase.IsRootImport)
                             {
-                                var assetBaseItem = session != null ? session.FindAsset(assetBase.Id) : Assets.Find(assetBase.Id);
-                                if (assetBaseItem != null)
+                                assetBase.Asset.Base = UpdateAssetBase(assetBase);
+                            }
+
+                            // Update base for BaseParts
+                            if (asset.Asset.BaseParts != null)
+                            {
+                                foreach (var basePart in asset.Asset.BaseParts)
                                 {
-                                    var newBase = (Asset)AssetCloner.Clone(assetBaseItem.Asset);
-                                    newBase.Base = null;
-                                    asset.Asset.Base = new AssetBase(asset.Asset.Base.Location, newBase);
+                                    basePart.Base = UpdateAssetBase(basePart.Base);
                                 }
                             }
 
@@ -575,6 +578,25 @@ namespace SiliconStudio.Assets
                 analysis.Parameters.ConvertUPathTo = UPathType.Absolute;
                 analysis.Run();
             }
+        }
+
+        /// <summary>
+        /// Finds the most recent asset base and return a new version of it.
+        /// </summary>
+        /// <param name="assetBase">The original asset base</param>
+        /// <returns>A copy of the asset base updated with the latest base</returns>
+        private AssetBase UpdateAssetBase(AssetBase assetBase)
+        {
+            var assetBaseItem = session != null ? session.FindAsset(assetBase.Id) : Assets.Find(assetBase.Id);
+            if (assetBaseItem != null)
+            {
+                var newBase = (Asset)AssetCloner.Clone(assetBaseItem.Asset);
+                newBase.Base = null;
+                newBase.BaseParts = null;
+                return new AssetBase(assetBase.Location, newBase);
+            }
+            // TODO: If we don't find it, should we log an error instead?
+            return assetBase;
         }
 
         /// <summary>
