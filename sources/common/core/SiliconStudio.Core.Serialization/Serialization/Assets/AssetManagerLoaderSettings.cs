@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Linq;
-using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Core.Serialization.Assets
 {
@@ -11,11 +10,7 @@ namespace SiliconStudio.Core.Serialization.Assets
     /// </summary>
     public sealed class AssetManagerLoaderSettings
     {
-        private static readonly AssetManagerLoaderSettings defaultValue = new AssetManagerLoaderSettings();
-        private static readonly AssetManagerLoaderSettings ignoreReferences = new AssetManagerLoaderSettings { LoadContentReferences = false };
-        private bool loadContentReferences = true;
-
-        public delegate void ContentFilterDelegate(ContentReference contentReference, ref bool shouldBeLoaded);
+        public delegate void ContentFilterDelegate(ITypedContentReference contentReference, ref bool shouldBeLoaded);
 
         /// <summary>
         /// Gets the default loader settings.
@@ -23,10 +18,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <value>
         /// The default loader settings.
         /// </value>
-        public static AssetManagerLoaderSettings Default
-        {
-            get { return defaultValue; }
-        }
+        public static AssetManagerLoaderSettings Default { get; } = new AssetManagerLoaderSettings();
 
         /// <summary>
         /// Gets the loader settings which doesn't load content references.
@@ -34,25 +26,18 @@ namespace SiliconStudio.Core.Serialization.Assets
         /// <value>
         /// The loader settings which doesn't load content references.
         /// </value>
-        public static AssetManagerLoaderSettings IgnoreReferences
-        {
-            get { return ignoreReferences; }
-        }
+        public static AssetManagerLoaderSettings IgnoreReferences { get; } = new AssetManagerLoaderSettings { LoadContentReferences = false };
 
         /// <summary>
-        /// Gets or sets a value indicating whether <see cref="ContentReference{T}"/> should be loaded.
+        /// Gets or sets a value indicating whether <see cref="IContentReference"/> should be loaded.
         /// </summary>
         /// <value>
-        ///   <c>true</c> if <see cref="ContentReference{T}"/> should be loaded; otherwise, <c>false</c>.
+        ///   <c>true</c> if <see cref="IContentReference"/> should be loaded; otherwise, <c>false</c>.
         /// </value>
-        public bool LoadContentReferences
-        {
-            get { return loadContentReferences; }
-            set { loadContentReferences = value; }
-        }
+        public bool LoadContentReferences { get; set; } = true;
 
         /// <summary>
-        /// Gets or sets a filter that can indicate whether <see cref="ContentReference{T}"/> should be loaded.
+        /// Gets or sets a filter that can indicate whether <see cref="IContentReference"/> should be loaded.
         /// </summary>
         /// <value>
         /// The content reference filter.
@@ -67,7 +52,7 @@ namespace SiliconStudio.Core.Serialization.Assets
         public static ContentFilterDelegate NewContentFilterByType(params Type[] types)
         {
             // We could convert to HashSet, but usually not worth it for small sets
-            return (ContentReference contentReference, ref bool shouldBeLoaded) =>
+            return (ITypedContentReference contentReference, ref bool shouldBeLoaded) =>
             {
                 if (!types.Contains(contentReference.Type))
                     shouldBeLoaded = false;

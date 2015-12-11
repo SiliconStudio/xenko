@@ -539,10 +539,6 @@ namespace SiliconStudio.Assets
                             {
                                 newReference = AssetReference.New(asset2Instance.GetType(), realItem.Id, realItem.Location);
                             }
-                            else if (asset2Instance is ContentReference)
-                            {
-                                newReference = ContentReference.New(asset2Instance.GetType(), realItem.Id, realItem.Location);
-                            }
                             else
                             {
                                 newReference = AttachedReferenceManager.CreateSerializableVersion(asset2Instance.GetType(), realItem.Id, realItem.Location);
