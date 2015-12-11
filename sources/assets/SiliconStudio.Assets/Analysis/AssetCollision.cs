@@ -29,14 +29,14 @@ namespace SiliconStudio.Assets.Analysis
         /// <exception cref="System.ArgumentException">List cannot contain null items;inputItems</exception>
         public static void Clean(Package package, ICollection<AssetItem> inputItems, ICollection<AssetItem> outputItems, AssetResolver assetResolver, bool cloneInput)
         {
-            if (inputItems == null) throw new ArgumentNullException("inputItems");
-            if (outputItems == null) throw new ArgumentNullException("outputItems");
-            if (assetResolver == null) throw new ArgumentNullException("assetResolver");
+            if (inputItems == null) throw new ArgumentNullException(nameof(inputItems));
+            if (outputItems == null) throw new ArgumentNullException(nameof(outputItems));
+            if (assetResolver == null) throw new ArgumentNullException(nameof(assetResolver));
 
             // Check that all items are non-null
             if (inputItems.Any(item => item == null))
             {
-                throw new ArgumentException("List cannot contain null items", "inputItems");
+                throw new ArgumentException("List cannot contain null items", nameof(inputItems));
             }
 
             var items = inputItems;

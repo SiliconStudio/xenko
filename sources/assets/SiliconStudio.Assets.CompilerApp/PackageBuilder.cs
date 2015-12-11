@@ -16,7 +16,9 @@ using SiliconStudio.Core.Serialization.Assets;
 
 using System.Threading;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Settings;
 using SiliconStudio.Xenko.Assets;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Assets.CompilerApp
 {
@@ -198,7 +200,8 @@ namespace SiliconStudio.Assets.CompilerApp
 
             // For now, graphics platform is implicit.
             // It will need to be readded to GameSettingsAsset at some point.
-            var graphicsPlatform = builderOptions.Platform.GetDefaultGraphicsPlatform();
+            var graphicsPlatformKey = new SettingsKey<GraphicsPlatform>("Xenko.GraphicsPlatform", buildProfile.Properties.Container, builderOptions.Platform.GetDefaultGraphicsPlatform());
+            var graphicsPlatform = graphicsPlatformKey.GetValue(buildProfile.Properties, true);
 
             Console.WriteLine(graphicsPlatform);
             return BuildResultCode.Successful;

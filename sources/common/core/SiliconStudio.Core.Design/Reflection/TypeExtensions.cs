@@ -196,7 +196,7 @@ namespace SiliconStudio.Core.Reflection
         public static string GetDisplayName(this Type type)
         {
             var displayAttribute = TypeDescriptorFactory.Default.AttributeRegistry.GetAttribute<DisplayAttribute>(type);
-            return displayAttribute != null && !string.IsNullOrEmpty(displayAttribute.Name) ? displayAttribute.Name : type.Name;
+            return !string.IsNullOrEmpty(displayAttribute?.Name) ? displayAttribute.Name : type.Name;
         }
 
         /// <summary>

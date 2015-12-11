@@ -22,13 +22,35 @@
 // THE SOFTWARE.
 
 using System;
-
+using System.Runtime.CompilerServices;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Games
 {
+
+    public abstract class GameWindow<TK> : GameWindow
+    {
+        internal sealed override void Initialize(GameContext gameContext)
+        {
+            var context = gameContext as GameContext<TK>;
+            if (context != null)
+            {
+                GameContext = context;
+                Initialize(context);
+            }
+            else
+            {
+                throw new InvalidOperationException("Invalid context for current game.");
+            }
+        }
+
+        internal GameContext<TK> GameContext;
+
+        protected abstract void Initialize(GameContext<TK> context);
+    }
+
     /// <summary>
     /// An abstract window.
     /// </summary>
@@ -37,8 +59,6 @@ namespace SiliconStudio.Xenko.Games
         #region Fields
 
         private string title;
-
-        internal GameContext GameContext;
 
         #endregion
 
@@ -166,12 +186,6 @@ namespace SiliconStudio.Xenko.Games
         #endregion
 
         #region Methods
-
-        /// <summary>
-        /// Initializes the GameWindow with the specified window context.
-        /// </summary>
-        /// <param name="gameContext">The window context.</param>
-        internal abstract bool CanHandle(GameContext gameContext);
 
         internal abstract void Initialize(GameContext gameContext);
 
