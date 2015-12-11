@@ -92,7 +92,7 @@ namespace SiliconStudio.ActionStack
         /// <summary>
         /// Gets whether an undo/redo operation is currently in progress.
         /// </summary>
-        protected bool UndoRedoInProgress { get; private set; }
+        public bool UndoRedoInProgress { get; private set; }
 
         /// <inheritdoc/>
         public virtual void Add(IActionItem item)
