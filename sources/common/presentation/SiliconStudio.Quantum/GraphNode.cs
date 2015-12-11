@@ -28,7 +28,7 @@ namespace SiliconStudio.Quantum
             if (name == null) throw new ArgumentNullException(nameof(name));
             if (content == null) throw new ArgumentNullException(nameof(content));
             if (guid == Guid.Empty) throw new ArgumentException(@"The guid must be different from Guid.Empty.", nameof(content));
-            this.Content = content;
+            Content = content;
             Name = name;
             Guid = guid;
 
