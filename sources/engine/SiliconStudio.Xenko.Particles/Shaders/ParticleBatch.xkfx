@@ -26,5 +26,10 @@ namespace SiliconStudio.Xenko.Rendering
         {
             mixin compose baseColor = ParticleBaseKeys.BaseColor;
         }
+
+        if (ParticleBaseKeys.BaseIntensity != null)
+        {
+            mixin compose baseIntensity = ParticleBaseKeys.BaseIntensity;
+        }
    };
 }

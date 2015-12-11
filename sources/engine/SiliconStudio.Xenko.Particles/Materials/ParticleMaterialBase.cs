@@ -25,16 +25,19 @@ namespace SiliconStudio.Xenko.Particles.Materials
     [DataContract("ParticleMaterialBase")]
     public abstract class ParticleMaterialBase
     {
+        // TODO Move to ParticleMaterialSimple and change the name
         [DataMember(20)]
         [DataMemberRange(0, 1, 0.001, 0.1)]
         [Display("Emissive power")]
         public float AlphaAdditive { get; set; } = 1f;
 
+        // TODO Move to ParticleMaterialSimple and change to IComputeScalar
         [DataMember(30)]
         [DataMemberRange(0, 100, 0.01, 1)]
         [Display("Intensity")]
         public float ColorIntensity { get; set; } = 1f; // TODO switch to IComputeScalar
 
+        // TODO Move to ParticleMaterialSimple ? Keep here?
         [DataMember(40)]
         [Display("Face culling")]
         public ParticleMaterialCulling FaceCulling;
@@ -75,10 +78,10 @@ namespace SiliconStudio.Xenko.Particles.Materials
         private DynamicEffectCompiler effectCompiler;
 
         /// <summary>
-        /// True if <see cref="ParticleMaterialBase.InitializeCore"/> has been called
+        /// True if <see cref="ParticleMaterialBase.Initialize"/> has been called
         /// </summary>
         [DataMemberIgnore]
-        private bool isInitialized = false;
+        protected bool isInitialized = false;
 
 
         /// <summary>
@@ -89,7 +92,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// <param name="projMatrix">The camera's Projection matrix</param>
         public virtual void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
-            InitializeCore(context);
+            if (!isInitialized)
+            {
+                InitializeCore(context);
+                isInitialized = true;
+            }
 
             // Setup graphics device - culling, blend states and depth testing
 
@@ -120,7 +127,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         }
 
-        public virtual unsafe void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool, ParticleEmitter emitter = null)
+        public virtual unsafe void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool)
         {
             var lifeField = pool.GetField(ParticleFields.RemainingLife);
             var randField = pool.GetField(ParticleFields.RandomSeed);
@@ -150,10 +157,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         protected virtual void InitializeCore(RenderContext context)
         {
-            if (isInitialized)
-                return;
-            isInitialized = true;
-
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
             ParameterCollections = new List<ParameterCollection> { parameters };
@@ -161,7 +164,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // Setup the effect compiler
             effectInstance = new DefaultEffectInstance(ParameterCollections);
             effectCompiler = new DynamicEffectCompiler(context.Services, EffectName, -1); // Image effects are compiled with higher priority
-
         }
 
         public void SetParameter<T>(ParameterKey<T> key, T value) => parameters.Set(key, value);
@@ -184,7 +186,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             if (parameterCollectionGroup == null || parameterCollectionGroup.Effect != effect)
             {
                 // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
-                parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, ParameterCollections);
+                parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, ParameterCollections.ToArray());
             }
         }
 

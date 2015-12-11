@@ -173,10 +173,10 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         // TODO Make some sort of accessor or enumerator around ParticlePool which can also sort particles
-        public unsafe override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool, ParticleEmitter emitter = null)
+        public unsafe override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool)
         {
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(vtxBuilder, invViewX, invViewY, maxVertices, pool, emitter);
+            base.PatchVertexBuffer(vtxBuilder, invViewX, invViewY, maxVertices, pool);
 
             var lifeField = pool.GetField(ParticleFields.RemainingLife);
 

@@ -15,6 +15,8 @@ class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
 
     compose ComputeColor  baseColor;
 
+    compose ComputeColor  baseIntensity;
+
     // -------------------------------------
     // streams
     // -------------------------------------
@@ -38,25 +40,27 @@ class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
     // Shading of the sprite
     stage override float4 Shading()
     {
-        float4 baseFloat4 = baseColor.Compute();
+//        float4 baseFloat4 = baseColor.Compute();
         
-        float4 finalColor = GenerateRandomColor() * streams.Color;
+        float4 finalColor = GenerateRandomColor() * streams.Color * baseColor.Compute();
         
-        finalColor = lerp(baseFloat4, finalColor, streams.Lifetime);
+//        finalColor = lerp(baseFloat4, finalColor, streams.Lifetime);
 //        finalColor.r = streams.Lifetime;
 //        finalColor.g = streams.Lifetime;
 //        finalColor.b = streams.Lifetime;
 //       finalColor.a = 1;
 
-        if (THasTexture)
-        {
-            finalColor *= ((RenderFlagSwizzle == 0) ? SampleTex0() : SampleTex0().rrrr);
-        }
+        //if (THasTexture)
+        //{
+        //    finalColor *= ((RenderFlagSwizzle == 0) ? SampleTex0() : SampleTex0().rrrr);
+        //}
 
-        finalColor.rgb *= ColorIntensity;
+
+        finalColor.rgb *= baseIntensity.Compute().rrr;
         // Test - for dynamic shaders
         //finalColor.b *= 200;
         finalColor.a   *= AlphaAdditive;
+        
 
         return finalColor;
     }

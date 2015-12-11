@@ -34,6 +34,17 @@ namespace SiliconStudio.Xenko.Rendering
                         context.PopComposition();
                     }
                 }
+                if (context.GetParam(ParticleBaseKeys.BaseIntensity) != null)
+                {
+
+                    {
+                        var __mixinToCompose__ = context.GetParam(ParticleBaseKeys.BaseIntensity);
+                        var __subMixin = new ShaderMixinSource();
+                        context.PushComposition(mixin, "baseIntensity", __subMixin);
+                        context.Mixin(__subMixin, __mixinToCompose__);
+                        context.PopComposition();
+                    }
+                }
             }
 
             [ModuleInitializer]
