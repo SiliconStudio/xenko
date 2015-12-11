@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract]
     [DataStyle(DataStyle.Compact)]
-    public class EntityScriptReference : IEntityScriptReference
+    public class EntityScriptReference : IEntityScriptReference, IIdentifiable
     {
         public EntityScriptReference()
         {

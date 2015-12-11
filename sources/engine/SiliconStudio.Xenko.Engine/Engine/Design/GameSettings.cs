@@ -24,6 +24,8 @@ namespace SiliconStudio.Xenko.Engine.Design
 
         public Guid PackageId { get; set; }
 
+        public string PackageName { get; set; }
+
         public string DefaultSceneUrl { get; set; }
 
         public int DefaultBackBufferWidth { get; set; }

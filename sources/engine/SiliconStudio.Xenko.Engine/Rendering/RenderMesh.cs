@@ -145,7 +145,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Handle picking
             if (context.IsPicking()) // TODO move this code corresponding to picking outside of the runtime code!
             {
-                parameters.Set(ModelComponentPickingShaderKeys.ModelComponentId, new Color4(RenderModel.ModelComponent.Id.ToRuntimeId()));
+                parameters.Set(ModelComponentPickingShaderKeys.ModelComponentId, new Color4(RuntimeIdHelper.ToRuntimeId(RenderModel.ModelComponent)));
                 parameters.Set(ModelComponentPickingShaderKeys.MeshId, new Color4(RenderModel.ModelComponent.Model.Meshes.IndexOf(Mesh)));
                 parameters.Set(ModelComponentPickingShaderKeys.MaterialId, new Color4(Mesh.MaterialIndex));
 

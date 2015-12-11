@@ -66,6 +66,7 @@ namespace SiliconStudio.Xenko.Games
             return null;
 #endif
         }
+
     }
 }
 #endif

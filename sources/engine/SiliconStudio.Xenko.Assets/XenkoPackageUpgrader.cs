@@ -22,7 +22,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.5.0-alpha02")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.5.0-alpha03")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -253,6 +253,18 @@ namespace SiliconStudio.Xenko.Assets
                 {
                     if (!AssetRegistry.IsAssetTypeAlwaysMarkAsRoot(assetItem.Asset.GetType()))
                         dependentPackage.RootAssets.Add(new AssetReference<Asset>(assetItem.Id, assetItem.Location));
+                }
+            }
+
+            if (dependencyVersionBeforeUpdate.MinVersion < new PackageVersion("1.5.0-alpha03"))
+            {
+                // Mark all assets dirty to force a resave
+                foreach (var assetItem in dependentPackage.Assets)
+                {
+                    if (!(assetItem.Asset is SourceCodeAsset))
+                    {
+                        assetItem.IsDirty = true;
+                    }
                 }
             }
 

@@ -3,7 +3,7 @@ Id: cc1bcc78-50b2-4da6-8902-f7a3ae42898b
 SerializedVersion: {Assets: 0.0.2}
 Meta:
     Name: Xenko
-    Version: 1.5.0-alpha02
+    Version: 1.5.0-alpha03
     Owners:
       - Silicon Studio
     Authors: 
@@ -42,7 +42,7 @@ TemplateFolders:
       Exclude: "**/*.psd;**/*.md"
     - Path: samples
       Group: Samples
-      Exclude: "**/.git/**;**/_ReSharper.*/**;**/Bin/**;**/obj/**;**/*.sln;**/*.suo;**/*.GhostDoc.xml;**/samples2/readme.md;**/samples2/.gitignore;**/*.psess;**/*.vspx;**/*.userprefs"
+      Exclude: "**/Testing/**;**/.git/**;**/_ReSharper.*/**;**/Bin/**;**/obj/**;**/*.sln;**/*.suo;**/*.GhostDoc.xml;**/samples2/readme.md;**/samples2/.gitignore;**/*.psess;**/*.vspx;**/*.userprefs"
       Files:
         - samples\Audio\SimpleAudio\SimpleAudio.xktpl
         - samples\Games\JumpyJet\JumpyJet.xktpl
