@@ -7,6 +7,7 @@ using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Particles.Materials
@@ -20,11 +21,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         [DataMember(100)]
         [Display("Emissive")]
-        public IComputeColor ComputeColor;
+        public IComputeColor ComputeColor { get; set; } = new ComputeTextureColor();
 
         [DataMember(110)]
         [Display("Intensity")]
-        public IComputeScalar ComputeIntensity;
+        public IComputeScalar ComputeIntensity { get; set; } = new ComputeFloat();
 
         // [DataMember(130)]
         // Texture Coordinates builder - fixed, scroll and flipbook
@@ -69,23 +70,24 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             shaderGeneratorContext.Parameters.Clear();
 
-            var shaderBaseColor = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
-            shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseColor, shaderBaseColor);
+            if (ComputeColor != null)
+            {
+                var shaderBaseColor = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
+                shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseColor, shaderBaseColor);
+            }
 
-            var shaderBaseIntensity = ComputeIntensity.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.IntensityMap, ParticleBaseKeys.IntensityValue, Color.White));
-            shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseIntensity, shaderBaseIntensity);
+            if (ComputeIntensity != null)
+            {
+                var shaderBaseIntensity = ComputeIntensity.GenerateShaderSource(shaderGeneratorContext,
+                    new MaterialComputeColorKeys(ParticleBaseKeys.IntensityMap, ParticleBaseKeys.IntensityValue, Color.White));
+                shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseIntensity, shaderBaseIntensity);
+            }
         }
 
         public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
             base.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
-
-            ///////////////
-            // Shader permutations parameters - shaders will change dynamically based on those parameters
-            SetParameter(ParticleBaseKeys.HasTexture, false);
             
-            SetParameter(ParticleBaseKeys.RenderFlagSwizzle, (uint)0);
-
             UpdateShaders();
 
             ApplyEffect(graphicsDevice);

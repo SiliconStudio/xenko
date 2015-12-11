@@ -9,18 +9,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         using params ParticleBaseKeys;
 
-        mixin ParticleBatchShader<ParticleBaseKeys.ColorIsSRgb, ParticleBaseKeys.HasTexture>;
-
-        
-        //if (ParticleBaseKeys.ComputeColor0 != null)
-        //{
-        //    mixin compose computeColor0 = ParticleBaseKeys.ComputeColor0;
-        //}
-
-        //if (ParticleBaseKeys.ComputeColor1 != null)
-        //{
-        //    mixin compose computeColor1 = ParticleBaseKeys.ComputeColor1;
-        //}
+        mixin ParticleBatchShader<ParticleBaseKeys.ColorIsSRgb>;
 
         if (ParticleBaseKeys.BaseColor != null)
         {
@@ -31,5 +20,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
             mixin compose baseIntensity = ParticleBaseKeys.BaseIntensity;
         }
+
    };
 }

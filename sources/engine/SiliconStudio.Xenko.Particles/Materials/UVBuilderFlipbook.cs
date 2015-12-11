@@ -10,6 +10,7 @@ using SiliconStudio.Xenko.Particles.VertexLayouts;
 namespace SiliconStudio.Xenko.Particles.Materials
 {
     [DataContract("UVBuilderFlipbook")]
+    [Display("Flipbook")]
     public class UVBuilderFlipbook : UVBuilderBase
     {
         private UInt32 xDivisions = 4;

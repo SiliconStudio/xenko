@@ -18,22 +18,11 @@ class ParticleBase : ShaderBase, Texturing
     // A general transformation matrix
     stage float4x4 MatrixTransform;
 
-    // Color scale min & max can be extracted using the particle's random seed to generate a pseudo-random lerp value
-    stage float4 ColorScaleMin;
-    stage float4 ColorScaleMax;
+    stage float4 ColorScale;
 
     // When the value is 0 there is no occlusion (100% emissive), when it is 1 there is 100% occlusion (still limited by alpha)
     stage float AlphaAdditive;
     
-    stage float ColorIntensity;
-
-    stage uint RenderFlagSwizzle;
-
-    stage uint ColorScaleOffset;
-
-    // Unfortunately Dx9.1 and OpenGlES2.0 do not support bitwise operations, otherwise we can use flags:
-    // static const uint RenderFlagSwizzle = 0x01;
-
 //    stage float4x4 ViewMatrix;
 //    stage float4x4 ProjectionMatrix;
 //    stage float4 InvViewX;

@@ -455,18 +455,15 @@ namespace SiliconStudio.Xenko.Particles
         [DataMember(40)]
         [Display("Shape")]
         [NotNull]
-        public ShapeBuilderBase ShapeBuilder;
+        public ShapeBuilderBase ShapeBuilder { get; set; } = new ShapeBuilderBillboard();
 
         [DataMember(50)]
         [Display("Material")]
         [NotNull]
-        public ParticleMaterialBase Material;
+        public ParticleMaterialBase Material { get; set; } = new ParticleMaterialComputeColor();
 
         public void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
-            if (Material == null)
-                return;
-
             var variation = defaultVariation;
             if (graphicsDevice.ColorSpace == ColorSpace.Linear)
                 variation |= ParticleEffectVariation.IsSrgb;
@@ -480,20 +477,11 @@ namespace SiliconStudio.Xenko.Particles
 
         public int GetRequiredQuadCount()
         {
-            if (ShapeBuilder == null)
-                ShapeBuilder = new ShapeBuilderBillboard();
-
             return ShapeBuilder.QuadsPerParticle*pool.LivingParticles;
         }
 
         public int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)
         {
-            if (ShapeBuilder == null)
-                ShapeBuilder = new ShapeBuilderBillboard();
-
-            if (Material == null)
-                Material = new ParticleMaterialTexture();
-
             var variation = defaultVariation;
             variation |= Material.MandatoryVariation;
             var vertexLayoutBuilder = ParticleBatch.GetVertexLayout(variation);
