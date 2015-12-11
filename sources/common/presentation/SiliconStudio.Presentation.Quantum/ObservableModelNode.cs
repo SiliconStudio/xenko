@@ -146,19 +146,8 @@ namespace SiliconStudio.Presentation.Quantum
         // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
         //public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
 
-        public OverrideType Override
-        {
-            get { return (SourceNode.Content as OverridableMemberContent)?.Override ?? OverrideType.Base; }
-            private set
-            {
-                SetValue(Override != value, () =>
-                {
-                    var overrideContent = SourceNode.Content as OverridableMemberContent;
-                    if (overrideContent != null)
-                        overrideContent.Override = value;
-                });
-            }
-        }
+        // TODO: would be better to put the override info in an associated data or in a specialized derived class.
+        public OverrideType Override => (SourceNode.Content as OverridableMemberContent)?.Override ?? OverrideType.Base;
 
         internal Guid ModelGuid => SourceNode.Guid;
    
@@ -273,7 +262,6 @@ namespace SiliconStudio.Presentation.Quantum
             if (!Equals(oldValue, newValue))
             {
                 node.Content.Update(newValue, Index);
-                Override = OverrideType.New;
                 return true;
             }
             return false;
@@ -470,7 +458,10 @@ namespace SiliconStudio.Presentation.Quantum
         private void ContentChanging(object sender, ContentChangeEventArgs e)
         {
             if (Equals(e.Index, Index))
+            {
                 OnPropertyChanging(nameof(TypedValue));
+                OnPropertyChanging(nameof(Override));
+            }
         }
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
@@ -484,6 +475,7 @@ namespace SiliconStudio.Presentation.Quantum
                     Refresh();
                 }
 
+                OnPropertyChanged(nameof(Override));
                 OnPropertyChanged(nameof(TypedValue));
                 OnValueChanged();
             }
