@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         // TODO Move to ParticleMaterialSimple and change the name
         [DataMember(20)]
         [DataMemberRange(0, 1, 0.001, 0.1)]
-        [Display("Emissive power")]
+        [Display("Alpha-Additive")]
         public float AlphaAdditive { get; set; } = 0f;
 
         // TODO Move to ParticleMaterialSimple ? Keep here?

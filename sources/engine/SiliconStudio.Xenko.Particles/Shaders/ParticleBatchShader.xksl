@@ -4,7 +4,7 @@
 namespace SiliconStudio.Xenko.Rendering
 {
 
-class ParticleBatchShader<bool TSRgb> : ParticleBase
+class ParticleBatchShader : ParticleBaseShader
 {
     // -------------------------------------
     // streams
@@ -13,42 +13,17 @@ class ParticleBatchShader<bool TSRgb> : ParticleBase
 
     compose ComputeColor  baseIntensity;
 
-    // -------------------------------------
-    // streams
-    // -------------------------------------
-    stage stream float4 Color : COLOR;
-
-    nointerpolation stage stream float Lifetime     : BATCH_LIFETIME;
-    nointerpolation stage stream float RandomSeed   : BATCH_RANDOMSEED; // Ideally should be uint. Note! The xksl doesn't support nointerpolation, so cast the float as int before using it
-
-    // -------------------------------------
-    // VertexShader
-    // -------------------------------------
-    stage override void VSMain()
-    {
-        base.VSMain();
-        if (TSRgb)
-        {
-            streams.Color = ColorUtility.ToLinear(streams.Color);
-        }
-    }
-
     // Shading of the sprite
     stage override float4 Shading()
     {
         // -----------------------------------------------
         // Base particle color
         // -----------------------------------------------        
-        float4 finalColor = ColorScale * streams.Color * baseColor.Compute();
+        float4 finalColor = base.Shading() * streams.Color * baseColor.Compute();
 
         // -----------------------------------------------
         // Color intensity------------------------------
         finalColor.rgb *= baseIntensity.Compute().rrr;
-
-        // -----------------------------------------------
-        // Additive-Alpha blending
-        // -----------------------------------------------
-        finalColor.a   *= AlphaAdditive;
 
         return finalColor;
     }
