@@ -43,6 +43,12 @@ namespace SiliconStudio.Quantum.Contents
         public bool ShouldProcessReference { get; internal set; }
 
         /// <inheritdoc/>
+        public event EventHandler<ContentChangeEventArgs> PrepareChange;
+
+        /// <inheritdoc/>
+        public event EventHandler<ContentChangeEventArgs> FinalizeChange;
+
+        /// <inheritdoc/>
         public event EventHandler<ContentChangeEventArgs> Changing;
 
         /// <inheritdoc/>
@@ -86,7 +92,9 @@ namespace SiliconStudio.Quantum.Contents
         /// <param name="newValue">The new value of this content.</param>
         protected void NotifyContentChanging(object index, object oldValue, object newValue)
         {
-            Changing?.Invoke(this, new ContentChangeEventArgs(this, index, oldValue, newValue));
+            var args = new ContentChangeEventArgs(this, index, oldValue, newValue);
+            PrepareChange?.Invoke(this, args);
+            Changing?.Invoke(this, args);
         }
 
         /// <summary>
@@ -97,7 +105,9 @@ namespace SiliconStudio.Quantum.Contents
         /// <param name="newValue">The new value of this content.</param>
         protected void NotifyContentChanged(object index, object oldValue, object newValue)
         {
-            Changed?.Invoke(this, new ContentChangeEventArgs(this, index, oldValue, newValue));
+            var args = new ContentChangeEventArgs(this, index, oldValue, newValue);
+            Changed?.Invoke(this, args);
+            FinalizeChange?.Invoke(this, args);
         }
     }
 }
