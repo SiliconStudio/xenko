@@ -8,11 +8,74 @@ namespace SiliconStudio.Core.Reflection
 {
     internal sealed class ShadowContainer
     {
+        // TODO: this class is not threadsafe. 
+
         private static readonly IEnumerable<ShadowAttributes> EmptyAttributes = Enumerable.Empty<ShadowAttributes>();
         private Dictionary<object, ShadowAttributes> attachedAttributesPerKey;
+        private Guid? id;
+        private bool isIdentifiable;
 
-        public ShadowContainer()
+        internal ShadowContainer()
         {
+        }
+
+        public ShadowContainer(Type type)
+        {
+            isIdentifiable = IdentifiableHelper.IsIdentifiable(type);
+        }
+
+        public ShadowContainer(ShadowContainer copy)
+        {
+            copy.CopyTo(this);
+        }
+
+        public bool HasId(object instance)
+        {
+            return instance is IIdentifiable || id.HasValue;
+        }
+
+        public Guid GetId(object instance)
+        {
+            // If the object is not identifiable, early exit
+            if (!isIdentifiable)
+            {
+                return Guid.Empty;
+            }
+
+            // Don't use  local id if the object is already identifiable
+            var @component = instance as IIdentifiable;
+            if (@component != null)
+            {
+                return @component.Id;
+            }
+
+            // If we don't have yet an id, create one.
+            if (!id.HasValue)
+            {
+                id = Guid.NewGuid();
+            }
+
+            return id.Value;
+        }
+
+        public void SetId(object instance, Guid id)
+        {
+            // If the object is not identifiable, early exit
+            if (!isIdentifiable)
+            {
+                return;
+            }
+
+            // If the object instance is already identifiable, store id into it directly
+            var @component = instance as IIdentifiable;
+            if (@component != null)
+            {
+                @component.Id = id;
+            }
+            else
+            {
+                this.id = id;
+            }
         }
 
         public IEnumerable<ShadowAttributes> Members
@@ -28,20 +91,23 @@ namespace SiliconStudio.Core.Reflection
 
         public ShadowContainer Clone()
         {
-            if (attachedAttributesPerKey == null)
-            {
-                return null;
-            }
-
-            var container = new ShadowContainer();
-            
-            container.attachedAttributesPerKey = new Dictionary<object, ShadowAttributes>();
-            foreach (var keyValue in attachedAttributesPerKey)
-            {
-                container.attachedAttributesPerKey.Add(keyValue.Key, keyValue.Value.Clone());
-            }
-
+            var container = new ShadowContainer(this);
             return container;
+        }
+
+        internal void CopyTo(ShadowContainer copy)
+        {
+            copy.id = id;
+            copy.isIdentifiable = isIdentifiable;
+
+            if (attachedAttributesPerKey != null)
+            {
+                copy.attachedAttributesPerKey = new Dictionary<object, ShadowAttributes>();
+                foreach (var keyValue in attachedAttributesPerKey)
+                {
+                    copy.attachedAttributesPerKey.Add(keyValue.Key, keyValue.Value.Clone());
+                }
+            }
         }
 
         public bool Contains(object memberKey)

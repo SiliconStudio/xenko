@@ -37,6 +37,7 @@ namespace SiliconStudio.Xenko.Games
         {
             ContextType = AppContextType.WindowsRuntime;
         }
+
     }
 }
 #endif
