@@ -8,15 +8,26 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
+using SiliconStudio.Xenko.Engine;
 
-namespace SiliconStudio.Xenko.Engine.Design
+namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
     /// Contains design data used by an <see cref="Entity"/>
     /// </summary>
     [DataContract("EntityDesignData")]
+    [NonIdentifitable]
     public class EntityDesignData
     {
+        public EntityDesignData()
+        {
+        }
+
+        public EntityDesignData(string folder)
+        {
+            Folder = folder;
+        }
+
         /// <summary>
         /// Gets or sets the folder where the entity is attached (folder is relative to parent folder). If null, the entity doesn't belong to a folder.
         /// </summary>
@@ -30,12 +41,20 @@ namespace SiliconStudio.Xenko.Engine.Design
         [DataMember(20)]
         [DefaultValue(null)]
         public Guid? BaseId { get; set; }
+
+        /// <summary>
+        /// Gets or sets the unique identifier of the part group in case of prefabs. If null, the entity doesn't belong to a part.
+        /// </summary>
+        [DataMember(30)]
+        [DefaultValue(null)]
+        public Guid? BasePartInstanceId { get; set; }
     }
 
     /// <summary>
     /// Associate an <see cref="Entity"/> with <see cref="EntityDesignData"/>.
     /// </summary>
     [DataContract("EntityDesign")]
+    [NonIdentifitable]
     public class EntityDesign
     {
         /// <summary>

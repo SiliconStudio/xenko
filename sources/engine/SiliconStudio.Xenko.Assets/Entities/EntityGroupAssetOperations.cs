@@ -13,9 +13,9 @@ using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    public static class EntityAssetOperations
+    public static class EntityGroupAssetOperations
     {
-        public static EntityAssetBase ExtractSceneClone(EntityAssetBase source, Guid sourceRootEntity)
+        public static EntityGroupAssetBase ExtractSceneClone(EntityGroupAssetBase source, Guid sourceRootEntity)
         {
             if (source == null) throw new ArgumentNullException("source");
 
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             source.Hierarchy = null;
 
             // clone asset without hierarchy
-            var clonedAsset = (EntityAssetBase)AssetCloner.Clone(source);
+            var clonedAsset = (EntityGroupAssetBase)AssetCloner.Clone(source);
             clonedAsset.Hierarchy = clonedHierarchy;
 
             // revert the source hierarchy
@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return null;
         }
 
-        public static void UpdateScene(EntityAsset source, EntityAsset dest, Guid destRootEntityId)
+        public static void UpdateScene(EntityGroupAsset source, EntityGroupAsset dest, Guid destRootEntityId)
         {
             if (source == null) throw new ArgumentNullException("source");
             if (dest == null) throw new ArgumentNullException("dest");
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             if (!dest.AssetBases.TryGetValue(destRootEntityId, out entityBase))
                 throw new InvalidOperationException("This entity base was not found with given Id.");
 
-            var entityBaseAsset = (EntityAsset)entityBase.Base.Asset;
+            var entityBaseAsset = (EntityGroupAsset)entityBase.Base.Asset;
 
             // Extract the scene starting from given root
             var clonedSource = ExtractSceneClone(source, entityBase.SourceRoot);
@@ -176,7 +176,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
  #pragma warning restore 649
         }
 
-        public static EntityHierarchyData ImportScene(UFile sourceUrl, EntityAssetBase source, Guid sourceRootEntity, out EntityBase entityBase)
+        public static EntityHierarchyData ImportScene(UFile sourceUrl, EntityGroupAssetBase source, Guid sourceRootEntity, out EntityBase entityBase)
         {
             if (source == null) throw new ArgumentNullException("source");
 

@@ -11,7 +11,7 @@ namespace SiliconStudio.Assets.Visitors
     /// </summary>
     public sealed class DataVisitListItem : DataVisitNode
     {
-        private readonly int index;
+        private int index;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DataVisitListItem"/> class.
@@ -58,6 +58,35 @@ namespace SiliconStudio.Assets.Visitors
         public override string ToString()
         {
             return string.Format("[{0}] = {1}", index, Instance ?? "null");
+        }
+
+        public override void SetValue(object instance)
+        {
+            SetValue(Index, instance);
+        }
+
+        public void SetValue(int indexLocal, object instance)
+        {
+            var descriptor = Descriptor;
+            if (descriptor != null)
+            {
+                descriptor.SetValue(Instance, indexLocal, instance);
+            }
+        }
+
+        public override void RemoveValue()
+        {
+            var descriptor = Descriptor;
+            if (descriptor != null)
+            {
+                // If we remove an element, we need 
+                descriptor.RemoveAt(Instance, Index);
+                for (int i = Index + 1; i < Parent.Items.Count; i++)
+                {
+                    var item = (DataVisitListItem)Parent.Items[i];
+                    item.index--;
+                }
+            }
         }
 
         public override DataVisitNode CreateWithEmptyInstance()

@@ -19,13 +19,13 @@ namespace SiliconStudio.Xenko.Assets.Tests
         public void Initialize()
         {
             AssetRegistry.RegisterAssembly(typeof(ModelAsset).Assembly);
-            AssetRegistry.RegisterAssembly(typeof(EntityAsset).Assembly);
+            AssetRegistry.RegisterAssembly(typeof(EntityGroupAsset).Assembly);
         }
 
         [Test]
         public void TestEntitySerialization()
         {
-            var entityAsset = new EntityAsset();
+            var entityAsset = new EntityGroupAsset();
 
             var entity1 = new Entity { Id = Guid.NewGuid() };
             var entity2 = new Entity { Id = Guid.NewGuid() };

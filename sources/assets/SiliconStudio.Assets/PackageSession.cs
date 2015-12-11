@@ -1297,6 +1297,7 @@ namespace SiliconStudio.Assets
                 IsPackageCheckDependencies = true,
                 IsProcessingAssetReferences = true,
                 IsLoggingAssetNotFoundAsError = true,
+                EnableAssetTemplating = true
             };
         }
 
