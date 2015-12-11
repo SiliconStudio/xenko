@@ -15,29 +15,29 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// <summary>
     /// This class is responsible for merging and handling asset templating for entities (according to base, new base, and new version of the entity)
     /// </summary>
-    internal class EntityAssetMerge
+    internal class EntityGroupAssetMerge
     {
         private readonly Dictionary<GroupPartKey, EntityRemapEntry> baseEntities;
         private readonly Dictionary<GroupPartKey, EntityRemapEntry> newBaseEntities;
         private readonly Dictionary<GroupPartKey, EntityRemapEntry> newEntities; // specific to this instance, GroupPartKey.PartInstanceId is always Guid.Empty
         private readonly HashSet<Guid> entitiesRemovedInNewBase;
         private readonly HashSet<Guid> entitiesToRemoveFromNew;
-        private readonly EntityAssetBase baseAsset;
-        private readonly EntityAssetBase newAsset;
-        private readonly EntityAssetBase newBaseAsset;
+        private readonly EntityGroupAssetBase baseAsset;
+        private readonly EntityGroupAssetBase newAsset;
+        private readonly EntityGroupAssetBase newBaseAsset;
         private readonly List<AssetBasePart> newBaseParts;
         private readonly HashSet<Guid> entitiesInHierarchy;
         private readonly List<Guid> rootEntitiesToAdd;
         private MergeResult result;
 
         /// <summary>
-        /// Initialize a new instance of <see cref="EntityAssetMerge"/>
+        /// Initialize a new instance of <see cref="EntityGroupAssetMerge"/>
         /// </summary>
         /// <param name="baseAsset">The base asset used for merge (can be null).</param>
         /// <param name="newAsset">The new asset (cannot be null)</param>
         /// <param name="newBaseAsset">The new base asset (can be null)</param>
         /// <param name="newBaseParts">The new base parts (can be null)</param>
-        public EntityAssetMerge(EntityAssetBase baseAsset, EntityAssetBase newAsset, EntityAssetBase newBaseAsset, List<AssetBasePart> newBaseParts)
+        public EntityGroupAssetMerge(EntityGroupAssetBase baseAsset, EntityGroupAssetBase newAsset, EntityGroupAssetBase newBaseAsset, List<AssetBasePart> newBaseParts)
         {
             if (newAsset == null) throw new ArgumentNullException(nameof(newAsset));
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 foreach (var partItem in newAsset.BaseParts)
                 {
-                    var assetPart = (EntityAssetBase)partItem.Base.Asset;
+                    var assetPart = (EntityGroupAssetBase)partItem.Base.Asset;
                     foreach (var groupPartId in partItem.InstanceIds)
                     {
                         MapEntities(assetPart.Hierarchy, baseEntities, groupPartId);
@@ -104,7 +104,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 foreach (var partItem in newBaseParts)
                 {
-                    var assetPart = (EntityAssetBase)partItem.Base.Asset;
+                    var assetPart = (EntityGroupAssetBase)partItem.Base.Asset;
                     foreach (var groupPartId in partItem.InstanceIds)
                     {
                         MapEntities(assetPart.Hierarchy, newBaseEntities, groupPartId);

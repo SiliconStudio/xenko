@@ -10,12 +10,12 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
-    /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="EntityAsset"/>)
+    /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="EntityGroupAsset"/>)
     /// </summary>
     [DataContract()]
-    public abstract class EntityAssetBase : Asset, IAssetPartContainer
+    public abstract class EntityGroupAssetBase : Asset, IAssetPartContainer
     {
-        protected EntityAssetBase()
+        protected EntityGroupAssetBase()
         {
             Hierarchy = new EntityHierarchyData();
         }
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public EntityHierarchyData Hierarchy { get; set; }
 
         /// <summary>
-        /// The various <see cref="EntityAsset"/> that are instantiated in this one.
+        /// The various <see cref="EntityGroupAsset"/> that are instantiated in this one.
         /// </summary>
         [DataMemberIgnore]
         [Obsolete]
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public override Asset CreateChildAsset(string location)
         {
-            var newAsset = (EntityAssetBase)base.CreateChildAsset(location);
+            var newAsset = (EntityGroupAssetBase)base.CreateChildAsset(location);
 
             // CAUTION: We need to re-add entities to the list as we are going to change their ids
             // (and the Hierarchy.Entities list is ordered by Id, so they should not be changed after the entity has been added)
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         /// <param name="assetPartBase">The entity asset to be used as a part (must be created directly from <see cref="CreateChildAsset"/>)</param>
         /// <param name="rootEntityId">An optional entity id to attach the part to it. If null, the part will be attached to the root entities of this instance</param>
-        public void AddPart(EntityAssetBase assetPartBase, Guid? rootEntityId = null)
+        public void AddPart(EntityGroupAssetBase assetPartBase, Guid? rootEntityId = null)
         {
             if (assetPartBase == null) throw new ArgumentNullException(nameof(assetPartBase));
 
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBasePart> newBaseParts)
         {
-            var entityMerge = new EntityAssetMerge((EntityAssetBase)baseAsset, this, (EntityAssetBase)newBase, newBaseParts);
+            var entityMerge = new EntityGroupAssetMerge((EntityGroupAssetBase)baseAsset, this, (EntityGroupAssetBase)newBase, newBaseParts);
             return entityMerge.Merge();
         }
 
@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     public class EntityBase
     {
         /// <summary>
-        /// The <see cref="EntityAsset"/> base.
+        /// The <see cref="EntityGroupAsset"/> base.
         /// </summary>
         public AssetBase Base;
 

@@ -6,18 +6,18 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    [DataContract("EntityAsset")]
+    [DataContract("EntityGroupAsset")]
     [AssetDescription(FileExtension, false)]
     //[AssetCompiler(typeof(SceneAssetCompiler))]
     //[ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
     [Display("Entity")]
     //[AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
-    public class EntityAsset : EntityAssetBase
+    public class EntityGroupAsset : EntityGroupAssetBase
     {
         public const int AssetFormatVersion = 0;
 
         /// <summary>
-        /// The default file extension used by the <see cref="EntityAsset"/>.
+        /// The default file extension used by the <see cref="EntityGroupAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkentity;.pdxentity";
     }

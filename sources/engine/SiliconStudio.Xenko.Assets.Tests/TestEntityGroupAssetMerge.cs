@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
     }
 
     [TestFixture]
-    public class TestEntityAssetMerge
+    public class TestEntityGroupAssetMerge
     {
 
         [Test]
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var entityC = new Entity() { Name = "C" };
 
             // Create Base Asset
-            var baseAsset = new EntityAsset();
+            var baseAsset = new EntityGroupAsset();
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityC, new EntityDesignData()));
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Asset (from base)
-            var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (EntityGroupAsset)baseAssetItem.CreateChildAsset();
 
             // On a derive asset all entities must have a base value and base must come from baseAsset
             Assert.True(newAsset.Hierarchy.Entities.All(item => item.Design.BaseId.HasValue && baseAsset.Hierarchy.Entities.ContainsKey(item.Design.BaseId.Value)));
@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var entityC = new Entity() { Name = "C" };
 
             // Create Base Asset
-            var baseAsset = new EntityAsset();
+            var baseAsset = new EntityGroupAsset();
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(entityC, new EntityDesignData()));
@@ -108,15 +108,15 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             // Create new Base Asset
             var entityD = new Entity() { Name = "D" };
-            var newBaseAsset = (EntityAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = (EntityGroupAsset)AssetCloner.Clone(baseAsset);
             newBaseAsset.Hierarchy.Entities.Add(new EntityDesign(entityD, new EntityDesignData()));
             newBaseAsset.Hierarchy.RootEntities.Add(entityD.Id);
 
             // Create new Asset (from base)
-            var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (EntityGroupAsset)baseAssetItem.CreateChildAsset();
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge((EntityAssetBase)AssetCloner.Clone(baseAsset), (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            var result = newAsset.Merge((EntityGroupAssetBase)AssetCloner.Clone(baseAsset), (EntityGroupAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
             // Both root and entities must be the same
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [Test]
         public void TestMergeEntityWithChildren()
         {
-            // Test merging an EntityAsset with a root entity EA, and 3 child entities
+            // Test merging an EntityGroupAsset with a root entity EA, and 3 child entities
             // - Add a child entity to NewBase
             // - Remove a child entity from NewAsset
             //
@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             eA.Transform.Children.Add(eA3.Transform);
 
             // Create Base Asset
-            var baseAsset = new EntityAsset();
+            var baseAsset = new EntityGroupAsset();
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
@@ -178,18 +178,18 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Base Asset
-            var newBaseAsset = (EntityAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = (EntityGroupAsset)AssetCloner.Clone(baseAsset);
             var eA2FromNewBase = newBaseAsset.Hierarchy.Entities.First(item => item.Entity.Id == eA2.Id);
             newBaseAsset.Hierarchy.Entities[eA.Id].Entity.Transform.Children.Remove(eA2FromNewBase.Entity.Transform);
 
             // Create new Asset (from base)
-            var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (EntityGroupAsset)baseAssetItem.CreateChildAsset();
             var eA4 = new Entity() { Name = "A4" };
             newAsset.Hierarchy.Entities.Add(new EntityDesign(eA4, new EntityDesignData()));
             newAsset.Hierarchy.Entities[newAsset.Hierarchy.RootEntities.First()].Entity.Transform.Children.Add(eA4.Transform);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge((EntityAssetBase)AssetCloner.Clone(baseAsset), (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            var result = newAsset.Merge((EntityGroupAssetBase)AssetCloner.Clone(baseAsset), (EntityGroupAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
@@ -207,7 +207,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [Test]
         public void TestMergeAddEntityWithLinks()
         {
-            // Test merging an EntityAsset with a root entity EA, and 3 child entities
+            // Test merging an EntityGroupAsset with a root entity EA, and 3 child entities
             // - Add a child entity to NewBase that has a link to an another entity + a link to the component of another entity
             //
             //       Base         NewBase                      NewAsset                  NewAsset (Merged)
@@ -228,7 +228,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             eA.Transform.Children.Add(eA3.Transform);
 
             // Create Base Asset
-            var baseAsset = new EntityAsset();
+            var baseAsset = new EntityGroupAsset();
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
@@ -238,7 +238,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Base Asset
-            var newBaseAsset = (EntityAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = (EntityGroupAsset)AssetCloner.Clone(baseAsset);
             var eA4 = new Entity() { Name = "A4" };
             var rootInNewBase = newBaseAsset.Hierarchy.Entities[newBaseAsset.Hierarchy.RootEntities.First()];
             var eA1InNewBaseTransform = rootInNewBase.Entity.Transform.Children.FirstOrDefault(item => item.Entity.Id == eA1.Id);
@@ -259,10 +259,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
             rootInNewBase.Entity.Transform.Children.Add(eA4.Transform);
 
             // Create new Asset (from base)
-            var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (EntityGroupAsset)baseAssetItem.CreateChildAsset();
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge((EntityAssetBase)AssetCloner.Clone(baseAsset), (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            var result = newAsset.Merge((EntityGroupAssetBase)AssetCloner.Clone(baseAsset), (EntityGroupAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
@@ -290,7 +290,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [Test]
         public void TestMergeRemoveEntityWithLinks()
         {
-            // Test merging an EntityAsset with a root entity EA, and 3 child entities
+            // Test merging an EntityGroupAsset with a root entity EA, and 3 child entities
             // - Remove a child entity from NewBase (EA2)
             // - Add a child entity (EA4) to NewBase that has a link to the EA2 entity
             //
@@ -312,7 +312,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             eA.Transform.Children.Add(eA3.Transform);
 
             // Create Base Asset
-            var baseAsset = new EntityAsset();
+            var baseAsset = new EntityGroupAsset();
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
@@ -322,12 +322,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Base Asset
-            var newBaseAsset = (EntityAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = (EntityGroupAsset)AssetCloner.Clone(baseAsset);
             var eA2FromNewBase = newBaseAsset.Hierarchy.Entities.First(item => item.Entity.Id == eA2.Id);
             newBaseAsset.Hierarchy.Entities[eA.Id].Entity.Transform.Children.Remove(eA2FromNewBase.Entity.Transform);
 
             // Create new Asset (from base)
-            var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (EntityGroupAsset)baseAssetItem.CreateChildAsset();
 
             var eA4 = new Entity() { Name = "A4" };
 
@@ -346,7 +346,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             rootInNew.Entity.Transform.Children.Add(eA4.Transform);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge((EntityAssetBase)AssetCloner.Clone(baseAsset), (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            var result = newAsset.Merge((EntityGroupAssetBase)AssetCloner.Clone(baseAsset), (EntityGroupAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
@@ -370,7 +370,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
         [Test]
         public void TestMergeAddEntityWithLinks2()
         {
-            // Test merging an EntityAsset with a root entity EA, and 3 child entities
+            // Test merging an EntityGroupAsset with a root entity EA, and 3 child entities
             // - Add a child entity to NewBase that has a link to an another entity + a link to the component of another entity
             //
             //       Base         NewBase                      NewAsset                  NewAsset (Merged)
@@ -390,7 +390,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             eA.Transform.Children.Add(eA3.Transform);
 
             // Create Base Asset
-            var baseAsset = new EntityAsset();
+            var baseAsset = new EntityGroupAsset();
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA1, new EntityDesignData()));
             baseAsset.Hierarchy.Entities.Add(new EntityDesign(eA2, new EntityDesignData()));
@@ -400,7 +400,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var baseAssetItem = new AssetItem("base", baseAsset);
 
             // Create new Base Asset
-            var newBaseAsset = (EntityAsset)AssetCloner.Clone(baseAsset);
+            var newBaseAsset = (EntityGroupAsset)AssetCloner.Clone(baseAsset);
             var eA4 = new Entity() { Name = "A4" };
             var rootInNewBase = newBaseAsset.Hierarchy.Entities[newBaseAsset.Hierarchy.RootEntities.First()];
 
@@ -418,10 +418,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
             rootInNewBase.Entity.Transform.Children.Add(eA4.Transform);
 
             // Create new Asset (from base)
-            var newAsset = (EntityAsset)baseAssetItem.CreateChildAsset();
+            var newAsset = (EntityGroupAsset)baseAssetItem.CreateChildAsset();
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var result = newAsset.Merge((EntityAssetBase)AssetCloner.Clone(baseAsset), (EntityAssetBase)AssetCloner.Clone(newBaseAsset), null);
+            var result = newAsset.Merge((EntityGroupAssetBase)AssetCloner.Clone(baseAsset), (EntityGroupAssetBase)AssetCloner.Clone(newBaseAsset), null);
             Assert.False(result.HasErrors);
 
             Assert.AreEqual(1, newAsset.Hierarchy.RootEntities.Count);
@@ -464,7 +464,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             entityC.Add(new TestEntityComponent() { EntityLink = entityA });
 
             // part1 Asset
-            var basePart = new EntityAsset();
+            var basePart = new EntityGroupAsset();
             basePart.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
             basePart.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
             basePart.Hierarchy.Entities.Add(new EntityDesign(entityC, new EntityDesignData()));
@@ -473,9 +473,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
             basePart.Hierarchy.RootEntities.Add(entityC.Id);
 
             // Create part1 asset
-            var part1 = (EntityAsset)basePart.CreateChildAsset("part");
+            var part1 = (EntityGroupAsset)basePart.CreateChildAsset("part");
             var entityB1 = part1.Hierarchy.Entities.First(it => it.Entity.Name == "B").Entity;
-            var part12 = (EntityAsset)basePart.CreateChildAsset("part");
+            var part12 = (EntityGroupAsset)basePart.CreateChildAsset("part");
             var entityB2 = part12.Hierarchy.Entities.First(it => it.Entity.Name == "B").Entity;
 
             // create part2 assset
@@ -486,10 +486,10 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var entityBFrom2 = basePart.Hierarchy.Entities.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
             entityD.Add(new TestEntityComponent() { EntityLink = entityBFrom2 });
 
-            var part2 = (EntityAsset)basePart.CreateChildAsset("part");
+            var part2 = (EntityGroupAsset)basePart.CreateChildAsset("part");
 
             // originalAsset: Add a new instanceId for this part
-            var asset = new EntityAsset();
+            var asset = new EntityGroupAsset();
             asset.AddPart(part1);
             asset.AddPart(part12);
 
@@ -556,7 +556,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             eRoot.Transform.Children.Add(entityC.Transform);
 
             // part1 Asset
-            var part1 = new EntityAsset();
+            var part1 = new EntityGroupAsset();
             part1.Hierarchy.Entities.Add(new EntityDesign(eRoot, new EntityDesignData()));
             part1.Hierarchy.Entities.Add(new EntityDesign(entityA, new EntityDesignData()));
             part1.Hierarchy.Entities.Add(new EntityDesign(entityB, new EntityDesignData()));
@@ -564,7 +564,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             part1.Hierarchy.RootEntities.Add(eRoot.Id);
 
             // part2 Asset
-            var part2 = (EntityAsset)AssetCloner.Clone(part1);
+            var part2 = (EntityGroupAsset)AssetCloner.Clone(part1);
             var eRootPart2 = part2.Hierarchy.Entities.Where(it => it.Entity.Name == "Root").Select(it => it.Entity).First();
 
             var entityD = new Entity() { Name = "D" };
@@ -577,13 +577,13 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
 
             // originalAsset: Add a new instanceId for this part
-            var asset = new EntityAsset { BaseParts = new List<AssetBasePart>() };
+            var asset = new EntityGroupAsset { BaseParts = new List<AssetBasePart>() };
             var assetBasePart = new AssetBasePart(new AssetBase("part", part1));
             asset.BaseParts.Add(assetBasePart);
 
             // Create derived parts
-            var eRoot1Asset = (EntityAsset)part1.CreateChildAsset("part");
-            var eRoot2Asset = (EntityAsset)part1.CreateChildAsset("part");
+            var eRoot1Asset = (EntityGroupAsset)part1.CreateChildAsset("part");
+            var eRoot2Asset = (EntityGroupAsset)part1.CreateChildAsset("part");
             asset.AddPart(eRoot1Asset);
             asset.AddPart(eRoot2Asset);
 
