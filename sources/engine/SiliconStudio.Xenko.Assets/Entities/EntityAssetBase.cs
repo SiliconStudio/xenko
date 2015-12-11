@@ -55,6 +55,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                 // Store the baseid of the new version
                 newEntityDesign.Design.BaseId = oldEntityDesign.Entity.Id;
+                // Make sure that we don't replicate the base part InstanceId
+                newEntityDesign.Design.BasePartInstanceId = null;
 
                 // If entity is root, update RootEntities
                 // TODO: might not be optimal if many root entities (should use dictionary and second pass on RootEntities)
