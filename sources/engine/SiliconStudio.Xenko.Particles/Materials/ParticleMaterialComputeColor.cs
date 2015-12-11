@@ -19,8 +19,19 @@ namespace SiliconStudio.Xenko.Particles.Materials
         protected override string EffectName { get; set; } = "ParticleBatch";
 
         [DataMember(100)]
-        [Display("Color map")]
+        [Display("Emissive")]
         public IComputeColor ComputeColor;
+
+        [DataMember(110)]
+        [Display("Intensity")]
+        public IComputeScalar ComputeIntensity;
+
+        // [DataMember(130)]
+        // Texture Coordinates builder - fixed, scroll and flipbook
+
+        [DataMember(200)]
+        [Display("Texture coordinates")]
+        public UVBuilderBase UVBuilder;
 
         [DataMemberIgnore]
         private ShaderGeneratorContext shaderGeneratorContext;
@@ -29,10 +40,40 @@ namespace SiliconStudio.Xenko.Particles.Materials
         {
             base.InitializeCore(context);
 
-            shaderGeneratorContext = new ShaderGeneratorContext();
-            ParameterCollections.Add(shaderGeneratorContext.Parameters);
+            UpdateShaders();
 
+            // TODO Change - part of the LayoutBuilder refactoring
             MandatoryVariation |= ParticleEffectVariation.HasTex0;
+        }
+
+        private int shadersUpdateCounter = 0;
+        private void UpdateShaders()
+        {
+            // TODO Don't do this every frame!!! <- Propagate changes
+            if (--shadersUpdateCounter > 0)
+                return;
+            shadersUpdateCounter = 10;
+
+            // Weird bug? If the shaderGeneratorContext.Parameters stay the same the particles disappear
+            if (shaderGeneratorContext != null)
+            {
+                ParameterCollections.Remove(shaderGeneratorContext.Parameters);
+                shaderGeneratorContext = null;
+            }
+
+            if (shaderGeneratorContext == null)
+            {
+                shaderGeneratorContext = new ShaderGeneratorContext();
+                ParameterCollections.Add(shaderGeneratorContext.Parameters);
+            }
+
+            shaderGeneratorContext.Parameters.Clear();
+
+            var shaderBaseColor = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
+            shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseColor, shaderBaseColor);
+
+            var shaderBaseIntensity = ComputeIntensity.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.IntensityMap, ParticleBaseKeys.IntensityValue, Color.White));
+            shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseIntensity, shaderBaseIntensity);
         }
 
         public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
@@ -42,57 +83,25 @@ namespace SiliconStudio.Xenko.Particles.Materials
             ///////////////
             // Shader permutations parameters - shaders will change dynamically based on those parameters
             SetParameter(ParticleBaseKeys.HasTexture, false);
-
-
+            
             SetParameter(ParticleBaseKeys.RenderFlagSwizzle, (uint)0);
 
-//            SetParameter(ParticleBaseKeys.ComputeColor0, new ShaderClassSource("ComputeColorBlue"));
-
-            // If particles don't have individual color, we can pass the color tint as part of the uniform color scale
-
-
-            //            SetParameter(TexturingKeys.Texture0, texture0); // ??
-
-            // var materialContext = new MaterialGeneratorContext(); // Shared for the particle system
-            // VisitFeature(materialContext);
-
-            {
-                shaderGeneratorContext.Parameters.Clear();
-
-                var shaderSource = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(MaterialKeys.EmissiveMap, MaterialKeys.EmissiveValue, Color.White));
-
-                shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseColor, shaderSource);
-            }
+            UpdateShaders();
 
             ApplyEffect(graphicsDevice);
         }
 
 
-
-        // THIS IS JUST A COPY FOR MEMO, IT DOESN'T DO ANYTHING
-        public static readonly MaterialStreamDescriptor DiffuseStream = new MaterialStreamDescriptor("Diffuse", "matDiffuse", MaterialKeys.DiffuseValue.PropertyType);
-        public static readonly MaterialStreamDescriptor ColorBaseStream = new MaterialStreamDescriptor("Color Base", "matColorBase", MaterialKeys.DiffuseValue.PropertyType);
-
-        public void VisitFeature(MaterialGeneratorContext context) // TODO Override
+        public override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool)
         {
-            // Where is it called from ?
+            // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
+            base.PatchVertexBuffer(vtxBuilder, invViewX, invViewY, maxVertices, pool);
 
-            if (ComputeColor != null)
+            if (UVBuilder != null)
             {
-                var computeColorSource = ComputeColor.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.DiffuseMap, MaterialKeys.DiffuseValue, Color.White));
-
-                var mixin = new ShaderMixinSource();
-                mixin.Mixins.Add(new ShaderClassSource("MaterialSurfaceDiffuse"));      // Name of the shader - class MaterialSurfaceDiffuse : IMaterialSurfacePixel
-                mixin.AddComposition("diffuseMap", computeColorSource);                 // compose ComputeColor diffuseMap;
-
-                context.UseStream(MaterialShaderStage.Pixel, DiffuseStream.Stream);     // streams.matDiffuse   = colorBase;
-                context.UseStream(MaterialShaderStage.Pixel, ColorBaseStream.Stream);   // streams.matColorBase = colorBase;
-
-                context.AddSurfaceShader(MaterialShaderStage.Pixel, mixin);
+                UVBuilder.BuildUVCoordinates(vtxBuilder, pool);
             }
-
-            // How to compile the shader?
         }
 
     }
-}
+    }

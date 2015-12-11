@@ -517,7 +517,7 @@ namespace SiliconStudio.Xenko.Particles
 
             maxDrawn -= remainingCapacity;
 
-            Material.PatchVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, maxDrawn, pool, this);
+            Material.PatchVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, maxDrawn, pool);
 
             vertexLayoutBuilder.EndBuffer();
 

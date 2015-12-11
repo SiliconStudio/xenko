@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -24,6 +25,15 @@ namespace SiliconStudio.Xenko.Rendering
 
         //public static readonly ParameterKey<ShaderSource> ComputeColor1 = ParameterKeys.New<ShaderSource>();
 
-        public static readonly ParameterKey<ShaderSource> BaseColor  = ParameterKeys.New<ShaderSource>();
+        public static readonly ParameterKey<ShaderSource> BaseColor     = ParameterKeys.New<ShaderSource>();
+
+        public static readonly ParameterKey<ShaderSource> BaseIntensity = ParameterKeys.New<ShaderSource>();
+
+        public static readonly ParameterKey<Texture> EmissiveMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<Color4>  EmissiveValue = ParameterKeys.New<Color4>();
+
+        public static readonly ParameterKey<Texture> IntensityMap = ParameterKeys.New<Texture>();
+        public static readonly ParameterKey<float>   IntensityValue = ParameterKeys.New<float>();
+
     }
 }
