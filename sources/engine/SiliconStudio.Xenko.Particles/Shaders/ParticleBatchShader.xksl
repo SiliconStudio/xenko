@@ -4,7 +4,7 @@
 namespace SiliconStudio.Xenko.Rendering
 {
 
-class ParticleBatchShader : ParticleBaseShader
+class ParticleBatchShader : ParticleBase
 {
     // -------------------------------------
     // streams
@@ -27,42 +27,6 @@ class ParticleBatchShader : ParticleBaseShader
 
         return finalColor;
     }
-
-    //stage float4 GenerateRandomColor()
-    //{
-    //    float fSeed = (float) (streams.RandomSeed + ColorScaleOffset);
-
-    //    return lerp(ColorScaleMin, ColorScaleMax, GetRandom(fSeed));
-    //}
-
-    /////////////////////////////////////////////////////////////////
-    // Randomness
-    /////////////////////////////////////////////////////////////////
-
-    // Some notes on randomness
-    //  The algorithm below is uses unsigned integer as input and generates deterministic random values with good distribution.
-    //  Because we can't pass uint as vertex input, we use a float and cast it twice to prevent interpolation errors.
-    //  Also, casting a huge uint value to float causes underflow, so we limit the input value to 0 .. 0xFFFF (the masking is done on the CPU side)
-
-    static const float  GelfondConst = 23.1406926327792690;            // e to the power of Pi = (-1) to the power of -i
-    static const float  GelfondSchneiderConst = 2.6651441426902251;    // 2 to the power of sqrt(2)
-    static const float2 Gelfond = float2(GelfondConst, GelfondSchneiderConst);
-    static const float  Numerator = 123456789;
-
-    stage float GetRandom(float fSeed)
-    {
-        // Cast to int once to prevent interpolation errors
-        int uSeed = (int) (fSeed);
-        fSeed = (float) uSeed;
-
-        float2 rand2 = float2(cos(fSeed), sin(fSeed));
-
-        float dotProduct = dot(rand2, Gelfond);
-
-        return frac(fmod(Numerator, 1e-7 + 256.f * dotProduct));
-    }
-
-    /////////////////////////////////////////////////////////////////
 
 };
 

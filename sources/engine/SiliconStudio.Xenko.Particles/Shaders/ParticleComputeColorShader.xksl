@@ -25,11 +25,8 @@ class ParticleComputeColorShader : ParticleBase
         // Color intensity------------------------------
         finalColor.rgb *= baseIntensity.Compute().rrr;
 
-       
         return finalColor;
     }
-
-
 };
 
 }

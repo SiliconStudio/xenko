@@ -52,12 +52,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorWhite.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Shaders\ParticleBaseShader.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>ParticleBaseShader.xksl</DependentUpon>
-    </Compile>
     <Compile Include="Shaders\ParticleComputeColorShader.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -172,10 +166,6 @@
     <None Include="Shaders\ParticleBase.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleBase.cs</LastGenOutput>
-    </None>
-    <None Include="Shaders\ParticleBaseShader.xksl">
-      <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>ParticleBaseShader.cs</LastGenOutput>
     </None>
     <None Include="Shaders\ParticleBatch.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
