@@ -26,7 +26,7 @@
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libcore.dll"/>
     <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libbulletc.dll"/>
 
-    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\SiliconStudio.Xenko.Native.dll"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\$(SiliconStudioCPU)\libxenkonative.dll"/>
     
     <!-- Users custom native libraries -->
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\$(SiliconStudioCPU)\*.dll" />

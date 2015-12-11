@@ -3,14 +3,14 @@
 
 using SiliconStudio.Core;
 
-namespace SiliconStudio.Xenko.NativeBridge
+namespace SiliconStudio.Xenko.Native
 {
-    public static class Module
+    internal static class Module
     {
         [ModuleInitializer]
-        public static void InitializeModule()
+        internal static void InitializeModule()
         {
-            NativeLibrary.PreloadLibrary("SiliconStudio.Xenko.Native.dll");
+            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".dll");
         }
     }
 }

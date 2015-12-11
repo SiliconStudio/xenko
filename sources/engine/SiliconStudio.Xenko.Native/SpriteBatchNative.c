@@ -3,7 +3,7 @@
 
 #include "SiliconStudio.Xenko.Native.h"
 
-void UpdateBufferValuesFromElementInfoNative(SpriteDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertexPointer, void* indexPointer, int vertexStartOffset)
+void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertexPointer, void* indexPointer, int vertexStartOffset)
 {
 	float deltaX = 1.0f / drawInfo->TextureSize.X;
 	float deltaY = 1.0f / drawInfo->TextureSize.Y;

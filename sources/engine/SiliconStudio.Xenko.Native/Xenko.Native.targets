@@ -1,5 +1,5 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildThisFileDirectory)Xenko.PreSettings.targets" />
+  <Import Project="$(MSBuildThisFileDirectory)..\..\targets\Xenko.PreSettings.targets" />
   
   <ItemGroup>
     <CFiles Include="*.c" />
@@ -11,7 +11,7 @@
     <SiliconStudioXenkoSdkBinDir>$(XenkoDependenciesDir)..\Bin\$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioXenkoSdkBinDir>
   </PropertyGroup>
   
-  <Target Name="CompileNativeClang_Windows" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\$(ProjectName).dll;$(SiliconStudioXenkoSdkBinDir)\x64\$(ProjectName).dll"  Condition="'$(SiliconStudioPlatform)' == 'Windows'" BeforeTargets="Build">
+  <Target Name="CompileNativeClang_Windows" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.dll"  Condition="'$(SiliconStudioPlatform)' == 'Windows'" BeforeTargets="Build">
     <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-pc-windows-msvc -fms-extensions -DWIN_EXPORT" />
     <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-pc-windows-msvc -fms-extensions -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
@@ -21,7 +21,7 @@
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
   </Target>
 
-  <Target Name="CompileNativeClang_Windows10" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\$(ProjectName).dll;$(SiliconStudioXenkoSdkBinDir)\x64\$(ProjectName).dll;$(SiliconStudioXenkoSdkBinDir)\ARM\$(ProjectName).dll"  Condition="'$(SiliconStudioPlatform)' == 'Windows10'" BeforeTargets="Build">
+  <Target Name="CompileNativeClang_Windows10" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\ARM\libxenkonative.dll"  Condition="'$(SiliconStudioPlatform)' == 'Windows10'" BeforeTargets="Build">
     <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-windows-msvc -fms-extensions -DWIN_EXPORT" />
     <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-windows-msvc -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\Windows10\Windows10.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
@@ -35,7 +35,7 @@
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\Windows10\Windows10.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
   </Target>
 
-  <Target Name="CompileNativeClang_WindowsStore" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\$(ProjectName).dll;$(SiliconStudioXenkoSdkBinDir)\x64\$(ProjectName).dll;$(SiliconStudioXenkoSdkBinDir)\ARM\$(ProjectName).dll"  Condition="'$(SiliconStudioPlatform)' == 'WindowsStore'" BeforeTargets="Build">
+  <Target Name="CompileNativeClang_WindowsStore" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\ARM\libxenkonative.dll"  Condition="'$(SiliconStudioPlatform)' == 'WindowsStore'" BeforeTargets="Build">
     <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-windows-msvc -fms-extensions -DWIN_EXPORT" />
     <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-windows-msvc -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
@@ -49,7 +49,7 @@
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
   </Target>
 
-  <Target Name="CompileNativeClang_WindowsPhone" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\$(ProjectName).dll;$(SiliconStudioXenkoSdkBinDir)\ARM\$(ProjectName).dll"  Condition="'$(SiliconStudioPlatform)' == 'WindowsPhone'" BeforeTargets="Build">
+  <Target Name="CompileNativeClang_WindowsPhone" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\ARM\libxenkonative.dll"  Condition="'$(SiliconStudioPlatform)' == 'WindowsPhone'" BeforeTargets="Build">
     <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-windows-msvc -fms-extensions -DWIN_EXPORT" />
     <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-windows-msvc -fms-extensions -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
@@ -59,42 +59,42 @@
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
   </Target>
   
-  <Target Name="CompileNativeClang_iOS" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)__armv7.a;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)__armv7s.a;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)__arm64.a;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)__i386.a;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)__x86_64.a" Condition="'$(SiliconStudioPlatform)' == 'iOS'" BeforeTargets="Build">
+  <Target Name="CompileNativeClang_iOS" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\libxenkonative_armv7.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_armv7s.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_arm64.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_i386.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_x86_64.a" Condition="'$(SiliconStudioPlatform)' == 'iOS'" BeforeTargets="Build">
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target armv7-apple-ios -mios-version-min=6.0" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)_armv7.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_armv7.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
     
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target armv7s-apple-ios -mios-version-min=6.0" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)_armv7s.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_armv7s.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
     
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target arm64-apple-ios -mios-version-min=6.0" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)_arm64.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_arm64.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
     
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i386-apple-ios -mios-version-min=6.0" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)_i386.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_i386.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
     
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-apple-ios -mios-version-min=6.0" />
-    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\lib$(ProjectName)_x86_64.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
+    <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\llvm-ar.exe&quot; rcs -format=bsd &quot;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_x86_64.a&quot; obj\@(CFiles->'%(Filename).o', ' ')" />
     
     <Copy SourceFiles="$(XenkoDependenciesDir)\NativePath\iOS\libNativePath.a" DestinationFolder="$(SiliconStudioXenkoSdkBinDir)" />
   </Target>
 
-  <Target Name="CompileNativeClang_Android" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\arm64-v8a\lib$(ProjectName).so;$(SiliconStudioXenkoSdkBinDir)\armeabi\lib$(ProjectName).so;$(SiliconStudioXenkoSdkBinDir)\armeabi-v7a\lib$(ProjectName).so;$(SiliconStudioXenkoSdkBinDir)\x86\lib$(ProjectName).so;$(SiliconStudioXenkoSdkBinDir)\x86_64\lib$(ProjectName).so" Condition="'$(SiliconStudioPlatform)' == 'Android'" BeforeTargets="Build">
+  <Target Name="CompileNativeClang_Android" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\arm64-v8a\libxenkonative.so;$(SiliconStudioXenkoSdkBinDir)\armeabi\libxenkonative.so;$(SiliconStudioXenkoSdkBinDir)\armeabi-v7a\libxenkonative.so;$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.so;$(SiliconStudioXenkoSdkBinDir)\x86_64\libxenkonative.so" Condition="'$(SiliconStudioPlatform)' == 'Android'" BeforeTargets="Build">
     <Error Text="The ANDROID_NDK_PATH environment variable is not set!" Condition="'$(ANDROID_NDK_PATH)' == ''" />
-    <Error Text="The installed NDK version is outdated, please install a r10+!" Condition="'$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText(`$(ANDROID_NDK_PATH)\RELEASE.TXT`)), `r1\d`).Success)' == 'false'" />
+    <Error Text="The installed NDK version is outdated, please install a r10+! ($(ANDROID_NDK_PATH))" Condition="'$([System.Text.RegularExpressions.Regex]::Match($([System.IO.File]::ReadAllText(`$(ANDROID_NDK_PATH)\RELEASE.TXT`)), `r1\d`).Success)' == 'false'" />
     
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target armv7-none-android" />
-    <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\x86_64-4.9\prebuilt\windows-x86_64\bin\x86_64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\armeabi-v7a\lib$(ProjectName).so&quot; &quot;obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\armeabi-v7a\libNativePath.a&quot; -L$(ANDROID_NDK_PATH)\platforms\android-21\arch-arm\usr\lib -nostdlib -lc -lm" />
+    <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\x86_64-4.9\prebuilt\windows-x86_64\bin\x86_64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\armeabi-v7a\libxenkonative.so&quot; &quot;obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\armeabi-v7a\libNativePath.a&quot; -L$(ANDROID_NDK_PATH)\platforms\android-21\arch-arm\usr\lib -nostdlib -lc -lm" />
 
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target arm-none-android" />
-    <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\x86_64-4.9\prebuilt\windows-x86_64\bin\x86_64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\armeabi\lib$(ProjectName).so&quot; &quot;obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\armeabi\libNativePath.a&quot; -L$(ANDROID_NDK_PATH)\platforms\android-21\arch-arm\usr\lib -nostdlib -lc -lm" />
+    <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\x86_64-4.9\prebuilt\windows-x86_64\bin\x86_64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\armeabi\libxenkonative.so&quot; &quot;obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\armeabi\libNativePath.a&quot; -L$(ANDROID_NDK_PATH)\platforms\android-21\arch-arm\usr\lib -nostdlib -lc -lm" />
 
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target aarch64-none-android" />
-    <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\aarch64-linux-android-4.9\prebuilt\windows-x86_64\bin\aarch64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\arm64-v8a\lib$(ProjectName).so&quot; &quot;obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\arm64-v8a\libNativePath.a&quot; -L$(ANDROID_NDK_PATH)\platforms\android-21\arch-arm64\usr\lib -nostdlib -lc -lm" />
+    <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\aarch64-linux-android-4.9\prebuilt\windows-x86_64\bin\aarch64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\arm64-v8a\libxenkonative.so&quot; &quot;obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\arm64-v8a\libNativePath.a&quot; -L$(ANDROID_NDK_PATH)\platforms\android-21\arch-arm64\usr\lib -nostdlib -lc -lm" />
 
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i386-none-android" />
-    <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\x86_64-4.9\prebuilt\windows-x86_64\bin\x86_64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86\lib$(ProjectName).so&quot; &quot;obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\x86\libNativePath.a&quot; -L$(ANDROID_NDK_PATH)\platforms\android-21\arch-x86\usr\lib -nostdlib -lc -lm" />
+    <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\x86_64-4.9\prebuilt\windows-x86_64\bin\x86_64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.so&quot; &quot;obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\x86\libNativePath.a&quot; -L$(ANDROID_NDK_PATH)\platforms\android-21\arch-x86\usr\lib -nostdlib -lc -lm" />
     
     <Exec Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 -o &quot;obj\%(CFiles.Filename).o&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-none-android" />
-    <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\x86_64-4.9\prebuilt\windows-x86_64\bin\x86_64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86_64\lib$(ProjectName).so&quot; &quot;obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\x86_64\libNativePath.a&quot; -L$(ANDROID_NDK_PATH)\platforms\android-21\arch-x86_64\usr\lib64 -nostdlib -lc -lm" />
+    <Exec Command="&quot;$(ANDROID_NDK_PATH)\toolchains\x86_64-4.9\prebuilt\windows-x86_64\bin\x86_64-linux-android-gcc.exe&quot; -shared -o &quot;$(SiliconStudioXenkoSdkBinDir)\x86_64\libxenkonative.so&quot; &quot;obj\@(CFiles->'%(Filename).o', ' ')&quot; &quot;$(XenkoDependenciesDir)\NativePath\Android\x86_64\libNativePath.a&quot; -L$(ANDROID_NDK_PATH)\platforms\android-21\arch-x86_64\usr\lib64 -nostdlib -lc -lm" />
   </Target>
 </Project>

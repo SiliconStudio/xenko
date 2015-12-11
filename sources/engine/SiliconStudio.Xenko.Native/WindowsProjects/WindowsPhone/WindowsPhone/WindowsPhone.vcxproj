@@ -21,8 +21,8 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{a36e95a9-9b7b-4468-a556-8862d1419992}</ProjectGuid>
     <Keyword>DynamicLibrary</Keyword>
-    <ProjectName>SiliconStudio.Xenko.Native</ProjectName>
-    <RootNamespace>SiliconStudio.Xenko.Native</RootNamespace>
+    <ProjectName>libxenkonative</ProjectName>
+    <RootNamespace>libxenkonative</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
     <AppContainerApplication>true</AppContainerApplication>
@@ -70,22 +70,22 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <OutDir>$(SolutionDir)..\Bin\WindowsPhone-Direct3D11\x86\</OutDir>
-    <TargetName>SiliconStudio.Xenko.Native</TargetName>
+    <TargetName>libxenkonative</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <OutDir>$(SolutionDir)..\Bin\WindowsPhone-Direct3D11\x86\</OutDir>
-    <TargetName>SiliconStudio.Xenko.Native</TargetName>
+    <TargetName>libxenkonative</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <OutDir>$(SolutionDir)..\Bin\WindowsPhone-Direct3D11\ARM\</OutDir>
-    <TargetName>SiliconStudio.Xenko.Native</TargetName>
+    <TargetName>libxenkonative</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <IgnoreImportLibrary>false</IgnoreImportLibrary>
     <OutDir>$(SolutionDir)..\Bin\WindowsPhone-Direct3D11\ARM\</OutDir>
-    <TargetName>SiliconStudio.Xenko.Native</TargetName>
+    <TargetName>libxenkonative</TargetName>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>

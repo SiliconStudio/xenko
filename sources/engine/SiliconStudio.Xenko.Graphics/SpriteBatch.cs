@@ -3,12 +3,11 @@
 
 using System;
 using System.Runtime.InteropServices;
-using System.Security;
 using System.Text;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics.Internals;
+using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -581,14 +580,11 @@ namespace SiliconStudio.Xenko.Graphics
             Draw(texture, ref elementInfo);
         }
 
-        [DllImport(NativeBridge.NativeBridge.Library, CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
-        private static extern void UpdateBufferValuesFromElementInfoNative(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
-
         protected override unsafe void UpdateBufferValuesFromElementInfo(ref ElementInfo elementInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset)
         {
             fixed (SpriteDrawInfo* drawInfo = &elementInfo.DrawInfo)
             {
-                UpdateBufferValuesFromElementInfoNative(new IntPtr(drawInfo), vertexPtr, indexPtr, vertexOffset);
+                NativeInvoke.UpdateBufferValuesFromElementInfo(new IntPtr(drawInfo), vertexPtr, indexPtr, vertexOffset);
             }
         }
 
