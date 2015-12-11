@@ -9,7 +9,7 @@ namespace SiliconStudio.Quantum.ActionStack
     /// </summary>
     public class ContentValueChangedActionItem : DirtiableActionItem
     {
-        private readonly IContent content;
+        protected readonly IContent Content;
         protected object Index;
         protected object PreviousValue;
 
@@ -24,7 +24,7 @@ namespace SiliconStudio.Quantum.ActionStack
         public ContentValueChangedActionItem(string name, IContent content, object index, object previousValue, IEnumerable<IDirtiable> dirtiables)
             : base(name, dirtiables)
         {
-            this.content = content;
+            this.Content = content;
             PreviousValue = previousValue;
             Index = index;
         }
@@ -39,8 +39,8 @@ namespace SiliconStudio.Quantum.ActionStack
         /// <inheritdoc/>
         protected override void UndoAction()
         {
-            var previousValue = content.Retrieve(Index);
-            content.Update(PreviousValue, Index);
+            var previousValue = Content.Retrieve(Index);
+            Content.Update(PreviousValue, Index);
             PreviousValue = previousValue;
         }
 
