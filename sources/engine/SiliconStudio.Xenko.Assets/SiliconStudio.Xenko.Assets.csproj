@@ -209,12 +209,9 @@
     <Compile Include="Entities\SceneAssetCompiler.cs" />
     <Compile Include="Entities\EntityGroupAssetOperations.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
-    <Compile Include="Entities\EntityDiffNode.cs" />
-    <Compile Include="Entities\EntityHierarchyDiffNodeBuilder.cs" />
     <Compile Include="Entities\EntityReference.cs" />
     <Compile Include="Entities\EntityScriptReference.cs" />
     <Compile Include="Entities\EntitySerializer.cs" />
-    <Compile Include="Entities\EntityTreeAsset.cs" />
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\IEntityComponentReference.cs" />
     <Compile Include="Entities\IEntityScriptReference.cs" />
