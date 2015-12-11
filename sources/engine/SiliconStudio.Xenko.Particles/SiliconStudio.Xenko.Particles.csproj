@@ -30,11 +30,9 @@
     <Compile Include="Initializers\InitialVelocitySeed.cs" />
     <Compile Include="Materials\ParticleMaterialBase.cs" />
     <Compile Include="Materials\ParticleMaterialComputeColor.cs" />
-    <Compile Include="Materials\ParticleMaterialFlipbook.cs" />
-    <Compile Include="Materials\ParticleMaterialTexture.cs" />
-    <Compile Include="Materials\ParticleMaterialTextureScroll.cs" />
     <Compile Include="Materials\UVBuilderBase.cs" />
     <Compile Include="Materials\UVBuilderFlipbook.cs" />
+    <Compile Include="Materials\UVBuilderScroll.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.OpenGL.Level_9_1.cs" />
@@ -48,11 +46,11 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorBlue.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Shaders\IComputeColor.cs">
+    <Compile Include="Shaders\ComputeColorWhite.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>IComputeColor.xksl</DependentUpon>
+      <DependentUpon>ComputeColorWhite.xksl</DependentUpon>
     </Compile>
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
@@ -155,9 +153,9 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ComputeColorBlue.cs</LastGenOutput>
     </None>
-    <None Include="Shaders\IComputeColor.xksl">
+    <None Include="Shaders\ComputeColorWhite.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
-      <LastGenOutput>IComputeColor.cs</LastGenOutput>
+      <LastGenOutput>ComputeColorWhite.cs</LastGenOutput>
     </None>
     <None Include="Shaders\ParticleBase.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>

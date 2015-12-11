@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ParticleBatchShader", context.GetParam(ParticleBaseKeys.ColorIsSRgb), context.GetParam(ParticleBaseKeys.HasTexture));
+                context.Mixin(mixin, "ParticleBatchShader", context.GetParam(ParticleBaseKeys.ColorIsSRgb));
                 if (context.GetParam(ParticleBaseKeys.BaseColor) != null)
                 {
 

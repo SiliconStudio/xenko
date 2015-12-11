@@ -29,13 +29,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMember(20)]
         [DataMemberRange(0, 1, 0.001, 0.1)]
         [Display("Emissive power")]
-        public float AlphaAdditive { get; set; } = 1f;
-
-        // TODO Move to ParticleMaterialSimple and change to IComputeScalar
-        [DataMember(30)]
-        [DataMemberRange(0, 100, 0.01, 1)]
-        [Display("Intensity")]
-        public float ColorIntensity { get; set; } = 1f; // TODO switch to IComputeScalar
+        public float AlphaAdditive { get; set; } = 0f;
 
         // TODO Move to ParticleMaterialSimple ? Keep here?
         [DataMember(40)]
@@ -117,9 +111,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             SetParameter(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
 
             // Scale up the color intensity - might depend on the eye adaptation later
-            SetParameter(ParticleBaseKeys.ColorIntensity, ColorIntensity);
-            SetParameter(ParticleBaseKeys.ColorScaleMin, color);
-            SetParameter(ParticleBaseKeys.ColorScaleMax, color);
+            SetParameter(ParticleBaseKeys.ColorScale, color);
 
             ///////////////
             // This should be CB0 - view/proj matrices don't change per material

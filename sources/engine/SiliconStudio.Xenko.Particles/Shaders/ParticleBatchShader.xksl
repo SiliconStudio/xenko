@@ -4,15 +4,11 @@
 namespace SiliconStudio.Xenko.Rendering
 {
 
-class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
+class ParticleBatchShader<bool TSRgb> : ParticleBase
 {
     // -------------------------------------
     // streams
     // -------------------------------------
-    //compose IComputeColor computeColor0;
-
-    //compose IComputeColor computeColor1;
-
     compose ComputeColor  baseColor;
 
     compose ComputeColor  baseIntensity;
@@ -40,43 +36,29 @@ class ParticleBatchShader<bool TSRgb, bool THasTexture> : ParticleBase
     // Shading of the sprite
     stage override float4 Shading()
     {
-//        float4 baseFloat4 = baseColor.Compute();
-        
-        float4 finalColor = GenerateRandomColor() * streams.Color * baseColor.Compute();
-        
-//        finalColor = lerp(baseFloat4, finalColor, streams.Lifetime);
-//        finalColor.r = streams.Lifetime;
-//        finalColor.g = streams.Lifetime;
-//        finalColor.b = streams.Lifetime;
-//       finalColor.a = 1;
+        // -----------------------------------------------
+        // Base particle color
+        // -----------------------------------------------        
+        float4 finalColor = ColorScale * streams.Color * baseColor.Compute();
 
-        //if (THasTexture)
-        //{
-        //    finalColor *= ((RenderFlagSwizzle == 0) ? SampleTex0() : SampleTex0().rrrr);
-        //}
-
-
+        // -----------------------------------------------
+        // Color intensity------------------------------
         finalColor.rgb *= baseIntensity.Compute().rrr;
-        // Test - for dynamic shaders
-        //finalColor.b *= 200;
+
+        // -----------------------------------------------
+        // Additive-Alpha blending
+        // -----------------------------------------------
         finalColor.a   *= AlphaAdditive;
-        
 
         return finalColor;
     }
 
-    stage float4 SampleTex0()
-    {
-        return Texture0.Sample(Sampler0, streams.TexCoord);                     // User-defined sampler state
-        // return Texture0.Sample(AnisotropicRepeatSampler, streams.TexCoord);  // Predefined sampler state
-    }
+    //stage float4 GenerateRandomColor()
+    //{
+    //    float fSeed = (float) (streams.RandomSeed + ColorScaleOffset);
 
-    stage float4 GenerateRandomColor()
-    {
-        float fSeed = (float) (streams.RandomSeed + ColorScaleOffset);
-
-        return lerp(ColorScaleMin, ColorScaleMax, GetRandom(fSeed));
-    }
+    //    return lerp(ColorScaleMin, ColorScaleMax, GetRandom(fSeed));
+    //}
 
     /////////////////////////////////////////////////////////////////
     // Randomness
