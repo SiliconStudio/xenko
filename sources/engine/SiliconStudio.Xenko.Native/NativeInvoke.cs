@@ -4,6 +4,7 @@
 using System;
 using System.Runtime.InteropServices;
 using System.Security;
+using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Native
 {
@@ -14,6 +15,11 @@ namespace SiliconStudio.Xenko.Native
 #else
         public const string Library = "libxenkonative";
 #endif
+
+        static NativeInvoke()
+        {
+            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".dll");
+        }
 
         [DllImport(Native.NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
         internal static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);

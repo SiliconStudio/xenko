@@ -24,7 +24,6 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Module.cs" />
     <Compile Include="NativeInvoke.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -36,7 +35,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="SiliconStudio.Xenko.Native.h" />
+    <None Include="XenkoNative.h" />
     <None Include="SpriteBatchNative.c" />
     <None Include="symbols.def" />
     <None Include="Xenko.Native.targets" />
