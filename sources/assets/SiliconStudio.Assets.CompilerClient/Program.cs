@@ -29,6 +29,10 @@ namespace SiliconStudio.Assets.CompilerClient
                 Environment.CurrentDirectory
             };
 
+            // Set the SiliconStudioXenkoDir environment variable
+            var installDir = DirectoryHelper.GetInstallationDirectory("Xenko");
+            Environment.SetEnvironmentVariable("SiliconStudioXenkoDir", installDir);
+
             newArgs.AddRange(args);
             var result = serverApp.Run(newArgs.ToArray());
             return result;

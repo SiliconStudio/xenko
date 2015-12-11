@@ -23,6 +23,8 @@
   <ItemGroup>
     <Reference Include="Mono.Android" Label="Xenko.DoNotSync" />
     <Reference Include="Xamarin.Android.NUnitLite" Label="Xenko.DoNotSync" />
+    <Content Label="Xenko.DoNotSync" Include="Properties\AndroidManifest.xml" />
+    <AndroidResource Label="Xenko.DoNotSync" Include="Resources\Drawable\Icon.png" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -63,9 +65,6 @@
       <Name>SiliconStudio.Core.Serialization</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Properties\AndroidManifest.xml" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

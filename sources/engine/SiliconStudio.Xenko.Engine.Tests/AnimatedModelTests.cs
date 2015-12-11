@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         public AnimatedModelTests()
         {
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
-            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_10_0 };
+            GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_3 };
         }
 
         protected override async Task LoadContent()

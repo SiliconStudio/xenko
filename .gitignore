@@ -44,6 +44,7 @@ obj/
 setup-cache*/
 setup-SetupFiles*/
 /doc/xenko_doc_output/
+/build/Xenko.version
 /externals/
 /sources/tools/Xenko.ShaderKeyGenerator/build/
 /sources/tools/Xenko.ProjectGenerator/build/
@@ -78,3 +79,5 @@ libbulletc.a
 sources/engine/SiliconStudio.Xenko.Graphics/Shaders.Bytecodes/log/
 log
 x64Debug
+x64Release
+*.opendb

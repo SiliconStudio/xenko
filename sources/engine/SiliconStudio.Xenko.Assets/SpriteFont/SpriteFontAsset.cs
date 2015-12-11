@@ -4,14 +4,15 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Graphics.Font;
+using IObjectFactory = SiliconStudio.Core.Reflection.IObjectFactory;
 
 namespace SiliconStudio.Xenko.Assets.SpriteFont
 {
@@ -22,6 +23,8 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [AssetDescription(FileExtension)]
     [AssetCompiler(typeof(SpriteFontAssetCompiler))]
     [ObjectFactory(typeof(SpriteFontFactory))]
+    [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha09")]
+    [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
     [Display(140, "Sprite Font")]
     [CategoryOrder(10, "Font")]
     [CategoryOrder(20, "Characters")]
@@ -148,8 +151,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// Check this property if you prefer to use interpolative alpha blending when rendering the font.
         /// </userdoc>
         [DataMember(120)]
-        [Display(null, "Rendering")]
-        public bool NoPremultiply { get; set; }
+        [DefaultValue(true)]
+        [Display("Premultiply", "Rendering")]
+        public bool IsPremultiplied { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the extra character spacing in pixels (relative to the font size). Zero is default spacing, negative closer together, positive further apart
@@ -224,6 +228,23 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             LineGapBaseLineFactor = 1.0f;
             Source = new UFile("");
             CharacterSet = new UFile("");
+        }
+
+        class PremultiplyUpgrader : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                if (asset.NoPremultiply != null)
+                {
+                    asset.IsPremultiplied = !(bool)asset.NoPremultiply;
+                    asset.NoPremultiply = DynamicYamlEmpty.Default;
+                }
+                if (asset.IsNotPremultiply != null)
+                {
+                    asset.IsPremultiplied = !(bool)asset.IsNotPremultiply;
+                    asset.IsNotPremultiply = DynamicYamlEmpty.Default;
+                }
+            }
         }
 
         /// <summary>

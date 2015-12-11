@@ -23,9 +23,7 @@
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
 using System;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-using System.Windows.Forms;
-#endif
+using System.Reflection;
 using SharpDX;
 using SharpDX.DXGI;
 using SharpDX.Mathematics.Interop;
@@ -256,7 +254,7 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return CreateSwapChainForWindowsRuntime();
 #else
-            return CreateSwapChainForDesktop();
+            return CreateSwapChainForWindows();
 #endif
         }
 
@@ -299,20 +297,37 @@ namespace SiliconStudio.Xenko.Graphics
             return swapChain;
         }
 #else
-        private SwapChain CreateSwapChainForDesktop()
+        /// <summary>
+        /// Create the SwapChain on Windows. To avoid any hard dependency on a actual windowing system
+        /// we assume that the <c>Description.DeviceWindowHandle.NativeHandle</c> holds
+        /// a window type that exposes the <code>Handle</code> property of type <see cref="IntPtr"/>.
+        /// </summary>
+        /// <returns></returns>
+        private SwapChain CreateSwapChainForWindows()
         {
-            var control = Description.DeviceWindowHandle.NativeHandle as Control;
-            if (control == null)
+            IntPtr hwndPtr = IntPtr.Zero;
+            var nativeHandle = Description.DeviceWindowHandle.NativeHandle;
+            var handleProperty = nativeHandle.GetType().GetProperty("Handle", BindingFlags.Instance | BindingFlags.NonPublic | BindingFlags.Public);
+            if (handleProperty != null && handleProperty.PropertyType == typeof(IntPtr))
             {
-                throw new NotSupportedException(string.Format("Form of type [{0}] is not supported. Only System.Windows.Control are supported", Description.DeviceWindowHandle != null ? Description.DeviceWindowHandle.GetType().Name : "null"));
+                hwndPtr = (IntPtr)handleProperty.GetValue(nativeHandle);
+                if (hwndPtr != IntPtr.Zero)
+                {
+                    return CreateSwapChainForDesktop(hwndPtr);
+                }
             }
+            throw new NotSupportedException(string.Format("Form of type [{0}] is not supported. Only System.Windows.Control or SDL2.Window are supported",
+                Description.DeviceWindowHandle != null ? Description.DeviceWindowHandle.GetType().Name : "null"));
+        }
 
+        private SwapChain CreateSwapChainForDesktop(IntPtr handle)
+        {
             bufferCount = 1;
             var description = new SwapChainDescription
                 {
                     ModeDescription = new ModeDescription(Description.BackBufferWidth, Description.BackBufferHeight, Description.RefreshRate.ToSharpDX(), (SharpDX.DXGI.Format)Description.BackBufferFormat), 
                     BufferCount = bufferCount, // TODO: Do we really need this to be configurable by the user?
-                    OutputHandle = control.Handle, 
+                    OutputHandle = handle,
                     SampleDescription = new SampleDescription((int)Description.MultiSampleCount, 0), 
                     SwapEffect = SwapEffect.Discard,
                     Usage = SharpDX.DXGI.Usage.BackBuffer | SharpDX.DXGI.Usage.RenderTargetOutput,

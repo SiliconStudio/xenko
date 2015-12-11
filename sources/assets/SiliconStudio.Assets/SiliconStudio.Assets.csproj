@@ -131,6 +131,7 @@
     <Compile Include="NugetLogEventArgs.cs" />
     <Compile Include="NugetStore.cs" />
     <Compile Include="AssetMigration.cs" />
+    <Compile Include="Package.Constants.cs" />
     <Compile Include="PackageLoadedAssembly.cs" />
     <Compile Include="PackageDependency.cs" />
     <Compile Include="PackageExtensions.cs" />
