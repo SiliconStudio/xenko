@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Games
         public static GameContext NewGameContextDesktop()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-    #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+    #if SILICONSTUDIO_XENKO_UI_OPENTK
             return new GameContextOpenTk(null);
     #else
         #if SILICONSTUDIO_XENKO_UI_SDL && !SILICONSTUDIO_XENKO_UI_WINFORMS && !SILICONSTUDIO_XENKO_UI_WPF
@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Games
 
         public static GameContext NewGameContextOpenTk()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
             return new GameContextOpenTk(null);
 #else
             return null;

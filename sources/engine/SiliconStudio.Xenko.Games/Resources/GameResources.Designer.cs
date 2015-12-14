@@ -10,6 +10,7 @@
 
 namespace SiliconStudio.Xenko.Games.Resources {
     using System;
+    using System.Reflection;
     
     
     /// <summary>
@@ -39,7 +40,7 @@ namespace SiliconStudio.Xenko.Games.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SiliconStudio.Xenko.Games.Resources.GameResources", typeof(GameResources).Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SiliconStudio.Xenko.Games.Resources.GameResources", typeof(GameResources).GetTypeInfo().Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;

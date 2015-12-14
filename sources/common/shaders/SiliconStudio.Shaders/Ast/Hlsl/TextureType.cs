@@ -133,7 +133,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// <returns></returns>
         public static TextureType Parse(string name)
         {
-            return TextureTypes.FirstOrDefault(textureType => string.Compare(name, textureType.Name.Text, true, CultureInfo.InvariantCulture) == 0);
+            return TextureTypes.FirstOrDefault(textureType => CultureInfo.InvariantCulture.CompareInfo.Compare(name, textureType.Name.Text, CompareOptions.None) == 0);
         }
     }
 }

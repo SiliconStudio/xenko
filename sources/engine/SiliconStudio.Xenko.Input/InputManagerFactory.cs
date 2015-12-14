@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Input
 
         private static InputManager NewInputManagerOpenTK(IServiceRegistry registry)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
             return new InputManagerOpenTK(registry);
 #else
             return null;

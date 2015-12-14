@@ -38,6 +38,7 @@ xenko_doc_output
 doc/doxygen/html
 Tools/bin
 Temp/
+Bin/
 ipch/
 obj/
 setup-cache*/

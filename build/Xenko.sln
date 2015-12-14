@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -20,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		SiliconStudio.PostSettings.Local.targets = SiliconStudio.PostSettings.Local.targets
 		..\sources\common\targets\SiliconStudio.PostSettings.targets = ..\sources\common\targets\SiliconStudio.PostSettings.targets
 		..\sources\common\targets\SiliconStudio.PreSettings.targets = ..\sources\common\targets\SiliconStudio.PreSettings.targets
+		..\sources\common\targets\SiliconStudio.Windows.CoreCLR.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows.CoreCLR.Cpp.targets
+		..\sources\common\targets\SiliconStudio.Windows.CoreCLR.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CoreCLR.CSharp.targets
 		..\sources\common\targets\SiliconStudio.Windows.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows.Cpp.targets
 		..\sources\common\targets\SiliconStudio.Windows.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CSharp.targets
 		..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets
@@ -74,6 +76,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTa
 		..\Targets\Xenko.Android.targets = ..\Targets\Xenko.Android.targets
 		..\Targets\Xenko.iOS.targets = ..\Targets\Xenko.iOS.targets
 		..\Targets\Xenko.targets = ..\Targets\Xenko.targets
+		..\Targets\Xenko.Windows.CoreCLR.targets = ..\Targets\Xenko.Windows.CoreCLR.targets
 		..\Targets\Xenko.Windows.targets = ..\Targets\Xenko.Windows.targets
 		..\Targets\Xenko.Windows10.targets = ..\Targets\Xenko.Windows10.targets
 		..\Targets\Xenko.WindowsPhone.targets = ..\Targets\Xenko.WindowsPhone.targets
@@ -330,6 +333,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SpriteStudio.Runtime", "..\sources\engine\SiliconStudio.Xenko.SpriteStudio.Runtime\SiliconStudio.Xenko.SpriteStudio.Runtime.csproj", "{9BC63BEC-F305-451D-BB31-262938EA964D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Launcher", "..\sources\install\SiliconStudio.Launcher\SiliconStudio.Launcher.csproj", "{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.CoreCLRBuilder", "..\sources\tools\SiliconStudio.CoreCLRBuilder\SiliconStudio.CoreCLRBuilder.csproj", "{85188363-84D8-45F8-A428-42D3301233CE}"
 EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.MostRecentlyUsedFiles", "..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.shproj", "{9AC6D791-811E-4D6A-B08E-93F0093EF268}"
 EndProject
@@ -2061,6 +2066,30 @@ Global
 		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C}.Testing|Win32.Build.0 = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.AppStore|Any CPU.Build.0 = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.AppStore|Win32.ActiveCfg = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.AppStore|Win32.Build.0 = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Debug|Win32.Build.0 = Debug|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Release|Win32.ActiveCfg = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Release|Win32.Build.0 = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Testing|Any CPU.ActiveCfg = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Testing|Any CPU.Build.0 = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Testing|Win32.ActiveCfg = Release|Any CPU
+		{85188363-84D8-45F8-A428-42D3301233CE}.Testing|Win32.Build.0 = Release|Any CPU
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -2302,6 +2331,7 @@ Global
 		{63562B0A-E501-42C2-97BB-13D3AD3A7DB4} = {4C142567-C42B-40F5-B092-798882190209}
 		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
 		{52E37DDA-584D-4C91-8EA3-E3D67C8ACB0C} = {A2A4342E-024B-4063-B10C-1DA96CA3046D}
+		{85188363-84D8-45F8-A428-42D3301233CE} = {860946E4-CC77-4FDA-A4FD-3DB2A502A696}
 		{9AC6D791-811E-4D6A-B08E-93F0093EF268} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
 		{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC} = {4C142567-C42B-40F5-B092-798882190209}
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9} = {4C142567-C42B-40F5-B092-798882190209}

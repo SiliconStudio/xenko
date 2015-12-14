@@ -42,8 +42,12 @@ namespace SiliconStudio.Xenko.Games
         {
             get
             {
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                 var assemblyUri = new Uri(Assembly.GetEntryAssembly().CodeBase);
                 return Path.GetDirectoryName(assemblyUri.LocalPath);
+#else
+                return AppContext.BaseDirectory;
+#endif
             }
         }
 
@@ -51,7 +55,7 @@ namespace SiliconStudio.Xenko.Games
         {
             switch (type)
             {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
                 case AppContextType.DesktopOpenTK:
                     return new GameWindowOpenTK();
 #endif
