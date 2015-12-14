@@ -14,8 +14,9 @@ void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionC
 
 	if (fabsf(drawInfo->Rotation) > 1e-6f)
 	{
-		rotation.X = npLolCos(drawInfo->Rotation);
-		rotation.Y = npLolSin(drawInfo->Rotation);
+		//npLolSincosf(drawInfo->Rotation, &rotation.Y, &rotation.X);
+		rotation.X = cos(drawInfo->Rotation);
+		rotation.Y = sin(drawInfo->Rotation);
 	}
 
 	Vector2 origin = drawInfo->Origin;
