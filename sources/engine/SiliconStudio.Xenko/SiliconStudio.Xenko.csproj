@@ -21,8 +21,12 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-    <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Drawing" />
-    <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Windows.Forms" />
+    <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Drawing" />
+    <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
+    <Reference Condition="$(SiliconStudioUI.Contains('SDL'))" Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Choose>
     <!-- SharpDX is needed for WIC -->
@@ -82,7 +86,7 @@
     <Compile Include="Graphics\SamplerStateDescription.cs" />
     <Compile Include="Graphics\StandardImageHelper.Android.cs" />
     <Compile Include="Graphics\StandardImageHelper.cs" />
-    <Compile Include="Graphics\StandardImageHelper.WindowsRuntime.cs" />
+    <Compile Include="Graphics\StandardImageHelper.Windows.Store.cs" />
     <Compile Include="Graphics\StandardImageHelper.Windows.cs" />
     <Compile Include="Graphics\TextureAddressMode.cs" />
     <Compile Include="Graphics\TextureDimension.cs" />
@@ -105,10 +109,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Condition="'$(SiliconStudioUI)' == 'SDL2'" Include="..\..\..\externals\SDL2.csproj">
-      <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
-      <Name>SDL2</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>

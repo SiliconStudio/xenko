@@ -7,6 +7,7 @@ namespace SiliconStudio.Shaders.Parser
     /// <summary>
     /// Macro to be used with <see cref="PreProcessor"/>.
     /// </summary>
+    [Serializable]
     public struct ShaderMacro : IEquatable<ShaderMacro>
     {
         /// <summary>

@@ -80,16 +80,17 @@ namespace SiliconStudio.AssemblyProcessor
                 throw new InvalidOperationException("Missing mscorlib.dll from assembly");
 
             // For now, use import, but this can cause mixed framework versions when processing an assembly with a different framework version.
-            voidType = assembly.MainModule.TypeSystem.Void;
-            stringType = assembly.MainModule.TypeSystem.String;
-            objectType = assembly.MainModule.TypeSystem.Object;
+            voidType = assembly.MainModule.ImportReference(mscorlibAssembly.MainModule.GetTypeResolved(typeof(void).FullName));
+            stringType = assembly.MainModule.ImportReference(mscorlibAssembly.MainModule.GetTypeResolved(typeof(string).FullName));
+            objectType = assembly.MainModule.ImportReference(mscorlibAssembly.MainModule.GetTypeResolved(typeof(object).FullName));
             var propertyInfoType = assembly.MainModule.ImportReference(mscorlibAssembly.MainModule.GetTypeResolved(typeof(PropertyInfo).FullName));
+
             var typeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Type).FullName);
 
 
             TypeDefinition propertyChangedExtendedEventArgsType;
 
-            AssemblyDefinition siliconStudioCoreAssembly;
+            AssemblyDefinition siliconStudioCoreAssembly = null;
             try
             {
                 siliconStudioCoreAssembly = assembly.Name.Name == "SiliconStudio.Core"
@@ -115,7 +116,7 @@ namespace SiliconStudio.AssemblyProcessor
 
             foreach (var type in assembly.MainModule.GetTypes())
             {
-                MethodReference getPropertyChangedMethod;
+                MethodReference getPropertyChangedMethod = null;
 
                 getPropertyChangedMethod = GetGetPropertyChangedMethod(assembly, type);
                 //var propertyChangedField = GetPropertyChangedField(type);

@@ -79,12 +79,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 using (var stream = new MemoryStream())
                 {
                     BinarySerialization.Write(stream, shaderBytecodes);
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                     rawData = stream.GetBuffer();
-#else
-// FIXME: Manu: The call to "ToArray()" might be slower than "GetBuffer()"
-                    rawData = stream.ToArray();
-#endif
                 }
             }
             else

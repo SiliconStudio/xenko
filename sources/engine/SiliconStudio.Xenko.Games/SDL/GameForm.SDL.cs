@@ -1,11 +1,10 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_UI_SDL2
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_UI_SDL
 using System;
-using System.ComponentModel;
-using Size = SiliconStudio.Xenko.Graphics.SDL.Size;
 using SiliconStudio.Xenko.Graphics.SDL;
+using SiliconStudio.Core.Mathematics;
 using SDL2;
 
 namespace SiliconStudio.Xenko.Games
@@ -14,13 +13,13 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// Default Rendering Form on SDL based applications.
     /// </summary>
-    public class GameForm : Window
+    public class GameFormSdl : Window
     {
 #region Initialization
         /// <summary>
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
-        public GameForm() : this("Xenko Game")
+        public GameFormSdl() : this("Xenko Game")
         {
         }
 
@@ -28,9 +27,9 @@ namespace SiliconStudio.Xenko.Games
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
         /// <param name="text">The text.</param>
-        public GameForm(String text) : base(text)
+        public GameFormSdl(String text) : base(text)
         {
-            Size = new Size(800, 600);
+            Size = new Size2(800, 600);
             ResizeBeginActions += GameForm_ResizeBeginActions;
             ResizeEndActions += GameForm_ResizeEndActions;
             ActivateActions += GameForm_ActivateActions;
@@ -73,7 +72,7 @@ namespace SiliconStudio.Xenko.Games
 //
 // TODO: The code below is taken from GameForm.cs of the Windows Desktop implementation. This needs reviewing
 //
-        private Size cachedSize;
+        private Size2 cachedSize;
         private FormWindowState previousWindowState;
         //private DisplayMonitor monitor;
         private bool isUserResizing;
@@ -110,7 +109,7 @@ namespace SiliconStudio.Xenko.Games
                 previousWindowState = FormWindowState.Normal;
 
                 // Only update when cachedSize is != 0
-                if (!cachedSize.IsEmpty)
+                if (cachedSize != Size2.Empty)
                 {
                     isSizeChangedWithoutResizeBegin = true;
                 }

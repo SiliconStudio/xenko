@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.IO
 {
     public partial class DirectoryWatcher
     {
-        private readonly Dictionary<string, DirectoryWatcherItem> watchers = new Dictionary<string, DirectoryWatcherItem>(StringComparer.CurrentCultureIgnoreCase);
+        private readonly Dictionary<string, DirectoryWatcherItem> watchers = new Dictionary<string, DirectoryWatcherItem>(StringComparer.InvariantCultureIgnoreCase);
 
         private void InitializeInternal()
         {
@@ -125,7 +125,7 @@ namespace SiliconStudio.Core.IO
         {
             if (path == null) throw new ArgumentNullException("path");
 
-            path = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), path));
+            path = Path.GetFullPath(Path.Combine(Environment.CurrentDirectory, path));
 
             // 1) Extract directory information from path
             DirectoryInfo info;
@@ -263,10 +263,7 @@ namespace SiliconStudio.Core.IO
                     IncludeSubdirectories = true
                 };
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
-// FIXME: Manu: This seems to be used for Designers in VS. Do we actually need this?
             watcher.BeginInit();
-#endif
 
             watcher.Changed += OnModified;
             watcher.Created += OnModified;
@@ -274,10 +271,7 @@ namespace SiliconStudio.Core.IO
             watcher.Renamed += OnModified;
             watcher.Error += WatcherOnError;
 
-#if !SILICONSTUDIO_RUNTIME_CORECLR
-// FIXME: Manu: This seems to be used for Designers in VS. Do we actually need this?
             watcher.EndInit();
-#endif
             watcher.EnableRaisingEvents = true;
 
             //Console.WriteLine("Watcher created {0}", directory);

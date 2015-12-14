@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
             var entityInfo = GetEntityInfo(localPath, importParameters.Logger);
 
-            //var isImportingEntity = importParameters.IsTypeSelectedForOutput<EntityAsset>();
+            //var isImportingEntity = importParameters.IsTypeSelectedForOutput<EntityGroupAsset>();
 
             var isImportingModel = importParameters.IsTypeSelectedForOutput<ModelAsset>();
 
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Assets.Model
                 //    var entityAssetItem = ImportEntity(rawAssetReferences, localPath, modelItem);
                 //
                 //    // Apply EntityAnalysis 
-                //    EntityAnalysis.UpdateEntityReferences(((EntityAsset)entityAssetItem.Asset).Hierarchy);
+                //    EntityAnalysis.UpdateEntityReferences(((EntityGroupAsset)entityAssetItem.Asset).Hierarchy);
                 //}
             }
 

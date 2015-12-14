@@ -18,12 +18,10 @@ namespace SiliconStudio.Core.Diagnostics
                 {
                     action();
                 }
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 catch (ThreadAbortException)
                 {
                     // Ignore this exception
                 }
-#endif
                 catch (Exception e)
                 {
                     Log.Fatal("Unexpected exception", e, CallerInfo.Get(sourceFilePath, memberName, sourceLineNumber));
@@ -40,12 +38,10 @@ namespace SiliconStudio.Core.Diagnostics
                 {
                     action(obj);
                 }
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                 catch (ThreadAbortException)
                 {
                     // Ignore this exception
                 }
-#endif
                 catch (Exception e)
                 {
                     Log.Fatal("Unexpected exception", e, CallerInfo.Get(sourceFilePath, memberName, sourceLineNumber));

@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
 
             try
             {
-                if (location.FileSource.EndsWith(".xksl", StringComparison.CurrentCultureIgnoreCase))
+                if (location.FileSource.EndsWith(".xksl", StringComparison.InvariantCultureIgnoreCase))
                 {
                     AnalyzeAndGoToDefinition(shaderSource, location, shaderDirectories, navigationResult);
                 }

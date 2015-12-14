@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
@@ -20,16 +20,12 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_UI_SDL2 || !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL)
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Globalization;
-#if !SILICONSTUDIO_UI_SDL2
 using System.Windows.Forms;
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using SharpDX.Win32;
-#else
-using SiliconStudio.Xenko.Graphics.SDL;
-using Control = SiliconStudio.Xenko.Graphics.SDL.Window;
-using SDL2;
 #endif
 using System.Runtime.InteropServices;
 
@@ -140,7 +136,6 @@ namespace SiliconStudio.Xenko.Games
 
             if(isControlAlive)
             {
-#if !SILICONSTUDIO_UI_SDL2
                 if(UseApplicationDoEvents)
                 {
                     // Revert back to Application.DoEvents in order to support Application.AddMessageFilter
@@ -154,7 +149,7 @@ namespace SiliconStudio.Xenko.Games
                     if (localHandle != IntPtr.Zero)
                     {
                         // Previous code not compatible with Application.AddMessageFilter but faster then DoEvents
-                        NativeMessage msg;
+                        Win32Native.NativeMessage msg;
                         while (Win32Native.PeekMessage(out msg, IntPtr.Zero, 0, 0, 0) != 0)
                         {
                             if (Win32Native.GetMessage(out msg, IntPtr.Zero, 0, 0) == -1)
@@ -185,13 +180,6 @@ namespace SiliconStudio.Xenko.Games
                         }
                     }
                 }
-#else
-                SDL.SDL_Event e;
-                while (SDL.SDL_PollEvent(out e) != 0)
-                {
-                    Application.ProcessEvent(e);
-                }
-#endif
             }
 
             return isControlAlive || switchControl;
@@ -215,7 +203,6 @@ namespace SiliconStudio.Xenko.Games
         /// </summary>
         public delegate void RenderCallback();
 
-#if !SILICONSTUDIO_UI_SDL2
         /// <summary>
         /// Runs the specified main loop in the specified context.
         /// </summary>
@@ -223,7 +210,6 @@ namespace SiliconStudio.Xenko.Games
         {
             Run(context.MainForm, renderCallback);
         }
-#endif
 
         /// <summary>
         /// Runs the specified main loop for the specified windows form.
@@ -248,7 +234,6 @@ namespace SiliconStudio.Xenko.Games
                 }
             }
         }
-
    }
 }
 #endif

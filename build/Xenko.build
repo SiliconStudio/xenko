@@ -145,10 +145,6 @@ Example of use:
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
   </Target>
 
-  <Target Name="BuildWindowsCoreCLR" DependsOnTargets="CopyXenkoKey">
-    <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).CoreCLR.sln" Properties="$(BuildProperties);Platform=Mixed Platforms"/>
-  </Target>
-
   <Target Name="BuildAndroid" DependsOnTargets="CopyXenkoKey">
     <MSBuild Targets="Clean;Build" Projects="$(XenkoSolution).Android.sln" Properties="$(BuildProperties);Platform=Android"/>
   </Target>

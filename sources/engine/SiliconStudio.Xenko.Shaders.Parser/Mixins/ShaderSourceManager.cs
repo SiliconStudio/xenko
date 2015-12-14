@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                                     if (File.Exists(shaderSourcePath))
                                     {
                                         // Replace path with a local path
-                                        shaderSource.Path = Path.Combine(Directory.GetCurrentDirectory(), shaderSourcePath);
+                                        shaderSource.Path = Path.Combine(Environment.CurrentDirectory, shaderSourcePath);
 
                                         // Optimization: It currently reads the source file twice
                                         shaderSource.Hash = ObjectId.FromBytes(File.ReadAllBytes(shaderSourcePath));
@@ -277,7 +277,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             return UseFileSystem ? File.Open(path, FileMode.Open, FileAccess.Read, FileShare.Read) : fileProvider.OpenStream(path, VirtualFileMode.Open, VirtualFileAccess.Read, VirtualFileShare.Read);
         }
 
-        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Unicode)]
+        [DllImport("kernel32.dll", SetLastError = true, CharSet = CharSet.Auto)]
         static extern uint GetLongPathName(string shortPath, StringBuilder sb, int buffer);
 
         [DllImport("kernel32.dll")]

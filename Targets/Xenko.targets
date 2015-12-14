@@ -30,8 +30,7 @@
   <PropertyGroup Condition="'$(SiliconStudioPlatformFullName)' == ''">
     <!-- Define the location where to build assemblies. -->
     <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
-    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioUI)</SiliconStudioPlatformFullName>
-    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioRuntime)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioRuntime)</SiliconStudioPlatformFullName>
+    <SiliconStudioPlatformFullName Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioBuildDirExtension)</SiliconStudioPlatformFullName>
   </PropertyGroup>
 
 
@@ -104,6 +103,9 @@
         <Reference Include="SiliconStudio.Xenko.SpriteStudio.Runtime">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll</HintPath>
         </Reference>
+        <Reference Condition="'$(SiliconStudioAutoTesting)' == 'true'" Include="SiliconStudio.Xenko.Games.Testing">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.Testing.dll</HintPath>
+        </Reference>
       </ItemGroup>
     </When>
   </Choose>
@@ -122,8 +124,7 @@
   <!-- Include platform specific targets -->
   <Import Condition="Exists('$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).targets')"
           Project="$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).targets"/>
-  <Import Condition="Exists('$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).$(SiliconStudioRuntime).targets')"
-          Project="$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).$(SiliconStudioRuntime).targets"/>
+  
   <!-- 
   *****************************************************************************************************************************
   Assembly Processor
@@ -137,7 +138,10 @@
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioUnitTest)' != 'true'">$(SiliconStudioAssemblyProcessorOptions) @(_ResolvedProjectReferencePaths->'--add-reference=%22%(Identity)%22',' ')</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(DocumentationFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --docfile="$(DocumentationFile)"</SiliconStudioAssemblyProcessorOptions>
       <!-- Physics and SpriteStudio assembly is actually hard coded/referenced here, remove once a better system is in place! -->
-      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Physics.dll" --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll" --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Physics.dll"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAutoTesting)' == 'true'">$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.Testing.dll"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)"</SiliconStudioAssemblyProcessorCommand>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorCommand) --signkeyfile="$(AssemblyOriginatorKeyFile)" --delete-on-error</SiliconStudioAssemblyProcessorCommand>
     </PropertyGroup>
@@ -201,8 +205,7 @@
     <PropertyGroup>
       <SiliconStudioPlatformFullNameOriginal>$(SiliconStudioPlatformFullName)</SiliconStudioPlatformFullNameOriginal>
       <SiliconStudioPlatformFullName>$(SiliconStudioPlatform)-$(SiliconStudioXenkoGraphicsApi)</SiliconStudioPlatformFullName>
-      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioUI)</SiliconStudioPlatformFullName>
-      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioRuntime)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioRuntime)</SiliconStudioPlatformFullName>
+      <SiliconStudioPlatformFullName Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioPlatformFullName)-$(SiliconStudioBuildDirExtension)</SiliconStudioPlatformFullName>
     </PropertyGroup>
     
     <!-- Rewrite dependencies -->

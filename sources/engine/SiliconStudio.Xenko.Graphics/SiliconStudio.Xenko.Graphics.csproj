@@ -16,18 +16,18 @@
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Condition="$(SiliconStudioUI.Contains('SDL'))" Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
       <ItemGroup>
-        <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Drawing" />
-        <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Windows.Forms" />
-        <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="SharpDX.Desktop">
-          <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Desktop.dll</HintPath>
-        </Reference>
+        <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Drawing" />
+        <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
       </ItemGroup>
     </When>
   </Choose>
@@ -59,8 +59,7 @@
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <ItemGroup>
             <Reference Include="OpenTK">
-              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
-              <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+              <HintPath>$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>
@@ -124,14 +123,6 @@
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="DepthStencilStateSerializer.cs" />
-    <Compile Include="SDL\Application.cs" />
-    <Compile Include="SDL\Window.cs" />
-    <Compile Include="SDL\Cursor.cs" />
-    <Compile Include="SDL\FormBorderStyle.cs" />
-    <Compile Include="SDL\FormWindowState.cs" />
-    <Compile Include="SDL\Point.cs" />
-    <Compile Include="SDL\Rect.cs" />
-    <Compile Include="SDL\Size.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />
@@ -460,10 +451,6 @@
     <Compile Include="ViewType.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Condition="'$(SiliconStudioUI)' == 'SDL2'" Include="..\..\..\externals\SDL2.csproj">
-      <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
-      <Name>SDL2</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>

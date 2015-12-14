@@ -1,6 +1,6 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL2
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
@@ -9,16 +9,15 @@ using System.Windows.Interop;
 
 using SharpDX.Multimedia;
 using SharpDX.RawInput;
-
 using WinFormsKeys = System.Windows.Forms.Keys;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    public partial class InputManagerBase
     {
-        private static readonly Dictionary<WinFormsKeys, Keys> mapKeys = new Dictionary<WinFormsKeys, Keys>();
+        internal static readonly Dictionary<WinFormsKeys, Keys> mapKeys = new Dictionary<WinFormsKeys, Keys>();
 
-        private void BindRawInputKeyboard(Control winformControl)
+        protected internal void BindRawInputKeyboard(Control winformControl)
         {
             EnsureMapKeys();
 
@@ -39,7 +38,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        private void BindRawInputKeyboard(System.Windows.Window winformControl)
+        protected internal void BindRawInputKeyboard(System.Windows.Window winformControl)
         {
             EnsureMapKeys();
 
@@ -141,7 +140,7 @@ namespace SiliconStudio.Xenko.Input
             }
         }
 
-        private static void EnsureMapKeys()
+        internal static void EnsureMapKeys()
         {
             lock (mapKeys)
             {

@@ -177,14 +177,14 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Performance
             if (globalCount == limit)
             {
                 PrintResult();
-                TextWriter tw = new StreamWriter(File.Open("performance.csv", FileMode.Append));
+                TextWriter tw = new StreamWriter("performance.csv");
                 tw.WriteLine("loading,type,semantic,mix,deepclone,global");
 
                 for (var i = 0; i < limit; ++i)
                 {
                     tw.WriteLine("{0},{1},{2},{3},{4},{5}", LoadingTimes[i], TypeAnalysisTimes[i], SemanticAnalysisTimes[i], MixTimes[i], DeepcloneTimes[i], GlobalTimes[i]);
                 }
-                tw.Dispose();
+                tw.Close();
             }
         }
     }

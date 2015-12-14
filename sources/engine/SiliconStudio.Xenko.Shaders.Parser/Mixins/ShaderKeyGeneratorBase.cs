@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Globalization;
 
 using SiliconStudio.Xenko.Shaders.Parser.Ast;
 using SiliconStudio.Shaders.Ast;
@@ -295,7 +294,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
         protected static bool IsStringInList(string value, params string[] list)
         {
-            return list.Any(str => CultureInfo.InvariantCulture.CompareInfo.Compare(value, str, CompareOptions.IgnoreCase) == 0);
+            return list.Any(str => string.Compare(value, str, StringComparison.InvariantCultureIgnoreCase) == 0);
         }
     }
 }

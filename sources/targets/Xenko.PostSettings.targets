@@ -10,8 +10,7 @@
             <When Condition="'$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES'">
               <ItemGroup>
                 <Reference Include="OpenTK">
-                  <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
-                  <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+                  <HintPath>$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
                 </Reference>
               </ItemGroup>
             </When>
@@ -26,8 +25,8 @@
           </Choose>
           <ItemGroup>
             <Reference Include="System.Data" />
-            <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Drawing" />
-            <Reference Condition=" '$(SiliconStudioUI)' == '' " Include="System.Windows.Forms" />
+            <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Drawing" />
+            <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
             <Reference Include="PresentationFramework" />
             <Reference Include="PresentationCore" />
             <Reference Include="WindowsBase" />

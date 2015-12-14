@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Input
     /// <summary>
     /// Interface for input management system, including keyboard, mouse, gamepads and touch.
     /// </summary>
-    public abstract class InputManagerBase : GameSystemBase
+    public abstract partial class InputManagerBase : GameSystemBase
     {
         #region Constants and Fields
 
@@ -705,6 +705,14 @@ namespace SiliconStudio.Xenko.Input
         /// </summary>
         internal virtual void CheckAndDisableSensors()
         {
+        }
+
+        internal void InjectPointerEvent(PointerEvent e)
+        {
+            lock (pointerEvents)
+            {
+                pointerEvents.Add(e);
+            }
         }
 
         private void UpdateGestureEvents(TimeSpan elapsedGameTime)

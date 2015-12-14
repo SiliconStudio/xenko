@@ -45,19 +45,20 @@
 * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 * THE SOFTWARE.
 */
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && !SILICONSTUDIO_UI_SDL2
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System.Runtime.InteropServices;
 using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
-
+using System.Reflection;
 
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
     /// Default Rendering Form on windows desktop.
     /// </summary>
+    [DesignerCategory("Code")]
     public class GameForm : Form
     {
         private const int SIZE_RESTORED = 0;
@@ -99,7 +100,14 @@ namespace SiliconStudio.Xenko.Games
             ResizeRedraw = true;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
 
-            Icon = Resources.GameResources.Logo;
+            try
+            {
+                Icon = Icon.ExtractAssociatedIcon(Assembly.GetEntryAssembly().Location);
+            }
+            catch
+            {
+                Icon = SystemIcons.Application;
+            }
 
             previousWindowState = FormWindowState.Normal;
         }

@@ -18,8 +18,7 @@
     <SiliconStudioDependenciesDir Condition="'$(SiliconStudioDependenciesDir)' != '' and !HasTrailingSlash('$(SiliconStudioDependenciesDir)')">$(SiliconStudioDependenciesDir)\</SiliconStudioDependenciesDir>
     <!-- Define the location where to build assemblies. -->
     <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUI)</SiliconStudioBuildDirectory>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioRuntime)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioRuntime)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioBuildDirExtension)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioBuildDirExtension)</SiliconStudioBuildDirectory>
     <BaseIntermediateOutputPath Condition=" $(BaseIntermediateOutputPath) == '' ">obj\</BaseIntermediateOutputPath>
     <IntermediateOutputPath Condition=" $(IntermediateOutputPath) == '' ">$(BaseIntermediateOutputPath)$(SiliconStudioBuildDirectory)\</IntermediateOutputPath>
     <DefaultOutputPath>Bin\$(SiliconStudioBuildDirectory)\</DefaultOutputPath>
@@ -128,17 +127,12 @@
   </PropertyGroup>
 
   <!-- 
-    Settings SiliconStudioRuntime specific
+    Settings SiliconStudioUI specific defines.
+    The computation of SiliconStudioUIDefineConstants is done in SiliconStudio.PreSettings.targets.
   -->
-  <PropertyGroup Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
-    <SiliconStudioRuntimeDefines>SILICONSTUDIO_RUNTIME_CORECLR</SiliconStudioRuntimeDefines>
-  </PropertyGroup>
 
-  <!-- 
-    Settings SiliconStudioUI specific
-  -->
-  <PropertyGroup Condition=" '$(SiliconStudioUI)' == 'SDL2' ">
-    <SiliconStudioUIDefines>SILICONSTUDIO_UI_SDL2</SiliconStudioUIDefines>
+  <PropertyGroup>
+    <SiliconStudioUIDefines>@(SiliconStudioUIDefineConstants->'%(Argument)')</SiliconStudioUIDefines>
   </PropertyGroup>
  
   <!-- 
@@ -162,7 +156,6 @@
   </PropertyGroup>
 
   <PropertyGroup>
-    <DefineConstants Condition="'$(SiliconStudioRuntimeDefines)' != ''">$(DefineConstants);$(SiliconStudioRuntimeDefines)</DefineConstants>
     <DefineConstants Condition="'$(SiliconStudioUIDefines)' != ''">$(DefineConstants);$(SiliconStudioUIDefines)</DefineConstants>
   </PropertyGroup>
   

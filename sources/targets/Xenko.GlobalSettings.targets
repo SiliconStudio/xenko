@@ -13,8 +13,7 @@
   <PropertyGroup Condition="'$(SiliconStudioBuildDirectory)' == ''">
     <!-- Define the location where to build assemblies. -->
     <SiliconStudioBuildDirectory>$(SiliconStudioPlatform)-$(XenkoGraphicsApi)</SiliconStudioBuildDirectory>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUI)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUI)</SiliconStudioBuildDirectory>
-    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioRuntime)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioRuntime)</SiliconStudioBuildDirectory>
+    <SiliconStudioBuildDirectory Condition="'$(SiliconStudioUIDir)' != ''">$(SiliconStudioBuildDirectory)-$(SiliconStudioUIDir)</SiliconStudioBuildDirectory>
   </PropertyGroup>
 
   <PropertyGroup>

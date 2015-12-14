@@ -59,23 +59,13 @@ namespace SiliconStudio.Core
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return false;
 #else
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             var entryAssembly = Assembly.GetEntryAssembly();
-#else
-                // FIXME: Manu: We cannot get the entry assembly in CoreCLR, so we assume none was found for the time being.
-            Assembly entryAssembly = null;
-#endif
             if (entryAssembly != null)
             {
-                var debuggableAttribute = entryAssembly.GetCustomAttributes<DebuggableAttribute>().FirstOrDefault();
+                var debuggableAttribute = entryAssembly.GetCustomAttributes(typeof(DebuggableAttribute)).OfType<DebuggableAttribute>().FirstOrDefault();
                 if (debuggableAttribute != null)
                 {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                     return (debuggableAttribute.DebuggingFlags & DebuggableAttribute.DebuggingModes.DisableOptimizations) != 0;
-#else
-                        // CoreCLR does not provide `DebuggingFlags' on DebuggableAttribute, so we ignore it for the time being.
-                    return (DebuggableAttribute.DebuggingModes.DisableOptimizations) != 0;
-#endif
                 }
             }
             return false;

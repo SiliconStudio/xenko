@@ -22,7 +22,7 @@ namespace SiliconStudio.AssemblyProcessor
             // Resolve mscorlib types
             var assemblyFileVersionAttributeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(AssemblyFileVersionAttribute).FullName);
             var assemblyMethodConstructor = assembly.MainModule.ImportReference(assemblyFileVersionAttributeType.Methods.FirstOrDefault(method => method.IsConstructor && method.Parameters.Count == 1));
-            var stringType = assembly.MainModule.TypeSystem.String;
+            var stringType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(string).FullName);
 
             // TODO: Git Commit SHA
             var gitCommitShortId = "0";

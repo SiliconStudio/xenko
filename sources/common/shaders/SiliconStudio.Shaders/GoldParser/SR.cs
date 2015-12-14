@@ -16,7 +16,6 @@
 #region Using directives
 
 using System;
-using System.Reflection;
 using System.IO;
 using System.Resources;
 using System.Globalization;
@@ -37,7 +36,7 @@ namespace GoldParser
 
 		private SR()
 		{
-			m_resources = new ResourceManager("GoldParser", this.GetType().GetTypeInfo().Assembly);
+			m_resources = new ResourceManager("GoldParser", this.GetType().Module.Assembly);
 		}
 
 		/* These function can be useful in other applications.

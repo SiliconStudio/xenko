@@ -149,7 +149,7 @@ namespace SiliconStudio.Core.Diagnostics
 
         private void EnsureConsole()
         {
-            if (Debugger.IsAttached || isConsoleActive || !Platform.IsWindowsDesktop)
+            if (Debugger.IsAttached || isConsoleActive || Environment.OSVersion.Platform != PlatformID.Win32NT)
             {
                 return;
             }

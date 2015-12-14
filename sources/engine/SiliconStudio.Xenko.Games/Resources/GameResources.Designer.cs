@@ -10,7 +10,6 @@
 
 namespace SiliconStudio.Xenko.Games.Resources {
     using System;
-    using System.Reflection;
     
     
     /// <summary>
@@ -40,7 +39,7 @@ namespace SiliconStudio.Xenko.Games.Resources {
         internal static global::System.Resources.ResourceManager ResourceManager {
             get {
                 if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SiliconStudio.Xenko.Games.Resources.GameResources", typeof(GameResources).GetTypeInfo().Assembly);
+                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("SiliconStudio.Xenko.Games.Resources.GameResources", typeof(GameResources).Assembly);
                     resourceMan = temp;
                 }
                 return resourceMan;
@@ -60,8 +59,8 @@ namespace SiliconStudio.Xenko.Games.Resources {
                 resourceCulture = value;
             }
         }
-        
-#if !SILICONSTUDIO_UI_SDL2
+
+#if SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Icon similar to (Icon).
         /// </summary>

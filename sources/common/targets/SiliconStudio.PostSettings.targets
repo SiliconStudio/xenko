@@ -45,9 +45,7 @@
 
     <SiliconStudioGenerateDoc Condition="'$(SiliconStudioPublicApi)' == 'true'">true</SiliconStudioGenerateDoc>
 
-    <!-- To preserve existing build layout, if no runtime is specified, we drop it from the name of the build directory -->
-    <SiliconStudioCompilerTargets Condition="'$(SiliconStudioRuntime)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
-    <SiliconStudioCompilerTargets Condition="'$(SiliconStudioRuntime)' != ''">$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioRuntime).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
+    <SiliconStudioCompilerTargets>$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
     <SiliconStudioCompilerTargetsEnable Condition="!Exists('$(SiliconStudioCompilerTargets)')">false</SiliconStudioCompilerTargetsEnable>
     <SiliconStudioCompilerTargetsEnable Condition=" '$(SiliconStudioPlatform)' != 'Windows' and $(SiliconStudioWindowsOnly) == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>
@@ -59,7 +57,7 @@
   <!-- Import the specific compiler targets for the selected platform/language -->
   <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
   
-  <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != ''">
+  <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
     <PropertyGroup Condition="'$(XenkoUserBuild)' != 'true'">
       <!-- Add SiliconStudio.Core path to assembly search directory -->
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioCoreAssemblyPath)' != ''">$(SiliconStudioAssemblyProcessorOptions) --assembly="$(SiliconStudioCoreAssemblyPath)"</SiliconStudioAssemblyProcessorOptions>

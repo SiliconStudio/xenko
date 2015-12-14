@@ -78,7 +78,7 @@ namespace SiliconStudio.Shaders.Parser
             if (includeDirectories != null)
                 allIncludeDirectories.AddRange(includeDirectories);
 
-            allIncludeDirectories.Add(Directory.GetCurrentDirectory());
+            allIncludeDirectories.Add(Environment.CurrentDirectory);
 
             var directoryName = Path.GetDirectoryName(sourceFileName);
             if (!string.IsNullOrEmpty(directoryName))

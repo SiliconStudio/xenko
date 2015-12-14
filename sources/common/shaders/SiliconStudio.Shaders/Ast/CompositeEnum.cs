@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -388,7 +387,7 @@ namespace SiliconStudio.Shaders.Ast
             {
                 foreach (var field in type.GetFields())
                 {
-                    if (typeof(CompositeEnum).GetTypeInfo().IsAssignableFrom(field.FieldType.GetTypeInfo()) && field.IsStatic)
+                    if (typeof(CompositeEnum).IsAssignableFrom(field.FieldType) && field.IsStatic)
                     {
                         var fieldValue = (CompositeEnum)field.GetValue(null);
                         if (fieldValue.Values.Count == 1)
@@ -402,7 +401,7 @@ namespace SiliconStudio.Shaders.Ast
                     }
                 }
 
-                type = type.GetTypeInfo().BaseType;
+                type = type.BaseType;
             }
 
             return map;
@@ -484,7 +483,7 @@ namespace SiliconStudio.Shaders.Ast
                 }
 
                 // If same value, than return it directly
-                if (typeof(T).GetTypeInfo().IsAssignableFrom(value.GetType().GetTypeInfo()))
+                if (typeof(T).IsAssignableFrom(value.GetType()))
                 {
                     return (T)value;
                 }

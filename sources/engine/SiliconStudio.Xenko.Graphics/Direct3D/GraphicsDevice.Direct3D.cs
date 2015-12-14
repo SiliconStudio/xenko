@@ -5,7 +5,6 @@
 using System;
 
 using SharpDX.DXGI;
-using SharpDX.Direct3D11;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
@@ -59,7 +58,7 @@ namespace SiliconStudio.Xenko.Graphics
             InputLayoutManager = device.InputLayoutManager;
             nativeDevice = device.NativeDevice;
             nativeDeviceContext = new SharpDX.Direct3D11.DeviceContext(NativeDevice).DisposeBy(this);
-            nativeDeviceProfiler = SharpDX.ComObject.QueryInterfaceOrNull<UserDefinedAnnotation>(nativeDeviceContext.NativePointer);
+            nativeDeviceProfiler = SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer);
             isDeferred = true;
             IsDebugMode = device.IsDebugMode;
             if (IsDebugMode)
@@ -186,17 +185,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="name">The name.</param>
         public unsafe void BeginProfile(Color4 profileColor, string name)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL2
             if (nativeDeviceProfiler != null)
             {
                 nativeDeviceProfiler.BeginEvent(name);
             }
-            else
-            {
-                var rawColor = profileColor.ToBgra();
-                SharpDX.Direct3D.PixHelper.BeginEvent(*(RawColorBGRA*)(&rawColor), name);
-            }
-#endif
         }
 
         /// <summary>
@@ -527,9 +519,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="enabledFlag">if set to <c>true</c> [enabled flag].</param>
         public void EnableProfile(bool enabledFlag)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL2
-            SharpDX.Direct3D.PixHelper.AllowProfiling(enabledFlag);
-#endif
         }
 
         /// <summary>
@@ -544,16 +533,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void EndProfile()
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_UI_SDL2
             if (nativeDeviceProfiler != null)
             {
                 nativeDeviceProfiler.EndEvent();
             }
-            else
-            {
-                SharpDX.Direct3D.PixHelper.EndEvent();
-            }
-#endif
         }
 
         /// <summary>
@@ -918,8 +901,8 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (IsDebugMode)
             {
-                var deviceDebug = new DeviceDebug(NativeDevice);
-                deviceDebug.ReportLiveDeviceObjects(ReportingLevel.Detail);
+                var deviceDebug = new SharpDX.Direct3D11.DeviceDebug(NativeDevice);
+                deviceDebug.ReportLiveDeviceObjects(SharpDX.Direct3D11.ReportingLevel.Detail);
             }
 
             currentInputLayout = null;

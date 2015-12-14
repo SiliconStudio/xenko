@@ -116,7 +116,6 @@ namespace SiliconStudio.Xenko.Graphics
         private GraphicsDevice immediateContext;
         private GraphicsAdapter _adapter;
         private SwapChainBackend _defaultSwapChainBackend;
-        private Viewport[] _currentViewports = new Viewport[MaxBoundRenderTargets];
         private Rectangle[] _currentScissorRectangles = new Rectangle[MaxBoundRenderTargets];
         private int contextBeginCounter = 0;
 
@@ -581,7 +580,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
                 
                 GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-                GL.Viewport((int)_currentViewports[0].X, (int)_currentViewports[0].Y, (int)_currentViewports[0].Width, (int)_currentViewports[0].Height);
+                GL.Viewport((int)currentState.Viewports[0].X, (int)currentState.Viewports[0].Y, (int)currentState.Viewports[0].Width, (int)currentState.Viewports[0].Height);
                 return;
             }
 
@@ -694,7 +693,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.ColorMask(enabledColors[0], enabledColors[1], enabledColors[2], enabledColors[3]);
 
             GL.BindFramebuffer(FramebufferTarget.Framebuffer, boundFBO);
-            GL.Viewport((int)_currentViewports[0].X, (int)_currentViewports[0].Y, (int)_currentViewports[0].Width, (int)_currentViewports[0].Height);
+            GL.Viewport((int)currentState.Viewports[0].X, (int)currentState.Viewports[0].Y, (int)currentState.Viewports[0].Width, (int)currentState.Viewports[0].Height);
         }
 
         private int CreateCopyProgram(bool srgb, out int offsetLocation, out int scaleLocation)
@@ -1605,6 +1604,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>The value of flipRenderTarget.</returns>
         private bool ChooseFlipRenderTarget(Texture depthStencilBuffer, params Texture[] renderTargets)
         {
+            // TODO: Only OpenGL renders to backbuffer directly and uses defaultRenderTarget, right now
+            if (defaultRenderTarget != null)
+                return true;
+
             if (renderTargets != null && renderTargets.Length > 0)
             {
                 foreach (var rt in renderTargets)
@@ -1774,7 +1777,7 @@ namespace SiliconStudio.Xenko.Graphics
                 boundFBOHeight = 0;
 
             // TODO: support multiple viewports and scissors?
-            UpdateViewport(_currentViewports[0]);
+            UpdateViewport(currentState.Viewports[0]);
             UpdateScissor(_currentScissorRectangles[0]);
         }
 
@@ -1850,8 +1853,6 @@ namespace SiliconStudio.Xenko.Graphics
             // TODO: Check all non-empty viewports are identical and match what is active in FBO!
             UpdateViewport(currentState.Viewports[0]);
 #else
-            if (currentState.Viewports.Length >= _currentViewports.Length)
-                throw new IndexOutOfRangeException("The viewport index is higher than the number of available viewports.");
             UpdateViewports();
 #endif
         }
@@ -1864,10 +1865,10 @@ namespace SiliconStudio.Xenko.Graphics
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private void UpdateViewports()
         {
-            int nbViewports = _currentViewports.Length;
+            int nbViewports = currentState.Viewports.Length;
             for (int i = 0; i < nbViewports; ++i)
             {
-                var currViewport = _currentViewports[i];
+                var currViewport = currentState.Viewports[i];
                 _currentViewportsSetBuffer[4 * i] = currViewport.X;
                 _currentViewportsSetBuffer[4 * i + 1] = GetViewportY(currViewport);
                 _currentViewportsSetBuffer[4 * i + 2] = currViewport.Width;
@@ -2338,6 +2339,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void InitDefaultRenderTarget(PresentationParameters presentationParameters)
         {
+// TODO: Provide unified ClientSize from GameWindow
 #if SILICONSTUDIO_PLATFORM_IOS
             windowProvidedFrameBuffer = gameWindow.Framebuffer;
 
@@ -2345,31 +2347,38 @@ namespace SiliconStudio.Xenko.Graphics
             var width = (int)(gameWindow.Size.Width * gameWindow.ContentScaleFactor);
             var height = (int)(gameWindow.Size.Height * gameWindow.ContentScaleFactor);
 #else
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
+            var width = gameWindow.ClientSize.Width;
+            var height = gameWindow.ClientSize.Height;
+#else
             var width = gameWindow.Size.Width;
             var height = gameWindow.Size.Height;
+#endif
             windowProvidedFrameBuffer = 0;
 #endif
+
+            boundFBO = windowProvidedFrameBuffer;
+            GL.BindFramebuffer(FramebufferTarget.Framebuffer, windowProvidedFrameBuffer);
 
             // TODO: iOS (and possibly other platforms): get real render buffer ID for color/depth?
             windowProvidedRenderTexture = Texture.New2D(this, width, height, 1,
                 // TODO: As a workaround, because OpenTK(+OpenGLES) doesn't support to create SRgb backbuffer, we fake it by creating a non-SRgb here and CopyScaler2D is responsible to transform it to non SRgb
                 presentationParameters.BackBufferFormat.IsSRgb() ? presentationParameters.BackBufferFormat.ToNonSRgb() : presentationParameters.BackBufferFormat, TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
-            windowProvidedRenderTexture.Reload = (graphicsResource) => { };
-
-            boundFBO = windowProvidedFrameBuffer;
-
-            GL.BindFramebuffer(FramebufferTarget.Framebuffer, windowProvidedFrameBuffer);
+            windowProvidedRenderTexture.Reload = graphicsResource => { };
 
             // Extract FBO render target
             int renderTargetTextureId;
             GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
             windowProvidedRenderTexture.resourceId = renderTargetTextureId;
-            windowProvidedRenderTexture.Reload = (graphicsResource) => { };
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
+            windowProvidedDepthTexture = Texture.New2D(this, width, height, 1, presentationParameters.DepthStencilFormat, TextureFlags.DepthStencil | Texture.TextureFlagsCustomResourceId);
+            windowProvidedDepthTexture.Reload = graphicsResource => { };
 
             // Extract FBO depth target
             GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
-            //windowProvidedDepthTexture.resourceId = renderTargetTextureId;
-            //windowProvidedDepthTexture.Reload = (graphicsResource) => { };
+            windowProvidedDepthTexture.resourceId = renderTargetTextureId;
+#endif
 
             RootDevice.existingFBOs[new FBOKey(windowProvidedDepthTexture, new[] { windowProvidedRenderTexture })] = windowProvidedFrameBuffer;
 
@@ -2378,7 +2387,9 @@ namespace SiliconStudio.Xenko.Graphics
             // - No blitting, but default RenderTarget won't work with a custom FBO
             // - Later we should be able to detect that automatically?
             //defaultRenderTarget = Texture.New2D(this, presentationParameters.BackBufferWidth, presentationParameters.BackBufferHeight, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).ToRenderTarget();
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
             defaultRenderTarget = windowProvidedRenderTexture;
+#endif
         }
 
         public GraphicsDevice ImmediateContext
@@ -2424,10 +2435,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the default render target associated with this graphics device.
         /// </summary>
         /// <value>The default render target.</value>
-        internal Texture DefaultRenderTarget
-        {
-            get { return defaultRenderTarget; }
-        }
+        internal Texture DefaultRenderTarget => defaultRenderTarget;
 
         /// <summary>
         /// Presents the display with the contents of the next buffer in the sequence of back buffers owned by the GraphicsDevice.

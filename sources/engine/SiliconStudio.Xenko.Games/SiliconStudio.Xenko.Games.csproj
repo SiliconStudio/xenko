@@ -18,6 +18,10 @@
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Condition="$(SiliconStudioUI.Contains('SDL'))" Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
@@ -25,12 +29,6 @@
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Desktop">
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.Desktop.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.RawInput">
-      <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.RawInput.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct3D11">
       <SpecificVersion>False</SpecificVersion>
@@ -46,45 +44,38 @@
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Android\AndroidXenkoGameView.cs" />
-    <Compile Include="Android\GamePlatformAndroid.cs" />
-    <Compile Include="Android\GameWindowAndroid.cs" />
+    <Compile Include="Android\GamePlatform.Android.cs" />
+    <Compile Include="Android\GameWindow.Android.cs" />
     <Compile Include="AssemblyDoc.cs" />
-    <Compile Include="Desktop\GameForm.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Desktop\WindowsMessageLoop.cs" />
+    <Compile Include="Desktop\GameForm.cs" />
+    <Compile Include="Desktop\GamePlatform.Windows.cs" />
+    <Compile Include="Desktop\GameWindow.Windows.Desktop.cs" />
     <Compile Include="Desktop\Win32Native.cs" />
-    <Compile Include="GameContext.Android.cs" />
-    <Compile Include="GameContext.OpenTK.cs" />
-    <Compile Include="GameContext.iOS.cs" />
-    <Compile Include="Desktop\GamePlatformDesktop.cs" />
-    <Compile Include="Desktop\GameWindowDesktop.cs" />
-    <Compile Include="SDL\GameForm.SDL.cs" />
-    <Compile Include="GameProfilingKeys.cs" />
-    <Compile Include="GameSystemState.cs" />
-    <Compile Include="GameUnhandledExceptionEventArgs.cs" />
-    <Compile Include="GraphicsDeviceManagerProfilingKeys.cs" />
-    <Compile Include="iOS\GamePlatformiOS.cs" />
-    <Compile Include="iOS\GameWindowiOS.cs" />
-    <Compile Include="iOS\IAnimatedGameView.cs" />
-    <Compile Include="ListBoundExtensions.cs" />
-    <Compile Include="OpenTK\GamePlatformOpenTK.cs" />
-    <Compile Include="OpenTK\GameWindowOpenTK.cs" />
+    <Compile Include="Desktop\WindowsMessageLoop.cs" />
     <Compile Include="GameBase.cs" />
+    <Compile Include="GameContext.Android.cs" />
+    <Compile Include="GameContext.SDL.cs" />
+    <Compile Include="GameContext.Windows.cs" />
+    <Compile Include="GameContext.Windows.Desktop.cs" />
+    <Compile Include="GameContext.Windows.OpenTK.cs" />
+    <Compile Include="GameContext.Windows.Store.cs" />
     <Compile Include="GameContext.cs" />
-    <Compile Include="GameContext.Desktop.cs" />
-    <Compile Include="GameContext.WindowsRuntime.cs" />
-    <Compile Include="GameContext.WindowsRuntime.SwapChainPanel.cs" />
+    <Compile Include="GameContext.iOS.cs" />
+    <Compile Include="GameContextFactory.cs" />
     <Compile Include="GameGraphicsParameters.cs" />
     <Compile Include="GamePlatform.cs" />
+    <Compile Include="GameProfilingKeys.cs" />
     <Compile Include="GameState.cs" />
     <Compile Include="GameSystemBase.cs" />
     <Compile Include="GameSystemCollection.cs" />
+    <Compile Include="GameSystemState.cs" />
     <Compile Include="GameTime.cs" />
+    <Compile Include="GameUnhandledExceptionEventArgs.cs" />
     <Compile Include="GameWindow.cs" />
     <Compile Include="GameWindowRenderer.cs" />
     <Compile Include="GraphicsDeviceInformation.cs" />
     <Compile Include="GraphicsDeviceManager.cs" />
+    <Compile Include="GraphicsDeviceManagerProfilingKeys.cs" />
     <Compile Include="IContentable.cs" />
     <Compile Include="IDrawable.cs" />
     <Compile Include="IGame.cs" />
@@ -92,28 +83,39 @@
     <Compile Include="IGameSystemBase.cs" />
     <Compile Include="IGraphicsDeviceFactory.cs" />
     <Compile Include="IGraphicsDeviceManager.cs" />
+    <Compile Include="iOS\iOSWindow.cs" />
     <Compile Include="IUpdateable.cs" />
     <Compile Include="LaunchParameters.cs" />
+    <Compile Include="ListBoundExtensions.cs" />
     <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="XenkoGameController.iOS.cs" />
+    <Compile Include="OpenTK\GamePlatform.Windows.OpenTK.cs" />
+    <Compile Include="OpenTK\GameWindow.Windows.OpenTK.cs" />
     <Compile Include="PreparingDeviceSettingsEventArgs.cs" />
+    <Compile Include="SDL\Application.cs" />
+    <Compile Include="SDL\Cursor.cs" />
+    <Compile Include="SDL\FormBorderStyle.cs" />
+    <Compile Include="SDL\FormWindowState.cs" />
+    <Compile Include="SDL\GameForm.SDL.cs" />
+    <Compile Include="SDL\GameWindow.SDL.cs" />
+    <Compile Include="SDL\SdlMessageLoop.cs" />
+    <Compile Include="SDL\Window.cs" />
+    <Compile Include="Time\AbsoluteStopwatch.cs" />
+    <Compile Include="Time\ITimedValue.cs" />
+    <Compile Include="Time\TimerTick.cs" />
+    <Compile Include="WindowsStore\GamePlatform.Windows.Store.cs" />
+    <Compile Include="WindowsStore\GameWindow.Windows.Store.cs" />
+    <Compile Include="XenkoGameController.iOS.cs" />
+    <Compile Include="iOS\GamePlatform.iOS.cs" />
+    <Compile Include="iOS\GameWindow.iOS.cs" />
+    <Compile Include="iOS\IAnimatedGameView.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resources\GameResources.Designer.cs" Condition=" '$(SiliconStudioPlatform)' == 'Windows'">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GameResources.resx</DependentUpon>
     </Compile>
-    <Compile Include="Time\AbsoluteStopwatch.cs" />
-    <Compile Include="Time\ITimedValue.cs" />
-    <Compile Include="Time\TimerTick.cs" />
-    <Compile Include="WindowsStore\GamePlatformWindowsRuntime.cs" />
-    <Compile Include="WindowsStore\GameWindowWindowsRuntimeSwapChainPanel.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Condition="'$(SiliconStudioUI)' == 'SDL2'" Include="..\..\..\externals\SDL2.csproj">
-      <Project>{85480198-8711-4355-830e-72fd794ad3f6}</Project>
-      <Name>SDL2</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">
       <Project>{0e916ab7-5a6c-4820-8ab1-aa492fe66d68}</Project>
       <Name>SiliconStudio.Core</Name>
@@ -147,11 +149,10 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Desktop\Win32Native.DirectX.cs" />
     <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'" />
   </ItemGroup>
   <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' And '$(XenkoGraphicsApi)' == 'OpenGLES' ">
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
       <ItemGroup>
         <Content Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>

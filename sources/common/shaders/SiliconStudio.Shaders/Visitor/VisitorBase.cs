@@ -5,7 +5,6 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Shaders.Ast;
-using System.Linq;
 using LinqExpression = System.Linq.Expressions.Expression;
 
 namespace SiliconStudio.Shaders.Visitor
@@ -185,12 +184,12 @@ namespace SiliconStudio.Shaders.Visitor
                 return inheritance;
 
                 inheritance = new List<Type>();
-                inheritance.AddRange(type.GetTypeInfo().ImplementedInterfaces);
-                var baseType = type.GetTypeInfo().BaseType;
+                inheritance.AddRange(type.GetInterfaces());
+                var baseType = type.BaseType;
                 while (baseType != null)
                 {
                     inheritance.Add(baseType);
-                    baseType = baseType.GetTypeInfo().BaseType;
+                    baseType = baseType.BaseType;
                 }
                 registeredTypes[type] = inheritance;
 
@@ -210,8 +209,8 @@ namespace SiliconStudio.Shaders.Visitor
 
             foreach (var method in methods)
             {
-                var attributes = method.GetCustomAttributes<VisitAttribute>(true);
-                if (attributes.Any())
+                var attributes = method.GetCustomAttributes(typeof(VisitAttribute), true);
+                if (attributes.Length > 0)
                 {
                     Type parameterType;
                     var function = BuildMethodVisitor(method, out parameterType);
@@ -237,7 +236,7 @@ namespace SiliconStudio.Shaders.Visitor
                     string.Format("Invalid number of parameters [{0}] for visit method [{1}] for type [{2}]. One parameter is expected", method.GetParameters().Length, method.Name, declaringtype.FullName));
 
             parameterType = method.GetParameters()[0].ParameterType;
-            if (!parameterType.GetTypeInfo().IsInterface && !typeof(Node).GetTypeInfo().IsAssignableFrom(parameterType.GetTypeInfo()))
+            if (!parameterType.IsInterface && !typeof(Node).IsAssignableFrom(parameterType))
                 throw new InvalidOperationException(
                     string.Format("Invalid type parameter [{0}] for visit method [{1}] for type [{2}]. Parameter must inherit from Node", parameterType, method.Name, declaringtype.FullName));
 

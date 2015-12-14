@@ -1,9 +1,7 @@
-// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-
 using System;
-using System.Reflection;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -30,9 +28,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             // get the GUID of the AudioStreamVolume interface from Class Attributes.
             if (streamAudioVolumeGuid == Guid.Empty)
-            {
-                streamAudioVolumeGuid = Guid.Parse(typeof(AudioStreamVolume).GetTypeInfo().GetCustomAttributes<GuidAttribute>().First().Value);
-            }
+                streamAudioVolumeGuid = Guid.Parse(Attribute.GetCustomAttributes(typeof(AudioStreamVolume)).OfType<GuidAttribute>().First().Value);
         }
 
         private void PlatformSpecificDispose()

@@ -21,19 +21,21 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
+using System;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Games
 {
+ 
     /// <summary>
     /// Contains context used to render the game (Control for WinForm, a DrawingSurface for WP8...etc.).
     /// </summary>
-    public partial class GameContext
+    public abstract class GameContext
     {
         /// <summary>
-        /// The context type of this instance.
+        /// Context type of this instance.
         /// </summary>
-        public readonly AppContextType ContextType;
+        public AppContextType ContextType { get; protected set; }
 
         // TODO: remove these requested values.
 
@@ -66,5 +68,74 @@ namespace SiliconStudio.Xenko.Games
         /// Indicate whether the game must initialize the default database when it starts running.
         /// </summary>
         public bool InitializeDatabase = true;
+
+        // This code is for backward compatibility only where the generated games
+        // would not explicitly create the context, but would just use a Winform
+        // or a SwapChainPanel.
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Control"/> to <see cref="GameContextWinforms"/>.
+        /// </summary>
+        /// <param name="control">Winform control</param>
+        /// <returns>The result of the conversion.</returns>
+        [Obsolete ("Use new GameContextWinforms(control) instead.")]
+        public static implicit operator GameContext(System.Windows.Forms.Control control)
+        {
+            return new GameContextWinforms(control);
+        }
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="OpenTK.GameWindow"/> to <see cref="GameContextOpenTk"/>.
+        /// </summary>
+        /// <param name="gameWindow">OpenTK GameWindow</param>
+        /// <returns>The result of the conversion.</returns>
+        [Obsolete ("Use new GameContextOpenTk(gameWindow) instead.")]
+        public static implicit operator GameContext(OpenTK.GameWindow gameWindow)
+        {
+            return new GameContextOpenTk(gameWindow);
+        }
+#endif
+#endif
+#elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+        /// <summary>
+        /// Performs an implicit conversion from <see cref="Windows.UI.Xaml.Controls.SwapChainPanel"/> to <see cref="GameContextWindowsRuntime"/>.
+        /// </summary>
+        /// <param name="panel">SwapChainPanel</param>
+        /// <returns>The result of the conversion.</returns>
+        [Obsolete ("Use new GameContextWindowsRuntime(panel) instead.")]
+        public static implicit operator GameContext(Windows.UI.Xaml.Controls.SwapChainPanel panel)
+        {
+            return new GameContextWindowsRuntime(panel);
+        }
+#endif
+    }
+
+    /// <summary>
+    /// Generic version of <see cref="GameContext"/>. The later is used to describe a generic game Context.
+    /// This version enables us to constraint the game context to a specifc toolkit and ensures a better cohesion
+    /// between the various toolkit specific classes, such as InputManager, GameWindow.
+    /// </summary>
+    /// <typeparam name="TK"></typeparam>
+    public abstract class GameContext<TK> : GameContext
+    {
+        /// <summary>
+        /// Underlying control associated with context.
+        /// </summary>
+        public TK Control { get; internal set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="GameContext" /> class.
+        /// </summary>
+        /// <param name="control">The control.</param>
+        /// <param name="requestedWidth">Width of the requested.</param>
+        /// <param name="requestedHeight">Height of the requested.</param>
+        protected GameContext(TK control, int requestedWidth = 0, int requestedHeight = 0)
+        {
+            Control = control;
+            RequestedWidth = requestedWidth;
+            RequestedHeight = requestedHeight;
+        }
     }
 }

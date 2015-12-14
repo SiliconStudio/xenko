@@ -11,6 +11,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
 
 namespace SiliconStudio.Assets.Tests.Diff
 {

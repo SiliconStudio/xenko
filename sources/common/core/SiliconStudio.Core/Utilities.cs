@@ -63,9 +63,7 @@ namespace SiliconStudio.Core
         /// <param name="sizeInBytesToCopy">The count.</param>
         /// <returns></returns>
         [DllImport(MemcpyDll, EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
-#if !SILICONSTUDIO_RUNTIME_CORECLR
         [SuppressUnmanagedCodeSecurity]
-#endif
         private static extern IntPtr CopyMemory(IntPtr dest, IntPtr src, ulong sizeInBytesToCopy);
 
         public static void CopyMemory(IntPtr dest, IntPtr src, int sizeInBytesToCopy)

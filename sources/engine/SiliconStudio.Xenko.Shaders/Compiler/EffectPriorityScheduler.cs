@@ -10,18 +10,6 @@ using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Shaders.Compiler
 {
-
-#if SILICONSTUDIO_RUNTIME_CORECLR
-    public enum ThreadPriority
-    {
-        Lowest = 0,
-        BelowNormal = 1,
-        Normal = 2,
-        AboveNormal = 3,
-        Highest = 4,
-    }
-#endif
-
     /// <summary>
     /// A <see cref="TaskScheduler"/> with control over concurrency and priority, useful with <see cref="EffectCompilerCache"/>.
     /// </summary>
@@ -137,7 +125,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                                     if (t.Task != null)
                                     {
                                         // High priority task (<0) gets an above normal thread priority
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                                         if (t.Scheduler.Priority < 0)
                                             Thread.CurrentThread.Priority = ThreadPriority.AboveNormal;
 
@@ -148,7 +135,6 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 
                                         if (t.Scheduler.Priority < 0)
                                             Thread.CurrentThread.Priority = ThreadPriority.Normal;
-#endif
                                     }
                                     else
                                     {
@@ -162,9 +148,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                             })
                             {
                                 Name = string.Format("PriorityScheduler: {0}", i),
-#if !SILICONSTUDIO_RUNTIME_CORECLR
                                 Priority = threadPriority,
-#endif
                                 IsBackground = true,
                             };
                             threads[i].Start();

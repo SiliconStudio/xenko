@@ -84,7 +84,7 @@ namespace SiliconStudio.Shaders.Convertor
         /// <returns>Return the ShaderModel default to 3.0 if not parsed correctly.</returns>
         public static ShaderModel Parse(string profile, out PipelineStage stage)
         {
-            profile = CultureInfo.InvariantCulture.TextInfo.ToLower(profile);
+            profile = profile.ToLower(CultureInfo.InvariantCulture);
 
             if (profile.StartsWith("vs"))
                 stage = PipelineStage.Vertex;
