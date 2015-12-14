@@ -48,7 +48,7 @@ namespace SiliconStudio.AssemblyProcessor
             // UpdateEngineHelper.Unbox
             var unbox = RewriteBody(updateEngineHelperType.Methods.First(x => x.Name == "Unbox"));
             unbox.Emit(OpCodes.Ldarg, unbox.Body.Method.Parameters[0]);
-            unbox.Emit(OpCodes.Unbox, unbox.Body.Method.GenericParameters[0]);
+            unbox.Emit(OpCodes.Unbox_Any, unbox.Body.Method.GenericParameters[0]); // Unbox doesn't AOT on iOS. Use Unbox_Any instead.
             unbox.Emit(OpCodes.Ret);
         }
 
