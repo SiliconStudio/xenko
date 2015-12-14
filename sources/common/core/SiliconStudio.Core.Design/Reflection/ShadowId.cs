@@ -8,7 +8,7 @@ namespace SiliconStudio.Core.Reflection
     /// <summary>
     /// This class is holding the PropertyKey using to store an Id per object into the <see cref="ShadowObject"/>.
     /// </summary>
-    public static class ShadowId
+    internal static class ShadowId
     {
         /// <summary>
         /// The OverrideType key.

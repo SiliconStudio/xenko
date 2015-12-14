@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("CharacterElement")]
     [Display(40, "Character")]
-    public class CharacterElement : PhysicsElementBase, IPhysicsElement
+    public class CharacterElement : PhysicsElementBase
     {
         public CharacterElement()
         {

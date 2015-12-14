@@ -9,7 +9,7 @@ using System.Linq;
 
 namespace SiliconStudio.Presentation.Collections
 {
-    public class ObservableList<T> : IList<T>, IObservableCollection<T>, IReadOnlyObservableCollection<T>
+    public class ObservableList<T> : IObservableList<T>, IReadOnlyObservableCollection<T>
     {
         private readonly List<T> list;
 

@@ -8,5 +8,7 @@ namespace SiliconStudio.Assets.Analysis
     public sealed class PackageAnalysisParameters : AssetAnalysisParameters
     {
         public bool IsPackageCheckDependencies { get; set; }
+
+        public bool EnableAssetTemplating { get; set; }
     }
 }

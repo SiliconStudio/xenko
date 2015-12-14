@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Rendering.ProceduralModels
     /// Base class for primitive procedural model.
     /// </summary>
     [DataContract]
+    [NonIdentifitable]
     public abstract class PrimitiveProceduralModelBase : IProceduralModel
     {
         protected PrimitiveProceduralModelBase()

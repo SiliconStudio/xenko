@@ -22,7 +22,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.5.0-alpha02")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.5.0-alpha03")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -256,6 +256,18 @@ namespace SiliconStudio.Xenko.Assets
                 }
             }
 
+            if (dependencyVersionBeforeUpdate.MinVersion < new PackageVersion("1.5.0-alpha03"))
+            {
+                // Mark all assets dirty to force a resave
+                foreach (var assetItem in dependentPackage.Assets)
+                {
+                    if (!(assetItem.Asset is SourceCodeAsset))
+                    {
+                        assetItem.IsDirty = true;
+                    }
+                }
+            }
+
             return true;
         }
 
@@ -328,13 +340,6 @@ namespace SiliconStudio.Xenko.Assets
 
             // Rename variables
             newFileContents = newFileContents.Replace("Paradox", "Xenko");
-
-            // Create fallback for old environment variable
-            var index = newFileContents.IndexOf("<SiliconStudioCurrentPackagePath>", StringComparison.InvariantCulture);
-            if (index >= 0)
-            {
-                newFileContents = newFileContents.Insert(index, "<SiliconStudioXenkoDir Condition=\"'$(SiliconStudioXenkoDir)' == ''\">$(SiliconStudioParadoxDir)</SiliconStudioXenkoDir>\n    ");
-            }
 
             // Save file if there were any changes
             if (newFileContents != fileContents)

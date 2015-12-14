@@ -24,12 +24,12 @@ namespace SiliconStudio.Xenko.Starter
     // TODO: make this class implement View.IOnSystemUiVisibilityChangeListener when support of Android < 3.0 is dropped.
     public class AndroidXenkoActivity : Activity, View.IOnTouchListener
     {
-        private AndroidGameView gameView;
+        private AndroidXenkoGameView gameView;
 
         /// <summary>
         /// The game context of the game instance.
         /// </summary>
-        protected GameContext GameContext;
+        protected GameContextAndroid GameContext;
 
         /// <summary>
         /// The instance of the game to run.
@@ -123,19 +123,7 @@ namespace SiliconStudio.Xenko.Starter
             mainLayout.AddView(gameView);
 
             // Create the Game context
-            GameContext = new GameContext(gameView, FindViewById<RelativeLayout>(Resource.Id.EditTextLayout));
-        }
-
-        public override void SetContentView(View view)
-        {
-            gameView = view as AndroidGameView;
-            SetupGameViewAndGameContext();
-        }
-
-        public override void SetContentView(View view, ViewGroup.LayoutParams @params)
-        {
-            gameView = view as AndroidGameView;
-            SetupGameViewAndGameContext();
+            GameContext = new GameContextAndroid(gameView, FindViewById<RelativeLayout>(Resource.Id.EditTextLayout));
         }
 
         protected override void OnPause()

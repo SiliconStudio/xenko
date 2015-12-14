@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.Reflection
         /// <summary>
         /// The value is taken from a base value or this instance if no base (default).
         /// </summary>
-        Base,
+        Base = 0,  // This is strictly not a correct value for a flag, but it is used to make sure default value is always base. When testing for this value, better use IsBase() extension method.
 
         /// <summary>
         /// The value is new and overridden locally. Base value is ignored.
@@ -48,7 +48,7 @@ namespace SiliconStudio.Core.Reflection
         /// <returns><c>true</c> if the specified type is base; otherwise, <c>false</c>.</returns>
         public static bool IsBase(this OverrideType type)
         {
-            return (type & OverrideType.Base) != 0;
+            return type == OverrideType.Base || type == OverrideType.Sealed;
         }
 
         /// <summary>

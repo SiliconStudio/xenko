@@ -26,8 +26,13 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
         {
             Task.Run(async () =>
             {
+                // Silently fails if connection already failed previously
+                var socketMessageLayerTask = GetOrCreateConnection();
+                if (socketMessageLayerTask.IsFaulted)
+                    return;
+
                 // Send any effect request remotely (should fail if not connected)
-                var socketMessageLayer = await GetOrCreateConnection();
+                var socketMessageLayer = await socketMessageLayerTask;
                 await socketMessageLayer.Send(new RemoteEffectCompilerEffectRequested { Request = effectCompileRequest });
             });
         }

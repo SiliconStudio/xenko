@@ -522,8 +522,8 @@ namespace SiliconStudio.Assets.Tests
 
             assets[1].Base = new AssetBase(assets[0]);
             assets[2].Base = new AssetBase(assets[1]);
-            assets[3].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
-            assets[1].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[4].Location, assetItems[4].Asset) };
+            assets[3].BaseParts = new List<AssetBasePart>() { new AssetBasePart(new AssetBase(assetItems[1].Location, assetItems[1].Asset)) };
+            assets[1].BaseParts = new List<AssetBasePart>() { new AssetBasePart(new AssetBase(assetItems[4].Location, assetItems[4].Asset)) };
             assets[5].Reference = CreateAssetReference(assetItems[1]);
             assets[1].Reference = CreateAssetReference(assetItems[6]);
 
@@ -641,7 +641,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkOut(assetItems[0]).Type);
 
-                assets[1].BaseParts = new List<AssetBase> { new AssetBase(assetItems[0].Location, assetItems[0].Asset) };
+                assets[1].BaseParts = new List<AssetBasePart> { new AssetBasePart(new AssetBase(assetItems[0].Location, assetItems[0].Asset)) };
                 assetItems[1].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -650,7 +650,7 @@ namespace SiliconStudio.Assets.Tests
                 Assert.AreEqual(ContentLinkType.Reference | ContentLinkType.Inheritance, dependencies.GetLinkIn(assetItems[2]).Type);
                 Assert.AreEqual(ContentLinkType.All, dependencies.GetLinkOut(assetItems[0]).Type);
                 
-                assets[2].BaseParts = new List<AssetBase> { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
+                assets[2].BaseParts = new List<AssetBasePart> { new AssetBasePart(new AssetBase(assetItems[1].Location, assetItems[1].Asset)) };
                 assetItems[2].IsDirty = true;
                 dependencies = dependencyManager.ComputeDependencies(assetItems[1]);
                 Assert.AreEqual(1, dependencies.LinksIn.Count());
@@ -789,9 +789,9 @@ namespace SiliconStudio.Assets.Tests
             assets[8].Base = new AssetBase(assets[1]);
             assets[1].Reference = CreateAssetReference(assetItems[5]);
             assets[4].Reference = CreateAssetReference(assetItems[1]);
-            assets[1].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[7].Location, assetItems[7].Asset) };
-            assets[2].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
-            assets[6].BaseParts = new List<AssetBase>() { new AssetBase(assetItems[1].Location, assetItems[1].Asset) };
+            assets[1].BaseParts = new List<AssetBasePart>() { new AssetBasePart(new AssetBase(assetItems[7].Location, assetItems[7].Asset)) };
+            assets[2].BaseParts = new List<AssetBasePart>() { new AssetBasePart(new AssetBase(assetItems[1].Location, assetItems[1].Asset)) };
+            assets[6].BaseParts = new List<AssetBasePart>() { new AssetBasePart(new AssetBase(assetItems[1].Location, assetItems[1].Asset)) };
 
             // Create a session with this project
             using (var session = new PackageSession(project))

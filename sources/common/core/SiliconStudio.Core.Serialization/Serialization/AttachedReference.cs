@@ -34,5 +34,10 @@ namespace SiliconStudio.Core.Serialization
         Guid IContentReference.Id => Id;
 
         string IContentReference.Location => Url;
+
+        public override string ToString()
+        {
+            return Url;
+        }
     }
 }

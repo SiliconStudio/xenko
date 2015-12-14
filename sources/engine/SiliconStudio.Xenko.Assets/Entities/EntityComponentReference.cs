@@ -10,6 +10,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     [DataContract]
     [DataStyle(DataStyle.Compact)]
+    [NonIdentifitable]
     public sealed class EntityComponentReference : IEntityComponentReference
     {
         // TODO: implement a serializer and pass these fields readonly (and their related properties)
