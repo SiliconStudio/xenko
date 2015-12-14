@@ -12,33 +12,31 @@ namespace SiliconStudio.Assets
     public struct AssetPart
     {
         /// <summary>
-        /// Initializes a new instance of <see cref="AssetPart"/> without a base.
-        /// </summary>
-        /// <param name="id">The asset identifier</param>
-        public AssetPart(Guid id) : this()
-        {
-            Id = id;
-        }
-
-        /// <summary>
         /// Initializes a new instance of <see cref="AssetPart"/> with a base.
         /// </summary>
         /// <param name="id">The asset identifier</param>
         /// <param name="baseId">The base asset identifier</param>
-        public AssetPart(Guid id, Guid? baseId)
+        /// <param name="basePartInstanceId">The identifier of the instance group used in a base composition</param>
+        public AssetPart(Guid id, Guid? baseId = null, Guid? basePartInstanceId = null)
         {
             Id = id;
             BaseId = baseId;
+            BasePartInstanceId = basePartInstanceId;
         }
 
         /// <summary>
         /// Asset identifier.
         /// </summary>
-        public Guid Id { get; internal set; }
+        public readonly Guid Id;
 
         /// <summary>
         /// Base asset identifier.
         /// </summary>
-        public Guid? BaseId { get; internal set; }
+        public readonly Guid? BaseId;
+
+        /// <summary>
+        /// Identifier used for a base part group.
+        /// </summary>
+        public readonly Guid? BasePartInstanceId;
     }
 }

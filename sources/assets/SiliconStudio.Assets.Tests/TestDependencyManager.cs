@@ -866,8 +866,8 @@ namespace SiliconStudio.Assets.Tests
             {
                 assets.Add(new TestAssetWithParts() { Parts =
                 {
-                        new AssetPart(Guid.NewGuid()),
-                        new AssetPart(Guid.NewGuid())
+                        new AssetPartTestItem(Guid.NewGuid()),
+                        new AssetPartTestItem(Guid.NewGuid())
                 }
                 });
                 assetItems.Add(new AssetItem("asset-" + i, assets[i]));

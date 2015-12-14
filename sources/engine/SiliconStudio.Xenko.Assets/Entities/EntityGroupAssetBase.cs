@@ -133,7 +133,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             foreach (var entityDesign in Hierarchy.Entities)
             {
-                yield return new AssetPart(entityDesign.Entity.Id, entityDesign.Design.BaseId);
+                yield return new AssetPart(entityDesign.Entity.Id, entityDesign.Design.BaseId, entityDesign.Design.BasePartInstanceId);
             }
         }
 
