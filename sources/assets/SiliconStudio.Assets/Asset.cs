@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 

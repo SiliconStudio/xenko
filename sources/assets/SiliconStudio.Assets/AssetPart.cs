@@ -6,7 +6,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Assets
 {
     /// <summary>
-    /// A part asset contained by an asset that is <see cref="IAssetPartContainer"/>.
+    /// A part asset contained by an asset that is <see cref="IAssetComposite"/>.
     /// </summary>
     [DataContract("AssetPart")]
     public struct AssetPart

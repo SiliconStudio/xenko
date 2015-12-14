@@ -7,9 +7,9 @@ using System.Collections.Generic;
 namespace SiliconStudio.Assets
 {
     /// <summary>
-    /// A container for part assets.
+    /// An interface that defines the composition declared by an asset inheriting from another asset.
     /// </summary>
-    public interface IAssetPartContainer
+    public interface IAssetComposite
     {
         /// <summary>
         /// Collects the part assets.

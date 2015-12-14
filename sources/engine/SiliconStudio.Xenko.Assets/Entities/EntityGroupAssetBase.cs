@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="EntityGroupAsset"/>)
     /// </summary>
     [DataContract()]
-    public abstract class EntityGroupAssetBase : Asset, IAssetPartContainer
+    public abstract class EntityGroupAssetBase : AssetComposite
     {
         protected EntityGroupAssetBase()
         {
@@ -72,32 +72,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="rootEntityId">An optional entity id to attach the part to it. If null, the part will be attached to the root entities of this instance</param>
         public void AddPart(EntityGroupAssetBase assetPartBase, Guid? rootEntityId = null)
         {
-            if (assetPartBase == null) throw new ArgumentNullException(nameof(assetPartBase));
-
-            // The assetPartBase must be a plain child asset
-            if (assetPartBase.Base == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetPartBase)}");
-            if (assetPartBase.BaseParts != null) throw new InvalidOperationException($"Expecting a null BaseParts for {nameof(assetPartBase)}");
-
-            // Check that the assetPartBase contains only entities from its base (no new entity, must be a plain ChildAsset)
-            if (assetPartBase.Hierarchy.Entities.Any(entity => !entity.Design.BaseId.HasValue))
-            {
-                throw new InvalidOperationException("An asset part base must contain only base assets");
-            }
-
-            // The instance id will be the id of the assetPartBase
-            var instanceId = assetPartBase.Id;
-            if (this.BaseParts == null)
-            {
-                this.BaseParts = new List<AssetBasePart>();
-            }
-
-            var basePart = this.BaseParts.FirstOrDefault(basePartIt => basePartIt.Base.Id == this.Id);
-            if (basePart == null)
-            {
-                basePart = new AssetBasePart(assetPartBase.Base);
-                this.BaseParts.Add(basePart);
-            }
-            basePart.InstanceIds.Add(instanceId);
+            AddPartCore(assetPartBase);
 
             // If a RootEntityId is given and found in this instance, add them as children of entity
             if (rootEntityId.HasValue && this.Hierarchy.Entities.ContainsKey(rootEntityId.Value))
@@ -118,7 +93,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // Add all entities with the correct instance id
             foreach (var entityEntry in assetPartBase.Hierarchy.Entities)
             {
-                entityEntry.Design.BasePartInstanceId = instanceId;
+                entityEntry.Design.BasePartInstanceId = assetPartBase.Id;
                 this.Hierarchy.Entities.Add(entityEntry);
             }
         }
@@ -129,7 +104,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             return entityMerge.Merge();
         }
 
-        public IEnumerable<AssetPart> CollectParts()
+        public override IEnumerable<AssetPart> CollectParts()
         {
             foreach (var entityDesign in Hierarchy.Entities)
             {
@@ -137,7 +112,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
-        public bool ContainsPart(Guid id)
+        public override bool ContainsPart(Guid id)
         {
             return Hierarchy.Entities.ContainsKey(id);
         }

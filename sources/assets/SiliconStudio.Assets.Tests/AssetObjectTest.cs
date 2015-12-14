@@ -64,7 +64,7 @@ namespace SiliconStudio.Assets.Tests
 
     [DataContract("!TestAssetWithParts")]
     [AssetDescription(FileExtension)]
-    public class TestAssetWithParts : Asset, IAssetPartContainer
+    public class TestAssetWithParts : AssetComposite
     {
         public const string FileExtension = ".xkpart";
 
@@ -77,12 +77,12 @@ namespace SiliconStudio.Assets.Tests
 
         public List<AssetPartTestItem> Parts { get; set; }
 
-        public IEnumerable<AssetPart> CollectParts()
+        public override IEnumerable<AssetPart> CollectParts()
         {
             return Parts.Select(it => new AssetPart(it.Id, it.BaseId, it.BasePartInstanceId));
         }
 
-        public bool ContainsPart(Guid id)
+        public override bool ContainsPart(Guid id)
         {
             return Parts.Any(t => t.Id == id);
         }
@@ -99,6 +99,17 @@ namespace SiliconStudio.Assets.Tests
             }
 
             return asset;
+        }
+
+        public void AddPart(TestAssetWithParts assetBaseWithParts)
+        {
+            AddPartCore(assetBaseWithParts);
+
+            for (int i = 0; i < assetBaseWithParts.Parts.Count; i++)
+            {
+                var part = assetBaseWithParts.Parts[i];
+                Parts.Add(new AssetPartTestItem(part.Id, part.BaseId, assetBaseWithParts.Id));
+            }
         }
     }
 

@@ -66,6 +66,7 @@
     <Compile Include="AssetCloner.cs" />
     <Compile Include="Analysis\AssetCollision.cs" />
     <Compile Include="AssetClonerFlags.cs" />
+    <Compile Include="AssetComposite.cs" />
     <Compile Include="AssetImport.cs" />
     <Compile Include="AssetImporterParameters.cs" />
     <Compile Include="AssetImportExtensions.cs" />
@@ -123,7 +124,7 @@
     <Compile Include="Compiler\FailedCommand.cs" />
     <Compile Include="Diff\MergeResult.cs" />
     <Compile Include="IAssetCompileTimeDependencies.cs" />
-    <Compile Include="IAssetPartContainer.cs" />
+    <Compile Include="IAssetComposite.cs" />
     <Compile Include="IAssetUpgrader.cs" />
     <Compile Include="IDirtyable.cs" />
     <Compile Include="IFileSynchronizable.cs" />
