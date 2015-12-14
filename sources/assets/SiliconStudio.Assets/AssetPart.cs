@@ -9,7 +9,7 @@ namespace SiliconStudio.Assets
     /// A part asset contained by an asset that is <see cref="IAssetComposite"/>.
     /// </summary>
     [DataContract("AssetPart")]
-    public struct AssetPart
+    public struct AssetPart : IEquatable<AssetPart>
     {
         /// <summary>
         /// Initializes a new instance of <see cref="AssetPart"/> with a base.
@@ -38,5 +38,36 @@ namespace SiliconStudio.Assets
         /// Identifier used for a base part group.
         /// </summary>
         public readonly Guid? BasePartInstanceId;
+
+        public bool Equals(AssetPart other)
+        {
+            return Id.Equals(other.Id) && BaseId.Equals(other.BaseId) && BasePartInstanceId.Equals(other.BasePartInstanceId);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is AssetPart && Equals((AssetPart)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = Id.GetHashCode();
+                hashCode = (hashCode*397) ^ BaseId.GetHashCode();
+                hashCode = (hashCode*397) ^ BasePartInstanceId.GetHashCode();
+                return hashCode;
+            }
+        }
+        public static bool operator ==(AssetPart left, AssetPart right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(AssetPart left, AssetPart right)
+        {
+            return !left.Equals(right);
+        }
     }
 }
