@@ -13,7 +13,7 @@ namespace SiliconStudio.Assets
     public abstract class AssetComposite : Asset, IAssetComposite
     {
         /// <summary>
-        /// Adds an entity as a part asset. This method has to be implemented by sub-classing.
+        /// Adds an asset composition as a part of this asset. This method has to be used in sub-classes.
         /// </summary>
         /// <param name="assetPartBase">The entity asset to be used as a part (must be created directly from <see cref="Asset.CreateChildAsset"/>)</param>
         protected void AddPartCore(AssetComposite assetPartBase)
@@ -43,6 +43,13 @@ namespace SiliconStudio.Assets
                 basePart = new AssetBasePart(assetPartBase.Base);
                 this.BaseParts.Add(basePart);
             }
+
+            // Check that we don't add a composition with the same instance id.
+            if (basePart.InstanceIds.Contains(instanceId))
+            {
+                throw new InvalidOperationException($"A composition with the same instance id [{instanceId}] has been already added to this instance");
+            }
+
             basePart.InstanceIds.Add(instanceId);
         }
 
