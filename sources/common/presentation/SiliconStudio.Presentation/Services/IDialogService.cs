@@ -45,6 +45,7 @@ namespace SiliconStudio.Presentation.Services
         /// <param name="image">The image to display in the message box.</param>
         /// <returns>A <see cref="MessageBoxResult"/> value indicating which button the user pressed to close the window.</returns>
         MessageBoxResult ShowMessageBox(string message, string caption, MessageBoxButton buttons = MessageBoxButton.OK, MessageBoxImage image = MessageBoxImage.None);
+       
         /// <summary>
         /// Displays a modal message box.
         /// </summary>
