@@ -12,7 +12,7 @@ void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionC
 	rotation.X = 1;
 	rotation.Y = 0;
 
-	if (acos(drawInfo->Rotation) > 1e-6f)
+	if (fabsf(drawInfo->Rotation) > 1e-6f)
 	{
 		rotation.X = npLolCos(drawInfo->Rotation);
 		rotation.Y = npLolSin(drawInfo->Rotation);

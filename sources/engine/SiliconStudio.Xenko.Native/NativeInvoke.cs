@@ -11,17 +11,17 @@ namespace SiliconStudio.Xenko.Native
     internal static class NativeInvoke
     {
 #if SILICONSTUDIO_PLATFORM_IOS
-        public const string Library = "__Internal";
+        internal const string Library = "__Internal";
 #else
-        public const string Library = "libxenkonative";
+        internal const string Library = "libxenkonative";
 #endif
 
         static NativeInvoke()
         {
-            NativeLibrary.PreloadLibrary(NativeInvoke.Library + ".dll");
+            NativeLibrary.PreloadLibrary(Library + ".dll");
         }
 
-        [DllImport(Native.NativeInvoke.Library, CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
+        [DllImport(Library, CallingConvention = CallingConvention.Cdecl), SuppressUnmanagedCodeSecurity]
         internal static extern void UpdateBufferValuesFromElementInfo(IntPtr drawInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset);
     }
 }
