@@ -30,7 +30,7 @@ namespace SiliconStudio.Core.Windows
             body.AppendLine(string.Format("Processor Count: {0}", Environment.ProcessorCount));
             body.AppendLine("Video configuration:");
             WriteVideoConfig(body);
-            body.AppendLine(string.Format("Exception: {0}", exception.FormatForReport()));
+            body.AppendLine(string.Format("Exception: {0}", exception.FormatFull()));
             return body.ToString();
         }
 
