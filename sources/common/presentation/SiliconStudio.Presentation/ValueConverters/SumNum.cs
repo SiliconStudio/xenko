@@ -3,12 +3,10 @@
 using System;
 using System.Globalization;
 
-using SiliconStudio.Presentation.MarkupExtensions;
-
 namespace SiliconStudio.Presentation.ValueConverters
 {
     /// <summary>
-    /// This converter will sum a given numeric value with a numeric value passed as parameter. You can use the <see cref="DoubleExtension"/>
+    /// This converter will sum a given numeric value with a numeric value passed as parameter. You can use the <see cref="MarkupExtensions.DoubleExtension"/>
     /// markup extension to easily pass a double value as parameter, with the following syntax: {sskk:Double (argument)}. 
     /// </summary>
     public class SumNum : ValueConverterBase<SumNum>
@@ -19,7 +17,7 @@ namespace SiliconStudio.Presentation.ValueConverters
             var doubleValue = (double)System.Convert.ChangeType(value ?? 0, typeof(double));
             var doubleParameter = (double)System.Convert.ChangeType(parameter ?? 0, typeof(double));
             var result = doubleValue + doubleParameter;
-            return System.Convert.ChangeType(result, value != null ? value.GetType() : targetType);
+            return System.Convert.ChangeType(result, value?.GetType() ?? targetType);
         }
 
         /// <inheritdoc/>
