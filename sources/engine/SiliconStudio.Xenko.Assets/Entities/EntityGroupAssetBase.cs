@@ -29,13 +29,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
         [DataMember(20)]
         public EntityHierarchyData Hierarchy { get; set; }
 
-        /// <summary>
-        /// The various <see cref="EntityGroupAsset"/> that are instantiated in this one.
-        /// </summary>
-        [DataMemberIgnore]
-        [Obsolete]
-        public Dictionary<Guid, EntityBase> AssetBases = new Dictionary<Guid, EntityBase>();
-
         public override Asset CreateChildAsset(string location)
         {
             var newAsset = (EntityGroupAssetBase)base.CreateChildAsset(location);
@@ -148,21 +141,5 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             return Hierarchy.Entities.ContainsKey(id);
         }
-    }
-
-    [DataContract("EntityBase")]
-    public class EntityBase
-    {
-        /// <summary>
-        /// The <see cref="EntityGroupAsset"/> base.
-        /// </summary>
-        public AssetBase Base;
-
-        public Guid SourceRoot;
-
-        /// <summary>
-        /// Maps <see cref="Entity.Id"/> from this asset to base asset one.
-        /// </summary>
-        public Dictionary<Guid, Guid> IdMapping;
     }
 }
