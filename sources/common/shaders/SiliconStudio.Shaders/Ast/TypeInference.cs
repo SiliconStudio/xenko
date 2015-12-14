@@ -7,11 +7,7 @@ namespace SiliconStudio.Shaders.Ast
     /// <summary>
     /// A reference to a type.
     /// </summary>
-#if !SILICONSTUDIO_RUNTIME_CORECLR
-    public class TypeInference : ICloneable
-#else
     public class TypeInference
-#endif
     {
         /// <summary>
         /// Gets or sets the declaration.
