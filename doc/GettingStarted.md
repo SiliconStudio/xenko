@@ -2,9 +2,10 @@
 
 ## Prerequisites
 
-1. Visual Studio 2013 with Update 3
-2. Visual Studio 2013 SDK (if you want to build the Visual Studio Package)
-3. FBX SDK 2015.1 VS2013, available from http://autodesk.com/fbx
+1. Visual Studio 2013 with Update 4 (only needed for C++ projects, will be updated later)
+2. Visual Studio 2015 (with SDK if you want Visual Studio package to compile (installable from VS2015 itself))
+3. [FBX SDK 2016.1.1 VS2015](http://usa.autodesk.com/adsk/servlet/pc/item?id=24735038&siteID=123112)
+4. [.NET Framework 4.5.2 Developer Pack](https://www.microsoft.com/en-us/download/details.aspx?id=42637)
 
 ## Build Instructions
 

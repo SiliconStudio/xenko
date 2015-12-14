@@ -226,7 +226,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont.Compiler
 
                     int value = bitmapData[blockX + x, blockY + y].A;
 
-                    if (options.NoPremultiply)
+                    if (!options.IsPremultiplied)
                     {
                         // If we are not pre-multiplied, RGB is always white and we have 4 bit alpha.
                         alpha = value >> 4;

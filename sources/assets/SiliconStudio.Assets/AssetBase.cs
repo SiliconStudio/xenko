@@ -4,7 +4,6 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Serialization.Serializers;
 
 namespace SiliconStudio.Assets
 {

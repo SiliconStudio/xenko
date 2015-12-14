@@ -98,10 +98,10 @@
 
   <Symbols>
     <!-- This is the package guid. -->
-    <GuidSymbol name="guidXenko_VisualStudio_PackagePkg" value="{c26b1ce9-bbab-497b-98ad-67e93a2037d1}" />
+    <GuidSymbol name="guidXenko_VisualStudio_PackagePkg" value="{b0b8feb1-7b83-43fc-9fc0-70065ddb80a1}" />
     
     <!-- This is the guid used to group the menu commands together -->
-    <GuidSymbol name="guidXenko_VisualStudio_PackageCmdSet" value="{12225fdc-b608-43d7-9c75-e8b845984494}">
+    <GuidSymbol name="guidXenko_VisualStudio_PackageCmdSet" value="{9428db93-bfea-4115-8d4a-40b047166e61}">
       <IDSymbol name="XenkoTool" value="0x1000" />
       <IDSymbol name="XenkoTopMenuGroup" value="0x1021" />
       <IDSymbol name="XenkoTopMenu" value="0x1040" />

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 namespace SiliconStudio.Core.Reflection
@@ -20,10 +21,17 @@ namespace SiliconStudio.Core.Reflection
         /// <returns>The shadow instance or <c>null</c> if none</returns>
         internal static ShadowContainer GetShadow(object instance)
         {
-            if (instance == null) throw new ArgumentNullException(nameof(instance));
-            ShadowContainer shadow;
-            Shadows.TryGetValue(instance, out shadow);
+            if (instance == null) return null;
+            var shadow = Shadows.GetValue(instance, callback => new ShadowContainer(instance.GetType()));
             return shadow;
+        }
+
+        internal static ShadowContainer TryGetShadow(object instance)
+        {
+            if (instance == null) return null;
+            ShadowContainer container;
+            Shadows.TryGetValue(instance, out container);
+            return container;
         }
 
         /// <summary>
@@ -36,11 +44,25 @@ namespace SiliconStudio.Core.Reflection
             if (fromInstance == null) throw new ArgumentNullException(nameof(fromInstance));
             if (toInstance == null) throw new ArgumentNullException(nameof(toInstance));
 
+
+            var type = fromInstance.GetType().GetTypeInfo();
+            bool forceShadowCreation = IdentifiableHelper.IsIdentifiable(type);
+
             ShadowContainer shadow;
-            if (Shadows.TryGetValue(fromInstance, out shadow))
+            if (forceShadowCreation)
             {
-                var shadowClone = shadow.Clone();
-                Shadows.Add(toInstance, shadowClone);
+                shadow = Shadows.GetValue(fromInstance, callback => new ShadowContainer(fromInstance.GetType()));
+            }
+            else
+            {
+                Shadows.TryGetValue(fromInstance, out shadow);
+            }
+
+            if (shadow != null)
+            {
+                var newShadow = Shadows.GetValue(toInstance, key => new ShadowContainer());
+                shadow.CopyTo(newShadow);
+                newShadow.SetId(toInstance, shadow.GetId(fromInstance));
             }
         }
 
@@ -92,7 +114,7 @@ namespace SiliconStudio.Core.Reflection
             if (instance == null) throw new ArgumentNullException("instance");
             if (memberKey == null) throw new ArgumentNullException("memberKey");
             if (attributeKey == null) throw new ArgumentNullException("attributeKey");
-            Shadows.GetOrCreateValue(instance)[memberKey].SetAttribute(attributeKey, value);
+            GetShadow(instance)[memberKey].SetAttribute(attributeKey, value);
         }
     }
 }

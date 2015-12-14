@@ -1,16 +1,18 @@
 !SpriteFont
 Id: 693f0d3d-b0ef-4cb8-bc84-0aa69efb3462
+Tags: []
+Source: 
 FontName: Meiryo
+Size: 14.0
 Style: Regular
 IsDynamic: true
-Size: 14
+DefaultCharacter: ' '
+CharacterSet: 
 CharacterRegions:
     -   Start: ' '
         End: "\x7F"
-DefaultCharacter: ' '
-Spacing: 0
-LineSpacing: 0
-UseKerning: false
 AntiAlias: Grayscale
-Format: Rgba32
-NoPremultiply: false
+IsNotPremultiply: false
+Spacing: 0.0
+LineSpacing: 0.0
+UseKerning: false

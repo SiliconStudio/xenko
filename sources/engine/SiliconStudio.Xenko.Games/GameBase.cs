@@ -39,8 +39,6 @@ namespace SiliconStudio.Xenko.Games
     {
         #region Fields
 
-        private readonly Dictionary<object, ProfilingKey> updateProfilers = new Dictionary<object, ProfilingKey>();
-        private readonly Dictionary<object, ProfilingKey> drawProfilers = new Dictionary<object, ProfilingKey>();
         private readonly GameTime updateTime;
         private readonly GameTime drawTime;
         private readonly TimerTick playTimer;
@@ -438,7 +436,7 @@ namespace SiliconStudio.Xenko.Games
             }
 
             // Gets the GameWindow Context
-            Context = gameContext ?? new GameContext();
+            Context = gameContext ?? GameContextFactory.NewDefaultGameContext();
 
             PrepareContext();
 

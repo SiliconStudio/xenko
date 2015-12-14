@@ -50,15 +50,32 @@ namespace SiliconStudio.Assets.Visitors
         }
 
         /// <summary>
+        /// Gets the root object visited by this instance.
+        /// </summary>
+        public object RootInstance
+        {
+            get
+            {
+                return rootInstance;
+            }
+        }
+
+        /// <summary>
         /// Creates <see cref="DataVisitNode"/> from the specified instance.
         /// </summary>
         /// <param name="typeDescriptorFactory">The type descriptor factory.</param>
         /// <param name="rootInstance">The root instance to generate diff nodes.</param>
+        /// <param name="customVisitors">Add </param>
         /// <returns>A diff node object.</returns>
-        public static DataVisitObject Run(ITypeDescriptorFactory typeDescriptorFactory, object rootInstance)
+        public static DataVisitObject Run(ITypeDescriptorFactory typeDescriptorFactory, object rootInstance, List<IDataCustomVisitor> customVisitors = null)
         {
             if (rootInstance == null) return null;
-            return new DataVisitNodeBuilder(typeDescriptorFactory, rootInstance).Run();
+            var builder = new DataVisitNodeBuilder(typeDescriptorFactory, rootInstance);
+            if (customVisitors != null)
+            {
+                builder.CustomVisitors.AddRange(customVisitors);
+            }
+            return builder.Run();
         }
 
         /// <summary>

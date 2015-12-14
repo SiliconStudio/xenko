@@ -19,20 +19,20 @@ namespace SiliconStudio.Presentation.Collections
         /// <summary>
         /// Initializes a new instance of the <see cref="NonGenericObservableListWrapper{T}"/> class.
         /// </summary>
-        /// <param name="list">The <see cref="ObservableList{T}"/> to wrap.</param>
-        public NonGenericObservableListWrapper(ObservableList<T> list)
+        /// <param name="list">The <see cref="IObservableList{T}"/> to wrap.</param>
+        public NonGenericObservableListWrapper(IObservableList<T> list)
             : base(list)
         {
         }
 
         public void AddRange(IEnumerable values)
         {
-            ((ObservableList<T>)List).AddRange(values.Cast<T>());
+            ((IObservableList<T>)List).AddRange(values.Cast<T>());
         }
         
         public void AddRange(IEnumerable<T> values)
         {
-            ((ObservableList<T>)List).AddRange(values);
+            ((IObservableList<T>)List).AddRange(values);
         }      
     }
 }

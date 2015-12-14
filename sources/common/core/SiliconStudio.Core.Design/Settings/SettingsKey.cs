@@ -88,6 +88,12 @@ namespace SiliconStudio.Core.Settings
         public abstract IEnumerable<object> AcceptableValues { get; }
 
         /// <summary>
+        /// Gets a collection of fallback deserializer methods in case the default deserialization throws an exception.
+        /// </summary>
+        /// <remarks>Fallback deserializers can be useful for migration of settings keys when the type of settings has changed.</remarks>
+        public List<Func<EventReader, object>> FallbackDeserializers { get; } = new List<Func<EventReader, object>>();
+
+        /// <summary>
         /// Raised when the value of the settings key has been modified and the method <see cref="SettingsProfile.ValidateSettingsChanges"/> has been invoked.
         /// </summary>
         public event EventHandler<ChangesValidatedEventArgs> ChangesValidated;
@@ -254,16 +260,33 @@ namespace SiliconStudio.Core.Settings
         /// <inheritdoc/>
         internal override object ConvertValue(List<ParsingEvent> parsingEvents)
         {
+            // First use default deserializer to deserialize value.
             try
             {
                 var eventReader = new EventReader(new MemoryParser(parsingEvents));
                 return YamlSerializer.Deserialize(eventReader, Type);
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                // Can't decode back, use default value
-                return DefaultValue;
+                e.Ignore();
             }
+
+            // If this fails, try to use any available fallback deserializer
+            foreach (var deserializer in FallbackDeserializers)
+            {
+                try
+                {
+                    var eventReader = new EventReader(new MemoryParser(parsingEvents));
+                    return deserializer.Invoke(eventReader);
+                }
+                catch (Exception e)
+                {
+                    e.Ignore();
+                }
+            }
+
+            // Can't decode back, use default value
+            return DefaultValue;
         }
     }
 }

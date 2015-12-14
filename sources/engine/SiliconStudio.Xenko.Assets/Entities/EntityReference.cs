@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [DataContract]
     [DataStyle(DataStyle.Compact)]
     [DataSerializer(typeof(EntityReference.Serializer))]
-    public sealed class EntityReference
+    public sealed class EntityReference : IIdentifiable
     {
         private Guid id;
 

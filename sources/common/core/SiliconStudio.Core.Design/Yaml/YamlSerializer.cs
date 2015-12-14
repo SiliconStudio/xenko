@@ -1,9 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.Remoting.Messaging;
 
@@ -14,6 +16,7 @@ using SharpYaml.Serialization;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Reflection;
 using AttributeRegistry = SharpYaml.Serialization.AttributeRegistry;
+using IMemberDescriptor = SharpYaml.Serialization.IMemberDescriptor;
 
 namespace SiliconStudio.Core.Yaml
 {
@@ -243,6 +246,8 @@ namespace SiliconStudio.Core.Yaml
                         EmitShortTypeName = true,
                     };
 
+                config.Attributes.PrepareMembersCallback += PrepareMembersCallback;
+
                 for (int index = RegisteredAssemblies.Count - 1; index >= 0; index--)
                 {
                     var registeredAssembly = RegisteredAssemblies[index];
@@ -256,6 +261,43 @@ namespace SiliconStudio.Core.Yaml
             }
 
             return localSerializer;
+        }
+
+        private static void PrepareMembersCallback(SharpYaml.Serialization.Descriptors.ObjectDescriptor objDesc, List<IMemberDescriptor> memberDescriptors)
+        {
+            var type = objDesc.Type;
+
+            // Early exit if we don't need to add a unique identifier to a type
+            if (!IdentifiableHelper.IsIdentifiable(type) || typeof(IIdentifiable).IsAssignableFrom(type))
+            {
+                return;
+            }
+
+            // Otherwise we can add it
+            memberDescriptors.Add(CustomDynamicMemberDescriptor);
+        }
+
+        private static readonly CustomDynamicMember CustomDynamicMemberDescriptor = new CustomDynamicMember();
+        
+        private class CustomDynamicMember : DynamicMemberDescriptorBase
+        {
+            private const string StringId = "~Id";
+
+            public CustomDynamicMember() : base(StringId, typeof(Guid))
+            {
+                Order = -int.MaxValue;
+            }
+
+            public override object Get(object thisObject)
+            {
+                return IdentifiableHelper.GetId(thisObject);
+            }
+
+            public override void Set(object thisObject, object value)
+            {
+                IdentifiableHelper.SetId(thisObject, (Guid)value);
+            }
+            public override bool HasSet => true;
         }
 
         /// <summary>
