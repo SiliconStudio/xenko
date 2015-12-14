@@ -5,6 +5,8 @@ using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Internals;
@@ -55,6 +57,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         [DataMemberIgnore]
         protected List<ParameterCollection> ParameterCollections;
+
+        [DataMemberIgnore]
+        protected FastListStruct<ParameterCollection> newParameterCollections;
+        [DataMemberIgnore]
+        protected FastListStruct<ParameterCollection> oldParameterCollections;
 
         /// <summary>
         /// Sets the name of the effect or shader which the material will use
@@ -153,8 +160,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             ParameterCollections = new List<ParameterCollection> { parameters };
 
+            newParameterCollections = new FastListStruct<ParameterCollection>(8);
+            oldParameterCollections = new FastListStruct<ParameterCollection>(8);
+
             // Setup the effect compiler
-            effectInstance = new DefaultEffectInstance(ParameterCollections);
+            effectInstance = new DefaultEffectInstance(ParameterCollections); // Remove this
             effectCompiler = new DynamicEffectCompiler(context.Services, EffectName, -1); // Image effects are compiled with higher priority
         }
 
@@ -174,11 +184,17 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             effect = effectInstance.Effect;
 
+            newParameterCollections.Clear();
+            newParameterCollections.AddRange(ParameterCollections.ToArray());
+
             // Get or create parameter collection
-            if (parameterCollectionGroup == null || parameterCollectionGroup.Effect != effect)
+            if (parameterCollectionGroup == null || parameterCollectionGroup.Effect != effect || !ArrayExtensions.ArraysReferenceEqual(ref oldParameterCollections, ref newParameterCollections))
             {
                 // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
                 parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, effect, ParameterCollections.ToArray());
+
+                oldParameterCollections.Clear();
+                oldParameterCollections.AddRange(newParameterCollections);
             }
         }
 
