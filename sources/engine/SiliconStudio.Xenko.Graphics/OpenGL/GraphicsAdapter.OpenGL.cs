@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Graphics
             if (version != null)
             {
                 var splitVersion = version.Split(new char[] { '.', ' ' });
-                // find first number occurence because:
+                // find first number occurrence because:
                 //   - on OpenGL, "<major>.<minor>"
                 //   - on OpenGL ES, "OpenGL ES <profile> <major>.<minor>"
                 for (var i = 0; i < splitVersion.Length - 1; ++i)

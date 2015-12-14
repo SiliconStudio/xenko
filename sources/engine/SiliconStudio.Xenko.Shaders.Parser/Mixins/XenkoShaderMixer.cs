@@ -140,7 +140,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             BuildMixinInheritance(mainModuleMixin);
             MixinInheritance = MixinInheritance.Distinct().ToList();
             
-            ComputeMixinOccurence();
+            ComputeMixinOccurrence();
             BuildStageInheritance();
             
             LinkVariables(mainModuleMixin, "", new List<ModuleMixin>());
@@ -430,16 +430,16 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         }
 
         /// <summary>
-        /// Compute the occurence Id of each mixin
+        /// Compute the occurrence Id of each mixin
         /// </summary>
-        private void ComputeMixinOccurence()
+        private void ComputeMixinOccurrence()
         {
             foreach (var mixin in MixinInheritance)
             {
                 foreach (var mixin2 in MixinInheritance)
                 {
                     if (mixin.MixinName == mixin2.MixinName)
-                        ++(mixin.OccurenceId);
+                        ++(mixin.OccurrenceId);
                     if (mixin == mixin2)
                         break;
                 }
@@ -598,15 +598,15 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                             continue;
 
                         var firstOccurence = stageMethodList.First();
-                        var occurenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                        var listVTReference = occurenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
+                        var occurrenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
+                        var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
 
                         if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
                             continue;
 
                         newEntry = false;
                         var extMixin = extMethod.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                        if (isClone || extMixin.OccurenceId == 1)
+                        if (isClone || extMixin.OccurrenceId == 1)
                             stageMethodList.Add(extMethod);
                     }
                     
@@ -708,8 +708,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     continue;
 
                 var firstOccurence = stageMethodList.First();
-                var occurenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                var listVTReference = occurenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
+                var occurrenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
+                var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
 
                 if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
                     continue;
@@ -750,8 +750,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                     continue;
 
                 var firstOccurence = stageMethodList.First();
-                var occurenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
-                var listVTReference = occurenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
+                var occurrenceMixin = firstOccurence.GetTag(XenkoTags.ShaderScope) as ModuleMixin;
+                var listVTReference = occurrenceMixin.VirtualTable.GetBaseDeclaration(firstOccurence);
 
                 if (vtReference.Slot != listVTReference.Slot || vtReference.Shader != listVTReference.Shader)
                     continue;
@@ -1210,9 +1210,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             MixedShader.Members.AddRange(constants);
             
             // Add structures, typedefs
-            foreach (var mixin in MixinInheritance.Where(x => x.OccurenceId == 1))
+            foreach (var mixin in MixinInheritance.Where(x => x.OccurrenceId == 1))
                 MixedShader.Members.AddRange(mixin.ParsingInfo.Typedefs);
-            foreach (var mixin in MixinInheritance.Where(x => x.OccurenceId == 1))
+            foreach (var mixin in MixinInheritance.Where(x => x.OccurrenceId == 1))
                 MixedShader.Members.AddRange(mixin.ParsingInfo.StructureDefinitions);
 
             var sortedNodes = SortNodes(MixedShader.Members);

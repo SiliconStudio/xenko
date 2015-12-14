@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         }
 
         /// <summary>
-        /// Replace the method occurence with its last definition
+        /// Replace the method occurrence with its last definition
         /// </summary>
         /// <param name="methodDeclaration">the overriding method</param>
         /// <param name="errorLogger"></param>
@@ -141,7 +141,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         #region Private methods
 
         /// <summary>
-        /// Find the base definition of the method and override its occurence
+        /// Find the base definition of the method and override its occurrence
         /// </summary>
         /// <param name="methodDeclaration"></param>
         /// <param name="errorLogger"></param>
