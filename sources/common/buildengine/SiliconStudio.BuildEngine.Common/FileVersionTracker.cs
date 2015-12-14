@@ -99,7 +99,7 @@ namespace SiliconStudio.BuildEngine
                 }
                 catch (Exception)
                 {
-                    // If an exception occured, we are going to try to recover from it by reseting it.
+                    // If an exception occurred, we are going to try to recover from it by reseting it.
                     // reset file length to 0
                     fileStream.SetLength(0);
                     tracker.Dispose();

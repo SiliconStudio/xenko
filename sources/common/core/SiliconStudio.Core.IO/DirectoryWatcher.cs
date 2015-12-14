@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.IO
         private bool exitThread;
 
         /// <summary>
-        /// Occurs when a file/directory change occured.
+        /// Occurs when a file/directory change occurred.
         /// </summary>
         public event EventHandler<FileEvent> Modified;
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Core.IO
         }
 
         /// <summary>
-        /// Called when a file event occured.
+        /// Called when a file event occurred.
         /// </summary>
         /// <param name="sender">The sender.</param>
         /// <param name="e">The file event.</param>

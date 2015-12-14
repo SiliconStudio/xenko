@@ -67,7 +67,7 @@ namespace SiliconStudio.Assets
         private readonly Lazy<PackageUserSettings> settings;
 
         /// <summary>
-        /// Occurs when an asset dirty changed occured.
+        /// Occurs when an asset dirty changed occurred.
         /// </summary>
         public event Action<Asset> AssetDirtyChanged;
 
