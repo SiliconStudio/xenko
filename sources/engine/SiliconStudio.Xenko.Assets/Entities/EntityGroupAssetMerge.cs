@@ -183,36 +183,38 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     var baseId = entityDesign.Design.BaseId.Value;
 
-                    var baseKey = new GroupPartKey(entityDesign.Design.BasePartInstanceId, baseId);
-
-                    EntityRemapEntry baseRemap;
-                    EntityRemapEntry newBaseRemap;
-                    baseEntities.TryGetValue(baseKey, out baseRemap);
-                    newBaseEntities.TryGetValue(baseKey, out newBaseRemap);
-                    entityEntry.Value.Base = baseRemap;
-                    entityEntry.Value.NewBase = newBaseRemap;
-
-                    // Remap ids in the RootEntities for base
-                    int index;
-                    if (baseAsset != null && baseRootEntities.TryGetValue(baseId, out index))
-                    {
-                        baseRootEntities.Remove(baseId);
-                        baseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
-                    }
-
-                    // Remap ids in the RootEntities for newBase
-                    if (newBaseAsset != null && newBaseRootEntities.TryGetValue(baseId, out index))
-                    {
-                        newBaseRootEntities.Remove(baseId);
-                        newBaseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
-                    }
-
                     if (entitiesRemovedInNewBase.Contains(baseId))
                     {
                         entitiesToRemoveFromNew.Add(newEntity.Id);
 
                         // Else the entity has been removed
                         newEntities.Remove(entityEntry.Key);
+                    }
+                    else
+                    {
+                        var baseKey = new GroupPartKey(entityDesign.Design.BasePartInstanceId, baseId);
+
+                        EntityRemapEntry baseRemap;
+                        EntityRemapEntry newBaseRemap;
+                        baseEntities.TryGetValue(baseKey, out baseRemap);
+                        newBaseEntities.TryGetValue(baseKey, out newBaseRemap);
+                        entityEntry.Value.Base = baseRemap;
+                        entityEntry.Value.NewBase = newBaseRemap;
+
+                        // Remap ids in the RootEntities for base
+                        int index;
+                        if (baseAsset != null && baseRootEntities.TryGetValue(baseId, out index))
+                        {
+                            baseRootEntities.Remove(baseId);
+                            baseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
+                        }
+
+                        // Remap ids in the RootEntities for newBase
+                        if (newBaseAsset != null && newBaseRootEntities.TryGetValue(baseId, out index))
+                        {
+                            newBaseRootEntities.Remove(baseId);
+                            newBaseAsset.Hierarchy.RootEntities[index] = newEntity.Id;
+                        }
                     }
                 }
             }

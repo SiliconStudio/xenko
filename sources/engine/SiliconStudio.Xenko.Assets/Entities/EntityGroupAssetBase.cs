@@ -155,12 +155,10 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             }
                         }
 
-                        if (existingAssetBase == null)
+                        if (existingAssetBase != null)
                         {
-                            throw new InvalidOperationException($"Unable to find base [{baseId}] from base parts");
+                            mapInstanceIdToBaseId.Add(basePartInstanceId, existingAssetBase);
                         }
-
-                        mapInstanceIdToBaseId.Add(basePartInstanceId, existingAssetBase);
                     }
                 }
             }
