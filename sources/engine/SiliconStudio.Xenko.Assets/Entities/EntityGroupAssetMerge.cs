@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         private readonly EntityGroupAssetBase baseAsset;
         private readonly EntityGroupAssetBase newAsset;
         private readonly EntityGroupAssetBase newBaseAsset;
-        private readonly List<AssetBasePart> newBaseParts;
+        private readonly List<AssetBase> newBaseParts;
         private readonly HashSet<Guid> entitiesInHierarchy;
         private readonly List<Guid> rootEntitiesToAdd;
         private MergeResult result;
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="newAsset">The new asset (cannot be null)</param>
         /// <param name="newBaseAsset">The new base asset (can be null)</param>
         /// <param name="newBaseParts">The new base parts (can be null)</param>
-        public EntityGroupAssetMerge(EntityGroupAssetBase baseAsset, EntityGroupAssetBase newAsset, EntityGroupAssetBase newBaseAsset, List<AssetBasePart> newBaseParts)
+        public EntityGroupAssetMerge(EntityGroupAssetBase baseAsset, EntityGroupAssetBase newAsset, EntityGroupAssetBase newBaseAsset, List<AssetBase> newBaseParts)
         {
             if (newAsset == null) throw new ArgumentNullException(nameof(newAsset));
 
@@ -81,33 +81,32 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </summary>
         private void PrepareMerge()
         {
+            // Prepare mapping for new asset
+            MapEntities(newAsset.Hierarchy, newEntities);
+
             // Prepare mappings for base
             MapEntities(baseAsset?.Hierarchy, baseEntities);
             if (newAsset.BaseParts != null)
             {
-                foreach (var partItem in newAsset.BaseParts)
+                foreach (var partItem in BuildInstanceIdMap(newAsset.BaseParts))
                 {
-                    var assetPart = (EntityGroupAssetBase)partItem.Base.Asset;
-                    foreach (var groupPartId in partItem.InstanceIds)
+                    foreach (var groupPartId in partItem.Value)
                     {
-                        MapEntities(assetPart.Hierarchy, baseEntities, groupPartId);
+                        MapEntities(partItem.Key.Hierarchy, baseEntities, groupPartId);
                     }
                 }
             }
 
-            // Prepare mapping for new asset
-            MapEntities(newAsset.Hierarchy, newEntities);
 
             // Prepare mapping for new base
             MapEntities(newBaseAsset?.Hierarchy, newBaseEntities);
             if (newBaseParts != null)
             {
-                foreach (var partItem in newBaseParts)
+                foreach (var partItem in BuildInstanceIdMap(newBaseParts))
                 {
-                    var assetPart = (EntityGroupAssetBase)partItem.Base.Asset;
-                    foreach (var groupPartId in partItem.InstanceIds)
+                    foreach (var groupPartId in partItem.Value)
                     {
-                        MapEntities(assetPart.Hierarchy, newBaseEntities, groupPartId);
+                        MapEntities(partItem.Key.Hierarchy, newBaseEntities, groupPartId);
                     }
                 }
             }
@@ -116,8 +115,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entityFromNewBase in newBaseEntities)
             {
                 var entityId = entityFromNewBase.Value.EntityDesign.Entity.Id;
-                var basePartInstanceId = entityFromNewBase.Value.EntityDesign.Design.BasePartInstanceId;
-                var key = new GroupPartKey(basePartInstanceId.GetValueOrDefault(), entityId);
+                // For PartInstanceId key, we take it from the entityFromNewBase.Key
+                var basePartInstanceId = entityFromNewBase.Key.PartInstanceId;
+                var key = new GroupPartKey(entityFromNewBase.Key.PartInstanceId, entityId);
 
                 if (!baseEntities.ContainsKey(key))
                 {
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                     // Add this to the list of entities from newAsset
                     // Specific to the newEntities, GroupPartKey.PartInstanceId is always Guid.Empty
-                    newEntities.Add(new GroupPartKey(Guid.Empty, newId), item);
+                    newEntities.Add(new GroupPartKey(null, newId), item);
 
                     // If the entity is coming from a part and is from root Entities, we need to add it to the rootEntities by default
                     if (basePartInstanceId.HasValue && entityFromNewBase.Value.Hierarchy.RootEntities.Contains(baseId))
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entityFromBase in baseEntities)
             {
                 var entityId = entityFromBase.Value.EntityDesign.Entity.Id;
-                var key = new GroupPartKey(entityFromBase.Value.EntityDesign.Design.BasePartInstanceId.GetValueOrDefault(), entityId);
+                var key = new GroupPartKey(entityFromBase.Key.PartInstanceId, entityId);
 
                 if (!newBaseEntities.ContainsKey(key))
                 {
@@ -183,7 +183,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     var baseId = entityDesign.Design.BaseId.Value;
 
-                    var baseKey = new GroupPartKey(entityDesign.Design.BasePartInstanceId.GetValueOrDefault(), baseId);
+                    var baseKey = new GroupPartKey(entityDesign.Design.BasePartInstanceId, baseId);
 
                     EntityRemapEntry baseRemap;
                     EntityRemapEntry newBaseRemap;
@@ -347,7 +347,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 if (entityEntry.Design.BaseId.HasValue)
                 {
                     var baseId = entityEntry.Design.BaseId.Value;
-                    var groupKey = new GroupPartKey(entityEntry.Design.BasePartInstanceId.GetValueOrDefault(), baseId);
+                    var groupKey = new GroupPartKey(entityEntry.Design.BasePartInstanceId, baseId);
                     finalMapBaseIdToNewId[groupKey] = entityEntry.Entity.Id;
                 }
             }
@@ -394,7 +394,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 // If entity id is not in the current list, it is more likely that it was a link to a base entity
                 if (!newAsset.Hierarchy.Entities.ContainsKey(id))
                 {
-                    var groupKey = new GroupPartKey(newEntityDesign.Design.BasePartInstanceId.GetValueOrDefault(), id);
+                    var groupKey = new GroupPartKey(newEntityDesign.Design.BasePartInstanceId, id);
 
                     // We are trying to remap the base id to the new id from known entities from newAsset
                     Guid newId;
@@ -436,7 +436,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var nextEntityIds = new List<Guid>();
             foreach (var entityId in entityIds)
             {
-                var remap = newEntities[new GroupPartKey(Guid.Empty, entityId)];
+                var remap = newEntities[new GroupPartKey(null, entityId)];
                 var entity = remap.EntityDesign.Entity;
 
                 // If we have a base/newbase, we can 3-ways merge lists
@@ -496,16 +496,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 hierarchyData = (EntityHierarchyData)AssetCloner.Clone(hierarchyData);
             }
 
-            var instancePartId = instancePartIdArg.GetValueOrDefault();
 
             foreach (var entityDesign in hierarchyData.Entities)
             {
                 if (instancePartIdArg.HasValue)
                 {
-                    entityDesign.Design.BasePartInstanceId = instancePartId;
+                    entityDesign.Design.BasePartInstanceId = instancePartIdArg;
                 }
 
-                var key = new GroupPartKey(instancePartId, entityDesign.Entity.Id);
+                var key = new GroupPartKey(instancePartIdArg, entityDesign.Entity.Id);
 
                 if (entities.ContainsKey(key))
                 {
@@ -518,6 +517,57 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                 entities[key] = remap;
             }
+        }
+
+        /// <summary>
+        /// Rebuilds a mapping between a base and the list of instance actually used
+        /// </summary>
+        /// <param name="baseParts"></param>
+        /// <returns></returns>
+        private Dictionary<EntityGroupAssetBase, List<Guid>> BuildInstanceIdMap(List<AssetBase> baseParts)
+        {
+            var mapInstanceIdToBaseId = new Dictionary<Guid, EntityGroupAssetBase>();
+            foreach (var entityIt in newAsset.Hierarchy.Entities)
+            {
+                if (entityIt.Design.BaseId.HasValue && entityIt.Design.BasePartInstanceId.HasValue)
+                {
+                    var basePartInstanceId = entityIt.Design.BasePartInstanceId.Value;
+                    EntityGroupAssetBase existingAssetBase;
+                    if (!mapInstanceIdToBaseId.TryGetValue(basePartInstanceId, out existingAssetBase))
+                    {
+                        var baseId = entityIt.Design.BaseId.Value;
+                        foreach (var basePart in baseParts)
+                        {
+                            var assetBase = (EntityGroupAssetBase)basePart.Asset;
+                            if (assetBase.ContainsPart(baseId))
+                            {
+                                existingAssetBase = assetBase;
+                                break;
+                            }
+                        }
+
+                        if (existingAssetBase == null)
+                        {
+                            throw new InvalidOperationException($"Unable to find base [{baseId}] from base parts");
+                        }
+
+                        mapInstanceIdToBaseId.Add(basePartInstanceId, existingAssetBase);
+                    }
+                }
+            }
+
+            var mapBaseToInstanceIds = new Dictionary<EntityGroupAssetBase, List<Guid>>();
+            foreach (var it in mapInstanceIdToBaseId)
+            {
+                List<Guid> ids;
+                if (!mapBaseToInstanceIds.TryGetValue(it.Value, out ids))
+                {
+                    ids = new List<Guid>();
+                    mapBaseToInstanceIds.Add(it.Value, ids);
+                }
+                ids.Add(it.Key);
+            }
+            return mapBaseToInstanceIds;
         }
 
         private class EntityRemapEntry
@@ -571,16 +621,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private struct GroupPartKey : IEquatable<GroupPartKey>
         {
-            public GroupPartKey(Guid partInstanceId, Guid baseId)
+            public GroupPartKey(Guid? partInstanceId, Guid baseId)
             {
                 PartInstanceId = partInstanceId;
                 BaseId = baseId;
             }
 
-
-            public readonly Guid PartInstanceId;
+            public readonly Guid? PartInstanceId;
 
             public readonly Guid BaseId;
+
 
             public bool Equals(GroupPartKey other)
             {
