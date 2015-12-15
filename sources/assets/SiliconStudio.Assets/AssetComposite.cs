@@ -31,26 +31,17 @@ namespace SiliconStudio.Assets
             }
 
             // The instance id will be the id of the assetPartBase
-            var instanceId = assetPartBase.Id;
             if (this.BaseParts == null)
             {
-                this.BaseParts = new List<AssetBasePart>();
+                this.BaseParts = new List<AssetBase>();
             }
 
-            var basePart = this.BaseParts.FirstOrDefault(basePartIt => basePartIt.Base.Id == assetPartBase.Base.Id);
+            var basePart = this.BaseParts.FirstOrDefault(basePartIt => basePartIt.Id == assetPartBase.Base.Id);
             if (basePart == null)
             {
-                basePart = new AssetBasePart(assetPartBase.Base);
+                basePart = assetPartBase.Base;
                 this.BaseParts.Add(basePart);
             }
-
-            // Check that we don't add a composition with the same instance id.
-            if (basePart.InstanceIds.Contains(instanceId))
-            {
-                throw new InvalidOperationException($"A composition with the same instance id [{instanceId}] has been already added to this instance");
-            }
-
-            basePart.InstanceIds.Add(instanceId);
         }
 
         public abstract IEnumerable<AssetPart> CollectParts();

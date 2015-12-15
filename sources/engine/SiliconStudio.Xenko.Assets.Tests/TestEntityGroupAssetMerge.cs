@@ -488,15 +488,13 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var entityBFrom2 = basePart.Hierarchy.Entities.Where(it => it.Entity.Name == "B").Select(it => it.Entity).First();
             entityD.Add(new TestEntityComponent() { EntityLink = entityBFrom2 });
 
-            var part2 = (EntityGroupAsset)basePart.CreateChildAsset("part");
-
             // originalAsset: Add a new instanceId for this part
             var asset = new EntityGroupAsset();
             asset.AddPart(part1);
             asset.AddPart(part12);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = asset.Merge(null, null, new List<AssetBasePart>() { new AssetBasePart(part2.Base) { InstanceIds = { part1.Id, part12.Id }}} );
+            var entityMerge = asset.Merge(null, null, new List<AssetBase>() { new AssetBase("part", (Asset)AssetCloner.Clone(basePart)) } );
             Assert.False(entityMerge.HasErrors);
 
             // EntityD must be now part of the new asset
@@ -591,7 +589,7 @@ namespace SiliconStudio.Xenko.Assets.Tests
             asset.Hierarchy.Entities.Remove(entityToRemove.Entity.Id);
 
             // Merge entities (NOTE: it is important to clone baseAsset/newBaseAsset)
-            var entityMerge = asset.Merge(null, null, new List<AssetBasePart>() { new AssetBasePart(new AssetBase("part", part2)) { InstanceIds = { eRoot1Asset.Id, eRoot2Asset.Id } } });
+            var entityMerge = asset.Merge(null, null, new List<AssetBase>() { new AssetBase("part", part2) } );
             Assert.False(entityMerge.HasErrors);
 
             // EntityD must be now part of the new asset
@@ -673,12 +671,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
             var a3 = (EntityGroupAsset)a2.CreateChildAsset("a2");
 
             // Merge a2
-            var result2 = a2.Merge(null, null, new List<AssetBasePart>()
+            var result2 = a2.Merge(null, null, new List<AssetBase>()
             {
-                new AssetBasePart(new AssetBase("a1", (Asset)AssetCloner.Clone(a1)))
-                {
-                    InstanceIds = { aPartInstance1.Id, aPartInstance2.Id }
-                }
+                new AssetBase("a1", (Asset)AssetCloner.Clone(a1))
             });
 
             Assert.False(result2.HasErrors);

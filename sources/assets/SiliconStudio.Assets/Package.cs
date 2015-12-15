@@ -544,9 +544,11 @@ namespace SiliconStudio.Assets
                             // Update base for BaseParts
                             if (asset.Asset.BaseParts != null)
                             {
-                                foreach (var basePart in asset.Asset.BaseParts)
+                                var baseParts = asset.Asset.BaseParts;
+                                for (int i = 0; i < baseParts.Count; i++)
                                 {
-                                    basePart.Base = UpdateAssetBase(basePart.Base);
+                                    var basePart = baseParts[i];
+                                    baseParts[i] = UpdateAssetBase(basePart);
                                 }
                             }
 

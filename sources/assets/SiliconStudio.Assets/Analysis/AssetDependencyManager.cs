@@ -1489,7 +1489,7 @@ namespace SiliconStudio.Assets.Analysis
                 if (item.Asset.BaseParts != null)
                 {
                     foreach (var compositionBase in item.Asset.BaseParts)
-                        dependencies.AddBrokenLinkOut(compositionBase.Base, ContentLinkType.CompositionInheritance);
+                        dependencies.AddBrokenLinkOut(compositionBase, ContentLinkType.CompositionInheritance);
                 }
 
                 return dependencies.BrokenLinksOut;
