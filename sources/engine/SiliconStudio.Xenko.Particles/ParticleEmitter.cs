@@ -37,6 +37,14 @@ namespace SiliconStudio.Xenko.Particles
         Local = 1,
     }
 
+    public enum EmitterSortingPolicy : byte
+    {
+        None = 0,
+        ByDepth = 1,
+        ByAge = 2,
+    }
+
+
     [DataContract("ParticleEmitter")]
     public class ParticleEmitter
     {
@@ -59,14 +67,57 @@ namespace SiliconStudio.Xenko.Particles
         // Exposing for debug drawing
         [DataMemberIgnore]
         public readonly ParticlePool pool;
-        
+
+        [DataMemberIgnore]
+        private Vector3 depthSortVector = new Vector3(0, 0, -1);
+
         [DataMemberIgnore]
         internal ParticleSorter ParticleSorter;
 
         private void PoolChangedNotification()
         {
-            // TODO Implement different sorters later
-            ParticleSorter = new ParticleSorterCustom(pool);
+            if (SortingPolicy == EmitterSortingPolicy.None || pool.ParticleCapacity <= 0)
+            {
+                ParticleSorter = new ParticleSorterDefault(pool);
+                return;
+            }
+
+            if (SortingPolicy == EmitterSortingPolicy.ByDepth)
+            {
+                GetSortIndex<Vector3> sortByDepth = value =>
+                {
+                    var depth = Vector3.Dot(depthSortVector, value);
+                    return depth;
+                };
+
+                ParticleSorter = new ParticleSorterCustom<Vector3>(pool, ParticleFields.Position, sortByDepth);
+                return;
+            }
+
+            if (SortingPolicy == EmitterSortingPolicy.ByAge)
+            {
+                GetSortIndex<float> sortByAge = value => { return -value; };
+
+                ParticleSorter = new ParticleSorterCustom<float>(pool, ParticleFields.Life, sortByAge);
+                return;
+            }
+
+            // Default - no sorting
+            ParticleSorter = new ParticleSorterDefault(pool);
+        }
+
+        private EmitterSortingPolicy sortingPolicy = EmitterSortingPolicy.None;
+
+        [DataMember(35)]
+        [Display("Sorting")]
+        public EmitterSortingPolicy SortingPolicy
+        {
+            get { return sortingPolicy; }
+            set
+            {
+                sortingPolicy = value;
+                PoolChangedNotification();
+            }
         }
 
         [DataMemberIgnore]
@@ -506,14 +557,8 @@ namespace SiliconStudio.Xenko.Particles
             var totalVertices = 0;
 
             // Sort the particles by depth
-            var invViewZ = Vector3.Cross(invViewX, invViewY);
-            ParticleSorter.Sort(ParticleFields.Position, 
-                value => {
-                    {
-                        var depth = Vector3.Dot(invViewZ, value);
-                        return depth;
-                    }
-            });
+            depthSortVector = Vector3.Cross(invViewX, invViewY);
+            ParticleSorter.Sort();
 
             if (simulationSpace == EmitterSimulationSpace.Local)
             {

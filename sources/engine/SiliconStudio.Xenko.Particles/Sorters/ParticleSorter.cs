@@ -8,36 +8,6 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Particles.Sorters
 {
-    struct SortedParticle : IComparable
-    {
-        public Particle Particle;
-        public float SortIndex;         // TODO Maybe use a Int32 key rather than float?
-
-        int IComparable.CompareTo(object other)
-        {
-            return CompareTo((SortedParticle)other);
-        }
-
-        int CompareTo(SortedParticle other)
-        {
-            return (this == other) ? 0 : (this < other) ? -1 : 1;
-        }
-
-        public static bool operator <(SortedParticle left, SortedParticle right) => (left.SortIndex < right.SortIndex);
-
-        public static bool operator >(SortedParticle left, SortedParticle right) => (left.SortIndex > right.SortIndex);
-
-        public static bool operator <=(SortedParticle left, SortedParticle right) => (left.SortIndex <= right.SortIndex);
-
-        public static bool operator >=(SortedParticle left, SortedParticle right) => (left.SortIndex >= right.SortIndex);
-
-        public static bool operator ==(SortedParticle left, SortedParticle right) => (left.SortIndex == right.SortIndex);
-
-        public static bool operator !=(SortedParticle left, SortedParticle right) => (left.SortIndex != right.SortIndex);
-    }
-
-    public delegate float GetSortIndex<T>(T value) where T : struct;
-
     public abstract class ParticleSorter : IEnumerable
     {
         protected ParticlePool ParticlePool;
@@ -52,7 +22,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             ParticlePool = pool;
         }
 
-        public abstract void Sort<T>(ParticleFieldDescription<T> fieldDesc, GetSortIndex<T> getIndex) where T : struct;
+        public abstract void Sort();
 
 IEnumerator IEnumerable.GetEnumerator()
         {
