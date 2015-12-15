@@ -36,6 +36,7 @@ namespace SiliconStudio.Xenko.Updater
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IntPtr Unbox<T>(object obj)
+            where T : struct
         {
 #if IL
             ldarg obj
