@@ -116,8 +116,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entityFromNewBase in newBaseEntities)
             {
                 var entityId = entityFromNewBase.Value.EntityDesign.Entity.Id;
-                var basePartInstanceId = entityFromNewBase.Value.EntityDesign.Design.BasePartInstanceId;
-                var key = new GroupPartKey(basePartInstanceId.GetValueOrDefault(), entityId);
+                // For PartInstanceId key, we take it from the entityFromNewBase.Key
+                var basePartInstanceId = entityFromNewBase.Key.PartInstanceId;
+                var key = new GroupPartKey(entityFromNewBase.Key.PartInstanceId, entityId);
 
                 if (!baseEntities.ContainsKey(key))
                 {
@@ -132,7 +133,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                     // Add this to the list of entities from newAsset
                     // Specific to the newEntities, GroupPartKey.PartInstanceId is always Guid.Empty
-                    newEntities.Add(new GroupPartKey(Guid.Empty, newId), item);
+                    newEntities.Add(new GroupPartKey(null, newId), item);
 
                     // If the entity is coming from a part and is from root Entities, we need to add it to the rootEntities by default
                     if (basePartInstanceId.HasValue && entityFromNewBase.Value.Hierarchy.RootEntities.Contains(baseId))
@@ -146,7 +147,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entityFromBase in baseEntities)
             {
                 var entityId = entityFromBase.Value.EntityDesign.Entity.Id;
-                var key = new GroupPartKey(entityFromBase.Value.EntityDesign.Design.BasePartInstanceId.GetValueOrDefault(), entityId);
+                var key = new GroupPartKey(entityFromBase.Key.PartInstanceId, entityId);
 
                 if (!newBaseEntities.ContainsKey(key))
                 {
@@ -183,7 +184,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     var baseId = entityDesign.Design.BaseId.Value;
 
-                    var baseKey = new GroupPartKey(entityDesign.Design.BasePartInstanceId.GetValueOrDefault(), baseId);
+                    var baseKey = new GroupPartKey(entityDesign.Design.BasePartInstanceId, baseId);
 
                     EntityRemapEntry baseRemap;
                     EntityRemapEntry newBaseRemap;
@@ -347,7 +348,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 if (entityEntry.Design.BaseId.HasValue)
                 {
                     var baseId = entityEntry.Design.BaseId.Value;
-                    var groupKey = new GroupPartKey(entityEntry.Design.BasePartInstanceId.GetValueOrDefault(), baseId);
+                    var groupKey = new GroupPartKey(entityEntry.Design.BasePartInstanceId, baseId);
                     finalMapBaseIdToNewId[groupKey] = entityEntry.Entity.Id;
                 }
             }
@@ -394,7 +395,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 // If entity id is not in the current list, it is more likely that it was a link to a base entity
                 if (!newAsset.Hierarchy.Entities.ContainsKey(id))
                 {
-                    var groupKey = new GroupPartKey(newEntityDesign.Design.BasePartInstanceId.GetValueOrDefault(), id);
+                    var groupKey = new GroupPartKey(newEntityDesign.Design.BasePartInstanceId, id);
 
                     // We are trying to remap the base id to the new id from known entities from newAsset
                     Guid newId;
@@ -436,7 +437,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             var nextEntityIds = new List<Guid>();
             foreach (var entityId in entityIds)
             {
-                var remap = newEntities[new GroupPartKey(Guid.Empty, entityId)];
+                var remap = newEntities[new GroupPartKey(null, entityId)];
                 var entity = remap.EntityDesign.Entity;
 
                 // If we have a base/newbase, we can 3-ways merge lists
@@ -496,16 +497,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 hierarchyData = (EntityHierarchyData)AssetCloner.Clone(hierarchyData);
             }
 
-            var instancePartId = instancePartIdArg.GetValueOrDefault();
 
             foreach (var entityDesign in hierarchyData.Entities)
             {
                 if (instancePartIdArg.HasValue)
                 {
-                    entityDesign.Design.BasePartInstanceId = instancePartId;
+                    entityDesign.Design.BasePartInstanceId = instancePartIdArg;
                 }
 
-                var key = new GroupPartKey(instancePartId, entityDesign.Entity.Id);
+                var key = new GroupPartKey(instancePartIdArg, entityDesign.Entity.Id);
 
                 if (entities.ContainsKey(key))
                 {
@@ -571,16 +571,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private struct GroupPartKey : IEquatable<GroupPartKey>
         {
-            public GroupPartKey(Guid partInstanceId, Guid baseId)
+            public GroupPartKey(Guid? partInstanceId, Guid baseId)
             {
                 PartInstanceId = partInstanceId;
                 BaseId = baseId;
             }
 
-
-            public readonly Guid PartInstanceId;
+            public readonly Guid? PartInstanceId;
 
             public readonly Guid BaseId;
+
 
             public bool Equals(GroupPartKey other)
             {
