@@ -111,7 +111,7 @@ namespace SiliconStudio.Assets.Analysis
                     }
 
                     // Replicate the group with the list of ids
-                    var newBasePart = new AssetBasePart(new AssetBase(existingAssetBasePart.Location, existingAssetBasePart.Asset));
+                    var newBasePart = new AssetBasePart(new AssetBase(existingAssetBasePart.Location, (Asset)AssetCloner.Clone(existingAssetBasePart.Asset)));
 
                     // Instancing ids are copied from existing base part
                     newBasePart.InstanceIds.AddRange(basePart.InstanceIds);
