@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         {           
         }
 
-        public override void Sort()
+        public override void Sort<T>(ParticleFieldDescription<T> fieldDesc, GetSortIndex<T> getIndex) 
         {
         }
 
