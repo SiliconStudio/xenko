@@ -37,7 +37,7 @@ namespace SiliconStudio.Assets
                 this.BaseParts = new List<AssetBasePart>();
             }
 
-            var basePart = this.BaseParts.FirstOrDefault(basePartIt => basePartIt.Base.Id == this.Id);
+            var basePart = this.BaseParts.FirstOrDefault(basePartIt => basePartIt.Base.Id == assetPartBase.Base.Id);
             if (basePart == null)
             {
                 basePart = new AssetBasePart(assetPartBase.Base);
