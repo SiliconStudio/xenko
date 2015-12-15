@@ -513,14 +513,17 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Assert.True(asset.Hierarchy.RootEntities.Contains(entity.Entity.Id));
             }
 
-            var entityDesignD1 = asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[6]];
-            Assert.AreEqual(part1.Id, entityDesignD1.Design.BasePartInstanceId);
+            var entityDesignD1 = asset.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "D" && it.Design.BasePartInstanceId == part1.Id);
+            Assert.NotNull(entityDesignD1);
+
+            var entityDesignD2 = asset.Hierarchy.Entities.FirstOrDefault(it => it.Entity.Name == "D" && it.Design.BasePartInstanceId == part12.Id);
+            Assert.NotNull(entityDesignD2);
+
+            // Check components
             var testComponentD1 = entityDesignD1.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD1);
             Assert.AreEqual(entityB1, testComponentD1.EntityLink);
 
-            var entityDesignD2 = asset.Hierarchy.Entities[asset.Hierarchy.RootEntities[7]];
-            Assert.AreEqual(part12.Id, entityDesignD2.Design.BasePartInstanceId);
             var testComponentD2 = entityDesignD2.Entity.Get<TestEntityComponent>();
             Assert.NotNull(testComponentD2);
             Assert.AreEqual(entityB2, testComponentD2.EntityLink);
