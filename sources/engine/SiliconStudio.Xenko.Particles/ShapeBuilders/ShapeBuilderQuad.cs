@@ -5,6 +5,7 @@ using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
@@ -15,34 +16,27 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     {
         public override int QuadsPerParticle { get; protected set; } = 1;
 
-        public override unsafe int BuildVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity,
-            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticlePool pool)
+        /// <inheritdoc />
+        public override int BuildVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
+            ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
-            var vtxPerShape = 4 * QuadsPerParticle;
-
-            var numberOfParticles = Math.Min(remainingCapacity / vtxPerShape, pool.LivingParticles);
-            if (numberOfParticles <= 0)
-                return 0;
-
-            var positionField = pool.GetField(ParticleFields.Position);
+            // Get all required particle fields
+            var positionField = sorter.GetField(ParticleFields.Position);
             if (!positionField.IsValid())
                 return 0;
+            var sizeField = sorter.GetField(ParticleFields.Size);
+            var rotField = sorter.GetField(ParticleFields.Quaternion);
+            var hasRotation = rotField.IsValid();
+
 
             // Check if the draw space is identity - in this case we don't need to transform the position, scale and rotation vectors
             var trsIdentity = (spaceScale == 1f);
             trsIdentity = trsIdentity && (spaceTranslation.Equals(new Vector3(0, 0, 0)));
             trsIdentity = trsIdentity && (spaceRotation.Equals(new Quaternion(0, 0, 0, 1)));
 
-            var sizeField = pool.GetField(ParticleFields.Size);
-
-            var rotField = pool.GetField(ParticleFields.Quaternion);
-            var hasRotation = rotField.IsValid();
 
             var renderedParticles = 0;
-
-            // TODO Sorting
-
-            foreach (var particle in pool)
+            foreach (var particle in sorter)
             {
                 var centralPos = particle.Get(positionField);
 
@@ -71,8 +65,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
                 unitX *= particleSize;
                 unitY *= particleSize;
-
-                // vertex.Size = particleSize;
 
                 var particlePos = centralPos - unitX + unitY;
                 var uvCoord = new Vector2(0, 0);
@@ -105,16 +97,11 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 vtxBuilder.SetUvCoords(ref uvCoord);
                 vtxBuilder.NextVertex();
 
-
-                remainingCapacity -= vtxPerShape;
-
-                if (++renderedParticles >= numberOfParticles)
-                {
-                    return renderedParticles;
-                }
+                renderedParticles++;
             }
 
-            return renderedParticles;
+            var vtxPerShape = 4 * QuadsPerParticle;
+            return renderedParticles * vtxPerShape;
         }
     }
 }

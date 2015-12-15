@@ -4,6 +4,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Internals;
+using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -94,14 +95,14 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
 
-        public override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool)
+        public override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(vtxBuilder, invViewX, invViewY, maxVertices, pool);
+            base.PatchVertexBuffer(vtxBuilder, invViewX, invViewY, sorter);
 
             if (UVBuilder != null)
             {
-                UVBuilder.BuildUVCoordinates(vtxBuilder, pool);
+                UVBuilder.BuildUVCoordinates(vtxBuilder, sorter);
             }
         }
 

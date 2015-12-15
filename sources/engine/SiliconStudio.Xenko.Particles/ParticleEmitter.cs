@@ -15,6 +15,7 @@ using SiliconStudio.Xenko.Particles.Initializers;
 using SiliconStudio.Xenko.Particles.Materials;
 using SiliconStudio.Xenko.Particles.Modules;
 using SiliconStudio.Xenko.Particles.ShapeBuilders;
+using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.Spawners;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
@@ -56,7 +57,10 @@ namespace SiliconStudio.Xenko.Particles
         // Exposing for debug drawing
         [DataMemberIgnore]
         public readonly ParticlePool pool;
-         
+        
+        [DataMemberIgnore]
+        internal ParticleSorter ParticleSorter;
+
         [DataMemberIgnore]
         internal ParticleRandomSeedGenerator RandomSeedGenerator;
 
@@ -67,6 +71,9 @@ namespace SiliconStudio.Xenko.Particles
         {
             pool = new ParticlePool(0, 0);
             requiredFields = new Dictionary<ParticleFieldDescription, int>();
+
+            // TODO Implement different sorters later
+            ParticleSorter = new ParticleSorterDefault(pool);
 
             // For now all particles require Life and RandomSeed fields, always
             AddRequiredField(ParticleFields.RemainingLife);
@@ -488,28 +495,31 @@ namespace SiliconStudio.Xenko.Particles
             vertexLayoutBuilder.VerticesPerParticle = ShapeBuilder.QuadsPerParticle * 4;
             vertexLayoutBuilder.StartBuffer(vertexBuffer);
 
+            var totalVertices = 0;
+
             var maxDrawn = remainingCapacity;
+
+            ParticleSorter.Sort();
 
             if (simulationSpace == EmitterSimulationSpace.Local)
             {
-                ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref drawPosition, ref drawRotation, drawScale, pool);
+                totalVertices += ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ref drawPosition, ref drawRotation, drawScale, ParticleSorter);
             }
             else
             {
                 var posIdentity = new Vector3(0, 0, 0);
                 var rotIdentity = new Quaternion(0, 0, 0, 1);
-                ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ref remainingCapacity, ref posIdentity, ref rotIdentity, 1f, pool);
+                totalVertices += ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ref posIdentity, ref rotIdentity, 1f, ParticleSorter);
             }
 
             vertexLayoutBuilder.RestartBuffer();
 
-            maxDrawn -= remainingCapacity;
-
-            Material.PatchVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, maxDrawn, pool);
+            Material.PatchVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ParticleSorter);
 
             vertexLayoutBuilder.EndBuffer();
 
-            return maxDrawn;
+            remainingCapacity -= totalVertices;
+            return totalVertices;
         }
 
         #endregion
