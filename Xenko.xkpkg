@@ -8,7 +8,7 @@ Meta:
       - Silicon Studio
     Authors: 
       - Silicon Studio
-    Copyright: © Silicon Studio All rights reserved.
+    Copyright: © Silicon Studio. All rights reserved.
     Description: Xenko Game Package
     LicenseUrl: http://xenko.com/license.txt
     ProjectUrl: http://xenko.com
@@ -42,7 +42,7 @@ TemplateFolders:
       Exclude: "**/*.psd;**/*.md"
     - Path: samples
       Group: Samples
-      Exclude: "**/.git/**;**/_ReSharper.*/**;**/Bin/**;**/obj/**;**/*.sln;**/*.suo;**/*.GhostDoc.xml;**/samples2/readme.md;**/samples2/.gitignore;**/*.psess;**/*.vspx;**/*.userprefs"
+      Exclude: "**/Testing/**;**/.git/**;**/_ReSharper.*/**;**/Bin/**;**/obj/**;**/*.sln;**/*.suo;**/*.GhostDoc.xml;**/samples2/readme.md;**/samples2/.gitignore;**/*.psess;**/*.vspx;**/*.userprefs"
       Files:
         - samples\Audio\SimpleAudio\SimpleAudio.xktpl
         - samples\Games\JumpyJet\JumpyJet.xktpl
