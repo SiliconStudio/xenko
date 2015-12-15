@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Updater
             throw new NotImplementedException();
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        [MethodImpl(MethodImplOptions.NoInlining)] // Needed for Xamarin AOT
         public static IntPtr Unbox<T>(object obj)
             where T : struct
         {
