@@ -6,7 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Assets;
+using SiliconStudio.Assets.Analysis;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Engine;
 
@@ -690,6 +692,75 @@ namespace SiliconStudio.Xenko.Assets.Tests
             Assert.AreEqual(6, a3.Hierarchy.RootEntities.Count);
             Assert.True(a3.Hierarchy.Entities.All(it => !it.Design.BasePartInstanceId.HasValue));
             Assert.True(a3.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && a2.Hierarchy.Entities.ContainsKey(it.Design.BaseId.Value)));
+        }
+
+        [Test]
+        public void TestPackageAssetTemplatingAnalysis()
+        {
+            var package = new Package();
+
+            var assetItems = package.Assets;
+
+            // Before Adding Package
+            // a1:      a2: (baseParts: a1, 2 instances)     a3: (base: a2)
+            //  | ea     | ea1 (base: ea)                     | ea1' (base: ea1)
+            //  | eb     | eb1 (base: eb)                     | eb1' (base: eb1)
+            //           | ea2 (base: ea)                     | ea2' (base: ea2)
+            //           | eb2 (base: eb)                     | eb2' (base: eb2)
+
+
+            // After adding the package to the session 
+            // We add one entity to the base a1 
+            // a1:      a2: (baseParts: a1, 2 instances)     a3: (base: a2)
+            //  | ea     | ea1 (base: ea)                     | ea1' (base: ea1)
+            //  | eb     | eb1 (base: eb)                     | eb1' (base: eb1)
+            //  | ec     | ec1 (base: ec)                     | ec1' (base: ec1)
+            //           | ea2 (base: ea)                     | ea2' (base: ea2)
+            //           | eb2 (base: eb)                     | eb2' (base: eb2)
+            //           | ec2 (base: ec)                     | ec2' (base: ec2)
+
+            var a1 = new EntityGroupAsset();
+            var ea = new Entity("ea");
+            var eb = new Entity("eb");
+            a1.Hierarchy.Entities.Add(ea);
+            a1.Hierarchy.Entities.Add(eb);
+            a1.Hierarchy.RootEntities.Add(ea.Id);
+            a1.Hierarchy.RootEntities.Add(eb.Id);
+
+            assetItems.Add(new AssetItem("a1", a1));
+
+            var a2 = new EntityGroupAsset();
+            var aPartInstance1 = (EntityGroupAsset)a1.CreateChildAsset("a1");
+            var aPartInstance2 = (EntityGroupAsset)a1.CreateChildAsset("a1");
+            a2.AddPart(aPartInstance1);
+            a2.AddPart(aPartInstance2);
+            assetItems.Add(new AssetItem("a2", a2));
+
+            // Modify a1 to add entity ec
+            var ec = new Entity("ec");
+            a1.Hierarchy.Entities.Add(ec);
+            a1.Hierarchy.RootEntities.Add(ec.Id);
+
+            var a3 = (EntityGroupAsset)a2.CreateChildAsset("a2");
+
+            assetItems.Add(new AssetItem("a3", a3));
+
+            // Create a session with this project
+            using (var session = new PackageSession())
+            {
+                var logger = new LoggerResult();
+                session.AddExistingPackage(package, logger);
+
+                Assert.False(logger.HasErrors);
+
+                Assert.AreEqual(6, a2.Hierarchy.RootEntities.Count);
+                Assert.AreEqual(6, a2.Hierarchy.RootEntities.Count);
+                Assert.True(a2.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
+
+                Assert.AreEqual(6, a3.Hierarchy.RootEntities.Count);
+                Assert.True(a3.Hierarchy.Entities.All(it => !it.Design.BasePartInstanceId.HasValue));
+                Assert.True(a3.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && a2.Hierarchy.Entities.ContainsKey(it.Design.BaseId.Value)));
+            }
         }
     }
 }
