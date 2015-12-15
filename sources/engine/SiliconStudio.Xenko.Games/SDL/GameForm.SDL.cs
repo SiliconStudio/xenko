@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Games
         private static string GetProductName()
         {
             var assembly = Assembly.GetEntryAssembly();
-            var productAttribute = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute)).FirstOrDefault() as AssemblyProductAttribute;
+            var productAttribute = assembly?.GetCustomAttributes(typeof(AssemblyProductAttribute)).FirstOrDefault() as AssemblyProductAttribute;
             return productAttribute?.Product ?? "Xenko Game";
         }
 #endregion

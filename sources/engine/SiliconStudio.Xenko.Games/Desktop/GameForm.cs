@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Games
 
             // TODO: Provide proper access to icon and title through code and game studio
             var assembly = Assembly.GetEntryAssembly();
-            var productAttribute = assembly.GetCustomAttributes(typeof(AssemblyProductAttribute)).FirstOrDefault() as AssemblyProductAttribute;
+            var productAttribute = assembly?.GetCustomAttributes(typeof(AssemblyProductAttribute)).FirstOrDefault() as AssemblyProductAttribute;
             Text = productAttribute?.Product ?? "Xenko Game";
 
             try
