@@ -6,6 +6,8 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Windows.Documents;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -61,6 +63,12 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         internal ParticleSorter ParticleSorter;
 
+        private void PoolChangedNotification()
+        {
+            // TODO Implement different sorters later
+            ParticleSorter = new ParticleSorterCustom(pool);
+        }
+
         [DataMemberIgnore]
         internal ParticleRandomSeedGenerator RandomSeedGenerator;
 
@@ -70,10 +78,8 @@ namespace SiliconStudio.Xenko.Particles
         public ParticleEmitter()
         {
             pool = new ParticlePool(0, 0);
+            PoolChangedNotification();
             requiredFields = new Dictionary<ParticleFieldDescription, int>();
-
-            // TODO Implement different sorters later
-            ParticleSorter = new ParticleSorterDefault(pool);
 
             // For now all particles require Life and RandomSeed fields, always
             AddRequiredField(ParticleFields.RemainingLife);
@@ -241,6 +247,7 @@ namespace SiliconStudio.Xenko.Particles
             {
                 MaxParticles = MaxParticlesOverride;
                 pool.SetCapacity(MaxParticles);
+                PoolChangedNotification();
                 return;
             }
 
@@ -254,6 +261,7 @@ namespace SiliconStudio.Xenko.Particles
             MaxParticles = (int)Math.Ceiling(ParticleMaxLifetime * particlesPerSecond);
 
             pool.SetCapacity(MaxParticles);
+            PoolChangedNotification();
         }
 
         /// <summary>
@@ -497,9 +505,15 @@ namespace SiliconStudio.Xenko.Particles
 
             var totalVertices = 0;
 
-            var maxDrawn = remainingCapacity;
-
-            ParticleSorter.Sort();
+            // Sort the particles by depth
+            var invViewZ = Vector3.Cross(invViewX, invViewY);
+            ParticleSorter.Sort(ParticleFields.Position, 
+                value => {
+                    {
+                        var depth = Vector3.Dot(invViewZ, value);
+                        return depth;
+                    }
+            });
 
             if (simulationSpace == EmitterSimulationSpace.Local)
             {
