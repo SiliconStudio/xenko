@@ -21,7 +21,6 @@ namespace SiliconStudio.AssemblyProcessor
     {
         private MethodDefinition updatableFieldGenericCtor;
         private MethodDefinition updatableListUpdateResolverGenericCtor;
-        private MethodDefinition updatableListUpdateResolverObjectGenericCtor;
         private MethodDefinition updatableArrayUpdateResolverGenericCtor;
 
         private TypeDefinition updatablePropertyGenericType;
@@ -105,9 +104,6 @@ namespace SiliconStudio.AssemblyProcessor
             var updatableListUpdateResolverGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.ListUpdateResolver`1");
             updatableListUpdateResolverGenericCtor = updatableListUpdateResolverGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
 
-            var updatableListUpdateResolverObjectGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.ListUpdateResolverObject`1");
-            updatableListUpdateResolverObjectGenericCtor = updatableListUpdateResolverObjectGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
-
             var updatableArrayUpdateResolverGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.ArrayUpdateResolver`1");
             updatableArrayUpdateResolverGenericCtor = updatableArrayUpdateResolverGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
 
@@ -163,12 +159,7 @@ namespace SiliconStudio.AssemblyProcessor
                 {
                     //call Updater.UpdateEngine.RegisterMemberResolver(new Updater.ListUpdateResolver<T>());
                     var elementType = ResolveGenericsVisitor.Process(serializableType.Key, listInterfaceType.GenericArguments[0]);
-                    var genericTypeParameter = context.Assembly.MainModule.ImportReference(elementType).FixupValueType();
-                    var genericTypeSpecification = genericTypeParameter as TypeSpecification;
-                    var isValueType = genericTypeSpecification?.ElementType.IsValueType ?? genericTypeParameter.IsValueType;
-                    var genericCtor = isValueType ? updatableListUpdateResolverGenericCtor : updatableListUpdateResolverObjectGenericCtor;
-
-                    il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(genericCtor).MakeGeneric(genericTypeParameter));
+                    il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatableListUpdateResolverGenericCtor).MakeGeneric(context.Assembly.MainModule.ImportReference(elementType).FixupValueType()));
                     il.Emit(OpCodes.Call, updateEngineRegisterMemberResolverMethod);
                 }
 

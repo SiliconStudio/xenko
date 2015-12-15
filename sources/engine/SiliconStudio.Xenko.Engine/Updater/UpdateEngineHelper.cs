@@ -36,7 +36,6 @@ namespace SiliconStudio.Xenko.Updater
 
         [MethodImpl(MethodImplOptions.NoInlining)] // Needed for Xamarin AOT
         public static IntPtr Unbox<T>(object obj)
-            where T : struct
         {
 #if IL
             ldarg obj

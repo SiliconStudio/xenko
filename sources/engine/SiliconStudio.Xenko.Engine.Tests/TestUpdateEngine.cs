@@ -234,7 +234,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         [Test]
         public void TestTestClassList()
         {
-            UpdateEngine.RegisterMemberResolver(new ListUpdateResolverObject<TestClass>());
+            UpdateEngine.RegisterMemberResolver(new ListUpdateResolver<TestClass>());
 
             var test = new TestClass();
             var test2 = new TestClass();

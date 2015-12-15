@@ -4,12 +4,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using SiliconStudio.AssemblyProcessor.Serializers;
-using MethodBody = Mono.Cecil.Cil.MethodBody;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -24,7 +22,6 @@ namespace SiliconStudio.AssemblyProcessor
             GenerateUpdatableFieldCode(assembly);
             new UpdatablePropertyCodeGenerator(assembly).GenerateUpdatablePropertyCode();
             new UpdatableListCodeGenerator(assembly).GenerateUpdatablePropertyCode();
-            new UpdatableListCodeGeneratorObject(assembly).GenerateUpdatablePropertyCode();
         }
 
         private static void GenerateUpdateEngineHelperCode(AssemblyDefinition assembly)
@@ -125,7 +122,18 @@ namespace SiliconStudio.AssemblyProcessor
 
             public virtual void GenerateUpdatablePropertyCode()
             {
-                GenerateStructCode();
+                var updateEngineHelperType = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngineHelper");
+                var unbox = updateEngineHelperType.Methods.First(x => x.Name == "Unbox");
+
+                // UpdatableProperty.GetStructAndUnbox
+                var getStructAndUnbox = RewriteBody(declaringType.Methods.First(x => x.Name == "GetStructAndUnbox"));
+                getStructAndUnbox.Emit(OpCodes.Ldarg, getStructAndUnbox.Body.Method.Parameters[1]);
+                getStructAndUnbox.Emit(OpCodes.Call, assembly.MainModule.ImportReference(unbox).MakeGenericMethod(declaringType.GenericParameters[0]));
+                getStructAndUnbox.Emit(OpCodes.Dup);
+                getStructAndUnbox.Emit(OpCodes.Ldarg, getStructAndUnbox.Body.Method.Parameters[0]);
+                EmitGetCode(getStructAndUnbox, declaringType.GenericParameters[0]);
+                getStructAndUnbox.Emit(OpCodes.Stobj, declaringType.GenericParameters[0]);
+                getStructAndUnbox.Emit(OpCodes.Ret);
 
                 // UpdatableProperty.GetBlittable
                 var getBlittable = RewriteBody(declaringType.Methods.First(x => x.Name == "GetBlittable"));
@@ -152,24 +160,6 @@ namespace SiliconStudio.AssemblyProcessor
                 setBlittable.Emit(OpCodes.Ldobj, declaringType.GenericParameters[0]);
                 EmitSetCodeAfterValue(setBlittable, declaringType.GenericParameters[0]);
                 setBlittable.Emit(OpCodes.Ret);
-            }
-
-            protected virtual void GenerateStructCode()
-            {
-                var updateEngineHelperType = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngineHelper");
-                var unbox = updateEngineHelperType.Methods.First(x => x.Name == "Unbox");
-
-                // UpdatableProperty.GetStructAndUnbox
-                var getStructAndUnbox = RewriteBody(declaringType.Methods.First(x => x.Name == "GetStructAndUnbox"));
-                getStructAndUnbox.Emit(OpCodes.Ldarg, getStructAndUnbox.Body.Method.Parameters[1]);
-                //getStructAndUnbox.Emit(OpCodes.Unbox, declaringType.GenericParameters[0]);
-                getStructAndUnbox.Emit(OpCodes.Call, assembly.MainModule.ImportReference(unbox).MakeGenericMethod(declaringType.GenericParameters[0]));
-                getStructAndUnbox.Emit(OpCodes.Dup);
-                getStructAndUnbox.Emit(OpCodes.Ldarg, getStructAndUnbox.Body.Method.Parameters[0]);
-                EmitGetCode(getStructAndUnbox, declaringType.GenericParameters[0]);
-                getStructAndUnbox.Emit(OpCodes.Stobj, declaringType.GenericParameters[0]);
-
-                getStructAndUnbox.Emit(OpCodes.Ret);
             }
         }
 
@@ -274,51 +264,6 @@ namespace SiliconStudio.AssemblyProcessor
 
                 ilistGetItem = assembly.MainModule.ImportReference(ilistItem.GetMethod).MakeGeneric(declaringType.GenericParameters[0]);
                 ilistSetItem = assembly.MainModule.ImportReference(ilistItem.SetMethod).MakeGeneric(declaringType.GenericParameters[0]);
-            }
-
-            public override void EmitGetCode(ILProcessor il, TypeReference type)
-            {
-                il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Ldfld, indexField);
-                il.Emit(OpCodes.Callvirt, ilistGetItem);
-            }
-
-            public override void EmitSetCodeBeforeValue(ILProcessor il, TypeReference type)
-            {
-                il.Emit(OpCodes.Ldarg_0);
-                il.Emit(OpCodes.Ldfld, indexField);
-            }
-
-            public override void EmitSetCodeAfterValue(ILProcessor il, TypeReference type)
-            {
-                il.Emit(OpCodes.Callvirt, ilistSetItem);
-            }
-        }
-
-        class UpdatableListCodeGeneratorObject : UpdatableCustomPropertyCodeGenerator
-        {
-            private readonly FieldDefinition indexField;
-            private readonly MethodReference ilistGetItem;
-            private readonly MethodReference ilistSetItem;
-
-            public UpdatableListCodeGeneratorObject(AssemblyDefinition assembly) : base(assembly)
-            {
-                declaringType = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdatableListAccessorObject`1");
-                indexField = assembly.MainModule.GetType("SiliconStudio.Xenko.Updater.UpdatableListAccessor").Fields.First(x => x.Name == "Index");
-
-                // TODO: Update to new method to resolve collection assembly
-                var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(assembly);
-                var ilistType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(IList<>).FullName);
-
-                var ilistItem = ilistType.Properties.First(x => x.Name == "Item");
-
-                ilistGetItem = assembly.MainModule.ImportReference(ilistItem.GetMethod).MakeGeneric(declaringType.GenericParameters[0]);
-                ilistSetItem = assembly.MainModule.ImportReference(ilistItem.SetMethod).MakeGeneric(declaringType.GenericParameters[0]);
-            }
-
-            protected override void GenerateStructCode()
-            {
-                // No struct specific code for reference type version
             }
 
             public override void EmitGetCode(ILProcessor il, TypeReference type)
