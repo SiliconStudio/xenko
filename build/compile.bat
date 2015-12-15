@@ -3,9 +3,41 @@
 setlocal
 
 set STARTTIME=%TIME%
+set __SkipTestBuild=true
+set __BuildType=Debug
+set __BuildVerbosity=m
 
+:Arg_Loop
+rem This does not check for duplicate arguments, the last one will take precedence
+if "%1" == "" goto ArgsDone
+if /i "%1" == "/?" goto Usage
+if /i "%1" == "debug" (set __BuildType=Debug && shift && goto Arg_loop)
+if /i "%1" == "release" (set __BuildType=Release && shift && goto Arg_loop)
+if /i "%1" == "tests" (set __SkipTestBuild=false && shift && goto Arg_loop)
+if /i "%1" == "verbosity:q" (set __BuildVerbosity=q && shift && goto Arg_loop)
+if /i "%1" == "verbosity:m" (set __BuildVerbosity=m && shift && goto Arg_loop)
+if /i "%1" == "verbosity:n" (set __BuildVerbosity=n && shift && goto Arg_loop)
+if /i "%1" == "verbosity:d" (set __BuildVerbosity=d && shift && goto Arg_loop)
+echo.
+echo Invalid command line argument: %1
+echo.
+goto Usage
+
+:Usage
+echo compile.bat [/? ^| debug ^| release ^| tests ^| verbosity:[q^|m^|n^|d]
+echo.
+echo   debug   : Build debug version
+echo   release : Build release version
+echo   tests   : Build tests
+echo verbosity : Verbosity level [q]uiet, [m]inimal, [n]ormal or [d]iagnostic. Default is [m]inimal
+echo.
+
+goto exit
+
+
+:ArgsDone
 set XXMSBUILD="\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
-set _option=/m /verbosity:normal /p:Configuration=Debug /p:Platform="Mixed Platforms"
+set _option=/nologo /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="Mixed Platforms" /p:SiliconStudioPackageBuild=%__SkipTestBuild%
 
 set Project=Xenko.sln
 %XXMSBUILD%  %_option% %Project%
@@ -55,6 +87,7 @@ echo "Using command line" %XXMSBUILD% %_option% %Project%
 
 set ENDTIME=%TIME%
 
+echo.
 echo Starting time was: %STARTTIME%
 echo Ending time is   : %ENDTIME%
 
