@@ -88,7 +88,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             MapEntities(baseAsset?.Hierarchy, baseEntities);
             if (newAsset.BaseParts != null)
             {
-                foreach (var partItem in BuildInstanceIdMap(newAsset.BaseParts))
+                foreach (var partItem in newAsset.GetBasePartInstanceIds())
                 {
                     foreach (var groupPartId in partItem.Value)
                     {
@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             MapEntities(newBaseAsset?.Hierarchy, newBaseEntities);
             if (newBaseParts != null)
             {
-                foreach (var partItem in BuildInstanceIdMap(newBaseParts))
+                foreach (var partItem in newAsset.GetBasePartInstanceIds(newBaseParts))
                 {
                     foreach (var groupPartId in partItem.Value)
                     {
@@ -519,56 +519,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
         }
 
-        /// <summary>
-        /// Rebuilds a mapping between a base and the list of instance actually used
-        /// </summary>
-        /// <param name="baseParts"></param>
-        /// <returns></returns>
-        private Dictionary<EntityGroupAssetBase, List<Guid>> BuildInstanceIdMap(List<AssetBase> baseParts)
-        {
-            var mapInstanceIdToBaseId = new Dictionary<Guid, EntityGroupAssetBase>();
-            foreach (var entityIt in newAsset.Hierarchy.Entities)
-            {
-                if (entityIt.Design.BaseId.HasValue && entityIt.Design.BasePartInstanceId.HasValue)
-                {
-                    var basePartInstanceId = entityIt.Design.BasePartInstanceId.Value;
-                    EntityGroupAssetBase existingAssetBase;
-                    if (!mapInstanceIdToBaseId.TryGetValue(basePartInstanceId, out existingAssetBase))
-                    {
-                        var baseId = entityIt.Design.BaseId.Value;
-                        foreach (var basePart in baseParts)
-                        {
-                            var assetBase = (EntityGroupAssetBase)basePart.Asset;
-                            if (assetBase.ContainsPart(baseId))
-                            {
-                                existingAssetBase = assetBase;
-                                break;
-                            }
-                        }
 
-                        if (existingAssetBase == null)
-                        {
-                            throw new InvalidOperationException($"Unable to find base [{baseId}] from base parts");
-                        }
-
-                        mapInstanceIdToBaseId.Add(basePartInstanceId, existingAssetBase);
-                    }
-                }
-            }
-
-            var mapBaseToInstanceIds = new Dictionary<EntityGroupAssetBase, List<Guid>>();
-            foreach (var it in mapInstanceIdToBaseId)
-            {
-                List<Guid> ids;
-                if (!mapBaseToInstanceIds.TryGetValue(it.Value, out ids))
-                {
-                    ids = new List<Guid>();
-                    mapBaseToInstanceIds.Add(it.Value, ids);
-                }
-                ids.Add(it.Key);
-            }
-            return mapBaseToInstanceIds;
-        }
 
         private class EntityRemapEntry
         {
