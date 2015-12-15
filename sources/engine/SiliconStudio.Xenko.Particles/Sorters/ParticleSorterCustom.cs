@@ -11,18 +11,24 @@ namespace SiliconStudio.Xenko.Particles.Sorters
     /// <summary>
     /// The default sorter doesn not sort the particles, but only passes them directly to the renderer
     /// </summary>
-    public class ParticleSorterCustom : ParticleSorter
+    public class ParticleSorterCustom<T> : ParticleSorter where T : struct
     {
         SortedParticle[] particleList;
         private int currentLivingParticles;
 
-        public ParticleSorterCustom(ParticlePool pool) : base(pool)
+        private readonly ParticleFieldDescription<T> fieldDesc;
+        private readonly GetSortIndex<T> getIndex;
+
+        public ParticleSorterCustom(ParticlePool pool, ParticleFieldDescription<T> fieldDesc, GetSortIndex<T> getIndex) : base(pool)
         {
             particleList = new SortedParticle[pool.ParticleCapacity];
             currentLivingParticles = 0;
+
+            this.fieldDesc = fieldDesc;
+            this.getIndex = getIndex;
         }
 
-        public override void Sort<T>(ParticleFieldDescription<T> fieldDesc, GetSortIndex<T> getIndex) 
+        public override void Sort() 
         {
             currentLivingParticles = ParticlePool.LivingParticles;
             var i = 0;
@@ -35,8 +41,6 @@ namespace SiliconStudio.Xenko.Particles.Sorters
                 {
                     foreach (var particle in ParticlePool)
                     {
-                        var position = particle.Get(posField);
-
                         particleList[i].Particle = particle;
                         particleList[i].SortIndex = getIndex(particle.Get(posField));
                         i++;
