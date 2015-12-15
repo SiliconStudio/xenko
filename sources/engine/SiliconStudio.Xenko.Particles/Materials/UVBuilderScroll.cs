@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.Materials
@@ -21,14 +22,14 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("End frame")]
         public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);
 
-        public unsafe override void BuildUVCoordinates(ParticleVertexLayout vtxBuilder, ParticlePool pool)
+        public unsafe override void BuildUVCoordinates(ParticleVertexLayout vtxBuilder, ParticleSorter sorter)
         {
-            var lifeField = pool.GetField(ParticleFields.RemainingLife);
+            var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 
             if (!lifeField.IsValid())
                 return;
 
-            foreach (var particle in pool)
+            foreach (var particle in sorter)
             {
                 var normalizedTimeline = 1f - *(float*)(particle[lifeField]); ;
 

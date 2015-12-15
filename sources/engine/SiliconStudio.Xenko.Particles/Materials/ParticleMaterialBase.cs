@@ -10,6 +10,7 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Internals;
+using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Materials;
@@ -126,21 +127,21 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         }
 
-        public virtual unsafe void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, int maxVertices, ParticlePool pool)
+        public virtual unsafe void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
-            var lifeField = pool.GetField(ParticleFields.RemainingLife);
-            var randField = pool.GetField(ParticleFields.RandomSeed);
+            var lifeField = sorter.GetField(ParticleFields.RemainingLife);
+            var randField = sorter.GetField(ParticleFields.RandomSeed);
 
             if (!randField.IsValid() || !lifeField.IsValid())
                 return;
 
-            var colorField = pool.GetField(ParticleFields.Color);
+            var colorField = sorter.GetField(ParticleFields.Color);
             var hasColorField = colorField.IsValid();
 
             var whiteColor = new Color4(1, 1, 1, 1);
 
             // TODO Fetch sorted particles
-            foreach (var particle in pool)
+            foreach (var particle in sorter)
             {
                 vtxBuilder.SetColorForParticle(hasColorField ? particle[colorField] : (IntPtr)(&whiteColor));
 
