@@ -12,15 +12,16 @@ void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionC
 	rotation.X = 1;
 	rotation.Y = 0;
 
-	if (fabsf(drawInfo->Rotation) > 1e-6f)
+	if (fabs(drawInfo->Rotation) > 1e-6f)
 	{
-		rotation.X = npLolCos(drawInfo->Rotation);
-		rotation.Y = npLolSin(drawInfo->Rotation);
+		npLolSincosf(drawInfo->Rotation, &rotation.Y, &rotation.X);
+		//rotation.X = cos(drawInfo->Rotation);
+		//rotation.Y = sin(drawInfo->Rotation);
 	}
 
 	Vector2 origin = drawInfo->Origin;
-	origin.X /= fmaxf(1e-6f, drawInfo->Source.width);
-	origin.Y /= fmaxf(1e-6f, drawInfo->Source.height);
+	origin.X /= fmax(1e-6f, drawInfo->Source.width);
+	origin.Y /= fmax(1e-6f, drawInfo->Source.height);
 
 	const Vector2 cornerOffsets[] =
 	{
