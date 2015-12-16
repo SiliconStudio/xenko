@@ -51,15 +51,6 @@ namespace SiliconStudio.Xenko.Particles
         public ParticleSystem()
         {
             emitters = new SafeList<ParticleEmitter>();
-
-            /*
-            var emitter = new ParticleEmitter();
-
-            emitter.AddModule(new UpdaterGravity());
-            emitter.AddModule(new SampleInitializer());
-
-            emitters.Add(emitter);
-            */
         }
 
         /// <summary>
@@ -98,36 +89,16 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// Draws the particles
         /// </summary>
-        public void Draw(ParticleBatch particleBatch, RenderContext context, Color4 color)
+        public void Draw(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
         {
-            // TODO Use color4 tint
-
             foreach (var particleEmitter in Emitters)
             {
                 if (particleEmitter.Enabled)
                 {
-                    particleBatch.Draw(particleEmitter, context, color);
+                    particleEmitter.Draw(device, context, ref viewMatrix, ref projMatrix, ref invViewMatrix, color);
                 }
             }
         }
-
-        /// <summary>
-        /// Build particle vertices to the given mapped vertex buffer.
-        /// </summary>
-        /// <param name="vertexBuffer"></param>
-        /// <param name="invViewX"></param>
-        /// <param name="invViewY"></param>
-        /// <param name="remainingCapacity"></param>
-        /// <returns>Total number of quads drawn. 1 quad = 2 triangles = 4 vertices.</returns>
-        public int BuildVertexBuffer(GraphicsDevice device, IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)
-        {
-            var totalParticlesDrawn = 0;
-            foreach (var particleEmitter in Emitters)
-            {
-                totalParticlesDrawn += particleEmitter.BuildVertexBuffer(device, vertexBuffer, invViewX, invViewY, ref remainingCapacity);
-            }
-
-            return totalParticlesDrawn;
-        }
+        
     }
 }

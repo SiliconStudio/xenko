@@ -23,23 +23,16 @@ namespace SiliconStudio.Xenko.Particles.Components
     {
         // TODO For now try to render particle systems as Sprites, later move on to a proper particle representation
 
-        /// <summary>
-        /// ParticleBatch batches similar particles together, based on Material properties.
-        /// </summary>
-        private ParticleBatch particleBatch;
-
-        private ParticleSystemProcessor particleSystemProcessor;
+     private ParticleSystemProcessor particleSystemProcessor;
 
         protected override void InitializeCore()
         {
             base.InitializeCore();
-
-            particleBatch = new ParticleBatch(Context.GraphicsDevice);
         }
 
         protected override void Unload()
         {
-            particleBatch.Dispose();
+//            particleBatch.Dispose();
 
             base.Unload();
         }
@@ -100,14 +93,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                 var particleSystemState = (ParticleSystemProcessor.ParticleSystemComponentState)renderItem.DrawContext;
                 var particleSystemComponent = particleSystemState.ParticleSystemComponent;
 
-                //// TODO Use transform component? Or no?
-                //var transformComponent = particleSystemState.TransformComponent;
-                
-                particleBatch.Begin(viewMat, projMat, viewInv);
-
-                particleSystemComponent.ParticleSystem.Draw(particleBatch, context, particleSystemComponent.Color);
-
-                particleBatch.End();
+                particleSystemComponent.ParticleSystem.Draw(device, context, ref viewMat, ref projMat, ref viewInv, particleSystemComponent.Color);
             }
         }
 
