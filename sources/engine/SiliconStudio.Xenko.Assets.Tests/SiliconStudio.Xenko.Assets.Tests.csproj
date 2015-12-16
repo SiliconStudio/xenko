@@ -145,7 +145,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="AssetImportTests.cs" />
     <Compile Include="TestDependencyResolver.cs" />
-    <Compile Include="EntityTests.cs" />
+    <Compile Include="TestEntityGroupAsset.cs" />
     <Compile Include="ModelAssetTests.cs" />
     <Compile Include="TestPackageArchive.cs" />
     <Compile Include="TexturePackerTests.cs" />

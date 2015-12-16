@@ -3,6 +3,7 @@
 
 using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using NUnit.Framework;
 using SiliconStudio.Assets;
@@ -12,10 +13,10 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Assets.Tests
 {
     [TestFixture]
-    public class EntityTests
+    public class TestEntityGroupAsset
     {
         [Test]
-        public void TestEntitySerialization()
+        public void TestSerialization()
         {
             // Basic test of entity serialization with links between entities (entity-entity, entity-component)
             // E1
@@ -72,12 +73,17 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Assert.NotNull(newEntityDesign3);
                 Assert.NotNull(newEntityDesign4);
 
+                // Check that Transform.Children is correctly setup
+                Assert.AreEqual(newEntityDesign2.Entity.Transform, newEntityDesign1.Entity.Transform.Children.FirstOrDefault());
+
+                // Test entity-entity link from E2 to E1
                 {
                     var component = newEntityDesign2.Entity.Get<TestEntityComponent>();
                     Assert.NotNull(component);
                     Assert.AreEqual(newEntityDesign1.Entity, component.EntityLink);
                 }
 
+                // Test entity-component link from E4 to E3
                 {
                     var component = newEntityDesign4.Entity.Get<TestEntityComponent>();
                     Assert.NotNull(component);
