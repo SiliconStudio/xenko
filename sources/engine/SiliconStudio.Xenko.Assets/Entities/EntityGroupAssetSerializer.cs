@@ -2,18 +2,18 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
 
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     //[YamlSerializerFactory]
-    public class EntitySerializer : ObjectSerializer //, IDataCustomVisitor
+    public class EntityGroupAssetSerializer : ObjectSerializer //, IDataCustomVisitor
     {
+        // TODO: Add some comments to explain how this is working and why we need a specialized serializer
+
         [ThreadStatic]
         private static bool isSerializingAsReference;
 
