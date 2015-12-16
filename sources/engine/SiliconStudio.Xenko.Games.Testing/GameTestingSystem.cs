@@ -11,6 +11,7 @@ using SiliconStudio.Xenko.Input.Extensions;
 using System;
 using System.Collections.Concurrent;
 using System.IO;
+using System.Runtime.InteropServices;
 using System.Threading.Tasks;
 
 namespace SiliconStudio.Xenko.Games.Testing
@@ -129,12 +130,19 @@ namespace SiliconStudio.Xenko.Games.Testing
             }
         }
 
+#if SILICONSTUDIO_PLATFORM_IOS
+        [DllImport("__Internal", EntryPoint = "exit")]
+        public static extern void exit(int status);
+#endif
+
         private static void Quit(Game game)
         {
             game.Exit();
 
 #if SILICONSTUDIO_PLATFORM_ANDROID
             global::Android.OS.Process.KillProcess(global::Android.OS.Process.MyPid());
+#elif SILICONSTUDIO_PLATFORM_IOS
+            exit(0);
 #endif
         }
     }

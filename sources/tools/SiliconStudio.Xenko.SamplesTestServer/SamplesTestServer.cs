@@ -17,14 +17,13 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 {
     public class SamplesTestServer : RouterServiceServer
     {
-        private class TestProcess
+        private class TestPair
         {
-            public Process Process;
             public SocketMessageLayer TesterSocket;
             public SocketMessageLayer GameSocket;
         }
 
-        private readonly Dictionary<string, TestProcess> processes = new Dictionary<string, TestProcess>();
+        private readonly Dictionary<string, TestPair> processes = new Dictionary<string, TestPair>();
 
         private readonly Dictionary<SocketMessageLayer, SocketMessageLayer> testerToGame = new Dictionary<SocketMessageLayer, SocketMessageLayer>();
         private readonly Dictionary<SocketMessageLayer, SocketMessageLayer> gameToTester = new Dictionary<SocketMessageLayer, SocketMessageLayer>();
@@ -74,7 +73,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 else
                                 {
-                                    processes[request.GameAssembly] = new TestProcess { Process = process, TesterSocket = socketMessageLayer };
+                                    processes[request.GameAssembly] = new TestPair { TesterSocket = socketMessageLayer };
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
                                 break;
@@ -98,7 +97,39 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 else
                                 {
-                                    processes[request.GameAssembly] = new TestProcess { Process = process, TesterSocket = socketMessageLayer };
+                                    processes[request.GameAssembly] = new TestPair { TesterSocket = socketMessageLayer };
+                                    socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
+                                }
+                                break;
+                            }
+                        case (int)PlatformType.iOS:
+                            {
+                                Process process = null;
+                                var debugInfo = "";
+                                try
+                                {
+                                    var start = new ProcessStartInfo
+                                    {
+                                        WorkingDirectory = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\",
+                                        FileName = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\idevicedebug.exe",
+                                        Arguments = $"run com.your-company.{request.GameAssembly}"
+                                    };
+                                    start.UseShellExecute = false;
+                                    debugInfo = "Starting process " + start.FileName + " with path " + start.WorkingDirectory;
+                                    process = Process.Start(start);
+                                }
+                                catch (Exception ex)
+                                {
+                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = $"Launch exception: {ex.Message} info: {debugInfo}" }).Wait();
+                                }
+
+                                if (process == null)
+                                {
+                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game process. " + debugInfo }).Wait();
+                                }
+                                else
+                                {
+                                    processes[request.GameAssembly] = new TestPair { TesterSocket = socketMessageLayer };
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
                                 break;
@@ -107,13 +138,13 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 }
                 else //Game process
                 {
-                    TestProcess process;
-                    if (processes.TryGetValue(request.GameAssembly, out process))
+                    TestPair pair;
+                    if (processes.TryGetValue(request.GameAssembly, out pair))
                     {
-                        process.GameSocket = socketMessageLayer;
-                        testerToGame[process.TesterSocket] = process.GameSocket;
-                        gameToTester[process.GameSocket] = process.TesterSocket;
-                        process.TesterSocket.Send(new StatusMessageRequest { Error = false, Message = "Start" }).Wait();
+                        pair.GameSocket = socketMessageLayer;
+                        testerToGame[pair.TesterSocket] = pair.GameSocket;
+                        gameToTester[pair.GameSocket] = pair.TesterSocket;
+                        pair.TesterSocket.Send(new StatusMessageRequest { Error = false, Message = "Start" }).Wait();
                     }
                 }
             });
@@ -141,6 +172,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 var game = testerToGame[socketMessageLayer];
                 game.Send(request).Wait();
                 testerToGame.Remove(socketMessageLayer);
+                ShellHelper.RunProcess("cmd.exe", "/C taskkill /IM idevicedebug.exe /f");
             });
 
             socketMessageLayer.AddPacketHandler<ScreenShotPayload>(request =>
