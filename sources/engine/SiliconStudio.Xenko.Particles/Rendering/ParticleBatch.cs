@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Particles
 //        private Vector4 vector4UnitX = Vector4.UnitX;
 //        private Vector4 vector4UnitY = -Vector4.UnitY;
 
-        private const int maxQuadCount = 1024 * 16;
+        private const int maxQuadCount = 1 * 16;
 
         public ParticleBatch(GraphicsDevice device, int bufferElementCount = maxQuadCount, int batchCapacity = 64)
             : base(device, ParticleBatch.Bytecode(ParticleEffectVariation.None), ParticleBatch.Bytecode(ParticleEffectVariation.IsSrgb), StaticQuadBufferInfo.CreateQuadBufferInfo("ParticleBatch.VertexIndexBuffer", true, bufferElementCount, batchCapacity), ParticleVertexLayout.VertexDeclaration)
@@ -37,6 +37,7 @@ namespace SiliconStudio.Xenko.Particles
             var context = elementInfo.DrawInfo.Context;
             var color = elementInfo.DrawInfo.Color;
 
+            // TODO Emitter draw settings in 1 call
 
             emitter.Setup(GraphicsDevice, context, viewMatrix, projMatrix, color);
 
@@ -45,7 +46,9 @@ namespace SiliconStudio.Xenko.Particles
             var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
 
             var remainingCapacity = maxQuadCount;
-            emitter.BuildVertexBuffer(vertexPointer, unitX, unitY, ref remainingCapacity);
+            emitter.BuildVertexBuffer(GraphicsDevice, vertexPointer, unitX, unitY, ref remainingCapacity);
+
+
         }
 
         public void Draw(ParticleEmitter emitter, RenderContext context, Color4 color)
@@ -60,7 +63,7 @@ namespace SiliconStudio.Xenko.Particles
             // TODO Sort by depth
             float depthSprite = 1f;
 
-            var requiredQuads = emitter.GetRequiredQuadCount();
+            var requiredQuads = 0;//emitter.GetRequiredQuadCount();
 
             var elementInfo = new ElementInfo(
                 StaticQuadBufferInfo.VertexByElement  * requiredQuads, 

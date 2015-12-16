@@ -146,7 +146,9 @@ namespace SiliconStudio.Xenko.Particles
             Updaters.CollectionChanged += ModulesChanged;
 
             Spawners = new TrackingCollection<SpawnerBase>();
-            Spawners.CollectionChanged += SpawnersChanged;            
+            Spawners.CollectionChanged += SpawnersChanged;        
+            
+            vertexBufferContext = new ParticleVertexBuffer();    
         }
 
         #region Modules
@@ -540,6 +542,8 @@ namespace SiliconStudio.Xenko.Particles
         [NotNull]
         public ParticleMaterialBase Material { get; set; } = new ParticleMaterialComputeColor();
 
+        private ParticleVertexBuffer vertexBufferContext;
+
         public void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
             var variation = defaultVariation;
@@ -555,16 +559,19 @@ namespace SiliconStudio.Xenko.Particles
 
         public int GetRequiredQuadCount()
         {
-            return ShapeBuilder.QuadsPerParticle*pool.LivingParticles;
+            return ShapeBuilder.QuadsPerParticle * pool.LivingParticles;
         }
 
-        public int BuildVertexBuffer(IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)
+        public int BuildVertexBuffer(GraphicsDevice device, IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)
         {
+            var vtxBuff = vertexBufferContext.StartBuffer(device, Material.Effect);
+
+
             var variation = defaultVariation;
             variation |= Material.MandatoryVariation;
             var vertexLayoutBuilder = ParticleBatch.GetVertexLayout(variation);
             vertexLayoutBuilder.VerticesPerParticle = ShapeBuilder.QuadsPerParticle * 4;
-            vertexLayoutBuilder.StartBuffer(vertexBuffer);
+            vertexLayoutBuilder.StartBuffer(vtxBuff);
 
             var totalVertices = 0;
 
@@ -588,6 +595,10 @@ namespace SiliconStudio.Xenko.Particles
             Material.PatchVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ParticleSorter);
 
             vertexLayoutBuilder.EndBuffer();
+
+
+            vertexBufferContext.FlushBuffer(device, (totalVertices / 4) * 6);
+
 
             remainingCapacity -= totalVertices;
             return totalVertices;

@@ -74,6 +74,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
         private Effect effect = null;
 
         [DataMemberIgnore]
+        public Effect Effect => effect;
+
+        [DataMemberIgnore]
         private DefaultEffectInstance effectInstance;
 
         [DataMemberIgnore]
