@@ -135,6 +135,9 @@ namespace SiliconStudio.Xenko.Particles
             // For now all particles require Life and RandomSeed fields, always
             AddRequiredField(ParticleFields.RemainingLife);
             AddRequiredField(ParticleFields.RandomSeed);
+            AddRequiredField(ParticleFields.Position);
+
+            initialDefaultFields = new InitialDefaultFields();
 
             Initializers = new TrackingCollection<InitializerBase>();
             Initializers.CollectionChanged += ModulesChanged;
@@ -153,6 +156,9 @@ namespace SiliconStudio.Xenko.Particles
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
         public readonly TrackingCollection<InitializerBase> Initializers;
+
+        [DataMemberIgnore]
+        private readonly InitialDefaultFields initialDefaultFields;
 
         [DataMember(300)]
         [Display("Updaters", Expand = ExpandRule.Always)]
@@ -202,6 +208,8 @@ namespace SiliconStudio.Xenko.Particles
             if (simulationSpace == EmitterSimulationSpace.World)
             {
                 // Update sub-systems
+                initialDefaultFields.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+
                 foreach (var initializer in Initializers)
                 {
                     initializer.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
@@ -218,6 +226,8 @@ namespace SiliconStudio.Xenko.Particles
                 var rotIdentity = new Quaternion(0, 0, 0, 1);
 
                 // Update sub-systems
+                initialDefaultFields.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
+
                 foreach (var initializer in Initializers)
                 {
                     initializer.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
@@ -435,6 +445,8 @@ namespace SiliconStudio.Xenko.Particles
             }
 
             particlesToSpawn = 0;
+
+            initialDefaultFields.Initialize(pool, startIndex, endIndex, capacity);
 
             foreach (var initializer in Initializers)
             {
