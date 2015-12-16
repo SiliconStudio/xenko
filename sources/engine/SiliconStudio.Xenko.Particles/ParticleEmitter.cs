@@ -544,6 +544,54 @@ namespace SiliconStudio.Xenko.Particles
 
         private ParticleVertexBuffer vertexBufferContext;
 
+        public void Draw(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
+        {
+            // TODO Remove variation
+            var variation = defaultVariation;
+            if (device.ColorSpace == ColorSpace.Linear)
+                variation |= ParticleEffectVariation.IsSrgb;
+
+            variation |= Material.MandatoryVariation;
+
+            Material.Setup(device, context, viewMatrix, projMatrix, color);
+
+            // Get camera-space X and Y axes for billboards and sort the particles by depth
+            var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
+            var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
+            depthSortVector = Vector3.Cross(unitX, unitY);
+            ParticleSorter.Sort();
+
+            // Local/World emitter
+            var posIdentity = new Vector3(0, 0, 0);
+            var rotIdentity = new Quaternion(0, 0, 0, 1);
+            var scaleIdentity = 1f;
+            if (simulationSpace == EmitterSimulationSpace.Local)
+            {
+                posIdentity   = drawPosition;
+                rotIdentity   = drawRotation;
+                scaleIdentity = drawScale;
+            }
+
+            var vtxBuff = vertexBufferContext.StartBuffer(device, Material.Effect);
+
+
+            var vertexLayoutBuilder = ParticleBatch.GetVertexLayout(variation);
+            vertexLayoutBuilder.VerticesPerParticle = ShapeBuilder.QuadsPerParticle * 4;
+            vertexLayoutBuilder.StartBuffer(vtxBuff);
+
+
+            ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, 1f, ParticleSorter);
+
+
+            vertexLayoutBuilder.RestartBuffer();
+
+            Material.PatchVertexBuffer(vertexLayoutBuilder, unitX, unitY, ParticleSorter);
+
+            vertexLayoutBuilder.EndBuffer();
+
+            vertexBufferContext.FlushBuffer(device, GetRequiredQuadCount() * 6);
+        }
+
         public void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
             var variation = defaultVariation;
@@ -597,7 +645,7 @@ namespace SiliconStudio.Xenko.Particles
             vertexLayoutBuilder.EndBuffer();
 
 
-            vertexBufferContext.FlushBuffer(device, (totalVertices / 4) * 6);
+            vertexBufferContext.FlushBuffer(device, GetRequiredQuadCount() * 6);
 
 
             remainingCapacity -= totalVertices;
