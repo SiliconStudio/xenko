@@ -22,6 +22,8 @@ namespace SiliconStudio.Core.Serialization
                 }));
         internal static PropertyKey<List<object>> ObjectDeserializeReferences = new PropertyKey<List<object>>("ObjectDeserializeReferences", typeof(SerializerExtensions), DefaultValueMetadata.Delegate(delegate { return new List<object>(); }));
 
+        internal static PropertyKey<Action<int, object>> ObjectDeserializeCallback = new PropertyKey<Action<int, object>>("ObjectDeserializeCallback", typeof(SerializerExtensions));
+
         /// <summary>
         /// Implements an equality comparer based on object reference instead of <see cref="object.Equals(object)"/>.
         /// </summary>

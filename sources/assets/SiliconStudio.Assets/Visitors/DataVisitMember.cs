@@ -43,20 +43,33 @@ namespace SiliconStudio.Assets.Visitors
             }
         }
 
-        public void SetValue(object newValue)
+        public override void SetValue(object newValue)
         {
             MemberDescriptor.Set(Parent.Instance, newValue);
             Instance = newValue;
-
-            if (Parent.InstanceType.IsStruct() && Parent is DataVisitMember)
+            var parentMember = Parent as DataVisitMember;
+            if (parentMember != null)
             {
-                ((DataVisitMember)Parent).SetValue(Parent.Instance);
+                parentMember.UpdateInstance();
+            }
+        }
+
+        public void UpdateInstance()
+        {
+            if (this.InstanceType.IsStruct())
+            {
+                this.SetValue(this.Instance);
             }
         }
 
         public override string ToString()
         {
             return string.Format("{0} = {1}", MemberDescriptor.Name, Instance ?? "null");
+        }
+
+        public override void RemoveValue()
+        {
+            SetValue(null);
         }
 
         public override DataVisitNode CreateWithEmptyInstance()

@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// An abstract window.
     /// </summary>
-    internal class GameWindowSdl : GameWindow<Window>
+    internal class GameWindowSDL : GameWindow<Window>
     {
         private bool isMouseVisible;
 
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Games
         private bool allowUserResizing;
         private bool isBorderLess;
 
-        internal GameWindowSdl()
+        internal GameWindowSDL()
         {
         }
 
@@ -128,7 +128,7 @@ namespace SiliconStudio.Xenko.Games
             }
 
             // Notifies the GameForm about the fullscreen state
-            var gameForm = window as GameFormSdl;
+            var gameForm = window as GameFormSDL;
             if (gameForm != null)
             {
                 gameForm.IsFullScreen = isFullScreenMaximized;
@@ -164,7 +164,7 @@ namespace SiliconStudio.Xenko.Games
             window.MouseEnterActions +=WindowOnMouseEnterActions;   
             window.MouseLeaveActions += WindowOnMouseLeaveActions;
 
-            var gameForm = window as GameFormSdl;
+            var gameForm = window as GameFormSDL;
             if (gameForm != null)
             {
                 //gameForm.AppActivated += OnActivated;
@@ -185,11 +185,11 @@ namespace SiliconStudio.Xenko.Games
             // Initialize the init callback
             InitCallback();
 
-            var runCallback = new SdlMessageLoop.RenderCallback(RunCallback);
+            var runCallback = new SDLMessageLoop.RenderCallback(RunCallback);
             // Run the rendering loop
             try
             {
-                SdlMessageLoop.Run(window, () =>
+                SDLMessageLoop.Run(window, () =>
                 {
                     if (Exiting)
                     {

@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Assets
@@ -11,7 +12,7 @@ namespace SiliconStudio.Assets
     /// Base class for Asset.
     /// </summary>
     [DataContract(Inherited = true)]
-    public abstract class Asset
+    public abstract class Asset : IIdentifiable
     {
         private Guid id;
 
@@ -90,7 +91,7 @@ namespace SiliconStudio.Assets
         /// <value>The part assets.</value>
         [DataMember("~BaseParts"), DefaultValue(null)]
         [Display(Browsable = false)]
-        public List<AssetBase> BaseParts { get; set; }
+        public List<AssetBasePart> BaseParts { get; set; }
 
         /// <summary>
         /// Gets or sets the build order for this asset.
@@ -137,6 +138,24 @@ namespace SiliconStudio.Assets
             // Create the base of this asset
             newAsset.Base = new AssetBase(location, assetBase);
             return newAsset;
+        }
+
+        /// <summary>
+        /// Merge an asset with its base, and new base and parts into this instance.
+        /// </summary>
+        /// <param name="baseAsset">A copy of the base asset. Can be null if no base asset for newAsset</param>
+        /// <param name="newBase">A copy of the next base asset. Can be null if no base asset for newAsset.</param>
+        /// <param name="newBaseParts">A copy of the new base parts</param>
+        /// <returns>The result of the merge</returns>
+        /// <remarks>The this instance is not used by this method.</remarks>
+        public virtual MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBasePart> newBaseParts)
+        {
+            var diff = new AssetDiff(baseAsset, this, newBase)
+            {
+                UseOverrideMode = true
+            };
+
+            return AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
         }
 
         /// <summary>

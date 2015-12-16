@@ -12,6 +12,7 @@ namespace SiliconStudio.Assets
     /// Metadata for a <see cref="Package"/> accessible from <see cref="Package.Meta"/>.
     /// </summary>
     [DataContract("PackageMeta")]
+    [NonIdentifitable]
     public sealed class PackageMeta
     {
         /// <summary>

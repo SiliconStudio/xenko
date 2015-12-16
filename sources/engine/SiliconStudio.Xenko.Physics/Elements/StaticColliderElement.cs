@@ -4,7 +4,7 @@ namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("StaticColliderElement")]
     [Display(40, "Static Collider")]
-    public class StaticColliderElement : PhysicsTriggerElementBase, IPhysicsElement
+    public class StaticColliderElement : PhysicsTriggerElementBase
     {
         public override Types Type => Types.StaticCollider;
     }

@@ -65,6 +65,7 @@
     <Compile Include="Reflection\IAttributeRegistry.cs" />
     <Compile Include="Reflection\IDataCustomVisitor.cs" />
     <Compile Include="Reflection\IDataVisitor.cs" />
+    <Compile Include="Reflection\IdentifiableHelper.cs" />
     <Compile Include="Reflection\IMemberDescriptor.cs" />
     <Compile Include="Reflection\ITypeDescriptor.cs" />
     <Compile Include="Reflection\ITypeDescriptorFactory.cs" />
