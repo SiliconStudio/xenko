@@ -117,6 +117,7 @@
     <Compile Include="Spawners\SpawnerBase.cs" />
     <Compile Include="Spawners\SpawnerPerFrame.cs" />
     <Compile Include="Spawners\SpawnerPerSecond.cs" />
+    <Compile Include="VertexLayouts\ParticleVertexBuffer.cs" />
     <Compile Include="VertexLayouts\ParticleVertexLayout.cs" />
     <Compile Include="VertexLayouts\ParticleVertexLayoutPlain.cs" />
     <Compile Include="VertexLayouts\ParticleVertexLayoutTextured.cs" />
