@@ -6,6 +6,8 @@ using System;
 using SiliconStudio.Xenko.Graphics.SDL;
 using SiliconStudio.Core.Mathematics;
 using SDL2;
+using System.Reflection;
+using System.Linq;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -13,13 +15,13 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// Default Rendering Form on SDL based applications.
     /// </summary>
-    public class GameFormSdl : Window
+    public class GameFormSDL : Window
     {
 #region Initialization
         /// <summary>
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
-        public GameFormSdl() : this("Xenko Game")
+        public GameFormSDL() : this(GetProductName())
         {
         }
 
@@ -27,7 +29,7 @@ namespace SiliconStudio.Xenko.Games
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
         /// <param name="text">The text.</param>
-        public GameFormSdl(String text) : base(text)
+        public GameFormSDL(string text) : base(text)
         {
             Size = new Size2(800, 600);
             ResizeBeginActions += GameForm_ResizeBeginActions;
@@ -38,6 +40,13 @@ namespace SiliconStudio.Xenko.Games
             MinimizedActions += GameForm_MinimizedActions;
             MaximizedActions += GameForm_MaximizedActions;
             RestoredActions += GameForm_RestoredActions;
+        }
+
+        private static string GetProductName()
+        {
+            var assembly = Assembly.GetEntryAssembly();
+            var productAttribute = assembly?.GetCustomAttributes(typeof(AssemblyProductAttribute)).FirstOrDefault() as AssemblyProductAttribute;
+            return productAttribute?.Product ?? "Xenko Game";
         }
 #endregion
 

@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Games
     /// </code>
     /// Note that the main control can be changed at anytime inside the loop.
     /// </remarks>
-    internal class SdlMessageLoop : IDisposable
+    internal class SDLMessageLoop : IDisposable
     {
         private Window control;
         private bool isControlAlive;
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Games
         /// <summary>
         /// Initializes a new instance of the <see cref="WindowsMessageLoop"/> class.
         /// </summary>
-        public SdlMessageLoop(Window control)
+        public SDLMessageLoop(Window control)
         {
             Control = control;
         }
@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Games
             if(renderCallback == null) throw new ArgumentNullException(nameof(renderCallback));
 
             form.Show();
-            using (var renderLoop = new SdlMessageLoop(form))
+            using (var renderLoop = new SDLMessageLoop(form))
             {
                 while(renderLoop.NextFrame())
                 {

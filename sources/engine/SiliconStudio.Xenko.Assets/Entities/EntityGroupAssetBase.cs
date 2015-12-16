@@ -116,5 +116,65 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             return Hierarchy.Entities.ContainsKey(id);
         }
+
+        /// <summary>
+        /// Gets a mapping between a base and the list of instance actually used
+        /// </summary>
+        /// <param name="baseParts">The list of baseParts to use. If null, use the parts from this instance directly.</param>
+        /// <returns>A mapping between a base asset and the list of instance actually used for inherited parts by composition</returns>
+        public Dictionary<EntityGroupAssetBase, List<Guid>> GetBasePartInstanceIds(List<AssetBase> baseParts = null)
+        {
+            if (baseParts == null)
+            {
+                baseParts = BaseParts;
+            }
+
+            var mapBaseToInstanceIds = new Dictionary<EntityGroupAssetBase, List<Guid>>();
+            if (baseParts == null)
+            {
+                return mapBaseToInstanceIds;
+            }
+
+            var mapInstanceIdToBaseId = new Dictionary<Guid, EntityGroupAssetBase>();
+            foreach (var entityIt in Hierarchy.Entities)
+            {
+                if (entityIt.Design.BaseId.HasValue && entityIt.Design.BasePartInstanceId.HasValue)
+                {
+                    var basePartInstanceId = entityIt.Design.BasePartInstanceId.Value;
+                    EntityGroupAssetBase existingAssetBase;
+                    if (!mapInstanceIdToBaseId.TryGetValue(basePartInstanceId, out existingAssetBase))
+                    {
+                        var baseId = entityIt.Design.BaseId.Value;
+                        foreach (var basePart in baseParts)
+                        {
+                            var assetBase = (EntityGroupAssetBase)basePart.Asset;
+                            if (assetBase.ContainsPart(baseId))
+                            {
+                                existingAssetBase = assetBase;
+                                break;
+                            }
+                        }
+
+                        if (existingAssetBase != null)
+                        {
+                            mapInstanceIdToBaseId.Add(basePartInstanceId, existingAssetBase);
+                        }
+                    }
+                }
+            }
+
+            foreach (var it in mapInstanceIdToBaseId)
+            {
+                List<Guid> ids;
+                if (!mapBaseToInstanceIds.TryGetValue(it.Value, out ids))
+                {
+                    ids = new List<Guid>();
+                    mapBaseToInstanceIds.Add(it.Value, ids);
+                }
+                ids.Add(it.Key);
+            }
+            return mapBaseToInstanceIds;
+        }
+
     }
 }

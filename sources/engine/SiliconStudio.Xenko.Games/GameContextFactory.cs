@@ -55,10 +55,10 @@ namespace SiliconStudio.Xenko.Games
                     res = NewGameContextDesktop();
                     break;
                 case AppContextType.DesktopOpenTK:
-                    res = NewGameContextOpenTk();
+                    res = NewGameContextOpenTK();
                     break;
                 case AppContextType.DesktopSDL:
-                    res = NewGameContextSdl();
+                    res = NewGameContextSDL();
                     break;
                 case AppContextType.DesktopWpf:
                     res = NewGameContextWpf();
@@ -101,10 +101,10 @@ namespace SiliconStudio.Xenko.Games
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
     #if SILICONSTUDIO_XENKO_UI_OPENTK
-            return new GameContextOpenTk(null);
+            return new GameContextOpenTK(null);
     #else
         #if SILICONSTUDIO_XENKO_UI_SDL && !SILICONSTUDIO_XENKO_UI_WINFORMS && !SILICONSTUDIO_XENKO_UI_WPF
-            return new GameContextSdl(null);
+            return new GameContextSDL(null);
         #elif (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
             return new GameContextWinforms(null);
         #else
@@ -125,19 +125,19 @@ namespace SiliconStudio.Xenko.Games
 #endif
         }
 
-        public static GameContext NewGameContextOpenTk()
+        public static GameContext NewGameContextOpenTK()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
-            return new GameContextOpenTk(null);
+            return new GameContextOpenTK(null);
 #else
             return null;
 #endif
         }
 
-        public static GameContext NewGameContextSdl()
+        public static GameContext NewGameContextSDL()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_UI_SDL
-            return new GameContextSdl(null);
+            return new GameContextSDL(null);
 #else
             return null;
 #endif

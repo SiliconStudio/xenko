@@ -752,7 +752,6 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 Assert.False(logger.HasErrors);
 
                 Assert.AreEqual(6, a2.Hierarchy.RootEntities.Count);
-                Assert.AreEqual(6, a2.Hierarchy.RootEntities.Count);
                 Assert.True(a2.Hierarchy.Entities.All(it => it.Design.BaseId.HasValue && it.Design.BasePartInstanceId.HasValue));
 
                 Assert.AreEqual(6, a3.Hierarchy.RootEntities.Count);
