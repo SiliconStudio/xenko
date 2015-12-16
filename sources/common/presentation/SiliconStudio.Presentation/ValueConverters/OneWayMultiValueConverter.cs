@@ -14,7 +14,7 @@ namespace SiliconStudio.Presentation.ValueConverters
     public abstract class OneWayMultiValueConverter<T> : MultiValueConverterBase<T> where T : class, IMultiValueConverter, new()
     {
         /// <inheritdoc/>
-        public override sealed object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
+        public sealed override object[] ConvertBack(object value, Type[] targetTypes, object parameter, CultureInfo culture)
         {
             throw new NotSupportedException("ConvertBack is not supported with this ValueConverter.");
         }
