@@ -87,14 +87,14 @@ namespace SiliconStudio.Xenko.Games
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         /// <summary>
-        /// Performs an implicit conversion from <see cref="OpenTK.GameWindow"/> to <see cref="GameContextOpenTk"/>.
+        /// Performs an implicit conversion from <see cref="OpenTK.GameWindow"/> to <see cref="GameContextOpenTK"/>.
         /// </summary>
         /// <param name="gameWindow">OpenTK GameWindow</param>
         /// <returns>The result of the conversion.</returns>
-        [Obsolete ("Use new GameContextOpenTk(gameWindow) instead.")]
+        [Obsolete ("Use new GameContextOpenTK(gameWindow) instead.")]
         public static implicit operator GameContext(OpenTK.GameWindow gameWindow)
         {
-            return new GameContextOpenTk(gameWindow);
+            return new GameContextOpenTK(gameWindow);
         }
 #endif
 #endif

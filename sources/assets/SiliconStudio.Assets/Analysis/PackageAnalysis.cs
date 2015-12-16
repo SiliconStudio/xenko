@@ -93,6 +93,12 @@ namespace SiliconStudio.Assets.Analysis
                 }
             }
 
+            if (Parameters.EnableAssetTemplating)
+            {
+                var packageTemplating = new PackageAssetTemplatingAnalysis(package, log);
+                packageTemplating.Run();
+            }
+
             ProcessAssets().CopyTo(log);
         }
 

@@ -25,5 +25,13 @@ namespace SiliconStudio.Assets.Visitors
         {
             return string.Format("{0}", InstanceDescriptor.Type);
         }
+
+        public override void SetValue(object instance)
+        {
+        }
+
+        public override void RemoveValue()
+        {
+        }
     }
 }

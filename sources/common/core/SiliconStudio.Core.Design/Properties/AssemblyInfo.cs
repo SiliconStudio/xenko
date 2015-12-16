@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine")]
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Engine.Step1")]
 [assembly: InternalsVisibleTo("SiliconStudio.Core.Tests")]
+[assembly: InternalsVisibleTo("SiliconStudio.Core.Design.Tests")]
 // looks like whenever we open the generated iOS solution with visual studio, it removes the dot in the assembly name -_-
 #if SILICONSTUDIO_PLATFORM_IOS
 [assembly: InternalsVisibleTo("SiliconStudioCoreTests")]

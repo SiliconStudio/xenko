@@ -97,7 +97,7 @@
     <Compile Include="SDL\FormWindowState.cs" />
     <Compile Include="SDL\GameForm.SDL.cs" />
     <Compile Include="SDL\GameWindow.SDL.cs" />
-    <Compile Include="SDL\SdlMessageLoop.cs" />
+    <Compile Include="SDL\SDLMessageLoop.cs" />
     <Compile Include="SDL\Window.cs" />
     <Compile Include="Time\AbsoluteStopwatch.cs" />
     <Compile Include="Time\ITimedValue.cs" />

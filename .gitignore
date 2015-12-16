@@ -74,6 +74,12 @@ sources/tests/framework/Xenko.Framework.Audio.Tests/app_data/
 libfreetype.a
 libcore.a
 libbulletc.a
+libNativePath.a
+libxenkonative_arm64.a
+libxenkonative_armv7.a
+libxenkonative_armv7s.a
+libxenkonative_i386.a
+libxenkonative_x86_64.a
 *.CachedGlyphs
 *.CachedImage
 sources/engine/SiliconStudio.Xenko.Graphics/Shaders.Bytecodes/log/

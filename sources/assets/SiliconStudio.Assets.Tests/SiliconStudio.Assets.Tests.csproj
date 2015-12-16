@@ -46,6 +46,7 @@
       <Link>TestMemberPathBase.cs</Link>
     </Compile>
     <Compile Include="CustomParameterCollection.cs" />
+    <Compile Include="Diff\TestDiffTemplatingAndMerge.cs" />
     <Compile Include="Diff\TestDiff.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -12,7 +12,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract("ProjectReference")]
     [DebuggerDisplay("Id: {Id}, Location: {Location}")]
-    public sealed class ProjectReference : IEquatable<ProjectReference>
+    public sealed class ProjectReference : IEquatable<ProjectReference>, IIdentifiable
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ProjectReference"/> class.
