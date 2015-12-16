@@ -31,10 +31,10 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
     /// </summary>
-    public partial class GameContextOpenTk : GameContextWindows<OpenTK.GameWindow>
+    public partial class GameContextOpenTK : GameContextWindows<OpenTK.GameWindow>
     {
         /// <inheritDoc/>
-        public GameContextOpenTk(OpenTK.GameWindow control, int requestedWidth = 0, int requestedHeight = 0)
+        public GameContextOpenTK(OpenTK.GameWindow control, int requestedWidth = 0, int requestedHeight = 0)
             : base(control, requestedWidth, requestedHeight)
         {
             ContextType = AppContextType.DesktopOpenTK;

@@ -20,7 +20,7 @@ namespace SiliconStudio.Assets.Diff
         /// Initializes a new instance of the <see cref="MergeResult"/> class.
         /// </summary>
         /// <param name="asset">The asset.</param>
-        public MergeResult(Asset asset) : this()
+        public MergeResult(object asset) : this()
         {
             Asset = asset;
         }
@@ -29,6 +29,6 @@ namespace SiliconStudio.Assets.Diff
         /// Gets or sets the merged asset. This is <c>null</c> when this instance <see cref="LoggerResult.HasErrors"/> to true.
         /// </summary>
         /// <value>The asset.</value>
-        public Asset Asset { get; set; }
+        public object Asset { get; set; }
     }
 }
