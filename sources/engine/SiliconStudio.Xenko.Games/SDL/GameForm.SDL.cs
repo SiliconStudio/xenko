@@ -15,13 +15,13 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// Default Rendering Form on SDL based applications.
     /// </summary>
-    public class GameFormSdl : Window
+    public class GameFormSDL : Window
     {
 #region Initialization
         /// <summary>
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
-        public GameFormSdl() : this(GetProductName())
+        public GameFormSDL() : this(GetProductName())
         {
         }
 
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Games
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
         /// <param name="text">The text.</param>
-        public GameFormSdl(string text) : base(text)
+        public GameFormSDL(string text) : base(text)
         {
             Size = new Size2(800, 600);
             ResizeBeginActions += GameForm_ResizeBeginActions;
