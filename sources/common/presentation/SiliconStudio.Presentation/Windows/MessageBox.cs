@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace SiliconStudio.Presentation.Windows
@@ -16,6 +17,13 @@ namespace SiliconStudio.Presentation.Windows
     {
         protected MessageBox()
         {
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, (_, __) => Clipboard.SetDataObject(Content ?? string.Empty, true)));
         }
 
         /// <summary>
