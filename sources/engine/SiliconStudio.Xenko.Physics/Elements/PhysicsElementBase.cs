@@ -109,6 +109,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <userdoc>
         /// Unchecking this will help with performance, ideally if this entity has no need to access collisions information should be set to false
         /// </userdoc>
+        [Display("Collision events")]
         [DataMember(45)]
         public virtual bool ProcessCollisions
         {
@@ -160,7 +161,7 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private bool canSleep = true;
+        private bool canSleep = false;
 
         /// <summary>
         /// Gets or sets if this element can enter sleep state
