@@ -23,6 +23,7 @@
 
 using System;
 using SiliconStudio.Xenko.Graphics;
+using System.Reflection;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -68,6 +69,41 @@ namespace SiliconStudio.Xenko.Games
         /// Indicate whether the game must initialize the default database when it starts running.
         /// </summary>
         public bool InitializeDatabase = true;
+
+        /// <summary>
+        /// Product name of game.
+        /// TODO: Provide proper access title through code and game studio
+        /// </summary>
+        internal static string ProductName
+        {
+            get
+            {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+                return "Xenko Game";
+#else
+                var assembly = Assembly.GetEntryAssembly();
+                var productAttribute = assembly?.GetCustomAttribute<AssemblyProductAttribute>();
+                return productAttribute?.Product ?? "Xenko Game";
+#endif
+            }
+        }
+
+        /// <summary>
+        /// Product location of game.
+		/// TODO: Only used for retrieving game's icon. See ProductName for future refactoring
+        /// </summary>
+        public static string ProductLocation
+        {
+            get
+            {
+#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+                return string.Empty;
+#else
+                var assembly = Assembly.GetEntryAssembly();
+                return assembly?.Location;
+#endif
+            }
+        }
 
         // This code is for backward compatibility only where the generated games
         // would not explicitly create the context, but would just use a Winform
