@@ -30,7 +30,7 @@ namespace SiliconStudio.Core.Reflection
                             || type.IsArray
                             || CollectionDescriptor.IsCollection(type)
                             || DictionaryDescriptor.IsDictionary(type)
-                            || attributes.OfType<NonIdentifitableAttribute>().Any());
+                            || attributes.OfType<NonIdentifiableAttribute>().Any());
 
                     IdentifiableTypes.Add(type, result);
                 }
