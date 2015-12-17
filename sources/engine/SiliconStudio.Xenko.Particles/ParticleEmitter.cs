@@ -123,9 +123,6 @@ namespace SiliconStudio.Xenko.Particles
         [DataMemberIgnore]
         internal ParticleRandomSeedGenerator RandomSeedGenerator;
 
-        [DataMemberIgnore]
-        private ParticleEffectVariation defaultVariation = ParticleEffectVariation.None;
-
         public ParticleEmitter()
         {
             pool = new ParticlePool(0, 0);
@@ -460,7 +457,6 @@ namespace SiliconStudio.Xenko.Particles
         #endregion
 
         #region Fields
-
         private readonly Dictionary<ParticleFieldDescription, int> requiredFields;
 
         /// <summary>
@@ -468,13 +464,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         private void UpdateDefalutEffectVariations()
         {
-            // Check fields to see the mandatory shader variation
-            defaultVariation = ParticleEffectVariation.None;
-            foreach (var requiredField in requiredFields.Keys)
-            {
-                if (requiredField == ParticleFields.Color)
-                    defaultVariation |= ParticleEffectVariation.HasColor;
-            }
+            // TODO Change the vertex builder here
         }
 
         /// <summary>
@@ -531,7 +521,6 @@ namespace SiliconStudio.Xenko.Particles
         #endregion
 
         #region Rendering
-
         [DataMember(40)]
         [Display("Shape")]
         [NotNull]
@@ -546,13 +535,6 @@ namespace SiliconStudio.Xenko.Particles
 
         public void Draw(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
         {
-            // TODO Remove variation
-            var variation = defaultVariation;
-            if (device.ColorSpace == ColorSpace.Linear)
-                variation |= ParticleEffectVariation.IsSrgb;
-
-            variation |= Material.MandatoryVariation;
-
             Material.Setup(device, context, viewMatrix, projMatrix, color);
 
             // Get camera-space X and Y axes for billboards and sort the particles by depth
@@ -572,16 +554,15 @@ namespace SiliconStudio.Xenko.Particles
                 scaleIdentity = drawScale;
             }
 
+            vertexBufferContext.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
+
             var vtxBuff = vertexBufferContext.StartBuffer(device, Material.Effect);
 
-
-            var vertexLayoutBuilder = ParticleBatch.GetVertexLayout(variation);
+            var vertexLayoutBuilder = new ParticleVertexLayoutTextured();
             vertexLayoutBuilder.VerticesPerParticle = ShapeBuilder.QuadsPerParticle * 4;
             vertexLayoutBuilder.StartBuffer(vtxBuff);
 
-
-            ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, 1f, ParticleSorter);
-
+            ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
             vertexLayoutBuilder.RestartBuffer();
 
@@ -589,69 +570,13 @@ namespace SiliconStudio.Xenko.Particles
 
             vertexLayoutBuilder.EndBuffer();
 
-            vertexBufferContext.FlushBuffer(device, GetRequiredQuadCount() * 6);
-        }
-
-        public void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
-        {
-            var variation = defaultVariation;
-            if (graphicsDevice.ColorSpace == ColorSpace.Linear)
-                variation |= ParticleEffectVariation.IsSrgb;
-
-            variation |= Material.MandatoryVariation;
-
-            Material.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
-
-            // Emitter parameters ?
+            vertexBufferContext.FlushBuffer(device);
         }
 
         public int GetRequiredQuadCount()
         {
             return ShapeBuilder.QuadsPerParticle * pool.LivingParticles;
         }
-
-        public int BuildVertexBuffer(GraphicsDevice device, IntPtr vertexBuffer, Vector3 invViewX, Vector3 invViewY, ref int remainingCapacity)
-        {
-            var vtxBuff = vertexBufferContext.StartBuffer(device, Material.Effect);
-
-
-            var variation = defaultVariation;
-            variation |= Material.MandatoryVariation;
-            var vertexLayoutBuilder = ParticleBatch.GetVertexLayout(variation);
-            vertexLayoutBuilder.VerticesPerParticle = ShapeBuilder.QuadsPerParticle * 4;
-            vertexLayoutBuilder.StartBuffer(vtxBuff);
-
-            var totalVertices = 0;
-
-            // Sort the particles by depth
-            depthSortVector = Vector3.Cross(invViewX, invViewY);
-            ParticleSorter.Sort();
-
-            if (simulationSpace == EmitterSimulationSpace.Local)
-            {
-                totalVertices += ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ref drawPosition, ref drawRotation, drawScale, ParticleSorter);
-            }
-            else
-            {
-                var posIdentity = new Vector3(0, 0, 0);
-                var rotIdentity = new Quaternion(0, 0, 0, 1);
-                totalVertices += ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ref posIdentity, ref rotIdentity, 1f, ParticleSorter);
-            }
-
-            vertexLayoutBuilder.RestartBuffer();
-
-            Material.PatchVertexBuffer(vertexLayoutBuilder, invViewX, invViewY, ParticleSorter);
-
-            vertexLayoutBuilder.EndBuffer();
-
-
-            vertexBufferContext.FlushBuffer(device, GetRequiredQuadCount() * 6);
-
-
-            remainingCapacity -= totalVertices;
-            return totalVertices;
-        }
-
         #endregion
 
         #region Particles

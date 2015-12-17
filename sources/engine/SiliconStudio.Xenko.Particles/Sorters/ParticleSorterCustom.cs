@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             }
 
             // Sort the list
-            Array.Sort(particleList, 0, currentLivingParticles);
+            Array.Sort(particleList, 0, currentLivingParticles); // GC problem? Switch to another solution if needed
         }
 
         public override IEnumerator<Particle> GetEnumerator()
