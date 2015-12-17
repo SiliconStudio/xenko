@@ -258,22 +258,4 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         }
 
     }
-
-    public struct AttributeAccessor
-    {
-        public int Offset;
-        public int Stride;
-    }
-
-    public struct AttributeDescription
-    {
-        private readonly int hashCode;
-        public override int GetHashCode() => hashCode;
-
-        public AttributeDescription(string name)
-        {
-            hashCode = name.GetHashCode();
-        }
-
-    }
 }
