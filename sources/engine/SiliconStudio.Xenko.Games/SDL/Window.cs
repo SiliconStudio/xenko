@@ -156,6 +156,10 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             get
             {
                 uint flags = SDL.SDL_GetWindowFlags(SdlHandle);
+                if ((flags & (uint) SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN) != 0)
+                {
+                    return FormWindowState.Fullscreen;
+                }
                 if ((flags & (uint) SDL.SDL_WindowFlags.SDL_WINDOW_MAXIMIZED) != 0)
                 {
                     return FormWindowState.Maximized;
@@ -173,6 +177,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             {
                 switch (value)
                 {
+                    case FormWindowState.Fullscreen:
+                        SDL.SDL_SetWindowFullscreen(SdlHandle, (uint) SDL.SDL_WindowFlags.SDL_WINDOW_FULLSCREEN);
+                        break;
                     case FormWindowState.Maximized:
                         SDL.SDL_MaximizeWindow(SdlHandle);
                         break;
