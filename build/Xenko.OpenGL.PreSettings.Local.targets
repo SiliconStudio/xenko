@@ -9,7 +9,7 @@
 
     <!-- Defines the platform used by Xenko - Values are Windows/WindowsStore/WindowsPhone/Android/iOS...etc. -->
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
-    <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">OPENTK;WINFORMS</SiliconStudioUI>
+    <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">OPENTK</SiliconStudioUI>
 
 
     <!-- Defines target for Asset compiler TODO: this is hardcoded -->

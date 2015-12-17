@@ -16,7 +16,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Graphics
 {
 
-#if SILICONSTUDIO_XENKO_UI_SDL && (!SILICONSTUDIO_XENKO_UI_WINFORMS && !SILICONSTUDIO_XENKO_UI_WPF)
+#if (SILICONSTUDIO_XENKO_UI_OPENTK || SILICONSTUDIO_XENKO_UI_SDL) && (!SILICONSTUDIO_XENKO_UI_WINFORMS && !SILICONSTUDIO_XENKO_UI_WPF)
     public sealed class ImageFormat
     {
         // Format IDs
@@ -130,10 +130,13 @@ namespace SiliconStudio.Xenko.Graphics
                 return image;
             }
 #else
+    #if SILICONSTUDIO_XENKO_UI_SDL
             // FIXME: Manu: The following beginning of code shows that we can read images using SDL.
             // FIXME: We will do the implementation logic later.
             IntPtr rw = SDL.SDL_RWFromMemNative((byte *)pSource, size);
             IntPtr image = SDL_image.IMG_Load_RW(rw, 1);
+    #elif SILICONSTUDIO_XENKO_UI_OPENTK
+    #endif
             return null;
 #endif
 
