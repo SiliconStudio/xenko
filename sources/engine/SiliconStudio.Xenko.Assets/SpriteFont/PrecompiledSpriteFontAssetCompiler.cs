@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                     Image image;
                     try
                     {
-                        image = Image.Load(imageStream);
+                        image = Image.Load(imageStream, AssetParameters.IsSrgb);
                     }
                     catch (FontNotFoundException ex)
                     {

@@ -6,6 +6,7 @@ using System.ComponentModel;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Graphics.Font;
@@ -18,26 +19,15 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
     [AssetFormatVersion(XenkoConfig.PackageName, "1.5.0-alpha09")]
     [AssetUpgrader(XenkoConfig.PackageName, "0.0.0", "1.5.0-alpha09", typeof(PremultiplyUpgrader))]
     [Display(105, "Sprite Font (Precompiled)")]
+    [CategoryOrder(10, "Font Data")]
+    [CategoryOrder(20, "Font Properties")]
+    [CategoryOrder(30, "Font Characters")]
     public class PrecompiledSpriteFontAsset : Asset
     {
         /// <summary>
         /// The default file extension used by the <see cref="PrecompiledSpriteFontAsset"/>.
         /// </summary>
         public const string FileExtension = ".xkpcfnt";
-
-        /// <summary>
-        /// The reference to the original source asset.
-        /// </summary>
-        /// <userdoc>The sprite font asset that has been used to generate this precompiled font.</userdoc>
-        [DataMember(0)]
-        public AssetReference<SpriteFontAsset> Source;
-
-        /// <summary>
-        /// The file containing the font data.
-        /// </summary>
-        /// <userdoc>The image file containing the extracted font data.</userdoc>
-        [DataMember(10)]
-        public UFile FontDataFile;
 
         [Display(Browsable = false)]
         public string FontName; // Note: this field is used only for thumbnail.
@@ -53,32 +43,93 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         /// <summary>
         /// The size in points (pt).
         /// </summary>
+        [DefaultValue(16)]
         [Display(Browsable = false)]
-        public float Size;
+        public float Size = 16; // a random non-null value for font created by users
 
-        [Display(Browsable = false)]
-        public List<Glyph> Glyphs;
+        /// <summary>
+        /// The reference to the original source asset.
+        /// </summary>
+        /// <userdoc>The sprite font asset that has been used to generate this precompiled font.</userdoc>
+        [DataMember(0)]
+        public AssetReference<SpriteFontAsset> Source;
 
-        [Display(Browsable = false)]
+        /// <summary>
+        /// The file containing the font data.
+        /// </summary>
+        /// <userdoc>The image file containing the extracted font data.</userdoc>
+        [Display("Font data image", "Font Data")]
+        [DataMember(10)]
+        public UFile FontDataFile;
+
+        /// <summary>
+        /// Indicate if the font data in stored in sRGB mode.
+        /// </summary>
+        /// <userdoc>If checked the font data contained in the source image is considered as sRGB.</userdoc>
+        [Display("sRGB", "Font Data")]
+        [DataMember(20)]
+        [DefaultValue(true)]
+        public bool IsSrgb = true;
+
+        /// <summary>
+        /// The default character of the font.
+        /// </summary>
+        /// <userdoc>The fallback character when trying to draw a character not existing in the font.</userdoc>
+        [Display("Fallback Character", "Font Properties")]
+        [DefaultValue(' ')]
+        [DataMember(30)]
+        public char DefaultCharacter = ' ';
+
+        /// <summary>
+        /// The base offset of the font.
+        /// </summary>
+        /// <userdoc>The position of the base line of the font with respect to the glyphs top pixel (in pixels).</userdoc>
+        [Display("Base Offset", "Font Properties")]
+        [DataMember(40)]
+        [DefaultValue(0)]
         public float BaseOffset;
 
-        [Display(Browsable = false)]
-        public float DefaultLineSpacing;
+        /// <summary>
+        /// The space between two lines
+        /// </summary>
+        /// <userdoc>The space between two lines in pixels.</userdoc>
+        [Display("Line Spacing", "Font Properties")]
+        [DataMember(50)]
+        [DefaultValue(10)]
+        public float DefaultLineSpacing = 10;
 
-        [Display(Browsable = false)]
-        public List<Kerning> Kernings;
-
+        /// <summary>
+        /// The extra horizontal spacing of the font.
+        /// </summary>
+        /// <userdoc>The extra horizontal spacing between characters.</userdoc>
+        [Display("Extra Spacing", "Font Properties")]
         [DefaultValue(0)]
-        [Display(Browsable = false)]
+        [DataMember(60)]
         public float ExtraSpacing;
 
+        /// <summary>
+        /// The extra vertical spacing between two lines.
+        /// </summary>
+        [Display("Extra Line Spacing", "Font Properties")]
         [DefaultValue(0)]
-        [Display(Browsable = false)]
+        [DataMember(70)]
         public float ExtraLineSpacing;
 
-        [DefaultValue(' ')]
-        [Display(Browsable = false)]
-        public char DefaultCharacter;
+        /// <summary>
+        /// The font glyph information
+        /// </summary>
+        /// <userdoc>The glyph information specifying the position of the characters in the data image.</userdoc>
+        [Display("Glyphs", "Font Characters")]
+        [DataMember(80)]
+        public List<Glyph> Glyphs = new List<Glyph>();
+
+        /// <summary>
+        /// The kerning information.
+        /// </summary>
+        /// <userdoc>The kerning information</userdoc>
+        [Display("Kernings", "Font Characters")]
+        [DataMember(90)]
+        public List<Kerning> Kernings = new List<Kerning>();
 
         class PremultiplyUpgrader : AssetUpgraderBase
         {
