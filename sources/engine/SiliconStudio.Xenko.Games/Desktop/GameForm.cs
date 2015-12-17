@@ -48,6 +48,7 @@
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System.Runtime.InteropServices;
 using System;
+using System.Linq;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -79,30 +80,22 @@ namespace SiliconStudio.Xenko.Games
         private bool isBackgroundFirstDraw;
         private bool isSizeChangedWithoutResizeBegin;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GameForm"/> class.
-        /// </summary>
-        public GameForm()
-            : this("Xenko Game")
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
         /// <param name="text">The text.</param>
-        public GameForm(String text)
+        public GameForm()
         {
-            Text = text;
             BackColor = System.Drawing.Color.Black;
             ClientSize = new System.Drawing.Size(800, 600);
 
             ResizeRedraw = true;
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
 
+            // TODO: Provide proper access to icon and title through code and game studio
+            Text = GameContext.ProductName;
             try
             {
-                Icon = Icon.ExtractAssociatedIcon(Assembly.GetEntryAssembly().Location);
+                Icon = Icon.ExtractAssociatedIcon(GameContext.ProductLocation);
             }
             catch
             {

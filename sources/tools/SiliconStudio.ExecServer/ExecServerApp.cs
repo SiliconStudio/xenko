@@ -227,7 +227,6 @@ namespace SiliconStudio.ExecServer
             }
             finally
             {
-                Thread.Sleep(5000);
                 // Close all services
                 CloseClients(clients);
             }

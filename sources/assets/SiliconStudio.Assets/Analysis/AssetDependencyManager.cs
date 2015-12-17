@@ -498,7 +498,7 @@ namespace SiliconStudio.Assets.Analysis
             var assetItem = result.Item;
 
             // Collect part assets.
-            var container = assetItem.Asset as IAssetPartContainer;
+            var container = assetItem.Asset as IAssetComposite;
             if (container != null)
             {
                 foreach (var part in container.CollectParts())
@@ -1489,7 +1489,7 @@ namespace SiliconStudio.Assets.Analysis
                 if (item.Asset.BaseParts != null)
                 {
                     foreach (var compositionBase in item.Asset.BaseParts)
-                        dependencies.AddBrokenLinkOut(compositionBase.Base, ContentLinkType.CompositionInheritance);
+                        dependencies.AddBrokenLinkOut(compositionBase, ContentLinkType.CompositionInheritance);
                 }
 
                 return dependencies.BrokenLinksOut;

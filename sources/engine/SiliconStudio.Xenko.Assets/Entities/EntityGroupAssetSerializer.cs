@@ -2,25 +2,29 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
 
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     //[YamlSerializerFactory]
-    public class EntitySerializer : ObjectSerializer //, IDataCustomVisitor
+    public class EntityGroupAssetSerializer : ObjectSerializer //, IDataCustomVisitor
     {
-        [ThreadStatic]
-        private static int recursionLevel;
+        // TODO: Add some comments to explain how this is working and why we need a specialized serializer
 
         [ThreadStatic]
-        private static int levelSinceScriptComponent;
+        private static bool isSerializingAsReference;
 
-        private static int recursionMaxExpectedDepth;
+        [ThreadStatic]
+        private static int sceneSettingsLevel;
+
+        [ThreadStatic]
+        private static int componentLevel;
+
+        [ThreadStatic]
+        private static int scriptLevel;
 
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
@@ -32,7 +36,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         protected override void CreateOrTransformObject(ref ObjectContext objectContext)
         {
-            if (recursionLevel >= recursionMaxExpectedDepth)
+            if (isSerializingAsReference)
             {
                 // Create appropriate reference type for both serialization and deserialization
                 if (objectContext.SerializerContext.IsSerializing)
@@ -43,7 +47,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     {
                         objectContext.Instance = new EntityComponentReference(entityComponent);
                     }
-                    else if (entityScript != null && levelSinceScriptComponent != 1)
+                    else if (entityScript != null && scriptLevel > 1)
                     {
                         var script = new EntityScriptReference(entityScript);
                         objectContext.Instance = script;
@@ -61,7 +65,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     {
                         objectContext.Instance = new EntityComponentReference();
                     }
-                    else if (typeof(Script).IsAssignableFrom(type) && levelSinceScriptComponent != 1)
+                    else if (typeof(Script).IsAssignableFrom(type) && scriptLevel > 1)
                     {
                         objectContext.Instance = new EntityScriptReference { ScriptType = objectContext.Descriptor.Type };
                     }
@@ -77,7 +81,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
         {
-            if (recursionLevel >= recursionMaxExpectedDepth)
+            if (isSerializingAsReference)
             {
                 // Transform the deserialized reference into a fake Entity, EntityComponent, etc...
                 // Fake objects will later be fixed later with EntityAnalysis.FixupEntityReferences()
@@ -116,7 +120,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public override void WriteYaml(ref ObjectContext objectContext)
         {
-            EnterNode(ref objectContext);
+            var type = objectContext.Descriptor.Type;
+            EnterNode(type);
 
             try
             {
@@ -124,19 +129,20 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
             finally
             {
-                LeaveNode(ref objectContext);
+                LeaveNode(type);
             }
         }
 
         public override object ReadYaml(ref ObjectContext objectContext)
         {
-            EnterNode(ref objectContext);
+            var type = objectContext.Descriptor.Type;
+            EnterNode(type);
 
             try
             {
                 var result = base.ReadYaml(ref objectContext);
 
-                if (typeof(EntityGroupAssetBase).IsAssignableFrom(objectContext.Descriptor.Type))
+                if (typeof(EntityGroupAssetBase).IsAssignableFrom(type))
                 {
                     // Let's fixup entity references after serialization
                     EntityAnalysis.FixupEntityReferences((EntityGroupAssetBase)objectContext.Instance);
@@ -146,56 +152,50 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
             finally
             {
-                LeaveNode(ref objectContext);
+                LeaveNode(type);
             }
         }
 
-        private static void EnterNode(ref ObjectContext objectContext)
+        private static void EnterNode(Type type)
         {
-            if (recursionLevel++ == 0)
-                SetupMaxExpectedDepth(objectContext);
-
-            ++levelSinceScriptComponent;
-            if (objectContext.Descriptor.Type == typeof(ScriptComponent))
-                levelSinceScriptComponent = 0;
-
             // SceneSettings: Pretend we are already inside an entity so add one level
-            if (objectContext.Descriptor.Type == typeof(SceneSettings))
-                recursionLevel += 2;
+            if (type == typeof(SceneSettings))
+            {
+                sceneSettingsLevel++;
+            }
+            else if (typeof(EntityComponent).IsAssignableFrom(type))
+            {
+                componentLevel++;
+            }
+            else if (typeof(Script).IsAssignableFrom(type))
+            {
+                scriptLevel++;
+            }
+
+            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 1;
         }
 
-        private static void LeaveNode(ref ObjectContext objectContext)
+        private static void LeaveNode(Type type)
         {
-            if (objectContext.Descriptor.Type == typeof(SceneSettings))
-                recursionLevel -= 2;
-            recursionLevel--;
-            levelSinceScriptComponent--;
+            if (type == typeof(SceneSettings))
+            {
+                sceneSettingsLevel--;
+            }
+            else if (typeof(EntityComponent).IsAssignableFrom(type))
+            {
+                componentLevel--;
+            }
+            else if (typeof(Script).IsAssignableFrom(type))
+            {
+                scriptLevel--;
+            }
+
+            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 1;
         }
 
         public bool CanVisit(Type type)
         {
             return typeof(EntityGroupAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
-        }
-
-        //public void Visit(ref VisitorContext context)
-        //{
-        //    // Only visit the instance without visiting childrens
-        //    context.Visitor.VisitObject(context.Instance, context.Descriptor, true);
-        //}
-
-        private static void SetupMaxExpectedDepth(ObjectContext objectContext)
-        {
-            // Make sure we start with 0 (in case previous serialization failed with an exception)
-            if (typeof(EntityGroupAssetBase).IsAssignableFrom(objectContext.Descriptor.Type))
-            {
-                // Level 1 is EntityGroupAssetBase, Level 2 is EntityHierarchyData, Level 3 is Entity, Level 4 is EntityComponent
-                recursionMaxExpectedDepth = 4;
-            }
-            else
-            {
-                // Level 1 is current object (Entity or EntityComponent)
-                recursionMaxExpectedDepth = 2;
-            }
         }
     }
 }

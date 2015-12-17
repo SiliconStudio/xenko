@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 
@@ -91,7 +92,7 @@ namespace SiliconStudio.Assets
         /// <value>The part assets.</value>
         [DataMember("~BaseParts"), DefaultValue(null)]
         [Display(Browsable = false)]
-        public List<AssetBasePart> BaseParts { get; set; }
+        public List<AssetBase> BaseParts { get; set; }
 
         /// <summary>
         /// Gets or sets the build order for this asset.
@@ -148,7 +149,7 @@ namespace SiliconStudio.Assets
         /// <param name="newBaseParts">A copy of the new base parts</param>
         /// <returns>The result of the merge</returns>
         /// <remarks>The this instance is not used by this method.</remarks>
-        public virtual MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBasePart> newBaseParts)
+        public virtual MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts)
         {
             var diff = new AssetDiff(baseAsset, this, newBase)
             {
