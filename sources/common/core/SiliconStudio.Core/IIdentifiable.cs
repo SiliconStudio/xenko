@@ -19,7 +19,7 @@ namespace SiliconStudio.Core
     /// Tag a class that should not have an attached unique identifier.
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class NonIdentifitableAttribute : Attribute
+    public class NonIdentifiableAttribute : Attribute
     {
     }
 }
