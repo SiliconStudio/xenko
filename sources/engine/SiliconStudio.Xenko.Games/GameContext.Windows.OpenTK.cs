@@ -29,9 +29,9 @@ using SiliconStudio.Xenko.Graphics.OpenGL;
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
-    /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
+    /// A <see cref="GameContext"/> to use for rendering to an existing OpenTK Window.
     /// </summary>
-    public partial class GameContextOpenTK : GameContextWindows<OpenTK.GameWindow>
+    public class GameContextOpenTK : GameContextWindows<OpenTK.GameWindow>
     {
         /// <inheritDoc/>
         public GameContextOpenTK(OpenTK.GameWindow control, int requestedWidth = 0, int requestedHeight = 0)
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Games
                 Core.NativeLibrary.PreloadLibrary("SDL2.dll");
 #endif
 
-                var gameWindow = new OpenTK.GameWindow(requestedWidth, requestedHeight, graphicMode, "Xenko Game", GameWindowFlags.Default, DisplayDevice.Default, versionMajor, versionMinor,
+                var gameWindow = new OpenTK.GameWindow(requestedWidth, requestedHeight, graphicMode, GameContext.ProductName, GameWindowFlags.Default, DisplayDevice.Default, versionMajor, versionMinor,
                     creationFlags);
                 return gameWindow;
             }
