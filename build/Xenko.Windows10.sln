@@ -92,6 +92,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SpriteS
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Games.Testing", "..\sources\engine\SiliconStudio.Xenko.Games.Testing\SiliconStudio.Xenko.Games.Testing.csproj", "{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Native", "..\sources\engine\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj", "{1DBBC150-F085-43EF-B41D-27C72D133770}"
+EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{9ac6d791-811e-4d6a-b08e-93f0093ef268}*SharedItemsImports = 13
@@ -304,6 +306,18 @@ Global
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Testing|Windows10.ActiveCfg = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Testing|Windows10.Build.0 = Release|Any CPU
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Testing|Windows10.Deploy.0 = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|Windows10.ActiveCfg = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|Windows10.Build.0 = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|Windows10.Deploy.0 = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|Windows10.ActiveCfg = Debug|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|Windows10.Build.0 = Debug|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|Windows10.Deploy.0 = Debug|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Release|Windows10.ActiveCfg = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Release|Windows10.Build.0 = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Release|Windows10.Deploy.0 = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|Windows10.ActiveCfg = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|Windows10.Build.0 = Release|Any CPU
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|Windows10.Deploy.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -326,5 +340,6 @@ Global
 		{DD592516-B341-40FE-9100-1B0FA784A060} = {4C142567-C42B-40F5-B092-798882190209}
 		{9BC63BEC-F305-451D-BB31-262938EA964D} = {4C142567-C42B-40F5-B092-798882190209}
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9} = {4C142567-C42B-40F5-B092-798882190209}
+		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

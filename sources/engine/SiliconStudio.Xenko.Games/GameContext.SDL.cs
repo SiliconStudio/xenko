@@ -8,11 +8,11 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// A <see cref="GameContext"/> to use for rendering to an existing SDL Window.
     /// </summary>
-    public class GameContextSdl : GameContextWindows<Window>
+    public class GameContextSDL : GameContextWindows<Window>
     {
         /// <inheritDoc/>
-        public GameContextSdl(Window control, int requestedWidth = 0, int requestedHeight = 0)
-            : base(control ?? new GameFormSdl(), requestedWidth, requestedHeight) 
+        public GameContextSDL(Window control, int requestedWidth = 0, int requestedHeight = 0)
+            : base(control ?? new GameFormSDL(), requestedWidth, requestedHeight) 
         {
             ContextType = AppContextType.DesktopSDL;
         }
