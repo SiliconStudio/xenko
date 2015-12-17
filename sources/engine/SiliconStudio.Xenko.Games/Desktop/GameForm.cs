@@ -92,13 +92,10 @@ namespace SiliconStudio.Xenko.Games
             SetStyle(ControlStyles.AllPaintingInWmPaint | ControlStyles.UserPaint, true);
 
             // TODO: Provide proper access to icon and title through code and game studio
-            var assembly = Assembly.GetEntryAssembly();
-            var productAttribute = assembly?.GetCustomAttributes(typeof(AssemblyProductAttribute)).FirstOrDefault() as AssemblyProductAttribute;
-            Text = productAttribute?.Product ?? "Xenko Game";
-
+            Text = GameContext.ProductName;
             try
             {
-                Icon = Icon.ExtractAssociatedIcon(assembly.Location);
+                Icon = Icon.ExtractAssociatedIcon(GameContext.ProductLocation);
             }
             catch
             {
