@@ -70,5 +70,6 @@ TemplateFolders:
         - samples\Physics\VolumeTrigger\VolumeTrigger.xktpl
         - samples\UI\GameMenu\GameMenu.xktpl
         - samples\Others\NativeLinking\NativeLinking.xktpl
+        - samples\Others\CustomAnimation\CustomAnimation.xktpl
 RootAssets:
     - c90f3988-0544-4cbe-993f-13af7d9c23c6:XenkoDefaultFont
