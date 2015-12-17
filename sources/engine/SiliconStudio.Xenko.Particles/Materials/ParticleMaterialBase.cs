@@ -39,9 +39,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("Face culling")]
         public ParticleMaterialCulling FaceCulling;
 
-        [DataMemberIgnore]
-        public ParticleEffectVariation MandatoryVariation { get; protected set; } = ParticleEffectVariation.None;
-
         // Parameters should be divided into several groups later.
         // CB0 - Parameters like camera position, viewProjMatrix, Screen size, FOV, etc. which persist for all materials/emitters in the same stage
         // CB1 - Material attributes which persist for all batched together emitters
@@ -130,7 +127,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         }
 
-        public virtual unsafe void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public virtual unsafe void PatchVertexBuffer(ParticleVertexBuffer vtxBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
             var randField = sorter.GetField(ParticleFields.RandomSeed);
@@ -143,14 +140,18 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             var whiteColor = new Color4(1, 1, 1, 1);
 
-            // TODO Fetch sorted particles
+            var colAttribute = vtxBuilder.GetAccessor(new AttributeDescription("COLOR"));
+            var lifeAttribute = vtxBuilder.GetAccessor(new AttributeDescription("BATCH_LIFETIME"));
+            var randAttribute = vtxBuilder.GetAccessor(new AttributeDescription("BATCH_RANDOMSEED"));
+
             foreach (var particle in sorter)
             {
-                vtxBuilder.SetColorForParticle(hasColorField ? particle[colorField] : (IntPtr)(&whiteColor));
+                var color = hasColorField ? (uint)(*(Color4*)particle[colorField]).ToRgba() : 0xFFFFFFFF;
+                vtxBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
 
-                vtxBuilder.SetLifetimeForParticle(particle[lifeField]);
+                vtxBuilder.SetAttributePerParticle(lifeAttribute, particle[lifeField]);
 
-                vtxBuilder.SetRandomSeedForParticle(particle[randField]);
+                vtxBuilder.SetAttributePerParticle(randAttribute, particle[randField]);
 
                 vtxBuilder.NextParticle();
             }

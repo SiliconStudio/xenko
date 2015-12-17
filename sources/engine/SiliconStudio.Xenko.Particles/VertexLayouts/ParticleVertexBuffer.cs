@@ -25,6 +25,8 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         private int verticesPerQuad = 4;
         private int indicesPerQuad = 6;
 
+        public delegate void TransformAttributeDelegate<T>(ref T value);
+
         private readonly int vertexStructSize;
         private readonly int indexStructSize;
 
@@ -181,6 +183,20 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
                 Utilities.CopyMemory(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Stride);
             }
         }
+
+        internal void TransformAttributePerParticle<T>(AttributeAccessor accessor, TransformAttributeDelegate<T> transformMethod) where T : struct
+        {
+            for (var i = 0; i < verticesPerParticle; i++)
+            {
+                var temp = Utilities.Read<T>(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride);
+
+                transformMethod(ref temp);
+
+                Utilities.Write(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ref temp);
+            }
+        }
+
+        // TransformAttributeDelegate
 
         /// <summary>
         /// Use a ResourceContext per GraphicsDevice (DeviceContext)
