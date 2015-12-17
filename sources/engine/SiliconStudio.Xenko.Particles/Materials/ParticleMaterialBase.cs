@@ -138,11 +138,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
             var colorField = sorter.GetField(ParticleFields.Color);
             var hasColorField = colorField.IsValid();
 
-            var whiteColor = new Color4(1, 1, 1, 1);
-
-            var colAttribute = vtxBuilder.GetAccessor(new AttributeDescription("COLOR"));
-            var lifeAttribute = vtxBuilder.GetAccessor(new AttributeDescription("BATCH_LIFETIME"));
-            var randAttribute = vtxBuilder.GetAccessor(new AttributeDescription("BATCH_RANDOMSEED"));
+            var colAttribute  = vtxBuilder.GetAccessor(VertexAttributes.Color);
+            var lifeAttribute = vtxBuilder.GetAccessor(VertexAttributes.Lifetime);
+            var randAttribute = vtxBuilder.GetAccessor(VertexAttributes.RandomSeed);
 
             foreach (var particle in sorter)
             {

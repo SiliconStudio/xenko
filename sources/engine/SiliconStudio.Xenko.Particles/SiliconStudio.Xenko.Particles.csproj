@@ -115,7 +115,10 @@
     <Compile Include="Spawners\SpawnerBase.cs" />
     <Compile Include="Spawners\SpawnerPerFrame.cs" />
     <Compile Include="Spawners\SpawnerPerSecond.cs" />
+    <Compile Include="VertexLayouts\AttributeAccessor.cs" />
+    <Compile Include="VertexLayouts\AttributeDescription.cs" />
     <Compile Include="VertexLayouts\ParticleVertexBuffer.cs" />
+    <Compile Include="VertexLayouts\VertexAttributes.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">
