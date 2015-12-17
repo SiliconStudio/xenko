@@ -22,12 +22,14 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("End frame")]
         public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);
 
-        public unsafe override void BuildUVCoordinates(ParticleVertexLayout vtxBuilder, ParticleSorter sorter)
+        public unsafe override void BuildUVCoordinates(ParticleVertexBuffer vtxBuilder, ParticleSorter sorter)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 
             if (!lifeField.IsValid())
                 return;
+
+            var texAttribute = vtxBuilder.GetAccessor(new AttributeDescription("TEXCOORD"));
 
             foreach (var particle in sorter)
             {
@@ -37,11 +39,16 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 uvTransform.Z -= uvTransform.X;
                 uvTransform.W -= uvTransform.Y;
 
-                for (int i = 0; i < vtxBuilder.VerticesPerParticle; i++)
-                {
-                    vtxBuilder.TransformUvCoords(ref uvTransform);
-                    vtxBuilder.NextVertex();
-                }
+                ParticleVertexBuffer.TransformAttributeDelegate<Vector2> transformCoords =
+                    (ref Vector2 value) =>
+                    {
+                        value.X = uvTransform.X + uvTransform.Z * value.X;
+                        value.Y = uvTransform.Y + uvTransform.W * value.Y;
+                    };
+
+                vtxBuilder.TransformAttributePerParticle(texAttribute, transformCoords);
+
+                vtxBuilder.NextParticle();
             }
         }
     }

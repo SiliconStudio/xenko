@@ -43,9 +43,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
             base.InitializeCore(context);
 
             UpdateShaders();
-
-            // TODO Change - part of the LayoutBuilder refactoring
-            MandatoryVariation |= ParticleEffectVariation.HasTex0;
         }
 
         private int shadersUpdateCounter = 0;
@@ -95,16 +92,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
 
-        public override void PatchVertexBuffer(ParticleVertexLayout vtxBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public override void PatchVertexBuffer(ParticleVertexBuffer vtxBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
             base.PatchVertexBuffer(vtxBuilder, invViewX, invViewY, sorter);
 
-            if (UVBuilder != null)
-            {
-                UVBuilder.BuildUVCoordinates(vtxBuilder, sorter);
-            }
+            UVBuilder?.BuildUVCoordinates(vtxBuilder, sorter);
         }
 
     }
-    }
+}

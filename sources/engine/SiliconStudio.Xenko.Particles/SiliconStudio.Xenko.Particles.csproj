@@ -92,7 +92,6 @@
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
-    <Compile Include="Shaders.Bytecodes\ParticleBatch.Extensions.cs" />
     <Compile Include="Shaders\ParticleBase.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -117,9 +116,6 @@
     <Compile Include="Spawners\SpawnerPerFrame.cs" />
     <Compile Include="Spawners\SpawnerPerSecond.cs" />
     <Compile Include="VertexLayouts\ParticleVertexBuffer.cs" />
-    <Compile Include="VertexLayouts\ParticleVertexLayout.cs" />
-    <Compile Include="VertexLayouts\ParticleVertexLayoutPlain.cs" />
-    <Compile Include="VertexLayouts\ParticleVertexLayoutTextured.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj">

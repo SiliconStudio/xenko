@@ -556,19 +556,13 @@ namespace SiliconStudio.Xenko.Particles
 
             vertexBufferContext.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
 
-            var vtxBuff = vertexBufferContext.StartBuffer(device, Material.Effect);
+            vertexBufferContext.StartBuffer(device, Material.Effect);
 
-            var vertexLayoutBuilder = new ParticleVertexLayoutTextured();
-            vertexLayoutBuilder.VerticesPerParticle = ShapeBuilder.QuadsPerParticle * 4;
-            vertexLayoutBuilder.StartBuffer(vtxBuff);
+            ShapeBuilder.BuildVertexBuffer(vertexBufferContext, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
-            ShapeBuilder.BuildVertexBuffer(vertexLayoutBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
+            vertexBufferContext.RestartBuffer();
 
-            vertexLayoutBuilder.RestartBuffer();
-
-            Material.PatchVertexBuffer(vertexLayoutBuilder, unitX, unitY, ParticleSorter);
-
-            vertexLayoutBuilder.EndBuffer();
+            Material.PatchVertexBuffer(vertexBufferContext, unitX, unitY, ParticleSorter);
 
             vertexBufferContext.FlushBuffer(device);
         }
