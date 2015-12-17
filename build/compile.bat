@@ -75,8 +75,6 @@ set Project=Xenko.Windows10.sln
 %XXMSBUILD%  %_option% /p:Platform="Windows10" %Project%
 if %ERRORLEVEL% != 0 goto error
 
-sleep 2
-
 goto exit
 
 :error
