@@ -92,12 +92,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
 
-        public override void PatchVertexBuffer(ParticleVertexBuffer vtxBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public override void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
-            base.PatchVertexBuffer(vtxBuilder, invViewX, invViewY, sorter);
+            base.PatchVertexBuffer(vertexBuilder, invViewX, invViewY, sorter);
 
-            UVBuilder?.BuildUVCoordinates(vtxBuilder, sorter);
+            UVBuilder?.BuildUVCoordinates(vertexBuilder, sorter);
         }
 
     }

@@ -117,7 +117,7 @@
     <Compile Include="Spawners\SpawnerPerSecond.cs" />
     <Compile Include="VertexLayouts\AttributeAccessor.cs" />
     <Compile Include="VertexLayouts\AttributeDescription.cs" />
-    <Compile Include="VertexLayouts\ParticleVertexBuffer.cs" />
+    <Compile Include="VertexLayouts\ParticleVertexBuilder.cs" />
     <Compile Include="VertexLayouts\ParticleVertexElements.cs" />
     <Compile Include="VertexLayouts\VertexAttributes.cs" />
   </ItemGroup>

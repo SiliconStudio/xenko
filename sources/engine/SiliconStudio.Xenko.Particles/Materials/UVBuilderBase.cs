@@ -10,6 +10,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
     [DataContract("UVBuilderBase")]
     public abstract class UVBuilderBase
     {
-        public abstract void BuildUVCoordinates(ParticleVertexBuffer vtxBuilder, ParticleSorter sorter);
+        public abstract void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter);
     }
 }

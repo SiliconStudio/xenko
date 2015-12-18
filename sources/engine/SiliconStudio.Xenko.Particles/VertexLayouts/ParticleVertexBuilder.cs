@@ -10,7 +10,7 @@ using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
 namespace SiliconStudio.Xenko.Particles.VertexLayouts
 {
-    public class ParticleVertexBuffer
+    public class ParticleVertexBuilder
     {
         public VertexDeclaration VertexDeclaration { get; private set; }
 
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         private readonly List<VertexElement> vertexElementList;
 
-        public ParticleVertexBuffer()
+        public ParticleVertexBuilder()
         {
             vertexElementList = new List<VertexElement>();
 

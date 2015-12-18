@@ -86,29 +86,29 @@ namespace SiliconStudio.Xenko.Particles.Materials
         protected bool isInitialized = false;
 
         [DataMemberIgnore]
-        public bool VertexLayoutChanged { get; protected set; } = true;
+        public bool VertexLayoutHasChanged { get; protected set; } = true;
 
         private bool hasColorField = false;
 
-        public virtual void PrepareForDraw(ParticleVertexBuffer vertexBuilder, ParticleSorter sorter)
+        public virtual void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
         {
             // Probe if the particles have a color field and if we need to support it
             var colorField = sorter.GetField(ParticleFields.Color);
             if (colorField.IsValid() != hasColorField)
             {
-                VertexLayoutChanged = true;
+                VertexLayoutHasChanged = true;
                 hasColorField = colorField.IsValid();
             }
         }
 
-        public virtual void UpdateVertexLayout(ParticleVertexBuffer vertexBuilder)
+        public virtual void UpdateVertexBuilder(ParticleVertexBuilder vertexBuilder)
         {
             if (hasColorField)
             {
                 vertexBuilder.AddVertexElement(ParticleVertexElements.Color);
             }
 
-            VertexLayoutChanged = false;
+            VertexLayoutHasChanged = false;
         }
 
 
@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         }
 
-        public virtual unsafe void PatchVertexBuffer(ParticleVertexBuffer vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public virtual unsafe void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
             var colorField = sorter.GetField(ParticleFields.Color);
             Debug.Assert(hasColorField == colorField.IsValid());
