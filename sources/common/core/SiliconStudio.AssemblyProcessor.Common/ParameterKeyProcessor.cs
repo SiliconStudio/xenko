@@ -193,10 +193,10 @@ namespace SiliconStudio.AssemblyProcessor
                 if (effectKeysArrayElemementTypes.Count > 0)
                 {
                     var methodImplAttributeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(MethodImplAttribute).FullName);
-                    var methodImplAttributesType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(System.Reflection.MethodImplAttributes).FullName);
+                    var methodImplAttributesType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(MethodImplOptions).FullName);
 
                     var attribute = new CustomAttribute(methodImplAttributeType.GetConstructors().First(x => x.HasParameters && x.Parameters[0].ParameterType.FullName == methodImplAttributesType.FullName));
-                    attribute.ConstructorArguments.Add(new CustomAttributeArgument(methodImplAttributesType, System.Reflection.MethodImplAttributes.NoOptimization));
+                    attribute.ConstructorArguments.Add(new CustomAttributeArgument(methodImplAttributesType, MethodImplOptions.NoOptimization));
 
                     staticConstructor.CustomAttributes.Add(attribute);
                 }
