@@ -18,32 +18,9 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
-    public enum ParticleMaterialCulling : byte
-    {
-        CullNone = 0,
-        CullBack = 1,
-        CullFront = 2
-    }
-
     [DataContract("ParticleMaterialBase")]
     public abstract class ParticleMaterialBase
     {
-        // TODO Move to ParticleMaterialSimple and change the name
-        [DataMember(20)]
-        [DataMemberRange(0, 1, 0.001, 0.1)]
-        [Display("Alpha-Additive")]
-        public float AlphaAdditive { get; set; } = 0f;
-
-        // TODO Move to ParticleMaterialSimple ? Keep here?
-        [DataMember(40)]
-        [Display("Face culling")]
-        public ParticleMaterialCulling FaceCulling;
-
-        // Parameters should be divided into several groups later.
-        // CB0 - Parameters like camera position, viewProjMatrix, Screen size, FOV, etc. which persist for all materials/emitters in the same stage
-        // CB1 - Material attributes which persist for all batched together emitters
-        // CB2 - (Maybe) Per-emitter attributes.
-
         /// <summary>
         /// Shader parameters collection for the effect
         /// </summary>
@@ -58,6 +35,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         [DataMemberIgnore]
         protected FastListStruct<ParameterCollection> newParameterCollections;
+
         [DataMemberIgnore]
         protected FastListStruct<ParameterCollection> oldParameterCollections;
 
@@ -88,26 +66,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMemberIgnore]
         public bool VertexLayoutHasChanged { get; protected set; } = true;
 
-        private bool hasColorField = false;
-
         public virtual void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
         {
-            // Probe if the particles have a color field and if we need to support it
-            var colorField = sorter.GetField(ParticleFields.Color);
-            if (colorField.IsValid() != hasColorField)
-            {
-                VertexLayoutHasChanged = true;
-                hasColorField = colorField.IsValid();
-            }
         }
 
         public virtual void UpdateVertexBuilder(ParticleVertexBuilder vertexBuilder)
         {
-            if (hasColorField)
-            {
-                vertexBuilder.AddVertexElement(ParticleVertexElements.Color);
-            }
-
             VertexLayoutHasChanged = false;
         }
 
@@ -124,57 +88,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
             {
                 InitializeCore(context);
                 isInitialized = true;
-            }
-
-            // Setup graphics device - culling, blend states and depth testing
-
-            if (FaceCulling == ParticleMaterialCulling.CullNone) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullNone);
-            if (FaceCulling == ParticleMaterialCulling.CullBack) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullBack);
-            if (FaceCulling == ParticleMaterialCulling.CullFront) graphicsDevice.SetRasterizerState(graphicsDevice.RasterizerStates.CullFront);
-
-            graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
-
-            graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.DepthRead);
-
-
-            // Setup the parameters
-
-            SetParameter(ParticleBaseKeys.ColorIsSRgb, graphicsDevice.ColorSpace == ColorSpace.Linear);
-
-            SetParameter(ParticleBaseKeys.ParticleColor, hasColorField ? new ShaderClassSource("ParticleColorStream") : null);
-
-            // This is correct. We invert the value here to reduce calculations on the shader side later
-            SetParameter(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
-
-            // Scale up the color intensity - might depend on the eye adaptation later
-            SetParameter(ParticleBaseKeys.ColorScale, color);
-
-            ///////////////
-            // This should be CB0 - view/proj matrices don't change per material
-            SetParameter(ParticleBaseKeys.MatrixTransform, viewMatrix * projMatrix);
-
+            }          
         }
 
-        public virtual unsafe void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public virtual void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
-            var colorField = sorter.GetField(ParticleFields.Color);
-            Debug.Assert(hasColorField == colorField.IsValid());
-
-            var colAttribute  = vertexBuilder.GetAccessor(VertexAttributes.Color);
-            Debug.Assert(hasColorField == (colAttribute.Size > 0));
-
-            foreach (var particle in sorter)
-            {
-                if (hasColorField)
-                {
-                    var color = (uint)(*(Color4*)particle[colorField]).ToRgba();
-                    vertexBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
-                }
-
-                vertexBuilder.NextParticle();
-            }
-
-            vertexBuilder.RestartBuffer();
         }
 
         protected virtual void InitializeCore(RenderContext context)
@@ -194,7 +112,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         public void SetParameter<T>(ParameterKey<T> key, T value) => parameters.Set(key, value);
 
 
-        protected void ApplyEffect(GraphicsDevice graphicsDevice)
+        public void ApplyEffect(GraphicsDevice graphicsDevice)
         {
             UpdateEffect(graphicsDevice);
 

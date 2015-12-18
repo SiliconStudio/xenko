@@ -31,6 +31,7 @@
     <Compile Include="Initializers\InitialVelocitySeed.cs" />
     <Compile Include="Materials\ParticleMaterialBase.cs" />
     <Compile Include="Materials\ParticleMaterialComputeColor.cs" />
+    <Compile Include="Materials\ParticleMaterialSimple.cs" />
     <Compile Include="Materials\UVBuilderBase.cs" />
     <Compile Include="Materials\UVBuilderFlipbook.cs" />
     <Compile Include="Materials\UVBuilderScroll.cs" />

@@ -557,6 +557,7 @@ namespace SiliconStudio.Xenko.Particles
             PrepareForDraw();
 
             Material.Setup(device, context, viewMatrix, projMatrix, color);
+            Material.ApplyEffect(device);
 
             // Get camera-space X and Y axes for billboards and sort the particles by depth
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
