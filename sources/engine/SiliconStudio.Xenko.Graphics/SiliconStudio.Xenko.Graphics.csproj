@@ -26,7 +26,7 @@
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
       <ItemGroup>
-        <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Drawing" />
+        <Reference Condition="($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))) OR ($(SiliconStudioUI.Contains('OPENTK')) AND '$(SiliconStudioRuntime)' == '')" Include="System.Drawing" />
         <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
       </ItemGroup>
     </When>
@@ -59,7 +59,8 @@
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <ItemGroup>
             <Reference Include="OpenTK">
-              <HintPath>$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' == 'CoreCLR'">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
             </Reference>
           </ItemGroup>
         </When>

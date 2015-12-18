@@ -81,7 +81,11 @@ namespace SiliconStudio.Xenko.Games
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
                 return "Xenko Game";
 #else
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                 var assembly = Assembly.GetEntryAssembly();
+#else
+                var assembly = typeof(GameContext).GetTypeInfo().Assembly;
+#endif
                 var productAttribute = assembly?.GetCustomAttribute<AssemblyProductAttribute>();
                 return productAttribute?.Product ?? "Xenko Game";
 #endif
@@ -98,9 +102,11 @@ namespace SiliconStudio.Xenko.Games
             {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
                 return string.Empty;
-#else
+#elif !SILICONSTUDIO_RUNTIME_CORECLR
                 var assembly = Assembly.GetEntryAssembly();
                 return assembly?.Location;
+#else
+                return AppContext.BaseDirectory ?? typeof(GameContext).GetTypeInfo().Assembly.Location;
 #endif
             }
         }
@@ -120,6 +126,7 @@ namespace SiliconStudio.Xenko.Games
         {
             return new GameContextWinforms(control);
         }
+
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         /// <summary>
