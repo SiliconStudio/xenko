@@ -87,3 +87,5 @@ log
 x64Debug
 x64Release
 *.opendb
+screenshots
+samplesGenerated

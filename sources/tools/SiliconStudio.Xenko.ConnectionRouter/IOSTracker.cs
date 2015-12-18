@@ -78,6 +78,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     }
             };
             process.Start();
+            new AttachedChildProcessJob(process);
 
             Log.Info("Device connected: {0}; successfully mapped port {1}:{2}", device.Name, testedLocalPort, RouterClient.DefaultListenPort);
 
