@@ -8,8 +8,10 @@ class ParticleBase : ShaderBase, Texturing
     // -------------------------------------
     stage stream float4 Position : POSITION;
 
-    stage stream float4 Color : COLOR;
-
+    // -------------------------------------
+    // conditional streams - may or may not be present depending on existing particle fields
+    // -------------------------------------
+//    stage stream float4 Color : COLOR;
     nointerpolation stage stream float Lifetime     : BATCH_LIFETIME;
     nointerpolation stage stream float RandomSeed   : BATCH_RANDOMSEED; // Ideally should be uint. Note! The xksl doesn't support nointerpolation, so cast the float as int before using it
 
@@ -48,9 +50,16 @@ class ParticleBase : ShaderBase, Texturing
         streams.ColorTarget = colorTarget;
     }
 
+    compose ParticleColor particleColor;
+
     stage float4 Shading()
     {
-        return ColorScale * streams.Color;
+        //if (hasColor)
+        //{
+            return ColorScale * particleColor.Compute();
+        //}
+
+        //return ColorScale;
     }
 
     

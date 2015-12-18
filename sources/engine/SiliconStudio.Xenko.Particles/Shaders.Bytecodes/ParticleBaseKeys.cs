@@ -18,6 +18,10 @@ namespace SiliconStudio.Xenko.Rendering
 
         public static readonly ParameterKey<bool> ColorIsSRgb = ParameterKeys.New(false);
 
+//        public static readonly ParameterKey<bool> HasColorStream = ParameterKeys.New(false);
+
+        public static readonly ParameterKey<ShaderSource> ParticleColor = ParameterKeys.New<ShaderSource>();
+
         public static readonly ParameterKey<ShaderSource> BaseColor     = ParameterKeys.New<ShaderSource>();
 
         public static readonly ParameterKey<ShaderSource> BaseIntensity = ParameterKeys.New<ShaderSource>();
