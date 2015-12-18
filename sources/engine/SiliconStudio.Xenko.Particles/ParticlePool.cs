@@ -196,7 +196,7 @@ namespace SiliconStudio.Xenko.Particles
             foreach (var field in fields.Values)
             {
                 var accessor = new ParticleFieldAccessor(field);
-                Utilities.CopyMemory(dstParticle[accessor], srcParticle[accessor], field.Stride);
+                Utilities.CopyMemory(dstParticle[accessor], srcParticle[accessor], field.Size);
             }
 #else
             Utilities.CopyMemory(dstParticle, srcParticle, ParticleSize);
@@ -267,7 +267,7 @@ namespace SiliconStudio.Xenko.Particles
             var fieldOffset = 0;
             foreach (var desc in fieldDescriptions)
             {
-                var fieldSize = fields[desc].Stride;
+                var fieldSize = fields[desc].Size;
                 fields[desc] = new ParticleField(fieldSize, ParticleData + fieldOffset * ParticleCapacity);
                 fieldOffset += fieldSize;
             }
@@ -360,11 +360,11 @@ namespace SiliconStudio.Xenko.Particles
             // Fields haven't changed so we can iterate them. In case of Add/Remove fields you shouldn't use this
             foreach (var field in fields.Values)
             {                
-                var copySize = Math.Min(oldCapacity, newCapacity) * field.Stride;
+                var copySize = Math.Min(oldCapacity, newCapacity) * field.Size;
                 Utilities.CopyMemory(newPool + newOffset, oldPool + oldOffset, copySize);
 
-                oldOffset += (field.Stride * oldCapacity);
-                newOffset += (field.Stride * newCapacity);
+                oldOffset += (field.Size * oldCapacity);
+                newOffset += (field.Size * newCapacity);
             }
 #else
             if (newCapacity > oldCapacity)
@@ -428,12 +428,12 @@ namespace SiliconStudio.Xenko.Particles
             foreach (var field in fields.Values)
             {
                 // This is the field which we have marked - do not copy it
-                if (field.Stride == 0 || field.Offset == IntPtr.Zero)
+                if (field.Size == 0 || field.Offset == IntPtr.Zero)
                     continue;
 
-                Utilities.CopyMemory(newPool + fieldOffset, field.Offset, field.Stride * ParticleCapacity);
+                Utilities.CopyMemory(newPool + fieldOffset, field.Offset, field.Size * ParticleCapacity);
 
-                fieldOffset += field.Stride * ParticleCapacity;
+                fieldOffset += field.Size * ParticleCapacity;
             }
 #else
             // Clear the memory first instead of once per particle

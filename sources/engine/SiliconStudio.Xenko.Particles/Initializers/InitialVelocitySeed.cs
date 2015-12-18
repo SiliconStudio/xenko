@@ -92,9 +92,9 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
         public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
         {
-            var hasPos = InheritLocation.HasFlag(Particles.InheritLocation.Position);
-            var hasRot = InheritLocation.HasFlag(Particles.InheritLocation.Rotation);
-            var hasScl = InheritLocation.HasFlag(Particles.InheritLocation.Scale);
+            var hasPos = InheritLocation.HasFlag(InheritLocation.Position);
+            var hasRot = InheritLocation.HasFlag(InheritLocation.Rotation);
+            var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
 
             WorldScale = (hasScl) ? Scale : 1f;
 

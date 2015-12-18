@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-
 namespace SiliconStudio.Xenko.Particles
 {
     public struct ParticleFieldAccessor
@@ -14,7 +12,7 @@ namespace SiliconStudio.Xenko.Particles
         internal ParticleFieldAccessor(ParticleField field)
         {
             offset = field.Offset;
-            unitSize = field.Stride;
+            unitSize = field.Size;
         }
 
         public ParticleFieldAccessor(IntPtr offset, int unitSize)
@@ -60,7 +58,7 @@ namespace SiliconStudio.Xenko.Particles
         internal ParticleFieldAccessor(ParticleField field)
         {
             offset = field.Offset;
-            unitSize = field.Stride;
+            unitSize = field.Size;
         }
 
         public ParticleFieldAccessor(IntPtr offset, int unitSize)
