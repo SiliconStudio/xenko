@@ -14,13 +14,6 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
     {
         public VertexDeclaration VertexDeclaration { get; private set; }
 
-        protected const int OffsetPosition  = 0;
-        protected const int OffsetUv        = 12 + OffsetPosition;
-        protected const int OffsetColor     = 8  + OffsetUv;
-        protected const int OffsetLifetime  = 4  + OffsetColor;
-        protected const int OffsetRandom    = 4  + OffsetLifetime;
-        protected const int OffsetMax       = 4  + OffsetRandom;
-
         private int verticesPerParticle = 4;
         private int verticesPerQuad = 4;
         private int indicesPerQuad = 6;
@@ -54,7 +47,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             {
                 var attrDesc = new AttributeDescription(vertexElement.SemanticName);
                 var stride = vertexElement.Format.SizeInBytes();
-                var attrAccs = new AttributeAccessor { Offset = totalOffset, Stride = stride };
+                var attrAccs = new AttributeAccessor { Offset = totalOffset, Size = stride };
                 totalOffset += stride;
 
                 availableAttributes.Add(attrDesc, attrAccs);
@@ -165,7 +158,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             AttributeAccessor accessor;
             if (!availableAttributes.TryGetValue(desc, out accessor))
             {
-                return new AttributeAccessor { Offset = 0, Stride = 0 };
+                return new AttributeAccessor { Offset = 0, Size = 0 };
             }
             
             return accessor;
@@ -173,14 +166,14 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         internal void SetAttribute(AttributeAccessor accessor, IntPtr ptrRef) 
         {
-            Utilities.CopyMemory(vertexBuffer + accessor.Offset, ptrRef, accessor.Stride);
+            Utilities.CopyMemory(vertexBuffer + accessor.Offset, ptrRef, accessor.Size);
         }
 
         internal void SetAttributePerParticle(AttributeAccessor accessor, IntPtr ptrRef)
         {
             for (var i = 0; i < verticesPerParticle; i++)
             {
-                Utilities.CopyMemory(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Stride);
+                Utilities.CopyMemory(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ptrRef, accessor.Size);
             }
         }
 

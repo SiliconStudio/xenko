@@ -16,12 +16,12 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// Size of one data unit. Depends of how you group the fields together (AoS or SoA)
         /// </summary>
-        public readonly int Stride;
+        public readonly int Size;
 
         public ParticleField(int fieldSize, IntPtr offset)
         {
             Offset = offset;
-            Stride = fieldSize;
+            Size = fieldSize;
         }
 #else
         /// <summary>

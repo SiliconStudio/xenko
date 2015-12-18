@@ -1,15 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Net;
-using System.Windows.Data;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering.Sprites;
-using SiliconStudio.Xenko.Shaders.Compiler;
-using System.Runtime.CompilerServices;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
@@ -24,18 +16,6 @@ namespace SiliconStudio.Xenko.Particles.Components
         // TODO For now try to render particle systems as Sprites, later move on to a proper particle representation
 
      private ParticleSystemProcessor particleSystemProcessor;
-
-        protected override void InitializeCore()
-        {
-            base.InitializeCore();
-        }
-
-        protected override void Unload()
-        {
-//            particleBatch.Dispose();
-
-            base.Unload();
-        }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
@@ -68,10 +48,9 @@ namespace SiliconStudio.Xenko.Particles.Components
                 Vector4.Transform(ref worldPosition, ref viewProjectionMatrix, out projectedPosition);
                 var projectedZ = projectedPosition.Z / projectedPosition.W;
 
-                var list = true ? transparentList : opaqueList;
-
-                // TODO Sort value based on custom key
-                list.Add(new RenderItem(this, particleSystemState, projectedZ));
+                //var list = true ? transparentList : opaqueList;
+                //list.Add(new RenderItem(this, particleSystemState, projectedZ));
+                transparentList.Add(new RenderItem(this, particleSystemState, projectedZ));
             }
         }
 
@@ -97,17 +76,6 @@ namespace SiliconStudio.Xenko.Particles.Components
             }
         }
 
-
-        protected override void PreDrawCore(RenderContext context)
-        {
-            base.PreDrawCore(context);
-            // Custom pre draw code
-        }
-
-        protected override void PostDrawCore(RenderContext context)
-        {
-            base.PostDrawCore(context);
-            // Custom post draw code
-        }
+       
     }
 }
