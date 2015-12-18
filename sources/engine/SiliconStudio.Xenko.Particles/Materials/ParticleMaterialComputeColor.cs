@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 {
     [DataContract("ParticleMaterialComputeColor")]
     [Display("DynamicColor")]
-    public class ParticleMaterialComputeColor : ParticleMaterialBase
+    public class ParticleMaterialComputeColor : ParticleMaterialSimple
     {
         [DataMemberIgnore]
         protected override string EffectName { get; set; } = "ParticleEffect";
@@ -27,9 +27,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMember(110)]
         [Display("Intensity")]
         public IComputeScalar ComputeIntensity { get; set; } = new ComputeFloat();
-
-        // [DataMember(130)]
-        // Texture Coordinates builder - fixed, scroll and flipbook
 
         [DataMember(200)]
         [Display("Texture coordinates")]
@@ -87,8 +84,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
             base.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
             
             UpdateShaders();
-
-            ApplyEffect(graphicsDevice);
         }
 
 
