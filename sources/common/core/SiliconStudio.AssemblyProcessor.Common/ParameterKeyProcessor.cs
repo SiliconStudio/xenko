@@ -34,6 +34,7 @@ namespace SiliconStudio.AssemblyProcessor
             });
 
             var effectKeysStaticConstructors = new List<MethodReference>();
+            var effectKeysArrayElemementTypes = new HashSet<TypeReference>();
 
             foreach (var type in assembly.MainModule.GetTypes())
             {
@@ -46,6 +47,17 @@ namespace SiliconStudio.AssemblyProcessor
                     {
                         if (fieldBaseType.FullName == "SiliconStudio.Xenko.Rendering.ParameterKey")
                             break;
+
+                        // TODO: Get PropertyKey.PropertyType instead
+                        var genericInstance = fieldBaseType as GenericInstanceType;
+                        if (genericInstance != null && genericInstance.ElementType.FullName == "SiliconStudio.Xenko.Rendering.ParameterKey`1")
+                        {
+                            var genericArgument = genericInstance.GenericArguments.First();
+                            if (genericArgument.IsArray)
+                            {
+                                effectKeysArrayElemementTypes.Add(genericArgument.GetElementType());
+                            }
+                        }
 
                         var resolvedFieldBaseType = fieldBaseType.Resolve();
                         if (resolvedFieldBaseType == null)
@@ -177,6 +189,32 @@ namespace SiliconStudio.AssemblyProcessor
                     il.Append(Instruction.Create(OpCodes.Callvirt, getTypeHandleMethod));
                     il.Append(Instruction.Create(OpCodes.Call, runClassConstructorMethod));
                 }
+
+                if (effectKeysArrayElemementTypes.Count > 0)
+                {
+                    var methodImplAttributeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(MethodImplAttribute).FullName);
+                    var methodImplAttributesType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(System.Reflection.MethodImplAttributes).FullName);
+
+                    var attribute = new CustomAttribute(methodImplAttributeType.GetConstructors().First(x => x.HasParameters && x.Parameters[0].ParameterType.FullName == methodImplAttributesType.FullName));
+                    attribute.ConstructorArguments.Add(new CustomAttributeArgument(methodImplAttributesType, System.Reflection.MethodImplAttributes.NoOptimization));
+
+                    staticConstructor.CustomAttributes.Add(attribute);
+                }
+
+                // Create instances of InternalValueArray<T>. Required for LLVM AOT
+                foreach (var elementType in effectKeysArrayElemementTypes)
+                {
+                    var siliconStudioXenkoAssembly = assembly.Name.Name == "SiliconStudio.Xenko" ? assembly : assembly.MainModule.AssemblyResolver.Resolve("SiliconStudio.Xenko");
+                    var parameterCollectionType = siliconStudioXenkoAssembly.MainModule.GetTypeResolved("SiliconStudio.Xenko.Rendering.ParameterCollection");
+                    var internalValueArrayType = parameterCollectionType.NestedTypes.First(x => x.Name == "InternalValueArray`1");
+                    var constructor = internalValueArrayType.GetConstructors().First();
+                    var internalValueArrayConstructor = siliconStudioXenkoAssembly.MainModule.ImportReference(constructor).MakeGeneric(elementType);
+
+                    il.Append(Instruction.Create(OpCodes.Ldc_I4_0));
+                    il.Append(Instruction.Create(OpCodes.Newobj, internalValueArrayConstructor));
+                    il.Append(Instruction.Create(OpCodes.Pop));
+                }
+
                 il.Append(newReturnInstruction);
                 staticConstructor.Body.OptimizeMacros();
             }
