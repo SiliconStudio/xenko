@@ -41,7 +41,7 @@ namespace SiliconStudio.Quantum.Contents
         public override void Update(object newValue, object index)
         {
             var oldValue = Value;
-            NotifyContentChanging(index, oldValue, Value);
+            NotifyContentChanging(index, oldValue, newValue);
             if (index != null)
             {
                 var collectionDescriptor = Descriptor as CollectionDescriptor;
@@ -67,7 +67,7 @@ namespace SiliconStudio.Quantum.Contents
                     Container.Update(containerValue);
             }
             UpdateReferences();
-            NotifyContentChanged(index, oldValue, Value);
+            NotifyContentChanged(index, oldValue, newValue);
         }
 
         private void UpdateReferences()
