@@ -115,7 +115,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 this.container = container;
             }
 
-            [Obsolete]
             public void Add(Entity entity)
             {
                 Add(new EntityDesign(entity, new EntityDesignData()));

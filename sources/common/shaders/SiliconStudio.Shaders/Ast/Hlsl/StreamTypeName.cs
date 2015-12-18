@@ -110,7 +110,7 @@ namespace SiliconStudio.Shaders.Ast.Hlsl
         /// <returns></returns>
         public static StreamTypeName Parse(string name)
         {
-            return StreamTypesName.FirstOrDefault(streamType => string.Compare(name, streamType.Name.Text, true, CultureInfo.InvariantCulture) == 0);
+            return StreamTypesName.FirstOrDefault(streamType =>  CultureInfo.InvariantCulture.CompareInfo.Compare(name, streamType.Name.Text, CompareOptions.None) == 0);
         }
     }
 }

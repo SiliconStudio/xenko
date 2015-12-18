@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Globalization;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -70,7 +71,7 @@ namespace SiliconStudio.Core
                     cpu = IntPtr.Size == 8 ? "x64" : "x86";
 
                 // We are trying to load the dll from a shadow path if it is already registered, otherwise we use it directly from the folder
-                var dllFolder = NativeLibraryInternal.GetShadowPathForNativeDll(libraryName) ?? Path.Combine(Path.GetDirectoryName(typeof(NativeLibrary).Assembly.Location), cpu);
+                var dllFolder = NativeLibraryInternal.GetShadowPathForNativeDll(libraryName) ?? Path.Combine(Path.GetDirectoryName(typeof(NativeLibrary).GetTypeInfo().Assembly.Location), cpu);
                 var libraryFilename = Path.Combine(dllFolder, libraryName);
                 var result = LoadLibrary(libraryFilename);
 

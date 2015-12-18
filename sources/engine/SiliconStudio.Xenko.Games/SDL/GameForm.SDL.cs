@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Games
         /// <summary>
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
-        public GameFormSDL() : this(GetProductName())
+        public GameFormSDL() : this(GameContext.ProductName)
         {
         }
 
@@ -40,13 +40,6 @@ namespace SiliconStudio.Xenko.Games
             MinimizedActions += GameForm_MinimizedActions;
             MaximizedActions += GameForm_MaximizedActions;
             RestoredActions += GameForm_RestoredActions;
-        }
-
-        private static string GetProductName()
-        {
-            var assembly = Assembly.GetEntryAssembly();
-            var productAttribute = assembly?.GetCustomAttributes(typeof(AssemblyProductAttribute)).FirstOrDefault() as AssemblyProductAttribute;
-            return productAttribute?.Product ?? "Xenko Game";
         }
 #endregion
 

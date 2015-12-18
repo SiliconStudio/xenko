@@ -2,10 +2,9 @@
 Id: 7ea96b46-d786-42c8-9541-0dba7cd63a44
 Tags: []
 Source: 90b99454-a7b4-4b88-8d42-638acc73e34b:StaticFonts/CourierNew10
-FontDataFile: ../../../../data/tests/PrecompileFonts/CourierNew10.xkimg
+FontDataFile: ../../../../data/tests/PrecompileFonts/CourierNew10 (Precompiled).png
 BaseOffset: 11.10026
 DefaultLineSpacing: 15.104166
-FontName: 
 Glyphs:
     -   BitmapIndex: 0
         Character: 32
@@ -487,5 +486,6 @@ Glyphs:
         Offset: {X: 0.0, Y: -8.0}
         Subrect: {X: 46, Y: 43, Width: 7, Height: 8}
         XAdvance: 8.001302
-Kernings: null
+Kernings: []
+FontName: Courier New
 Size: 10.0

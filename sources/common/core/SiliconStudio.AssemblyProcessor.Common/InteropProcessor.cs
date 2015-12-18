@@ -39,7 +39,6 @@ namespace SiliconStudio.AssemblyProcessor
 {
     public class InteropProcessor : IAssemblyDefinitionProcessor
     {
-        private AssemblyDefinition mscorlibAssembly;
         private readonly List<TypeDefinition> classToRemoveList = new List<TypeDefinition>();
         private AssemblyDefinition assembly;
         private TypeReference voidPointerType;
@@ -48,14 +47,6 @@ namespace SiliconStudio.AssemblyProcessor
         public bool Process(AssemblyProcessorContext context)
         {
             this.assembly = context.Assembly;
-            mscorlibAssembly = CecilExtensions.FindCorlibAssembly(assembly);
-
-            if (mscorlibAssembly == null)
-            {
-                LogError("Missing mscorlib.dll from assembly {0}", assembly.FullName);
-                throw new InvalidOperationException("Missing mscorlib.dll from assembly");
-            }
-
             // Import void* and int32 from assembly using mscorlib specific version (2.0 or 4.0 depending on assembly)
             voidPointerType = new PointerType(assembly.MainModule.TypeSystem.Void);
             intType = assembly.MainModule.TypeSystem.Int32;

@@ -10,7 +10,8 @@ namespace SiliconStudio.Xenko.Graphics.SDL
     {
         Normal = 0,
         Minimized = 1,
-        Maximized = 2
+        Maximized = 2,
+        Fullscreen = 3
     }
 }
 #endif
