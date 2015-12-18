@@ -20,7 +20,7 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
 using System;
 using OpenTK;
 using OpenTK.Graphics;
@@ -29,12 +29,12 @@ using SiliconStudio.Xenko.Graphics.OpenGL;
 namespace SiliconStudio.Xenko.Games
 {
     /// <summary>
-    /// A <see cref="GameContext"/> to use for rendering to an existing WinForm <see cref="Control"/>.
+    /// A <see cref="GameContext"/> to use for rendering to an existing OpenTK Window.
     /// </summary>
-    public partial class GameContextOpenTk : GameContextWindows<OpenTK.GameWindow>
+    public class GameContextOpenTK : GameContextWindows<OpenTK.GameWindow>
     {
         /// <inheritDoc/>
-        public GameContextOpenTk(OpenTK.GameWindow control, int requestedWidth = 0, int requestedHeight = 0)
+        public GameContextOpenTK(OpenTK.GameWindow control, int requestedWidth = 0, int requestedHeight = 0)
             : base(control, requestedWidth, requestedHeight)
         {
             ContextType = AppContextType.DesktopOpenTK;
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Games
                 Core.NativeLibrary.PreloadLibrary("SDL2.dll");
 #endif
 
-                var gameWindow = new OpenTK.GameWindow(requestedWidth, requestedHeight, graphicMode, "Xenko Game", GameWindowFlags.Default, DisplayDevice.Default, versionMajor, versionMinor,
+                var gameWindow = new OpenTK.GameWindow(requestedWidth, requestedHeight, graphicMode, GameContext.ProductName, GameWindowFlags.Default, DisplayDevice.Default, versionMajor, versionMinor,
                     creationFlags);
                 return gameWindow;
             }

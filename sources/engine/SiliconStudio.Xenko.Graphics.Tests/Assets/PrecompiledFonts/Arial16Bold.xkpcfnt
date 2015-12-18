@@ -2,10 +2,9 @@
 Id: 5a4ddca8-7c53-4b7d-b234-450bd84a408f
 Tags: []
 Source: a8c5497e-7dea-46ec-a818-5728f34f5cc5:StaticFonts/Arial16Bold
-FontDataFile: ../../../../data/tests/PrecompileFonts/Arial16Bold.xkimg
+FontDataFile: ../../../../data/tests/PrecompileFonts/Arial16Bold (Precompiled).png
 BaseOffset: 20.0104179
 DefaultLineSpacing: 24.53125
-FontName: 
 Glyphs:
     -   BitmapIndex: 0
         Character: 32
@@ -487,6 +486,6 @@ Glyphs:
         Offset: {X: 2.0, Y: -14.0}
         Subrect: {X: 14, Y: 124, Width: 12, Height: 14}
         XAdvance: 16.0
-Kernings: null
-Size: 16.0
+Kernings: []
+FontName: Arial
 Style: Bold

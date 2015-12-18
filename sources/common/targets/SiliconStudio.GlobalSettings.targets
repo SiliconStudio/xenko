@@ -127,6 +127,13 @@
   </PropertyGroup>
 
   <!-- 
+    Settings SiliconStudioRuntime specific
+  -->
+  <PropertyGroup Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
+    <SiliconStudioRuntimeDefines>SILICONSTUDIO_RUNTIME_CORECLR</SiliconStudioRuntimeDefines>
+  </PropertyGroup>
+
+  <!-- 
     Settings SiliconStudioUI specific defines.
     The computation of SiliconStudioUIDefineConstants is done in SiliconStudio.PreSettings.targets.
   -->
@@ -156,6 +163,7 @@
   </PropertyGroup>
 
   <PropertyGroup>
+    <DefineConstants Condition="'$(SiliconStudioRuntimeDefines)' != ''">$(DefineConstants);$(SiliconStudioRuntimeDefines)</DefineConstants>
     <DefineConstants Condition="'$(SiliconStudioUIDefines)' != ''">$(DefineConstants);$(SiliconStudioUIDefines)</DefineConstants>
   </PropertyGroup>
   

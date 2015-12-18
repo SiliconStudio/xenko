@@ -88,9 +88,9 @@ namespace SiliconStudio.Shaders.Ast
 
         private static readonly MethodInfo DeepcloneObject = MethodReflector(() => DeepClone(ref tempObject, out tempObject, null));
 
-        private static readonly MethodInfo MethodAdd = typeof(Dictionary<object, object>).GetMethod("Add");
+        private static readonly MethodInfo MethodAdd = typeof(Dictionary<object, object>).GetTypeInfo().GetDeclaredMethod("Add");
 
-        private static readonly MethodInfo MethodTryGetValue = typeof(CloneContext).GetMethod("TryGetValue");
+        private static readonly MethodInfo MethodTryGetValue = typeof(CloneContext).GetTypeInfo().GetDeclaredMethod("TryGetValue");
 
         private static object tempObject = new object();
 
@@ -174,7 +174,7 @@ namespace SiliconStudio.Shaders.Ast
                 {
                     dest = obj;
                 }
-                else if (typeof(T) == t && t.IsValueType)
+                else if (typeof(T) == t && t.GetTypeInfo().IsValueType)
                 {
                     GetObjectCloner<T>(typeof(T), context)(ref obj, out dest, context);
                 }
@@ -227,7 +227,7 @@ namespace SiliconStudio.Shaders.Ast
             while (t != null)
             {
                 fields.AddRange(t.GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic));
-                t = t.BaseType;
+                t = t.GetTypeInfo().BaseType;
             }
 
             return fields;
@@ -250,7 +250,7 @@ namespace SiliconStudio.Shaders.Ast
                 ParameterExpression localCast;
                 ParameterExpression localOutput;
                 ParameterExpression localObj;
-                bool isStruct = type.IsValueType && typeof(T) == type;
+                bool isStruct = type.GetTypeInfo().IsValueType && typeof(T) == type;
                 bool isArray = type.IsArray;
 
                 if (isStruct || isArray)
@@ -306,7 +306,7 @@ namespace SiliconStudio.Shaders.Ast
                             throw new InvalidOperationException(String.Format("Field [{0}] in [{1}] is readonly, which is not supported in DeepClone", field.Name, type));
 
                         var t = field.FieldType;
-                        if (t.IsSubclassOf(typeof(Delegate)))
+                        if (t.GetTypeInfo().IsSubclassOf(typeof(Delegate)))
                             continue;
 
                         var value = LinqExpression.Field(localCast, field);
@@ -375,7 +375,7 @@ namespace SiliconStudio.Shaders.Ast
 
         private static bool IsPrimitive(Type type)
         {
-            return type.IsPrimitive || type.IsEnum || type == typeof(string);
+            return type.GetTypeInfo().IsPrimitive || type.GetTypeInfo().IsEnum || type == typeof(string);
         }
 
         private static MethodInfo MethodReflector(Expression<Action> access)

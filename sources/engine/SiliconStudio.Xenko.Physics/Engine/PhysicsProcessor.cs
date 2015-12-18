@@ -29,13 +29,27 @@ namespace SiliconStudio.Xenko.Physics
         private readonly List<PhysicsElementBase> characters = new List<PhysicsElementBase>();
 
         private Bullet2PhysicsSystem physicsSystem;
+        private SceneSystem sceneSystem;
         private Simulation simulation;
+
+        private bool colliderShapesRendering;
 
         private PhysicsDebugShapeRendering debugShapeRendering;
 
         public PhysicsProcessor()
             : base(PhysicsComponent.Key, TransformComponent.Key)
         {
+        }
+
+        internal void RenderColliderShapes(bool enabled)
+        {
+            colliderShapesRendering = enabled;
+
+            foreach (var element in elements)
+            {
+                if(enabled) element.AddDebugEntity(sceneSystem.SceneInstance.Scene);
+                else element.RemoveDebugEntity(sceneSystem.SceneInstance.Scene);
+            }
         }
 
         protected override AssociatedData GenerateAssociatedData(Entity entity)
@@ -287,6 +301,11 @@ namespace SiliconStudio.Xenko.Physics
                     break;
             }
 
+            if (colliderShapesRendering)
+            {
+                element.AddDebugEntity(sceneSystem.SceneInstance.Scene);
+            }
+
             elements.Add(element);
             if (element.BoneIndex != -1) boneElements.Add(skinnedElement);
         }
@@ -439,6 +458,8 @@ namespace SiliconStudio.Xenko.Physics
             {
                 debugShapeRendering = new PhysicsDebugShapeRendering(gfxDevice);
             }
+
+            sceneSystem = Services.GetSafeServiceAs<SceneSystem>();
         }
 
         protected override void OnSystemRemove()

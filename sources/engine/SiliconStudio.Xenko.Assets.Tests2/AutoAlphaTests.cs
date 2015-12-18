@@ -4,16 +4,14 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using NUnit.Framework;
-
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
 
-namespace SiliconStudio.Xenko.Assets.Tests
+namespace SiliconStudio.Xenko.Assets.Tests2
 {
     /// <summary>
     /// Tests for automatic alpha detection in textures and sprite sheets
