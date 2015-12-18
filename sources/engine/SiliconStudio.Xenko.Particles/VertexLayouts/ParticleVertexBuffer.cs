@@ -49,11 +49,6 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             // Mandatory
             AddVertexElement(ParticleVertexElements.Position);
             AddVertexElement(ParticleVertexElements.TexCoord);
-
-            // Optional
-            AddVertexElement(ParticleVertexElements.Color);
-            AddVertexElement(ParticleVertexElements.Lifetime);
-            AddVertexElement(ParticleVertexElements.RandSeed);
         }
 
         internal void AddVertexElement(VertexElement element)
@@ -64,7 +59,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             vertexElementList.Add(element);
         }
 
-        private void UpdateVertexLayout()
+        internal void UpdateVertexLayout()
         {
             VertexDeclaration = new VertexDeclaration(vertexElementList.ToArray());
 
