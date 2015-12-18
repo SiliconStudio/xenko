@@ -74,6 +74,10 @@
     <Compile Include="SoundEffectSerializer.cs" />
     <Compile Include="SoundInstanceBase.cs" />
     <Compile Include="SoundMusic.cs" />
+    <Compile Include="SoundMusicAction.cs" />
+    <Compile Include="SoundMusicActionRequest.cs" />
+    <Compile Include="SoundMusicEvent.cs" />
+    <Compile Include="SoundMusicEventNotification.cs" />
     <Compile Include="SoundMusicSerializer.cs" />
     <Compile Include="SoundPlayState.cs" />
     <Compile Include="AudioEngine.Windows.cs" />

@@ -10,62 +10,6 @@ using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Audio
 {
-
-    /// <summary>
-    /// Describe an play action that a SoundMusic can request to the AudioEngine
-    /// </summary>
-    internal enum SoundMusicAction
-    {
-        Play,
-        Pause,
-        Stop,
-        Volume,
-    }
-
-    /// <summary>
-    /// A SoundMusic action request aimed for the AudioEngine.
-    /// </summary>
-    internal struct SoundMusicActionRequest
-    {
-        public SoundMusic Requester;
-
-        public SoundMusicAction RequestedAction;
-
-        public SoundMusicActionRequest(SoundMusic requester, SoundMusicAction request)
-        {
-            Requester = requester;
-            RequestedAction = request;
-        }
-    }
-
-    /// <summary>
-    /// A <see cref="SoundMusic"/> event.
-    /// </summary>
-    internal enum SoundMusicEvent
-    {
-        ErrorOccurred,
-        MetaDataLoaded,
-        ReadyToBePlayed,
-        EndOfTrackReached,
-        MusicPlayerClosed,
-    }
-
-    /// <summary>
-    /// A notification of an SoundMusic event.
-    /// </summary>
-    internal struct SoundMusicEventNotification
-    {
-        public SoundMusicEvent Event;
-
-        public object EventData;
-
-        public SoundMusicEventNotification(SoundMusicEvent mEvent, object eventData)
-        {
-            Event = mEvent;
-            EventData = eventData;
-        }
-    }
-
     /// <summary>
     /// Represents the audio engine. 
     /// In current version, the audio engine necessarily creates its context on the default audio hardware of the device.
