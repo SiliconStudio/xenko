@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Audio
             // get the GUID of the AudioStreamVolume interface from Class Attributes.
             if (streamAudioVolumeGuid == Guid.Empty)
             {
-                streamAudioVolumeGuid = Guid.Parse(typeof(AudioStreamVolume).GetTypeInfo().GetCustomAttributes<GuidAttribute>().First().Value);
+                streamAudioVolumeGuid = Guid.Parse(typeof(AudioStreamVolume).GetTypeInfo().GetCustomAttribute<GuidAttribute>().Value);
             }
         }
 
