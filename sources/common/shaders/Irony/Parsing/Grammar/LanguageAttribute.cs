@@ -42,12 +42,7 @@ namespace Irony.Parsing {
     } string _description; 
 
     public static LanguageAttribute GetValue(Type grammarClass) {
-      IEnumerable<LanguageAttribute> attrs = grammarClass.GetTypeInfo().GetCustomAttributes<LanguageAttribute>(true);
-      if (attrs != null && (attrs.Count() > 0)) {
-        LanguageAttribute la = attrs.First();
-        return la; 
-      }
-      return null; 
+      return grammarClass.GetTypeInfo().GetCustomAttribute<LanguageAttribute>(true);
     }
 
   }//class
