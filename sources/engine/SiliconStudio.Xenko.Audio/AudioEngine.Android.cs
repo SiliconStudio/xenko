@@ -12,11 +12,11 @@ using Java.Lang;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    partial class AudioEngine
+    partial class AudioEngineAndroid: AudioEngine
     {
         private readonly MediaPlayer mediaPlayer = new MediaPlayer();
 
-        private void DestroyImpl()
+        internal override void DestroyAudioEngine()
         {
             if (nbOfAudioEngineInstances == 0)
                 SoundEffectInstance.StaticDestroy();
@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Audio
             mediaPlayer.Release();
         }
 
-        private void AudioEngineImpl(AudioDevice device)
+        internal override void InitializeAudioEngine(AudioDevice device)
         {
             mediaPlayer.Completion += OnMusicCompletion;
             mediaPlayer.Error += OnMusicError;
@@ -34,14 +34,14 @@ namespace SiliconStudio.Xenko.Audio
                 SoundEffectInstance.CreateAudioTracks();
         }
 
-        private void StopCurrentMusic()
+        internal override void StopMusic()
         {
             mediaPlayer.Stop();
 
             ResetMusicPlayer();
         }
 
-        private void StartCurrentMusic()
+        internal override void StartMusic()
         {
             if (isMusicPlayerReady)
                 mediaPlayer.Start();
@@ -49,12 +49,12 @@ namespace SiliconStudio.Xenko.Audio
                 mediaPlayer.PrepareAsync();
         }
 
-        private void PauseCurrentMusic()
+        internal override void PauseMusic()
         {
             mediaPlayer.Pause();
         }
 
-        private void UpdateMusicVolume()
+        internal override void UpdateMusicVolume()
         {
             // volume factor used in order to adjust Sound Music and Sound Effect Maximum volumes
             const float volumeAdjustFactor = 0.5f;
@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Audio
             mediaPlayer.SetVolume(vol, vol);
         }
 
-        private void ResetMusicPlayer()
+        internal override void ResetMusicPlayer()
         {
             mediaPlayer.Reset();
 
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         private Stopwatch loadTime = new Stopwatch();
-        private void LoadNewMusic(SoundMusic soundMusic)
+        internal override void LoadNewMusic(SoundMusic soundMusic)
         {
             loadTime.Restart();
             try
@@ -116,12 +116,12 @@ namespace SiliconStudio.Xenko.Audio
             musicMediaEvents.Enqueue(new SoundMusicEventNotification(SoundMusicEvent.ReadyToBePlayed, args));
         }
 
-        private void RestartCurrentMusic()
+        internal override void RestartMusic()
         {
             mediaPlayer.SeekTo(0);
         }
 
-        private void PlatformSpecificProcessMusicReady()
+        internal override void ProcessMusicReadyImpl()
         {
             loadTime.Stop();
 
@@ -129,17 +129,17 @@ namespace SiliconStudio.Xenko.Audio
                 Logger.Verbose("Time taken for music '{0}' loading = {0}", currentMusic.Name, loadTime.ElapsedMilliseconds);
         }
 
-        private void ProcessPlayerClosed()
+        internal override void ProcessPlayerClosed()
         {
             throw new AudioSystemInternalException("Should never arrive here. (Used only by windows implementation.");
         }
 
-        private void ProcessMusicMetaData()
+        internal override void ProcessMusicMetaData()
         {
             throw new AudioSystemInternalException("Should never arrive here. (Used only by windows implementation.");
         }
 
-        private void ProcessMusicError(SoundMusicEventNotification eventNotification)
+        internal override void ProcessMusicError(SoundMusicEventNotification eventNotification)
         {
             if (eventNotification.Event != SoundMusicEvent.ErrorOccurred) // no errors
                 return;
@@ -170,16 +170,6 @@ namespace SiliconStudio.Xenko.Audio
 
             // reset the music player to a valid state for future plays
             ResetMusicPlayer();
-        }
-
-        private void PauseAudioPlatformSpecific()
-        {
-            // nothing to do for windows
-        }
-
-        private void ResumeAudioPlatformSpecific()
-        {
-            // nothing to do for windows
         }
     }
 }

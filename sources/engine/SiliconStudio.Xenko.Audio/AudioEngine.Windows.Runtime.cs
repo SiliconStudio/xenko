@@ -7,12 +7,12 @@ using SharpDX.Multimedia;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    partial class AudioEngine
+    partial class AudioEngineRuntime: AudioEngineWindows
     {
         private MediaEngine mediaEngine;
         private MediaEngineEx mediaEngineEx;
 
-        private void PlatformSpecificInit()
+        internal override void InitImpl()
         {
             // Setup Media Engine attributes
             using (var attributes = new MediaEngineAttributes { AudioEndpointRole = AudioEndpointRole.Console,
@@ -30,48 +30,48 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void PlatformSpecificDispose()
+        internal override void DisposeImpl()
         {
             mediaEngine.Shutdown();
             mediaEngine.Dispose();
         }
 
-        private void ResetMusicPlayer()
+        internal override void ResetMusicPlayer()
         {
-            StopCurrentMusic();
+            StopMusic();
 
             isMusicPlayerReady = false;
 
             currentMusic = null;
         }
 
-        private void RestartCurrentMusic()
+        internal override void RestartMusic()
         {
             mediaEngine.CurrentTime = 0;
         }
 
-        private void StartCurrentMusic()
+        internal override void StartMusic()
         {
             mediaEngine.Play();
         }
 
-        private void UpdateMusicVolume()
+        internal override void UpdateMusicVolume()
         {
             mediaEngine.Volume = currentMusic.Volume;
         }
 
-        private void StopCurrentMusic()
+        internal override void StopMusic()
         {
-            PauseCurrentMusic();
-            RestartCurrentMusic();
+            PauseMusic();
+            RestartMusic();
         }
 
-        private void PauseCurrentMusic()
+        internal override void PauseMusic()
         {
             mediaEngine.Pause();
         }
         
-        private void LoadNewMusic(SoundMusic lastPlayRequestMusicInstance)
+        internal override void LoadNewMusic(SoundMusic lastPlayRequestMusicInstance)
         {
             currentMusic = lastPlayRequestMusicInstance;
             
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessMusicError(SoundMusicEventNotification eventNotification)
+        internal override void ProcessMusicError(SoundMusicEventNotification eventNotification)
         {
             if (eventNotification.Event == SoundMusicEvent.ErrorOccurred)
             {
@@ -128,19 +128,14 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessMusicMetaData()
+        internal override void ProcessMusicMetaData()
         {
             throw new System.NotImplementedException();
         }
 
-        private void ProcessPlayerClosed()
+        internal override void ProcessPlayerClosed()
         {
             throw new System.NotImplementedException();
-        }
-
-        private void PlatformSpecificProcessMusicReady()
-        {
-            // nothing to do here
         }
     }
 }

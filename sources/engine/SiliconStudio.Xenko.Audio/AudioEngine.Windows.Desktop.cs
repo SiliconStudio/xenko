@@ -4,7 +4,6 @@
 
 using System;
 using System.Reflection;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -17,16 +16,15 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Audio
 {
-
     // We use MediaFoundation.MediaSession on windows desktop to play SoundMusics.
     // The class has an internal thread to process MediaSessionEvents.
-    public partial class AudioEngine
+    public class AudioEngineDesktop : AudioEngineWindows
     {
         /// <summary>
         /// This method is called during engine construction to initialize Windows.Desktop specific components.
         /// </summary>
         /// <remarks>Variables do not need to be locked here since there are no concurrent calls before the end of the construction.</remarks>
-        private void PlatformSpecificInit()
+        internal override void InitImpl()
         {
             // get the GUID of the AudioStreamVolume interface from Class Attributes.
             if (streamAudioVolumeGuid == Guid.Empty)
@@ -35,7 +33,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void PlatformSpecificDispose()
+        internal override void DisposeImpl()
         {
             if (mediaSession != null)
             {
@@ -198,7 +196,7 @@ namespace SiliconStudio.Xenko.Audio
         /// Load a new music into the media session. That is create a new session and a new topology and set the topology of the session.
         /// </summary>
         /// <param name="music"></param>
-        private void LoadNewMusic(SoundMusic music)
+        internal override void LoadNewMusic(SoundMusic music)
         {
             if (currentMusic != null || mediaSession != null)
                 throw new AudioSystemInternalException("State of the audio engine invalid at the entry of LoadNewMusic.");
@@ -238,7 +236,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
         
-        private void UpdateMusicVolume()
+        internal override void UpdateMusicVolume()
         {
             // volume factor used in order to adjust Sound Music and Sound Effect Maximum volumes
             const float volumeAdjustFactor = 0.5f;
@@ -258,32 +256,32 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
         
-        private void PauseCurrentMusic()
+        internal override void PauseMusic()
         {
             mediaSession.Pause();
         }
 
-        private void StopCurrentMusic()
+        internal override void StopMusic()
         {
             mediaSession.Stop();
         }
 
-        private void StartCurrentMusic()
+        internal override void StartMusic()
         {
             mediaSession.Start(null, new Variant ());
         }
 
-        private void ResetMusicPlayer()
+        internal override void ResetMusicPlayer()
         {
             mediaSession.Close();
         }
         
-        private void RestartCurrentMusic()
+        internal override void RestartMusic()
         {
             mediaSession.Start(null, new Variant { ElementType = VariantElementType.Long, Type = VariantType.Default, Value = (long)0 });
         }
 
-        private void PlatformSpecificProcessMusicReady()
+        internal override void ProcessMusicReadyImpl()
         {
             // The topology of the MediaSession is ready.
 
@@ -296,7 +294,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessMusicError(SoundMusicEventNotification eventNotification)
+        internal override void ProcessMusicError(SoundMusicEventNotification eventNotification)
         {
             var mediaEvent = (MediaEvent)eventNotification.EventData;
 
@@ -308,12 +306,12 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessMusicMetaData()
+        internal override void ProcessMusicMetaData()
         {
             throw new NotImplementedException();
         }
 
-        private void ProcessPlayerClosed()
+        internal override void ProcessPlayerClosed()
         {
             // The session finished to close, we have to dispose all related object.
             currentMusic = null;

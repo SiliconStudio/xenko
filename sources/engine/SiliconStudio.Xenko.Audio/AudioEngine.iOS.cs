@@ -9,12 +9,12 @@ using Foundation;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    public partial class AudioEngine
+    public partial class AudioEngineiOS: AudioEngine
     {
         private AVAudioPlayer audioPlayer;
         private bool currentMusicDataTypeIsUnsupported;
 
-        private void AudioEngineImpl(AudioDevice device)
+        internal override void InitializeAudioEngine(AudioDevice device)
         {
             if (nbOfAudioEngineInstances == 0)
                 ActivateAudioSession();
@@ -60,12 +60,12 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void DestroyImpl()
+        internal override void DestroyAudioEngine()
         {
             ResetMusicPlayer();
         }
 
-        private void LoadNewMusic(SoundMusic lastPlayRequestMusicInstance)
+        internal override void LoadNewMusic(SoundMusic lastPlayRequestMusicInstance)
         {
             if(audioPlayer != null)
                 throw new AudioSystemInternalException("Tried to create a new AudioPlayer but the current instance was not freed.");
@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Audio
             musicMediaEvents.Enqueue(new SoundMusicEventNotification(SoundMusicEvent.ErrorOccurred, e));
         }
 
-        private void ResetMusicPlayer()
+        internal override void ResetMusicPlayer()
         {
             currentMusic = null;
 
@@ -137,7 +137,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void StopCurrentMusic()
+        internal override void StopMusic()
         {
             if(audioPlayer == null)
                 return;
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Audio
             audioPlayer.CurrentTime = 0;
         }
 
-        private void PauseCurrentMusic()
+        internal override void PauseMusic()
         {
             if (audioPlayer == null)
                 return;
@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Audio
             audioPlayer.Pause();
         }
 
-        private void UpdateMusicVolume()
+        internal override void UpdateMusicVolume()
         {
             if (audioPlayer == null)
                 return;
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Audio
             audioPlayer.Volume = currentMusic.Volume;
         }
 
-        private void StartCurrentMusic()
+        internal override void StartMusic()
         {
             if (audioPlayer == null)
                 return;
@@ -178,18 +178,13 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void RestartCurrentMusic()
+        internal override void RestartMusic()
         {
-            StopCurrentMusic();
-            StartCurrentMusic();
+            StopMusic();
+            StartMusic();
         }
 
-        private void PlatformSpecificProcessMusicReady()
-        {
-            // nothing to do here.
-        }
-
-        private void ProcessMusicError(SoundMusicEventNotification eventNotification)
+        internal override void ProcessMusicError(SoundMusicEventNotification eventNotification)
         {
             if (eventNotification.Event == SoundMusicEvent.ErrorOccurred)
             {
@@ -198,7 +193,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessMusicMetaData()
+        internal override void ProcessMusicMetaData()
         {
             var errorMsg = "Try to play a music with other format than PCM or MP3.";
             var errorInFormat = currentMusicDataTypeIsUnsupported;
@@ -220,17 +215,19 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessPlayerClosed()
+        internal override void ProcessPlayerClosed()
         {
             throw new AudioSystemInternalException("Should never arrive here. (Used only by windows implementation.");
         }
 
-        private void PauseAudioPlatformSpecific()
+        /// <inheritDoc/>
+        protected override void PauseAudioImpl()
         {
             // todo: Should we Inactivate the audio session here?
         }
 
-        private void ResumeAudioPlatformSpecific()
+        /// <inheritDoc/>
+        protected override void ResumeAudioImpl()
         {
             ActivateAudioSession();
         }

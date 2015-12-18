@@ -13,7 +13,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             get
             {
-                return AudioEngine.MasteringVoice;
+                // TODO: Find a way to not perform a cast!
+                return ((AudioEngineWindows) AudioEngine).MasteringVoice;
             }
         }
     }

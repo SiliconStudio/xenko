@@ -32,6 +32,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.MediaFoundation.dll</HintPath>
     </Reference>
+    <Reference Condition="$(SiliconStudioUI.Contains('SDL'))" Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
@@ -43,6 +47,7 @@
     <Compile Include="AudioEngine.Android.cs" />
     <Compile Include="AudioEngine.cs" />
     <Compile Include="AudioEngine.iOS.cs" />
+    <Compile Include="AudioEngine.SDL.cs" />
     <Compile Include="AudioEngine.Windows.Desktop.cs" />
     <Compile Include="AudioEngine.Windows.Runtime.cs" />
     <Compile Include="AudioEngineState.cs" />
@@ -50,6 +55,7 @@
     <Compile Include="AudioListener.cs" />
     <Compile Include="AudioDataEncoding.cs" />
     <Compile Include="AudioVoice.iOS.cs" />
+    <Compile Include="AudioEngineFactory.cs" />
     <Compile Include="ConversionExtensions.Android.cs" />
     <Compile Include="ConversionExtensions.Windows.cs" />
     <Compile Include="DynamicSoundEffectInstance.Android.cs" />
