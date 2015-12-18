@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Particles
             Spawners = new TrackingCollection<SpawnerBase>();
             Spawners.CollectionChanged += SpawnersChanged;        
             
-            vertexBufferContext = new ParticleVertexBuffer();    
+            vertexBufferBuilder = new ParticleVertexBuffer();    
         }
 
         #region Modules
@@ -529,10 +529,31 @@ namespace SiliconStudio.Xenko.Particles
         [NotNull]
         public ParticleMaterialBase Material { get; set; } = new ParticleMaterialComputeColor();
 
-        private ParticleVertexBuffer vertexBufferContext;
+        private ParticleVertexBuffer vertexBufferBuilder;
+
+        /// <summary>
+        /// <see cref="PrepareForDraw"/> prepares and updates the Material, ShapeBuilder and VertexBuilder if necessary
+        /// </summary>
+        private void PrepareForDraw()
+        {
+            Material.PrepareForDraw(vertexBufferBuilder, ParticleSorter);
+
+            // Update the vertex builder and the vertex layout if needed
+            if (Material.VertexLayoutChanged)
+            {
+                vertexBufferBuilder.ResetVertexElementList();
+
+                Material.UpdateVertexLayout(vertexBufferBuilder);
+
+                vertexBufferBuilder.UpdateVertexLayout();
+            }
+        }
+
 
         public void Draw(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
         {
+            PrepareForDraw();
+
             Material.Setup(device, context, viewMatrix, projMatrix, color);
 
             // Get camera-space X and Y axes for billboards and sort the particles by depth
@@ -552,17 +573,17 @@ namespace SiliconStudio.Xenko.Particles
                 scaleIdentity = drawScale;
             }
 
-            vertexBufferContext.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
+            vertexBufferBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
 
-            vertexBufferContext.StartBuffer(device, Material.Effect);
+            vertexBufferBuilder.StartBuffer(device, Material.Effect);
 
-            ShapeBuilder.BuildVertexBuffer(vertexBufferContext, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
+            ShapeBuilder.BuildVertexBuffer(vertexBufferBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
-            vertexBufferContext.RestartBuffer();
+            vertexBufferBuilder.RestartBuffer();
 
-            Material.PatchVertexBuffer(vertexBufferContext, unitX, unitY, ParticleSorter);
+            Material.PatchVertexBuffer(vertexBufferBuilder, unitX, unitY, ParticleSorter);
 
-            vertexBufferContext.FlushBuffer(device);
+            vertexBufferBuilder.FlushBuffer(device);
         }
 
         public int GetRequiredQuadCount()

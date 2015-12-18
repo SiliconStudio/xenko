@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -84,6 +85,32 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMemberIgnore]
         protected bool isInitialized = false;
 
+        [DataMemberIgnore]
+        public bool VertexLayoutChanged { get; protected set; } = true;
+
+        private bool hasColorField = false;
+
+        public virtual void PrepareForDraw(ParticleVertexBuffer vertexBuilder, ParticleSorter sorter)
+        {
+            // Probe if the particles have a color field and if we need to support it
+            var colorField = sorter.GetField(ParticleFields.Color);
+            if (colorField.IsValid() != hasColorField)
+            {
+                VertexLayoutChanged = true;
+                hasColorField = colorField.IsValid();
+            }
+        }
+
+        public virtual void UpdateVertexLayout(ParticleVertexBuffer vertexBuilder)
+        {
+            if (hasColorField)
+            {
+                vertexBuilder.AddVertexElement(ParticleVertexElements.Color);
+            }
+
+            VertexLayoutChanged = false;
+        }
+
 
         /// <summary>
         /// Setups the current material using the graphics device.
@@ -114,9 +141,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             SetParameter(ParticleBaseKeys.ColorIsSRgb, graphicsDevice.ColorSpace == ColorSpace.Linear);
 
-            // TODO Will depend on dynamic parameters
-            //SetParameter(ParticleBaseKeys.ParticleColor, null);
-            SetParameter(ParticleBaseKeys.ParticleColor, new ShaderClassSource("ParticleColorStream"));
+            SetParameter(ParticleBaseKeys.ParticleColor, hasColorField ? new ShaderClassSource("ParticleColorStream") : null);
 
             // This is correct. We invert the value here to reduce calculations on the shader side later
             SetParameter(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
@@ -130,34 +155,26 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
         }
 
-        public virtual unsafe void PatchVertexBuffer(ParticleVertexBuffer vtxBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
+        public virtual unsafe void PatchVertexBuffer(ParticleVertexBuffer vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
-            var lifeField = sorter.GetField(ParticleFields.RemainingLife);
-            var randField = sorter.GetField(ParticleFields.RandomSeed);
-
-            if (!randField.IsValid() || !lifeField.IsValid())
-                return;
-
             var colorField = sorter.GetField(ParticleFields.Color);
-            var hasColorField = colorField.IsValid();
+            Debug.Assert(hasColorField == colorField.IsValid());
 
-            var colAttribute  = vtxBuilder.GetAccessor(VertexAttributes.Color);
-            var lifeAttribute = vtxBuilder.GetAccessor(VertexAttributes.Lifetime);
-            var randAttribute = vtxBuilder.GetAccessor(VertexAttributes.RandomSeed);
+            var colAttribute  = vertexBuilder.GetAccessor(VertexAttributes.Color);
+            Debug.Assert(hasColorField == (colAttribute.Size > 0));
 
             foreach (var particle in sorter)
             {
-                var color = hasColorField ? (uint)(*(Color4*)particle[colorField]).ToRgba() : 0xFFFFFFFF;
-                vtxBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
+                if (hasColorField)
+                {
+                    var color = (uint)(*(Color4*)particle[colorField]).ToRgba();
+                    vertexBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));
+                }
 
-                vtxBuilder.SetAttributePerParticle(lifeAttribute, particle[lifeField]);
-
-                vtxBuilder.SetAttributePerParticle(randAttribute, particle[randField]);
-
-                vtxBuilder.NextParticle();
+                vertexBuilder.NextParticle();
             }
 
-            vtxBuilder.RestartBuffer();
+            vertexBuilder.RestartBuffer();
         }
 
         protected virtual void InitializeCore(RenderContext context)
