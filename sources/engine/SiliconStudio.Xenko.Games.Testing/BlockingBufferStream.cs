@@ -106,7 +106,7 @@ namespace SiliconStudio.Xenko.Games.Testing
             innerStream.WriteByte(value);
         }
 
-#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if !SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME && !SILICONSTUDIO_RUNTIME_CORECLR
 
         /// <inheritdoc/>
         public override void Close()
