@@ -1,8 +1,8 @@
-﻿using System;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
@@ -27,21 +27,49 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         private readonly Dictionary<AttributeDescription, AttributeAccessor> availableAttributes;
 
+        private readonly List<VertexElement> vertexElementList;
+
         public ParticleVertexBuffer()
         {
-            // TODO This should be dynamic
-            VertexDeclaration
-                = new VertexDeclaration(
-                    VertexElement.Position<Vector3>(),
-                    VertexElement.TextureCoordinate<Vector2>(),
-                    VertexElement.Color<Color>(),
-                    new VertexElement("BATCH_LIFETIME", PixelFormat.R32_Float),
-                    new VertexElement("BATCH_RANDOMSEED", PixelFormat.R32_Float)
-                    );
+            vertexElementList = new List<VertexElement>();
+
+            ResetVertexElementList();
 
             indexStructSize = sizeof(short);
 
             availableAttributes = new Dictionary<AttributeDescription, AttributeAccessor>();
+
+            UpdateVertexLayout();
+        }
+
+        internal void ResetVertexElementList()
+        {
+            vertexElementList.Clear();
+
+            // Mandatory
+            AddVertexElement(ParticleVertexElements.Position);
+            AddVertexElement(ParticleVertexElements.TexCoord);
+
+            // Optional
+            AddVertexElement(ParticleVertexElements.Color);
+            AddVertexElement(ParticleVertexElements.Lifetime);
+            AddVertexElement(ParticleVertexElements.RandSeed);
+        }
+
+        internal void AddVertexElement(VertexElement element)
+        {
+            if (vertexElementList.Contains(element))
+                return;
+
+            vertexElementList.Add(element);
+        }
+
+        private void UpdateVertexLayout()
+        {
+            VertexDeclaration = new VertexDeclaration(vertexElementList.ToArray());
+
+            availableAttributes.Clear();
+
             var totalOffset = 0;
             foreach (var vertexElement in VertexDeclaration.VertexElements)
             {
@@ -52,6 +80,8 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
                 availableAttributes.Add(attrDesc, attrAccs);
             }
+
+            bufferIsDirty = true;
         }
 
         private bool bufferIsDirty = true;

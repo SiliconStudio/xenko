@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Particles.VertexLayouts
 {
@@ -18,4 +19,5 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         public static AttributeDescription RandomSeed = new AttributeDescription("BATCH_RANDOMSEED");
     }
+
 }

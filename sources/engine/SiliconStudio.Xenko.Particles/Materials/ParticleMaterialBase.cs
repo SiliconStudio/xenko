@@ -13,6 +13,7 @@ using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
@@ -112,6 +113,10 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // Setup the parameters
 
             SetParameter(ParticleBaseKeys.ColorIsSRgb, graphicsDevice.ColorSpace == ColorSpace.Linear);
+
+            // TODO Will depend on dynamic parameters
+            //SetParameter(ParticleBaseKeys.ParticleColor, null);
+            SetParameter(ParticleBaseKeys.ParticleColor, new ShaderClassSource("ParticleColorStream"));
 
             // This is correct. We invert the value here to reduce calculations on the shader side later
             SetParameter(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
