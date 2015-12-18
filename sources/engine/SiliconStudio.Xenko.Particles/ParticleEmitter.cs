@@ -142,8 +142,6 @@ namespace SiliconStudio.Xenko.Particles
 
             Spawners = new TrackingCollection<SpawnerBase>();
             Spawners.CollectionChanged += SpawnersChanged;        
-            
-            vertexBufferBuilder = new ParticleVertexBuffer();    
         }
 
         #region Modules
@@ -529,23 +527,27 @@ namespace SiliconStudio.Xenko.Particles
         [NotNull]
         public ParticleMaterialBase Material { get; set; } = new ParticleMaterialComputeColor();
 
-        private ParticleVertexBuffer vertexBufferBuilder;
+        private ParticleVertexBuilder vertexBuilder = new ParticleVertexBuilder();
 
         /// <summary>
         /// <see cref="PrepareForDraw"/> prepares and updates the Material, ShapeBuilder and VertexBuilder if necessary
         /// </summary>
         private void PrepareForDraw()
         {
-            Material.PrepareForDraw(vertexBufferBuilder, ParticleSorter);
+            Material.PrepareForDraw(vertexBuilder, ParticleSorter);
+
+            ShapeBuilder.PrepareForDraw(vertexBuilder, ParticleSorter);
 
             // Update the vertex builder and the vertex layout if needed
-            if (Material.VertexLayoutChanged)
+            if (Material.VertexLayoutHasChanged || ShapeBuilder.VertexLayoutHasChanged)
             {
-                vertexBufferBuilder.ResetVertexElementList();
+                vertexBuilder.ResetVertexElementList();
 
-                Material.UpdateVertexLayout(vertexBufferBuilder);
+                Material.UpdateVertexBuilder(vertexBuilder);
 
-                vertexBufferBuilder.UpdateVertexLayout();
+                ShapeBuilder.UpdateVertexBuilder(vertexBuilder);
+
+                vertexBuilder.UpdateVertexLayout();
             }
         }
 
@@ -573,17 +575,17 @@ namespace SiliconStudio.Xenko.Particles
                 scaleIdentity = drawScale;
             }
 
-            vertexBufferBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
+            vertexBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
 
-            vertexBufferBuilder.StartBuffer(device, Material.Effect);
+            vertexBuilder.StartBuffer(device, Material.Effect);
 
-            ShapeBuilder.BuildVertexBuffer(vertexBufferBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
+            ShapeBuilder.BuildVertexBuffer(vertexBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
-            vertexBufferBuilder.RestartBuffer();
+            vertexBuilder.RestartBuffer();
 
-            Material.PatchVertexBuffer(vertexBufferBuilder, unitX, unitY, ParticleSorter);
+            Material.PatchVertexBuffer(vertexBuilder, unitX, unitY, ParticleSorter);
 
-            vertexBufferBuilder.FlushBuffer(device);
+            vertexBuilder.FlushBuffer(device);
         }
 
         public int GetRequiredQuadCount()

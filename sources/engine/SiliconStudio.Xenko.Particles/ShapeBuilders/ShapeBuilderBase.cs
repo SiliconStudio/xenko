@@ -11,9 +11,24 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
     [DataContract("ShapeBuilderBase")]
     public abstract class ShapeBuilderBase
     {
-        public abstract int BuildVertexBuffer(ParticleVertexBuffer vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
+        public abstract int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter);
 
         public abstract int QuadsPerParticle { get; protected set; }
+
+        [DataMemberIgnore]
+        public bool VertexLayoutHasChanged { get; protected set; } = true;
+
+        public virtual void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
+        {
+            // Check if ParticleVertexElements should be changed and set VertexLayoutHasChanged = true; if they do
+        }
+
+        public virtual void UpdateVertexBuilder(ParticleVertexBuilder vertexBuilder)
+        {
+            // You can add ParticleVertexElements here
+
+            VertexLayoutHasChanged = false;
+        }
     }
 }

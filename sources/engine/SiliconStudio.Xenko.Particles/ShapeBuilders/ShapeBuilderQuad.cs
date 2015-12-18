@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         public override int QuadsPerParticle { get; protected set; } = 1;
 
         /// <inheritdoc />
-        public unsafe override int BuildVertexBuffer(ParticleVertexBuffer vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
+        public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
             // Get all required particle fields
