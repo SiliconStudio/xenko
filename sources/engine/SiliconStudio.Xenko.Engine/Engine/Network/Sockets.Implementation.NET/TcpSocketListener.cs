@@ -91,7 +91,7 @@ namespace Sockets.Plugin
             {
                 while (!cancelToken.IsCancellationRequested)
                 {
-                    var nativeClient = await Task.Run(() => _backingTcpListener.AcceptTcpClient(), cancelToken);
+                    var nativeClient = await _backingTcpListener.AcceptTcpClientAsync();
                     var wrappedClient = new TcpSocketClient(nativeClient, _bufferSize);
 
                     var eventArgs = new TcpSocketListenerConnectEventArgs(wrappedClient);

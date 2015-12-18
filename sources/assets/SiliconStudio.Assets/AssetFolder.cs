@@ -12,7 +12,7 @@ namespace SiliconStudio.Assets
     /// </summary>
     [DataContract("AssetFolder")]
     [DebuggerDisplay("Assets: {Path}")]
-    [NonIdentifitable]
+    [NonIdentifiable]
     public sealed class AssetFolder
     {
         private UDirectory path;

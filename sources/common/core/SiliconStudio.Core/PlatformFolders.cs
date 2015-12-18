@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -152,7 +152,15 @@ namespace SiliconStudio.Core
         private static string GetApplicationExecutablePath()
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_MONO_MOBILE
-            return (Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly()).Location;
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+            Assembly currentAssembly = (Assembly.GetEntryAssembly() ?? Assembly.GetExecutingAssembly());
+            return currentAssembly.Location;
+#else
+                // For the time being we use the location of the application context, and if none
+                // available the one from the current type which is semantically equivalent to Assembly.GetExecutingAssembly.
+            return AppContext.BaseDirectory ?? typeof(PlatformFolders).GetTypeInfo().Assembly.Location;
+#endif
+
 #elif SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return Path.Combine(Windows.ApplicationModel.Package.Current.InstalledLocation.Path, "XenkoGame.exe"); // Use generic name workaround
 #else

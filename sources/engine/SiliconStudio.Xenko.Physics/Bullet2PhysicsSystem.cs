@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Physics
 
         public Simulation Create(PhysicsProcessor sceneProcessor, PhysicsEngineFlags flags = PhysicsEngineFlags.None)
         {
-            var scene = new PhysicsScene { Processor = sceneProcessor, Simulation = new Simulation(flags) };
+            var scene = new PhysicsScene { Processor = sceneProcessor, Simulation = new Simulation(sceneProcessor, flags) };
             lock (this)
             {
                 scenes.Add(scene);

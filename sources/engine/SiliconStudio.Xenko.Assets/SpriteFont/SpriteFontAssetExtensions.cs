@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
             var glyphs = new List<Glyph>(staticFont.CharacterToGlyph.Values);
             var textures = staticFont.Textures;
             
-            var imageType = ImageFileType.Xenko;
+            var imageType = ImageFileType.Png;
             var textureFileName = new UFile(texturePath).GetFullPathWithoutExtension() + imageType.ToFileExtension();
 
             if (textures != null && textures.Count > 0)
@@ -55,8 +55,9 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
                 ExtraSpacing = staticFont.ExtraSpacing,
                 ExtraLineSpacing = staticFont.ExtraLineSpacing,
                 DefaultCharacter = asset.DefaultCharacter,
-                FontName = asset.Source != null ? (asset.Source.GetFileName() ?? "") : asset.FontName,
+                FontName = !string.IsNullOrEmpty(asset.Source) ? (asset.Source.GetFileName() ?? "") : asset.FontName,
                 IsPremultiplied = asset.IsPremultiplied,
+                IsSrgb = srgb
             };
 
             return precompiledAsset;

@@ -674,6 +674,12 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type ContextMenu}">
+          <ControlTemplate.Resources>
+            <Style TargetType="{x:Type Image}">
+              <Setter Property="MaxHeight" Value="16" />
+              <Setter Property="MaxWidth" Value="16" />
+            </Style>
+          </ControlTemplate.Resources>
           <Border x:Name="Border" Background="{DynamicResource MenuBackgroundBrush}" BorderBrush="{DynamicResource MenuBorderBrush}" BorderThickness="1">
             <StackPanel IsItemsHost="True" KeyboardNavigation.DirectionalNavigation="Cycle"/>
           </Border>
@@ -2125,6 +2131,12 @@
     <Setter Property="Template">
       <Setter.Value>
         <ControlTemplate TargetType="{x:Type Menu}">
+          <ControlTemplate.Resources>
+            <Style TargetType="{x:Type Image}">
+              <Setter Property="MaxHeight" Value="16" />
+              <Setter Property="MaxWidth" Value="16" />
+            </Style>
+          </ControlTemplate.Resources>
           <Grid>
             <Border Margin="1" x:Name="Border" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" />
             <StackPanel Background="{TemplateBinding Background}" IsItemsHost="True" ClipToBounds="True" Orientation="Horizontal" />

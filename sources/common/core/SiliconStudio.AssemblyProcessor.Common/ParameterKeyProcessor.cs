@@ -30,7 +30,7 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 // Find Type.GetTypeFromHandle
                 var typeType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(Type).FullName);
-                return assembly.MainModule.ImportReference(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));   
+                return assembly.MainModule.ImportReference(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));
             });
 
             var effectKeysStaticConstructors = new List<MethodReference>();

@@ -45,7 +45,9 @@
 
     <SiliconStudioGenerateDoc Condition="'$(SiliconStudioPublicApi)' == 'true'">true</SiliconStudioGenerateDoc>
 
-    <SiliconStudioCompilerTargets>$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
+    <!-- To preserve existing build layout, if no runtime is specified, we drop it from the name of the build directory -->
+    <SiliconStudioCompilerTargets Condition="'$(SiliconStudioRuntime)' == ''">$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
+    <SiliconStudioCompilerTargets Condition="'$(SiliconStudioRuntime)' != ''">$(MSBuildThisFileDirectory)SiliconStudio.$(SiliconStudioPlatform).$(SiliconStudioRuntime).$(SiliconStudioProjectType).targets</SiliconStudioCompilerTargets>
     <SiliconStudioCompilerTargetsEnable Condition="!Exists('$(SiliconStudioCompilerTargets)')">false</SiliconStudioCompilerTargetsEnable>
     <SiliconStudioCompilerTargetsEnable Condition=" '$(SiliconStudioPlatform)' != 'Windows' and $(SiliconStudioWindowsOnly) == 'true'">false</SiliconStudioCompilerTargetsEnable>
   </PropertyGroup>

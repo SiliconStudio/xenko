@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="EntityGroupAsset"/>)
     /// </summary>
     [DataContract()]
-    public abstract class EntityGroupAssetBase : Asset, IAssetPartContainer
+    public abstract class EntityGroupAssetBase : AssetComposite
     {
         protected EntityGroupAssetBase()
         {
@@ -28,13 +28,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// </value>
         [DataMember(20)]
         public EntityHierarchyData Hierarchy { get; set; }
-
-        /// <summary>
-        /// The various <see cref="EntityGroupAsset"/> that are instantiated in this one.
-        /// </summary>
-        [DataMemberIgnore]
-        [Obsolete]
-        public Dictionary<Guid, EntityBase> AssetBases = new Dictionary<Guid, EntityBase>();
 
         public override Asset CreateChildAsset(string location)
         {
@@ -79,32 +72,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// <param name="rootEntityId">An optional entity id to attach the part to it. If null, the part will be attached to the root entities of this instance</param>
         public void AddPart(EntityGroupAssetBase assetPartBase, Guid? rootEntityId = null)
         {
-            if (assetPartBase == null) throw new ArgumentNullException(nameof(assetPartBase));
-
-            // The assetPartBase must be a plain child asset
-            if (assetPartBase.Base == null) throw new InvalidOperationException($"Expecting a Base for {nameof(assetPartBase)}");
-            if (assetPartBase.BaseParts != null) throw new InvalidOperationException($"Expecting a null BaseParts for {nameof(assetPartBase)}");
-
-            // Check that the assetPartBase contains only entities from its base (no new entity, must be a plain ChildAsset)
-            if (assetPartBase.Hierarchy.Entities.Any(entity => !entity.Design.BaseId.HasValue))
-            {
-                throw new InvalidOperationException("An asset part base must contain only base assets");
-            }
-
-            // The instance id will be the id of the assetPartBase
-            var instanceId = assetPartBase.Id;
-            if (this.BaseParts == null)
-            {
-                this.BaseParts = new List<AssetBasePart>();
-            }
-
-            var basePart = this.BaseParts.FirstOrDefault(basePartIt => basePartIt.Base.Id == this.Id);
-            if (basePart == null)
-            {
-                basePart = new AssetBasePart(assetPartBase.Base);
-                this.BaseParts.Add(basePart);
-            }
-            basePart.InstanceIds.Add(instanceId);
+            AddPartCore(assetPartBase);
 
             // If a RootEntityId is given and found in this instance, add them as children of entity
             if (rootEntityId.HasValue && this.Hierarchy.Entities.ContainsKey(rootEntityId.Value))
@@ -125,44 +93,88 @@ namespace SiliconStudio.Xenko.Assets.Entities
             // Add all entities with the correct instance id
             foreach (var entityEntry in assetPartBase.Hierarchy.Entities)
             {
-                entityEntry.Design.BasePartInstanceId = instanceId;
+                entityEntry.Design.BasePartInstanceId = assetPartBase.Id;
                 this.Hierarchy.Entities.Add(entityEntry);
             }
         }
 
-        public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBasePart> newBaseParts)
+        public override MergeResult Merge(Asset baseAsset, Asset newBase, List<AssetBase> newBaseParts)
         {
             var entityMerge = new EntityGroupAssetMerge((EntityGroupAssetBase)baseAsset, this, (EntityGroupAssetBase)newBase, newBaseParts);
             return entityMerge.Merge();
         }
 
-        public IEnumerable<AssetPart> CollectParts()
+        public override IEnumerable<AssetPart> CollectParts()
         {
             foreach (var entityDesign in Hierarchy.Entities)
             {
-                yield return new AssetPart(entityDesign.Entity.Id, entityDesign.Design.BaseId);
+                yield return new AssetPart(entityDesign.Entity.Id, entityDesign.Design.BaseId, entityDesign.Design.BasePartInstanceId);
             }
         }
 
-        public bool ContainsPart(Guid id)
+        public override bool ContainsPart(Guid id)
         {
             return Hierarchy.Entities.ContainsKey(id);
         }
-    }
-
-    [DataContract("EntityBase")]
-    public class EntityBase
-    {
-        /// <summary>
-        /// The <see cref="EntityGroupAsset"/> base.
-        /// </summary>
-        public AssetBase Base;
-
-        public Guid SourceRoot;
 
         /// <summary>
-        /// Maps <see cref="Entity.Id"/> from this asset to base asset one.
+        /// Gets a mapping between a base and the list of instance actually used
         /// </summary>
-        public Dictionary<Guid, Guid> IdMapping;
+        /// <param name="baseParts">The list of baseParts to use. If null, use the parts from this instance directly.</param>
+        /// <returns>A mapping between a base asset and the list of instance actually used for inherited parts by composition</returns>
+        public Dictionary<EntityGroupAssetBase, List<Guid>> GetBasePartInstanceIds(List<AssetBase> baseParts = null)
+        {
+            if (baseParts == null)
+            {
+                baseParts = BaseParts;
+            }
+
+            var mapBaseToInstanceIds = new Dictionary<EntityGroupAssetBase, List<Guid>>();
+            if (baseParts == null)
+            {
+                return mapBaseToInstanceIds;
+            }
+
+            var mapInstanceIdToBaseId = new Dictionary<Guid, EntityGroupAssetBase>();
+            foreach (var entityIt in Hierarchy.Entities)
+            {
+                if (entityIt.Design.BaseId.HasValue && entityIt.Design.BasePartInstanceId.HasValue)
+                {
+                    var basePartInstanceId = entityIt.Design.BasePartInstanceId.Value;
+                    EntityGroupAssetBase existingAssetBase;
+                    if (!mapInstanceIdToBaseId.TryGetValue(basePartInstanceId, out existingAssetBase))
+                    {
+                        var baseId = entityIt.Design.BaseId.Value;
+                        foreach (var basePart in baseParts)
+                        {
+                            var assetBase = (EntityGroupAssetBase)basePart.Asset;
+                            if (assetBase.ContainsPart(baseId))
+                            {
+                                existingAssetBase = assetBase;
+                                break;
+                            }
+                        }
+
+                        if (existingAssetBase != null)
+                        {
+                            mapInstanceIdToBaseId.Add(basePartInstanceId, existingAssetBase);
+                        }
+                    }
+                }
+            }
+
+            foreach (var it in mapInstanceIdToBaseId)
+            {
+                List<Guid> ids;
+                if (!mapBaseToInstanceIds.TryGetValue(it.Value, out ids))
+                {
+                    ids = new List<Guid>();
+                    mapBaseToInstanceIds.Add(it.Value, ids);
+                }
+                ids.Add(it.Key);
+            }
+            return mapBaseToInstanceIds;
+        }
+
     }
 }
