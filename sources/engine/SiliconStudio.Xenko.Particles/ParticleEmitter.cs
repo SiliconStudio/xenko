@@ -586,10 +586,10 @@ namespace SiliconStudio.Xenko.Particles
 
             Material.PatchVertexBuffer(vertexBuilder, unitX, unitY, ParticleSorter);
 
-            if (Material.GetInputSignature() != vertexBuilder.GetInputSignature())
-            {
-                return;
-            }
+            //if (Material.GetInputSignature() != vertexBuilder.GetInputSignature())
+            //{
+            //    return;
+            //}
 
             vertexBuilder.FlushBuffer(device);
         }

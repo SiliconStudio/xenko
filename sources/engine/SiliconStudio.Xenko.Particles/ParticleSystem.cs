@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
@@ -91,7 +92,15 @@ namespace SiliconStudio.Xenko.Particles
             {
                 if (particleEmitter.Enabled)
                 {
-                    particleEmitter.Draw(device, context, ref viewMatrix, ref projMatrix, ref invViewMatrix, color);
+                    try
+                    {
+                        particleEmitter.Draw(device, context, ref viewMatrix, ref projMatrix, ref invViewMatrix, color);
+                    }
+                    catch (Exception e)
+                    {
+                        System.Console.WriteLine(e);
+                        throw;
+                    }
                 }
             }
         }
