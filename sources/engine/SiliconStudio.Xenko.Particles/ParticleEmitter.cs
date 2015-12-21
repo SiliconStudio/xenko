@@ -554,10 +554,10 @@ namespace SiliconStudio.Xenko.Particles
 
         public void Draw(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
         {
-            PrepareForDraw();
-
             Material.Setup(device, context, viewMatrix, projMatrix, color);
             Material.ApplyEffect(device);
+
+            PrepareForDraw();
 
             // Get camera-space X and Y axes for billboards and sort the particles by depth
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
@@ -585,6 +585,11 @@ namespace SiliconStudio.Xenko.Particles
             vertexBuilder.RestartBuffer();
 
             Material.PatchVertexBuffer(vertexBuilder, unitX, unitY, ParticleSorter);
+
+            if (Material.GetInputSignature() != vertexBuilder.GetInputSignature())
+            {
+                return;
+            }
 
             vertexBuilder.FlushBuffer(device);
         }

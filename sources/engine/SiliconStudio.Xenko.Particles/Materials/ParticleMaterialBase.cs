@@ -57,6 +57,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMemberIgnore]
         private DynamicEffectCompiler effectCompiler;
 
+        public EffectInputSignature GetInputSignature()
+        {
+            return Effect?.InputSignature;
+        }
+
         /// <summary>
         /// True if <see cref="ParticleMaterialBase.Initialize"/> has been called
         /// </summary>
