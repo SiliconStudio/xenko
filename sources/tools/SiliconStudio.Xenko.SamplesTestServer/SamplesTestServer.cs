@@ -8,7 +8,9 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Threading;
 using System.Threading.Tasks;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Xenko.Games.Testing;
 using SiliconStudio.Xenko.Games.Testing.Requests;
 using SiliconStudio.Xenko.Graphics;
@@ -21,6 +23,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
         {
             public SocketMessageLayer TesterSocket;
             public SocketMessageLayer GameSocket;
+            public PlatformType Platform;
         }
 
         private readonly Dictionary<string, TestPair> processes = new Dictionary<string, TestPair>();
@@ -31,6 +34,8 @@ namespace SiliconStudio.Xenko.SamplesTestServer
         public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
         }
+
+        private TestPair currenTestPair;
 
         protected override async void HandleClient(SimpleSocket clientSocket, string url)
         {
@@ -50,6 +55,11 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 var debugInfo = "";
                                 try
                                 {
+                                    var workingDir = Path.GetDirectoryName(request.Cmd);
+                                    if (workingDir.IsNullOrEmpty())
+                                    {
+                                        
+                                    }
                                     var start = new ProcessStartInfo
                                     {
                                         WorkingDirectory = Path.GetDirectoryName(request.Cmd),
@@ -73,7 +83,8 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 else
                                 {
-                                    processes[request.GameAssembly] = new TestPair { TesterSocket = socketMessageLayer };
+                                    currenTestPair = new TestPair { TesterSocket = socketMessageLayer, Platform = PlatformType.Windows };
+                                    processes[request.GameAssembly] = currenTestPair;
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
                                 break;
@@ -81,7 +92,6 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                         case (int)PlatformType.Android:
                             {
                                 Process process = null;                                
-                                var debugInfo = "";
                                 try
                                 {
                                     process = Process.Start("cmd.exe", $"/C adb shell monkey -p {request.GameAssembly}.{request.GameAssembly} -c android.intent.category.LAUNCHER 1");
@@ -93,11 +103,12 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
                                 if (process == null)
                                 {
-                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game process. " + debugInfo }).Wait();
+                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game process."}).Wait();
                                 }
                                 else
                                 {
-                                    processes[request.GameAssembly] = new TestPair { TesterSocket = socketMessageLayer };
+                                    currenTestPair = new TestPair { TesterSocket = socketMessageLayer, Platform = PlatformType.Android };
+                                    processes[request.GameAssembly] = currenTestPair;
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
                                 break;
@@ -108,13 +119,14 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 var debugInfo = "";
                                 try
                                 {
+                                    Thread.Sleep(5000); //ios processes might be slow to close, we must make sure that we start clean
                                     var start = new ProcessStartInfo
                                     {
                                         WorkingDirectory = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\",
                                         FileName = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\idevicedebug.exe",
-                                        Arguments = $"run com.your-company.{request.GameAssembly}"
+                                        Arguments = $"run com.your-company.{request.GameAssembly}",
+                                        UseShellExecute = false
                                     };
-                                    start.UseShellExecute = false;
                                     debugInfo = "Starting process " + start.FileName + " with path " + start.WorkingDirectory;
                                     process = Process.Start(start);
                                 }
@@ -129,7 +141,8 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 else
                                 {
-                                    processes[request.GameAssembly] = new TestPair { TesterSocket = socketMessageLayer };
+                                    currenTestPair = new TestPair { TesterSocket = socketMessageLayer, Platform = PlatformType.iOS };
+                                    processes[request.GameAssembly] = currenTestPair;
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
                                 break;
@@ -172,7 +185,10 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 var game = testerToGame[socketMessageLayer];
                 game.Send(request).Wait();
                 testerToGame.Remove(socketMessageLayer);
-                ShellHelper.RunProcess("cmd.exe", "/C taskkill /IM idevicedebug.exe /f");
+                if (currenTestPair.Platform == PlatformType.iOS)
+                {
+                    ShellHelper.RunProcess("cmd.exe", "/C taskkill /IM idevicedebug.exe /f");
+                }
             });
 
             socketMessageLayer.AddPacketHandler<ScreenShotPayload>(request =>
