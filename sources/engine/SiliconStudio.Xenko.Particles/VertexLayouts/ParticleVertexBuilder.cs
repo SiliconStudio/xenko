@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
             // Mandatory
             AddVertexElement(ParticleVertexElements.Position);
-            AddVertexElement(ParticleVertexElements.TexCoord);
+            AddVertexElement(ParticleVertexElements.TexCoord0);
         }
 
         internal void AddVertexElement(VertexElement element)

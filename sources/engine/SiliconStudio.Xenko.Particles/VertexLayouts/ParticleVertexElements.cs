@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
     {
         public static VertexElement Position = VertexElement.Position<Vector3>();
 
-        public static VertexElement TexCoord = VertexElement.TextureCoordinate<Vector2>();
+        public static VertexElement TexCoord0 = VertexElement.TextureCoordinate<Vector2>();
 
         public static VertexElement Color    = VertexElement.Color<Color>();
 
@@ -18,5 +18,24 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         public static VertexElement RandSeed = new VertexElement("BATCH_RANDOMSEED", PixelFormat.R32_Float);
 
+        public static VertexElement[] TexCoord = new VertexElement[]
+        {
+            new VertexElement("TEXCOORD",  0, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD",  1, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD",  2, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD",  3, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD",  4, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD",  5, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD",  6, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD",  7, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD",  8, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD",  9, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD", 10, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD", 11, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD", 12, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD", 13, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD", 14, VertexElement.ConvertTypeToFormat<Vector2>()),
+            new VertexElement("TEXCOORD", 15, VertexElement.ConvertTypeToFormat<Vector2>()),
+        };
     }
 }
