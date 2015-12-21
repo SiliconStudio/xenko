@@ -340,9 +340,11 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.11_0.Windows", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.11_0\SiliconStudio.Xenko.Graphics.Tests.11_0.Windows.csproj", "{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SamplesTestServer", "..\sources\tools\SiliconStudio.Xenko.SamplesTestServer\SiliconStudio.Xenko.SamplesTestServer.csproj", "{75D71310-ECF7-4592-9E35-3FE540040982}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particles", "..\sources\engine\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj", "{F32FDA80-B6DD-47A8-8681-437E2C0D3F31}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Games.Testing", "..\sources\engine\SiliconStudio.Xenko.Games.Testing\SiliconStudio.Xenko.Games.Testing.csproj", "{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particles.Tests", "..\sources\engine\SiliconStudio.Xenko.Particles.Tests\SiliconStudio.Xenko.Particles.Tests.csproj", "{5629F6EF-126B-4D89-AC46-1DAAC121EC3D}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.SamplesBootstrapper", "..\sources\tools\SiliconStudio.Xenko.SamplesBootstrapper\SiliconStudio.Xenko.SamplesBootstrapper.csproj", "{FF2A1FBB-3AB3-4CE5-AA81-A10E68232CD6}"
