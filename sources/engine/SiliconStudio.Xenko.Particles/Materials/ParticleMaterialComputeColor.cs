@@ -2,6 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Windows.Forms;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Assets;
@@ -74,10 +77,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseColor, shaderBaseColor);
 
                 // Check if shader code has changed
-                var code = shaderBaseColor.ToString();
-                if (!code.Equals(shaderCode))
+                if (!shaderBaseColor.Equals(shaderSource))
                 {
-                    shaderCode = code;
+                    shaderSource = shaderBaseColor;
                     VertexLayoutHasChanged = true;
                 }
             }
@@ -90,21 +92,37 @@ namespace SiliconStudio.Xenko.Particles.Materials
             //}
         }
 
-        private string shaderCode;
+        private ShaderSource shaderSource;
 
         public override void UpdateVertexBuilder(ParticleVertexBuilder vertexBuilder)
         {
             base.UpdateVertexBuilder(vertexBuilder);
 
-            if (shaderCode.Contains("COLOR0"))
+            // The arguments we need are in the GenericArguments, which is again just an array of strings
+            // We could search it element by element, but in the end getting the entire string and searching it instead is the same
+
+            var code = shaderSource?.ToString();
+
+            if (code.Contains("COLOR0"))
             {
                 vertexBuilder.AddVertexElement(ParticleVertexElements.Color);
             }
 
-            // TODO Also add texture coordinates 1 -15
-            if (shaderCode.Contains("TEXCOORD0"))
+            var coordIndex = code?.IndexOf("TEXCOORD", 0) ?? -1;
+            while (coordIndex >= 0)
             {
-                vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord);
+                var semanticIndex = 0;
+                var subStr = code.Substring(coordIndex + 8);
+
+                if (int.TryParse(Regex.Match(subStr, @"\d+").Value, out semanticIndex))
+                {
+                    semanticIndex = (semanticIndex <  0) ?  0 : semanticIndex;
+                    semanticIndex = (semanticIndex > 15) ? 15 : semanticIndex;
+
+                    vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[semanticIndex]);
+                }
+
+                coordIndex = code.IndexOf("TEXCOORD", coordIndex + 1);
             }
         }
 
