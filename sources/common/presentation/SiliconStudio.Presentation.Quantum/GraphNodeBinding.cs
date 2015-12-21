@@ -26,7 +26,8 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="propertyChanging">The delegate to invoke when the node content is about to change.</param>
         /// <param name="propertyChanged">The delegate to invoke when the node content has changed.</param>
         /// <param name="converter">A converter function to convert between the content type and the property type.</param>
-        public GraphNodeBinding(IGraphNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, Func<TContentType, TTargetType> converter)
+        /// <param name="notifyChangesOnly">If <c>True</c>, delegates will be invoked only if the content of the node has actually changed. Otherwise, they will be invoked every time the node is updated, even if the new value is equal to the previous one.</param>
+        public GraphNodeBinding(IGraphNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, Func<TContentType, TTargetType> converter, bool notifyChangesOnly = true)
         {
             if (node == null) throw new ArgumentNullException(nameof(node));
             if (converter == null) throw new ArgumentNullException(nameof(converter));
@@ -35,7 +36,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             changingHandler = (s, e) =>
             {
-                if (!Equals(e.OldValue, e.NewValue))
+                if (!notifyChangesOnly || !Equals(e.Content.Retrieve(e.OldValue, e.Index), e.Content.Retrieve(e.NewValue, e.Index)))
                 {
                     propertyChanging?.Invoke(new[] { propertyName });
                 }
@@ -44,7 +45,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             changedHandler = (s, e) =>
             {
-                if (!Equals(e.OldValue, e.NewValue))
+                if (!notifyChangesOnly || !Equals(e.Content.Retrieve(e.OldValue, e.Index), e.Content.Retrieve(e.NewValue, e.Index)))
                 {
                     propertyChanged?.Invoke(new[] { propertyName });
                 }
@@ -98,8 +99,9 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="propertyName">The name of the property of the view model that is bound to this instance.</param>
         /// <param name="propertyChanging">The delegate to invoke when the node content is about to change.</param>
         /// <param name="propertyChanged">The delegate to invoke when the node content has changed.</param>
-        public GraphNodeBinding(IGraphNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged)
-            : base(node, propertyName, propertyChanging, propertyChanged, x => x)
+        /// <param name="notifyChangesOnly">If <c>True</c>, delegates will be invoked only if the content of the node has actually changed. Otherwise, they will be invoked every time the node is updated, even if the new value is equal to the previous one.</param>
+        public GraphNodeBinding(IGraphNode node, string propertyName, PropertyChangeDelegate propertyChanging, PropertyChangeDelegate propertyChanged, bool notifyChangesOnly = true)
+            : base(node, propertyName, propertyChanging, propertyChanged, x => x, notifyChangesOnly)
         {
         }
 

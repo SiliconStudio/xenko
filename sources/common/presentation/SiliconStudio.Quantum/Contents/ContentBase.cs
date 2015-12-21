@@ -57,22 +57,28 @@ namespace SiliconStudio.Quantum.Contents
         /// <inheritdoc/>
         public virtual object Retrieve(object index)
         {
+            return Retrieve(Value, index);
+        }
+
+        /// <inheritdoc/>
+        public virtual object Retrieve(object value, object index)
+        {
             if (index != null)
             {
                 var collectionDescriptor = Descriptor as CollectionDescriptor;
                 var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
                 if (collectionDescriptor != null)
                 {
-                    return collectionDescriptor.GetValue(Value, (int)index);
+                    return collectionDescriptor.GetValue(value, (int)index);
                 }
                 if (dictionaryDescriptor != null)
                 {
-                    return dictionaryDescriptor.GetValue(Value, index);
+                    return dictionaryDescriptor.GetValue(value, index);
                 }
 
                 throw new NotSupportedException("Unable to get the node value, the collection is unsupported");
             }
-            return Value;
+            return value;
         }
 
         /// <inheritdoc/>
