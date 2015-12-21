@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 
         public Process SetupProxy(ConnectedDevice device)
         {
-            var currentDir = Directory.GetCurrentDirectory();
+            var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\";
             var iosId = Path.Combine(currentDir, "iproxy.exe");
 
             int testedLocalPort;
@@ -87,12 +87,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
 
         public async Task TrackDevices()
         {
-            //make sure we kill stale proxies
-            ShellHelper.RunProcess("cmd.exe", "/C taskkill /IM iproxy.exe /f");
-
-            await Task.Delay(2000);
-
-            var currentDir = Directory.GetCurrentDirectory();
+            var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\";
             var iosId = Path.Combine(currentDir, "idevice_id.exe");
 
             while (true)
