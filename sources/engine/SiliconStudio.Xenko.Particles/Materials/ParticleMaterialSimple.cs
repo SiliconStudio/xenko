@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("Face culling")]
         public ParticleMaterialCulling FaceCulling;
 
-        private bool hasColorField = false;
+        protected bool HasColorField { get; private set; } = false;
 
         public override void PrepareForDraw(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
         {
@@ -45,23 +45,17 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             // Probe if the particles have a color field and if we need to support it
             var colorField = sorter.GetField(ParticleFields.Color);
-            if (colorField.IsValid() != hasColorField)
+            if (colorField.IsValid() != HasColorField)
             {
                 VertexLayoutHasChanged = true;
-                hasColorField = colorField.IsValid();
+                HasColorField = colorField.IsValid();
             }
         }
 
         public override void UpdateVertexBuilder(ParticleVertexBuilder vertexBuilder)
         {
             base.UpdateVertexBuilder(vertexBuilder);
-
-            if (hasColorField)
-            {
-                vertexBuilder.AddVertexElement(ParticleVertexElements.Color);
-            }
         }
-
 
         /// <summary>
         /// Setups the current material using the graphics device.
@@ -92,7 +86,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             SetParameter(ParticleBaseKeys.ColorIsSRgb, graphicsDevice.ColorSpace == ColorSpace.Linear);
 
-            SetParameter(ParticleBaseKeys.ParticleColor, hasColorField ? new ShaderClassSource("ParticleColorStream") : new ShaderClassSource("ParticleColor"));
+//            SetParameter(ParticleBaseKeys.ParticleColor, HasColorField ? new ShaderClassSource("ParticleColorStream") : new ShaderClassSource("ParticleColor"));
 
             // This is correct. We invert the value here to reduce calculations on the shader side later
             SetParameter(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);
@@ -103,14 +97,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
             base.PatchVertexBuffer(vertexBuilder, invViewX, invViewY, sorter);
 
-            if (!hasColorField)
+            var colorField = sorter.GetField(ParticleFields.Color);
+            if (!colorField.IsValid())
                 return;
 
-            var colorField = sorter.GetField(ParticleFields.Color);
-            Debug.Assert(hasColorField == colorField.IsValid());
-
             var colAttribute = vertexBuilder.GetAccessor(VertexAttributes.Color);
-            Debug.Assert(hasColorField == (colAttribute.Size > 0));
+            if (colAttribute.Size <= 0)
+                return;
 
             foreach (var particle in sorter)
             {
