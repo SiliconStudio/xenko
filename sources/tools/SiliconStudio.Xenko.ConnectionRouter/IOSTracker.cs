@@ -35,6 +35,13 @@ namespace SiliconStudio.Xenko.ConnectionRouter
             return tcpConnInfoArray.All(endpoint => endpoint.Port != port);
         }
 
+        public static bool CanProxy()
+        {
+            var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\";
+            var iosId = Path.Combine(currentDir, "iproxy.exe");
+            return File.Exists(iosId);
+        }
+
         public Process SetupProxy(ConnectedDevice device)
         {
             var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\";

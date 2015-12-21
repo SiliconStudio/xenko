@@ -94,11 +94,15 @@ namespace SiliconStudio.Xenko.ConnectionRouter
                     new Thread(() => WindowsPhoneTracker.TrackDevices(router)) { IsBackground = true }.Start();
 
                     //Start iOS device discovery and proxy launcher
-                    new Thread(async () =>
+                    //Currently this is used only internally for QA testing... as we cannot attach the debugger from windows for normal usages..
+                    if (IosTracker.CanProxy())
                     {
-                        var iosTracker = new IosTracker(router);
-                        await iosTracker.TrackDevices();
-                    }) {  IsBackground = true }.Start();
+                        new Thread(async () =>
+                        {
+                            var iosTracker = new IosTracker(router);
+                            await iosTracker.TrackDevices();
+                        }) { IsBackground = true }.Start();
+                    }
 
                     // Start WinForms loop
                     System.Windows.Forms.Application.Run();
