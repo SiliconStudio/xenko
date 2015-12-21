@@ -18,30 +18,18 @@ namespace SiliconStudio.Xenko.Rendering
 {
     internal static partial class ShaderMixins
     {
-        internal partial class ParticleEffect  : IShaderMixinBuilder
+        internal partial class ParticleBaseEffect  : IShaderMixinBuilder
         {
             public void Generate(ShaderMixinSource mixin, ShaderMixinContext context)
             {
-                context.Mixin(mixin, "ParticleBaseEffect");
-                context.Mixin(mixin, "ParticleComputeColorShader");
-                if (context.GetParam(ParticleBaseKeys.BaseColor) != null)
-                {
-
-                    {
-                        var __mixinToCompose__ = context.GetParam(ParticleBaseKeys.BaseColor);
-                        var __subMixin = new ShaderMixinSource();
-                        context.PushComposition(mixin, "baseColor", __subMixin);
-                        context.Mixin(__subMixin, __mixinToCompose__);
-                        context.PopComposition();
-                    }
-                }
+                context.Mixin(mixin, "ParticleBase");
             }
 
             [ModuleInitializer]
             internal static void __Initialize__()
 
             {
-                ShaderMixinManager.Register("ParticleEffect", new ParticleEffect());
+                ShaderMixinManager.Register("ParticleBaseEffect", new ParticleBaseEffect());
             }
         }
     }

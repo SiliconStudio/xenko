@@ -50,16 +50,12 @@ class ParticleBase : ShaderBase, Texturing
         streams.ColorTarget = colorTarget;
     }
 
-    compose ParticleColor particleColor;
+    //compose ParticleColor particleColor;
 
     stage float4 Shading()
     {
-        //if (hasColor)
-        //{
-            return ColorScale * particleColor.Compute();
-        //}
-
-        //return ColorScale;
+        return ColorScale;
+        //return ColorScale * particleColor.Compute();
     }
 
     

@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             SetParameter(ParticleBaseKeys.ColorIsSRgb, graphicsDevice.ColorSpace == ColorSpace.Linear);
 
-            SetParameter(ParticleBaseKeys.ParticleColor, hasColorField ? new ShaderClassSource("ParticleColorStream") : null);
+            SetParameter(ParticleBaseKeys.ParticleColor, hasColorField ? new ShaderClassSource("ParticleColorStream") : new ShaderClassSource("ParticleColor"));
 
             // This is correct. We invert the value here to reduce calculations on the shader side later
             SetParameter(ParticleBaseKeys.AlphaAdditive, 1f - AlphaAdditive);

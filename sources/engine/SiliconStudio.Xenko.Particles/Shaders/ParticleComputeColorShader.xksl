@@ -11,7 +11,7 @@ class ParticleComputeColorShader : ParticleBase
     // -------------------------------------
     compose ComputeColor  baseColor;
 
-    compose ComputeColor  baseIntensity;
+    //compose ComputeColor  baseIntensity;
 
     // Shading of the sprite
     stage override float4 Shading()
@@ -21,9 +21,9 @@ class ParticleComputeColorShader : ParticleBase
         // -----------------------------------------------        
         float4 finalColor = base.Shading() * baseColor.Compute();
 
-        // -----------------------------------------------
-        // Color intensity------------------------------
-        finalColor.rgb *= baseIntensity.Compute().rrr;
+        //// -----------------------------------------------
+        //// Color intensity------------------------------
+        //finalColor.rgb *= baseIntensity.Compute().rrr;
 
         return finalColor;
     }
