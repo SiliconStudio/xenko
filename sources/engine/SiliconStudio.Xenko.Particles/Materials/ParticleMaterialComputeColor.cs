@@ -24,9 +24,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("Emissive")]
         public IComputeColor ComputeColor { get; set; } = new ComputeTextureColor();
 
-        [DataMember(110)]
-        [Display("Intensity")]
-        public IComputeScalar ComputeIntensity { get; set; } = new ComputeFloat();
+        //[DataMember(110)]
+        //[Display("Intensity")]
+        //public IComputeScalar ComputeIntensity { get; set; } = new ComputeFloat();
 
         [DataMember(200)]
         [Display("Texture coordinates")]
@@ -71,12 +71,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
                 shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseColor, shaderBaseColor);
             }
 
-            if (ComputeIntensity != null)
-            {
-                var shaderBaseIntensity = ComputeIntensity.GenerateShaderSource(shaderGeneratorContext,
-                    new MaterialComputeColorKeys(ParticleBaseKeys.IntensityMap, ParticleBaseKeys.IntensityValue, Color.White));
-                shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseIntensity, shaderBaseIntensity);
-            }
+            //if (ComputeIntensity != null)
+            //{
+            //    var shaderBaseIntensity = ComputeIntensity.GenerateShaderSource(shaderGeneratorContext,
+            //        new MaterialComputeColorKeys(ParticleBaseKeys.IntensityMap, ParticleBaseKeys.IntensityValue, Color.White));
+            //    shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseIntensity, shaderBaseIntensity);
+            //}
         }
 
         public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)

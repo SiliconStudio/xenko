@@ -54,6 +54,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ComputeColorWhite.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Shaders\ParticleBaseEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>ParticleBaseEffect.xkfx</DependentUpon>
+    </Compile>
     <Compile Include="Shaders\ParticleColor.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -172,6 +178,10 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleBase.cs</LastGenOutput>
     </None>
+    <None Include="Shaders\ParticleBaseEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>ParticleBaseEffect.cs</LastGenOutput>
+    </None>
     <None Include="Shaders\ParticleColor.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>ParticleColor.cs</LastGenOutput>
@@ -189,7 +199,9 @@
       <LastGenOutput>ParticleEffect.cs</LastGenOutput>
     </None>
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <None Include="Docs\VertexAttributes.txt" />
+  </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
