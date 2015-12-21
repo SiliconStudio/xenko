@@ -68,6 +68,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
             if (ComputeColor != null)
             {
                 var shaderBaseColor = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
+
+                var shaderText = shaderBaseColor.ToString();
+
                 shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseColor, shaderBaseColor);
             }
 

@@ -214,6 +214,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             }
         }
 
+        public EffectInputSignature GetInputSignature()
+        {
+            return ResourceContext.EffectInputSignature;
+        }
+
         // TransformAttributeDelegate
 
         /// <summary>
@@ -256,9 +261,13 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             /// </summary>
             public int IndexBufferPosition;
 
+            public EffectInputSignature EffectInputSignature;
+
             public DeviceResourceContext(GraphicsDevice device, Effect effect, VertexDeclaration declaration, int vertexCount, int indexStructSize, int indexCount)
             {
                 var vertexSize = declaration.CalculateSize();
+
+                EffectInputSignature = effect.InputSignature;
 
                 VertexCount = vertexCount;
                 IndexCount  = indexCount;
