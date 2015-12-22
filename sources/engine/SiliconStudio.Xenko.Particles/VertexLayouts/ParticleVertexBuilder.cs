@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
 
@@ -48,7 +47,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
             // Mandatory
             AddVertexElement(ParticleVertexElements.Position);
-            AddVertexElement(ParticleVertexElements.TexCoord0);
+//            AddVertexElement(ParticleVertexElements.TexCoord0);
         }
 
         internal void AddVertexElement(VertexElement element)
@@ -59,16 +58,24 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             vertexElementList.Add(element);
         }
 
+        public AttributeDescription DefaultTexCoords { get; private set; } = new AttributeDescription(null);
+
         internal void UpdateVertexLayout()
         {
             VertexDeclaration = new VertexDeclaration(vertexElementList.ToArray());
 
             availableAttributes.Clear();
+            DefaultTexCoords = new AttributeDescription(null);
 
             var totalOffset = 0;
             foreach (var vertexElement in VertexDeclaration.VertexElements)
             {
-                var attrDesc = new AttributeDescription(vertexElement.SemanticName);
+                var attrDesc = new AttributeDescription(vertexElement.SemanticAsText);
+                if (DefaultTexCoords.GetHashCode() == 0 && vertexElement.SemanticAsText.Contains("TEXCOORD"))
+                {
+                    DefaultTexCoords = attrDesc;
+                }
+
                 var stride = vertexElement.Format.SizeInBytes();
                 var attrAccs = new AttributeAccessor { Offset = totalOffset, Size = stride };
                 totalOffset += stride;

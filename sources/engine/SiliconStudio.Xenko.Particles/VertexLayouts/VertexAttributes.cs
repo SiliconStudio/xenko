@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
     {
         public static AttributeDescription Position = new AttributeDescription("POSITION");
 
-        public static AttributeDescription TexCoord = new AttributeDescription("TEXCOORD");
+//        public static AttributeDescription TexCoord = new AttributeDescription("TEXCOORD");
 
         public static AttributeDescription Color = new AttributeDescription("COLOR");
 

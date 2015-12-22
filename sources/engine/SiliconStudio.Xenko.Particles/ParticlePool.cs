@@ -12,6 +12,9 @@ namespace SiliconStudio.Xenko.Particles
 {
     public class ParticlePool : IDisposable, IEnumerable
     {
+        // TODO Perf?
+        // private Func<IntPtr, int, int, IntPtr, int, int> CopyParticlePoolFunc;
+             
         public delegate void CopyParticlePoolDelegate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize);
 
         public enum ListPolicy

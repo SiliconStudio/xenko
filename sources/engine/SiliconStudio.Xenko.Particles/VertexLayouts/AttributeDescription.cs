@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         public AttributeDescription(string name)
         {
-            hashCode = name.GetHashCode();
+            hashCode = name?.GetHashCode() ?? 0;
         }
     }
 }

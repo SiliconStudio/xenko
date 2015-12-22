@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
     {
         public static VertexElement Position = VertexElement.Position<Vector3>();
 
-        public static VertexElement TexCoord0 = VertexElement.TextureCoordinate<Vector2>();
+//        public static VertexElement TexCoord0 = VertexElement.TextureCoordinate<Vector2>();
 
         public static VertexElement Color    = VertexElement.Color<Color>();
 
