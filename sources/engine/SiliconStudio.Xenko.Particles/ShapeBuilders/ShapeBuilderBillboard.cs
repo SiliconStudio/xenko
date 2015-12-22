@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var renderedParticles = 0;
 
             var posAttribute = vtxBuilder.GetAccessor(VertexAttributes.Position);
-            var texAttribute = vtxBuilder.GetAccessor(VertexAttributes.TexCoord);
+            var texAttribute = vtxBuilder.GetAccessor(vtxBuilder.DefaultTexCoords);
 
             foreach (var particle in sorter)
             {

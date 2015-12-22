@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             if (!lifeField.IsValid())
                 return;
 
-            var texAttribute = vertexBuilder.GetAccessor(VertexAttributes.TexCoord);
+            var texAttribute = vertexBuilder.GetAccessor(vertexBuilder.DefaultTexCoords);
 
             foreach (var particle in sorter)
             {

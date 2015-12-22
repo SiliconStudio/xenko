@@ -2,9 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Globalization;
 using System.Text.RegularExpressions;
-using System.Windows.Forms;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Assets;
@@ -47,7 +45,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             UpdateShaders();
         }
 
-        private int shadersUpdateCounter = 0;
+        private int shadersUpdateCounter;
         private void UpdateShaders()
         {
             // TODO Don't do this every frame!!! <- Propagate changes
@@ -103,12 +101,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             var code = shaderSource?.ToString();
 
-            if (code.Contains("COLOR0"))
+            if (code?.Contains("COLOR0") ?? false)
             {
-                vertexBuilder.AddVertexElement(ParticleVertexElements.Color);
+                vertexBuilder.AddVertexElement(ParticleVertexElements.Color);                
             }
 
-            var coordIndex = code?.IndexOf("TEXCOORD", 0) ?? -1;
+            var coordIndex = code?.IndexOf("TEXCOORD", 0, StringComparison.Ordinal) ?? -1;
             while (coordIndex >= 0)
             {
                 var semanticIndex = 0;
