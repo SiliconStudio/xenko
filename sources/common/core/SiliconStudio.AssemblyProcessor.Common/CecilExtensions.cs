@@ -621,6 +621,8 @@ namespace SiliconStudio.AssemblyProcessor
                 clonedMethod.Body.Variables.AddRange(
                     method.Body.Variables.Select(x => new VariableDefinition(x.Name, inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(x.VariableType)))));
 
+                clonedMethod.Body.InitLocals = method.Body.InitLocals;
+
                 var mappedInstructions = new Dictionary<Instruction, Instruction>();
                 foreach (var instruction in method.Body.Instructions)
                 {
