@@ -2,10 +2,9 @@
 Id: 0e2b48ac-a089-4ea6-b62b-f797c64f6904
 Tags: []
 Source: 83cbacc4-ae04-4a9b-94ef-4ecd49557287:StaticFonts/Calibri64
-FontDataFile: ../../../../data/tests/PrecompileFonts/Calibri64.xkimg
+FontDataFile: ../../../../data/tests/PrecompileFonts/Calibri64 (Precompiled).png
 BaseOffset: 81.25
 DefaultLineSpacing: 104.166672
-FontName: 
 Glyphs:
     -   BitmapIndex: 0
         Character: 32
@@ -487,5 +486,6 @@ Glyphs:
         Offset: {X: 1.0, Y: -54.0}
         Subrect: {X: 248, Y: 240, Width: 40, Height: 54}
         XAdvance: 43.25
-Kernings: null
+Kernings: []
+FontName: Calibri
 Size: 64.0

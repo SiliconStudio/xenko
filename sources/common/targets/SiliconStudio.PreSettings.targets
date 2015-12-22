@@ -57,6 +57,7 @@
 
   <ItemGroup>
     <SiliconStudioUIListDefines Include="SDL"><Argument>SILICONSTUDIO_XENKO_UI_SDL</Argument></SiliconStudioUIListDefines>
+    <SiliconStudioUIListDefines Include="OPENTK"><Argument>SILICONSTUDIO_XENKO_UI_OPENTK</Argument></SiliconStudioUIListDefines>
     <SiliconStudioUIListDefines Include="WINFORMS"><Argument>SILICONSTUDIO_XENKO_UI_WINFORMS</Argument></SiliconStudioUIListDefines>
     <SiliconStudioUIListDefines Include="WPF"><Argument>SILICONSTUDIO_XENKO_UI_WPF</Argument></SiliconStudioUIListDefines>
   </ItemGroup>

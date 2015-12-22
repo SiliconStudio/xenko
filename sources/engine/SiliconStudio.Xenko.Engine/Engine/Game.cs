@@ -330,7 +330,11 @@ namespace SiliconStudio.Xenko.Engine
                     && Input.IsKeyDown(Keys.C)
                     && Input.IsKeyReleased(Keys.F12))
                 {
+#if !SILICONSTUDIO_RUNTIME_CORECLR
                     var currentFilePath = Assembly.GetEntryAssembly().Location;
+#else
+                    var currentFilePath = Directory.GetCurrentDirectory();
+#endif
                     var timeNow = DateTime.Now.ToString("s", CultureInfo.InvariantCulture).Replace(':', '_');
                     var newFileName = Path.Combine(
                         Path.GetDirectoryName(currentFilePath),

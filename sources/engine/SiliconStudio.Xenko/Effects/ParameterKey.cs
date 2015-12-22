@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             if (name == null) throw new ArgumentNullException("name");
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME || SILICONSTUDIO_RUNTIME_CORECLR
             Name = name;
 #else
             Name = string.Intern(name);

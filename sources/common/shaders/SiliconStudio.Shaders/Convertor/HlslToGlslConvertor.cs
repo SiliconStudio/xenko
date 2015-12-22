@@ -697,7 +697,7 @@ namespace SiliconStudio.Shaders.Convertor
             TypeBase newFieldType;
             int semanticIndex = 0;
             var semantic = ResolveSemantic(inputSemantic, type, false, "tmptmp", out newFieldType, out semanticIndex, inputSemantic.Span);
-            if (semantic.Name.Text.StartsWith("gl_fragdata", StringComparison.InvariantCultureIgnoreCase) && (newFieldType != type || type is ArrayType))
+            if (CultureInfo.InvariantCulture.CompareInfo.IsPrefix(semantic.Name.Text, "gl_fragdata", CompareOptions.IgnoreCase) && (newFieldType != type || type is ArrayType))
             {
                 return true;
                 //// Generate only fragdata when whe basetype is completly changing
@@ -3692,9 +3692,9 @@ namespace SiliconStudio.Shaders.Convertor
 
             string variableName = glSemantic == null ? varName : glSemantic.Name.Text;
 
-            bool addGlslGlobalVariable = string.Compare(variableName, "gl_Position", StringComparison.InvariantCultureIgnoreCase) == 0 && defaultType != type;
+            bool addGlslGlobalVariable = CultureInfo.InvariantCulture.CompareInfo.Compare(variableName, "gl_Position", CompareOptions.IgnoreCase) == 0 && defaultType != type;
 
-            if (variableName.StartsWith("gl_fragdata", StringComparison.InvariantCultureIgnoreCase) && isPixelShaderOutputFragDataMuliType)
+            if (CultureInfo.InvariantCulture.CompareInfo.IsPrefix(variableName, "gl_fragdata", CompareOptions.IgnoreCase) && isPixelShaderOutputFragDataMuliType)
             {
                 // IF varName is null, this is a semantic from a returned function, so use a generic out_gl_fragdata name
                 // otherwise, use the original variable name.

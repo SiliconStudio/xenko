@@ -99,10 +99,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     }
                     else if (entityScriptReference != null)
                     {
+                        var entityReference = new Entity { Id = entityScriptReference.Entity.Id };
+                        var scriptComponent = new ScriptComponent();
+                        entityReference.Add(scriptComponent);
+
                         var entityScript = (Script)Activator.CreateInstance(entityScriptReference.ScriptType);
                         entityScript.Id = entityScriptReference.Id;
-                        var entityReference = new Entity { Id = entityScriptReference.Entity.Id };
-                        entityReference.Add(new ScriptComponent { Scripts = { entityScript } });
+                        scriptComponent.Scripts.Add(entityScript);
 
                         objectContext.Instance = entityScript;
                     }
@@ -172,7 +175,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 scriptLevel++;
             }
 
-            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 1;
+            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 1 || scriptLevel > 1;
         }
 
         private static void LeaveNode(Type type)
@@ -190,7 +193,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 scriptLevel--;
             }
 
-            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 1;
+            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 1 || scriptLevel > 1;
         }
 
         public bool CanVisit(Type type)

@@ -106,7 +106,7 @@ namespace SiliconStudio.Assets
 
         private void OnObjectDeserialized(int i, object newObject)
         {
-            if (objectReferences != null)
+            if (objectReferences != null && newObject != null)
             {
                 var previousObject = objectReferences[i];
                 ShadowObject.CopyDynamicProperties(previousObject, newObject);
