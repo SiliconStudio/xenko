@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
@@ -113,7 +114,7 @@ namespace SiliconStudio.Shaders.Convertor
                 {
                     var textureType = textureVariable.Type.ResolveType();
 
-                    if (textureType is TextureType || (textureType.IsBuiltIn && textureType.Name.Text.StartsWith("Texture", StringComparison.InvariantCultureIgnoreCase)))
+                    if (textureType is TextureType || (textureType.IsBuiltIn && CultureInfo.InvariantCulture.CompareInfo.IsPrefix(textureType.Name.Text, "Texture", CompareOptions.IgnoreCase)))
                     {
                         switch (memberRef.Member)
                         {

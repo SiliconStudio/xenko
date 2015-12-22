@@ -128,33 +128,43 @@ namespace SiliconStudio.AssemblyProcessor
         }
 
         /// <summary>
-        /// Finds the corlib assembly.
+        /// Finds the corlib assembly which can be either mscorlib.dll or System.Runtime.dll depending on the .NET runtime environment.
         /// </summary>
-        /// <param name="assembly">The assembly.</param>
+        /// <param name="assembly">Assembly where System.Object is found.</param>
         /// <returns></returns>
-        /// <exception cref="System.InvalidOperationException">Missing mscorlib.dll from assembly</exception>
         public static AssemblyDefinition FindCorlibAssembly(AssemblyDefinition assembly)
         {
-            AssemblyNameReference corlibReference = null;
-            
-            // First, check current assemblies reference for the highest version of mscorlib referenced (if any)
-            foreach (var assemblyNameReference in assembly.MainModule.AssemblyReferences)
-            {
-                if (assemblyNameReference.Name.ToLower() == "mscorlib"
-                    && (corlibReference == null || assemblyNameReference.Version > corlibReference.Version))
-                {
-                    corlibReference = assemblyNameReference;
-                }
-            }
-
-            // Use CoreLibrary (note: we want mscorlib, not System.Runtime)
-            if (corlibReference == null)
-                corlibReference = assembly.MainModule.TypeSystem.CoreLibrary as AssemblyNameReference;
-
-            if (corlibReference == null || corlibReference.Name != "mscorlib")
-                corlibReference = new AssemblyNameReference("mscorlib", new Version(4, 0, 0, 0));
-
+            // Ask Cecil for the core library which will be either mscorlib or System.Runtime.
+            AssemblyNameReference corlibReference = assembly.MainModule.TypeSystem.CoreLibrary as AssemblyNameReference;
             return assembly.MainModule.AssemblyResolver.Resolve(corlibReference);
+        }
+
+        /// <summary>
+        /// Finds the assembly in which the generic collections are defined. This can be either in mscorlib.dll or in System.Collections.dll depending on the .NET runtime environment.
+        /// </summary>
+        /// <param name="assembly">Assembly where the generic collections are defined.</param>
+        /// <returns></returns>
+        public static AssemblyDefinition FindCollectionsAssembly(AssemblyDefinition assembly)
+        {
+            // Ask Cecil for the core library which will be either mscorlib or System.Runtime.
+            var corlibReference = FindCorlibAssembly(assembly);
+
+            if (corlibReference.Name.Name.ToLower() == "system.runtime")
+            {
+                // The core library is System.Runtime, so the collections assemblies are in System.Collections.dll.
+                // First we look if it is not already referenced by `assembly' and if not, we made an explicit reference
+                // to System.Collections.
+                var collectionsAssembly = assembly.MainModule.AssemblyReferences.FirstOrDefault(ass => ass.Name.ToLower() == "system.collections");
+                if (collectionsAssembly == null)
+                {
+                    collectionsAssembly = new AssemblyNameReference("System.Collections", new Version(4,0,0,0));
+                }
+                return assembly.MainModule.AssemblyResolver.Resolve(collectionsAssembly);
+            }
+            else
+            {
+                return corlibReference;
+            }
         }
 
         /// <summary>
@@ -610,6 +620,8 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 clonedMethod.Body.Variables.AddRange(
                     method.Body.Variables.Select(x => new VariableDefinition(x.Name, inflatedType.Module.ImportReference(resolveGenericsVisitor.VisitDynamic(x.VariableType)))));
+
+                clonedMethod.Body.InitLocals = method.Body.InitLocals;
 
                 var mappedInstructions = new Dictionary<Instruction, Instruction>();
                 foreach (var instruction in method.Body.Instructions)

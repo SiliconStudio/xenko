@@ -6,11 +6,14 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
 {
     public class Simulation : IDisposable
     {
+        private PhysicsProcessor processor;
+
         private readonly BulletSharp.DiscreteDynamicsWorld discreteDynamicsWorld;
         private readonly BulletSharp.CollisionWorld collisionWorld;
 
@@ -62,10 +65,13 @@ namespace SiliconStudio.Xenko.Physics
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
         /// </summary>
+        /// <param name="processor"></param>
         /// <param name="flags">The flags.</param>
         /// <exception cref="System.NotImplementedException">SoftBody processing is not yet available</exception>
-        internal Simulation(PhysicsEngineFlags flags = PhysicsEngineFlags.None)
+        internal Simulation(PhysicsProcessor processor, PhysicsEngineFlags flags = PhysicsEngineFlags.None)
         {
+            this.processor = processor;
+
             if (flags == PhysicsEngineFlags.None)
             {
                 if (OnSimulationCreation != null)
@@ -444,6 +450,17 @@ namespace SiliconStudio.Xenko.Physics
             broadphase?.Dispose();
             dispatcher?.Dispose();
             collisionConfiguration?.Dispose();
+        }
+
+        /// <summary>
+        /// Enables or disables the rendering of collider shapes
+        /// </summary>
+        public bool ColliderShapesRendering
+        {
+            set
+            {
+                processor.RenderColliderShapes(value);
+            }
         }
 
         /// <summary>

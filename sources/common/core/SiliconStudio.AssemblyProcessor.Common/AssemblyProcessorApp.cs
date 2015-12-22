@@ -209,7 +209,12 @@ namespace SiliconStudio.AssemblyProcessor
                     // It's recommended to do it in the original code to avoid this extra step.
 
                     var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(assemblyDefinition);
-                    var stringType = mscorlibAssembly.MainModule.GetTypeResolved(typeof(string).FullName);
+                    if (mscorlibAssembly == null)
+                    {
+                        OnErrorAction("Missing reference to mscorlib.dll or System.Runtime.dll in assembly!");
+                        return false;
+                    }
+
                     var internalsVisibleToAttribute = mscorlibAssembly.MainModule.GetTypeResolved(typeof(InternalsVisibleToAttribute).FullName);
                     var serializationAssemblyName = assemblyDefinition.Name.Name + ".Serializers";
                     bool internalsVisibleAlreadyApplied = false;
@@ -244,7 +249,7 @@ namespace SiliconStudio.AssemblyProcessor
                         {
                             ConstructorArguments =
                             {
-                                new CustomAttributeArgument(assemblyDefinition.MainModule.ImportReference(stringType), serializationAssemblyName)
+                                new CustomAttributeArgument(assemblyDefinition.MainModule.TypeSystem.String, serializationAssemblyName)
                             }
                         };
                         assemblyDefinition.CustomAttributes.Add(internalsVisibleAttribute);
@@ -281,7 +286,7 @@ namespace SiliconStudio.AssemblyProcessor
                     var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(assemblyDefinition);
                     if (mscorlibAssembly == null)
                     {
-                        OnErrorAction("Missing mscorlib.dll from assembly");
+                        OnErrorAction("Missing reference to mscorlib.dll or System.Runtime.dll in assembly!");
                         return false;
                     }
 

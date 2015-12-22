@@ -25,8 +25,9 @@ namespace Irony.Parsing {
       if (parseTree == null || parseTree.Root == null) return string.Empty;
       var xdoc = ToXmlDocument(parseTree); 
       StringWriter sw = new StringWriter();
-      XmlTextWriter xw = new XmlTextWriter(sw);
-      xw.Formatting = Formatting.Indented;
+      XmlWriterSettings xs = new XmlWriterSettings();
+      xs.Indent = true;
+      XmlWriter xw = XmlWriter.Create(sw, xs);
       xdoc.WriteTo(xw);
       xw.Flush();
       return sw.ToString();
