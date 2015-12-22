@@ -124,9 +124,27 @@ namespace SiliconStudio.Xenko.Particles.Materials
             effect.Apply(graphicsDevice, parameterCollectionGroup, applyEffectStates: false);
         }
 
+        private int EffectCompilationAttemptCountdown = 0;
         private void UpdateEffect(GraphicsDevice graphicsDevice)
         {
-            effectCompiler.Update(effectInstance, null);
+            if (EffectCompilationAttemptCountdown > 0)
+            {
+                EffectCompilationAttemptCountdown--;
+                return;
+            }
+
+            try
+            {
+                effectCompiler.Update(effectInstance, null);
+            }
+            catch (Exception)
+            {
+                // If the compilation fails do not update the current effect and try again later
+                EffectCompilationAttemptCountdown = 30; // Try again in 30 frames
+                Debug.WriteLine("Shader compilation errors!");
+                VertexLayoutHasChanged = false;
+                return;
+            }
 
             effect = effectInstance.Effect;
 
