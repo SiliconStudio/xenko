@@ -106,7 +106,14 @@
         <Reference Include="SiliconStudio.Xenko.Native">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Native.dll</HintPath>
         </Reference>
-        <Reference Condition="'$(SiliconStudioAutoTesting)' == 'true'" Include="SiliconStudio.Xenko.Games.Testing">
+      </ItemGroup>
+    </When>
+  </Choose>
+
+  <Choose>
+    <When Condition="'$(SiliconStudioAutoTesting)' == 'true'">
+      <ItemGroup>
+        <Reference Include="SiliconStudio.Xenko.Games.Testing">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.Testing.dll</HintPath>
         </Reference>
       </ItemGroup>
