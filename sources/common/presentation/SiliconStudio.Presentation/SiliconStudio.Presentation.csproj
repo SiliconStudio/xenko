@@ -42,6 +42,7 @@
     <Compile Include="Behaviors\BindCurrentToolTipStringBehavior.cs" />
     <Compile Include="Behaviors\ChangeCursorOnSliderThumbBehavior.cs" />
     <Compile Include="Behaviors\CloseWindowBehavior.cs" />
+    <Compile Include="Behaviors\ContainTextAdornerBehavior.cs" />
     <Compile Include="Behaviors\DoubleClickCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\DragOverAutoScrollBehavior.cs" />
     <Compile Include="Behaviors\HyperlinkCloseWindowBehavior.cs" />
