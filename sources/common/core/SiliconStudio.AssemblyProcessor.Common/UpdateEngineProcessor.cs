@@ -10,7 +10,6 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using SiliconStudio.AssemblyProcessor.Serializers;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 using FieldAttributes = Mono.Cecil.FieldAttributes;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
@@ -65,10 +64,6 @@ namespace SiliconStudio.AssemblyProcessor
             // Get or create method
             var updateEngineType = GetOrCreateUpdateType(context.Assembly, true);
             var mainPrepareMethod = new MethodDefinition("UpdateMain", MethodAttributes.HideBySig | MethodAttributes.Assembly | MethodAttributes.Static, context.Assembly.MainModule.TypeSystem.Void);
-            // To have safe code.
-            mainPrepareMethod.Body.InitLocals = true;
-            // Add a local variable at position 0 to store the addresses.
-            mainPrepareMethod.Body.Variables.Add (new VariableDefinition(context.Assembly.MainModule.TypeSystem.UIntPtr));
             updateEngineType.Methods.Add(mainPrepareMethod);
 
             // Get some useful Cecil objects from SiliconStudio.Core
@@ -116,7 +111,7 @@ namespace SiliconStudio.AssemblyProcessor
             updateEngineRegisterMemberResolverMethod = context.Assembly.MainModule.ImportReference(siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngine").Methods.First(x => x.Name == "RegisterMemberResolver"));
 
             var typeType = CecilExtensions.FindCorlibAssembly(context.Assembly).MainModule.GetTypeResolved(typeof(Type).FullName);
-            getTypeFromHandleMethod = context.Assembly.MainModule.ImportReference(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));
+            getTypeFromHandleMethod = context.Assembly.MainModule.Import(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));
 
             // Make sure it is called at module startup
             var moduleInitializerAttribute = siliconStudioCoreModule.GetType("SiliconStudio.Core.ModuleInitializerAttribute");
@@ -249,74 +244,46 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             var il = updateCurrentMethod.Body.GetILProcessor();
+            var emptyObjectField = updateMainMethod.DeclaringType.Fields.FirstOrDefault(x => x.Name == "emptyObject");
 
             // Note: forcing fields and properties to be processed in all cases
             foreach (var serializableItem in ComplexClassSerializerGenerator.GetSerializableItems(type, true, ComplexTypeSerializerFlags.SerializePublicFields | ComplexTypeSerializerFlags.SerializePublicProperties | ComplexTypeSerializerFlags.Updatable))
             {
                 var fieldReference = serializableItem.MemberInfo as FieldReference;
-                var field = fieldReference?.Resolve();
-                // Process only fields that are not read-only and in a concrete class.
-                if ((field != null) && (!field.IsInitOnly) && (!type.Resolve().IsAbstract))
+                if (fieldReference != null)
                 {
-                    var localVariable = new VariableDefinition(type);
-                    updateCurrentMethod.Body.Variables.Add(localVariable);
+                    var field = fieldReference.Resolve();
 
-                    var fieldType = context.Assembly.MainModule.ImportReference(
-                        replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(field.FieldType) : field.FieldType).FixupValueType();
+                    // First time it is needed, let's create empty object: var emptyObject = new object();
+                    if (emptyObjectField == null)
+                    {
+                        emptyObjectField = new FieldDefinition("emptyObject", FieldAttributes.Static | FieldAttributes.Private, context.Assembly.MainModule.TypeSystem.Object);
 
-                    // Generate the System.Type instance
+                        // Create static ctor that will initialize this object
+                        var staticConstructor = new MethodDefinition(".cctor",
+                                                MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+                                                context.Assembly.MainModule.TypeSystem.Void);
+                        var staticConstructorIL = staticConstructor.Body.GetILProcessor();
+                        staticConstructorIL.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(emptyObjectField.FieldType.Resolve().GetConstructors().Single(x => !x.IsStatic && !x.HasParameters)));
+                        staticConstructorIL.Emit(OpCodes.Stsfld, emptyObjectField);
+                        staticConstructorIL.Emit(OpCodes.Ret);
+
+                        updateMainMethod.DeclaringType.Fields.Add(emptyObjectField);
+                        updateMainMethod.DeclaringType.Methods.Add(staticConstructor);
+                    }
+
                     il.Emit(OpCodes.Ldtoken, type);
                     il.Emit(OpCodes.Call, getTypeFromHandleMethod);
-
-                    // Generate the Name of the field
                     il.Emit(OpCodes.Ldstr, field.Name);
 
-                    if (type.IsValueType)
-                    {
-                        // Generate a local of the right type on the stack but only for value types
+                    il.Emit(OpCodes.Ldsfld, emptyObjectField);
+                    il.Emit(OpCodes.Ldflda, context.Assembly.MainModule.ImportReference(fieldReference));
+                    il.Emit(OpCodes.Ldsfld, emptyObjectField);
+                    il.Emit(OpCodes.Conv_I);
+                    il.Emit(OpCodes.Sub);
+                    il.Emit(OpCodes.Conv_I4);
 
-                        // Load the address of offset of the field in the struct pointed by localVariable
-                        il.Emit(OpCodes.Ldloca, localVariable);
-                        il.Emit(OpCodes.Conv_U);
-                        il.Emit(OpCodes.Stloc_0);
-                        il.Emit(OpCodes.Ldloca, localVariable);
-                        il.Emit(OpCodes.Ldflda, context.Assembly.MainModule.ImportReference(field));
-                        il.Emit(OpCodes.Conv_U);
-                        il.Emit(OpCodes.Ldloc_0);
-                        il.Emit(OpCodes.Sub);
-                        il.Emit(OpCodes.Conv_I4);
-                    }
-                    else
-                    {
-                        // Case of a reference type. We have to build a routine that will create the initialization.
-                        // First time it is needed, let's create empty object: var emptyObject = new object();
-
-                        var defaultConstructor = type.Resolve().GetConstructors().SingleOrDefault(c => !c.IsStatic && !c.HasParameters && c.IsPublic);
-                        if (defaultConstructor != null)
-                        {
-                            il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(defaultConstructor));
-                            il.Emit(OpCodes.Stloc, localVariable);
-
-                            // Load the address of offset of the field in the object pointed by localVariable
-                            il.Emit(OpCodes.Ldloc, localVariable);
-                            il.Emit(OpCodes.Ldflda, context.Assembly.MainModule.ImportReference(field));
-                            // load the address of the struct containing the field
-                            il.Emit(OpCodes.Ldloc, localVariable);
-                            // Compute the offset
-                            il.Emit(OpCodes.Sub);
-                            // Note that we convert to a Int32 which is not correct but our offsets should not be greater than that.
-                            il.Emit(OpCodes.Conv_I4);
-                        }
-                        else
-                        {
-                            // Currently we emit some IL to easily see if there is no constructor available, maybe
-                            // we should throw an exception while running the assembly processor.
-                            il.Emit(OpCodes.Ldstr, "Could not find " + type.ToString() + "'s default constructor");
-                            il.Emit(OpCodes.Pop);
-                            il.Emit(OpCodes.Ldc_I4_0);
-                        }
-                    }
-
+                    var fieldType = context.Assembly.MainModule.ImportReference(replaceGenericsVisitor != null ? replaceGenericsVisitor.VisitDynamic(field.FieldType) : field.FieldType).FixupValueType();
                     il.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(updatableFieldGenericCtor).MakeGeneric(fieldType));
                     il.Emit(OpCodes.Call, updateEngineRegisterMemberMethod);
                 }
