@@ -10,7 +10,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Xenko.Games.Testing;
 using SiliconStudio.Xenko.Games.Testing.Requests;
 using SiliconStudio.Xenko.Graphics;
@@ -24,18 +23,18 @@ namespace SiliconStudio.Xenko.SamplesTestServer
             public SocketMessageLayer TesterSocket;
             public SocketMessageLayer GameSocket;
             public PlatformType Platform;
+            public string GameName;
+            public Process Process;
         }
 
         private readonly Dictionary<string, TestPair> processes = new Dictionary<string, TestPair>();
 
-        private readonly Dictionary<SocketMessageLayer, SocketMessageLayer> testerToGame = new Dictionary<SocketMessageLayer, SocketMessageLayer>();
-        private readonly Dictionary<SocketMessageLayer, SocketMessageLayer> gameToTester = new Dictionary<SocketMessageLayer, SocketMessageLayer>();
+        private readonly Dictionary<SocketMessageLayer, TestPair> testerToGame = new Dictionary<SocketMessageLayer, TestPair>();
+        private readonly Dictionary<SocketMessageLayer, TestPair> gameToTester = new Dictionary<SocketMessageLayer, TestPair>();
 
         public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
         }
-
-        private TestPair currenTestPair;
 
         protected override async void HandleClient(SimpleSocket clientSocket, string url)
         {
@@ -56,21 +55,20 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 try
                                 {
                                     var workingDir = Path.GetDirectoryName(request.Cmd);
-                                    if (workingDir.IsNullOrEmpty())
+                                    if (workingDir != null)
                                     {
-                                        
-                                    }
-                                    var start = new ProcessStartInfo
-                                    {
-                                        WorkingDirectory = Path.GetDirectoryName(request.Cmd),
-                                        FileName = request.Cmd,
-                                    };
-                                    start.EnvironmentVariables["SiliconStudioXenkoDir"] = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
-                                    start.UseShellExecute = false;
+                                        var start = new ProcessStartInfo
+                                        {
+                                            WorkingDirectory = workingDir,
+                                            FileName = request.Cmd,
+                                        };
+                                        start.EnvironmentVariables["SiliconStudioXenkoDir"] = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
+                                        start.UseShellExecute = false;
 
-                                    debugInfo = "Starting process " + start.FileName + " with path " + start.WorkingDirectory;
-                                    socketMessageLayer.Send(new LogRequest { Message = debugInfo }).Wait();
-                                    process = Process.Start(start);
+                                        debugInfo = "Starting process " + start.FileName + " with path " + start.WorkingDirectory;
+                                        socketMessageLayer.Send(new LogRequest { Message = debugInfo }).Wait();
+                                        process = Process.Start(start);
+                                    }
                                 }
                                 catch (Exception ex)
                                 {
@@ -83,8 +81,9 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 else
                                 {
-                                    currenTestPair = new TestPair { TesterSocket = socketMessageLayer, Platform = PlatformType.Windows };
+                                    var currenTestPair = new TestPair { TesterSocket = socketMessageLayer, Platform = PlatformType.Windows, GameName = request.GameAssembly, Process = process };
                                     processes[request.GameAssembly] = currenTestPair;
+                                    testerToGame[socketMessageLayer] = currenTestPair;
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
                                 break;
@@ -107,8 +106,9 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 else
                                 {
-                                    currenTestPair = new TestPair { TesterSocket = socketMessageLayer, Platform = PlatformType.Android };
+                                    var currenTestPair = new TestPair { TesterSocket = socketMessageLayer, Platform = PlatformType.Android, GameName = request.GameAssembly, Process = process };
                                     processes[request.GameAssembly] = currenTestPair;
+                                    testerToGame[socketMessageLayer] = currenTestPair;
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
                                 break;
@@ -141,8 +141,9 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 else
                                 {
-                                    currenTestPair = new TestPair { TesterSocket = socketMessageLayer, Platform = PlatformType.iOS };
+                                    var currenTestPair = new TestPair { TesterSocket = socketMessageLayer, Platform = PlatformType.iOS, GameName = request.GameAssembly, Process = process };
                                     processes[request.GameAssembly] = currenTestPair;
+                                    testerToGame[socketMessageLayer] = currenTestPair;
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
                                 }
                                 break;
@@ -152,43 +153,66 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 else //Game process
                 {
                     TestPair pair;
-                    if (processes.TryGetValue(request.GameAssembly, out pair))
-                    {
-                        pair.GameSocket = socketMessageLayer;
-                        testerToGame[pair.TesterSocket] = pair.GameSocket;
-                        gameToTester[pair.GameSocket] = pair.TesterSocket;
-                        pair.TesterSocket.Send(new StatusMessageRequest { Error = false, Message = "Start" }).Wait();
-                    }
+                    if (!processes.TryGetValue(request.GameAssembly, out pair)) return;
+
+                    pair.GameSocket = socketMessageLayer;
+
+                    testerToGame[pair.TesterSocket] = pair;
+                    gameToTester[pair.GameSocket] = pair;
+
+                    pair.TesterSocket.Send(new StatusMessageRequest { Error = false, Message = "Start" }).Wait();
+
+                    Console.WriteLine($"Starting test {request.GameAssembly}");
                 }
             });
 
             socketMessageLayer.AddPacketHandler<KeySimulationRequest>(request =>
             {
                 var game = testerToGame[socketMessageLayer];
-                game.Send(request).Wait();
+                game.GameSocket.Send(request).Wait();
             });
 
             socketMessageLayer.AddPacketHandler<TapSimulationRequest>(request =>
             {
                 var game = testerToGame[socketMessageLayer];
-                game.Send(request).Wait();
+                game.GameSocket.Send(request).Wait();
             });
 
             socketMessageLayer.AddPacketHandler<ScreenshotRequest>(request =>
             {
                 var game = testerToGame[socketMessageLayer];
-                game.Send(request).Wait();
+                game.GameSocket.Send(request).Wait();
             });
 
             socketMessageLayer.AddPacketHandler<TestEndedRequest>(request =>
             {
                 var game = testerToGame[socketMessageLayer];
-                game.Send(request).Wait();
+                game.GameSocket.Send(request).Wait();
+
                 testerToGame.Remove(socketMessageLayer);
-                if (currenTestPair.Platform == PlatformType.iOS)
-                {
-                    ShellHelper.RunProcess("cmd.exe", "/C taskkill /IM idevicedebug.exe /f");
-                }
+                gameToTester.Remove(game.GameSocket);
+                processes.Remove(game.GameName);
+
+                socketMessageLayer.Context.Dispose();
+                game.GameSocket.Context.Dispose();
+
+                game.Process.Kill();
+
+                Console.WriteLine($"Finished test {game.GameName}");
+            });
+
+            socketMessageLayer.AddPacketHandler<TestAbortedRequest>(request =>
+            {
+                var game = testerToGame[socketMessageLayer];
+
+                testerToGame.Remove(socketMessageLayer);
+                processes.Remove(game.GameName);
+
+                socketMessageLayer.Context.Dispose();
+
+                game.Process.Kill();
+
+                Console.WriteLine($"Aborted test {game.GameName}");
             });
 
             socketMessageLayer.AddPacketHandler<ScreenShotPayload>(request =>
@@ -203,10 +227,20 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 imageData.Image.Save(resultFileStream, ImageFileType.Png);
                 resultFileStream.Dispose();
 
-                tester.Send(new ScreenshotStored()).Wait();
+                tester.TesterSocket.Send(new ScreenshotStored()).Wait();
             });
 
-            Task.Run(() => socketMessageLayer.MessageLoop());
+            
+            Task.Run(async () =>
+            {
+                try
+                {
+                    await socketMessageLayer.MessageLoop();
+                }
+                catch
+                {
+                }              
+            });
         }
     }
 }

@@ -22,6 +22,8 @@ namespace SiliconStudio.Xenko.Games.Testing
     /// </summary>
     internal class GameTestingSystem : GameSystemBase
     {
+        public static bool Initialized;
+
         private readonly ConcurrentQueue<Action> drawActions = new ConcurrentQueue<Action>();
         private SocketMessageLayer socketMessageLayer;
 
@@ -35,13 +37,6 @@ namespace SiliconStudio.Xenko.Games.Testing
         public override async void Initialize()
         {
             var game = (Game)Game;
-
-            //Quit after 1 minute anyway!
-            Task.Run(async () =>
-            {
-                await Task.Delay(60000);
-                Quit(game);
-            });
 
             var url = $"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe";
 
@@ -89,7 +84,9 @@ namespace SiliconStudio.Xenko.Games.Testing
 
             socketMessageLayer.AddPacketHandler<TestEndedRequest>(request =>
             {
-                Quit(game);
+                socketMessageLayer.Context.Dispose();
+                game.Exit();
+                Quit();
             });
 
             Task.Run(() => socketMessageLayer.MessageLoop());
@@ -98,6 +95,8 @@ namespace SiliconStudio.Xenko.Games.Testing
             {
                 await socketMessageLayer.Send(new TestRegistrationRequest { GameAssembly = game.Settings.PackageName, Tester = false, Platform = (int)Platform.Type });
             });
+
+            Initialized = true;
         }
 
         public override void Draw(GameTime gameTime)
@@ -135,10 +134,8 @@ namespace SiliconStudio.Xenko.Games.Testing
         public static extern void exit(int status);
 #endif
 
-        private static void Quit(Game game)
+        public static void Quit()
         {
-            game.Exit();
-
 #if SILICONSTUDIO_PLATFORM_ANDROID
             global::Android.OS.Process.KillProcess(global::Android.OS.Process.MyPid());
 #elif SILICONSTUDIO_PLATFORM_IOS
