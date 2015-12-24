@@ -35,6 +35,12 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector4Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
 
         /// <summary>
+        /// Identifies the <see cref="EditingMode"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty EditingModeProperty =
+            DependencyProperty.Register("EditingMode", typeof(VectorEditingMode), typeof(Vector4Editor), new PropertyMetadata(VectorEditingMode.Normal));
+
+        /// <summary>
         /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector4"/> associated to this control.
         /// </summary>
         public float X { get { return (float)GetValue(XProperty); } set { SetValue(XProperty, value); } }
@@ -59,6 +65,8 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
 
+        public VectorEditingMode EditingMode { get { return (VectorEditingMode)GetValue(EditingModeProperty); } set { SetValue(EditingModeProperty, value); } }
+
         /// <inheritdoc/>
         protected override void UpdateComponentsFromValue(Vector4 value)
         {
@@ -73,20 +81,58 @@ namespace SiliconStudio.Presentation.Controls
         protected override Vector4 UpdateValueFromComponent(DependencyProperty property)
         {
             if (property == LengthProperty)
+                return FromLength(Value, Length);
+
+            switch (EditingMode)
             {
-                var newValue = Value;
-                newValue.Normalize();
-                newValue *= Length;
-                return newValue;
+                case VectorEditingMode.Normal:
+                    if (property == XProperty)
+                        return new Vector4(X, Value.Y, Value.Z, Value.W);
+                    if (property == YProperty)
+                        return new Vector4(Value.X, Y, Value.Z, Value.W);
+                    if (property == ZProperty)
+                        return new Vector4(Value.X, Value.Y, Z, Value.W);
+                    if (property == WProperty)
+                        return new Vector4(Value.X, Value.Y, Value.Z, W);
+                    break;
+
+                case VectorEditingMode.AllComponents:
+                    if (property == XProperty)
+                        return new Vector4(X);
+                    if (property == YProperty)
+                        return new Vector4(Y);
+                    if (property == ZProperty)
+                        return new Vector4(Z);
+                    if (property == WProperty)
+                        return new Vector4(W);
+                    break;
+
+                case VectorEditingMode.Length:
+                    if (property == XProperty)
+                    {
+                        var length = (float)CoerceLengthValue(this, X);
+                        return FromLength(Value, length);
+                    }
+                    if (property == YProperty)
+                    {
+                        var length = (float)CoerceLengthValue(this, Y);
+                        return FromLength(Value, length);
+                    }
+                    if (property == ZProperty)
+                    {
+                        var length = (float)CoerceLengthValue(this, Z);
+                        return FromLength(Value, length);
+                    }
+                    if (property == WProperty)
+                    {
+                        var length = (float)CoerceLengthValue(this, W);
+                        return FromLength(Value, length);
+                    }
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(EditingMode));
             }
-            if (property == XProperty)
-                return new Vector4(X, Value.Y, Value.Z, Value.W);
-            if (property == YProperty)
-                return new Vector4(Value.X, Y, Value.Z, Value.W);
-            if (property == ZProperty)
-                return new Vector4(Value.X, Value.Y, Z, Value.W);
-            if (property == WProperty)
-                return new Vector4(Value.X, Value.Y, Value.Z, W);
 
             throw new ArgumentException("Property unsupported by method UpdateValueFromComponent.");
         }
@@ -104,6 +150,14 @@ namespace SiliconStudio.Presentation.Controls
         {
             baseValue = CoerceComponentValue(sender, baseValue);
             return Math.Max(0.0f, (float)baseValue);
+        }
+
+        private static Vector4 FromLength(Vector4 value, float length)
+        {
+            var newValue = value;
+            newValue.Normalize();
+            newValue *= length;
+            return newValue;
         }
     }
 }
