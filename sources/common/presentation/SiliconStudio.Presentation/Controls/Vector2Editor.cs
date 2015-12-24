@@ -25,6 +25,12 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector2Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
 
         /// <summary>
+        /// Identifies the <see cref="EditingMode"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty EditingModeProperty =
+            DependencyProperty.Register("EditingMode", typeof(VectorEditingMode), typeof(Vector2Editor), new FrameworkPropertyMetadata(VectorEditingMode.Normal, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+
+        /// <summary>
         /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector2"/> associated to this control.
         /// </summary>
         public float X { get { return (float)GetValue(XProperty); } set { SetValue(XProperty, value); } }
@@ -39,6 +45,8 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
 
+        public VectorEditingMode EditingMode { get { return (VectorEditingMode)GetValue(EditingModeProperty); } set { SetValue(EditingModeProperty, value); } }
+
         /// <inheritdoc/>
         protected override void UpdateComponentsFromValue(Vector2 value)
         {
@@ -51,17 +59,41 @@ namespace SiliconStudio.Presentation.Controls
         protected override Vector2 UpdateValueFromComponent(DependencyProperty property)
         {
             if (property == LengthProperty)
+                return FromLength(Value, Length);
+
+            switch (EditingMode)
             {
-                var newValue = Value;
-                newValue.Normalize();
-                newValue *= Length;
-                return newValue;
+                case VectorEditingMode.Normal:
+                    if (property == XProperty)
+                        return new Vector2(X, Value.Y);
+                    if (property == YProperty)
+                        return new Vector2(Value.X, Y);
+                    break;
+
+                case VectorEditingMode.AllComponents:
+                    if (property == XProperty)
+                        return new Vector2(X);
+                    if (property == YProperty)
+                        return new Vector2(Y);
+                    break;
+
+                case VectorEditingMode.Length:
+                    if (property == XProperty)
+                    {
+                        var length = (float)CoerceLengthValue(this, X);
+                        return FromLength(Value, length);
+                    }
+                    if (property == YProperty)
+                    {
+                        var length = (float)CoerceLengthValue(this, Y);
+                        return FromLength(Value, length);
+                    }
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(EditingMode));
             }
-            if (property == XProperty)
-                return new Vector2(X, Value.Y);
-            if (property == YProperty)
-                return new Vector2(Value.X, Y);
-              
+
             throw new ArgumentException("Property unsupported by method UpdateValueFromComponent.");
         }
 
@@ -78,6 +110,14 @@ namespace SiliconStudio.Presentation.Controls
         {
             baseValue = CoerceComponentValue(sender, baseValue);
             return Math.Max(0.0f, (float)baseValue);
+        }
+
+        private static Vector2 FromLength(Vector2 value, float length)
+        {
+            var newValue = value;
+            newValue.Normalize();
+            newValue *= length;
+            return newValue;
         }
     }
 }
