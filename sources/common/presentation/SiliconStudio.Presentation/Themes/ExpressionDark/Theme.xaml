@@ -3747,6 +3747,18 @@
   </Style>
 
   <!--  EDITORS  -->
+  <Style x:Key="EditingModeToggleButtonStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
+    <Setter Property="Content" Value="{me:Image {StaticResource ImageErrorDialog}, 16, 16}" />
+    <Style.Triggers>
+      <Trigger Property="IsChecked" Value="True">
+        <Setter Property="Content" Value="{me:Image {StaticResource ImageInformationDialog}, 16, 16, NearestNeighbor}" />
+      </Trigger>
+      <Trigger Property="IsChecked" Value="{x:Null}">
+        <Setter Property="Content" Value="{me:Image {StaticResource ImageWarningDialog}, 16, 16, NearestNeighbor}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+  
   <Style TargetType="ctrl:Vector2Editor">
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="Template">
@@ -3758,6 +3770,7 @@
               <ColumnDefinition Width="*"/>
               <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="*"/>
+              <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
@@ -3778,7 +3791,10 @@
 
               </DockPanel>
             </Border>
-            <ToggleButton Grid.Column="4" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
+            <ToggleButton Grid.Column="4" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent" ToolTip="Toggle editing mode"
+                          Style="{StaticResource EditingModeToggleButtonStyle}" ClickMode="Release" IsThreeState="True"
+                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
+            <!--<ToggleButton Grid.Column="5" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
                                       ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
               <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
             </ToggleButton>
@@ -3791,10 +3807,6 @@
                   <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                                          DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
                                                          Margin="2,6,6,2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                  <TextBlock Text="Angle" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                  <ctrl:NumericTextBox Value="{Binding Angle, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                         DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                         Margin="2,2,6,2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
                   <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
                   <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
                     <i:Interaction.Behaviors>
@@ -3806,7 +3818,7 @@
                   <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
                 </ctrl:KeyValueGrid>
               </Border>
-            </Popup>
+            </Popup>-->
           </Grid>
         </ControlTemplate>
       </Setter.Value>

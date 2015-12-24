@@ -70,6 +70,7 @@
     <Compile Include="Controls\TreeView.cs" />
     <Compile Include="Controls\TreeViewItem.cs" />
     <Compile Include="Controls\TreeViewItemEventArgs.cs" />
+    <Compile Include="Controls\VectorEditingMode.cs" />
     <Compile Include="Controls\VirtualizingTreePanel.cs" />
     <Compile Include="Controls\Trimming.cs" />
     <Compile Include="Collections\IObservableCollection.cs" />
@@ -126,6 +127,7 @@
     </Compile>
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
+    <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />
     <Compile Include="XamlMarkdown.cs" />
     <Compile Include="MarkupExtensions\FalseExtension.cs" />
