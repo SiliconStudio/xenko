@@ -32,8 +32,57 @@ namespace SiliconStudio.Xenko.SamplesTestServer
         private readonly Dictionary<SocketMessageLayer, TestPair> testerToGame = new Dictionary<SocketMessageLayer, TestPair>();
         private readonly Dictionary<SocketMessageLayer, TestPair> gameToTester = new Dictionary<SocketMessageLayer, TestPair>();
 
+        private SocketMessageLayer currentTester;
+        readonly object loggerLock = new object();
+
         public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
+            if (IosTracker.CanProxy()) //start logging the iOS device
+            {
+                var loggerProcess = Process.Start(new ProcessStartInfo($"{ Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") }\\Bin\\Windows-Direct3D11\\idevicesyslog.exe", "-d")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true,
+                });
+
+                if (loggerProcess != null)
+                {
+                    loggerProcess.OutputDataReceived += (sender, args) =>
+                    {
+                        try
+                        {
+                            lock (loggerLock)
+                            {
+                                currentTester?.Send(new LogRequest { Message = $"STDIO: {args.Data}" }).Wait();
+                            }                            
+                        }
+                        catch
+                        {
+                        }
+                    };
+
+                    loggerProcess.ErrorDataReceived += (sender, args) =>
+                    {
+                        try
+                        {
+                            lock (loggerLock)
+                            {
+                                currentTester?.Send(new LogRequest { Message = $"STDERR: {args.Data}" }).Wait();
+                            }
+                        }
+                        catch
+                        {
+                        }
+                    };
+
+                    loggerProcess.BeginOutputReadLine();
+                    loggerProcess.BeginErrorReadLine();
+                }
+
+                new AttachedChildProcessJob(loggerProcess);
+            }
         }
 
         protected override async void HandleClient(SimpleSocket clientSocket, string url)
@@ -212,44 +261,9 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 else
                                 {
-                                    var loggerProcess = Process.Start(new ProcessStartInfo($"{ Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") }\\Bin\\Windows-Direct3D11\\idevicesyslog.exe", "-d")
+                                    lock (loggerLock)
                                     {
-                                        UseShellExecute = false,
-                                        CreateNoWindow = true,
-                                        RedirectStandardError = true,
-                                        RedirectStandardOutput = true,
-                                    });
-
-                                    if (loggerProcess == null)
-                                    {
-                                        socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game logging process." }).Wait();
-                                    }
-                                    else
-                                    {
-                                        loggerProcess.OutputDataReceived += (sender, args) =>
-                                        {
-                                            try
-                                            {
-                                                socketMessageLayer.Send(new LogRequest { Message = $"STDIO: {args.Data}" }).Wait();
-                                            }
-                                            catch
-                                            { 
-                                            }                                           
-                                        };
-
-                                        loggerProcess.ErrorDataReceived += (sender, args) =>
-                                        {
-                                            try
-                                            {
-                                                socketMessageLayer.Send(new LogRequest { Message = $"STDERR: {args.Data}" }).Wait();
-                                            }
-                                            catch
-                                            {
-                                            }
-                                        };
-
-                                        loggerProcess.BeginOutputReadLine();
-                                        loggerProcess.BeginErrorReadLine();
+                                        currentTester = socketMessageLayer;
                                     }
 
                                     var currenTestPair = new TestPair { TesterSocket = socketMessageLayer, GameName = request.GameAssembly, Process = process };
@@ -312,6 +326,11 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 game.LoggerProcess?.Kill();
                 game.LoggerProcess?.Dispose();
 
+                lock (loggerLock)
+                {
+                    currentTester = null;
+                }
+
                 Console.WriteLine($"Finished test {game.GameName}");
             });
 
@@ -328,6 +347,11 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 game.Process.Dispose();
                 game.LoggerProcess?.Kill();
                 game.LoggerProcess?.Dispose();
+
+                lock (loggerLock)
+                {
+                    currentTester = null;
+                }
 
                 Console.WriteLine($"Aborted test {game.GameName}");
             });

@@ -11,7 +11,7 @@ using SiliconStudio.Xenko.Engine.Network;
 
 namespace SiliconStudio.Xenko.ConnectionRouter
 {
-    class IosTracker
+    public class IosTracker
     {
         private static readonly Logger Log = GlobalLogger.GetLogger("IosTracker");
 
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.ConnectionRouter
             return File.Exists(iosId);
         }
 
-        public Process SetupProxy(ConnectedDevice device)
+        internal Process SetupProxy(ConnectedDevice device)
         {
             var currentDir = $"{Environment.GetEnvironmentVariable("SiliconStudioXenkoDir")}\\Bin\\Windows-Direct3D11\\";
             var iosId = Path.Combine(currentDir, "iproxy.exe");
