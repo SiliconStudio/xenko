@@ -25,11 +25,6 @@ namespace SiliconStudio.Presentation.Controls
         public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector2Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
 
         /// <summary>
-        /// Identifies the <see cref="Angle"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty AngleProperty = DependencyProperty.Register("Angle", typeof(float), typeof(Vector2Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceAngleValue));
-
-        /// <summary>
         /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector2"/> associated to this control.
         /// </summary>
         public float X { get { return (float)GetValue(XProperty); } set { SetValue(XProperty, value); } }
@@ -44,18 +39,12 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
 
-        /// <summary>
-        /// Gets or sets the angle (in polar coordinate system) of the <see cref="Vector2"/> associated to this control.
-        /// </summary>
-        public float Angle { get { return (float)GetValue(AngleProperty); } set { SetValue(AngleProperty, value); } }
-
         /// <inheritdoc/>
         protected override void UpdateComponentsFromValue(Vector2 value)
         {
             SetCurrentValue(XProperty, value.X);
             SetCurrentValue(YProperty, value.Y);
             SetCurrentValue(LengthProperty, value.Length());
-            SetCurrentValue(AngleProperty, MathUtil.RadiansToDegrees((float)Math.Atan2(value.Y, value.X)));
         }
 
         /// <inheritdoc/>
@@ -67,11 +56,6 @@ namespace SiliconStudio.Presentation.Controls
                 newValue.Normalize();
                 newValue *= Length;
                 return newValue;
-            }
-            if (property == AngleProperty)
-            {
-                var angle = MathUtil.DegreesToRadians(Angle);
-                return new Vector2((float)(Length * Math.Cos(angle)), (float)(Length * Math.Sin(angle)));
             }
             if (property == XProperty)
                 return new Vector2(X, Value.Y);
@@ -94,15 +78,6 @@ namespace SiliconStudio.Presentation.Controls
         {
             baseValue = CoerceComponentValue(sender, baseValue);
             return Math.Max(0.0f, (float)baseValue);
-        }
-
-        /// <summary>
-        /// Coerce the value of the Angle so it is always contained between 0 and 360
-        /// </summary>
-        private static object CoerceAngleValue(DependencyObject sender, object baseValue)
-        {
-            baseValue = CoerceComponentValue(sender, baseValue);
-            return (float)baseValue % 360.0f;
         }
     }
 }
