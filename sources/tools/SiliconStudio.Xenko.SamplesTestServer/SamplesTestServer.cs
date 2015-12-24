@@ -133,6 +133,10 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                                 }
                                 else
                                 {
+                                    //clear the log first
+                                    ShellHelper.RunProcessAndGetOutput("cmd.exe", "/C adb logcat -c");
+
+                                    //start logger
                                     var loggerProcess = Process.Start(new ProcessStartInfo("cmd.exe", "/C adb logcat")
                                     {
                                         UseShellExecute = false,
