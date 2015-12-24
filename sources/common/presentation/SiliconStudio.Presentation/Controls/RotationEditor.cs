@@ -76,11 +76,7 @@ namespace SiliconStudio.Presentation.Controls
         {
             var radian = MathUtil.DegreesToRadians(value);
             decomposedRotation = new Vector3(radian);
-            Quaternion quatX, quatY, quatZ;
-            Quaternion.RotationX(decomposedRotation.X, out quatX);
-            Quaternion.RotationY(decomposedRotation.Y, out quatY);
-            Quaternion.RotationZ(decomposedRotation.Z, out quatZ);
-            return quatX * quatY * quatZ;
+            return Recompose(ref decomposedRotation);
         }
 
         private static Quaternion Recompose(ref Vector3 vector)
