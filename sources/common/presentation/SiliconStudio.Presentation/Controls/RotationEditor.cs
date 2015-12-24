@@ -44,7 +44,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <inheritdoc/>
         protected override void UpdateComponentsFromValue(Quaternion value)
         {
-            Matrix rotationMatrix = Matrix.RotationQuaternion(value);
+            // This allows iterating on the euler angles when resulting rotation are equivalent (see PDX-1779).
+            var current = Recompose(ref decomposedRotation);
+            if (current == value)
+                return;
+
+            var rotationMatrix = Matrix.RotationQuaternion(value);
             rotationMatrix.DecomposeXYZ(out decomposedRotation);
             SetCurrentValue(XProperty, MathUtil.RadiansToDegrees(decomposedRotation.X));
             SetCurrentValue(YProperty, MathUtil.RadiansToDegrees(decomposedRotation.Y));
@@ -62,12 +67,8 @@ namespace SiliconStudio.Presentation.Controls
                 decomposedRotation = new Vector3(decomposedRotation.X, decomposedRotation.Y, MathUtil.DegreesToRadians(Z));
             else
                 throw new ArgumentException("Property unsupported by method UpdateValueFromComponent.");
-
-            Quaternion quatX, quatY, quatZ;
-            Quaternion.RotationX(decomposedRotation.X, out quatX);
-            Quaternion.RotationY(decomposedRotation.Y, out quatY);
-            Quaternion.RotationZ(decomposedRotation.Z, out quatZ);
-            return quatX * quatY * quatZ;
+            
+            return Recompose(ref decomposedRotation);
         }
 
         /// <inheritdoc/>
@@ -75,11 +76,12 @@ namespace SiliconStudio.Presentation.Controls
         {
             var radian = MathUtil.DegreesToRadians(value);
             decomposedRotation = new Vector3(radian);
-            Quaternion quatX, quatY, quatZ;
-            Quaternion.RotationX(decomposedRotation.X, out quatX);
-            Quaternion.RotationY(decomposedRotation.Y, out quatY);
-            Quaternion.RotationZ(decomposedRotation.Z, out quatZ);
-            return quatX * quatY * quatZ;
+            return Recompose(ref decomposedRotation);
+        }
+
+        private static Quaternion Recompose(ref Vector3 vector)
+        {
+            return Quaternion.RotationYawPitchRoll(vector.Y, vector.X, vector.Z);
         }
     }
 }
