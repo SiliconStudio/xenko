@@ -9,6 +9,7 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Particles.BoundingShapes;
+using SiliconStudio.Xenko.Particles.DebugDraw;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles
@@ -27,6 +28,62 @@ namespace SiliconStudio.Xenko.Particles
         public bool Enabled { get; set; } = true;
 
         /// <summary>
+        /// Should the Particle System's bounds be displayed as a debug draw
+        /// </summary>
+        /// <userdoc>
+        /// Display the Particle System's boinds as a wireframe debug shape. Temporary feature (will be removed later)!
+        /// </userdoc>
+        [DataMember(-1)]
+        [DefaultValue(false)]
+        public bool DebugDraw { get; set; } = false;
+
+        private bool ToWorldSpace(ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        {
+            scale *= UniformScale;
+            rotation *= Rotation;
+            rotation.Rotate(ref translation);
+            translation *= UniformScale;
+            translation += Translation;
+
+            return true;
+        }
+
+        public bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        {
+            foreach (var particleEmitter in Emitters)
+            {
+                foreach (var initializer in particleEmitter.Initializers)
+                {
+                    if (initializer.DebugDraw && initializer.TryGetDebugDrawShape(ref debugDrawShape, ref translation, ref rotation, ref scale))
+                    {
+                        // Convert to world space if local
+                        if (particleEmitter.SimulationSpace == EmitterSimulationSpace.Local)
+                            return ToWorldSpace(ref translation, ref rotation, ref scale);
+
+                        return true;
+                    }
+                }
+
+                foreach (var updater in particleEmitter.Updaters)
+                {
+                    if (updater.DebugDraw && updater.TryGetDebugDrawShape(ref debugDrawShape, ref translation, ref rotation, ref scale))
+                    {
+                        // Convert to world space if local
+                        if (particleEmitter.SimulationSpace == EmitterSimulationSpace.Local)
+                            return ToWorldSpace(ref translation, ref rotation, ref scale);
+
+                        return true;
+                    }
+                }
+            }
+
+            if (DebugDraw && BoundingShape.TryGetDebugDrawShape(ref debugDrawShape, ref translation, ref rotation, ref scale))
+                return ToWorldSpace(ref translation, ref rotation, ref scale);
+
+            return false;
+        }
+
+        /// <summary>
         /// AABB of this Particle System
         /// </summary>
         /// <userdoc>
@@ -35,7 +92,7 @@ namespace SiliconStudio.Xenko.Particles
         [DataMember(5)]
         [NotNull]
         [Display("Bounding Shape")]
-        public BoundingShapeBase BoundingShape { get; set; } = new BoundingBoxStatic();
+        public BoundingShape BoundingShape { get; set; } = new BoundingBoxStatic();
 
         /// <summary>
         /// Gets the current AABB of the <see cref="ParticleSystem"/>

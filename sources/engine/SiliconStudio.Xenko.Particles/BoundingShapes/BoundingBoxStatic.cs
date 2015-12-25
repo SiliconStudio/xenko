@@ -3,11 +3,12 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.DebugDraw;
 
 namespace SiliconStudio.Xenko.Particles.BoundingShapes
 {
     [DataContract("BoundingBoxStatic")]
-    public class BoundingBoxStatic : BoundingShapeBase
+    public class BoundingBoxStatic : BoundingShape
     {
         /// <summary>
         /// Lower corner of the AABB
@@ -61,6 +62,15 @@ namespace SiliconStudio.Xenko.Particles.BoundingShapes
             }
 
             return cachedBox;
+        }
+
+        public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        {
+            debugDrawShape = DebugDrawShape.Cube;
+            scale = (Maximum - Minimum);
+            translation = (Maximum + Minimum) * 0.5f;
+            rotation = new Quaternion(0, 0, 0, 1);
+            return true;
         }
 
     }

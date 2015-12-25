@@ -3,11 +3,12 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.DebugDraw;
 
 namespace SiliconStudio.Xenko.Particles.BoundingShapes
 {
     [DataContract("BoundingSpheretatic")]
-    public class BoundingSphereStatic : BoundingShapeBase
+    public class BoundingSphereStatic : BoundingShape
     {
         /// <summary>
         /// Fixed radius of the <see cref="BoundingSphereStatic"/>
@@ -31,6 +32,15 @@ namespace SiliconStudio.Xenko.Particles.BoundingShapes
             }
 
             return cachedBox;
+        }
+
+        public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        {
+            debugDrawShape = DebugDrawShape.Cube;
+            scale = new Vector3(Radius, Radius, Radius);
+            translation = new Vector3(0, 0, 0);
+            rotation = new Quaternion(0, 0, 0, 1);
+            return true;
         }
 
     }
