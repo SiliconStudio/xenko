@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.DebugDraw;
 
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
@@ -12,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// </summary>
     [DataContract("InitialVelocitySeed")]
     [Display("Initial Velocity by seed")]
-    public class InitialVelocitySeed : InitializerBase
+    public class InitialVelocitySeed : Initializer
     {
         public InitialVelocitySeed()
         {
@@ -83,6 +84,9 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMemberIgnore]
         public float WorldScale { get; private set; } = 1f;
 
+        [DataMemberIgnore]
+        private Vector3 WorldPosition;
+
         /// <summary>
         /// The rotation relative to the parent transformation.
         /// </summary>
@@ -92,13 +96,31 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 
         public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
         {
-            var hasPos = InheritLocation.HasFlag(InheritLocation.Position);
             var hasRot = InheritLocation.HasFlag(InheritLocation.Rotation);
             var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
+
+            WorldPosition = Translation;
 
             WorldScale = (hasScl) ? Scale : 1f;
 
             WorldRotation = (hasRot) ? this.Rotation * Rotation : this.Rotation;
         }
+
+        public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        {
+            debugDrawShape = DebugDrawShape.Cube;
+
+            rotation = WorldRotation;
+
+            scale = (VelocityMax - VelocityMin);
+            translation = (VelocityMax + VelocityMin) * 0.5f * WorldScale;
+
+            scale *= WorldScale;
+            rotation.Rotate(ref translation);
+            translation += WorldPosition;
+
+            return true;
+        }
+
     }
 }

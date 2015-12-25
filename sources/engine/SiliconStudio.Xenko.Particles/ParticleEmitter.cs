@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Particles
 
             initialDefaultFields = new InitialDefaultFields();
 
-            Initializers = new TrackingCollection<InitializerBase>();
+            Initializers = new TrackingCollection<Initializer>();
             Initializers.CollectionChanged += ModulesChanged;
 
             Updaters = new TrackingCollection<UpdaterBase>();
@@ -159,7 +159,7 @@ namespace SiliconStudio.Xenko.Particles
         #region Modules
 
         /// <summary>
-        /// List of <see cref="InitializerBase"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
+        /// List of <see cref="Initializer"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
         /// </summary>
         /// <userdoc>
         /// Initializers set initial values for fields of particles which just spawned. Have no effect on already spawned particles.
@@ -168,7 +168,7 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Initializers")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<InitializerBase> Initializers;
+        public readonly TrackingCollection<Initializer> Initializers;
 
         [DataMemberIgnore]
         private readonly InitialDefaultFields initialDefaultFields;

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.DebugDraw;
 
 namespace SiliconStudio.Xenko.Particles
 {
@@ -34,6 +35,21 @@ namespace SiliconStudio.Xenko.Particles
         [DataMember(-10)]
         [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        /// Should this Particle Module's bounds be displayed as a debug draw
+        /// </summary>
+        /// <userdoc>
+        /// Display the Particle Module's bounds as a wireframe debug shape. Temporary feature (will be removed later)!
+        /// </userdoc>
+        [DataMember(-1)]
+        [DefaultValue(false)]
+        public bool DebugDraw { get; set; } = false;
+
+        public virtual bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        {
+            return false;
+        }
 
         /// <summary>
         /// A list of fields required by the module to operate properly.

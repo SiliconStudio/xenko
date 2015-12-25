@@ -4,12 +4,13 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.DebugDraw;
 
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialPositionSeed")]
     [Display("Initial Position by seed")]
-    public class InitialPositionSeed : InitializerBase
+    public class InitialPositionSeed : Initializer
     {
         public InitialPositionSeed()
         {
@@ -104,6 +105,22 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             WorldRotation = (hasRot) ? this.Rotation * Rotation : this.Rotation;
 
             WorldPosition = (hasPos) ? Translation : new Vector3(0, 0, 0);
+        }
+
+        public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        {
+            debugDrawShape = DebugDrawShape.Cube;
+
+            rotation = WorldRotation;
+
+            scale = (PositionMax - PositionMin);
+            translation = (PositionMax + PositionMin) * 0.5f * WorldScale;
+
+            scale *= WorldScale;
+            rotation.Rotate(ref translation);
+            translation += WorldPosition;
+
+            return true;
         }
     }
 }
