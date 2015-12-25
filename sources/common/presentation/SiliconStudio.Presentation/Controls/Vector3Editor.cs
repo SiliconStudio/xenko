@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public class Vector3Editor : VectorEditorBase<Vector3>
+    public class Vector3Editor : VectorEditor<Vector3>
     {
         /// <summary>
         /// Identifies the <see cref="X"/> dependency property.
@@ -29,11 +29,10 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
 
-        /// <summary>
-        /// Identifies the <see cref="EditingMode"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty EditingModeProperty =
-            DependencyProperty.Register("EditingMode", typeof(VectorEditingMode), typeof(Vector3Editor), new PropertyMetadata(VectorEditingMode.Normal));
+        static Vector3Editor()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(Vector3Editor), new FrameworkPropertyMetadata(typeof(Vector3Editor)));
+        }
 
         /// <summary>
         /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
@@ -54,9 +53,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets the length (in polar coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
         public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
-
-        public VectorEditingMode EditingMode { get { return (VectorEditingMode)GetValue(EditingModeProperty); } set { SetValue(EditingModeProperty, value); } }
-
+        
         /// <inheritdoc/>
         protected override void UpdateComponentsFromValue(Vector3 value)
         {
@@ -114,7 +111,7 @@ namespace SiliconStudio.Presentation.Controls
                     throw new ArgumentOutOfRangeException(nameof(EditingMode));
             }
 
-            throw new ArgumentException("Property unsupported by method UpdateValueFromComponent.");
+            throw new ArgumentException($"Property unsupported by method {nameof(UpdateValueFromComponent)}.");
         }
 
         /// <inheritdoc/>

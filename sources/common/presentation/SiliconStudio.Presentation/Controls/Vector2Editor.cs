@@ -7,28 +7,27 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public class Vector2Editor : VectorEditorBase<Vector2>
+    public class Vector2Editor : VectorEditor<Vector2>
     {
         /// <summary>
         /// Identifies the <see cref="X"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty XProperty = DependencyProperty.Register("X", typeof(float), typeof(Vector2Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
+        public static readonly DependencyProperty XProperty = DependencyProperty.Register(nameof(X), typeof(float), typeof(Vector2Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Y"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty YProperty = DependencyProperty.Register("Y", typeof(float), typeof(Vector2Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
+        public static readonly DependencyProperty YProperty = DependencyProperty.Register(nameof(Y), typeof(float), typeof(Vector2Editor), new FrameworkPropertyMetadata(.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceComponentValue));
 
         /// <summary>
         /// Identifies the <see cref="Length"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector2Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
+        public static readonly DependencyProperty LengthProperty = DependencyProperty.Register(nameof(Length), typeof(float), typeof(Vector2Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
 
-        /// <summary>
-        /// Identifies the <see cref="EditingMode"/> dependency property.
-        /// </summary>
-        public static readonly DependencyProperty EditingModeProperty =
-            DependencyProperty.Register("EditingMode", typeof(VectorEditingMode), typeof(Vector2Editor), new FrameworkPropertyMetadata(VectorEditingMode.Normal, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault));
+        static Vector2Editor()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(Vector2Editor), new FrameworkPropertyMetadata(typeof(Vector2Editor)));
+        }
 
         /// <summary>
         /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector2"/> associated to this control.
@@ -44,8 +43,6 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets the length (in polar coordinate system) of the <see cref="Vector2"/> associated to this control.
         /// </summary>
         public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
-
-        public VectorEditingMode EditingMode { get { return (VectorEditingMode)GetValue(EditingModeProperty); } set { SetValue(EditingModeProperty, value); } }
 
         /// <inheritdoc/>
         protected override void UpdateComponentsFromValue(Vector2 value)
@@ -94,7 +91,7 @@ namespace SiliconStudio.Presentation.Controls
                     throw new ArgumentOutOfRangeException(nameof(EditingMode));
             }
 
-            throw new ArgumentException("Property unsupported by method UpdateValueFromComponent.");
+            throw new ArgumentException($"Property unsupported by method {nameof(UpdateValueFromComponent)}.");
         }
 
         /// <inheritdoc/>
