@@ -27,11 +27,11 @@ namespace SiliconStudio.Presentation.Core
             Attach(attachTo);
         }
 
-        public DependencyObject AssociatedObject { get { return frameworkElement; } }
+        public DependencyObject AssociatedObject => frameworkElement;
 
         public void Attach(DependencyObject dependencyObject)
         {
-            if (dependencyObject == null) throw new ArgumentNullException("dependencyObject");
+            if (dependencyObject == null) throw new ArgumentNullException(nameof(dependencyObject));
             if (ReferenceEquals(dependencyObject, frameworkElement))
                 return;
 
@@ -100,8 +100,8 @@ namespace SiliconStudio.Presentation.Core
 
         private void AttachHandler(DependencyProperty property, EventHandler handler)
         {
-            if (property == null) throw new ArgumentNullException("property");
-            if (handler == null) throw new ArgumentNullException("handler");
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
             if (frameworkElement == null) throw new InvalidOperationException("A dependency object must be attached in order to register a handler.");
 
             DependencyPropertyDescriptor descriptor;
@@ -115,8 +115,8 @@ namespace SiliconStudio.Presentation.Core
 
         private void DetachHandler(DependencyProperty property, EventHandler handler)
         {
-            if (property == null) throw new ArgumentNullException("property");
-            if (handler == null) throw new ArgumentNullException("handler");
+            if (property == null) throw new ArgumentNullException(nameof(property));
+            if (handler == null) throw new ArgumentNullException(nameof(handler));
             if (frameworkElement == null) throw new InvalidOperationException("A dependency object must be attached in order to unregister a handler.");
 
             DependencyPropertyDescriptor descriptor;
