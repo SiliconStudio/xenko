@@ -97,6 +97,8 @@ namespace SiliconStudio.Xenko.Games.Testing
             });
 
             Initialized = true;
+
+            Console.WriteLine(@"Test initialized, waiting to start...");
         }
 
         public override void Draw(GameTime gameTime)
