@@ -22,10 +22,10 @@ namespace SiliconStudio.Presentation.Controls.Commands
         {
             ClearSelectionCommand = new RoutedCommand("ClearSelectionCommand", typeof(Selector));
             CommandManager.RegisterClassCommandBinding(typeof(Selector), new CommandBinding(ClearSelectionCommand, OnClearSelectionCommand));
-            SetAllVectorComponentsCommand = new RoutedCommand("SetAllVectorComponentsCommand", typeof(VectorEditor));
-            CommandManager.RegisterClassCommandBinding(typeof(VectorEditor), new CommandBinding(SetAllVectorComponentsCommand, OnSetAllVectorComponents));
-            ResetValueCommand = new RoutedCommand("ResetValueCommand", typeof(VectorEditor));
-            CommandManager.RegisterClassCommandBinding(typeof(VectorEditor), new CommandBinding(ResetValueCommand, OnResetValue));
+            SetAllVectorComponentsCommand = new RoutedCommand("SetAllVectorComponentsCommand", typeof(VectorEditorBase));
+            CommandManager.RegisterClassCommandBinding(typeof(VectorEditorBase), new CommandBinding(SetAllVectorComponentsCommand, OnSetAllVectorComponents));
+            ResetValueCommand = new RoutedCommand("ResetValueCommand", typeof(VectorEditorBase));
+            CommandManager.RegisterClassCommandBinding(typeof(VectorEditorBase), new CommandBinding(ResetValueCommand, OnResetValue));
         }
 
         /// <summary>
@@ -34,12 +34,12 @@ namespace SiliconStudio.Presentation.Controls.Commands
         public static RoutedCommand ClearSelectionCommand { get; private set; }
 
         /// <summary>
-        /// Sets all the components of a <see cref="VectorEditor"/> to the value given as parameter.
+        /// Sets all the components of a <see cref="VectorEditorBase"/> to the value given as parameter.
         /// </summary>
         public static RoutedCommand SetAllVectorComponentsCommand { get; private set; }
 
         /// <summary>
-        /// Resets the current value of a vector editor to the value set in the <see cref="VectorEditor{T}.DefaultValue"/> property.
+        /// Resets the current value of a vector editor to the value set in the <see cref="VectorEditorBase{T}.DefaultValue"/> property.
         /// </summary>
         public static RoutedCommand ResetValueCommand { get; private set; }
         
@@ -54,7 +54,7 @@ namespace SiliconStudio.Presentation.Controls.Commands
 
         private static void OnSetAllVectorComponents(object sender, ExecutedRoutedEventArgs e)
         {
-            var vectorEditor = sender as VectorEditor;
+            var vectorEditor = sender as VectorEditorBase;
             if (vectorEditor != null)
             {
                 try
@@ -71,11 +71,8 @@ namespace SiliconStudio.Presentation.Controls.Commands
 
         private static void OnResetValue(object sender, ExecutedRoutedEventArgs e)
         {
-            var vectorEditor = sender as VectorEditor;
-            if (vectorEditor != null)
-            {
-                vectorEditor.ResetValue();
-            }
+            var vectorEditor = sender as VectorEditorBase;
+            vectorEditor?.ResetValue();
         }
     }
 }

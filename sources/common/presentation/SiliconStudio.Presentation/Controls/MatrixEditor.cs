@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public class MatrixEditor : VectorEditor<Matrix>
+    public class MatrixEditor : VectorEditorBase<Matrix>
     {
         private static readonly Dictionary<DependencyProperty, int> PropertyToIndex;
 

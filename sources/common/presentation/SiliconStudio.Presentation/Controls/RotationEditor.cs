@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public class RotationEditor : VectorEditor<Quaternion>
+    public class RotationEditor : VectorEditorBase<Quaternion>
     {
         private Vector3 decomposedRotation;
 
