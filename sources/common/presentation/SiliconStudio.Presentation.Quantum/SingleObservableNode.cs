@@ -56,9 +56,18 @@ namespace SiliconStudio.Presentation.Quantum
                 DisplayName = provider();
         }
 
-        public VirtualObservableNode CreateVirtualChild(string name, Type contentType, int? order, bool isPrimitive, object initialValue, object index = null, NodeCommandWrapperBase valueChangedCommand = null, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
+        public VirtualObservableNode CreateVirtualChild(string name, Type contentType, bool isPrimitive, int? order, object index, Func<object> getter, Action<object> setter, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
         {
-            var observableChild = VirtualObservableNode.Create(Owner, name, order, isPrimitive, contentType, initialValue, index, valueChangedCommand);
+            var observableChild = VirtualObservableNode.Create(Owner, name, contentType, isPrimitive, order, index, getter, setter);
+            nodeAssociatedData?.ForEach(x => observableChild.AddAssociatedData(x.Key, x.Value));
+            observableChild.FinalizeChildrenInitialization();
+            AddChild(observableChild);
+            return observableChild;
+        }
+
+        public Deprecated_VirtualObservableNode CreateVirtualChild(string name, Type contentType, int? order, bool isPrimitive, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand, IReadOnlyDictionary<string, object> nodeAssociatedData)
+        {
+            var observableChild = Deprecated_VirtualObservableNode.Create(Owner, name, order, isPrimitive, contentType, initialValue, index, valueChangedCommand);
             if (nodeAssociatedData != null)
             {
                 foreach (var data in nodeAssociatedData)
