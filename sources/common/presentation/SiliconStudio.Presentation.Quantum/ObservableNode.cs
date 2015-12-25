@@ -341,12 +341,12 @@ namespace SiliconStudio.Presentation.Quantum
             return new ObservableNodeDynamicMetaObject(parameter, this);
         }
 
-        public void NotifyPropertyChanging(string propertyName)
+        internal void NotifyPropertyChanging(string propertyName)
         {
             OnPropertyChanging(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
         }
 
-        public void NotifyPropertyChanged(string propertyName)
+        internal void NotifyPropertyChanged(string propertyName)
         {
             OnPropertyChanged(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
         }
