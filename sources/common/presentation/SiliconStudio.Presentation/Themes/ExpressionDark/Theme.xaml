@@ -48,6 +48,7 @@
   <SolidColorBrush x:Key="GreenBrush" Color="#FF65C36A"/>
   <SolidColorBrush x:Key="BlueBrush" Color="#FF3F74D1"/>
   <SolidColorBrush x:Key="AlphaBrush" Color="#FFBCBCBC"/>
+  <SolidColorBrush x:Key="LengthBrush" Color="#FFBCBCBC"/>
 
   <SolidColorBrush x:Key="ControlBackgroundBrush" Color="#FF333333" />
 
@@ -139,11 +140,16 @@
   <BitmapImage x:Key="ImageMaximizeWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/maximize_window.png" />
   <BitmapImage x:Key="ImageMinimizeWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/minimize_window.png" />
   <BitmapImage x:Key="ImageRestoreWindow" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/restore_window.png" />
-  <BitmapImage x:Key="ImageAdvancedEditionVector" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/gear--pencil.png" />
+
   <BitmapImage x:Key="ImageErrorDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/error-32.png" />
   <BitmapImage x:Key="ImageInformationDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/info-32.png" />
   <BitmapImage x:Key="ImageQuestionDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/question-32.png" />
   <BitmapImage x:Key="ImageWarningDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/warning-32.png" />
+
+  <BitmapImage x:Key="ImageAdvancedEditionVector" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/gear--pencil.png" />
+  <BitmapImage x:Key="ImageLocked" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/lock-16.png" />
+  <BitmapImage x:Key="ImageUnlocked" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/unlock-16.png" />
+  <BitmapImage x:Key="ImageLength" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/length-16.png" />
 
   <!--  WINDOWS  -->
   <Style TargetType="Window" x:Key="WindowChromeStyle">
@@ -315,7 +321,7 @@
       </Setter.Value>
     </Setter>
   </Style>
-  
+
   <Style TargetType="{x:Type ctrl:MarkdownTextBlock}">
     <Setter Property="Template">
       <Setter.Value>
@@ -3706,7 +3712,7 @@
       </DataTrigger>
     </Style.Triggers>
   </Style>
-  
+
   <SolidColorBrush x:Key="TagBackgroundBrush" Color="#FF708090"/>
   <Style TargetType="{x:Type ctrl:TagControl}">
     <Setter Property="Background" Value="{StaticResource TagBackgroundBrush}" />
@@ -3747,6 +3753,21 @@
   </Style>
 
   <!--  EDITORS  -->
+  <Style x:Key="{x:Static ctrl:VectorEditorResources.ToggleButtonStyleKey}" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}" x:Shared="False">
+    <Setter Property="ToolTip" Value="Toggle editing mode" />
+    <Style.Triggers>
+      <Trigger Property="IsChecked" Value="False">
+        <Setter Property="Content" Value="{me:Image {StaticResource ImageUnlocked}, 16, 16, NearestNeighbor}" />
+      </Trigger>
+      <Trigger Property="IsChecked" Value="True">
+        <Setter Property="Content" Value="{me:Image {StaticResource ImageLocked}, 16, 16, NearestNeighbor}" />
+      </Trigger>
+      <Trigger Property="IsChecked" Value="{x:Null}">
+        <Setter Property="Content" Value="{me:Image {StaticResource ImageLength}, 16, 16, NearestNeighbor}" />
+      </Trigger>
+    </Style.Triggers>
+  </Style>
+
   <Style TargetType="ctrl:Vector2Editor">
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="Template">
@@ -3760,22 +3781,32 @@
               <ColumnDefinition Width="*"/>
               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+            <!-- HACK: In the cvt:Chained converter, Parameter1 should be ctrl:VectorEditingMode.Length, but for some reason it doesn't compile. So we convert it first to an int. -->
+            <Border Grid.Column="1" Grid.ColumnSpan="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource LengthBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+              <DockPanel>
+                <TextBlock Text="L" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+              </DockPanel>
+            </Border>
+            <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
               </DockPanel>
             </Border>
-            <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+            <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
-
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
               </DockPanel>
             </Border>
             <ToggleButton x:Name="PART_ToggleButton" Grid.Column="4" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
@@ -3802,7 +3833,18 @@
               <ColumnDefinition Width="*"/>
               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+            <!-- HACK: In the cvt:Chained converter, Parameter1 should be ctrl:VectorEditingMode.Length, but for some reason it doesn't compile. So we convert it first to an int. -->
+            <Border Grid.Column="1" Grid.ColumnSpan="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource LengthBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+              <DockPanel>
+                <TextBlock Text="L" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+              </DockPanel>
+            </Border>
+            <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
@@ -3811,7 +3853,8 @@
 
               </DockPanel>
             </Border>
-            <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+            <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
@@ -3820,7 +3863,8 @@
 
               </DockPanel>
             </Border>
-            <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
+            <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
@@ -3855,7 +3899,18 @@
               <ColumnDefinition Width="*"/>
               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
-            <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
+            <!-- HACK: In the cvt:Chained converter, Parameter1 should be ctrl:VectorEditingMode.Length, but for some reason it doesn't compile. So we convert it first to an int. -->
+            <Border Grid.Column="1" Grid.ColumnSpan="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource LengthBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
+              <DockPanel>
+                <TextBlock Text="L" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
+                <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
+                                     DisplayUpDownButtons="False" SelectAllOnFocus="True" Margin="-1" TextAlignment="Center"/>
+              </DockPanel>
+            </Border>
+            <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="X" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding X, RelativeSource={RelativeSource Mode=TemplatedParent}}"
@@ -3864,7 +3919,8 @@
 
               </DockPanel>
             </Border>
-            <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent">
+            <Border Grid.Column="3" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource GreenBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="Y" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding Y, RelativeSource={RelativeSource Mode=TemplatedParent}}"
@@ -3873,7 +3929,8 @@
 
               </DockPanel>
             </Border>
-            <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent">
+            <Border Grid.Column="5" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource BlueBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="Z" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding Z, RelativeSource={RelativeSource Mode=TemplatedParent}}"
@@ -3882,7 +3939,8 @@
 
               </DockPanel>
             </Border>
-            <Border Grid.Column="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent">
+            <Border Grid.Column="7" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource AlphaBrush}" BorderThickness="1" BorderBrush="Transparent"
+                    Visibility="{Binding EditingMode, Converter={cvt:Chained {cvt:IsEqual}, {cvt:InvertBool}, {cvt:VisibleOrCollapsed}, Parameter1={me:Int {x:Static ctrl:VectorEditingMode.Length}}}, RelativeSource={RelativeSource Mode=TemplatedParent}}">
               <DockPanel>
                 <TextBlock Text="W" Margin="3,0" MinWidth="12" VerticalAlignment="Center" TextAlignment="Center" Foreground="White"/>
                 <ctrl:NumericTextBox Value="{Binding W, RelativeSource={RelativeSource Mode=TemplatedParent}}"
