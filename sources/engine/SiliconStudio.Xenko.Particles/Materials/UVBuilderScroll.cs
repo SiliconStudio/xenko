@@ -10,12 +10,24 @@ namespace SiliconStudio.Xenko.Particles.Materials
 {
     [DataContract("UVBuilderScroll")]
     [Display("Scrolling")]
-    public class UVBuilderScroll : UVBuilderBase
+    public class UVBuilderScroll : UVBuilder
     {
+        /// <summary>
+        /// Starting sub-region (rectangle) for the scroll
+        /// </summary>
+        /// <userdoc>
+        /// The rectangular sub-region of the texture where the scrolling should start, given as (Xmin, Ymin, Xmax, Ymax) ( (0, 0, 1, 1) being the entire texture). Numbers also can be negative or bigger than 1.
+        /// </userdoc>
         [DataMember(200)]
         [Display("Start frame")]
         public Vector4 StartFrame { get; set; } = new Vector4(0, 0, 1, 1);
 
+        /// <summary>
+        /// Ending sub-region (rectangle) for the scroll
+        /// </summary>
+        /// <userdoc>
+        /// The rectangular sub-region of the texture where the scrolling should end at the particle life's end, given as (Xmin, Ymin, Xmax, Ymax) ( (0, 0, 1, 1) being the entire texture). Numbers also can be negative or bigger than 1.
+        /// </userdoc>
         [DataMember(240)]
         [Display("End frame")]
         public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);

@@ -5,7 +5,6 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Mathematics;
@@ -14,12 +13,11 @@ using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
-    [DataContract("ParticleMaterialBase")]
-    public abstract class ParticleMaterialBase
+    [DataContract("ParticleMaterial")]
+    public abstract class ParticleMaterial
     {
         /// <summary>
         /// Shader parameters collection for the effect
@@ -63,7 +61,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         }
 
         /// <summary>
-        /// True if <see cref="ParticleMaterialBase.Initialize"/> has been called
+        /// True if <see cref="ParticleMaterial.Initialize"/> has been called
         /// </summary>
         [DataMemberIgnore]
         protected bool isInitialized = false;

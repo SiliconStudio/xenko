@@ -8,6 +8,7 @@ using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Particles.BoundingShapes;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles
@@ -25,14 +26,35 @@ namespace SiliconStudio.Xenko.Particles
         [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
 
-        private readonly SafeList<ParticleEmitter> emitters;
-            /// <summary>
-        /// Gets the color transforms.
+        /// <summary>
+        /// AABB of this Particle System
         /// </summary>
-        /// <value>The transforms.</value>
+        /// <userdoc>
+        /// AABB (Axis-Aligned Bounding Box) used for fast culling, optimizations etc. Can be specified by the user
+        /// </userdoc>
+        [DataMember(5)]
+        [NotNull]
+        [Display("Bounding Shape")]
+        public BoundingShapeBase BoundingShape { get; set; } = new BoundingBoxStatic();
+
+        /// <summary>
+        /// Gets the current AABB of the <see cref="ParticleSystem"/>
+        /// </summary>
+        public BoundingBox GetAABB()
+        {
+            return BoundingShape?.GetAABB(Translation, Rotation, UniformScale) ?? new BoundingBox(new Vector3(-1), new Vector3(1));
+        }
+
+        private readonly SafeList<ParticleEmitter> emitters;
+        /// <summary>
+        /// List of <see cref="ParticleEmitter"/>
+        /// </summary>
+        /// <userdoc>
+        /// Emitters in this Particle System. Each Emitter has a separate pool (group) of Particles in it
+        /// </userdoc>
         [DataMember(10)]
-        [Display("Emitters", Expand = ExpandRule.Always)]
-        // [NotNullItems] // Can't create non-derived classes if this attribute is set
+        [Display("Emitters")]
+        [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
         public SafeList<ParticleEmitter> Emitters
         {
@@ -73,7 +95,9 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         /// <param name="dt"></param>
         public void Update(float dt)
-        {           
+        {
+            BoundingShape.Dirty = true;
+
             foreach (var particleEmitter in Emitters)
             {
                 if (particleEmitter.Enabled)

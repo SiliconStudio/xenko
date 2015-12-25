@@ -7,8 +7,8 @@ using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
-    [DataContract("UVBuilderBase")]
-    public abstract class UVBuilderBase
+    [DataContract("UVBuilder")]
+    public abstract class UVBuilder
     {
         public abstract void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter);
     }

@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 {
     [DataContract("UVBuilderFlipbook")]
     [Display("Flipbook")]
-    public class UVBuilderFlipbook : UVBuilderBase
+    public class UVBuilderFlipbook : UVBuilder
     {
         private UInt32 xDivisions = 4;
         private UInt32 yDivisions = 4;
@@ -21,6 +21,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
         private UInt32 startingFrame = 0;
         private UInt32 animationSpeedOverLife = 16;
 
+        /// <summary>
+        /// Number of columns (cells per row)
+        /// </summary>
+        /// <userdoc>
+        /// How many columns (divisions along the width/X-axis) should the flipbook have.
+        /// </userdoc>
         [DataMember(200)]
         [Display("X divisions")]
         public UInt32 XDivisions
@@ -35,6 +41,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
         }
 
+        /// <summary>
+        /// Number of rows (cells per column)
+        /// </summary>
+        /// <userdoc>
+        /// How many rows (divisions along the height/Y-axis) should the flipbook have.
+        /// </userdoc>
         [DataMember(240)]
         [Display("Y divisions")]
         public UInt32 YDivisions
@@ -49,6 +61,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
         }
 
+        /// <summary>
+        /// Position of the starting frame, 0-based indexing
+        /// </summary>
+        /// <userdoc>
+        /// Index of the starting frame in a 0-based indexing. Frames increase to the right first, before going down after the end of a row.
+        /// </userdoc>
         [DataMember(280)]
         [Display("Starting frame")]
         public UInt32 StartingFrame
@@ -61,6 +79,12 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
         }
 
+        /// <summary>
+        /// Number of frames to change over the particle life
+        /// </summary>
+        /// <userdoc>
+        /// How many frames does the animation have over the particle's lifetime. Speed = X * Y means all frames are played exactly once.
+        /// </userdoc>
         [DataMember(320)]
         [Display("Animation speed")]
         public UInt32 AnimationSpeed
