@@ -10,9 +10,9 @@ namespace SiliconStudio.Presentation.MarkupExtensions
     {
         public double Value { get; set; }
 
-        public DoubleExtension(double value)
+        public DoubleExtension(object value)
         {
-            Value = value;
+            Value = Convert.ToDouble(value);
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)
