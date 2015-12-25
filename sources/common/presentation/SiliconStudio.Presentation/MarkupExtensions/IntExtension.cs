@@ -10,9 +10,9 @@ namespace SiliconStudio.Presentation.MarkupExtensions
     {
         public int Value { get; set; }
 
-        public IntExtension(int value)
+        public IntExtension(object value)
         {
-            Value = value;
+            Value = Convert.ToInt32(value);
         }
 
         public override object ProvideValue(IServiceProvider serviceProvider)

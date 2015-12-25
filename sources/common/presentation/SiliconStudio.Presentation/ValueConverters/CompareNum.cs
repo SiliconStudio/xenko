@@ -14,10 +14,9 @@ namespace SiliconStudio.Presentation.ValueConverters
         /// <inheritdoc/>
         public override object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            var doubleValue = (double)System.Convert.ChangeType(value, typeof(double));
-            var doubleParameter = (double)System.Convert.ChangeType(parameter, typeof(double));
-            var result = Compare(doubleValue, doubleParameter);
-            return System.Convert.ChangeType(result, value.GetType());
+            var doubleValue = System.Convert.ToDouble(value);
+            var doubleParameter = System.Convert.ToDouble(parameter);
+            return Compare(doubleValue, doubleParameter);
         }
 
         protected abstract bool Compare(double left, double right);
