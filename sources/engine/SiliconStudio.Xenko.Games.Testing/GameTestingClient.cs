@@ -98,7 +98,18 @@ namespace SiliconStudio.Xenko.Games.Testing
                 Platform = (int)platform, Tester = true, Cmd = cmd, GameAssembly = gameName
             }).Wait();
 
-            if (!ev.WaitOne(platform == PlatformType.Windows ? 20000 : 30000))
+            var waitMs = 10000;
+            switch (platform)
+            {
+                case PlatformType.Android:
+                    waitMs = 20000;
+                    break;
+                case PlatformType.iOS:
+                    waitMs = 40000;
+                    break;
+            }
+
+            if (!ev.WaitOne(waitMs))
             {
                 socketMessageLayer.Send(new TestAbortedRequest()).Wait();
                 throw new Exception("Time out while launching the game");
