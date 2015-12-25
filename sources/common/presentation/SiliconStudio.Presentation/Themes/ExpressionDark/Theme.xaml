@@ -3747,18 +3747,6 @@
   </Style>
 
   <!--  EDITORS  -->
-  <Style x:Key="EditingModeToggleButtonStyle" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}">
-    <Setter Property="Content" Value="{me:Image {StaticResource ImageErrorDialog}, 16, 16}" />
-    <Style.Triggers>
-      <Trigger Property="IsChecked" Value="True">
-        <Setter Property="Content" Value="{me:Image {StaticResource ImageInformationDialog}, 16, 16, NearestNeighbor}" />
-      </Trigger>
-      <Trigger Property="IsChecked" Value="{x:Null}">
-        <Setter Property="Content" Value="{me:Image {StaticResource ImageWarningDialog}, 16, 16, NearestNeighbor}" />
-      </Trigger>
-    </Style.Triggers>
-  </Style>
-  
   <Style TargetType="ctrl:Vector2Editor">
     <Setter Property="Focusable" Value="False"/>
     <Setter Property="Template">
@@ -3770,7 +3758,6 @@
               <ColumnDefinition Width="*"/>
               <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="*"/>
-              <ColumnDefinition Width="Auto"/>
               <ColumnDefinition Width="Auto"/>
             </Grid.ColumnDefinitions>
             <Border Grid.Column="1" CornerRadius="4" Margin="2,0,0,0" Background="{StaticResource RedBrush}" BorderThickness="1" BorderBrush="Transparent">
@@ -3791,34 +3778,9 @@
 
               </DockPanel>
             </Border>
-            <ToggleButton Grid.Column="4" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent" ToolTip="Toggle editing mode"
-                          Style="{StaticResource EditingModeToggleButtonStyle}" ClickMode="Release" IsThreeState="True"
+            <ToggleButton x:Name="PART_ToggleButton" Grid.Column="4" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
+                          ClickMode="Release" IsThreeState="True"
                           IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
-            <!--<ToggleButton Grid.Column="5" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
-                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-              <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-            </ToggleButton>
-            <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
-                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Vector2Editor}}" StaysOpen="False"
-                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Vector2Editor}}" PopupAnimation="Slide" VerticalOffset="2">
-              <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
-                <ctrl:KeyValueGrid>
-                  <TextBlock Text="Length:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                  <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                         DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                         Margin="2,6,6,2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                  <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                  <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
-                    <i:Interaction.Behaviors>
-                      <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
-                      <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
-                    </i:Interaction.Behaviors>
-                  </ctrl:NumericTextBox>
-                  <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
-                  <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
-                </ctrl:KeyValueGrid>
-              </Border>
-            </Popup>-->
           </Grid>
         </ControlTemplate>
       </Setter.Value>
@@ -3867,31 +3829,9 @@
 
               </DockPanel>
             </Border>
-            <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16"
-                                      Background="Transparent" ToolTip="Advanced options" ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-              <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-            </ToggleButton>
-            <Popup x:Name="Popup" Placement="Bottom" AllowsTransparency="True" IsOpen="{TemplateBinding IsDropDownOpen}"
-                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Vector3Editor}}" StaysOpen="False"
-                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Vector3Editor}}" PopupAnimation="Slide" VerticalOffset="2">
-              <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
-                <ctrl:KeyValueGrid>
-                  <TextBlock Text="Length:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                  <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                         DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                         Margin="2,6,6,2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                  <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                  <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
-                    <i:Interaction.Behaviors>
-                      <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
-                      <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
-                    </i:Interaction.Behaviors>
-                  </ctrl:NumericTextBox>
-                  <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
-                  <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
-                </ctrl:KeyValueGrid>
-              </Border>
-            </Popup>
+            <ToggleButton x:Name="PART_ToggleButton" Grid.Column="6" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
+                          ClickMode="Release" IsThreeState="True"
+                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
           </Grid>
         </ControlTemplate>
       </Setter.Value>
@@ -3951,31 +3891,9 @@
 
               </DockPanel>
             </Border>
-            <ToggleButton Grid.Column="8" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
-                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-              <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-            </ToggleButton>
-            <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
-                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:Vector4Editor}}" StaysOpen="False"
-                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:Vector4Editor}}" PopupAnimation="Slide" VerticalOffset="2">
-              <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
-                <ctrl:KeyValueGrid>
-                  <TextBlock Text="Length:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                  <ctrl:NumericTextBox Value="{Binding Length, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                         DecimalPlaces="{Binding DecimalPlaces, RelativeSource={RelativeSource Mode=TemplatedParent}}"
-                                                         Margin="2,6,6,2" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True"/>
-                  <TextBlock Text="All components:" Margin="4,0" VerticalAlignment="Center" HorizontalAlignment="Right"/>
-                  <ctrl:NumericTextBox x:Name="AllTextBox" Margin="2,2,6,6" TextAlignment="Center" DisplayUpDownButtons="False" SelectAllOnFocus="True" ValidateOnLostFocus="False">
-                    <i:Interaction.Behaviors>
-                      <behaviors:OnEventCommandBehavior EventName="Validated" Command="{x:Static commands:ControlCommands.SetAllVectorComponentsCommand}" CommandParameter="{Binding Value, ElementName=AllTextBox}"/>
-                      <behaviors:OnEventCommandBehavior EventName="Validated" Command="{Binding ResetValueCommand, ElementName=AllTextBox}"/>
-                    </i:Interaction.Behaviors>
-                  </ctrl:NumericTextBox>
-                  <Rectangle Width="0" Height="0" Visibility="Collapsed"/>
-                  <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="2,2,6,6"/>
-                </ctrl:KeyValueGrid>
-              </Border>
-            </Popup>
+            <ToggleButton x:Name="PART_ToggleButton" Grid.Column="8" Margin="2,0,0,0" Padding="0" Width="16" Height="16" Background="Transparent"
+                          ClickMode="Release" IsThreeState="True"
+                          IsChecked="{Binding EditingMode, Converter={cvt:VectorEditingModeToBool}, RelativeSource={RelativeSource Mode=TemplatedParent}, Mode=TwoWay}"/>
           </Grid>
         </ControlTemplate>
       </Setter.Value>
