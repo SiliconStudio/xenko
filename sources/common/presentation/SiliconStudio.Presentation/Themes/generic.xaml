@@ -431,11 +431,7 @@
             <ctrl:TextBox x:Name="PART_EditableTextBox" ValidateOnLostFocus="False" VerticalAlignment="Center" Focusable="True"
                           WatermarkContent="{Binding WatermarkContent, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}}"
                           Text="{Binding Text, RelativeSource={RelativeSource AncestorType=ctrl:FilteringComboBox}, UpdateSourceTrigger=PropertyChanged}"
-                          IsEnabled="{TemplateBinding IsEnabled}" CancelWithEscape="False">
-              <i:Interaction.Behaviors>
-                <behaviors:ContainTextAdornerBehavior />
-              </i:Interaction.Behaviors>
-            </ctrl:TextBox>
+                          IsEnabled="{TemplateBinding IsEnabled}" CancelWithEscape="False" />
             <Popup IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" x:Name="Popup" Focusable="False" AllowsTransparency="True" PopupAnimation="Slide">
               <Grid>
                 <ListBox x:Name="PART_ListBox" MinWidth="{TemplateBinding ActualWidth}" MaxHeight="380" SnapsToDevicePixels="True"

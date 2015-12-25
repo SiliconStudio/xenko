@@ -33,15 +33,15 @@ namespace SiliconStudio.Presentation.Behaviors
             DependencyProperty.Register(nameof(BorderThickness), typeof(double), typeof(ContainTextAdornerBehavior), new PropertyMetadata(2.0, PropertyChanged));
         
         /// <summary>
-        /// Gets or sets the border brush when the adorner visible but not highlighted.
+        /// Gets or sets the border brush when the adorner visible.
         /// </summary>
         public Brush BorderBrush { get { return (Brush)GetValue(BorderBrushProperty); } set { SetValue(BorderBrushProperty, value); } }
         /// <summary>
-        /// Gets or sets the border corner radius when the adorner is visible but not highlighted.
+        /// Gets or sets the border corner radius when the adorner is visible.
         /// </summary>
         public double BorderCornerRadius { get { return (double)GetValue(BorderCornerRadiusProperty); } set { SetValue(BorderCornerRadiusProperty, value); } }
         /// <summary>
-        /// Gets or sets the border thickness when the adorner is visible but not highlighted.
+        /// Gets or sets the border thickness when the adorner is visible.
         /// </summary>
         public double BorderThickness { get { return (double)GetValue(BorderThicknessProperty); } set { SetValue(BorderThicknessProperty, value); } }
 
@@ -53,8 +53,7 @@ namespace SiliconStudio.Presentation.Behaviors
 
             propertyWatcher.Attach(AssociatedObject);
             propertyWatcher.RegisterValueChangedHandler(textProperty, OnTextChanged);
-
-
+            
             var adornerLayer = AdornerLayer.GetAdornerLayer(AssociatedObject);
             if (adornerLayer != null)
             {
@@ -99,6 +98,9 @@ namespace SiliconStudio.Presentation.Behaviors
 
         private void OnTextChanged(object sender, EventArgs e)
         {
+            if (adorner == null)
+                return;
+
             var showAdorner = !string.IsNullOrEmpty(AssociatedObject.Text);
             adorner.State = showAdorner ? HighlightAdornerState.Visible : HighlightAdornerState.Hidden;
         }
