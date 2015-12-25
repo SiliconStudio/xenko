@@ -21,7 +21,9 @@ namespace SiliconStudio.Xenko.Games.Testing
                 await Task.Delay(20000);
                 if (!GameTestingSystem.Initialized)
                 {
+#if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_WINDOWS
                     Console.WriteLine(@"FATAL: Test launch timeout. Aborting.");
+#endif
                     GameTestingSystem.Quit();
                 }
             });

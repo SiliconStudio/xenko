@@ -98,7 +98,9 @@ namespace SiliconStudio.Xenko.Games.Testing
 
             Initialized = true;
 
+#if SILICONSTUDIO_PLATFORM_IOS || SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_WINDOWS
             Console.WriteLine(@"Test initialized, waiting to start...");
+#endif
         }
 
         public override void Draw(GameTime gameTime)
