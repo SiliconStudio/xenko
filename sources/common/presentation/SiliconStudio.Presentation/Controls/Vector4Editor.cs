@@ -77,9 +77,6 @@ namespace SiliconStudio.Presentation.Controls
         /// <inheritdoc/>
         protected override Vector4 UpdateValueFromComponent(DependencyProperty property)
         {
-            if (property == LengthProperty)
-                return FromLength(Value, Length);
-
             switch (EditingMode)
             {
                 case VectorEditingMode.Normal:
@@ -105,33 +102,15 @@ namespace SiliconStudio.Presentation.Controls
                     break;
 
                 case VectorEditingMode.Length:
-                    if (property == XProperty)
-                    {
-                        var length = (float)CoerceLengthValue(this, X);
-                        return FromLength(Value, length);
-                    }
-                    if (property == YProperty)
-                    {
-                        var length = (float)CoerceLengthValue(this, Y);
-                        return FromLength(Value, length);
-                    }
-                    if (property == ZProperty)
-                    {
-                        var length = (float)CoerceLengthValue(this, Z);
-                        return FromLength(Value, length);
-                    }
-                    if (property == WProperty)
-                    {
-                        var length = (float)CoerceLengthValue(this, W);
-                        return FromLength(Value, length);
-                    }
+                    if (property == LengthProperty)
+                        return FromLength(Value, Length);
                     break;
 
                 default:
                     throw new ArgumentOutOfRangeException(nameof(EditingMode));
             }
 
-            throw new ArgumentException($"Property unsupported by method {nameof(UpdateValueFromComponent)}.");
+            throw new ArgumentException($"Property {property} is unsupported by method {nameof(UpdateValueFromComponent)} in {EditingMode} mode.");
         }
 
         /// <inheritdoc/>
