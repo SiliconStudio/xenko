@@ -23,17 +23,25 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [DataMemberIgnore]
         protected override string EffectName { get; set; } = "ParticleEffect";
 
+        /// <summary>
+        /// <see cref="IComputeColor"/> allows several channels to be blended together, including textures, vertex streams and fixed values.
+        /// </summary>
+        /// <userdoc>
+        /// Emissive component ignores light and defines a fixed color this particle should use (emit) when rendered.
+        /// </userdoc>
         [DataMember(100)]
         [Display("Emissive")]
         public IComputeColor ComputeColor { get; set; } = new ComputeTextureColor();
 
-        //[DataMember(110)]
-        //[Display("Intensity")]
-        //public IComputeScalar ComputeIntensity { get; set; } = new ComputeFloat();
-
+        /// <summary>
+        /// <see cref="Materials.UVBuilder"/> defines how the base coordinates of the particle shape should be modified for texture scrolling, animation, etc.
+        /// </summary>
+        /// <userdoc>
+        /// If left blank, the texture coordinates will be the original ones from the shape builder, usually (0, 0, 1, 1). Or you can define a custom texture coordinate builder which modifies the original coordinates for the sprite.
+        /// </userdoc>
         [DataMember(200)]
         [Display("Texture coordinates")]
-        public UVBuilderBase UVBuilder;
+        public UVBuilder UVBuilder;
 
         [DataMemberIgnore]
         private ShaderGeneratorContext shaderGeneratorContext;
@@ -81,13 +89,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
                     VertexLayoutHasChanged = true;
                 }
             }
-
-            //if (ComputeIntensity != null)
-            //{
-            //    var shaderBaseIntensity = ComputeIntensity.GenerateShaderSource(shaderGeneratorContext,
-            //        new MaterialComputeColorKeys(ParticleBaseKeys.IntensityMap, ParticleBaseKeys.IntensityValue, Color.White));
-            //    shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseIntensity, shaderBaseIntensity);
-            //}
         }
 
         private ShaderSource shaderSource;
@@ -162,8 +163,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
 
             vertexBuilder.RestartBuffer();
-            // TODO TexCoord1-15
-
         }
 
     }

@@ -26,13 +26,25 @@ namespace SiliconStudio.Xenko.Particles.Materials
     }
 
     [DataContract("ParticleMaterialSimple")]
-    public abstract class ParticleMaterialSimple : ParticleMaterialBase
+    public abstract class ParticleMaterialSimple : ParticleMaterial
     {
+        /// <summary>
+        /// Shows if the particles should be rendered as alhpa-blended, additive or something in-between (lerp between the two methods)
+        /// </summary>
+        /// <userdoc>
+        /// Defines if the particles should be rendered as alpha-blended (0), additive (1) or something in-between (any value between 0 and 1)
+        /// </userdoc>
         [DataMember(20)]
         [DataMemberRange(0, 1, 0.001, 0.1)]
         [Display("Alpha-Additive")]
         public float AlphaAdditive { get; set; } = 0f;
 
+        /// <summary>
+        /// Allows the particle shape to be back- or front-face culled.
+        /// </summary>
+        /// <userdoc>
+        /// The default option is no culling, other possible options are back-face culling and front-face culling. Culling both faces at the same time is not an option.
+        /// </userdoc>
         [DataMember(40)]
         [Display("Face culling")]
         public ParticleMaterialCulling FaceCulling;

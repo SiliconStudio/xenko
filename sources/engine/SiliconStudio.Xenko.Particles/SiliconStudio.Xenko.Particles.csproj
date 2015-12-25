@@ -18,6 +18,9 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BoundingShapes\BoundingBoxStatic.cs" />
+    <Compile Include="BoundingShapes\BoundingShapeBase.cs" />
+    <Compile Include="BoundingShapes\BoundingSphereStatic.cs" />
     <Compile Include="Components\ParticleSystemComponent.cs" />
     <Compile Include="Components\ParticleSystemComponentRenderer.cs" />
     <Compile Include="Components\ParticleSystemProcessor.cs" />
@@ -29,10 +32,10 @@
     <Compile Include="Initializers\InitialRotationSeed.cs" />
     <Compile Include="Initializers\InitialSizeSeed.cs" />
     <Compile Include="Initializers\InitialVelocitySeed.cs" />
-    <Compile Include="Materials\ParticleMaterialBase.cs" />
+    <Compile Include="Materials\ParticleMaterial.cs" />
     <Compile Include="Materials\ParticleMaterialComputeColor.cs" />
     <Compile Include="Materials\ParticleMaterialSimple.cs" />
-    <Compile Include="Materials\UVBuilderBase.cs" />
+    <Compile Include="Materials\UVBuilder.cs" />
     <Compile Include="Materials\UVBuilderFlipbook.cs" />
     <Compile Include="Materials\UVBuilderScroll.cs" />
     <Compile Include="Module.cs" />
