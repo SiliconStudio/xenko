@@ -4,15 +4,15 @@
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.ConnectionRouter;
 using SiliconStudio.Xenko.Engine.Network;
+using SiliconStudio.Xenko.Games.Testing;
+using SiliconStudio.Xenko.Games.Testing.Requests;
+using SiliconStudio.Xenko.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
-using SiliconStudio.Xenko.Games.Testing;
-using SiliconStudio.Xenko.Games.Testing.Requests;
-using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.SamplesTestServer
 {
@@ -24,7 +24,6 @@ namespace SiliconStudio.Xenko.SamplesTestServer
             public SocketMessageLayer GameSocket;
             public string GameName;
             public Process Process;
-            public Process LoggerProcess;
         }
 
         private readonly Dictionary<string, TestPair> processes = new Dictionary<string, TestPair>();
@@ -33,11 +32,12 @@ namespace SiliconStudio.Xenko.SamplesTestServer
         private readonly Dictionary<SocketMessageLayer, TestPair> gameToTester = new Dictionary<SocketMessageLayer, TestPair>();
 
         private SocketMessageLayer currentTester;
-        readonly object loggerLock = new object();
+        private readonly object loggerLock = new object();
 
         public SamplesTestServer() : base($"/service/{XenkoVersion.CurrentAsText}/SiliconStudio.Xenko.SamplesTestServer.exe")
         {
-            if (IosTracker.CanProxy()) //start logging the iOS device
+            //start logging the iOS device if we have the proper tools avail
+            if (IosTracker.CanProxy()) 
             {
                 var loggerProcess = Process.Start(new ProcessStartInfo($"{ Environment.GetEnvironmentVariable("SiliconStudioXenkoDir") }\\Bin\\Windows-Direct3D11\\idevicesyslog.exe", "-d")
                 {
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                             lock (loggerLock)
                             {
                                 currentTester?.Send(new LogRequest { Message = $"STDIO: {args.Data}" }).Wait();
-                            }                            
+                            }
                         }
                         catch
                         {
@@ -79,9 +79,54 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
                     loggerProcess.BeginOutputReadLine();
                     loggerProcess.BeginErrorReadLine();
-                }
 
-                new AttachedChildProcessJob(loggerProcess);
+                    new AttachedChildProcessJob(loggerProcess);
+                }
+            }
+
+            //Start also adb in case of android device
+            {
+                //clear the log first
+                ShellHelper.RunProcessAndGetOutput("cmd.exe", "/C adb logcat -c");
+
+                //start logger
+                var loggerProcess = Process.Start(new ProcessStartInfo("cmd.exe", "/C adb logcat")
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true,
+                });
+
+                if (loggerProcess != null)
+                {
+                    loggerProcess.OutputDataReceived += (sender, args) =>
+                    {
+                        try
+                        {
+                            currentTester?.Send(new LogRequest { Message = $"STDIO: {args.Data}" }).Wait();
+                        }
+                        catch
+                        {
+                        }
+                    };
+
+                    loggerProcess.ErrorDataReceived += (sender, args) =>
+                    {
+                        try
+                        {
+                            currentTester?.Send(new LogRequest { Message = $"STDERR: {args.Data}" }).Wait();
+                        }
+                        catch
+                        {
+                        }
+                    };
+
+                    loggerProcess.BeginOutputReadLine();
+                    loggerProcess.BeginErrorReadLine();
+
+                    new AttachedChildProcessJob(loggerProcess);
+                }
             }
         }
 
@@ -118,7 +163,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
                                         debugInfo = "Starting process " + start.FileName + " with path " + start.WorkingDirectory;
                                         socketMessageLayer.Send(new LogRequest { Message = debugInfo }).Wait();
-                                        process = Process.Start(start);                                        
+                                        process = Process.Start(start);
                                     }
                                 }
                                 catch (Exception ex)
@@ -166,7 +211,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                             }
                         case (int)PlatformType.Android:
                             {
-                                Process process = null;                                
+                                Process process = null;
                                 try
                                 {
                                     process = Process.Start("cmd.exe", $"/C adb shell monkey -p {request.GameAssembly}.{request.GameAssembly} -c android.intent.category.LAUNCHER 1");
@@ -178,55 +223,16 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
                                 if (process == null)
                                 {
-                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game process."}).Wait();
+                                    socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game process." }).Wait();
                                 }
                                 else
                                 {
-                                    //clear the log first
-                                    ShellHelper.RunProcessAndGetOutput("cmd.exe", "/C adb logcat -c");
-
-                                    //start logger
-                                    var loggerProcess = Process.Start(new ProcessStartInfo("cmd.exe", "/C adb logcat")
+                                    lock (loggerLock)
                                     {
-                                        UseShellExecute = false,
-                                        CreateNoWindow = true,
-                                        RedirectStandardError = true,
-                                        RedirectStandardOutput = true,
-                                    });
-
-                                    if (loggerProcess == null)
-                                    {
-                                        socketMessageLayer.Send(new StatusMessageRequest { Error = true, Message = "Failed to start game logging process." }).Wait();
-                                    }
-                                    else
-                                    {
-                                        loggerProcess.OutputDataReceived += (sender, args) =>
-                                        {
-                                            try
-                                            {
-                                                socketMessageLayer.Send(new LogRequest { Message = $"STDIO: {args.Data}" }).Wait();
-                                            }
-                                            catch
-                                            {
-                                            }
-                                        };
-
-                                        loggerProcess.ErrorDataReceived += (sender, args) =>
-                                        {
-                                            try
-                                            {
-                                                socketMessageLayer.Send(new LogRequest { Message = $"STDERR: {args.Data}" }).Wait();
-                                            }
-                                            catch
-                                            {
-                                            }
-                                        };
-
-                                        loggerProcess.BeginOutputReadLine();
-                                        loggerProcess.BeginErrorReadLine();
+                                        currentTester = socketMessageLayer;
                                     }
 
-                                    var currenTestPair = new TestPair { TesterSocket = socketMessageLayer, GameName = request.GameAssembly, Process = process, LoggerProcess = loggerProcess };
+                                    var currenTestPair = new TestPair { TesterSocket = socketMessageLayer, GameName = request.GameAssembly, Process = process };
                                     processes[request.GameAssembly] = currenTestPair;
                                     testerToGame[socketMessageLayer] = currenTestPair;
                                     socketMessageLayer.Send(new LogRequest { Message = "Process created, id: " + process.Id.ToString() }).Wait();
@@ -323,8 +329,6 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
                 game.Process.Kill();
                 game.Process.Dispose();
-                game.LoggerProcess?.Kill();
-                game.LoggerProcess?.Dispose();
 
                 lock (loggerLock)
                 {
@@ -345,8 +349,6 @@ namespace SiliconStudio.Xenko.SamplesTestServer
 
                 game.Process.Kill();
                 game.Process.Dispose();
-                game.LoggerProcess?.Kill();
-                game.LoggerProcess?.Dispose();
 
                 lock (loggerLock)
                 {
@@ -371,7 +373,6 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 tester.TesterSocket.Send(new ScreenshotStored()).Wait();
             });
 
-            
             Task.Run(async () =>
             {
                 try
@@ -380,7 +381,7 @@ namespace SiliconStudio.Xenko.SamplesTestServer
                 }
                 catch
                 {
-                }              
+                }
             });
         }
     }
