@@ -32,7 +32,9 @@ namespace SiliconStudio.Xenko.Games.Testing
 
         public GameTestingClient(string gamePath, PlatformType platform)
         {
-            if(gamePath == null) throw new ArgumentNullException(nameof(gamePath));
+            GameTestingSystem.Initialized = true; //prevent time-outs from test side!!
+
+            if (gamePath == null) throw new ArgumentNullException(nameof(gamePath));
 
             xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
             if(xenkoDir.IsNullOrEmpty()) throw new NullReferenceException("Could not find SiliconStudioXenkoDir, make sure the environment variable is set.");
