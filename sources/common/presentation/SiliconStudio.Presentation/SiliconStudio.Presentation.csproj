@@ -94,7 +94,7 @@
     <Compile Include="Controls\RotationEditor.cs" />
     <Compile Include="Controls\TextBoxBase.cs" />
     <Compile Include="Controls\TrimmingSource.cs" />
-    <Compile Include="Controls\VectorEditor.cs" />
+    <Compile Include="Controls\VectorEditorBase.cs" />
     <Compile Include="Core\AnonymousComparer.cs" />
     <Compile Include="Behaviors\CharInputBehavior.cs" />
     <Compile Include="Behaviors\ButtonCloseWindowBehavior.cs" />

@@ -8,17 +8,17 @@ using System.Windows.Input;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public abstract class VectorEditor : Control
+    public abstract class VectorEditorBase : Control
     {
         /// <summary>
         /// Identifies the <see cref="DecimalPlaces"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty DecimalPlacesProperty = DependencyProperty.Register("DecimalPlaces", typeof(int), typeof(VectorEditor), new FrameworkPropertyMetadata(-1));
+        public static readonly DependencyProperty DecimalPlacesProperty = DependencyProperty.Register("DecimalPlaces", typeof(int), typeof(VectorEditorBase), new FrameworkPropertyMetadata(-1));
 
         /// <summary>
         /// Identifies the <see cref="IsDropDownOpen"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(VectorEditor), new PropertyMetadata(false));
+        public static readonly DependencyProperty IsDropDownOpenProperty = DependencyProperty.Register("IsDropDownOpen", typeof(bool), typeof(VectorEditorBase), new PropertyMetadata(false));
 
         /// <summary>
         /// Gets or sets the number of decimal places displayed in the <see cref="NumericTextBox"/>.
@@ -48,7 +48,7 @@ namespace SiliconStudio.Presentation.Controls
         }
     }
 
-    public abstract class VectorEditor<T> : VectorEditor
+    public abstract class VectorEditorBase<T> : VectorEditorBase
     {
         private bool interlock;
         private bool templateApplied;
@@ -57,12 +57,12 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Identifies the <see cref="Value"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(T), typeof(VectorEditor<T>), new FrameworkPropertyMetadata(default(T), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValuePropertyChanged, null, false, UpdateSourceTrigger.Explicit));
+        public static readonly DependencyProperty ValueProperty = DependencyProperty.Register("Value", typeof(T), typeof(VectorEditorBase<T>), new FrameworkPropertyMetadata(default(T), FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnValuePropertyChanged, null, false, UpdateSourceTrigger.Explicit));
 
         /// <summary>
         /// Identifies the <see cref="DefaultValue"/> dependency property.
         /// </summary>
-        public static readonly DependencyProperty DefaultValueProperty = DependencyProperty.Register("DefaultValue", typeof(T), typeof(VectorEditor<T>), new PropertyMetadata(default(T)));
+        public static readonly DependencyProperty DefaultValueProperty = DependencyProperty.Register("DefaultValue", typeof(T), typeof(VectorEditorBase<T>), new PropertyMetadata(default(T)));
 
         /// <summary>
         /// Gets or sets the vector associated to this control.
@@ -70,7 +70,7 @@ namespace SiliconStudio.Presentation.Controls
         public T Value { get { return (T)GetValue(ValueProperty); } set { SetValue(ValueProperty, value); } }
 
         /// <summary>
-        /// Gets or sets the value that will be used by the <see cref="VectorEditor.ResetValue"/> method to reset the <see cref="Value"/> of this control.
+        /// Gets or sets the value that will be used by the <see cref="VectorEditorBase.ResetValue"/> method to reset the <see cref="Value"/> of this control.
         /// </summary>
         public T DefaultValue { get { return (T)GetValue(DefaultValueProperty); } set { SetValue(DefaultValueProperty, value); } }
         
@@ -168,13 +168,13 @@ namespace SiliconStudio.Presentation.Controls
 
         protected static void OnComponentPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var editor = (VectorEditor<T>)sender;
+            var editor = (VectorEditorBase<T>)sender;
             editor.OnComponentPropertyChanged(e);
         }
 
         protected static object CoerceComponentValue(DependencyObject sender, object basevalue)
         {
-            var editor = (VectorEditor<T>)sender;
+            var editor = (VectorEditorBase<T>)sender;
             int decimalPlaces = editor.DecimalPlaces;
             return decimalPlaces < 0 ? basevalue : (float)Math.Round((float)basevalue, decimalPlaces);
         }
@@ -186,7 +186,7 @@ namespace SiliconStudio.Presentation.Controls
         /// <param name="e">The event data.</param>
         private static void OnValuePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-            var editor = (VectorEditor<T>)sender;
+            var editor = (VectorEditorBase<T>)sender;
             editor.OnValueValueChanged();
         }
     }
