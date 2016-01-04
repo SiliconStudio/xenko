@@ -321,7 +321,7 @@ namespace SiliconStudio.Shaders.Analysis.Hlsl
         private static bool IsValidIndex(SourceSpan span, char valueChar, int min, int max, ParsingResult result = null)
         {
             int value;
-            var isParseOk = int.TryParse(valueChar.ToString(CultureInfo.InvariantCulture), out value);
+            var isParseOk = int.TryParse(valueChar.ToString(), out value);
 
             if (!isParseOk || value < min || value > max)
             {

@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Globalization;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -11,7 +12,11 @@ namespace SiliconStudio.Shaders.Grammar
     public class ShaderLanguageData : LanguageData
     {
         private Dictionary<string, Terminal> keywordToTerminal = new Dictionary<string, Terminal>();
+#if !SILICONSTUDIO_RUNTIME_CORECLR
         private Dictionary<string, Terminal> caseInsensitiveKeywordToTerminal = new Dictionary<string, Terminal>(StringComparer.InvariantCultureIgnoreCase);
+#else
+        private Dictionary<string, Terminal> caseInsensitiveKeywordToTerminal = new Dictionary<string, Terminal>(CultureInfo.InvariantCulture.CompareInfo.GetStringComparer(CompareOptions.IgnoreCase));
+#endif
         private Terminal[] SymbolToToken;
 
         /// <summary>

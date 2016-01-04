@@ -229,6 +229,7 @@ namespace SiliconStudio.AssemblyProcessor
                 var getObject = RewriteBody(declaringType.Methods.First(x => x.Name == "GetObject"));
                 getObject.Emit(OpCodes.Ldarg, getObject.Body.Method.Parameters[0]);
                 EmitGetCode(getObject, declaringType.GenericParameters[0]);
+                getObject.Emit(OpCodes.Box, declaringType.GenericParameters[0]); // Required for Windows 10 AOT
                 getObject.Emit(OpCodes.Ret);
 
                 // UpdatableProperty.SetObject
@@ -236,6 +237,7 @@ namespace SiliconStudio.AssemblyProcessor
                 setObject.Emit(OpCodes.Ldarg, setObject.Body.Method.Parameters[0]);
                 EmitSetCodeBeforeValue(setObject, declaringType.GenericParameters[0]);
                 setObject.Emit(OpCodes.Ldarg, setObject.Body.Method.Parameters[1]);
+                setObject.Emit(OpCodes.Unbox_Any, declaringType.GenericParameters[0]); // Required for Windows 10 AOT
                 EmitSetCodeAfterValue(setObject, declaringType.GenericParameters[0]);
                 setObject.Emit(OpCodes.Ret);
 

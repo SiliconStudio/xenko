@@ -52,6 +52,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             debug = isDebug;
             GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_11_0 };
+            GraphicsDeviceManager.ShaderProfile = GraphicsProfile.Level_11_0;
         }
 
         protected override async Task LoadContent()

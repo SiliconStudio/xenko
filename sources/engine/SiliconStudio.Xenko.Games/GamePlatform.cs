@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2013 SharpDX - Alexandre Mutel
@@ -50,14 +50,13 @@ namespace SiliconStudio.Xenko.Games
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
             return new GamePlatformWindowsRuntime(game);
-#elif SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-            return new GamePlatformOpenTK(game);
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             return new GamePlatformAndroid(game);
 #elif SILICONSTUDIO_PLATFORM_IOS
             return new GamePlatformiOS(game);
 #else
-            return new GamePlatformDesktop(game);
+            // Here we cover all Desktop variants: OpenTK, SDL, Winforms,...
+            return new GamePlatformWindows(game);
 #endif
         }
 
@@ -87,22 +86,16 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
-        internal abstract GameWindow[] GetSupportedGameWindows();
+        internal abstract GameWindow GetSupportedGameWindow(AppContextType type);
 
         public virtual GameWindow CreateWindow(GameContext gameContext)
         {
-            gameContext = gameContext ?? new GameContext();
-
-            var windows = GetSupportedGameWindows();
-
-            foreach (var gameWindowToTest in windows)
+            var window = GetSupportedGameWindow(gameContext.ContextType);
+            if (window != null)
             {
-                if (gameWindowToTest.CanHandle(gameContext))
-                {
-                    gameWindowToTest.Services = Services;
-                    gameWindowToTest.Initialize(gameContext);
-                    return gameWindowToTest;
-                }
+                window.Services = Services;
+                window.Initialize(gameContext);
+                return window;
             }
 
             throw new ArgumentException("Game Window context not supported on this platform");
@@ -115,7 +108,6 @@ namespace SiliconStudio.Xenko.Games
             gameWindow = CreateWindow(gameContext);
 
             // Register on Activated 
-            gameWindow.GameContext = gameContext;
             gameWindow.Activated += OnActivated;
             gameWindow.Deactivated += OnDeactivated;
             gameWindow.InitCallback = OnInitCallback;
@@ -385,5 +377,14 @@ namespace SiliconStudio.Xenko.Games
             Resume = null;
             Suspend = null;
         }
+    }
+
+    internal abstract class GamePlatform<TK> : GamePlatform
+    {
+
+        protected GamePlatform(GameBase game) : base(game)
+        {
+        }
+
     }
 }

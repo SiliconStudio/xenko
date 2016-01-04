@@ -34,6 +34,11 @@ namespace SiliconStudio.Xenko.Games
         Desktop,
 
         /// <summary>
+        /// Game running on desktop in a SDL window.
+        /// </summary>
+        DesktopSDL,
+
+        /// <summary>
         /// Game running on desktop in a WPF window through a D3DImage.
         /// </summary>
         DesktopWpf,
@@ -44,7 +49,7 @@ namespace SiliconStudio.Xenko.Games
         DesktopOpenTK,
 
         /// <summary>
-        /// Game running on Android in an AndroidGameView.
+        /// Game running on Android in an AndroidXenkoGameView.
         /// </summary>
         Android,
 

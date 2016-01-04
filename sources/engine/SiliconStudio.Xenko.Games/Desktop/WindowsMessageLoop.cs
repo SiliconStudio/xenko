@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 //
 // Copyright (c) 2010-2014 SharpDX - Alexandre Mutel
@@ -20,13 +20,14 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System;
 using System.Globalization;
 using System.Windows.Forms;
-using System.Runtime.InteropServices;
-
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using SharpDX.Win32;
+#endif
+using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -144,13 +145,11 @@ namespace SiliconStudio.Xenko.Games
                 }
                 else
                 {
-                    var gameForm = Control as GameForm;
-
                     var localHandle = controlHandle;
                     if (localHandle != IntPtr.Zero)
                     {
                         // Previous code not compatible with Application.AddMessageFilter but faster then DoEvents
-                        NativeMessage msg;
+                        Win32Native.NativeMessage msg;
                         while (Win32Native.PeekMessage(out msg, IntPtr.Zero, 0, 0, 0) != 0)
                         {
                             if (Win32Native.GetMessage(out msg, IntPtr.Zero, 0, 0) == -1)
@@ -173,7 +172,6 @@ namespace SiliconStudio.Xenko.Games
                             //{
                             //    continue;
                             //}
-
                             if (!Application.FilterMessage(ref message))
                             {
                                 Win32Native.TranslateMessage(ref msg);
@@ -234,21 +232,6 @@ namespace SiliconStudio.Xenko.Games
                 {
                     renderCallback();
                 }
-            }
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this instance is application idle.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this instance is application idle; otherwise, <c>false</c>.
-        /// </value>
-        public static bool IsIdle
-        {
-            get
-            {
-                NativeMessage msg;
-                return (bool)(Win32Native.PeekMessage(out msg, IntPtr.Zero, 0, 0, 0) == 0);
             }
         }
    }

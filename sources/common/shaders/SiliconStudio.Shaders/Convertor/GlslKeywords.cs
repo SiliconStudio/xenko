@@ -1,6 +1,7 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.RegularExpressions;
@@ -41,7 +42,7 @@ namespace SiliconStudio.Shaders.Convertor
             try
             {
                 // Try to load from the 
-                var keywordFilePath = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(typeof (GlslKeywords).Assembly.Location)), KeywordsFileName);
+                var keywordFilePath = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(typeof (GlslKeywords).GetTypeInfo().Assembly.Location)), KeywordsFileName);
                 if (File.Exists(keywordFilePath))
                     stream = new FileStream(keywordFilePath, FileMode.Open, FileAccess.Read);
 
@@ -54,7 +55,7 @@ namespace SiliconStudio.Shaders.Convertor
             } finally
             {
                 if (stream != null)
-                    try { stream.Close(); } catch {}
+                    try { stream.Dispose(); } catch {}
             }
         }
 

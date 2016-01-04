@@ -26,7 +26,7 @@ namespace SiliconStudio.Presentation.ViewModel
         /// Gets a dispatcher that is capable of executing code in the UI thread.
         /// </summary>
         [DataMemberIgnore]
-        public IDispatcherService Dispatcher { get; private set; }
+        public IDispatcherService Dispatcher { get; }
 
         /// <inheritdoc/>
         protected override void OnPropertyChanging(params string[] propertyNames)

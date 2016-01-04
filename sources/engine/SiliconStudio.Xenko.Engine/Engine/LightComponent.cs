@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.ComponentModel;
+using System.Threading;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -20,6 +21,8 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(LightProcessor))]
     public sealed class LightComponent : ActivableEntityComponent
     {
+        private static int LightComponentIds;
+
         public static PropertyKey<LightComponent> Key = new PropertyKey<LightComponent>("Key", typeof(LightComponent));
 
         /// <summary>
@@ -35,7 +38,13 @@ namespace SiliconStudio.Xenko.Engine
             Type = new LightDirectional();
             Intensity = 1.0f;
             CullingMask = EntityGroupMask.All;
+            Id = Interlocked.Increment(ref LightComponentIds);
         }
+
+        /// <summary>
+        /// Internal id used to identify a light component
+        /// </summary>
+        internal readonly int Id;
 
         /// <summary>
         /// Gets or sets the type of the light.

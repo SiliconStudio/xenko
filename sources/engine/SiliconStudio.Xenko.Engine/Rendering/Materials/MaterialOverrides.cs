@@ -11,6 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
     /// </summary>
     [DataContract("MaterialOverrides")]
     [Display("Layer Overrides")]
+    [NonIdentifiable]
     public class MaterialOverrides
     {
         // TODO: This class should use instead pluggable ovrride so that the system can support new overrides

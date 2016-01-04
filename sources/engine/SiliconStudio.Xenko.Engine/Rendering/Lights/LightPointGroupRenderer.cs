@@ -37,6 +37,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
             else
             {
+                if (lightMaxCount == 0) lightMaxCount = 1; //todo verify this.. this is just an hot fix 
                 mixin.Mixins.Add(new ShaderClassSource("LightPointGroup", lightMaxCount));
                 mixin.Mixins.Add(new ShaderClassSource("DirectLightGroupFixed", lightMaxCount));
             }

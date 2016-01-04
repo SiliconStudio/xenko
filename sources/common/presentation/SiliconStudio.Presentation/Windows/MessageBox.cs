@@ -2,7 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Windows;
+using System.Windows.Input;
 using System.Windows.Media;
 
 namespace SiliconStudio.Presentation.Windows
@@ -15,6 +17,13 @@ namespace SiliconStudio.Presentation.Windows
     {
         protected MessageBox()
         {
+        }
+
+        protected override void OnInitialized(EventArgs e)
+        {
+            base.OnInitialized(e);
+
+            CommandBindings.Add(new CommandBinding(ApplicationCommands.Copy, (_, __) => Clipboard.SetDataObject(Content ?? string.Empty, true)));
         }
 
         /// <summary>
@@ -148,14 +157,27 @@ namespace SiliconStudio.Presentation.Windows
         /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
         public static MessageBoxResult Show(Window owner, string message, string caption, MessageBoxButton button, MessageBoxImage image)
         {
-            var buttons = GetButtons(button);
+            return Show(owner, message, caption, GetButtons(button), image);
+        }
+
+        /// <summary>
+        /// Displays a <see cref="MessageBox"/> an returns the <see cref="MessageBoxResult"/> depending on the user's choice.
+        /// </summary>
+        /// <param name="owner">A <see cref="Window"/> that represents the owner window of the message box.</param>
+        /// <param name="message">A <see cref="string"/> that specifies the text to display.</param>
+        /// <param name="caption">A <see cref="string"/> that specifies the title bar caption to display.</param>
+        /// <param name="buttons">A n enumeration of <see cref="DialogButtonInfo"/> that specifies buttons to display</param>
+        /// <param name="image">A <see cref="MessageBoxImage"/> value that specifies the icon to display.</param>
+        /// <returns>A <see cref="MessageBoxResult"/> value that specifies which message box button is clicked by the user.</returns>
+        public static MessageBoxResult Show(Window owner, string message, string caption, IEnumerable<DialogButtonInfo> buttons, MessageBoxImage image)
+        {
             var messageBox = new MessageBox
             {
                 Owner = owner,
                 WindowStartupLocation = owner != null ? WindowStartupLocation.CenterOwner : WindowStartupLocation.CenterScreen,
                 Title = caption,
                 Content = message,
-                ButtonsSource = buttons,
+                ButtonsSource = buttons.ToList(),
             };
             SetImage(messageBox, image);
             return (MessageBoxResult)messageBox.ShowInternal();

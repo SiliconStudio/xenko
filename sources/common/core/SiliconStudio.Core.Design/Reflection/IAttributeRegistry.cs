@@ -18,7 +18,7 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="memberInfo">The reflection member.</param>
         /// <param name="inherit">if set to <c>true</c> includes inherited attributes.</param>
         /// <returns>An enumeration of <see cref="Attribute"/>.</returns>
-        IReadOnlyCollection<Attribute> GetAttributes(MemberInfo memberInfo, bool inherit = true);
+        List<Attribute> GetAttributes(MemberInfo memberInfo, bool inherit = true);
 
         /// <summary>
         /// Registers an attribute for the specified member. Restriction: Attributes registered this way cannot be listed in inherited attributes.

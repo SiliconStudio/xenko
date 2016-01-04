@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using SiliconStudio.Assets;
 using SiliconStudio.Core.IO;
@@ -11,12 +12,18 @@ namespace SiliconStudio.Xenko.Assets.Tasks
 {
     internal sealed class PackageArchive
     {
-        public static void Build(Package package, string outputDirectory = null)
+        public static void Build(Package package, string specialVersion = null, string outputDirectory = null)
         {
             if (package == null) throw new ArgumentNullException("package");
 
             var meta = new NuGet.ManifestMetadata();
             package.Meta.ToNugetManifest(meta);
+
+            // Override version with task SpecialVersion (if specified by user)
+            if (specialVersion != null)
+            {
+                meta.Version = new PackageVersion(package.Meta.Version.ToString().Split('-').First() + "-" + specialVersion).ToString();
+            }
 
             var builder = new NuGet.PackageBuilder();
             builder.Populate(meta);
