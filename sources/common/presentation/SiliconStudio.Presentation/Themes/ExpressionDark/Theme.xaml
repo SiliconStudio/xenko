@@ -277,6 +277,11 @@
     <Setter Property="FontWeight" Value="Light" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
   </Style>
+  <Style TargetType="{x:Type Image}" x:Key="{x:Static local:XamlMarkdown.ImageStyleKey}">
+    <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" />
+    <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}" />
+    <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
+  </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
     <Setter Property="HorizontalContentAlignment" Value="Center" />
     <Setter Property="VerticalContentAlignment" Value="Center" />
