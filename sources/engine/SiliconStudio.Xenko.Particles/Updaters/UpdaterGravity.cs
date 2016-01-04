@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
 {
     [DataContract("UpdaterGravity")]
     [Display("Gravity")]
-    public class UpdaterGravity : UpdaterBase
+    public class UpdaterGravity : ParticleUpdater
     {
         /// <summary>
         /// Direction and magnitude of the gravitational acceleration

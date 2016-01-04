@@ -59,11 +59,11 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         Dead,
     }
 
-    [DataContract("SpawnerBase")]
-    public abstract class SpawnerBase 
+    [DataContract("ParticleSpawner")]
+    public abstract class ParticleSpawner 
     {
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="SpawnerBase"/> is enabled.
+        /// Gets or sets a value indicating whether this <see cref="ParticleSpawner"/> is enabled.
         /// </summary>
         /// <value>
         ///   <c>true</c> if enabled; otherwise, <c>false</c>.

@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
 {
     [DataContract("UpdaterOldPosition")]
     [Display("OldPosition")]
-    public class UpdaterOldPosition : UpdaterBase
+    public class UpdaterOldPosition : ParticleUpdater
     {
         public UpdaterOldPosition()
         {

@@ -23,11 +23,11 @@ namespace SiliconStudio.Xenko.Particles
     /// Each plugin operates over one or several <see cref="ParticleFields"/> updating or setting up the particle state
     /// Additionally, each plugin can inherit some properties from the parent particle system, which are usually passed by the user.
     /// </summary>
-    [DataContract("PaticleModuleBase")]
-    public abstract class ParticleModuleBase
+    [DataContract("PaticleModule")]
+    public abstract class ParticleModule
     {
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="ParticleModuleBase"/> is enabled.
+        /// Gets or sets a value indicating whether this <see cref="ParticleModule"/> is enabled.
         /// </summary>
         /// <value>
         ///   <c>true</c> if enabled; otherwise, <c>false</c>.

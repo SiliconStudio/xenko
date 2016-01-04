@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialColorSeed")]
     [Display("Initial Color by seed")]
-    public class InitialColorSeed : Initializer
+    public class InitialColorSeed : ParticleInitializer
     {
         public InitialColorSeed()
         {

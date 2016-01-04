@@ -5,8 +5,8 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Particles.Modules
 {
-    [DataContract("UpdaterBase")]
-    public abstract class UpdaterBase : ParticleModuleBase
+    [DataContract("ParticleUpdater")]
+    public abstract class ParticleUpdater : ParticleModule
     {
 //        internal List<ParticleFieldDescription> RequiredFields = new List<ParticleFieldDescription>(ParticlePool.DefaultMaxFielsPerPool);
 
