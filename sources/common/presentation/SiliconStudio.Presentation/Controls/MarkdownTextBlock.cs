@@ -51,11 +51,16 @@ namespace SiliconStudio.Presentation.Controls
         /// <summary>
         /// Default markdown used if none is supplied.
         /// </summary>
-        private readonly Lazy<XamlMarkdown> defaultMarkdown = new Lazy<XamlMarkdown>(() => new XamlMarkdown());
+        private readonly Lazy<XamlMarkdown> defaultMarkdown;
 
         static MarkdownTextBlock()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(MarkdownTextBlock), new FrameworkPropertyMetadata(typeof(MarkdownTextBlock)));
+        }
+
+        public MarkdownTextBlock()
+        {
+            defaultMarkdown = new Lazy<XamlMarkdown>(() => new XamlMarkdown(this));
         }
 
         /// <inheritdoc/>

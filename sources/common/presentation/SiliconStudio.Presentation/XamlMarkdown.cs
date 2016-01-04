@@ -66,9 +66,27 @@ namespace SiliconStudio.Presentation
         private Style heading4Style;
         private Style imageStyle;
 
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        /// <remarks><see cref="Application.Current"/> will be used for styles look-up.</remarks>
         public XamlMarkdown()
         {
             HyperlinkCommand = NavigationCommands.GoToPage;
+        }
+
+        private readonly FrameworkElement resourcesProvider;
+
+        /// <summary>
+        /// Creates an instance of <see cref="XamlMarkdown"/> with <paramref name="resourcesProvider"/> for styles look-up.
+        /// </summary>
+        /// <param name="resourcesProvider">The framework element used for styles look-up.</param>
+        public XamlMarkdown(FrameworkElement resourcesProvider)
+            : this()
+        {
+            if (resourcesProvider == null) throw new ArgumentNullException(nameof(resourcesProvider));
+
+            this.resourcesProvider = resourcesProvider;
         }
 
         /// <summary>
@@ -115,19 +133,24 @@ namespace SiliconStudio.Presentation
 
         public ICommand HyperlinkCommand { get; set; }
 
-        private Style CodeStyle => codeStyle ?? (codeStyle = (Style)Application.Current?.TryFindResource(CodeStyleKey));
+        private Style CodeStyle => codeStyle ?? (codeStyle = TryFindStyle(CodeStyleKey));
 
-        private Style DocumentStyle => documentStyle ?? (documentStyle = (Style)Application.Current?.TryFindResource(DocumentStyleKey));
+        private Style DocumentStyle => documentStyle ?? (documentStyle = TryFindStyle(DocumentStyleKey));
 
-        private Style Heading1Style => heading1Style ?? (heading1Style = (Style)Application.Current?.TryFindResource(Heading1StyleKey));
+        private Style Heading1Style => heading1Style ?? (heading1Style = TryFindStyle(Heading1StyleKey));
 
-        private Style Heading2Style => heading2Style ?? (heading2Style = (Style)Application.Current?.TryFindResource(Heading2StyleKey));
+        private Style Heading2Style => heading2Style ?? (heading2Style = TryFindStyle(Heading2StyleKey));
 
-        private Style Heading3Style => heading3Style ?? (heading3Style = (Style)Application.Current?.TryFindResource(Heading3StyleKey));
+        private Style Heading3Style => heading3Style ?? (heading3Style = TryFindStyle(Heading3StyleKey));
 
-        private Style Heading4Style => heading4Style ?? (heading4Style = (Style)Application.Current?.TryFindResource(Heading4StyleKey));
+        private Style Heading4Style => heading4Style ?? (heading4Style = TryFindStyle(Heading4StyleKey));
 
-        private Style ImageStyle => imageStyle ?? (imageStyle = (Style)Application.Current?.TryFindResource(ImageStyleKey));
+        private Style ImageStyle => imageStyle ?? (imageStyle = TryFindStyle(ImageStyleKey));
+
+        private Style TryFindStyle(object resourceKey)
+        {
+            return (resourcesProvider?.TryFindResource(resourceKey) ?? Application.Current?.TryFindResource(DocumentStyleKey)) as Style;
+        }
 
         public FlowDocument Transform(string text)
         {
