@@ -6,7 +6,7 @@ using System;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    public partial class AudioEngineSDL : AudioEngine
+    public class AudioEngineSDL : AudioEngine
     {
         /// <inheritDoc/>
         internal override void InitializeAudioEngine(AudioDevice device)

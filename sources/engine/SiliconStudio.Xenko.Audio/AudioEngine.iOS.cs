@@ -9,7 +9,7 @@ using Foundation;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    public partial class AudioEngineiOS: AudioEngine
+    public class AudioEngineiOS: AudioEngine
     {
         private AVAudioPlayer audioPlayer;
         private bool currentMusicDataTypeIsUnsupported;

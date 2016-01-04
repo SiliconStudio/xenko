@@ -45,8 +45,7 @@ namespace SiliconStudio.Xenko.Audio
             
             var dspSettings = new DspSettings(inputChannels, outputChannels);
 
-            // @TODO: Find a way to not perform a cast.
-            ((AudioEngineWindows) AudioEngine).X3DAudio.Calculate(list, emit, CalculateFlags.Matrix | CalculateFlags.LpfDirect, dspSettings);
+            AudioEngine.X3DAudio.Calculate(list, emit, CalculateFlags.Matrix | CalculateFlags.LpfDirect, dspSettings);
 
             /////////////////////////////////////////////////////////////
             // 2. Now let's set the voice parameters to simulate a 3D voice.
@@ -133,8 +132,7 @@ namespace SiliconStudio.Xenko.Audio
 
         internal void CreateVoice(WaveFormat format)
         {
-            // @TODO: Find a way to not perform a cast.
-            SourceVoice = new SourceVoice(((AudioEngineWindows)AudioEngine).XAudio2, format.ToSharpDX(), VoiceFlags.None, 2f, true); // '2f' -> allow to modify pitch up to one octave, 'true' -> enable callback
+            SourceVoice = new SourceVoice(AudioEngine.XAudio2, format.ToSharpDX(), VoiceFlags.None, 2f, true); // '2f' -> allow to modify pitch up to one octave, 'true' -> enable callback
             SourceVoice.StreamEnd += Stop;
         }
 
