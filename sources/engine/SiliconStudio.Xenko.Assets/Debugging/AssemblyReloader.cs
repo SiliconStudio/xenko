@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Assets.Debugging
         {
             foreach (var reloadedScript in reloadedScripts)
             {
-                var scriptComponent = reloadedScript.Entity.Components.Get(ScriptComponent.Key);
+                var scriptComponent = reloadedScript.Entity.Components.Get<ScriptComponent>();
                 if (scriptComponent == null) // Should not happpen
                     continue;
 
@@ -42,7 +42,7 @@ namespace SiliconStudio.Xenko.Assets.Debugging
             // Find scripts that will need reloading
             foreach (var entity in entities)
             {
-                var scriptComponent = entity.Components.Get(ScriptComponent.Key);
+                var scriptComponent = entity.Components.Get<ScriptComponent>();
                 if (scriptComponent == null)
                     continue;
 
