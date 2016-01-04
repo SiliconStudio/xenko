@@ -61,6 +61,7 @@
     <Compile Include="AnonymousDisposable.cs" />
     <Compile Include="BrowsableAttribute.cs" />
     <Compile Include="CategoryAttribute.cs" />
+    <Compile Include="Collections\FastCollection.cs" />
     <Compile Include="Collections\ITrackingCollectionChanged.cs" />
     <Compile Include="Collections\KeyedSortedList.cs" />
     <Compile Include="Collections\PoolListStruct.cs" />
