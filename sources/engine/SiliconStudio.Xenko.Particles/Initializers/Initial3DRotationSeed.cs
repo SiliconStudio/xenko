@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("Initial3DRotationSeed")]
     [Display("Initial 3D Rotation by seed")]
-    public class Initial3DRotationSeed : Initializer
+    public class Initial3DRotationSeed : ParticleInitializer
     {
         public Initial3DRotationSeed()
         {

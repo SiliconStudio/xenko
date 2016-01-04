@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
     /// </summary>
     [DataContract("InitialVelocitySeed")]
     [Display("Initial Velocity by seed")]
-    public class InitialVelocitySeed : Initializer
+    public class InitialVelocitySeed : ParticleInitializer
     {
         public InitialVelocitySeed()
         {

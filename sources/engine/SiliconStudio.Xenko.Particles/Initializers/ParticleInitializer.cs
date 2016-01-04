@@ -5,8 +5,8 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Particles.Initializers
 {
-    [DataContract("Initializer")]
-    public abstract class Initializer : ParticleModuleBase
+    [DataContract("ParticleInitializer")]
+    public abstract class ParticleInitializer : ParticleModule
     {
 //        internal List<ParticleFieldDescription> RequiredFields = new List<ParticleFieldDescription>(ParticlePool.DefaultMaxFielsPerPool);
 

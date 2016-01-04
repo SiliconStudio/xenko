@@ -28,7 +28,7 @@
     <Compile Include="Initializers\Initial3DRotationSeed.cs" />
     <Compile Include="Initializers\InitialColorSeed.cs" />
     <Compile Include="Initializers\InitialDefaultFields.cs" />
-    <Compile Include="Initializers\Initializer.cs" />
+    <Compile Include="Initializers\ParticleInitializer.cs" />
     <Compile Include="Initializers\InitialPositionSeed.cs" />
     <Compile Include="Initializers\InitialRotationSeed.cs" />
     <Compile Include="Initializers\InitialSizeSeed.cs" />
@@ -95,14 +95,14 @@
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
     <Compile Include="Updaters\UpdaterOldPosition.cs" />
-    <Compile Include="Updaters\UpdaterBase.cs" />
+    <Compile Include="Updaters\ParticleUpdater.cs" />
     <Compile Include="Particle.cs" />
     <Compile Include="ParticleEmitter.cs" />
     <Compile Include="ParticleField.cs" />
     <Compile Include="ParticleFieldAccessor.cs" />
     <Compile Include="ParticleFieldDescription.cs" />
     <Compile Include="ParticleFields.cs" />
-    <Compile Include="ParticleModuleBase.cs" />
+    <Compile Include="ParticleModule.cs" />
     <Compile Include="ParticlePool.cs" />
     <Compile Include="ParticleRandomSeedGenerator.cs" />
     <Compile Include="ParticleSystem.cs" />
@@ -123,7 +123,7 @@
     </Compile>
     <Compile Include="ShapeBuilders\ShapeBuilderBillboard.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderBase.cs" />
-    <Compile Include="Spawners\SpawnerBase.cs" />
+    <Compile Include="Spawners\ParticleSpawner.cs" />
     <Compile Include="Spawners\SpawnerPerFrame.cs" />
     <Compile Include="Spawners\SpawnerPerSecond.cs" />
     <Compile Include="VertexLayouts\AttributeAccessor.cs" />

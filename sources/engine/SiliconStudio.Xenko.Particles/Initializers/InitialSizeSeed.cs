@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
 {
     [DataContract("InitialSizeSeed")]
     [Display("Initial Size by seed")]
-    public class InitialSizeSeed : Initializer
+    public class InitialSizeSeed : ParticleInitializer
     {
         public InitialSizeSeed()
         {

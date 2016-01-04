@@ -57,7 +57,7 @@ namespace SiliconStudio.Xenko.Particles
         public bool Enabled { get; set; } = true;
 
         /// <summary>
-        /// List of <see cref="SpawnerBase"/> to spawn particles in this <see cref="ParticleEmitter"/>
+        /// List of <see cref="ParticleSpawner"/> to spawn particles in this <see cref="ParticleEmitter"/>
         /// </summary>
         /// <userdoc>
         /// Spawners define when, how and how many particles are spawned withing this Emitter. There can be several of them.
@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Spawners")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<SpawnerBase> Spawners;
+        public readonly TrackingCollection<ParticleSpawner> Spawners;
 
         // Exposing for debug drawing
         [DataMemberIgnore]
@@ -146,20 +146,20 @@ namespace SiliconStudio.Xenko.Particles
 
             initialDefaultFields = new InitialDefaultFields();
 
-            Initializers = new TrackingCollection<Initializer>();
+            Initializers = new TrackingCollection<ParticleInitializer>();
             Initializers.CollectionChanged += ModulesChanged;
 
-            Updaters = new TrackingCollection<UpdaterBase>();
+            Updaters = new TrackingCollection<ParticleUpdater>();
             Updaters.CollectionChanged += ModulesChanged;
 
-            Spawners = new TrackingCollection<SpawnerBase>();
+            Spawners = new TrackingCollection<ParticleSpawner>();
             Spawners.CollectionChanged += SpawnersChanged;        
         }
 
         #region Modules
 
         /// <summary>
-        /// List of <see cref="Initializer"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
+        /// List of <see cref="ParticleInitializer"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
         /// </summary>
         /// <userdoc>
         /// Initializers set initial values for fields of particles which just spawned. Have no effect on already spawned particles.
@@ -168,13 +168,13 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Initializers")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<Initializer> Initializers;
+        public readonly TrackingCollection<ParticleInitializer> Initializers;
 
         [DataMemberIgnore]
         private readonly InitialDefaultFields initialDefaultFields;
 
         /// <summary>
-        /// List of <see cref="UpdaterBase"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
+        /// List of <see cref="ParticleUpdater"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
         /// </summary>
         /// <userdoc>
         /// Updaters change the fields of all living particles every frame, like position, velocity, color, size etc.
@@ -183,11 +183,11 @@ namespace SiliconStudio.Xenko.Particles
         [Display("Updaters")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<UpdaterBase> Updaters;
+        public readonly TrackingCollection<ParticleUpdater> Updaters;
 
         private void ModulesChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
-            var module = e.Item as ParticleModuleBase;
+            var module = e.Item as ParticleModule;
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:

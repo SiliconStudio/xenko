@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
     /// </summary>
     [DataContract("SpawnerPerSecond")]
     [Display("Per second")]
-    public sealed class SpawnerPerSecond : SpawnerBase
+    public sealed class SpawnerPerSecond : ParticleSpawner
     {
         private float carryOver;
 
