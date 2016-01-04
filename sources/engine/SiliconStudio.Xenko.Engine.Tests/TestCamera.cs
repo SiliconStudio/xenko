@@ -387,7 +387,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             var boundingSphere = new BoundingSphere();
 
-            var model = rootEntity.Get(ModelComponent.Key);
+            var model = rootEntity.Get<ModelComponent>();
             if (model != null && model.Model != null)
             {
                 var boundingBox = model.Model.BoundingBox;

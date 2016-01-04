@@ -36,8 +36,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 UpdateEngine.Run(entity, compiledUpdate, (IntPtr)dataPtr, new[] { new UpdateObjectData(modelComponent) });
             }
 
-            Assert.That(entity.Get(ModelComponent.Key), Is.EqualTo(modelComponent));
-            Assert.That(entity.GetChild(0).Get(LightComponent.Key).Intensity, Is.EqualTo(32.0f));
+            Assert.That(entity.Get<ModelComponent>(), Is.EqualTo(modelComponent));
+            Assert.That(entity.GetChild(0).Get<LightComponent>().Intensity, Is.EqualTo(32.0f));
         }
 
         struct TestData

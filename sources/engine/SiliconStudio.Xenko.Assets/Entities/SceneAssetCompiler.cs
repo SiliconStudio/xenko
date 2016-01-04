@@ -22,9 +22,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entityData in asset.Hierarchy.Entities)
             {
                 // TODO: How to make this code pluggable?
-                var modelComponent = entityData.Entity.Components.Get(ModelComponent.Key);
-                var spriteComponent = entityData.Entity.Components.Get(SpriteComponent.Key);
-                var scriptComponent = entityData.Entity.Components.Get(ScriptComponent.Key);
+                var modelComponent = entityData.Entity.Components.Get<ModelComponent>();
+                var spriteComponent = entityData.Entity.Components.Get<SpriteComponent>();
+                var scriptComponent = entityData.Entity.Components.Get<ScriptComponent>();
 
                 // determine the underlying source asset exists
                 if (modelComponent != null)
