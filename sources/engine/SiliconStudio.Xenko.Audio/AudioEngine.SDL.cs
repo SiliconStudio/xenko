@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <inheritDoc/>
-        internal override void LoadNewMusic(SoundMusic lastPlayRequestMusicInstance)
+        internal override void LoadMusic(SoundMusic music)
         {
             throw new NotImplementedException();
         }
@@ -61,12 +61,6 @@ namespace SiliconStudio.Xenko.Audio
 
         /// <inheritDoc/>
         internal override void ProcessPlayerClosed()
-        {
-            throw new NotImplementedException();
-        }
-
-        /// <inheritDoc/>
-        internal override void ResetMusicPlayer()
         {
             throw new NotImplementedException();
         }

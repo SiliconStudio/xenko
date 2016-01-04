@@ -36,15 +36,6 @@ namespace SiliconStudio.Xenko.Audio
             mediaEngine.Dispose();
         }
 
-        internal override void ResetMusicPlayer()
-        {
-            StopMusic();
-
-            isMusicPlayerReady = false;
-
-            currentMusic = null;
-        }
-
         internal override void RestartMusic()
         {
             mediaEngine.CurrentTime = 0;
@@ -57,7 +48,7 @@ namespace SiliconStudio.Xenko.Audio
 
         internal override void UpdateMusicVolume()
         {
-            mediaEngine.Volume = currentMusic.Volume;
+            mediaEngine.Volume = CurrentMusic.Volume;
         }
 
         internal override void StopMusic()
@@ -71,11 +62,11 @@ namespace SiliconStudio.Xenko.Audio
             mediaEngine.Pause();
         }
         
-        internal override void LoadNewMusic(SoundMusic lastPlayRequestMusicInstance)
+        internal override void LoadMusic(SoundMusic music)
         {
-            currentMusic = lastPlayRequestMusicInstance;
+            CurrentMusic = music;
             
-            mediaEngineEx.SetSourceFromByteStream(new ByteStream(currentMusic.Stream), "MP3");
+            mediaEngineEx.SetSourceFromByteStream(new ByteStream(CurrentMusic.Stream), "MP3");
         }
 
         private struct MediaEngineErrorCodes
@@ -116,7 +107,7 @@ namespace SiliconStudio.Xenko.Audio
 
                 if (errorCodes.Parameter1 == (long)MediaEngineErr.SourceNotSupported)
                 {
-                    if(currentMusic!=null)
+                    if(CurrentMusic!=null)
                         ResetMusicPlayer();
                     else
                         throw new AudioSystemInternalException("Audio Engine is in an unconsistant state. CurrentMusic is null while Error on Unsupported media was reached.");

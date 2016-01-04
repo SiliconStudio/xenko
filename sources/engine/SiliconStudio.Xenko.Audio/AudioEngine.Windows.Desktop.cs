@@ -196,10 +196,10 @@ namespace SiliconStudio.Xenko.Audio
         /// Load a new music into the media session. That is create a new session and a new topology and set the topology of the session.
         /// </summary>
         /// <param name="music"></param>
-        internal override void LoadNewMusic(SoundMusic music)
+        internal override void LoadMusic(SoundMusic music)
         {
-            if (currentMusic != null || mediaSession != null)
-                throw new AudioSystemInternalException("State of the audio engine invalid at the entry of LoadNewMusic.");
+            if (CurrentMusic != null || mediaSession != null)
+                throw new AudioSystemInternalException("State of the audio engine invalid at the entry of LoadMusic.");
 
             music.Stream.Position = 0;
             mediaInputByteStream = new ByteStream(music.Stream);
@@ -208,7 +208,7 @@ namespace SiliconStudio.Xenko.Audio
             mediaSessionCallback = new MediaSessionCallback(mediaSession, OnMediaSessionEvent);
             mediaSession.SetTopology(SessionSetTopologyFlags.None, topology);
 
-            currentMusic = music;
+            CurrentMusic = music;
         }
 
         private void OnMediaSessionEvent(MediaEvent mEvent)
@@ -243,7 +243,7 @@ namespace SiliconStudio.Xenko.Audio
 
             if (streamVolume != null)
             {
-                var vol = volumeAdjustFactor * currentMusic.Volume;
+                var vol = volumeAdjustFactor * CurrentMusic.Volume;
 
                 // Query number of channels
                 var channelCount = streamVolume.ChannelCount;
@@ -273,6 +273,7 @@ namespace SiliconStudio.Xenko.Audio
 
         internal override void ResetMusicPlayer()
         {
+            base.ResetMusicPlayer();
             mediaSession.Close();
         }
         
@@ -285,7 +286,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             // The topology of the MediaSession is ready.
 
-            if (!currentMusic.IsDisposed) // disposal of the music can happen between the call to Play and its ready-to-play state notification
+            if (!CurrentMusic.IsDisposed) // disposal of the music can happen between the call to Play and its ready-to-play state notification
             {
                 // Query the Volume interface associated to the new topology
                 IntPtr volumeObj;
@@ -314,7 +315,7 @@ namespace SiliconStudio.Xenko.Audio
         internal override void ProcessPlayerClosed()
         {
             // The session finished to close, we have to dispose all related object.
-            currentMusic = null;
+            CurrentMusic = null;
 
             mediaSessionCallback.Dispose();
 

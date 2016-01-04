@@ -59,37 +59,34 @@ namespace SiliconStudio.Xenko.Audio
             // volume factor used in order to adjust Sound Music and Sound Effect Maximum volumes
             const float volumeAdjustFactor = 0.5f;
             
-            var vol = volumeAdjustFactor * currentMusic.Volume;
+            var vol = volumeAdjustFactor * CurrentMusic.Volume;
 
             mediaPlayer.SetVolume(vol, vol);
         }
 
         internal override void ResetMusicPlayer()
         {
+            base.ResetMusicPlayer();
             mediaPlayer.Reset();
-
-            isMusicPlayerReady = false;
-
-            currentMusic = null;
         }
 
         private Stopwatch loadTime = new Stopwatch();
-        internal override void LoadNewMusic(SoundMusic soundMusic)
+        internal override void LoadMusic(SoundMusic music)
         {
             loadTime.Restart();
             try
             {
-                using (var javaFileStream = new FileInputStream(soundMusic.FileName))
-                    mediaPlayer.SetDataSource(javaFileStream.FD, soundMusic.StartPosition, soundMusic.Length);
+                using (var javaFileStream = new FileInputStream(music.FileName))
+                    mediaPlayer.SetDataSource(javaFileStream.FD, music.StartPosition, music.Length);
 
                 mediaPlayer.PrepareAsync();
 
-                currentMusic = soundMusic;
+                CurrentMusic = music;
             }
             catch (IOException)
             {
                 // this can happen namely if too many files are already opened (should not throw an exception)
-                Logger.Warning("The audio file '{0}' could not be opened", soundMusic.FileName);
+                Logger.Warning("The audio file '{0}' could not be opened", music.FileName);
             }
             catch (SecurityException)
             {
@@ -125,8 +122,8 @@ namespace SiliconStudio.Xenko.Audio
         {
             loadTime.Stop();
 
-            if(currentMusic != null)
-                Logger.Verbose("Time taken for music '{0}' loading = {0}", currentMusic.Name, loadTime.ElapsedMilliseconds);
+            if(CurrentMusic != null)
+                Logger.Verbose("Time taken for music '{0}' loading = {0}", CurrentMusic.Name, loadTime.ElapsedMilliseconds);
         }
 
         internal override void ProcessPlayerClosed()
@@ -146,10 +143,10 @@ namespace SiliconStudio.Xenko.Audio
 
             var soundMusicName = "Unknown";
 
-            if (currentMusic != null)
+            if (CurrentMusic != null)
             {
-                currentMusic.SetStateToStopped();
-                soundMusicName = currentMusic.Name;
+                CurrentMusic.SetStateToStopped();
+                soundMusicName = CurrentMusic.Name;
             }
 
             Logger.Error("Error while playing the sound music '{0}'. Details follows:");

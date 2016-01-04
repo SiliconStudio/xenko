@@ -65,20 +65,20 @@ namespace SiliconStudio.Xenko.Audio
             ResetMusicPlayer();
         }
 
-        internal override void LoadNewMusic(SoundMusic lastPlayRequestMusicInstance)
+        internal override void LoadMusic(SoundMusic music)
         {
             if(audioPlayer != null)
                 throw new AudioSystemInternalException("Tried to create a new AudioPlayer but the current instance was not freed.");
 
-            currentMusic = lastPlayRequestMusicInstance;
+            CurrentMusic = music;
 
             currentMusicDataTypeIsUnsupported = false;
 
             NSError loadError;
 
-            // TODO: Avoid allocating twice the music size (i.e. by using NSData.FromBytesNoCopy on currentMusic.Stream.GetBuffer())
-            currentMusic.Stream.Position = 0;
-            audioPlayer = AVAudioPlayer.FromData(NSData.FromStream(currentMusic.Stream), out loadError);
+            // TODO: Avoid allocating twice the music size (i.e. by using NSData.FromBytesNoCopy on CurrentMusic.Stream.GetBuffer())
+            CurrentMusic.Stream.Position = 0;
+            audioPlayer = AVAudioPlayer.FromData(NSData.FromStream(CurrentMusic.Stream), out loadError);
 
             if (loadError != null)
             {
@@ -100,8 +100,8 @@ namespace SiliconStudio.Xenko.Audio
             if (!audioPlayer.PrepareToPlay())
             {
                 // this happens sometimes when we put the application on background when starting to play.
-                var currentMusicName = currentMusic.Name;
-                currentMusic.SetStateToStopped();
+                var currentMusicName = CurrentMusic.Name;
+                CurrentMusic.SetStateToStopped();
                 ResetMusicPlayer();
 
                 Logger.Warning("The music '{0}' failed to prepare to play.", currentMusicName);
@@ -128,13 +128,9 @@ namespace SiliconStudio.Xenko.Audio
 
         internal override void ResetMusicPlayer()
         {
-            currentMusic = null;
-
-            if (audioPlayer != null)
-            {
-                audioPlayer.Dispose();
-                audioPlayer = null;
-            }
+            base.ResetMusicPlayer();
+            audioPlayer?.Dispose();
+            audioPlayer = null;
         }
 
         internal override void StopMusic()
@@ -159,7 +155,7 @@ namespace SiliconStudio.Xenko.Audio
             if (audioPlayer == null)
                 return;
 
-            audioPlayer.Volume = currentMusic.Volume;
+            audioPlayer.Volume = CurrentMusic.Volume;
         }
 
         internal override void StartMusic()
@@ -170,8 +166,8 @@ namespace SiliconStudio.Xenko.Audio
             if (!audioPlayer.Play())
             {
                 // this happens sometimes when we put the application on background when starting to play.
-                var currentMusicName = currentMusic.Name;
-                currentMusic.SetStateToStopped();
+                var currentMusicName = CurrentMusic.Name;
+                CurrentMusic.SetStateToStopped();
                 ResetMusicPlayer();
 
                 Logger.Warning("The music '{0}' failed to start playing.", currentMusicName);
