@@ -53,6 +53,7 @@ namespace SiliconStudio.Xenko.Assets
                 var result = new GameSettings
                 {
                     PackageId = package.Id,
+                    PackageName = package.Meta.Name,
                     DefaultSceneUrl = AssetParameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(AssetParameters.DefaultScene) : null,
                     DefaultBackBufferWidth = AssetParameters.BackBufferWidth,
                     DefaultBackBufferHeight = AssetParameters.BackBufferHeight,

@@ -278,6 +278,30 @@ namespace SiliconStudio.Assets
         }
 
         /// <summary>
+        /// Adds an existing package to the current session and runs the package analysis before adding it.
+        /// </summary>
+        /// <param name="package">The package to add</param>
+        /// <param name="logger">The logger</param>
+        public void AddExistingPackage(Package package, ILogger logger)
+        {
+            if (package == null) throw new ArgumentNullException(nameof(package));
+            if (logger == null) throw new ArgumentNullException(nameof(logger));
+
+            if (packages.Contains(package))
+            {
+                return;
+            }
+
+            // Preset the session on the package to allow the session to look for existing asset
+            this.Packages.Add(package);
+
+            // Run analysis after
+            var analysis = new PackageAnalysis(package, GetPackageAnalysisParametersForLoad());
+            analysis.Run(logger);
+
+        }
+
+        /// <summary>
         /// Loads a package from specified file path.
         /// </summary>
         /// <param name="filePath">The file path to a package file.</param>
@@ -1297,6 +1321,7 @@ namespace SiliconStudio.Assets
                 IsPackageCheckDependencies = true,
                 IsProcessingAssetReferences = true,
                 IsLoggingAssetNotFoundAsError = true,
+                EnableAssetTemplating = true
             };
         }
 

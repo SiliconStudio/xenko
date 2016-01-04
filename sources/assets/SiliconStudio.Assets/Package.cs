@@ -53,7 +53,7 @@ namespace SiliconStudio.Assets
     [AssetFormatVersion("Assets", PackageFileVersion)]
     [AssetUpgrader("Assets", 0, 1, typeof(RemoveRawImports))]
     [AssetUpgrader("Assets", 1, 2, typeof(RenameSystemPackage))]
-    public sealed class Package : Asset, IFileSynchronizable
+    public sealed partial class Package : Asset, IFileSynchronizable
     {
         private const int PackageFileVersion = 2;
 
@@ -65,13 +65,6 @@ namespace SiliconStudio.Assets
         private UFile previousPackagePath;
         private bool isDirty;
         private readonly Lazy<PackageUserSettings> settings;
-
-        /// <summary>
-        /// The file extension used for <see cref="Package"/>.
-        /// </summary>
-        public const string PackageFileExtension = ".xkpkg";
-
-        public const string PackageFileExtensions = PackageFileExtension + ";.pdxpkg";
 
         /// <summary>
         /// Occurs when an asset dirty changed occured.
@@ -541,16 +534,21 @@ namespace SiliconStudio.Assets
                                 session.DependencyManager.AddFileBeingSaveDuringSessionSave(assetPath);
                             }
 
-                            // Incject a copy of the base into the current asset when saving
+                            // Inject a copy of the base into the current asset when saving
                             var assetBase = asset.Asset.Base;
                             if (assetBase != null && !assetBase.IsRootImport)
                             {
-                                var assetBaseItem = session != null ? session.FindAsset(assetBase.Id) : Assets.Find(assetBase.Id);
-                                if (assetBaseItem != null)
+                                assetBase.Asset.Base = UpdateAssetBase(assetBase);
+                            }
+
+                            // Update base for BaseParts
+                            if (asset.Asset.BaseParts != null)
+                            {
+                                var baseParts = asset.Asset.BaseParts;
+                                for (int i = 0; i < baseParts.Count; i++)
                                 {
-                                    var newBase = (Asset)AssetCloner.Clone(assetBaseItem.Asset);
-                                    newBase.Base = null;
-                                    asset.Asset.Base = new AssetBase(asset.Asset.Base.Location, newBase);
+                                    var basePart = baseParts[i];
+                                    baseParts[i] = UpdateAssetBase(basePart);
                                 }
                             }
 
@@ -582,6 +580,25 @@ namespace SiliconStudio.Assets
                 analysis.Parameters.ConvertUPathTo = UPathType.Absolute;
                 analysis.Run();
             }
+        }
+
+        /// <summary>
+        /// Finds the most recent asset base and return a new version of it.
+        /// </summary>
+        /// <param name="assetBase">The original asset base</param>
+        /// <returns>A copy of the asset base updated with the latest base</returns>
+        private AssetBase UpdateAssetBase(AssetBase assetBase)
+        {
+            var assetBaseItem = session != null ? session.FindAsset(assetBase.Id) : Assets.Find(assetBase.Id);
+            if (assetBaseItem != null)
+            {
+                var newBase = (Asset)AssetCloner.Clone(assetBaseItem.Asset);
+                newBase.Base = null;
+                newBase.BaseParts = null;
+                return new AssetBase(assetBase.Location, newBase);
+            }
+            // TODO: If we don't find it, should we log an error instead?
+            return assetBase;
         }
 
         /// <summary>
@@ -797,12 +814,26 @@ namespace SiliconStudio.Assets
                 resolver.AlwaysCreateNewId = alwaysGenerateNewAssetId;
 
                 // Clean assets
-                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, false);
+                AssetCollision.Clean(this, TemporaryAssets, outputItems, resolver, true);
 
                 // Add them back to the package
                 foreach (var item in outputItems)
                 {
                     Assets.Add(item);
+                }
+
+                var dirtyAssets = outputItems.Where(o => o.IsDirty)
+                    .Join(TemporaryAssets, o => o.Id, t => t.Id, (o, t) => t)
+                    .ToList();
+                // Dirty assets (except in system package) should be mark as deleted so that are properly saved again later.
+                if (!IsSystem && dirtyAssets.Count > 0)
+                {
+                    IsDirty = true;
+
+                    lock (filesToDelete)
+                    {
+                        filesToDelete.AddRange(dirtyAssets.Select(a => a.FullPath));
+                    }
                 }
 
                 TemporaryAssets.Clear();

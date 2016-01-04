@@ -8,7 +8,7 @@ using Microsoft.VisualStudio.Shell.Interop;
 
 namespace SiliconStudio.Xenko.VisualStudio.Commands
 {
-    public class BuildMonitorCallback : MarshalByRefObject, IBuildMonitorCallback, Paradox.VisualStudio.Commands.IBuildMonitorCallback
+    public class BuildMonitorCallback : MarshalByRefObject, IBuildMonitorCallback
     {
         private IVsOutputWindowPane buildPane;
 

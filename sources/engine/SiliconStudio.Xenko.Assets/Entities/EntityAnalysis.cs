@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         /// Fixups the entity references, by clearing invalid <see cref="EntityReference.Id"/>, and updating <see cref="EntityReference.Value"/> (same for components).
         /// </summary>
         /// <param name="entityAssetBase">The entity asset.</param>
-        public static void FixupEntityReferences(EntityAssetBase entityAssetBase)
+        public static void FixupEntityReferences(EntityGroupAssetBase entityAssetBase)
         {
             FixupEntityReferences(entityAssetBase, entityAssetBase.Hierarchy);
         }

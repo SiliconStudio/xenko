@@ -1,7 +1,0 @@
-[Router]: Info: Start to listen on port 31244
-[Router]: Info: Client 127.0.0.1:55628 connected, with message ClientRequestServer
-[SiliconStudio.Xenko.EffectCompilerServer:2020]: Info: Process started
-[Router]: Info: Client 127.0.0.1:55634 connected, with message ServiceProvideServer
-[Router]: Info: Client 127.0.0.1:55635 connected, with message ServerStarted
-[SiliconStudio.Xenko.EffectCompilerServer:2020]: Info: GameStudio mode started!
-[Router]: Info: Client 127.0.0.1:55628 disconnected with exception: Unable to read data from the transport connection: An existing connection was forcibly closed by the remote host.

@@ -154,11 +154,12 @@ namespace SiliconStudio.ExecServer
         /// Runs the main entry point method passing arguments to it
         /// </summary>
         /// <param name="workingDirectory"></param>
+        /// <param name="environmentVariables">The environment variables.</param>
         /// <param name="args">The arguments.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>System.Int32.</returns>
         /// <exception cref="System.InvalidOperationException">Must call TryLock before calling this method</exception>
-        public int Run(string workingDirectory, string[] args, IServerLogger logger)
+        public int Run(string workingDirectory, Dictionary<string, string> environmentVariables, string[] args, IServerLogger logger)
         {
             if (!isRunning)
             {
@@ -172,6 +173,7 @@ namespace SiliconStudio.ExecServer
                 {
                     appDomainCallback.Logger = appDomainRedirectLogger;
                     appDomainCallback.CurrentDirectory = workingDirectory;
+                    appDomainCallback.EnvironmentVariables = environmentVariables;
                     appDomainCallback.Arguments = args;
                     appDomain.DoCallBack(appDomainCallback.Run);
                     var result = appDomainCallback.Result;
@@ -432,6 +434,8 @@ namespace SiliconStudio.ExecServer
 
             public string CurrentDirectory { get; set; }
 
+            public Dictionary<string, string> EnvironmentVariables { get; set; }
+
             public string[] Arguments { get; set; }
 
             public int Result { get; private set; }
@@ -460,6 +464,13 @@ namespace SiliconStudio.ExecServer
             {
                 var currentDomain = AppDomain.CurrentDomain;
                 Environment.CurrentDirectory = CurrentDirectory;
+
+                // Set environment variables
+                // TODO: We might want to reset them after; if we do so, we should make sure that the server process start without inheriting client environment in ExecServerApp.RunServerProcess()
+                //       Also this probably work only if we solve PDX-2875 before
+                foreach (var environmentVariable in EnvironmentVariables)
+                    Environment.SetEnvironmentVariable(environmentVariable.Key, environmentVariable.Value);
+
                 currentDomain.SetData(AppDomainLogToActionKey, new Action<string, ConsoleColor>((text, color) => Logger.OnLog(text, color)));
                 var assembly = (Assembly)currentDomain.GetData(AppDomainExecServerEntryAssemblyKey);
                 Result = Convert.ToInt32(assembly.EntryPoint.Invoke(null, new object[] { Arguments }));

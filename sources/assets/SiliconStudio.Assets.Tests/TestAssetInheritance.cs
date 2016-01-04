@@ -26,8 +26,8 @@ namespace SiliconStudio.Assets.Tests
             {
                 Parts =
                 {
-                        new AssetPart(Guid.NewGuid()),
-                        new AssetPart(Guid.NewGuid())
+                        new AssetPartTestItem(Guid.NewGuid()),
+                        new AssetPartTestItem(Guid.NewGuid())
                 }
             });
             assetItems.Add(new AssetItem("asset-0", assets[0]));
@@ -59,8 +59,8 @@ namespace SiliconStudio.Assets.Tests
             {
                 Parts =
                 {
-                        new AssetPart(Guid.NewGuid()),
-                        new AssetPart(Guid.NewGuid())
+                        new AssetPartTestItem(Guid.NewGuid()),
+                        new AssetPartTestItem(Guid.NewGuid())
                 }
             });
             assetItems.Add(new AssetItem("asset-0", assets[0]));

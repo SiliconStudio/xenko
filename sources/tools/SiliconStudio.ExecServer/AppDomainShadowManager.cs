@@ -49,10 +49,11 @@ namespace SiliconStudio.ExecServer
         /// Runs the assembly with the specified arguments.xit
         /// </summary>
         /// <param name="workingDirectory">The working directory.</param>
+        /// <param name="environmentVariables">The environment variables.</param>
         /// <param name="args">The main arguments.</param>
         /// <param name="logger">The logger.</param>
         /// <returns>System.Int32.</returns>
-        public int Run(string workingDirectory, string[] args, IServerLogger logger)
+        public int Run(string workingDirectory, Dictionary<string, string> environmentVariables, string[] args, IServerLogger logger)
         {
             lock (disposingLock)
             {
@@ -68,7 +69,7 @@ namespace SiliconStudio.ExecServer
             try
             {
                 shadowDomain = GetOrNew(IsCachingAppDomain);
-                return shadowDomain.Run(workingDirectory, args, logger);
+                return shadowDomain.Run(workingDirectory, environmentVariables, args, logger);
             }
             finally
             {

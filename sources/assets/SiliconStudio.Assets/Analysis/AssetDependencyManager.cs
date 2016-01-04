@@ -498,7 +498,7 @@ namespace SiliconStudio.Assets.Analysis
             var assetItem = result.Item;
 
             // Collect part assets.
-            var container = assetItem.Asset as IAssetPartContainer;
+            var container = assetItem.Asset as IAssetComposite;
             if (container != null)
             {
                 foreach (var part in container.CollectParts())

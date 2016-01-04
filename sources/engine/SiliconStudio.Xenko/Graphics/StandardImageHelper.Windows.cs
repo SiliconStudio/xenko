@@ -1,15 +1,93 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
+#if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
 using System.Drawing;
 using System.Drawing.Imaging;
+#endif
+#if SILICONSTUDIO_XENKO_UI_SDL
+using SDL2;
+#endif
 using System.IO;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Graphics
 {
+
+#if (SILICONSTUDIO_XENKO_UI_OPENTK || SILICONSTUDIO_XENKO_UI_SDL) && (!SILICONSTUDIO_XENKO_UI_WINFORMS && !SILICONSTUDIO_XENKO_UI_WPF)
+    public sealed class ImageFormat
+    {
+        // Format IDs
+        // private static ImageFormat undefined = new ImageFormat(new Guid("{b96b3ca9-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat memoryBMP = new ImageFormat(new Guid("{b96b3caa-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat bmp = new ImageFormat(new Guid("{b96b3cab-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat emf = new ImageFormat(new Guid("{b96b3cac-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat wmf = new ImageFormat(new Guid("{b96b3cad-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat jpeg = new ImageFormat(new Guid("{b96b3cae-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat png = new ImageFormat(new Guid("{b96b3caf-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat gif = new ImageFormat(new Guid("{b96b3cb0-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat tiff = new ImageFormat(new Guid("{b96b3cb1-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat exif = new ImageFormat(new Guid("{b96b3cb2-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat photoCD = new ImageFormat(new Guid("{b96b3cb3-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat flashPIX = new ImageFormat(new Guid("{b96b3cb4-0728-11d3-9d7b-0000f81ef32e}"));
+        private static ImageFormat icon = new ImageFormat(new Guid("{b96b3cb5-0728-11d3-9d7b-0000f81ef32e}"));
+
+
+        private Guid guid;
+
+        public ImageFormat(Guid guid)
+        {
+            this.guid = guid;
+        }
+
+        public Guid Guid
+        {
+            get { return guid; }
+        }
+
+        public static ImageFormat MemoryBmp { get { return memoryBMP; } }
+        public static ImageFormat Bmp { get { return bmp; } }
+        public static ImageFormat Emf { get { return emf; } }
+        public static ImageFormat Wmf { get { return wmf; } }
+        public static ImageFormat Gif { get { return gif; } }
+        public static ImageFormat Jpeg { get { return jpeg; } }
+        public static ImageFormat Png { get { return png; } }
+        public static ImageFormat Tiff { get { return tiff; } }
+        public static ImageFormat Exif { get { return exif; } }
+        public static ImageFormat Icon { get { return icon; } }
+
+        public override bool Equals(object o)
+        {
+            ImageFormat format = o as ImageFormat;
+            if (format == null)
+                return false;
+            return this.guid == format.guid;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.guid.GetHashCode();
+        }
+
+        public override string ToString()
+        {
+            if (this == memoryBMP) return "MemoryBMP";
+            if (this == bmp) return "Bmp";
+            if (this == emf) return "Emf";
+            if (this == wmf) return "Wmf";
+            if (this == gif) return "Gif";
+            if (this == jpeg) return "Jpeg";
+            if (this == png) return "Png";
+            if (this == tiff) return "Tiff";
+            if (this == exif) return "Exif";
+            if (this == icon) return "Icon";
+            return "[ImageFormat: " + guid + "]";
+        }
+    }
+#endif
+
     /// <summary>
     /// This class is responsible to provide image loader for png, gif, bmp.
     /// TODO: Replace using System.Drawing, as it is not available on all platforms (not on Windows 8/WP8).
@@ -18,6 +96,7 @@ namespace SiliconStudio.Xenko.Graphics
     {
         public unsafe static Image LoadFromMemory(IntPtr pSource, int size, bool makeACopy, GCHandle? handle)
         {
+#if SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF
             using (var memoryStream = new UnmanagedMemoryStream((byte*)pSource, size))
             using (var bitmap = (Bitmap)System.Drawing.Image.FromStream(memoryStream))
             {
@@ -50,6 +129,16 @@ namespace SiliconStudio.Xenko.Graphics
 
                 return image;
             }
+#else
+    #if SILICONSTUDIO_XENKO_UI_SDL
+            // FIXME: Manu: The following beginning of code shows that we can read images using SDL.
+            // FIXME: We will do the implementation logic later.
+            IntPtr rw = SDL.SDL_RWFromMemNative((byte *)pSource, size);
+            IntPtr image = SDL_image.IMG_Load_RW(rw, 1);
+    #elif SILICONSTUDIO_XENKO_UI_OPENTK
+    #endif
+            return null;
+#endif
 
         }
 
@@ -85,6 +174,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private static void SaveFromMemory(PixelBuffer[] pixelBuffers, int count, ImageDescription description, Stream imageStream, ImageFormat imageFormat)
         {
+#if (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
             using (var bitmap = new Bitmap(description.Width, description.Height))
             {
                 var sourceArea = new Rectangle(0, 0, bitmap.Width, bitmap.Height);
@@ -110,6 +200,9 @@ namespace SiliconStudio.Xenko.Graphics
                 // Save
                 bitmap.Save(imageStream, imageFormat);
             }
+#else
+            // FIXME: Manu: Currently SDL can only save to BMP or PNG.
+#endif
         }
     }
 }

@@ -16,31 +16,30 @@ This is the source code for Xenko Game Engine (http://xenko.com/).
 ## Documentation
 
 * [Build Instructions](doc/GettingStarted.md)
-* [API Reference](http://doc.xenko.com/html/index.htm?page=api)
-* [Confluence documentation](http://doc.xenko.com/)
-* [Release Notes](doc/ReleaseNotes/ReleaseNotes.1.3.md)
+* [API Reference](http://doc.xenko.com/1.5/api/SiliconStudio.Assets.html)
+* [Documentation](http://doc.xenko.com/latest)
 
 ## Assemblies
 
-[Assembly diagram](http://doc.xenko.com/html/index.htm?page=Assemblies+diagrams)
+[Assembly diagram](http://doc.xenko.com/1.5/manual/engine/assemblies-diagrams.html)
 
-* [__SiliconStudio.Xenko.Graphics__](http://doc.xenko.com/html/index.htm?page=Graphics):
+* [__SiliconStudio.Xenko.Graphics__](http://doc.xenko.com/1.5/manual/graphics/index.html):
    Platform-indepdenent D3D11-like rendering API. Implementations for Direct3D 11 (with feature levels 9.1 and 10), OpenGL 4 and OpenGL ES 2.0.
 * __SiliconStudio.Xenko.Games__:
    Windows and game loop management.
-* [__SiliconStudio.Xenko.Input__](http://doc.xenko.com/html/index.htm?page=Input):
+* [__SiliconStudio.Xenko.Input__](http://doc.xenko.com/1.5/manual/input/index.html):
    Input management, including keyboard, joystick, mouse, touch, gestures.
 * __SiliconStudio.Xenko.Engine__:
    Effect system, entity system, particle system, high-level audio engine, etc...
-* [__SiliconStudio.Xenko.UI__](http://doc.xenko.com/html/index.htm?page=UI):
+* [__SiliconStudio.Xenko.UI__](http://doc.xenko.com/1.5/manual/ui/index.html):
    In-game UI library, similar to WPF (including many UI Controls).
-* [__SiliconStudio.Xenko.Shaders__](http://doc.xenko.com/html/index.htm?page=Shading+Language):
+* [__SiliconStudio.Xenko.Shaders__](http://doc.xenko.com/1.5/manual/graphics/graphics-reference/effects-and-shaders-reference/shading-language/index.html):
    Xenko shader language, including many new language constructs to make shader programming much more easy/modular.
-* [__SiliconStudio.Xenko.Audio__](http://doc.xenko.com/html/index.htm?page=Audio):
+* [__SiliconStudio.Xenko.Audio__](http://doc.xenko.com/1.5/manual/audio/index.html):
    Low-level audio engine.
 * __SiliconStudio.Assets__:
    Modular asset project management and pipeline system.
-* [__SiliconStudio.Xenko.GameStudio__](http://doc.xenko.com/html/index.htm?page=Game+Studio):
+* __SiliconStudio.Xenko.GameStudio__:
    Asset editor for Xenko. Allow asset browsing and editing, and Xenko Asset project editing.
    
 We currently do not provide sources for:

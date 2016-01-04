@@ -1,19 +1,20 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP  || SILICONSTUDIO_PLATFORM_WINDOWS_STORE
 using System;
 using System.Collections.Generic;
 
 using SharpDX.XInput;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Input
 {
-    public partial class InputManager
+    public partial class InputManagerBase
     {
         /// <summary>
         /// Internal GamePad factory handling XInput gamepads.
         /// </summary>
-        private class XInputGamePadFactory : GamePadFactory
+        internal class XInputGamePadFactory : GamePadFactory
         {
             private const int XInputGamePadCount = 4;
 
@@ -22,7 +23,7 @@ namespace SiliconStudio.Xenko.Input
             private readonly Controller[] controllers;
 
             /// <summary>
-            /// Initializes static members of the <see cref="InputManager" /> class.
+            /// Initializes static members of the <see cref="System.Windows.Input.InputManager" /> class.
             /// </summary>
             static XInputGamePadFactory()
             {

@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Graphics.OpenGL
                     return GraphicsProfile.Level_11_0; // missing tessellation and geometry shaders
                 return GraphicsProfile.Level_10_0;
             }
-            return GraphicsProfile.Level_9_1;
+            return GraphicsProfile.Level_9_3;
         }
 #else
         public static void GetGLVersion(GraphicsProfile graphicsProfile, out int major, out int minor)
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Graphics.OpenGL
             return int.TryParse(versionText.Substring(dotIndex + 1), out versionMinor);
 #else
             GL.GetInteger(GetPName.MajorVersion, out versionMajor);
-            GL.GetInteger(GetPName.MinorVersion, out versionMajor);
+            GL.GetInteger(GetPName.MinorVersion, out versionMinor);
             return true;
 #endif
         }

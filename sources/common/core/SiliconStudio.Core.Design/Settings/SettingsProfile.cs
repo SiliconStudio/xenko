@@ -14,6 +14,7 @@ namespace SiliconStudio.Core.Settings
     /// are not currently registered, if they exist in the file from which the profile was loaded.
     /// </summary>
     [DataSerializer(typeof(Serializer))]
+    [NonIdentifiable]
     public class SettingsProfile : IDisposable
     {
         internal ActionStack.ActionStack ActionStack = new ActionStack.ActionStack(-1);

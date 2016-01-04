@@ -1362,7 +1362,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Holds a value of a specific type in a ParameterCollection.
         /// </summary>
         /// <typeparam name="T"></typeparam>
-        internal class InternalValueBase<T> : InternalValue
+        public class InternalValueBase<T> : InternalValue
         {
             private static EqualityComparer<T> comparer = EqualityComparer<T>.Default;
             private static DataSerializer<T> dataSerializer;
@@ -1427,7 +1427,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         }
 
-        internal class InternalValue<T> : InternalValueBase<T>
+        public class InternalValue<T> : InternalValueBase<T>
         {
             public override unsafe void ReadFrom(IntPtr dest, int offset, int size)
             {
@@ -1443,7 +1443,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         }
 
-        internal class InternalValueArray<T> : InternalValueBase<T[]>
+        public class InternalValueArray<T> : InternalValueBase<T[]>
         {
             private int elementSize;
 
