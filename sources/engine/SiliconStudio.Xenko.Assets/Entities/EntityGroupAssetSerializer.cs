@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 sceneSettingsLevel++;
             }
-            else if (typeof(EntityComponent).IsAssignableFrom(type))
+            else if (typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type))
             {
                 componentLevel++;
             }
@@ -175,7 +175,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 scriptLevel++;
             }
 
-            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 1 || scriptLevel > 1;
+            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 2 || scriptLevel > 1;
         }
 
         private static void LeaveNode(Type type)
@@ -184,7 +184,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 sceneSettingsLevel--;
             }
-            else if (typeof(EntityComponent).IsAssignableFrom(type))
+            else if (typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type))
             {
                 componentLevel--;
             }
@@ -193,7 +193,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 scriptLevel--;
             }
 
-            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 1 || scriptLevel > 1;
+            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 2 || scriptLevel > 1;
         }
 
         public bool CanVisit(Type type)
