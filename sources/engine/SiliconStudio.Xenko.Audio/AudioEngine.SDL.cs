@@ -1,6 +1,6 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_XENKO_UI_SDL
+#if SILICONSTUDIO_XENKO_SOUND_SDL
 using SDL2;
 using System;
 
