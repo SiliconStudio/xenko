@@ -36,6 +36,14 @@ namespace SiliconStudio.Xenko.Assets.Tests
         }
 
         [Test]
+        public void TestClone()
+        {
+            var originAsset = CreateOriginAsset();
+            var newAsset = (EntityGroupAsset)AssetCloner.Clone(originAsset);
+            CheckAsset(originAsset, newAsset);
+        }
+
+        [Test]
         public void TestSerializationWithBaseAndParts()
         {
             // Create an entity as in TestSerialization
