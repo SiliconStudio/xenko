@@ -19,7 +19,7 @@
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10'">
+  <ItemGroup Condition="$(SiliconStudioAudio) == '' AND ('$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10')">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.dll</HintPath>
@@ -34,7 +34,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Condition="$(SiliconStudioUI.Contains('SDL'))" Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Condition="'$(SiliconStudioAudio)' == 'SDL'" Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
     </Reference>
@@ -78,6 +78,7 @@
     <Compile Include="SoundEffect.cs" />
     <Compile Include="SoundEffect.iOS.cs" />
     <Compile Include="SoundEffect.Android.cs" />
+    <Compile Include="SoundEffect.SDL.cs" />
     <Compile Include="SoundEffectInstance.Android.cs" />
     <Compile Include="SoundEffectInstance.cs" />
     <Compile Include="SoundEffectInstance.iOS.cs" />

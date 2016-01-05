@@ -3,6 +3,7 @@
 #if SILICONSTUDIO_XENKO_SOUND_SDL
 
 using System;
+using SiliconStudio.Xenko.Audio.Wave;
 
 namespace SiliconStudio.Xenko.Audio
 {
