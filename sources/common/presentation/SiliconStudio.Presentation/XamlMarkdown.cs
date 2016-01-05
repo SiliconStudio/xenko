@@ -334,6 +334,22 @@ namespace SiliconStudio.Presentation
             return result;
         }
 
+        private static readonly Regex HtmlImageInline = new Regex(@"
+              (                     # wrap whole match in $1
+                <img
+                    [^>]*?          # any valid HTML characters
+                    src             # src attribute
+                    \s*             # optional whitespace characters
+                    =               
+                    \s*             # optional whitespace characters
+                    (['""])         # quote char = $2
+                    ([^'"" >]+?)    # href = $3
+                    \2              # matching quote
+                    [^>]*?          # any valid HTML characters
+                >
+              )",
+            RegexOptions.Singleline | RegexOptions.IgnorePatternWhitespace | RegexOptions.Compiled);
+
         private static readonly Regex ImageInline = new Regex(string.Format(@"
               (                     # wrap whole match in $1
                 !\[
@@ -365,8 +381,22 @@ namespace SiliconStudio.Presentation
         {
             if (text == null) throw new ArgumentNullException(nameof(text));
             
+            // First, handle HTML images: <img src="url" />
             // Next, handle inline images:  ![alt text](url "optional title")
-            return Evaluate(text, ImageInline, ImageInlineEvaluator, defaultHandler);
+            return Evaluate(text, HtmlImageInline, HtmlImageInlineEvaluator, 
+                s => Evaluate(s, ImageInline, ImageInlineEvaluator, defaultHandler));
+        }
+
+        private Inline HtmlImageInlineEvaluator(Match match)
+        {
+            if (match == null) throw new ArgumentNullException(nameof(match));
+            
+            var url = match.Groups[3].Value;
+
+            if (url.StartsWith("<") && url.EndsWith(">"))
+                url = url.Substring(1, url.Length - 2);    // Remove <>'s surrounding URL, if present
+
+            return ImageTag(url, null, null);
         }
 
         private Inline ImageInlineEvaluator(Match match)
@@ -387,9 +417,12 @@ namespace SiliconStudio.Presentation
         {
             var image = new Image
             {
-                Source = new BitmapImage(new Uri(url)),
-                ToolTip = Create<TextBlock, Inline>(RunSpanGamut(title))
+                Source = new BitmapImage(new Uri(url))
             };
+            if (!string.IsNullOrEmpty(title))
+            {
+                image.ToolTip = Create<TextBlock, Inline>(RunSpanGamut(title));
+            }
             if (ImageStyle != null)
             {
                 image.Style = ImageStyle;
@@ -895,7 +928,7 @@ namespace SiliconStudio.Presentation
             }
         }
 
-        private static readonly Regex Eoln = new Regex("\\s+");
+        private static readonly Regex Eoln = new Regex(@"\s+");
 
         public IEnumerable<Inline> DoText(string text)
         {
