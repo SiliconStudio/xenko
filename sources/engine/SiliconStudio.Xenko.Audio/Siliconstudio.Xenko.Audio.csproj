@@ -63,6 +63,7 @@
     <Compile Include="DynamicSoundEffectInstance.Android.cs" />
     <Compile Include="DynamicSoundEffectInstance.cs" />
     <Compile Include="DynamicSoundEffectInstance.iOS.cs" />
+    <Compile Include="DynamicSoundEffectInstance.SDL.cs" />
     <Compile Include="IPositionableSound.cs" />
     <Compile Include="IPlayableSound.cs" />
     <Compile Include="IRecorder.cs" />
@@ -80,6 +81,7 @@
     <Compile Include="SoundEffectInstance.Android.cs" />
     <Compile Include="SoundEffectInstance.cs" />
     <Compile Include="SoundEffectInstance.iOS.cs" />
+    <Compile Include="SoundEffectInstance.SDL.cs" />
     <Compile Include="SoundEffectSerializer.cs" />
     <Compile Include="SoundInstanceBase.cs" />
     <Compile Include="SoundMusic.cs" />
