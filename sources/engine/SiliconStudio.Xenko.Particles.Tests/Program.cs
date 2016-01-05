@@ -403,7 +403,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
             // Updating the emitter forces the creation of a default spawner (100 particles per second)
             emitter.Update(dt, dummyParticleSystem);
 
-            var gravity = new ParticleUpdaterGravity();
+            var gravity = new UpdaterGravity();
             emitter.Updaters.Add(gravity);
 
             var initializer = new InitialPositionSeed();
