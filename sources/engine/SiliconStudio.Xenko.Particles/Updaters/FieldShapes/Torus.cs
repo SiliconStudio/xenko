@@ -68,34 +68,22 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             inverseRotation = new Quaternion(-fieldRotation.X, -fieldRotation.Y, -fieldRotation.Z, fieldRotation.W);
         }
 
-        public override float GetFieldStrength(
+        public override float GetDistanceToCenter(
             Vector3 particlePosition, Vector3 particleVelocity,
             out Vector3 alongAxis, out Vector3 aroundAxis, out Vector3 towardAxis)
         {
-            aroundAxis = towardAxis = alongAxis = new Vector3(0, 1, 0);
+            alongAxis = new Vector3(0, 1, 0);
 
             particlePosition -= fieldPosition;            
             inverseRotation.Rotate(ref particlePosition);
             particlePosition /= fieldSize;
 
-            // Start of code for Cube
-
             // Start by positioning hte particle on the torus' plane
             var projectedPosition = new Vector3(particlePosition.X, 0, particlePosition.Z);
-            var distanceFromOriginSquared = projectedPosition.LengthSquared();
+            var distanceFromOrigin = projectedPosition.Length();
+            var distSquared = 1 + distanceFromOrigin * distanceFromOrigin - 2 * distanceFromOrigin + particlePosition.Y * particlePosition.Y;
 
-            // If the particle is at the torus' center, it is considered to be outside the torus (provided small radius <= big radius)
-           // if (distanceFromOriginSquared <= 0)
-           //     return 0;
-
-            var distanceFromOrigin = Math.Sqrt(distanceFromOriginSquared);
-            var distSquared = 1 + distanceFromOriginSquared - 2 * distanceFromOrigin + particlePosition.Y * particlePosition.Y;
-
-            //if (distSquared >= smallRadiusSquared)
-            //    return 0;
-
-            var totalStrength = (distSquared >= smallRadiusSquared) ? 0 : 1 - ((float) Math.Sqrt(distSquared) / smallRadius);
-            // End of code for Cube
+            var totalStrength = (distSquared >= smallRadiusSquared) ? 1 : ((float) Math.Sqrt(distSquared) / smallRadius);
 
             // Fix the field's axis back to world space
             var forceAxis = Vector3.Cross(alongAxis, projectedPosition);
