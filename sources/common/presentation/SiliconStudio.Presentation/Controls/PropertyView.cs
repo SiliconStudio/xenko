@@ -16,6 +16,9 @@ namespace SiliconStudio.Presentation.Controls
     {
         private readonly ObservableList<PropertyViewItem> properties = new ObservableList<PropertyViewItem>();
 
+
+        public static readonly DependencyProperty NameColumnSizeProperty = DependencyProperty.RegisterAttached("NameColumnSize", typeof(GridLength), typeof(PropertyView), new FrameworkPropertyMetadata(new GridLength(150)));
+
         /// <summary>
         /// Identifies the <see cref="HighlightedItem"/> dependency property.
         /// </summary>
@@ -54,7 +57,7 @@ namespace SiliconStudio.Presentation.Controls
             IsKeyboardFocusWithinChanged += OnIsKeyboardFocusWithinChanged;
         }
 
-        public IReadOnlyCollection<PropertyViewItem> Properties { get { return properties; } }
+        public IReadOnlyCollection<PropertyViewItem> Properties => properties;
 
         /// <summary>
         /// Gets the <see cref="PropertyViewItem"/> that is currently highlighted by the mouse cursor.
@@ -150,41 +153,23 @@ namespace SiliconStudio.Presentation.Controls
 
         private void KeyboardActivateItem(PropertyViewItem item)
         {
-            if (KeyboardActiveItem != null)
-            {
-                KeyboardActiveItem.SetValue(PropertyViewItem.IsKeyboardActivePropertyKey, false);
-            }
+            KeyboardActiveItem?.SetValue(PropertyViewItem.IsKeyboardActivePropertyKey, false);
             KeyboardActiveItem = item;
-            if (KeyboardActiveItem != null)
-            {
-                KeyboardActiveItem.SetValue(PropertyViewItem.IsKeyboardActivePropertyKey, true);
-            }
+            KeyboardActiveItem?.SetValue(PropertyViewItem.IsKeyboardActivePropertyKey, true);
         }
 
         private void HoverItem(PropertyViewItem item)
         {
-            if (HoveredItem != null)
-            {
-                HoveredItem.SetValue(PropertyViewItem.IsHoveredPropertyKey, false);
-            }
+            HoveredItem?.SetValue(PropertyViewItem.IsHoveredPropertyKey, false);
             HoveredItem = item;
-            if (HoveredItem != null)
-            {
-                HoveredItem.SetValue(PropertyViewItem.IsHoveredPropertyKey, true);
-            }
+            HoveredItem?.SetValue(PropertyViewItem.IsHoveredPropertyKey, true);
         }
 
         private void HighlightItem(PropertyViewItem item)
         {
-            if (HighlightedItem != null)
-            {
-                HighlightedItem.SetValue(PropertyViewItem.IsHighlightedPropertyKey, false);
-            }
+            HighlightedItem?.SetValue(PropertyViewItem.IsHighlightedPropertyKey, false);
             HighlightedItem = item;
-            if (HighlightedItem != null)
-            {
-                HighlightedItem.SetValue(PropertyViewItem.IsHighlightedPropertyKey, true);
-            }
+            HighlightedItem?.SetValue(PropertyViewItem.IsHighlightedPropertyKey, true);
         }
 
         
