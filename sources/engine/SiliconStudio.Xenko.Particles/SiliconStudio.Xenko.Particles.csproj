@@ -93,6 +93,10 @@
     <Compile Include="Sorters\ParticleSorter.cs" />
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
+    <Compile Include="Updaters\FieldShapes\Cube.cs" />
+    <Compile Include="Updaters\FieldShapes\FieldShape.cs" />
+    <Compile Include="Updaters\FieldShapes\Torus.cs" />
+    <Compile Include="Updaters\UpdaterForceField.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
     <Compile Include="Updaters\UpdaterOldPosition.cs" />
     <Compile Include="Updaters\ParticleUpdater.cs" />
