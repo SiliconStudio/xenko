@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.Assets.Physics
 
                     var loadSettings = new AssetManagerLoaderSettings
                     {
-                        ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh))
+                        ContentFilter = AssetManagerLoaderSettings.NewContentFilterByType(typeof(Mesh), typeof(Skeleton))
                     };
 
                     var modelAsset = assetManager.Load<Model>(AttachedReferenceManager.GetUrl(convexHullDesc.Model), loadSettings);
