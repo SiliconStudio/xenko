@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.DebugDraw;
 using SiliconStudio.Xenko.Particles.Updaters.FieldShapes;
@@ -12,6 +13,59 @@ namespace SiliconStudio.Xenko.Particles.Modules
     [Display("ForceField")]
     public class UpdaterForceField : ParticleUpdater
     {
+        /// <summary>
+        /// Defines how and if the total magnitude of the force should change depending of how far away the particle is from the central axis
+        /// </summary>
+        /// <userdoc>
+        /// Defines how and if the total magnitude of the force should change depending of how far away the particle is from the central axis
+        /// </userdoc>
+        [DataMember(50)]
+        [Display("Falloff")]
+        public FieldFalloff FieldFalloff { get; set; } = new FieldFalloff();
+
+        /// <summary>
+        /// How much of the force should be applied as conserved energy (acceleration)
+        /// </summary>
+        /// <userdoc>
+        /// With no concervation (0) particles will cease to move when the force disappears (physically incorrect, but easier to control).
+        /// With energy concervation (1) particles will retain energy and gradually accelerate, continuing to move even when the force
+        /// cease to exist (physically correct, but more difficult to control).
+        /// </userdoc>
+        [DataMember(50)]
+        [DataMemberRange(0, 1, 0.001, 0.1)]
+        [Display("Energy conservation")]
+        public float EnergyConservation { get; set; } = 0f;
+
+        /// <summary>
+        /// The force ALONG the bounding shape's axis.
+        /// </summary>
+        /// <userdoc>
+        /// The force ALONG the bounding shape's axis.
+        /// </userdoc>
+        [DataMember(60)]
+        [Display("Directed force")]
+        public float ForceDirected { get; set; }
+
+        /// <summary>
+        /// The force AROUND the bounding shape's axis.
+        /// </summary>
+        /// <userdoc>
+        /// The force AROUND the bounding shape's axis.
+        /// </userdoc>
+        [DataMember(70)]
+        [Display("Vortex force")]
+        public float ForceVortex { get; set; } = 1f;
+
+        /// <summary>
+        /// The force AWAY from the bounding shape's axis.
+        /// </summary>
+        /// <userdoc>
+        /// The force AWAY from the bounding shape's axis.
+        /// </userdoc>
+        [DataMember(80)]
+        [Display("Repulsive force")]
+        public float ForceRepulsive { get; set; } = 1f;
+
         public UpdaterForceField()
         {
             // A force field operates over the particle's position and velocity, updating them as required
@@ -19,7 +73,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
             RequiredFields.Add(ParticleFields.Velocity);
 
             // Test purposes only
-            RequiredFields.Add(ParticleFields.Color);
+//            RequiredFields.Add(ParticleFields.Color);
         }
 
         public override unsafe void Update(float dt, ParticlePool pool)
@@ -29,10 +83,9 @@ namespace SiliconStudio.Xenko.Particles.Modules
 
             var posField = pool.GetField(ParticleFields.Position);
             var velField = pool.GetField(ParticleFields.Velocity);
-            var colField = pool.GetField(ParticleFields.Color);
+//            var colField = pool.GetField(ParticleFields.Color);
 
-            var deltaVel = new Vector3(10, 10, 10) * dt;
-            var deltaPos = deltaVel * (dt * 0.5f);
+            var directToPosition = 1f - EnergyConservation;
 
             foreach (var particle in pool)
             {
@@ -45,28 +98,26 @@ namespace SiliconStudio.Xenko.Particles.Modules
 
                 FieldShape?.PreUpdateField(WorldPosition, WorldRotation, new Vector3(1, 1, 1) * WorldScale);
 
-                var forceStrength = FieldShape?.GetFieldStrength(particlePos, particleVel, out alongAxis, out aroundAxis, out towardAxis) ?? 1;
+                var forceMagnitude = FieldShape?.GetDistanceToCenter(particlePos, particleVel, out alongAxis, out aroundAxis, out towardAxis) ?? 1;
 
-                // TODO Max and min magnitude + threshold
-                forceStrength = 1f - forceStrength;
+                forceMagnitude = FieldFalloff.GetStrength(forceMagnitude);
 
-                forceStrength *= dt * WorldScale;
+                forceMagnitude *= dt * WorldScale;
 
-                // Apply the field's force
-                //(*((Color4*)particle[colField])) = new Color(new Vector3(forceStrength, forceStrength, forceStrength), 1);
+                var totalForceVector = 
+                    alongAxis  * ForceDirected +
+                    aroundAxis * ForceVortex +
+                    towardAxis * ForceRepulsive;
 
-                // Vortex
-                var forceVortex = 2f;
-                var forceRepulse = -0.3f;
-                var forceAlong = 4f;
+                totalForceVector *= forceMagnitude;
+               
+                // Force contribution to velocity - conserved energy
+                var vectorContribution = totalForceVector * EnergyConservation;
+                (*((Vector3*)particle[velField])) += vectorContribution;
 
-                (*((Vector3*)particle[posField])) += aroundAxis * (forceStrength * forceVortex);
-
-                (*((Vector3*)particle[posField])) += towardAxis * (forceStrength * forceRepulse);
-
-                (*((Vector3*)particle[posField])) += alongAxis  * (forceStrength * forceAlong);
-
-                //   (*((Vector3*)particle[velField])) += deltaVel;
+                // Force contribution to position - lost energy
+                vectorContribution = (vectorContribution * (dt * 0.5f)) + (totalForceVector * directToPosition);
+                (*((Vector3*)particle[posField])) += vectorContribution;
             }
         }
 

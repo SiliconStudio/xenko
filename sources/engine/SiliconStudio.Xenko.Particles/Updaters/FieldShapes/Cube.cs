@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             inverseRotation = new Quaternion(-fieldRotation.X, -fieldRotation.Y, -fieldRotation.Z, fieldRotation.W);
         }
 
-        public override float GetFieldStrength(
+        public override float GetDistanceToCenter(
             Vector3 particlePosition, Vector3 particleVelocity,
             out Vector3 alongAxis, out Vector3 aroundAxis, out Vector3 towardAxis)
         {
@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             // End of code for Cube
 
 
-            return 1;
+            return 0;
         }
 
     }

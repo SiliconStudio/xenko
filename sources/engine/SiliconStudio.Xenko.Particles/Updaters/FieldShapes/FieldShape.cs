@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
         public abstract void PreUpdateField(Vector3 fieldPosition, Quaternion fieldRotation, Vector3 fieldSize);
 
-        public abstract float GetFieldStrength(
+        public abstract float GetDistanceToCenter(
             Vector3 particlePosition, Vector3 particleVelocity,
             out Vector3 alongAxis, out Vector3 aroundAxis, out Vector3 towardAxis);
     }
