@@ -217,13 +217,13 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         /// <inheritDoc/>
-        protected override void PauseAudioImpl()
+        internal override void PauseAudioImpl()
         {
             // todo: Should we Inactivate the audio session here?
         }
 
         /// <inheritDoc/>
-        protected override void ResumeAudioImpl()
+        internal override void ResumeAudioImpl()
         {
             ActivateAudioSession();
         }
