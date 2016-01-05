@@ -111,7 +111,7 @@ namespace SiliconStudio.AssemblyProcessor
             updateEngineRegisterMemberResolverMethod = context.Assembly.MainModule.ImportReference(siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngine").Methods.First(x => x.Name == "RegisterMemberResolver"));
 
             var typeType = CecilExtensions.FindCorlibAssembly(context.Assembly).MainModule.GetTypeResolved(typeof(Type).FullName);
-            getTypeFromHandleMethod = context.Assembly.MainModule.Import(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));
+            getTypeFromHandleMethod = context.Assembly.MainModule.ImportReference(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));
 
             // Make sure it is called at module startup
             var moduleInitializerAttribute = siliconStudioCoreModule.GetType("SiliconStudio.Core.ModuleInitializerAttribute");
