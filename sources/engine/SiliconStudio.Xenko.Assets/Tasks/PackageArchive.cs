@@ -64,6 +64,7 @@ namespace SiliconStudio.Xenko.Assets.Tasks
                     //files.Add(NewFile(source, target, @"**\*.cs;**\*.hlsl;**\*.csproj;**\*.csproj.user;**\obj\**"));
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xksl", target));
                     files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkfx", target));
+                    files.Add(NewFile(assetFolder.Path.MakeRelative(rootDir) + "/**/*.xkfnt", target));
                 }
 
                 var targetProfile = new PackageProfile(profile.Name);
