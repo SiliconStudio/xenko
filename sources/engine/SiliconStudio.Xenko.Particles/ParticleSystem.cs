@@ -185,6 +185,8 @@ namespace SiliconStudio.Xenko.Particles
                 }
             }
         }
-        
+
+       
+
     }
 }
