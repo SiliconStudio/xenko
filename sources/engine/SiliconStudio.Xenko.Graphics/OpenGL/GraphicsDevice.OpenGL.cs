@@ -30,8 +30,9 @@ using DrawBuffersEnum = OpenTK.Graphics.ES30.DrawBufferMode;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
-using ProgramParameter = OpenTK.Graphics.ES30.GetProgramParameterName;
 #else
+// Use GetProgramParameterName which is what needs to be used with the new version of OpenTK (but not yet ported on Xamarin)
+using GetProgramParameterName = OpenTK.Graphics.ES30.ProgramParameter;
 using FramebufferAttachment = OpenTK.Graphics.ES30.FramebufferSlot;
 #endif
 #else
