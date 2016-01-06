@@ -630,7 +630,7 @@ namespace SiliconStudio.Xenko.Particles
 
             vertexBuilder.FlushBuffer(device);
         }
-
+        
         public int GetRequiredQuadCount()
         {
             return ShapeBuilder.QuadsPerParticle * pool.LivingParticles;

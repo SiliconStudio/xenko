@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
@@ -74,8 +75,26 @@ namespace SiliconStudio.Xenko.Particles.Components
 
                 particleSystemComponent.ParticleSystem.Draw(device, context, ref viewMat, ref projMat, ref viewInv, particleSystemComponent.Color);
             }
-        }
 
-       
+            // TODO Part of the renderer code is not thread safe - need to split the buffer building and the rendering to speed up the process
+            /*
+            var itemCount = toIndex - fromIndex + 1; // Inclusive
+            var renderItemList = renderItems.GetRange(fromIndex, itemCount);
+
+            TaskList.Dispatch(
+                renderItemList,
+                8,
+                8,
+                (i, renderItem) =>
+                {
+                    var particleSystemState = (ParticleSystemProcessor.ParticleSystemComponentState)renderItem.DrawContext;
+                    var particleSystemComponent = particleSystemState.ParticleSystemComponent;
+
+                    particleSystemComponent.ParticleSystem.Draw(device, context, ref viewMat, ref projMat, ref viewInv, particleSystemComponent.Color);
+                }
+                );
+            //*/
+
+        }
     }
 }
