@@ -125,45 +125,20 @@ namespace SiliconStudio.Xenko.Particles.Modules
             }
         }
 
-        /// <summary>
-        /// Note on inheritance. The current values only change once per frame, when the SetParentTRS is called. 
-        /// This is intentional and reduces overhead, because SetParentTRS is called exactly once/turn.
-        /// </summary>
-        [DataMember(5)]
-        [Display("Inheritance")]
-        public InheritLocation InheritLocation { get; set; } = InheritLocation.Position | InheritLocation.Rotation | InheritLocation.Scale;
-
         [DataMember(10)]
         [Display("Shape")]
         public FieldShape FieldShape { get; set; }
-
-        [DataMemberIgnore]
-        public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
-        [DataMemberIgnore]
-        public Quaternion WorldRotation { get; private set; } = new Quaternion(0, 0, 0, 1);
-        [DataMemberIgnore]
-        public Vector3 WorldScale { get; private set; } = new Vector3(1, 1, 1);
 
         [DataMemberIgnore]
         private float parentScale = 1f;
 
         public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
         {
-            var hasPos = InheritLocation.HasFlag(InheritLocation.Position);
-            var hasRot = InheritLocation.HasFlag(InheritLocation.Rotation);
+            base.SetParentTRS(ref Translation, ref Rotation, Scale);
+
             var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
-
             parentScale = (hasScl) ? Scale : 1f;
-
-            WorldScale = (hasScl) ? ParticleLocator.Scale * Scale : ParticleLocator.Scale;
-
-            WorldRotation = (hasRot) ? ParticleLocator.Rotation * Rotation : ParticleLocator.Rotation;
-
-            var offsetTranslation = ParticleLocator.Translation * WorldScale;
-            WorldRotation.Rotate(ref offsetTranslation);
-            WorldPosition = (hasPos) ? Translation + offsetTranslation : offsetTranslation;
         }
-
 
         public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
         {

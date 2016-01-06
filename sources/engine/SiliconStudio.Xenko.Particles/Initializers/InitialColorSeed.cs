@@ -37,8 +37,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             }
         }
 
-        public override void SetParentTRS(ref Vector3 translation, ref Quaternion rotation, float scale) { }
-
         [DataMember(8)]
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;

@@ -29,7 +29,5 @@ namespace SiliconStudio.Xenko.Particles.Modules
                 (*((Vector3*)particle[oldPosField])) = (*((Vector3*)particle[posField]));
             }
         }
-
-        public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale) { }
     }
 }

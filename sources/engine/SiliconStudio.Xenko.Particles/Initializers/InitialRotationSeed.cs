@@ -73,7 +73,5 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         private float angularRotationMax = 60f;
         private float angularRotationStart = MathUtil.DegreesToRadians(-60f);
         private float angularRotationStep  = MathUtil.DegreesToRadians(120);
-
-        public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale) { }
     }
 }
