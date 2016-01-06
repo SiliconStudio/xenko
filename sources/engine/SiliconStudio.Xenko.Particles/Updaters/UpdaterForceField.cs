@@ -99,14 +99,14 @@ namespace SiliconStudio.Xenko.Particles.Modules
                 var forceMagnitude = 1f;
                 if (FieldShape != null)
                 {
-                    FieldShape.PreUpdateField(WorldPosition, WorldRotation, new Vector3(1, 1, 1) * WorldScale);
+                    FieldShape.PreUpdateField(WorldPosition, WorldRotation, WorldScale);
 
                     forceMagnitude = FieldShape.GetDistanceToCenter(particlePos, particleVel, out alongAxis, out aroundAxis, out awayAxis);
 
                     forceMagnitude = FieldFalloff.GetStrength(forceMagnitude);
 
                 }
-                forceMagnitude *= dt * WorldScale;
+                forceMagnitude *= dt * parentScale;
 
                 var totalForceVector = 
                     alongAxis  * ForceDirected +
@@ -142,7 +142,10 @@ namespace SiliconStudio.Xenko.Particles.Modules
         [DataMemberIgnore]
         public Quaternion WorldRotation { get; private set; } = new Quaternion(0, 0, 0, 1);
         [DataMemberIgnore]
-        public float WorldScale { get; private set; } = 1f;
+        public Vector3 WorldScale { get; private set; } = new Vector3(1, 1, 1);
+
+        [DataMemberIgnore]
+        private float parentScale = 1f;
 
         public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
         {
@@ -150,11 +153,15 @@ namespace SiliconStudio.Xenko.Particles.Modules
             var hasRot = InheritLocation.HasFlag(InheritLocation.Rotation);
             var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
 
-            WorldScale = (hasScl) ? Scale : 1f;
+            parentScale = (hasScl) ? Scale : 1f;
 
-            WorldRotation = (hasRot) ? Rotation : new Quaternion(0, 0, 0, 1);
+            WorldScale = (hasScl) ? ParticleLocator.Scale * Scale : ParticleLocator.Scale;
 
-            WorldPosition = (hasPos) ? Translation : new Vector3(0, 0, 0);
+            WorldRotation = (hasRot) ? ParticleLocator.Rotation * Rotation : ParticleLocator.Rotation;
+
+            var offsetTranslation = ParticleLocator.Translation * WorldScale;
+            WorldRotation.Rotate(ref offsetTranslation);
+            WorldPosition = (hasPos) ? Translation + offsetTranslation : offsetTranslation;
         }
 
 

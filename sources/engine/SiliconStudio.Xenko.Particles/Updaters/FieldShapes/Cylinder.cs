@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             particlePosition /= fieldSize;
 
             // Start of code for Cylinder
-            if (Math.Abs(particlePosition.Y) >= 1)
+            if (Math.Abs(particlePosition.Y) >= halfHeight)
                 return 1;
 
             particlePosition.Y = 0;
