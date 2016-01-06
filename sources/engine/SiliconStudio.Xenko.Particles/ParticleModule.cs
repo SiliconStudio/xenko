@@ -7,6 +7,7 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.DebugDraw;
+using SiliconStudio.Xenko.Particles.Updaters.FieldShapes;
 
 namespace SiliconStudio.Xenko.Particles
 {
@@ -50,15 +51,31 @@ namespace SiliconStudio.Xenko.Particles
         {
             return false;
         }
-        [DataMember(1)]
-        [Display("Offset")]
-        public ParticleLocator ParticleLocator { get; set; } = new ParticleLocator();
 
         /// <summary>
         /// A list of fields required by the module to operate properly.
         /// Please fill it during construction time.
         /// </summary>
         internal List<ParticleFieldDescription> RequiredFields = new List<ParticleFieldDescription>(ParticlePool.DefaultMaxFielsPerPool);
+
+        [DataMember(1)]
+        [Display("Offset")]
+        public ParticleLocator ParticleLocator { get; set; } = new ParticleLocator();
+
+        /// <summary>
+        /// Note on inheritance. The current values only change once per frame, when the SetParentTRS is called. 
+        /// This is intentional and reduces overhead, because SetParentTRS is called exactly once/turn.
+        /// </summary>
+        [DataMember(5)]
+        [Display("Inheritance")]
+        public InheritLocation InheritLocation { get; set; } = InheritLocation.Position | InheritLocation.Rotation | InheritLocation.Scale;
+
+        [DataMemberIgnore]
+        public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
+        [DataMemberIgnore]
+        public Quaternion WorldRotation { get; private set; } = new Quaternion(0, 0, 0, 1);
+        [DataMemberIgnore]
+        public Vector3 WorldScale { get; private set; } = new Vector3(1, 1, 1);
 
         /// <summary>
         /// Sets the parent (particle system's) translation, rotation and scale (uniform)
@@ -67,7 +84,19 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="Translation">Particle System's translation (from the Transform component)</param>
         /// <param name="Rotation">Particle System's quaternion rotation (from the Transform component)</param>
         /// <param name="Scale">Particle System's uniform scale (from the Transform component)</param>
-        public abstract void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale);
+        public virtual void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
+        {
+            var hasPos = InheritLocation.HasFlag(InheritLocation.Position);
+            var hasRot = InheritLocation.HasFlag(InheritLocation.Rotation);
+            var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
 
+            WorldScale = (hasScl) ? ParticleLocator.Scale * Scale : ParticleLocator.Scale;
+
+            WorldRotation = (hasRot) ? ParticleLocator.Rotation * Rotation : ParticleLocator.Rotation;
+
+            var offsetTranslation = ParticleLocator.Translation * WorldScale;
+            WorldRotation.Rotate(ref offsetTranslation);
+            WorldPosition = (hasPos) ? Translation + offsetTranslation : offsetTranslation;
+        }
     }
 }

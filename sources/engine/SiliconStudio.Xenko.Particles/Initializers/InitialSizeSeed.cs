@@ -25,8 +25,8 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             var sizeField = pool.GetField(ParticleFields.Size);
             var rndField = pool.GetField(ParticleFields.RandomSeed);
             
-            var minSize = WorldScale * RandomSize.X;
-            var sizeGap = WorldScale * RandomSize.Y - minSize;
+            var minSize = WorldScale.X * RandomSize.X;
+            var sizeGap = WorldScale.X * RandomSize.Y - minSize;
 
             var i = startIdx;
             while (i != endIdx)
@@ -39,9 +39,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 i = (i + 1) % maxCapacity;
             }
         }
-
-        [DataMemberIgnore]
-        public float WorldScale { get; private set; } = 1f;
 
         /// <summary>
         /// Note on inheritance. The current values only change once per frame, when the SetParentTRS is called. 
@@ -58,12 +55,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMember(30)]
         [Display("Random size")]
         public Vector2 RandomSize { get; set; } = new Vector2(0.5f, 1);
-
-        public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
-        {
-            var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
-
-            WorldScale = (hasScl) ? Scale : 1f;
-        }
+        
     }
 }

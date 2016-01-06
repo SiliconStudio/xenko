@@ -61,15 +61,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMember(40)]
         [Display("Rotation max")]
         public Quaternion RotationQuaternionMax { get; set; } = new Quaternion(0, 0, 0, 1);
-
-        [DataMemberIgnore]
-        public Quaternion WorldRotation { get; private set; } = new Quaternion(0, 0, 0, 1);
-
-        public override void SetParentTRS(ref Vector3 translation, ref Quaternion rotation, float scale)
-        {
-            var hasRot = InheritLocation.HasFlag(InheritLocation.Rotation);
-
-            WorldRotation = (hasRot) ? rotation : new Quaternion(0, 0, 0, 1);
-        }
+        
     }
 }

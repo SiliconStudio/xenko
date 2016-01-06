@@ -27,9 +27,9 @@ namespace SiliconStudio.Xenko.Particles.Initializers
             var rndField = pool.GetField(ParticleFields.RandomSeed);
 
             var leftCorner = PositionMin * WorldScale;
-            var xAxis = new Vector3(PositionMax.X * WorldScale - leftCorner.X, 0, 0);
-            var yAxis = new Vector3(0, PositionMax.Y * WorldScale - leftCorner.Y, 0);
-            var zAxis = new Vector3(0, 0, PositionMax.Z * WorldScale - leftCorner.Z);
+            var xAxis = new Vector3(PositionMax.X * WorldScale.X - leftCorner.X, 0, 0);
+            var yAxis = new Vector3(0, PositionMax.Y * WorldScale.Y - leftCorner.Y, 0);
+            var zAxis = new Vector3(0, 0, PositionMax.Z * WorldScale.Z - leftCorner.Z);
 
             if (!WorldRotation.IsIdentity)
             {
@@ -79,34 +79,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [DataMember(40)]
         [Display("Position max")]
         public Vector3 PositionMax { get; set; } = new Vector3(1, 1, 1);
-
-        [DataMemberIgnore]
-        public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
-        [DataMemberIgnore]
-        public Quaternion WorldRotation { get; private set; } = new Quaternion(0, 0, 0, 1);
-        [DataMemberIgnore]
-        public float WorldScale { get; private set; } = 1f;
-
-        /// <summary>
-        /// The rotation relative to the parent transformation.
-        /// </summary>
-        /// <userdoc>The rotation of the entity with regard to its parent</userdoc>
-        [DataMember(12)]
-        public Quaternion Rotation { get; set; } = new Quaternion(0, 0, 0, 1);
-
-        public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
-        {
-            var hasPos = InheritLocation.HasFlag(Particles.InheritLocation.Position);
-            var hasRot = InheritLocation.HasFlag(Particles.InheritLocation.Rotation);
-            var hasScl = InheritLocation.HasFlag(Particles.InheritLocation.Scale);
-
-            WorldScale    = (hasScl) ? Scale : 1f;
-
-            WorldRotation = (hasRot) ? this.Rotation * Rotation : this.Rotation;
-
-            WorldPosition = (hasPos) ? Translation : new Vector3(0, 0, 0);
-        }
-
+ 
         public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
         {
             debugDrawShape = DebugDrawShape.Cube;

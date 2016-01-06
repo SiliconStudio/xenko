@@ -42,7 +42,5 @@ namespace SiliconStudio.Xenko.Particles.Modules
                 (*((Vector3*)particle[velField])) += deltaVel;
             }
         }
-
-        public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale) { }
     }
 }
