@@ -14,8 +14,9 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Xenko.Shaders;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 using OpenTK.Graphics.ES30;
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-using ProgramParameter = OpenTK.Graphics.ES30.GetProgramParameterName;
+#if SILICONSTUDIO_PLATFORM_MONO_MOBILE
+// Use GetProgramParameterName which is what needs to be used with the new version of OpenTK (but not yet ported on Xamarin)
+using GetProgramParameterName = OpenTK.Graphics.ES30.ProgramParameter;
 #endif
 #else
 using OpenTK.Graphics.OpenGL;
