@@ -284,10 +284,11 @@ namespace SiliconStudio.Xenko.Engine
         public T GetProcessor<T>() where T : EntityProcessor
         {
             // TODO: Cache in a Dictionary
-            foreach (var system in processors)
+            for (int i = 0; i < processors.Count; i++)
             {
-                if (system is T)
-                    return (T)system;
+                var system = processors[i] as T;
+                if (system != null)
+                    return system;
             }
 
             return null;
@@ -305,16 +306,21 @@ namespace SiliconStudio.Xenko.Engine
             if (entities.ContainsKey(entity))
                 return;
 
+            if (entity.Manager != null)
+            {
+                throw new InvalidOperationException("Cannot an an entity to this entity manager when it is already used by another entity manager");
+            }
+
+            entity.Manager = this;
+
+
             addEntityLevel++;
 
             var entityProcessors = new List<EntityProcessor>();
             entities.Add(entity, entityProcessors);
 
             enabledEntities.Add(entity);
-
             entity.AddReferenceInternal();
-
-            entity.Components.PropertyUpdated += EntityPropertyUpdated;
 
             // Check which processor want this entity
             CheckEntityWithProcessors(entity, entityProcessors, false);
@@ -379,23 +385,18 @@ namespace SiliconStudio.Xenko.Engine
             // Notify Processors this entity has been removed
             CheckEntityWithProcessors(entity, entityProcessors, true);
 
-            entity.Components.PropertyUpdated -= EntityPropertyUpdated;
-
             entity.ReleaseInternal();
+
+            entity.Manager = null;
 
             OnEntityRemoved(entity);
         }
 
         private void AutoRegisterProcessors(Entity entity)
         {
-            // TODO: Access to Components use a yield behind. Change this
-            foreach (var componentKeyPair in entity.Components)
+            foreach (var component in entity.Components)
             {
-                var component = componentKeyPair.Value as EntityComponent;
-                if (component != null)
-                {
-                    RegisterComponentType(component.GetType());
-                }
+                RegisterComponentType(component.GetType());
             }
         }
 
@@ -446,9 +447,9 @@ namespace SiliconStudio.Xenko.Engine
                 processorTypes.Add(processorType);
                 var processor = (EntityProcessor)Activator.CreateInstance(processorType);
 
-                foreach (var key in processor.RequiredKeys)
+                foreach (var type in processor.RequiredTypes)
                 {
-                    RegisterComponentType(key.OwnerType);
+                    RegisterComponentType(type);
                 }
 
                 RegisterProcessors(processorType);
@@ -478,17 +479,12 @@ namespace SiliconStudio.Xenko.Engine
             processor.EntityManager = null;
         }
 
-        private void EntityPropertyUpdated(ref PropertyContainer propertyContainer, PropertyKey propertyKey, object newValue, object oldValue)
+        internal void NotifyComponentChanged(Entity entity, int index, EntityComponent newValue, EntityComponent oldValue)
         {
-            // Only process EntityComponent properties
-            if (!typeof(EntityComponent).GetTypeInfo().IsAssignableFrom(propertyKey.PropertyType.GetTypeInfo()))
-                return;
-
             // No real update   
             if (oldValue == newValue)
                 return;
 
-            var entity = (Entity)propertyContainer.Owner;
             var entityProcessors = entities[entity];
 
             AutoRegisterProcessors(entity);
@@ -497,7 +493,7 @@ namespace SiliconStudio.Xenko.Engine
             CheckEntityWithProcessors(entity, entityProcessors, false);
 
             // Notify component changes
-            OnComponentChanged(new EntityComponentEventArgs(entity, propertyKey, (EntityComponent)oldValue, (EntityComponent)newValue));
+            OnComponentChanged(new EntityComponentEventArgs(entity, index, oldValue, newValue));
         }
 
         private void CheckEntityWithProcessors(Entity entity, List<EntityProcessor> entityProcessors, bool forceRemove)
@@ -585,6 +581,17 @@ namespace SiliconStudio.Xenko.Engine
         {
             var handler = ComponentChanged;
             if (handler != null) handler(this, e);
+        }
+
+        /// <summary>
+        /// Gets the internal association entities -> processor (only used by tests)
+        /// </summary>
+        /// <returns>The map between entity -> processors</returns>
+        internal List<EntityProcessor> GetProcessorsByEntity(Entity entity)
+        {
+            List<EntityProcessor> localProcessors;
+            entities.TryGetValue(entity, out localProcessors);
+            return localProcessors;
         }
 
         private class EntityProcessorComparer : Comparer<EntityProcessor>

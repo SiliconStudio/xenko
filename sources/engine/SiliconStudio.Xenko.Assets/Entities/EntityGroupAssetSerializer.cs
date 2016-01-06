@@ -4,8 +4,9 @@
 using System;
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
-
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine;
+using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
@@ -63,7 +64,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var type = objectContext.Descriptor.Type;
                     if (typeof(EntityComponent).IsAssignableFrom(type))
                     {
-                        objectContext.Instance = new EntityComponentReference();
+                        objectContext.Instance = new EntityComponentReference() { ComponentType = type };
                     }
                     else if (typeof(Script).IsAssignableFrom(type) && scriptLevel > 1)
                     {
@@ -77,6 +78,13 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
 
             base.CreateOrTransformObject(ref objectContext);
+
+            // When deserializing, we don't keep the TransformComponent created when the Entity is created
+            if (!objectContext.SerializerContext.IsSerializing && objectContext.Instance is Entity)
+            {
+                var entity = (Entity)objectContext.Instance;
+                entity.Components.Clear();
+            }
         }
 
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
@@ -91,8 +99,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var entityScriptReference = objectContext.Instance as EntityScriptReference;
                     if (entityComponentReference != null)
                     {
-                        var entityReference = new Entity { Id = entityComponentReference.Entity.Id };
+                        var entityReference = new Entity { Id = entityComponentReference.EntityId };
                         var entityComponent = (EntityComponent)Activator.CreateInstance(entityComponentReference.ComponentType);
+                        IdentifiableHelper.SetId(entityComponent, entityComponentReference.ComponentId);
                         entityComponent.Entity = entityReference;
 
                         objectContext.Instance = entityComponent;
@@ -199,6 +208,11 @@ namespace SiliconStudio.Xenko.Assets.Entities
         public bool CanVisit(Type type)
         {
             return typeof(EntityGroupAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
+        }
+
+
+        public class TransientEntityComponent : EntityComponent
+        {
         }
     }
 }

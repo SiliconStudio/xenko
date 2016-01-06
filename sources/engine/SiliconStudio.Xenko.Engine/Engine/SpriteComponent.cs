@@ -22,8 +22,6 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(SpriteProcessor))]
     public sealed class SpriteComponent : ActivableEntityComponent
     {
-        public static PropertyKey<SpriteComponent> Key = new PropertyKey<SpriteComponent>("Key", typeof(SpriteComponent));
-
         /// <summary>
         /// The group of sprites associated to the component.
         /// </summary>
@@ -159,11 +157,6 @@ namespace SiliconStudio.Xenko.Engine
                 var info = Animations.Dequeue();
                 RecycleSpriteIndicesList(info.SpriteIndices);
             }
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

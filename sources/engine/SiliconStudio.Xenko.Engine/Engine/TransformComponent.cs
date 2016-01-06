@@ -21,9 +21,6 @@ namespace SiliconStudio.Xenko.Engine
     {
         private static readonly TransformOperation[] emptyTransformOperations = new TransformOperation[0];
 
-        public readonly static PropertyKey<TransformComponent> Key = new PropertyKey<TransformComponent>("Key", typeof(TransformComponent),
-            new AccessorMetadata((ref PropertyContainer props) => ((Entity)props.Owner).Transform, (ref PropertyContainer props, object value) => ((Entity)props.Owner).Transform = (TransformComponent)value));
-
         // When false, transformation should be computed in TransformProcessor (no dependencies).
         // When true, transformation is computed later by another system.
         // This is useful for scenario such as binding a node to a bone, where it first need to run TransformProcessor for the hierarchy,
@@ -359,20 +356,5 @@ namespace SiliconStudio.Xenko.Engine
             result.M34 = 0.0f;
             result.M44 = 1.0f;
         }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
-
-        //public IEnumerator<TransformComponent> GetEnumerator()
-        //{
-        //    return Children.GetEnumerator();
-        //}
-
-        //IEnumerator IEnumerable.GetEnumerator()
-        //{
-        //    return ((IEnumerable)Children).GetEnumerator();
-        //}
     }
 }

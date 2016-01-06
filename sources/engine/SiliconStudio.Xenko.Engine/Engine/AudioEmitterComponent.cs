@@ -32,8 +32,6 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(AudioEmitterProcessor))]
     public sealed class AudioEmitterComponent : EntityComponent
     {
-        public static PropertyKey<AudioEmitterComponent> Key = new PropertyKey<AudioEmitterComponent>("Key", typeof(AudioEmitterComponent));
-
         /// <summary>
         /// Dictionary associating each soundEffect to a single soundController.
         /// The controller a valid as long as the corresponding SoundEffect is present in the dictionary.
@@ -270,10 +268,5 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMemberIgnore]
         internal bool ShouldBeProcessed { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

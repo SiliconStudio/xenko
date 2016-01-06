@@ -29,12 +29,6 @@ namespace SiliconStudio.Xenko.Engine
 
         public const float DefaultFarClipPlane = 1000.0f;
 
-
-        /// <summary>
-        /// The property key of this component.
-        /// </summary>
-        public static PropertyKey<CameraComponent> Key = new PropertyKey<CameraComponent>("Key", typeof(CameraComponent));
-
         /// <summary>
         /// Create a new <see cref="CameraComponent"/> instance.
         /// </summary>
@@ -223,11 +217,6 @@ namespace SiliconStudio.Xenko.Engine
 
             // Update the frustum.
             Frustum = new BoundingFrustum(ref ViewProjectionMatrix);
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

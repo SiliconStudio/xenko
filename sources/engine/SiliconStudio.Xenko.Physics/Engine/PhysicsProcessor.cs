@@ -14,14 +14,21 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
 {
-    public class PhysicsProcessor : EntityProcessor<PhysicsProcessor.AssociatedData>
+    public class PhysicsProcessor : EntityProcessor<PhysicsProcessor.AssociatedData, PhysicsComponent>
     {
-        public class AssociatedData
+        public class AssociatedData : IEntityComponentNode
         {
             public PhysicsComponent PhysicsComponent;
             public TransformComponent TransformComponent;
             public ModelComponent ModelComponent; //not mandatory, could be null e.g. invisible triggers
             public bool BoneMatricesUpdated;
+
+            IEntityComponentNode IEntityComponentNode.Next { get; set; }
+
+            EntityComponent IEntityComponentNode.Component
+            {
+                get { return PhysicsComponent; }
+            }
         }
 
         private readonly List<PhysicsElementBase> elements = new List<PhysicsElementBase>();
@@ -37,7 +44,7 @@ namespace SiliconStudio.Xenko.Physics
         private PhysicsDebugShapeRendering debugShapeRendering;
 
         public PhysicsProcessor()
-            : base(PhysicsComponent.Key, TransformComponent.Key)
+            : base(typeof(TransformComponent))
         {
         }
 
@@ -52,13 +59,13 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        protected override AssociatedData GenerateAssociatedData(Entity entity)
+        protected override AssociatedData GenerateAssociatedData(Entity entity, PhysicsComponent component)
         {
             var data = new AssociatedData
             {
-                PhysicsComponent = entity.Get(PhysicsComponent.Key),
-                TransformComponent = entity.Get(TransformComponent.Key),
-                ModelComponent = entity.Get(ModelComponent.Key)
+                PhysicsComponent = component,
+                TransformComponent = entity.Transform,
+                ModelComponent = entity.Get<ModelComponent>()
             };
 
             data.PhysicsComponent.Simulation = simulation;
@@ -67,12 +74,12 @@ namespace SiliconStudio.Xenko.Physics
             return data;
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, PhysicsComponent physicsComponent, AssociatedData associatedData)
         {
             return
-                entity.Get(PhysicsComponent.Key) == associatedData.PhysicsComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent &&
-                entity.Get(ModelComponent.Key) == associatedData.ModelComponent;
+                physicsComponent == associatedData.PhysicsComponent &&
+                entity.Transform == associatedData.TransformComponent &&
+                entity.Get<ModelComponent>() == associatedData.ModelComponent;
         }
 
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
@@ -426,7 +433,7 @@ namespace SiliconStudio.Xenko.Physics
         {
             if (Simulation.DisableSimulation) return;
 
-            var entityElements = entity.Get(PhysicsComponent.Key).Elements;
+            var entityElements = entity.Get<PhysicsComponent>().Elements;
 
             foreach (var element in entityElements)
             {

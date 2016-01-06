@@ -2,18 +2,29 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Runtime.CompilerServices;
+using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Engine
 {
+
+    public interface IEntityComponentNode
+    {
+        IEntityComponentNode Next { get; set; }
+
+        EntityComponent Component { get; }
+    }
+
     /// <summary>
     /// Base class for <see cref="Entity"/> components.
     /// </summary>
     [DataSerializer(typeof(EntityComponent.Serializer))]
     [DataContract]
-    public abstract class EntityComponent : ComponentBase
+    public abstract class EntityComponent : ComponentBase, IEntityComponentNode
     {
         /// <summary>
         /// Gets or sets the owner entity.
@@ -40,27 +51,6 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        /// <summary>
-        /// The default key this component is associated to.
-        /// </summary>
-        public abstract PropertyKey GetDefaultKey();
-
-        /// <summary>
-        /// Gets the default key for the specified entity component type.
-        /// </summary>
-        /// <typeparam name="T">An entity component type</typeparam>
-        /// <returns>PropertyKey.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static PropertyKey GetDefaultKey<T>() where T : EntityComponent, new()
-        {
-            return EntityComponentHelper<T>.DefaultKey;
-        }
-
-        struct EntityComponentHelper<T> where T : EntityComponent, new()
-        {
-            public static readonly PropertyKey DefaultKey = new T().GetDefaultKey();
-        }
-
         internal class Serializer : DataSerializer<EntityComponent>
         {
             public override void Serialize(ref EntityComponent obj, ArchiveMode mode, SerializationStream stream)
@@ -71,5 +61,9 @@ namespace SiliconStudio.Xenko.Engine
                 stream.SerializeExtended(ref entity, mode);
             }
         }
+
+        IEntityComponentNode IEntityComponentNode.Next { get; set; }
+
+        EntityComponent IEntityComponentNode.Component => this;
     }
 }

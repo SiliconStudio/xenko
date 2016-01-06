@@ -12,12 +12,11 @@ namespace SiliconStudio.Xenko.Engine
     /// This processor will take care of adding/removing children of every Entity added/removed in the SceneInstance.
     /// It will also exposes a list of root entities.
     /// </summary>
-    public class HierarchicalProcessor : EntityProcessor<TransformComponent>
+    public class HierarchicalProcessor : EntityProcessor<TransformComponent, TransformComponent>
     {
         private readonly TrackingHashSet<Entity> rootEntities;
 
         public HierarchicalProcessor()
-            : base(TransformComponent.Key)
         {
             rootEntities = new TrackingHashSet<Entity>();
             rootEntities.CollectionChanged += rootEntities_CollectionChanged;
@@ -30,9 +29,9 @@ namespace SiliconStudio.Xenko.Engine
         public ISet<Entity> RootEntities => rootEntities;
 
         /// <inheritdoc/>
-        protected override TransformComponent GenerateAssociatedData(Entity entity)
+        protected override TransformComponent GenerateAssociatedData(Entity entity, TransformComponent component)
         {
-            return entity.Transform;
+            return component;
         }
 
         /// <inheritdoc/>

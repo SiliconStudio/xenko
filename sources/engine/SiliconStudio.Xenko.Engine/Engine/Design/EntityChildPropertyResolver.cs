@@ -148,14 +148,16 @@ namespace SiliconStudio.Xenko.Engine.Design
             public override object GetObject(IntPtr obj)
             {
                 var entity = UpdateEngineHelper.PtrToObject<Entity>(obj);
-                return entity.Components[propertyKey];
+                throw new NotImplementedException();
+                //return entity.Components[propertyKey];
             }
 
             /// <inheritdoc/>
             public override void SetObject(IntPtr obj, object data)
             {
                 var entity = UpdateEngineHelper.PtrToObject<Entity>(obj);
-                entity.Components[propertyKey] = data;
+                throw new NotImplementedException();
+                //entity.Components[propertyKey] = data;
             }
         }
     }

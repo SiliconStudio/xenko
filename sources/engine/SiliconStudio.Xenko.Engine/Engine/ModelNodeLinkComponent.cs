@@ -12,8 +12,6 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(ModelNodeLinkProcessor))]
     public sealed class ModelNodeLinkComponent : EntityComponent
     {
-        public static PropertyKey<ModelNodeLinkComponent> Key = new PropertyKey<ModelNodeLinkComponent>("Key", typeof(ModelNodeLinkComponent));
-
         /// <summary>
         /// Gets or sets the model which contains the hierarchy to use.
         /// </summary>
@@ -32,10 +30,5 @@ namespace SiliconStudio.Xenko.Engine
         /// </value>
         /// <userdoc>The name of node of the model of the target entity to which attach the current entity.</userdoc>
         public string NodeName { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

@@ -7,18 +7,18 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
-    public class ModelNodeLinkProcessor : EntityProcessor<ModelNodeLinkComponent>
+    public class ModelNodeLinkProcessor : EntityProcessor<ModelNodeLinkComponent, ModelNodeLinkComponent>
     {
         internal ModelProcessor meshProcessor;
 
         public ModelNodeLinkProcessor()
-            : base(TransformComponent.Key, ModelNodeLinkComponent.Key)
+            : base(typeof(TransformComponent))
         {
         }
 
-        protected override ModelNodeLinkComponent GenerateAssociatedData(Entity entity)
+        protected override ModelNodeLinkComponent GenerateAssociatedData(Entity entity, ModelNodeLinkComponent component)
         {
-            return entity.Get(ModelNodeLinkComponent.Key);
+            return component;
         }
 
         protected override void OnEntityRemoved(Entity entity, ModelNodeLinkComponent data)
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 {
                     // In case we use parent, modelComponent still needs to be resolved
                     if (modelComponent == null)
-                        modelComponent = modelEntity?.Get(ModelComponent.Key);
+                        modelComponent = modelEntity?.Get<ModelComponent>();
 
                     // If model component is not parent, we want to use forceRecursive because we might want to update this link before the modelComponent.Entity is updated (depending on order of transformation update)
                     transformComponent.TransformLink = modelComponent != null ? new ModelNodeTransformLink(modelComponent, modelNodeLink.NodeName, modelEntity != transformComponent.Parent?.Entity) : null;

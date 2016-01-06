@@ -20,8 +20,6 @@ namespace SiliconStudio.Xenko.Engine
         // Used by the ChildSceneProcessor
         [DataMemberIgnore]
         internal SceneInstance SceneInstance;
-        
-        public readonly static PropertyKey<ChildSceneComponent> Key = new PropertyKey<ChildSceneComponent>("Key", typeof(ChildSceneComponent));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChildSceneComponent"/> class.
@@ -54,11 +52,6 @@ namespace SiliconStudio.Xenko.Engine
                 if (SceneInstance != null)
                     SceneInstance.Scene = null; // unload the current scene, so that it can be unloaded from memory directly (without having to wait one frame)
             }
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

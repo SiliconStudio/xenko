@@ -20,8 +20,6 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(UIComponentProcessor))]
     public class UIComponent : ActivableEntityComponent
     {
-        public static PropertyKey<UIComponent> Key = new PropertyKey<UIComponent>("Key", typeof(UIComponent));
-
         public UIComponent()
         {
             SnapText = true;
@@ -84,10 +82,5 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Snap Text")]
         [DefaultValue(true)]
         public bool SnapText { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Audio
     /// When a new emitter or a new listener is added to the system, its creates the required SoundInstances and associate them with the new emitter/listener tuples.
     /// </para> 
     /// </remarks>
-    public class AudioEmitterProcessor: EntityProcessor<AudioEmitterProcessor.AssociatedData>
+    public class AudioEmitterProcessor: EntityProcessor<AudioEmitterProcessor.AssociatedData, AudioEmitterComponent>
     {
         /// <summary>
         /// Reference to the audioSystem.
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// Data associated to each <see cref="Entity"/> instances of the system having an <see cref="AudioEmitterComponent"/> and an <see cref="TransformComponent"/>.
         /// </summary>
-        public class AssociatedData
+        public class AssociatedData : IEntityComponentNode
         {
             /// <summary>
             /// The <see cref="Xenko.Audio.AudioEmitter"/> associated to the <see cref="AudioEmitterComponent"/>.
@@ -55,13 +55,20 @@ namespace SiliconStudio.Xenko.Audio
             /// A dictionary associating each activated listener of the AudioSystem and each sound controller of the <see cref="AudioEmitterComponent"/> to a valid sound effect instance.
             /// </summary>
             public Dictionary<Tuple<AudioListenerComponent, AudioEmitterSoundController>, SoundEffectInstance> ListenerControllerToSoundInstance;
+
+            IEntityComponentNode IEntityComponentNode.Next { get; set; }
+
+            EntityComponent IEntityComponentNode.Component
+            {
+                get { return AudioEmitterComponent; }
+            }
         }
 
         /// <summary>
         /// Create a new instance of the processor.
         /// </summary>
         public AudioEmitterProcessor()
-            : base(AudioEmitterComponent.Key, TransformComponent.Key)
+            : base(typeof(TransformComponent))
         {
         }
 
@@ -74,21 +81,21 @@ namespace SiliconStudio.Xenko.Audio
             audioSystem.Listeners.CollectionChanged += OnListenerCollectionChanged;
         }
 
-        protected override AssociatedData GenerateAssociatedData(Entity entity)
+        protected override AssociatedData GenerateAssociatedData(Entity entity, AudioEmitterComponent component)
         {
             return new AssociatedData
             {
-                AudioEmitterComponent = entity.Get(AudioEmitterComponent.Key),
-                TransformComponent = entity.Get(TransformComponent.Key),
+                AudioEmitterComponent = component,
+                TransformComponent = entity.Transform,
                 ListenerControllerToSoundInstance = new Dictionary<Tuple<AudioListenerComponent, AudioEmitterSoundController>, SoundEffectInstance>()
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, AudioEmitterComponent component, AssociatedData associatedData)
         {
             return
-                entity.Get(AudioEmitterComponent.Key) == associatedData.AudioEmitterComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+                component == associatedData.AudioEmitterComponent &&
+                entity.Transform == associatedData.TransformComponent;
         }
 
         protected internal override void OnSystemRemove()

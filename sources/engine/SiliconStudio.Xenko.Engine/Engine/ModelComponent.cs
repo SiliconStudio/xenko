@@ -21,8 +21,6 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
     public sealed class ModelComponent : ActivableEntityComponent, IModelInstance
     {
-        public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
-
         private Model model;
         private SkeletonUpdater skeleton;
         private bool modelViewHierarchyDirty = true;
@@ -221,11 +219,6 @@ namespace SiliconStudio.Xenko.Engine
             // Update the bounds
             BoundingBox = modelBoundingBox;
             BoundingSphere = modelBoundingSphere;
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

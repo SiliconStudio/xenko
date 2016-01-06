@@ -17,16 +17,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
     [DataContract("TestEntityComponent")]
     public class TestEntityComponent : EntityComponent
     {
-        public static readonly PropertyKey<TestEntityComponent> Key = new PropertyKey<TestEntityComponent>("Key", typeof(TestEntityComponent));
-
         public Entity EntityLink { get; set; }
 
         public EntityComponent EntityComponentLink { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 
     [TestFixture]

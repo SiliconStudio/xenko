@@ -12,8 +12,6 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
     [DefaultEntityComponentProcessor(typeof(SpriteStudioNodeLinkProcessor))]
     public sealed class SpriteStudioNodeLinkComponent : EntityComponent
     {
-        public static PropertyKey<SpriteStudioNodeLinkComponent> Key = new PropertyKey<SpriteStudioNodeLinkComponent>("Key", typeof(SpriteStudioNodeLinkComponent));
-
         /// <summary>
         /// Gets or sets the model which contains the hierarchy to use.
         /// </summary>
@@ -32,10 +30,5 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         /// </value>
         /// <userdoc>The name of node of the model of the target entity to which attach the current entity.</userdoc>
         public string NodeName { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

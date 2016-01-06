@@ -68,12 +68,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     }
 
                     EntityDesign realEntity;
-                    if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity)
-                        && realEntity.Entity.Components.TryGetValue(entityLink.EntityComponent.GetDefaultKey(), out obj))
+                    if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity))
                     {
-                        // If we already have the proper item, let's skip
+                        var componentId = IdentifiableHelper.GetId(entityLink.EntityComponent);
+                        obj = realEntity.Entity.Components.FirstOrDefault(c => IdentifiableHelper.GetId(c) == componentId);
                         if (obj == entityLink.EntityComponent)
+                        {
                             continue;
+                        }
                     }
                 }
                 else if (entityLink.EntityScript != null)
@@ -85,11 +87,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     }
 
                     EntityDesign realEntity;
-                    ScriptComponent scriptComponent;
-                    if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity)
-                        && realEntity.Entity.Components.TryGetValue(ScriptComponent.Key, out scriptComponent))
+                    if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity))
                     {
-                        obj = scriptComponent.Scripts.FirstOrDefault(x => x.Id == entityLink.EntityScript.Id);
+                        obj = realEntity.Entity.Components.OfType<ScriptComponent>().SelectMany(t => t.Scripts).FirstOrDefault(x => x.Id == entityLink.EntityScript.Id);
                         if (obj == entityLink.EntityScript)
                             continue;
                     }
