@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
@@ -17,6 +18,52 @@ namespace SiliconStudio.Xenko.Engine
         IEntityComponentNode Next { get; set; }
 
         EntityComponent Component { get; }
+    }
+
+    /// <summary>
+    /// Allows a component of the same type to be added multiple time to the same entity (default is <c>false</c>)
+    /// </summary>
+    [AttributeUsage(AttributeTargets.Class)]
+    public class AllowMultipleComponentAttribute : Attribute
+    {
+    }
+
+    public struct EntityComponentAttributes
+    {
+        private static readonly Dictionary<Type, EntityComponentAttributes> ComponentAttributes = new Dictionary<Type, EntityComponentAttributes>();
+        public EntityComponentAttributes(bool allowMultipleComponent)
+        {
+            AllowMultipleComponent = allowMultipleComponent;
+        }
+
+        public readonly bool AllowMultipleComponent ;
+
+        public static EntityComponentAttributes Get<T>() where T : EntityComponent
+        {
+            return GetInternal(typeof(T));
+        }
+
+        public static EntityComponentAttributes Get(Type type)
+        {
+            if (type == null) throw new ArgumentNullException(nameof(type));
+            if (!typeof(EntityComponent).IsAssignableFrom(type)) throw new ArgumentException("The type must be of EntityComponent", "type");
+            return GetInternal(type);
+        }
+
+        private static EntityComponentAttributes GetInternal(Type type)
+        {
+            lock (ComponentAttributes)
+            {
+                EntityComponentAttributes attributes;
+                if (!ComponentAttributes.TryGetValue(type, out attributes))
+                {
+                    attributes = new EntityComponentAttributes(type.GetTypeInfo().GetCustomAttribute<AllowMultipleComponentAttribute>() != null);
+                    ComponentAttributes.Add(type, attributes);
+                    return attributes;
+                }
+            }
+            return new EntityComponentAttributes();
+        }
     }
 
     /// <summary>

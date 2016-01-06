@@ -149,9 +149,11 @@ namespace SiliconStudio.Xenko.Engine
         protected readonly HashSet<Entity> reentrancyCheck = new HashSet<Entity>();
         private readonly List<EntityComponent> tempComponents = new List<EntityComponent>();
         private readonly List<TData> tempDatas = new List<TData>();
+        protected readonly EntityComponentAttributes ComponentAttributes;
 
         protected EntityProcessor(params Type[] requiredAdditionalTypes) : base(typeof(TComponent), requiredAdditionalTypes)
         {
+            ComponentAttributes = EntityComponentAttributes.Get<TComponent>();
         }
 
         /// <inheritdoc/>
@@ -192,6 +194,8 @@ namespace SiliconStudio.Xenko.Engine
             TData entityData;
             bool entityAdded = matchingEntities.TryGetValue(entity, out entityData);
 
+            TData firstData;
+
             if (entityMatch && !entityAdded)
             {
                 // Adding entity is not reentrant, so let's skip if already being called for current entity
@@ -228,6 +232,11 @@ namespace SiliconStudio.Xenko.Engine
                     OnEntityAdding(entity, data);
 
                     previousData = data;
+
+                    if (!ComponentAttributes.AllowMultipleComponent)
+                    {
+                        break;
+                    }
                 }
                 // Clear the last next entry
                 if (previousData != null)
@@ -251,10 +260,18 @@ namespace SiliconStudio.Xenko.Engine
             {
                 // Need to be removed
                 var current = entityData;
-                while (current != null)
+
+                if (ComponentAttributes.AllowMultipleComponent)
+                {
+                    while (current != null)
+                    {
+                        OnEntityRemoved(entity, current);
+                        current = (TData)current.Next;
+                    }
+                }
+                else
                 {
                     OnEntityRemoved(entity, current);
-                    current = (TData)current.Next;
                 }
                 processors.SwapRemove(this);
 
@@ -264,85 +281,126 @@ namespace SiliconStudio.Xenko.Engine
             }
             else if (entityMatch) // && entityMatch
             {
-                tempDatas.Clear();
-                tempComponents.Clear();
-
-                // Compute the list of associated data datas 
-                var components = entity.Components;
-                for (int i = 0; i < components.Count; i++)
+                if (ComponentAttributes.AllowMultipleComponent)
                 {
-                    var component = components[i] as TComponent;
-                    if (component == null)
-                    {
-                        continue;
-                    }
-                    tempComponents.Add(component);
-                    tempDatas.Add(null);
-                }
+                    tempDatas.Clear();
+                    tempComponents.Clear();
 
-                // Iterate on the list of previous datas and match them with current components
-                int minIndex = 0;
-                var dataItem = entityData;
-                while (dataItem != null)
-                {
-                    var index = tempComponents.IndexOf(dataItem.Component, minIndex);
-                    if (index < 0)
+                    // Compute the list of associated data datas 
+                    var components = entity.Components;
+                    for (int i = 0; i < components.Count; i++)
                     {
-                        OnEntityRemoved(entity, dataItem);
-                    }
-                    else
-                    {
-                        tempDatas[index] = dataItem;
-                        if (minIndex == index)
+                        var component = components[i] as TComponent;
+                        if (component == null)
                         {
-                            minIndex++;
+                            continue;
+                        }
+                        tempComponents.Add(component);
+                        tempDatas.Add(null);
+
+                        if (!ComponentAttributes.AllowMultipleComponent)
+                        {
+                            break;
                         }
                     }
-                    dataItem = (TData)dataItem.Next;
-                }
 
-                // Fill the gaps for new components, check if we need to update associated data if component was updated
-                var count = tempDatas.Count;
-                TData previousData = null;
-                for (int i = 0; i < count; i++)
-                {
-                    var component = (TComponent)tempComponents[i];
-                    var data = tempDatas[i];
-                    if (data == null)
+                    // Iterate on the list of previous datas and match them with current components
+                    int minIndex = 0;
+                    var dataItem = entityData;
+                    while (dataItem != null)
                     {
-                        data = GenerateAssociatedData(entity, component);
-                        OnEntityAdding(entity, data);
-                    }
-                    else
-                    {
-                        if (!IsAssociatedDataValid(entity, component, data))
+                        var index = tempComponents.IndexOf(dataItem.Component, minIndex);
+                        if (index < 0)
                         {
-                            OnEntityRemoved(entity, data);
+                            OnEntityRemoved(entity, dataItem);
+                        }
+                        else
+                        {
+                            tempDatas[index] = dataItem;
+                            if (minIndex == index)
+                            {
+                                minIndex++;
+                            }
+                        }
+                        dataItem = (TData)dataItem.Next;
+                    }
+
+                    // Fill the gaps for new components, check if we need to update associated data if component was updated
+                    var count = tempDatas.Count;
+                    TData previousData = null;
+                    for (int i = 0; i < count; i++)
+                    {
+                        var component = (TComponent)tempComponents[i];
+                        var data = tempDatas[i];
+                        if (data == null)
+                        {
                             data = GenerateAssociatedData(entity, component);
-                            tempDatas[i] = data;
                             OnEntityAdding(entity, data);
                         }
+                        else
+                        {
+                            if (!IsAssociatedDataValid(entity, component, data))
+                            {
+                                OnEntityRemoved(entity, data);
+                                data = GenerateAssociatedData(entity, component);
+                                tempDatas[i] = data;
+                                OnEntityAdding(entity, data);
+                            }
+                        }
+                        if (previousData != null)
+                        {
+                            previousData.Next = data;
+                        }
+                        previousData = data;
                     }
+                    // Clear the last next entry
                     if (previousData != null)
                     {
-                        previousData.Next = data;
+                        previousData.Next = null;
                     }
-                    previousData = data;
-                }
-                // Clear the last next entry
-                if (previousData != null)
-                {
-                    previousData.Next = null;
-                }
 
-                var firstData = tempDatas.FirstOrDefault();
+                    firstData = tempDatas.FirstOrDefault();
+
+                    // Don't keep any references
+                    tempDatas.Clear();
+                    tempComponents.Clear();
+                }
+                else
+                {
+                    TComponent selectedComponent = null;
+
+                    // Compute the list of associated data datas 
+                    var components = entity.Components;
+                    for (int i = 0; i < components.Count; i++)
+                    {
+                        selectedComponent = components[i] as TComponent;
+                        if (selectedComponent != null)
+                        {
+                            break;
+                        }
+                    }
+
+                    if (selectedComponent == null)
+                    {
+                        OnEntityRemoved(entity, entityData);
+                    }
+                    else
+                    {
+                        if (!IsAssociatedDataValid(entity, selectedComponent, entityData))
+                        {
+                            OnEntityRemoved(entity, entityData);
+                            entityData = GenerateAssociatedData(entity, selectedComponent);
+                            OnEntityAdding(entity, entityData);
+                        }
+                    }
+
+                    firstData = entityData;
+                }
+                
                 matchingEntities[entity] = firstData;
                 if (EntityManager.IsEnabled(entity))
                     enabledEntities[entity] = firstData;
 
-                // Don't keep any references
-                tempDatas.Clear();
-                tempComponents.Clear();
             }
         }
 
