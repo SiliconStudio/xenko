@@ -150,6 +150,18 @@ namespace SiliconStudio.Xenko.Engine
             return Components.Get<T>();
         }
 
+        /// <summary>
+        /// Gets a component by the specified key.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
+        /// <returns>The component or null if does no exist</returns>
+        /// <exception cref="System.ArgumentNullException">key</exception>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void Remove<T>() where T : EntityComponent
+        {
+            Components.Remove<T>();
+        }
+
         internal void ComponentsUpdated(int index, EntityComponent oldComponent, EntityComponent newComponent)
         {
             // Don't use events but directly call the Manager
