@@ -79,6 +79,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
             // Toward - tawards the main axis
             awayAxis = particlePosition - fieldPosition;
+            awayAxis.Y = 0; // In case of cylinder the away vector should be flat (away from the axis rather than just a point)
             awayAxis.Normalize();
 
             // Around - around the main axis, following the right hand rule
