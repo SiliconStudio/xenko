@@ -40,8 +40,10 @@ namespace SiliconStudio.Xenko.Particles
         private bool ToWorldSpace(ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
         {
             scale *= UniformScale;
+
             rotation *= Rotation;
-            rotation.Rotate(ref translation);
+
+            Rotation.Rotate(ref translation);
             translation *= UniformScale;
             translation += Translation;
 
