@@ -1134,28 +1134,29 @@ namespace SiliconStudio.Xenko.Graphics
 
                 if (depthStencilBuffer != null)
                 {
-                    FramebufferAttachment attachmentType;
-                    if (depthStencilBuffer.IsDepthBuffer && depthStencilBuffer.HasStencil && depthStencilBuffer.ResourceIdStencil != 0)
-                        attachmentType = FramebufferAttachment.DepthStencilAttachment; // This enum does not exists in ES 2
-                    else if (depthStencilBuffer.IsDepthBuffer)
-                        attachmentType = FramebufferAttachment.DepthAttachment;
-                    else
-                        attachmentType = FramebufferAttachment.StencilAttachment;
+                    bool useSharedAttachment = depthStencilBuffer.ResourceIdStencil == depthStencilBuffer.ResourceId;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                    if (IsOpenGLES2)  // FramebufferAttachment.DepthStencilAttachment is not supported in ES 2
+                        useSharedAttachment = false;
+#endif
+                    var attachmentType = useSharedAttachment ? FramebufferAttachment.DepthStencilAttachment : FramebufferAttachment.DepthAttachment;
 
                     if (depthStencilBuffer.IsRenderbuffer)
                     {
+                        // Bind depth-only or packed depth-stencil buffer
                         GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, attachmentType, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceId);
 
                         // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
-                        if (depthStencilBuffer.ResourceIdStencil != 0)
+                        if (depthStencilBuffer.HasStencil && !useSharedAttachment)
                             GL.FramebufferRenderbuffer(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, RenderbufferTarget.Renderbuffer, depthStencilBuffer.ResourceIdStencil);
                     }
                     else
                     {
+                        // Bind depth-only or packed depth-stencil buffer
                         GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, attachmentType, TextureTargetTexture2D, depthStencilBuffer.ResourceId, 0);
 
                         // If stencil buffer is separate, it's resource id might be stored in depthStencilBuffer.Texture.ResouceIdStencil
-                        if (depthStencilBuffer.ResourceIdStencil != 0)
+                        if (depthStencilBuffer.HasStencil && !useSharedAttachment)
                             GL.FramebufferTexture2D(FramebufferTarget.Framebuffer, FramebufferAttachment.StencilAttachment, TextureTargetTexture2D, depthStencilBuffer.ResourceIdStencil, 0);
                     }
                 }
