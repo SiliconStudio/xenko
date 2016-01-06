@@ -94,8 +94,10 @@
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
     <Compile Include="Updaters\FieldShapes\Cube.cs" />
+    <Compile Include="Updaters\FieldShapes\Cylinder.cs" />
     <Compile Include="Updaters\FieldShapes\FieldFalloff.cs" />
     <Compile Include="Updaters\FieldShapes\FieldShape.cs" />
+    <Compile Include="Updaters\FieldShapes\Sphere.cs" />
     <Compile Include="Updaters\FieldShapes\Torus.cs" />
     <Compile Include="Updaters\UpdaterForceField.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
