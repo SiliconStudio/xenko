@@ -13,6 +13,6 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
         public abstract float GetDistanceToCenter(
             Vector3 particlePosition, Vector3 particleVelocity,
-            out Vector3 alongAxis, out Vector3 aroundAxis, out Vector3 towardAxis);
+            out Vector3 alongAxis, out Vector3 aroundAxis, out Vector3 awayAxis);
     }
 }

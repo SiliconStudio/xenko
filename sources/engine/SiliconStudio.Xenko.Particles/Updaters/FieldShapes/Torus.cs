@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
         public override float GetDistanceToCenter(
             Vector3 particlePosition, Vector3 particleVelocity,
-            out Vector3 alongAxis, out Vector3 aroundAxis, out Vector3 towardAxis)
+            out Vector3 alongAxis, out Vector3 aroundAxis, out Vector3 awayAxis)
         {
             alongAxis = new Vector3(0, 1, 0);
 
@@ -95,10 +95,10 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             projectedPosition -= particlePosition;
             projectedPosition *= fieldSize;
             fieldRotation.Rotate(ref projectedPosition);
-            towardAxis = -projectedPosition;
-            towardAxis.Normalize();
+            awayAxis = -projectedPosition;
+            awayAxis.Normalize();
 
-            aroundAxis = Vector3.Cross(towardAxis, alongAxis);
+            aroundAxis = Vector3.Cross(awayAxis, alongAxis);
 
             return totalStrength;
         }

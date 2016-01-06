@@ -90,24 +90,28 @@ namespace SiliconStudio.Xenko.Particles.Modules
             foreach (var particle in pool)
             {
                 var alongAxis  = new Vector3(0, 1, 0);
-                var aroundAxis = new Vector3(0, 0, 1);
-                var towardAxis = new Vector3(1, 0, 0);
+                var awayAxis   = new Vector3(0, 0, 1);
+                var aroundAxis = new Vector3(1, 0, 0);
 
                 var particlePos = (*((Vector3*)particle[posField]));
                 var particleVel = (*((Vector3*)particle[velField]));
 
-                FieldShape?.PreUpdateField(WorldPosition, WorldRotation, new Vector3(1, 1, 1) * WorldScale);
+                var forceMagnitude = 1f;
+                if (FieldShape != null)
+                {
+                    FieldShape.PreUpdateField(WorldPosition, WorldRotation, new Vector3(1, 1, 1) * WorldScale);
 
-                var forceMagnitude = FieldShape?.GetDistanceToCenter(particlePos, particleVel, out alongAxis, out aroundAxis, out towardAxis) ?? 1;
+                    forceMagnitude = FieldShape.GetDistanceToCenter(particlePos, particleVel, out alongAxis, out aroundAxis, out awayAxis);
 
-                forceMagnitude = FieldFalloff.GetStrength(forceMagnitude);
+                    forceMagnitude = FieldFalloff.GetStrength(forceMagnitude);
 
+                }
                 forceMagnitude *= dt * WorldScale;
 
                 var totalForceVector = 
                     alongAxis  * ForceDirected +
                     aroundAxis * ForceVortex +
-                    towardAxis * ForceRepulsive;
+                    awayAxis * ForceRepulsive;
 
                 totalForceVector *= forceMagnitude;
                
