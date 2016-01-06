@@ -58,17 +58,17 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         internal List<ParticleFieldDescription> RequiredFields = new List<ParticleFieldDescription>(ParticlePool.DefaultMaxFielsPerPool);
 
-        [DataMember(1)]
-        [Display("Offset")]
-        public ParticleLocator ParticleLocator { get; set; } = new ParticleLocator();
-
         /// <summary>
         /// Note on inheritance. The current values only change once per frame, when the SetParentTRS is called. 
         /// This is intentional and reduces overhead, because SetParentTRS is called exactly once/turn.
         /// </summary>
-        [DataMember(5)]
+        [DataMember(1)]
         [Display("Inheritance")]
         public InheritLocation InheritLocation { get; set; } = InheritLocation.Position | InheritLocation.Rotation | InheritLocation.Scale;
+
+        [DataMember(5)]
+        [Display("Offset")]
+        public ParticleLocator ParticleLocator { get; set; } = new ParticleLocator();
 
         [DataMemberIgnore]
         public Vector3 WorldPosition { get; private set; } = new Vector3(0, 0, 0);
