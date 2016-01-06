@@ -21,8 +21,6 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(BackgroundComponentProcessor))]
     public class BackgroundComponent : ActivableEntityComponent
     {
-        public static PropertyKey<BackgroundComponent> Key = new PropertyKey<BackgroundComponent>("Key", typeof(BackgroundComponent));
-
         /// <summary>
         /// Create an empty Background component.
         /// </summary>
@@ -48,10 +46,5 @@ namespace SiliconStudio.Xenko.Engine
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
         public float Intensity { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

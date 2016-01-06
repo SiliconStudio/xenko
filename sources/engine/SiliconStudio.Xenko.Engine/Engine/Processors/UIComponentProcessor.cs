@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class UIComponentProcessor : EntityProcessor<UIComponentProcessor.UIComponentState>
+    internal class UIComponentProcessor : EntityProcessor<UIComponentProcessor.UIComponentState, UIComponent>
     {
         public List<UIComponentState> UIRoots { get; private set; }
 
@@ -21,25 +21,21 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
         /// </summary>
         public UIComponentProcessor()
-            : base(UIComponent.Key, TransformComponent.Key)
+            : base(typeof(TransformComponent))
         {
             UIRoots = new List<UIComponentState>();
         }
         
-        protected override UIComponentState GenerateAssociatedData(Entity entity)
+        protected override UIComponentState GenerateAssociatedData(Entity entity, UIComponent component)
         {
-            return new UIComponentState
-            {
-                UIComponent = entity.Get(UIComponent.Key),
-                TransformComponent = entity.Get(TransformComponent.Key),
-            };
+            return new UIComponentState(component, entity.Transform);
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, UIComponentState associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, UIComponent component, UIComponentState associatedData)
         {
             return
-                entity.Get(UIComponent.Key) == associatedData.UIComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+                entity.Get<UIComponent>() == component &&
+                entity.Transform == associatedData.TransformComponent;
         }
 
         public override void Draw(RenderContext gameTime)
@@ -54,11 +50,17 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
         }
 
-        public class UIComponentState
+        public class UIComponentState : IEntityComponentNode
         {
-            public UIComponent UIComponent;
+            public UIComponentState(UIComponent uiComponent, TransformComponent transformComponent)
+            {
+                UIComponent = uiComponent;
+                TransformComponent = transformComponent;
+            }
 
-            public TransformComponent TransformComponent;
+            public readonly UIComponent UIComponent;
+
+            public readonly TransformComponent TransformComponent;
 
             public UIElement LastOveredElement;
 
@@ -67,6 +69,13 @@ namespace SiliconStudio.Xenko.Engine.Processors
             public Vector3 LastIntersectionPoint;
 
             public Matrix LastRootMatrix;
+
+            IEntityComponentNode IEntityComponentNode.Next { get; set; }
+
+            EntityComponent IEntityComponentNode.Component
+            {
+                get { return UIComponent; }
+            }
         }
     }
 }

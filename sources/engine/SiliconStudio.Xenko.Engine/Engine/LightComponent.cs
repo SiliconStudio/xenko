@@ -23,8 +23,6 @@ namespace SiliconStudio.Xenko.Engine
     {
         private static int LightComponentIds;
 
-        public static PropertyKey<LightComponent> Key = new PropertyKey<LightComponent>("Key", typeof(LightComponent));
-
         /// <summary>
         /// The default direction of a light vector is (x,y,z) = (0,0,-1)
         /// </summary>
@@ -151,11 +149,6 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             return true;
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

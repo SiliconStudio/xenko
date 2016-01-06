@@ -102,9 +102,11 @@ namespace SiliconStudio.Xenko.Assets.Tests
 
             {
                 var entity1 = new Entity() { Name = "E1" };
-                var entity2 = new Entity() { Name = "E2" };
+                var entity2 = new Entity() { Name = "E2", Group = EntityGroup.Group1 }; // Use group property to make sure that it is properly serialized
                 var entity3 = new Entity() { Name = "E3" };
-                var entity4 = new Entity() { Name = "E4" };
+                var entity4 = new Entity() { Name = "E4", Group = EntityGroup.Group2 };
+
+                // TODO: Add script link
 
                 entity1.Transform.Children.Add(entity2.Transform);
 
@@ -137,7 +139,9 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 var newEntityDesign = newAsset.Hierarchy.Entities[entityDesign.Entity.Id];
                 Assert.NotNull(newEntityDesign);
 
+                // Check properties
                 Assert.AreEqual(entityDesign.Entity.Name, newEntityDesign.Entity.Name);
+                Assert.AreEqual(entityDesign.Entity.Group, newEntityDesign.Entity.Group);
 
                 // Check that we have the same amount of components
                 Assert.AreEqual(entityDesign.Entity.Components.Count, newEntityDesign.Entity.Components.Count);
@@ -149,7 +153,12 @@ namespace SiliconStudio.Xenko.Assets.Tests
                 {
                     var children = entityDesign.Entity.Transform.Children[i];
                     var newChildren = newEntityDesign.Entity.Transform.Children[i];
+                    // Make sure that it is the same entity id
                     Assert.AreEqual(children.Entity.Id, newChildren.Entity.Id);
+
+                    // Make sure that we resolve to the global entity and not a copy
+                    Assert.True(newAsset.Hierarchy.Entities.ContainsKey(newChildren.Entity.Id));
+                    Assert.AreEqual(newChildren.Entity, newAsset.Hierarchy.Entities[newChildren.Entity.Id].Entity);
                 }
             }
         }

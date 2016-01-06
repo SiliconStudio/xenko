@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
     /// <summary>
     /// Process <see cref="LightComponent"/> stored in an <see cref="EntityManager"/> by providing grouped lights per types/shadows.
     /// </summary>
-    public class LightProcessor : EntityProcessor<LightComponent>
+    public class LightProcessor : EntityProcessor<LightComponent, LightComponent>
     {
         private const int DefaultLightCapacityCount = 512;
 
@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// Initializes a new instance of the <see cref="LightProcessor"/> class.
         /// </summary>
         public LightProcessor()
-            : base(LightComponent.Key)
         {
             lights = new LightComponentCollection(DefaultLightCapacityCount);
             lightsCollected = new LightComponentCollection(DefaultLightCapacityCount);
@@ -45,9 +44,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             lights.Remove(state);
         }
 
-        protected override LightComponent GenerateAssociatedData(Entity entity)
+        protected override LightComponent GenerateAssociatedData(Entity entity, LightComponent component)
         {
-            return entity.Get<LightComponent>();
+            return component;
         }
 
         public override void Draw(RenderContext context)

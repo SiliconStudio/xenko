@@ -13,13 +13,12 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// This processor is handling specially an entity with a <see cref="ChildSceneComponent"/>. If an scene component is found, it will
     /// create a sub-<see cref="EntityManager"/> dedicated to handle the entities inside the child scene.
     /// </remarks>
-    public sealed class ChildSceneProcessor : EntityProcessor<ChildSceneComponent>
+    public sealed class ChildSceneProcessor : EntityProcessor<ChildSceneComponent, ChildSceneComponent>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ChildSceneProcessor"/> class.
         /// </summary>
         public ChildSceneProcessor()
-            : base(ChildSceneComponent.Key)
         {
         }
 
@@ -40,9 +39,9 @@ namespace SiliconStudio.Xenko.Engine.Processors
             return component.SceneInstance;
         }
 
-        protected override ChildSceneComponent GenerateAssociatedData(Entity entity)
+        protected override ChildSceneComponent GenerateAssociatedData(Entity entity, ChildSceneComponent component)
         {
-            return entity.Get<ChildSceneComponent>();
+            return component;
         }
 
         protected override void OnEntityAdding(Entity entity, ChildSceneComponent component)

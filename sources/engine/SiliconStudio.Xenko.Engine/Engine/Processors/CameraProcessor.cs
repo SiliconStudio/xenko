@@ -10,21 +10,20 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// <summary>
     /// The processor for <see cref="CameraComponent"/>.
     /// </summary>
-    public class CameraProcessor : EntityProcessor<CameraComponent>
+    public class CameraProcessor : EntityProcessor<CameraComponent, CameraComponent>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CameraProcessor"/> class.
         /// </summary>
         public CameraProcessor()
-            : base(CameraComponent.Key)
         {
             Cameras = new List<CameraComponent>();
             Order = -10;
         }
 
-        protected override CameraComponent GenerateAssociatedData(Entity entity)
+        protected override CameraComponent GenerateAssociatedData(Entity entity, CameraComponent component)
         {
-            return entity.Get<CameraComponent>();
+            return component;
         }
 
         /// <summary>

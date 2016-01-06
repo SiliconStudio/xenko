@@ -82,6 +82,7 @@
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
     <Compile Include="Engine\Design\EntityChildPropertyResolver.cs" />
     <Compile Include="Engine\Design\ExecutionMode.cs" />
+    <Compile Include="Engine\EntityComponentCollection.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
@@ -155,7 +156,7 @@
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\CameraComponent.cs" />
     <Compile Include="Engine\ChildSceneComponent.cs" />
-    <Compile Include="Engine\HierarchicalProcessor.cs" />
+    <Compile Include="Engine\Processors\HierarchicalProcessor.cs" />
     <Compile Include="Engine\ModelComponent.cs" />
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
     <Compile Include="Engine\SceneSettings.cs" />

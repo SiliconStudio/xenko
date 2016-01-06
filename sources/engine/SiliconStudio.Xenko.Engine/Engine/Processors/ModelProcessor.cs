@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// <summary>
     /// The processor for <see cref="ModelComponent"/>.
     /// </summary>
-    public class ModelProcessor : EntityProcessor<ModelProcessor.RenderModelItem>
+    public class ModelProcessor : EntityProcessor<ModelProcessor.RenderModelItem, ModelComponent>
     {
         // TODO: ModelProcessor should be decoupled from RenderModel
         private readonly RenderModelCollection[] allModelGroups;
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// Initializes a new instance of the <see cref="ModelProcessor"/> class.
         /// </summary>
         public ModelProcessor()
-            : base(ModelComponent.Key, TransformComponent.Key)
+            : base(typeof(TransformComponent))
         {
             ModelGroups = new List<RenderModelCollection>();
             allModelGroups = new RenderModelCollection[32];
@@ -39,14 +39,14 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
         }
 
-        protected override RenderModelItem GenerateAssociatedData(Entity entity)
+        protected override RenderModelItem GenerateAssociatedData(Entity entity, ModelComponent component)
         {
-            return new RenderModelItem(new RenderModel(entity.Get<ModelComponent>()), entity.Transform);
+            return new RenderModelItem(new RenderModel(component), entity.Transform);
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, RenderModelItem associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, ModelComponent component, RenderModelItem associatedData)
         {
-            return entity.Get(ModelComponent.Key) == associatedData.ModelComponent && entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+            return entity.Get<ModelComponent>() == component && entity.Transform == associatedData.TransformComponent;
         }
 
         protected override void OnEntityAdding(Entity entity, RenderModelItem data)
@@ -140,7 +140,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
         }
 
-        public class RenderModelItem
+        public class RenderModelItem : IEntityComponentNode
         {
             public RenderModelItem(RenderModel renderModel, TransformComponent transformComponent)
             {
@@ -149,13 +149,20 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 TransformComponent = transformComponent;
             }
 
-            public readonly RenderModel RenderModel;
-
             public readonly ModelComponent ModelComponent;
+
+            public readonly RenderModel RenderModel;
 
             public readonly TransformComponent TransformComponent;
 
             public ModelViewHierarchyTransformOperation TransformOperation;
+
+            IEntityComponentNode IEntityComponentNode.Next { get; set; }
+
+            EntityComponent IEntityComponentNode.Component
+            {
+                get { return ModelComponent; }
+            }
         }
 
         public struct EntityLink

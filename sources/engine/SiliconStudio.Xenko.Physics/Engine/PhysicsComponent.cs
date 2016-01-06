@@ -15,8 +15,6 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     public sealed class PhysicsComponent : EntityComponent
     {
-        public static PropertyKey<PhysicsComponent> Key = new PropertyKey<PhysicsComponent>("Key", typeof(PhysicsComponent));
-
         public PhysicsComponent()
         {
             Elements = new List<IPhysicsElement>();
@@ -37,11 +35,6 @@ namespace SiliconStudio.Xenko.Engine
 
         [DataMemberIgnore]
         public Simulation Simulation { get; internal set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
 
         [DataMemberIgnore]
         internal PhysicsDebugShapeRendering DebugShapeRendering;

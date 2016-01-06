@@ -34,8 +34,6 @@ namespace SiliconStudio.Xenko.Engine
         [DataMemberIgnore]
         public AnimationClipResult CurrentFrameResult;
 
-        public static PropertyKey<AnimationComponent> Key = new PropertyKey<AnimationComponent>("Key", typeof(AnimationComponent));
-
         public AnimationComponent()
         {
             animations = new Dictionary<string, AnimationClip>();
@@ -154,10 +152,5 @@ namespace SiliconStudio.Xenko.Engine
         /// </userdoc>
         [MemberCollection(CanReorderItems = true)]
         public TrackingCollection<PlayingAnimation> PlayingAnimations => playingAnimations;
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

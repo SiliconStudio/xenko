@@ -17,8 +17,6 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(ScriptProcessor), ExecutionMode = ExecutionMode.Runtime)]
     public sealed class ScriptComponent : EntityComponent
     {
-        public static PropertyKey<ScriptComponent> Key = new PropertyKey<ScriptComponent>("Key", typeof(ScriptComponent));
-
         public ScriptComponent()
         {
             Scripts = new ScriptCollection();
@@ -50,11 +48,5 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Script", Expand = ExpandRule.Always)]
         [MemberCollection(CanReorderItems = true)]
         public TrackingCollection<Script> Scripts { get; private set; }
-
-        /// <inheritdoc/>
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

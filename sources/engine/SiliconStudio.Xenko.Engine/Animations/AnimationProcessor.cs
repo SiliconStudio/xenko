@@ -9,31 +9,29 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public class AnimationProcessor : EntityProcessor<AnimationProcessor.AssociatedData>
+    public class AnimationProcessor : EntityProcessor<AnimationProcessor.AssociatedData, AnimationComponent>
     {
         private readonly FastList<AnimationOperation> animationOperations = new FastList<AnimationOperation>(2);
 
-
         public AnimationProcessor()
-            : base(AnimationComponent.Key)
         {
             Order = -500;
         }
 
-        protected override AssociatedData GenerateAssociatedData(Entity entity)
+        protected override AssociatedData GenerateAssociatedData(Entity entity, AnimationComponent component)
         {
             return new AssociatedData
             {
-                AnimationComponent = entity.Get(AnimationComponent.Key),
-                ModelComponent = entity.Get(ModelComponent.Key)
+                AnimationComponent = component,
+                ModelComponent = entity.Get<ModelComponent>()
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, AnimationComponent component, AssociatedData associatedData)
         {
             return
-                entity.Get(AnimationComponent.Key) == associatedData.AnimationComponent &&
-                entity.Get(ModelComponent.Key) == associatedData.ModelComponent;
+                component == associatedData.AnimationComponent &&
+                entity.Get<ModelComponent>() == associatedData.ModelComponent;
         }
 
         protected override void OnEntityAdding(Entity entity, AssociatedData data)
@@ -189,12 +187,16 @@ namespace SiliconStudio.Xenko.Animations
             return AnimationOperation.NewPush(playingAnimation.Evaluator, playingAnimation.CurrentTime);
         }
 
-        public class AssociatedData
+        public class AssociatedData : IEntityComponentNode
         {
             public AnimationUpdater AnimationUpdater;
             public ModelComponent ModelComponent;
             public AnimationComponent AnimationComponent;
             public AnimationClipResult AnimationClipResult;
+
+            IEntityComponentNode IEntityComponentNode.Next { get; set; }
+
+            EntityComponent IEntityComponentNode.Component => AnimationComponent;
         }
     }
 }

@@ -21,11 +21,5 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(AudioListenerProcessor))]
     public sealed class AudioListenerComponent : EntityComponent
     {
-        public static PropertyKey<AudioListenerComponent> Key = new PropertyKey<AudioListenerComponent>("Key", typeof(AudioListenerComponent));
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

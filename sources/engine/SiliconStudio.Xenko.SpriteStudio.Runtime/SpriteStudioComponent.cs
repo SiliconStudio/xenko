@@ -19,13 +19,6 @@ namespace SiliconStudio.Xenko.Engine
     [DataSerializerGlobal(null, typeof(List<SpriteStudioNodeState>))]
     public class SpriteStudioComponent : EntityComponent
     {
-        public static PropertyKey<SpriteStudioComponent> Key = new PropertyKey<SpriteStudioComponent>("Key", typeof(SpriteStudioComponent));
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
-
         [DataMember(1)]
         public SpriteStudioSheet Sheet { get; set; }
 

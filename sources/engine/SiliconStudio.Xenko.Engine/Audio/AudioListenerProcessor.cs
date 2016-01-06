@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Audio
     /// the processor set the <see cref="AudioEmitter"/> reference of the <see cref="AudioSystem"/> to null 
     /// but do not remove the <see cref="AudioListenerComponent"/> from its collection.
     /// </remarks>
-    public class AudioListenerProcessor : EntityProcessor<AudioListenerProcessor.AssociatedData>
+    public class AudioListenerProcessor : EntityProcessor<AudioListenerProcessor.AssociatedData, AudioListenerComponent>
     {
         /// <summary>
         /// Reference to the <see cref="AudioSystem"/> of the game instance.
@@ -38,26 +38,26 @@ namespace SiliconStudio.Xenko.Audio
         /// Create a new instance of AudioListenerProcessor.
         /// </summary>
         public AudioListenerProcessor()
-            : base(AudioListenerComponent.Key, TransformComponent.Key)
+            : base(typeof(AudioListenerComponent))
         {
         }
 
-        protected override AssociatedData GenerateAssociatedData(Entity entity)
+        protected override AssociatedData GenerateAssociatedData(Entity entity, AudioListenerComponent component)
         {
             // Initialize TransformComponent and ListenerComponent fields of the matchingEntities' AssociatedData.
             // other fields are initialized in OnEntityAdded or OnListenerCollectionChanged
             return new AssociatedData
             {
-                TransformComponent = entity.Get(TransformComponent.Key),
-                ListenerComponent = entity.Get(AudioListenerComponent.Key)
+                TransformComponent = entity.Transform,
+                ListenerComponent = component
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, AudioListenerComponent component, AssociatedData associatedData)
         {
             return
-                entity.Get(AudioListenerComponent.Key) == associatedData.ListenerComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+                component == associatedData.ListenerComponent &&
+                entity.Transform == associatedData.TransformComponent;
         }
 
         protected internal override void OnSystemAdd()
@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
         
-        public class AssociatedData
+        public class AssociatedData : IEntityComponentNode
         {
             /// <summary>
             /// Boolean indicating whether the AudioEmitter need to be updated for the current loop turn or not.
@@ -186,6 +186,10 @@ namespace SiliconStudio.Xenko.Audio
             /// The <see cref="TransformComponent"/> associated to the entity.
             /// </summary>
             public TransformComponent TransformComponent;
+
+            IEntityComponentNode IEntityComponentNode.Next { get; set; }
+
+            EntityComponent IEntityComponentNode.Component => ListenerComponent;
         }
     }
 }

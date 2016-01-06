@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Engine
 
         internal ProfilingKey UpdateProfilingKey;
         internal ProfilingKey DrawProfilingKey;
-        private readonly PropertyKey[] requiredKeys;
+        private readonly List<Type> requiredTypes;
 
         /// <summary>
         /// Tags associated to this entity processor
@@ -36,19 +36,36 @@ namespace SiliconStudio.Xenko.Engine
 
         public IServiceRegistry Services { get; internal set; }
 
-        protected EntityProcessor(PropertyKey[] requiredKeys)
+        protected EntityProcessor(Type mainComponentType, Type[] additionalTypes)
         {
+            if (mainComponentType == null) throw new ArgumentNullException(nameof(mainComponentType));
+            if (additionalTypes == null) throw new ArgumentNullException(nameof(additionalTypes));
+
+            MainComponentType = mainComponentType;
+            requiredTypes = new List<Type>() { MainComponentType };
+            requiredTypes.AddRange(additionalTypes);
+
+            // Check that types are valid
+            foreach (var requiredType in requiredTypes)
+            {
+                if (!typeof(EntityComponent).IsAssignableFrom(requiredType))
+                {
+                    throw new ArgumentException($"Invalid required type [{requiredType}]. Expecting only an EntityComponent type");
+                }
+            }
+
             UpdateProfilingKey = new ProfilingKey(GameProfilingKeys.GameUpdate, this.GetType().Name);
             DrawProfilingKey = new ProfilingKey(GameProfilingKeys.GameDraw, this.GetType().Name);
-            this.requiredKeys = requiredKeys;
         }
+
+        /// <summary>
+        /// Gets the primary component type handled by this processor
+        /// </summary>
+        public Type MainComponentType { get; }
 
         /// <summary>Gets the required components for an entity to be added to this entity processor.</summary>
         /// <value>The required keys.</value>
-        public PropertyKey[] RequiredKeys
-        {
-            get { return requiredKeys; }
-        }
+        public List<Type> RequiredTypes => requiredTypes;
 
         /// <summary>
         /// Gets or sets the order of this processor.
@@ -125,13 +142,15 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>Helper class for <see cref="EntityProcessor"/>, that will keep track of <see cref="Entity"/> matching certain <see cref="EntityComponent"/> requirements.</summary>
     /// Additional precomputed data will be stored alongside the <see cref="Entity"/> to offer faster accesses and iterations.
     /// <typeparam name="T">Generic type parameter.</typeparam>
-    public abstract class EntityProcessor<T> : EntityProcessor
+    public abstract class EntityProcessor<TData, TComponent> : EntityProcessor  where TData : class, IEntityComponentNode where TComponent : EntityComponent
     {
-        protected Dictionary<Entity, T> enabledEntities = new Dictionary<Entity, T>();
-        protected Dictionary<Entity, T> matchingEntities = new Dictionary<Entity, T>();
-        protected HashSet<Entity> reentrancyCheck = new HashSet<Entity>();
+        protected readonly Dictionary<Entity, TData> enabledEntities = new Dictionary<Entity, TData>();
+        protected readonly Dictionary<Entity, TData> matchingEntities = new Dictionary<Entity, TData>();
+        protected readonly HashSet<Entity> reentrancyCheck = new HashSet<Entity>();
+        private readonly List<EntityComponent> tempComponents = new List<EntityComponent>();
+        private readonly List<TData> tempDatas = new List<TData>();
 
-        protected EntityProcessor(params PropertyKey[] requiredKeys) : base(requiredKeys)
+        protected EntityProcessor(params Type[] requiredAdditionalTypes) : base(typeof(TComponent), requiredAdditionalTypes)
         {
         }
 
@@ -150,7 +169,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             if (enabled)
             {
-                T entityData;
+                TData entityData;
                 if (!matchingEntities.TryGetValue(entity, out entityData))
                     throw new InvalidOperationException("EntityProcessor: Tried to enable an unknown entity.");
 
@@ -170,7 +189,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             // If forceRemove is true, no need to check if entity matches.
             bool entityMatch = !forceRemove && EntityMatch(entity);
-            T entityData;
+            TData entityData;
             bool entityAdded = matchingEntities.TryGetValue(entity, out entityData);
 
             if (entityMatch && !entityAdded)
@@ -183,12 +202,40 @@ namespace SiliconStudio.Xenko.Engine
                     if (!reentrancyCheck.Add(entity))
                         return;
                 }
-                
-                // Need to add entity
-                entityData = GenerateAssociatedData(entity);
+
+                TData previousData = null;
+                var components = entity.Components;
+                for (int i = 0; i < components.Count; i++)
+                {
+                    var component = components[i] as TComponent;
+                    if (component == null)
+                    {
+                        continue;
+                    }
+
+                    // Need to add entity
+                    var data = GenerateAssociatedData(entity, component);
+
+                    if (entityData == null)
+                    {
+                        entityData = data;
+                    }
+
+                    if (previousData != null)
+                    {
+                        previousData.Next = data;
+                    }
+                    OnEntityAdding(entity, data);
+
+                    previousData = data;
+                }
+                // Clear the last next entry
+                if (previousData != null)
+                {
+                    previousData.Next = null;
+                }
 
                 processors.Add(this);
-                OnEntityAdding(entity, entityData);
                 matchingEntities.Add(entity, entityData);
 
                 // If entity was enabled, add it to enabled entity list
@@ -203,7 +250,12 @@ namespace SiliconStudio.Xenko.Engine
             else if (entityAdded && !entityMatch)
             {
                 // Need to be removed
-                OnEntityRemoved(entity, entityData);
+                var current = entityData;
+                while (current != null)
+                {
+                    OnEntityRemoved(entity, current);
+                    current = (TData)current.Next;
+                }
                 processors.SwapRemove(this);
 
                 // Remove from enabled and matching entities
@@ -212,70 +264,121 @@ namespace SiliconStudio.Xenko.Engine
             }
             else if (entityMatch) // && entityMatch
             {
-                // one of the components of the entity changed we need to regenerate the AssociatedData
-                if (!IsAssociatedDataValid(entity, entityData))
-                {
-                    OnEntityRemoved(entity, entityData);
-                    entityData = GenerateAssociatedData(entity);
-                    OnEntityAdding(entity, entityData);
+                tempDatas.Clear();
+                tempComponents.Clear();
 
-                    matchingEntities[entity] = entityData;
-                    if (EntityManager.IsEnabled(entity))
-                        enabledEntities[entity] = entityData;
+                // Compute the list of associated data datas 
+                var components = entity.Components;
+                for (int i = 0; i < components.Count; i++)
+                {
+                    var component = components[i] as TComponent;
+                    if (component == null)
+                    {
+                        continue;
+                    }
+                    tempComponents.Add(component);
+                    tempDatas.Add(null);
                 }
+
+                // Iterate on the list of previous datas and match them with current components
+                int minIndex = 0;
+                var dataItem = entityData;
+                while (dataItem != null)
+                {
+                    var index = tempComponents.IndexOf(dataItem.Component, minIndex);
+                    if (index < 0)
+                    {
+                        OnEntityRemoved(entity, dataItem);
+                    }
+                    else
+                    {
+                        tempDatas[index] = dataItem;
+                        if (minIndex == index)
+                        {
+                            minIndex++;
+                        }
+                    }
+                    dataItem = (TData)dataItem.Next;
+                }
+
+                // Fill the gaps for new components, check if we need to update associated data if component was updated
+                var count = tempDatas.Count;
+                TData previousData = null;
+                for (int i = 0; i < count; i++)
+                {
+                    var component = (TComponent)tempComponents[i];
+                    var data = tempDatas[i];
+                    if (data == null)
+                    {
+                        data = GenerateAssociatedData(entity, component);
+                        OnEntityAdding(entity, data);
+                    }
+                    else
+                    {
+                        if (!IsAssociatedDataValid(entity, component, data))
+                        {
+                            OnEntityRemoved(entity, data);
+                            data = GenerateAssociatedData(entity, component);
+                            tempDatas[i] = data;
+                            OnEntityAdding(entity, data);
+                        }
+                    }
+                    if (previousData != null)
+                    {
+                        previousData.Next = data;
+                    }
+                    previousData = data;
+                }
+                // Clear the last next entry
+                if (previousData != null)
+                {
+                    previousData.Next = null;
+                }
+
+                var firstData = tempDatas.FirstOrDefault();
+                matchingEntities[entity] = firstData;
+                if (EntityManager.IsEnabled(entity))
+                    enabledEntities[entity] = firstData;
+
+                // Don't keep any references
+                tempDatas.Clear();
+                tempComponents.Clear();
             }
         }
 
         /// <summary>Generates associated data to the given entity.</summary>
         /// Called right before <see cref="OnEntityAdding"/>.
         /// <param name="entity">The entity.</param>
+        /// <param name="component"></param>
         /// <returns>The associated data.</returns>
-        protected abstract T GenerateAssociatedData(Entity entity);
+        protected abstract TData GenerateAssociatedData(Entity entity, TComponent component);
 
         /// <summary>Checks if the current associated data is valid, or if readding the entity is required.</summary>
         /// <param name="entity">The entity.</param>
+        /// <param name="component"></param>
         /// <param name="associatedData">The associated data.</param>
         /// <returns>True if the change in associated data requires the entity to be readded, false otherwise.</returns>
-        protected virtual bool IsAssociatedDataValid(Entity entity, T associatedData)
+        protected virtual bool IsAssociatedDataValid(Entity entity, TComponent component, TData associatedData)
         {
-            return GenerateAssociatedData(entity).Equals(associatedData);
+            return GenerateAssociatedData(entity, component).Equals(associatedData);
         }
 
         protected virtual bool EntityMatch(Entity entity)
         {
-            return RequiredKeys.All(x => entity.Components.Get(x) != null);
+            return RequiredTypes.All(x => entity.Components.Any(t => x.IsAssignableFrom(t.GetType())));
         }
-
-        protected virtual void EntityReadd(Entity entity)
-        {
-            T data;
-            if (matchingEntities.TryGetValue(entity, out data))
-            {
-                try
-                {
-                    OnEntityRemoved(entity, data);
-                    OnEntityAdding(entity, data);
-                }
-                catch (Exception)
-                {
-                    enabledEntities.Remove(entity);
-                    matchingEntities.Remove(entity);
-                    throw new Exception("Error during entity readd.");
-                }
-            }
-        }
-        
+       
         /// <summary>Run when a matching entity is added to this entity processor.</summary>
         /// <param name="entity">The entity.</param>
         /// <param name="data">  The associated data.</param>
-        protected virtual void OnEntityAdding(Entity entity, T data)
+        protected virtual void OnEntityAdding(Entity entity, TData data)
         {
         }
 
         /// <summary>Run when a matching entity is removed from this entity processor.</summary>
         /// <param name="entity">The entity.</param>
         /// <param name="data">  The associated data.</param>
-        protected virtual void OnEntityRemoved(Entity entity, T data)
+        protected virtual void OnEntityRemoved(Entity entity, TData data)
         {
         }
     }
