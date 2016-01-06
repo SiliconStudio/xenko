@@ -50,6 +50,9 @@ namespace SiliconStudio.Xenko.Particles
         {
             return false;
         }
+        [DataMember(1)]
+        [Display("Offset")]
+        public ParticleLocator ParticleLocator { get; set; } = new ParticleLocator();
 
         /// <summary>
         /// A list of fields required by the module to operate properly.
