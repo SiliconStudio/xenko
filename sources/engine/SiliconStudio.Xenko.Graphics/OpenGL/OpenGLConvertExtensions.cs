@@ -289,10 +289,9 @@ namespace SiliconStudio.Xenko.Graphics
                     case PixelFormat.R32G32B32A32_Float:
                     case PixelFormat.D32_Float:
                         throw new NotSupportedException(String.Format("Texture format {0} not supported", inputFormat));
-                    case PixelFormat.D24_UNorm_S8_UInt:
-                        if (!(graphicsDevice.HasDepth24 && graphicsDevice.HasPackedDepthStencilExtension))
-                            throw new NotSupportedException(String.Format("Texture format {0} not supported", inputFormat));
-                        break;
+
+                    // NOTE: We always allow PixelFormat.D24_UNorm_S8_UInt.
+                    // If it is not supported we will fall back to separate D24/D16 and S8 resources when creating a texture.
                 }
             }
 #endif
