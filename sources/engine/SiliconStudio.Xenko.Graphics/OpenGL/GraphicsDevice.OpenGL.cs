@@ -2246,7 +2246,8 @@ namespace SiliconStudio.Xenko.Graphics
                 deviceCreationWindowInfo = windowInfo;
 
                 // We don't want context to be set or it might collide with our internal use to create async resources
-                gameWindow.AutoSetContextOnRenderFrame = false;
+                // TODO: Reenabled, since the context seems to change otherwise. Do we need this in the first place, since we only want a single context?
+                //gameWindow.AutoSetContextOnRenderFrame = false;
             }
             else
             {
