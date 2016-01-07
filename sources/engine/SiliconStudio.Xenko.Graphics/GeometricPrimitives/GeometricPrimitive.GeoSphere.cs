@@ -298,6 +298,10 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
 
                         for (int i = 0; i < preCount; ++i)
                         {
+                            // Poles will be fixed separately
+                            if (i == southPoleIndex || i == northPoleIndex)
+                                continue;
+
                             // This vertex is on the prime meridian if position.x and texcoord.u are both zero (allowing for small epsilon).
                             bool isOnPrimeMeridian = MathUtil.WithinEpsilon(vertices[i].Position.X, 0, XMVectorSplatEpsilon)
                                                      && MathUtil.WithinEpsilon(vertices[i].TextureCoordinate.X, 0, XMVectorSplatEpsilon);
