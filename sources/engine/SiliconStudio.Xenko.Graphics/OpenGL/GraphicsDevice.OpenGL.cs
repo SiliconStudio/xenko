@@ -2504,7 +2504,7 @@ namespace SiliconStudio.Xenko.Graphics
         }
 #endif
 
-        internal struct FBOKey
+        internal struct FBOKey : IEquatable<FBOKey>
         {
             public readonly Texture DepthStencilBuffer;
             public readonly Texture[] RenderTargets;
@@ -2530,12 +2530,8 @@ namespace SiliconStudio.Xenko.Graphics
                 RenderTargets = LastRenderTarget != 0 ? renderTargets : null;
             }
 
-            public override bool Equals(object obj)
+            public bool Equals(FBOKey obj2)
             {
-                if (!(obj is FBOKey)) return false;
-
-                var obj2 = (FBOKey)obj;
-
                 if (obj2.DepthStencilBuffer != DepthStencilBuffer) return false;
 
                 // Should have same number of render targets
@@ -2548,6 +2544,15 @@ namespace SiliconStudio.Xenko.Graphics
                         return false;
 
                 return true;
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (!(obj is FBOKey)) return false;
+
+                var obj2 = (FBOKey)obj;
+
+                return Equals(obj2);
             }
 
             public override int GetHashCode()
