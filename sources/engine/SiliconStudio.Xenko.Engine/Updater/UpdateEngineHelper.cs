@@ -48,7 +48,6 @@ namespace SiliconStudio.Xenko.Updater
         static int ComputeArrayFirstElementOffset()
         {
             var testArray = new int[1];
-            int result = 0;
             fixed (int* testArrayStart = testArray)
             {
                 var testArrayObjectStart = ObjectToPtr(testArray);
