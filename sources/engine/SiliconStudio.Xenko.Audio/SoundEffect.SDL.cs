@@ -1,6 +1,8 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS && !SILICONSTUDIO_XENKO_SOUND_SDL
+#if SILICONSTUDIO_XENKO_SOUND_SDL
+
+using System;
 
 namespace SiliconStudio.Xenko.Audio
 {
@@ -8,11 +10,12 @@ namespace SiliconStudio.Xenko.Audio
     {
         private void AdaptAudioDataImpl()
         {
-            // Nothing to do here. Audio input of different sampling rate is correctly handle by the Windows OS
+            throw new NotImplementedException();
         }
 
         private void DestroyImpl()
         {
+            throw new NotImplementedException();
         }
     }
 }

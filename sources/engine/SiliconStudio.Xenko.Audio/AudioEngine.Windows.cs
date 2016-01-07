@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS
+#if SILICONSTUDIO_PLATFORM_WINDOWS && !SILICONSTUDIO_XENKO_SOUND_SDL
 
 using System;
 
@@ -11,7 +11,7 @@ using SharpDX.XAudio2;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    public partial class AudioEngine
+    public abstract class AudioEngineWindows : AudioEngine
     {
         internal XAudio2 XAudio2;
 
@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Audio
 
         #region Implementation of the IDisposable Interface
 
-        private void DestroyImpl()
+        internal override void DestroyAudioEngine()
         {
             if (MasteringVoice != null)
             {
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Audio
                 XAudio2 = null;
             }
 
-            PlatformSpecificDispose();
+            DisposeImpl();
 
             if (mediaEngineStarted && nbOfAudioEngineInstances == 0)
             {
@@ -47,13 +47,23 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
+        /// <summary>
+        /// Windows specific implementation of Dispose
+        /// </summary>
+        internal abstract void DisposeImpl();
+
+        #endregion
+
+        #region Windows abstractions
+        internal abstract void InitImpl();
+
         #endregion
 
         #region Audio Hardware Selection
 
         // This region is currently nor implemented nor exposed to the client
 
-        private void AudioEngineImpl(AudioDevice device)
+        internal override void InitializeAudioEngine(AudioDevice device)
         {
             try
             {
@@ -71,7 +81,7 @@ namespace SiliconStudio.Xenko.Audio
                     mediaEngineStarted = true;
                 }
 
-                PlatformSpecificInit();
+                InitImpl();
             }
             catch (DllNotFoundException exp)
             {
@@ -106,16 +116,6 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         #endregion
-
-        private void PauseAudioPlatformSpecific()
-        {
-            // nothing to do for windows
-        }
-
-        private void ResumeAudioPlatformSpecific()
-        {
-            // nothing to do for windows
-        }
     }
 }
 

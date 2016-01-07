@@ -165,6 +165,7 @@
   <PropertyGroup>
     <DefineConstants Condition="'$(SiliconStudioRuntimeDefines)' != ''">$(DefineConstants);$(SiliconStudioRuntimeDefines)</DefineConstants>
     <DefineConstants Condition="'$(SiliconStudioUIDefines)' != ''">$(DefineConstants);$(SiliconStudioUIDefines)</DefineConstants>
+    <DefineConstants Condition="'$(SiliconStudioAudio)' == 'SDL'">$(DefineConstants);SILICONSTUDIO_XENKO_SOUND_SDL</DefineConstants>
   </PropertyGroup>
   
   <!-- Signing -->

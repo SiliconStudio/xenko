@@ -37,7 +37,7 @@ goto exit
 
 :ArgsDone
 set XXMSBUILD="\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
-set _option=/nologo /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="Mixed Platforms" /p:SiliconStudioPackageBuild=%__SkipTestBuild%
+set _option=/nologo /nr:false /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="Mixed Platforms" /p:SiliconStudioPackageBuild=%__SkipTestBuild%
 
 set Project=Xenko.sln
 %XXMSBUILD%  %_option% %Project%
