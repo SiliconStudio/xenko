@@ -308,7 +308,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
 
                                 // copy this vertex, correct the texture coordinate, and add the vertex
                                 VertexPositionNormalTexture v = vertices[i];
-                                v.TextureCoordinate.X = 1.0f;
+                                v.TextureCoordinate.X = uScale;
                                 vertices.Add(v);
 
                                 // Now find all the triangles which contain this vertex and update them if necessary
@@ -339,8 +339,8 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
                                     }
 
                                     // check the other two vertices to see if we might need to fix this triangle
-                                    if (Math.Abs(vertices[*triIndex0].TextureCoordinate.X - vertices[*triIndex1].TextureCoordinate.X) > 0.5f ||
-                                        Math.Abs(vertices[*triIndex0].TextureCoordinate.X - vertices[*triIndex2].TextureCoordinate.X) > 0.5f)
+                                    if (Math.Abs(vertices[*triIndex0].TextureCoordinate.X - vertices[*triIndex1].TextureCoordinate.X) > 0.5f * uScale ||
+                                        Math.Abs(vertices[*triIndex0].TextureCoordinate.X - vertices[*triIndex2].TextureCoordinate.X) > 0.5f * uScale)
                                     {
                                         // yep; replace the specified index to point to the new, corrected vertex
                                         indices[j + 0] = newIndex;
