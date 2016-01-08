@@ -13,6 +13,9 @@ namespace SiliconStudio.Xenko.Particles.Modules
     [Display("Collider")]
     public class UpdaterCollider : ParticleUpdater
     {
+        [DataMemberIgnore]
+        public override bool IsPostUpdater => true;
+
         /// <summary>
         /// Shows if the collider shape is solid on the inside or no
         /// </summary>

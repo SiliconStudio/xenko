@@ -62,7 +62,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <userdoc>
         /// Spawners define when, how and how many particles are spawned withing this Emitter. There can be several of them.
         /// </userdoc>
-        [DataMember(30)]
+        [DataMember(55)]
         [Display("Spawners")]
         [NotNullItems]
         [MemberCollection(CanReorderItems = true)]
@@ -265,6 +265,8 @@ namespace SiliconStudio.Xenko.Particles
             ApplyParticleUpdaters(dt);
 
             SpawnNewParticles(dt);
+
+            ApplyParticlePostUpdaters(dt);
         }
 
         [DataMemberIgnore]
@@ -403,7 +405,20 @@ namespace SiliconStudio.Xenko.Particles
         {
             foreach (var updater in Updaters)
             {
-                if (updater.Enabled)
+                if (updater.Enabled && !updater.IsPostUpdater)
+                    updater.Update(dt, pool);
+            }
+        }
+
+        /// <summary>
+        /// Should be called after <see cref="SpawnNewParticles"/> to ensure ALL particles are updated, not only the old ones
+        /// </summary>
+        /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>
+        private void ApplyParticlePostUpdaters(float dt)
+        {
+            foreach (var updater in Updaters)
+            {
+                if (updater.Enabled && updater.IsPostUpdater)
                     updater.Update(dt, pool);
             }
         }
