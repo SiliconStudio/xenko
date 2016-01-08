@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataSerializer(typeof(EntityComponent.Serializer))]
     [DataContract]
-    public abstract class EntityComponent : ComponentBase, IEntityComponentNode
+    public abstract class EntityComponent : IEntityComponentNode
     {
         /// <summary>
         /// Gets or sets the owner entity.
