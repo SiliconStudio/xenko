@@ -29,11 +29,23 @@ namespace SiliconStudio.Xenko.Particles.Modules
             // A force field operates over the particle's position and velocity, updating them as required
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.Velocity);
+            RequiredFields.Add(ParticleFields.Life);
 
             // Test purposes only
-            RequiredFields.Add(ParticleFields.Color);
+            //            RequiredFields.Add(ParticleFields.Color);
         }
 
+
+        /// <summary>
+        /// Kill particles when they collide with the shape
+        /// </summary>
+        /// <userdoc>
+        /// Kill particles when they collide with the shape
+        /// </userdoc>
+        [DataMember(60)]
+        [Display("Kill particles")]
+        public bool KillParticles { get; set; } = false;
+        
 
         /// <summary>
         /// How much of the vertical (normal-oriented) kinetic energy is preserved after impact
@@ -68,7 +80,8 @@ namespace SiliconStudio.Xenko.Particles.Modules
 
             var posField = pool.GetField(ParticleFields.Position);
             var velField = pool.GetField(ParticleFields.Velocity);
-            var colField = pool.GetField(ParticleFields.Color);
+//          var colField = pool.GetField(ParticleFields.Color);
+            var lifeField = pool.GetField(ParticleFields.Life);
 
             foreach (var particle in pool)
             {
@@ -100,6 +113,16 @@ namespace SiliconStudio.Xenko.Particles.Modules
                         verticalIncidentVelocity * ((verIncidentCoef > 0) ? Restitution : -Restitution);
 
                     (*((Vector3*)particle[velField])) = particleVel;
+
+
+                    // TODO Maybe set some collision flags if other calculations depend on them
+
+                    // Possibly kill the particle
+                    if (KillParticles)
+                    {
+                        // Don't set the particle's life directly to 0 just yet - it might need to spawn other particles on impact
+                        (*((float*)particle[lifeField])) = MathUtil.ZeroTolerance;
+                    }
                 }
             }
         }
