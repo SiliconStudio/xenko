@@ -26,11 +26,14 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private Texture displayedCubemap;
 
         private LambertianPrefilteringSH lamberFilter;
+        private LambertianPrefilteringSHNoCompute lamberFilterNoCompute;
         private SphericalHarmonicsRendererEffect renderSHEffect;
 
         private Texture outputCubemap;
 
         private bool shouldPrefilter = true;
+
+        private bool useComputeShader;
 
         private Int2 screenSize = new Int2(768, 1024);
 
@@ -38,7 +41,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestLambertPrefilteringSH()
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
         }
@@ -51,6 +54,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             drawEffectContext = RenderContext.GetShared(Services);
             lamberFilter = new LambertianPrefilteringSH(drawEffectContext);
+            lamberFilterNoCompute = new LambertianPrefilteringSHNoCompute(drawEffectContext);
             renderSHEffect = new SphericalHarmonicsRendererEffect();
             renderSHEffect.Initialize(drawEffectContext);
 
@@ -65,11 +69,21 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (!shouldPrefilter)
                 return;
 
-            lamberFilter.HarmonicOrder = 5;
-            lamberFilter.RadianceMap = inputCubemap;
-            lamberFilter.Draw();
+            if (useComputeShader)
+            { 
+                lamberFilter.HarmonicOrder = 5;
+                lamberFilter.RadianceMap = inputCubemap;
+                lamberFilter.Draw();
+                renderSHEffect.InputSH = lamberFilter.PrefilteredLambertianSH;
+            }
+            else
+            {
+                lamberFilterNoCompute.HarmonicOrder = 5;
+                lamberFilterNoCompute.RadianceMap = inputCubemap;
+                lamberFilterNoCompute.Draw();
+                renderSHEffect.InputSH = lamberFilterNoCompute.PrefilteredLambertianSH;
+            }
 
-            renderSHEffect.InputSH = lamberFilter.PrefilteredLambertianSH;
             renderSHEffect.SetOutput(outputCubemap);
             renderSHEffect.Draw();
         }
@@ -128,6 +142,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             if (Input.IsKeyPressed(Keys.Space))
                 shouldPrefilter = !shouldPrefilter;
+
+            if (Input.IsKeyPressed(Keys.C))
+                useComputeShader = !useComputeShader;
 
             if (Input.IsKeyPressed(Keys.I))
                 displayedCubemap = inputCubemap;
