@@ -471,7 +471,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                         });
                     }
                     var elapsedAdd = clock.ElapsedMilliseconds;
-                    totalTime += elapsedAdd;
+                    stepTime += elapsedAdd;
                     clock.Restart();
 
                     foreach (var entity in entityManager)
@@ -489,7 +489,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                     }
 
                     var elapsedRemove = clock.ElapsedMilliseconds;
-                    totalTime += elapsedRemove;
+                    stepTime += elapsedRemove;
                     DumpGC($"\t[{j}] ElapsedAdd: {elapsedAdd} ElapsedRemove: {elapsedRemove} ");
                 }
             }
