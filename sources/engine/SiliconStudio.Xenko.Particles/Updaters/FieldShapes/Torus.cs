@@ -60,12 +60,12 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         [DataMemberIgnore]
         private Vector3 fieldSize;
 
-        public override void PreUpdateField(Vector3 fieldPosition, Quaternion fieldRotation, Vector3 fieldSize)
+        public override void PreUpdateField(Vector3 position, Quaternion rotation, Vector3 size)
         {
-            this.fieldSize = fieldSize * BigRadius;
-            this.fieldPosition = fieldPosition;
-            this.fieldRotation = fieldRotation;
-            inverseRotation = new Quaternion(-fieldRotation.X, -fieldRotation.Y, -fieldRotation.Z, fieldRotation.W);
+            this.fieldSize = size * BigRadius;
+            this.fieldPosition = position;
+            this.fieldRotation = rotation;
+            inverseRotation = new Quaternion(-rotation.X, -rotation.Y, -rotation.Z, rotation.W);
         }
 
         public override float GetDistanceToCenter(
@@ -101,6 +101,14 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             aroundAxis = Vector3.Cross(awayAxis, alongAxis);
 
             return totalStrength;
+        }
+
+        public override bool IsPointInside(Vector3 particlePosition, out Vector3 surfacePoint, out Vector3 surfaceNormal)
+        {
+            // TODO FIXME
+            surfacePoint = new Vector3(0, 0, 0);
+            surfaceNormal = new Vector3(0, 1, 0);
+            return false;
         }
 
     }

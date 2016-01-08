@@ -68,18 +68,18 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         public float HalfSideZ { get { return halfSideZ; } set { halfSideZ = (value > MathUtil.ZeroTolerance) ? value : MathUtil.ZeroTolerance; } }
         private float halfSideZ = 1f;
 
-        public override void PreUpdateField(Vector3 fieldPosition, Quaternion fieldRotation, Vector3 fieldSize)
+        public override void PreUpdateField(Vector3 position, Quaternion rotation, Vector3 size)
         {
-            this.fieldSize = fieldSize;
-            this.fieldPosition = fieldPosition;
-            this.fieldRotation = fieldRotation;
-            inverseRotation = new Quaternion(-fieldRotation.X, -fieldRotation.Y, -fieldRotation.Z, fieldRotation.W);
+            this.fieldSize = size;
+            this.fieldPosition = position;
+            this.fieldRotation = rotation;
+            inverseRotation = new Quaternion(-rotation.X, -rotation.Y, -rotation.Z, rotation.W);
 
             mainAxis = new Vector3(0, 1, 0);
-            fieldRotation.Rotate(ref mainAxis);
-    }
+            rotation.Rotate(ref mainAxis);
+        }
 
-    public override float GetDistanceToCenter(
+        public override float GetDistanceToCenter(
             Vector3 particlePosition, Vector3 particleVelocity,
             out Vector3 alongAxis, out Vector3 aroundAxis, out Vector3 awayAxis)
         {
@@ -105,5 +105,14 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
             return maxDist;
         }
+
+        public override bool IsPointInside(Vector3 particlePosition, out Vector3 surfacePoint, out Vector3 surfaceNormal)
+        {
+            // TODO FIXME
+            surfacePoint = new Vector3(0, 0, 0);
+            surfaceNormal = new Vector3(0, 1, 0);
+            return false;
+        }
+
     }
 }
