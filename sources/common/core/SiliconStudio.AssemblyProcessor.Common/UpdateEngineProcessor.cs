@@ -118,6 +118,7 @@ namespace SiliconStudio.AssemblyProcessor
             mainPrepareMethod.CustomAttributes.Add(new CustomAttribute(context.Assembly.MainModule.ImportReference(moduleInitializerAttribute.GetConstructors().Single(x => !x.IsStatic))));
 
             // Emit serialization code for all the types we care about
+            var processedTypes = new HashSet<TypeDefinition>(TypeReferenceEqualityComparer.Default);
             foreach (var serializableType in context.SerializableTypesProfiles.SelectMany(x => x.Value.SerializableTypes))
             {
                 // Special case: when processing Xenko.Engine assembly, we automatically add dependent assemblies types too
@@ -126,6 +127,10 @@ namespace SiliconStudio.AssemblyProcessor
 
                 var typeDefinition = serializableType.Key as TypeDefinition;
                 if (typeDefinition == null)
+                    continue;
+
+                // Ignore already processed types
+                if (!processedTypes.Add(typeDefinition))
                     continue;
 
                 try
