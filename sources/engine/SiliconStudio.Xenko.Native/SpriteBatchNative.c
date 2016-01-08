@@ -3,13 +3,6 @@
 
 #include "XenkoNative.h"
 
-//temporary work around for some android platforms
-#undef abs
-int abs(int x)
-{
-	return (x < 0) ? -x : x;
-}
-
 void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertexPointer, void* indexPointer, int vertexStartOffset)
 {
 	float deltaX = 1.0f / drawInfo->TextureSize.X;
