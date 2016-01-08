@@ -91,7 +91,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 // -------------------------------------------------------------------
                 // Calculate Diffuse prefiltering
                 // -------------------------------------------------------------------
-                var lamberFiltering = new LambertianPrefilteringSH(context.DrawEffectContext);
+                var lamberFiltering = new LambertianPrefilteringSHNoCompute(context.DrawEffectContext);
 
 
                 lamberFiltering.HarmonicOrder = (int)asset.DiffuseSHOrder;
