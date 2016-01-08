@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
+using System.Linq;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -57,16 +58,19 @@ namespace SiliconStudio.Core.Reflection
         public static void RemoveFrom(object instance)
         {
             if (instance == null) throw new ArgumentNullException(nameof(instance));
-            var shadow = ShadowObject.GetShadow(instance);
+            var shadow = ShadowObject.Get(instance);
             if (shadow == null)
             {
                 return;
             }
 
             // Remove override information from an object
-            foreach (var attributes in shadow.Members)
+            foreach (var memberKey in shadow.Keys.ToList())
             {
-                attributes.Attributes.Remove(OverrideKey);
+                if (memberKey.Item2 == OverrideKey)
+                {
+                    shadow.Remove(memberKey);
+                }
             }
         }
     }
