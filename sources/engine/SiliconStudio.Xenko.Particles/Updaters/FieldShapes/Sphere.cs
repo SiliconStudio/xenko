@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.DebugDraw;
@@ -45,15 +44,15 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
         public float Radius { get { return radius; } set { radius = (value > MathUtil.ZeroTolerance) ? value : MathUtil.ZeroTolerance; } }
         private float radius = 1f;
 
-        public override void PreUpdateField(Vector3 fieldPosition, Quaternion fieldRotation, Vector3 fieldSize)
+        public override void PreUpdateField(Vector3 position, Quaternion rotation, Vector3 size)
         {
-            this.fieldSize = fieldSize;
-            this.fieldPosition = fieldPosition;
-            this.fieldRotation = fieldRotation;
-            inverseRotation = new Quaternion(-fieldRotation.X, -fieldRotation.Y, -fieldRotation.Z, fieldRotation.W);
+            fieldSize = size;
+            fieldPosition = position;
+            fieldRotation = rotation;
+            inverseRotation = new Quaternion(-rotation.X, -rotation.Y, -rotation.Z, rotation.W);
 
             mainAxis = new Vector3(0, 1, 0);
-            fieldRotation.Rotate(ref mainAxis);
+            rotation.Rotate(ref mainAxis);
         }
 
         public override float GetDistanceToCenter(
@@ -71,7 +70,6 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             aroundAxis = Vector3.Cross(alongAxis, awayAxis);
 
             particlePosition -= fieldPosition;
-            var inverseRotation = new Quaternion(-fieldRotation.X, -fieldRotation.Y, -fieldRotation.Z, fieldRotation.W);
             inverseRotation.Rotate(ref particlePosition);
             particlePosition /= fieldSize;
 
@@ -80,6 +78,32 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             // End of code for Sphere
 
             return maxDist;
+        }
+
+        public override bool IsPointInside(Vector3 particlePosition, out Vector3 surfacePoint, out Vector3 surfaceNormal)
+        {
+            particlePosition -= fieldPosition;
+            inverseRotation.Rotate(ref particlePosition);
+            particlePosition /= fieldSize;
+
+            var maxDist = particlePosition.Length() / radius;
+            if (maxDist <= MathUtil.ZeroTolerance)
+            {
+                surfacePoint = fieldPosition;
+                surfaceNormal = new Vector3(0, 1, 0);
+                return true;
+            }
+
+            surfaceNormal = particlePosition / maxDist;
+            fieldRotation.Rotate(ref surfaceNormal);
+            surfaceNormal *= fieldSize;
+
+            surfacePoint = surfaceNormal;
+            surfacePoint += fieldPosition;
+
+            surfaceNormal.Normalize();
+
+            return (maxDist <= 1);
         }
     }
 }

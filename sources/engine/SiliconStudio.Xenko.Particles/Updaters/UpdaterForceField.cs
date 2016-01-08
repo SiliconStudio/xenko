@@ -66,6 +66,17 @@ namespace SiliconStudio.Xenko.Particles.Modules
         [Display("Repulsive force")]
         public float ForceRepulsive { get; set; } = 1f;
 
+
+        /// <summary>
+        /// The fixed force doesn't scale or rotate with the the bounding shape
+        /// </summary>
+        /// <userdoc>
+        /// The fixed force doesn't scale or rotate with the the bounding shape
+        /// </userdoc>
+        [DataMember(100)]
+        [Display("Fixed force")]
+        public Vector3 ForceFixed { get; set; } = new Vector3(0, 0, 0);
+
         public UpdaterForceField()
         {
             // A force field operates over the particle's position and velocity, updating them as required
@@ -108,7 +119,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
                 }
                 forceMagnitude *= dt * parentScale;
 
-                var totalForceVector = 
+                var totalForceVector = ForceFixed + 
                     alongAxis  * ForceDirected +
                     aroundAxis * ForceVortex +
                     awayAxis * ForceRepulsive;

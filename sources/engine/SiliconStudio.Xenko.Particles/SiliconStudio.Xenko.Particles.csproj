@@ -100,6 +100,7 @@
     <Compile Include="Updaters\FieldShapes\FieldShape.cs" />
     <Compile Include="Updaters\FieldShapes\Sphere.cs" />
     <Compile Include="Updaters\FieldShapes\Torus.cs" />
+    <Compile Include="Updaters\UpdaterCollider.cs" />
     <Compile Include="Updaters\UpdaterForceField.cs" />
     <Compile Include="Updaters\UpdaterGravity.cs" />
     <Compile Include="Updaters\UpdaterOldPosition.cs" />
