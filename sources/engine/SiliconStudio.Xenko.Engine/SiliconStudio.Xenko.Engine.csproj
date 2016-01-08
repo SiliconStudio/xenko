@@ -109,6 +109,25 @@
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
+    <Compile Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringNoCompute.cs" />
+    <Compile Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputeEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LambertianPrefilteringSHNoComputeEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputePass1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LambertianPrefilteringSHNoComputePass1.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputePass2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2308,6 +2327,18 @@
     <None Include="Rendering\BRDF\BRDFMicrofacet.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFMicrofacet.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputeEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LambertianPrefilteringSHNoComputeEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputePass1.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LambertianPrefilteringSHNoComputePass1.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputePass2.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LambertianPrefilteringSHNoComputePass2.cs</LastGenOutput>
     </None>
     <None Include="Rendering\Images\ColorTransforms\LuminanceToChannelShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
