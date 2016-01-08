@@ -179,14 +179,15 @@ namespace SiliconStudio.AssemblyProcessor
                 }
 
                 var genericInstanceType = serializableType.Key as GenericInstanceType;
-                if (genericInstanceType == null)
+                if (genericInstanceType != null)
                 {
-                    var updateMethod = GetOrCreateUpdateType(typeDefinition.Module.Assembly, false)?.Methods.FirstOrDefault(x => x.Name == ComputeUpdateMethodName(typeDefinition));
+                    var expectedUpdateMethodName = ComputeUpdateMethodName(typeDefinition);
+                    var updateMethod = GetOrCreateUpdateType(typeDefinition.Module.Assembly, false)?.Methods.FirstOrDefault(x => x.Name == expectedUpdateMethodName && x.HasGenericParameters && x.GenericParameters.Count == genericInstanceType.GenericParameters.Count);
 
                     // If nothing was found in main assembly, also look in SiliconStudio.Xenko.Engine assembly, just in case (it might defines some shared/corlib types -- currently not the case)
                     if (updateMethod == null)
                     {
-                        updateMethod = GetOrCreateUpdateType(siliconStudioXenkoEngineAssembly, false)?.Methods.FirstOrDefault(x => x.Name == ComputeUpdateMethodName(typeDefinition));
+                        updateMethod = GetOrCreateUpdateType(siliconStudioXenkoEngineAssembly, false)?.Methods.FirstOrDefault(x => x.Name == expectedUpdateMethodName && x.HasGenericParameters && x.GenericParameters.Count == genericInstanceType.GenericParameters.Count);
                     }
 
                     if (updateMethod != null)
