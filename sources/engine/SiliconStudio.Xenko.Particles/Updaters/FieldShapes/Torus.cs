@@ -105,11 +105,36 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
         public override bool IsPointInside(Vector3 particlePosition, out Vector3 surfacePoint, out Vector3 surfaceNormal)
         {
-            // TODO FIXME
-            surfacePoint = new Vector3(0, 0, 0);
-            surfaceNormal = new Vector3(0, 1, 0);
-            return false;
-        }
+            particlePosition -= fieldPosition;
+            inverseRotation.Rotate(ref particlePosition);
+            particlePosition /= fieldSize;
 
+            var projectedPosition = new Vector3(particlePosition.X, 0, particlePosition.Z);
+            var distanceFromOrigin = projectedPosition.Length();
+            projectedPosition = (distanceFromOrigin > MathUtil.ZeroTolerance) ? (projectedPosition / distanceFromOrigin) : projectedPosition;
+
+
+            surfaceNormal = particlePosition - projectedPosition;
+            surfacePoint = surfaceNormal;
+            var coef = surfacePoint.Length();
+
+            var isInside = (coef <= smallRadius);
+
+            coef = (coef > MathUtil.ZeroTolerance) ? smallRadius/coef : smallRadius;
+            surfacePoint *= coef;
+            surfacePoint += projectedPosition;
+
+
+            // Fix the surface point and normal to world space
+            fieldRotation.Rotate(ref surfaceNormal);
+            surfaceNormal *= fieldSize;
+            surfaceNormal.Normalize();
+
+            fieldRotation.Rotate(ref surfacePoint);
+            surfacePoint *= fieldSize;
+            surfacePoint += fieldPosition;
+
+            return isInside;
+        }
     }
 }

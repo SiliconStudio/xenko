@@ -108,10 +108,51 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
 
         public override bool IsPointInside(Vector3 particlePosition, out Vector3 surfacePoint, out Vector3 surfaceNormal)
         {
-            // TODO FIXME
-            surfacePoint = new Vector3(0, 0, 0);
-            surfaceNormal = new Vector3(0, 1, 0);
-            return false;
+            particlePosition -= fieldPosition;
+            inverseRotation.Rotate(ref particlePosition);
+            particlePosition /= fieldSize;
+
+            var maxX = Math.Abs(particlePosition.X);
+            var maxY = Math.Abs(particlePosition.Y);
+            var maxZ = Math.Abs(particlePosition.Z);
+
+            bool isInside;
+
+            if ((maxX / halfSideX >= maxY / halfSideY) && (maxX / halfSideX >= maxZ / halfSideZ))
+            {
+                // Biggest distance is on the X axis
+                surfacePoint = particlePosition * (halfSideX / maxX);
+                surfaceNormal = new Vector3(surfacePoint.X, 0, 0);
+                isInside = (maxX <= halfSideX);
+            }
+
+            else
+            if (maxY / halfSideY >= maxZ / halfSideZ)
+            {
+                // Biggest distance is on the Y axis
+                surfacePoint = particlePosition * (halfSideY / maxY);
+                surfaceNormal = new Vector3(0, surfacePoint.Y, 0);
+                isInside = (maxY <= halfSideY);
+            }
+
+            else
+            {
+                // Biggest distance is on the Z axis
+                surfacePoint = particlePosition * (halfSideZ / maxZ);
+                surfaceNormal = new Vector3(0, 0, surfacePoint.Z);
+                isInside = (maxZ <= halfSideZ);
+            }
+
+            // Fix the surface point and normal to world space
+            fieldRotation.Rotate(ref surfaceNormal);
+            surfaceNormal *= fieldSize;
+            surfaceNormal.Normalize();
+
+            fieldRotation.Rotate(ref surfacePoint);
+            surfacePoint *= fieldSize;
+            surfacePoint += fieldPosition;
+
+            return isInside;
         }
 
     }
