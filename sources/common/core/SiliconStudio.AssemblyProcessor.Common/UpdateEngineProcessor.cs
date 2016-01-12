@@ -284,6 +284,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                     il.Emit(OpCodes.Ldsfld, emptyObjectField);
                     il.Emit(OpCodes.Ldflda, context.Assembly.MainModule.ImportReference(fieldReference));
+                    il.Emit(OpCodes.Conv_I);
                     il.Emit(OpCodes.Ldsfld, emptyObjectField);
                     il.Emit(OpCodes.Conv_I);
                     il.Emit(OpCodes.Sub);
