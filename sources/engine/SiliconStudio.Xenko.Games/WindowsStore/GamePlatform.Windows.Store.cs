@@ -45,6 +45,8 @@ namespace SiliconStudio.Xenko.Games
 
         private void CurrentOnSuspending(object sender, SuspendingEventArgs suspendingEventArgs)
         {
+            var deferral = suspendingEventArgs.SuspendingOperation.GetDeferral();
+
             using (var device3 = game.GraphicsDevice.NativeDevice.QueryInterface<SharpDX.DXGI.Device3>())
             {
                 game.GraphicsDevice.ClearState();
@@ -52,6 +54,8 @@ namespace SiliconStudio.Xenko.Games
             }
 
             OnSuspend(sender, null);
+
+            deferral.Complete();
         }
 
         public override string DefaultAppDirectory
