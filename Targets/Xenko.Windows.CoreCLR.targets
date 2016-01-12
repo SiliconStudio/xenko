@@ -6,7 +6,7 @@
     -->
   <PropertyGroup>
     <!-- For the time being we hardcode the location of CoreFX to the Xenko installation -->
-    <TargetFrameworkRootPath>$(SiliconStudioXenkoDir)\externals\CoreFX</TargetFrameworkRootPath>
+    <TargetFrameworkRootPath>$(SiliconStudioXenkoDir)\deps\CoreFX</TargetFrameworkRootPath>
     <FrameworkPathOverride>$(TargetFrameworkRootPath)\CoreCLR\v5.0</FrameworkPathOverride>
   </PropertyGroup>
   <Import Project="$(TargetFrameworkRootPath)\configs\CoreCLR.CSharp.targets"/>
