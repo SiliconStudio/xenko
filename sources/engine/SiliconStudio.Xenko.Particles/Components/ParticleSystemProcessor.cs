@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Particles.Components
 
         public List<ParticleSystemComponentState> ParticleSystems { get; private set; }
 
-        internal void UpdateParticleSystem(ParticleSystemComponentState state)
+        internal void UpdateParticleSystem(ParticleSystemComponentState state, float deltaTime)
         {
             var speed = state.ParticleSystemComponent.Speed;
             var transformComponent = state.TransformComponent;
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                 Quaternion.RotationMatrix(ref rotMatrix, out particleSystem.Rotation);
             }
 
-            particleSystem.Update(0.016f * speed);
+            particleSystem.Update(deltaTime * speed);
         }
 
         /// <summary>
@@ -78,6 +78,8 @@ namespace SiliconStudio.Xenko.Particles.Components
         public override void Update(GameTime time)
         {
             base.Update(time);
+
+            float deltaTime = (float) time.Elapsed.TotalSeconds;
 
             ParticleSystems.Clear();
             foreach (var particleSystemStateKeyPair in enabledEntities)
@@ -93,7 +95,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                 }
             }
 
-            if (true || ParticleSystems.Count > 8)
+            if (ParticleSystems.Count > 8)
             {
                 TaskList.Dispatch(
                     ParticleSystems,
@@ -101,7 +103,7 @@ namespace SiliconStudio.Xenko.Particles.Components
                     8,
                     (i, particleSystemComponentState) =>
                     {
-                        UpdateParticleSystem(particleSystemComponentState);
+                        UpdateParticleSystem(particleSystemComponentState, deltaTime);
                     }
                     );
             }
@@ -109,44 +111,9 @@ namespace SiliconStudio.Xenko.Particles.Components
             {
                 foreach (var particleSystemComponentState in ParticleSystems)
                 {
-                    UpdateParticleSystem(particleSystemComponentState);
+                    UpdateParticleSystem(particleSystemComponentState, deltaTime);
                 }
             }
-
-
-            /*
-                    internal static void UpdateTransformations(FastCollection<TransformComponent> transformationComponents)
-        {
-            // To avoid GC pressure (due to lambda), parallelize only if required
-            if (transformationComponents.Count >= 1024)
-            {
-                TaskList.Dispatch(
-                    transformationComponents,
-                    8,
-                    1024,
-                    (i, transformation) =>
-                        {
-                            UpdateTransformation(transformation);
-
-                            // Recurse
-                            if (transformation.Children.Count > 0)
-                                UpdateTransformations(transformation.Children);
-                        }
-                    );
-            }
-            else
-            {
-                foreach (var transformation in transformationComponents)
-                {
-                    UpdateTransformation(transformation);
-
-                    // Recurse
-                    if (transformation.Children.Count > 0)
-                        UpdateTransformations(transformation.Children);
-                }
-            }
-        }
-            */
         }
 
         /// <summary>
