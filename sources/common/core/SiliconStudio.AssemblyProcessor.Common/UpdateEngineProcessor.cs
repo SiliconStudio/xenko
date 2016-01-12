@@ -118,6 +118,7 @@ namespace SiliconStudio.AssemblyProcessor
             mainPrepareMethod.CustomAttributes.Add(new CustomAttribute(context.Assembly.MainModule.ImportReference(moduleInitializerAttribute.GetConstructors().Single(x => !x.IsStatic))));
 
             // Emit serialization code for all the types we care about
+            var processedTypes = new HashSet<TypeDefinition>(TypeReferenceEqualityComparer.Default);
             foreach (var serializableType in context.SerializableTypesProfiles.SelectMany(x => x.Value.SerializableTypes))
             {
                 // Special case: when processing Xenko.Engine assembly, we automatically add dependent assemblies types too
@@ -126,6 +127,10 @@ namespace SiliconStudio.AssemblyProcessor
 
                 var typeDefinition = serializableType.Key as TypeDefinition;
                 if (typeDefinition == null)
+                    continue;
+
+                // Ignore already processed types
+                if (!processedTypes.Add(typeDefinition))
                     continue;
 
                 try
@@ -174,14 +179,15 @@ namespace SiliconStudio.AssemblyProcessor
                 }
 
                 var genericInstanceType = serializableType.Key as GenericInstanceType;
-                if (genericInstanceType == null)
+                if (genericInstanceType != null)
                 {
-                    var updateMethod = GetOrCreateUpdateType(typeDefinition.Module.Assembly, false)?.Methods.FirstOrDefault(x => x.Name == ComputeUpdateMethodName(typeDefinition));
+                    var expectedUpdateMethodName = ComputeUpdateMethodName(typeDefinition);
+                    var updateMethod = GetOrCreateUpdateType(typeDefinition.Module.Assembly, false)?.Methods.FirstOrDefault(x => x.Name == expectedUpdateMethodName && x.HasGenericParameters && x.GenericParameters.Count == genericInstanceType.GenericParameters.Count);
 
                     // If nothing was found in main assembly, also look in SiliconStudio.Xenko.Engine assembly, just in case (it might defines some shared/corlib types -- currently not the case)
                     if (updateMethod == null)
                     {
-                        updateMethod = GetOrCreateUpdateType(siliconStudioXenkoEngineAssembly, false)?.Methods.FirstOrDefault(x => x.Name == ComputeUpdateMethodName(typeDefinition));
+                        updateMethod = GetOrCreateUpdateType(siliconStudioXenkoEngineAssembly, false)?.Methods.FirstOrDefault(x => x.Name == expectedUpdateMethodName && x.HasGenericParameters && x.GenericParameters.Count == genericInstanceType.GenericParameters.Count);
                     }
 
                     if (updateMethod != null)
@@ -261,7 +267,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                         // Create static ctor that will initialize this object
                         var staticConstructor = new MethodDefinition(".cctor",
-                                                MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+                                                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
                                                 context.Assembly.MainModule.TypeSystem.Void);
                         var staticConstructorIL = staticConstructor.Body.GetILProcessor();
                         staticConstructorIL.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(emptyObjectField.FieldType.Resolve().GetConstructors().Single(x => !x.IsStatic && !x.HasParameters)));
