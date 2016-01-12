@@ -39,47 +39,66 @@ goto exit
 set XXMSBUILD="\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
 set _option=/nologo /nr:false /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="Mixed Platforms" /p:SiliconStudioPackageBuild=%__SkipTestBuild%
 
+set _extra_option=
+
 set Project=Xenko.sln
-%XXMSBUILD%  %_option% %Project%
-if %ERRORLEVEL% != 0 goto error
+call :compile
+if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.Direct3D.sln
-%XXMSBUILD%  %_option% %Project%
-if %ERRORLEVEL% != 0 goto error
+call :compile
+if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.Direct3D.SDL.sln
-%XXMSBUILD%  %_option% %Project%
-if %ERRORLEVEL% != 0 goto error
+call :compile
+if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.Direct3D.CoreCLR.sln
-%XXMSBUILD%  %_option% %Project%
-if %ERRORLEVEL% != 0 goto error
+call :compile
+if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.OpenGL.sln
-%XXMSBUILD%  %_option% %Project%
-if %ERRORLEVEL% != 0 goto error
+call :compile
+if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.OpenGL.CoreCLR.sln
-%XXMSBUILD%  %_option% %Project%
-if %ERRORLEVEL% != 0 goto error
+call :compile
+if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.WindowsPhone.sln
-%XXMSBUILD%  %_option% /p:Platform="WindowsPhone" %Project%
-if %ERRORLEVEL% != 0 goto error
+set _extra_option=/p:Platform="WindowsPhone"
+call :compile
+if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.WindowsStore.sln
-%XXMSBUILD%  %_option% /p:Platform="WindowsStore" %Project%
-if %ERRORLEVEL% != 0 goto error
+set _extra_option=/p:Platform="WindowsStore"
+call :compile
+if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.Windows10.sln
-%XXMSBUILD%  %_option% /p:Platform="Windows10" %Project%
-if %ERRORLEVEL% != 0 goto error
+set _extra_option=/p:Platform="Windows10"
+call :compile
+if %ERRORLEVEL% != 0 goto exit
 
 goto exit
 
-:error
-echo "Error while compiling project: " %Project%
-echo "Using command line" %XXMSBUILD% %_option% %Project%
+rem Compile our solution. The following variables needs to be set:
+rem "Project" is the solution name
+rem "_option" are the command line options
+rem "_extra_option" are the extra command line options
+:compile
+echo Compiling using command line %XXMSBUILD% %_option% %_extra_option% %Project%
+echo.
+%XXMSBUILD%  %_option% %_extra_option% %Project%
+if %ERRORLEVEL% != 0 (
+    echo Error while compiling project: %Project%
+    echo Command line was: %XXMSBUILD% %_option% %_extra_option% %Project%
+    exit /b 1
+) else (
+    echo Done compiling project: %Project%
+)
+echo.
+goto :eof
 
 :exit
 
