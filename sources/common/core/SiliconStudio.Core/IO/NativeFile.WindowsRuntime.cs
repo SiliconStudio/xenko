@@ -11,7 +11,7 @@ namespace SiliconStudio.Core.IO
 {
     public class NativeFile
     {
-        private const string KERNEL_FILE = "api-ms-win-core-file-l1-2-0.dll";
+        private const string KERNEL_FILE = "api-ms-win-core-file-l2-1-1.dll";
 
         [DllImport(KERNEL_FILE, EntryPoint = "GetFileAttributesExW", CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false)]
         [return: MarshalAs(UnmanagedType.Bool)]
