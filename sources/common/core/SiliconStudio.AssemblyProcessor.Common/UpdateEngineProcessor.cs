@@ -267,7 +267,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                         // Create static ctor that will initialize this object
                         var staticConstructor = new MethodDefinition(".cctor",
-                                                MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+                                                MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
                                                 context.Assembly.MainModule.TypeSystem.Void);
                         var staticConstructorIL = staticConstructor.Body.GetILProcessor();
                         staticConstructorIL.Emit(OpCodes.Newobj, context.Assembly.MainModule.ImportReference(emptyObjectField.FieldType.Resolve().GetConstructors().Single(x => !x.IsStatic && !x.HasParameters)));
