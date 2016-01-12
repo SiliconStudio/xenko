@@ -495,14 +495,6 @@ namespace SiliconStudio.Xenko.Particles
         private readonly Dictionary<ParticleFieldDescription, int> requiredFields;
 
         /// <summary>
-        /// Updates the mandatory required variations depending on what particle fields are available
-        /// </summary>
-        private void UpdateDefalutEffectVariations()
-        {
-            // TODO Change the vertex builder here
-        }
-
-        /// <summary>
         /// Add a particle field required by some dependent module. If the module already exists in the pool, only its reference counter is increased.
         /// </summary>
         /// <param name="description"></param>
@@ -524,8 +516,6 @@ namespace SiliconStudio.Xenko.Particles
                 return;
 
             requiredFields.Add(description, 1);
-
-            UpdateDefalutEffectVariations();
         }
 
         /// <summary>
@@ -546,8 +536,6 @@ namespace SiliconStudio.Xenko.Particles
                 pool.RemoveField(description);
 
                 requiredFields.Remove(description);
-
-                UpdateDefalutEffectVariations();
             }
 
             // This line can be reached when a AddModule was unsuccessful and the required fields should be cleaned up
@@ -558,7 +546,7 @@ namespace SiliconStudio.Xenko.Particles
         #region Rendering
 
         /// <summary>
-        /// The <see cref="ShapeBuilderBase"/> expands all living particles to vertex buffers for rendering
+        /// The <see cref="ShapeBuilders.ShapeBuilder"/> expands all living particles to vertex buffers for rendering
         /// </summary>
         /// <userdoc>
         /// The shape defines how each particle is expanded when rendered (camera-facing billboards, oriented quads, ribbons, etc.)
@@ -566,7 +554,7 @@ namespace SiliconStudio.Xenko.Particles
         [DataMember(40)]
         [Display("Shape")]
         [NotNull]
-        public ShapeBuilderBase ShapeBuilder { get; set; } = new ShapeBuilderBillboard();
+        public ShapeBuilder ShapeBuilder { get; set; } = new ShapeBuilderBillboard();
 
         /// <summary>
         /// The <see cref="ParticleMaterial"/> may update the vertex buffer, and it also applies the <see cref="Effect"/> required for rendering
@@ -603,21 +591,33 @@ namespace SiliconStudio.Xenko.Particles
             }
         }
 
-
+        /// <summary>
+        /// Render the particles contained in this emitter with the specified device and context
+        /// </summary>
+        /// <param name="device">The graphics device, used to rebuild vertex layouts and shaders if needed</param>
+        /// <param name="context">The rendering context</param>
+        /// <param name="viewMatrix">The current camera's view matrix</param>
+        /// <param name="projMatrix">The current camera's projection matrix</param>
+        /// <param name="invViewMatrix">The current camera's inverse view matrix</param>
+        /// <param name="color">Color scale (color shade) for all particles</param>
         public void Draw(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
         {
+            // Because the edit-time class and the runtime design are the same we have delayed setup for materials
+            // The first time Draw(...) is called and every time the shader or the layout change, we have to rebuild the material and possible the vertex buffer builder
             Material.Setup(device, context, viewMatrix, projMatrix, color);
             Material.ApplyEffect(device);
-
             PrepareForDraw();
 
-            // Get camera-space X and Y axes for billboards and sort the particles by depth
+
+            // Get camera-space X and Y axes for billboard expansion and sort the particles if needed
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
             var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
             depthSortVector = Vector3.Cross(unitX, unitY);
             ParticleSorter.Sort();
 
-            // Local/World emitter
+
+            // If the particles are in world space they don't need to be fixed as their coordinates are already in world space
+            // If the particles are in local space they need to be drawn in world space using the emitter's current location matrix
             var posIdentity = new Vector3(0, 0, 0);
             var rotIdentity = new Quaternion(0, 0, 0, 1);
             var scaleIdentity = 1f;
@@ -628,6 +628,9 @@ namespace SiliconStudio.Xenko.Particles
                 scaleIdentity = drawScale;
             }
 
+
+            // Prepare the vertex buffer and draw the quads (or other shapes) directly, then flush it
+            // The shape material defines the shape and vertices per particle, but the material can patch the buffer later, usually with attributes which are defined per-particle
             vertexBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
 
             vertexBuilder.StartBuffer(device, Material.Effect);
@@ -638,17 +641,7 @@ namespace SiliconStudio.Xenko.Particles
 
             Material.PatchVertexBuffer(vertexBuilder, unitX, unitY, ParticleSorter);
 
-            //if (Material.GetInputSignature() != vertexBuilder.GetInputSignature())
-            //{
-            //    return;
-            //}
-
             vertexBuilder.FlushBuffer(device);
-        }
-        
-        public int GetRequiredQuadCount()
-        {
-            return ShapeBuilder.QuadsPerParticle * pool.LivingParticles;
         }
         #endregion
 

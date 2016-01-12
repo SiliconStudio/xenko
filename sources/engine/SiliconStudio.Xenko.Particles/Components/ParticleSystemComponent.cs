@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Particles.Components
     /// Add a <see cref="ParticleSystem"/> to an <see cref="Entity"/>
     /// </summary>
     [DataContract("ParticleSystemComponent")]
-    [Display(10200, "Particle System Component", Expand = ExpandRule.Once)]
+    [Display(10200, "Particle System", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(ParticleSystemComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(ParticleSystemProcessor))]
 
@@ -30,6 +30,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// The Particle System associated with this component
         /// </userdoc>
         [DataMember(10)]
+        [Display("Source")]
         public ParticleSystem ParticleSystem
         {
             get

@@ -8,8 +8,8 @@ using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
-    [DataContract("ShapeBuilderBase")]
-    public abstract class ShapeBuilderBase
+    [DataContract("ShapeBuilder")]
+    public abstract class ShapeBuilder
     {
         public abstract int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter);
