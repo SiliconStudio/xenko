@@ -25,40 +25,62 @@
 
   <Target Name="CompileNativeClang_Windows10" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\ARM\libxenkonative.dll"  Condition="'$(SiliconStudioPlatform)' == 'Windows10'" BeforeTargets="Build">
     <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD -DWIN_EXPORT" />
-    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -Zi -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\Windows10\Windows10.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
 
     <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m64 -MD -DWIN_EXPORT" />
-    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m64 -MD -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -Zi -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m64 -MD -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\Windows10\Windows10.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
 
     <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD --target=thumbv7-windows-msvc -DWIN_EXPORT" />
-    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD --target=thumbv7-windows-msvc -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -Zi -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD --target=thumbv7-windows-msvc -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\Windows10\Windows10.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
   </Target>
 
   <Target Name="CompileNativeClang_WindowsStore" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\ARM\libxenkonative.dll"  Condition="'$(SiliconStudioPlatform)' == 'WindowsStore'" BeforeTargets="Build">
-    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-windows-msvc -fms-extensions -DWIN_EXPORT" />
-    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-windows-msvc -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -Zi -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
 
-    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-windows-msvc -fms-extensions -DWIN_EXPORT" />
-    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target x86_64-windows-msvc -fms-extensions -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m64 -MD -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -Zi -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m64 -MD -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x64" StopOnFirstFailure="true" />
 
-    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target thumbv7-windows-msvc -fms-extensions -DWIN_EXPORT" />
-    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target thumbv7-windows-msvc -fms-extensions -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD --target=thumbv7-windows-msvc -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -Zi -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD --target=thumbv7-windows-msvc -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
   </Target>
 
   <Target Name="CompileNativeClang_WindowsPhone" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.dll;$(SiliconStudioXenkoSdkBinDir)\ARM\libxenkonative.dll"  Condition="'$(SiliconStudioPlatform)' == 'WindowsPhone'" BeforeTargets="Build">
-    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-windows-msvc -fms-extensions -DWIN_EXPORT" />
-    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target i686-windows-msvc -fms-extensions -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -Zi -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=x86" StopOnFirstFailure="true" />
 
-    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target thumbv7-windows-msvc -fms-extensions -DWIN_EXPORT" />
-    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -g -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -target thumbv7-windows-msvc -fms-extensions -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Release'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O3 $(SiliconStudioXenkoNativeClang) -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD --target=thumbv7-windows-msvc -DWIN_EXPORT" />
+    <Exec Condition="'$(Configuration)' == 'Debug'" Command="&quot;$(XenkoDependenciesDir)\LLVM\clang-cl.exe&quot; -O0 $(SiliconStudioXenkoNativeClang) -Zi -o &quot;obj\%(CFiles.Filename).obj&quot; -c &quot;%(CFiles.FullPath)&quot; -I&quot;$(XenkoDependenciesDir)\NativePath&quot; -WX -EHsc -m32 -MD --target=thumbv7-windows-msvc -DWIN_EXPORT" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
+  </Target>
+  
+  <Target Name="CompileNativeClang_Windows_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows'" BeforeTargets="Clean">
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x86" />    
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x64" />
+  </Target>
+
+  <Target Name="CompileNativeClang_Windows10_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows10'" BeforeTargets="Clean">
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x86" />
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x64" />
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=ARM" />
+  </Target>
+
+  <Target Name="CompileNativeClang_WindowsStore_Clean" Condition="'$(SiliconStudioPlatform)' == 'WindowsStore'" BeforeTargets="Clean">
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x86" />
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x64" />
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsStore\WindowsStore.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=ARM" />
+  </Target>
+
+  <Target Name="CompileNativeClang_WindowsPhone_Clean" Condition="'$(SiliconStudioPlatform)' == 'WindowsPhone'" BeforeTargets="Clean">
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x86" />
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=ARM" />
   </Target>
   
   <Target Name="CompileNativeClang_iOS" Inputs="@(CFiles);@(HFiles)" Outputs="$(SiliconStudioXenkoSdkBinDir)\libxenkonative_armv7.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_armv7s.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_arm64.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_i386.a;$(SiliconStudioXenkoSdkBinDir)\libxenkonative_x86_64.a" Condition="'$(SiliconStudioPlatform)' == 'iOS'" BeforeTargets="Build">
