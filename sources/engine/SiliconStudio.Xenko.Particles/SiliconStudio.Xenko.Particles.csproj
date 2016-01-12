@@ -131,7 +131,7 @@
       <DependentUpon>ParticleBase.xksl</DependentUpon>
     </Compile>
     <Compile Include="ShapeBuilders\ShapeBuilderBillboard.cs" />
-    <Compile Include="ShapeBuilders\ShapeBuilderBase.cs" />
+    <Compile Include="ShapeBuilders\ShapeBuilder.cs" />
     <Compile Include="Spawners\ParticleSpawner.cs" />
     <Compile Include="Spawners\SpawnerPerFrame.cs" />
     <Compile Include="Spawners\SpawnerPerSecond.cs" />

@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
     [DataContract("ShapeBuilderQuad")]
     [Display("Quad")]
-    public class ShapeBuilderQuad : ShapeBuilderBase
+    public class ShapeBuilderQuad : ShapeBuilder
     {
         public override int QuadsPerParticle { get; protected set; } = 1;
 
