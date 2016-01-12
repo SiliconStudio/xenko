@@ -127,7 +127,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets a custom value for the <see cref="Order"/> of this node.
         /// </summary>
-        public int? CustomOrder { get { return customOrder; } set { SetValue(ref customOrder, value, "CustomOrder", "Order"); } }
+        public int? CustomOrder { get { return customOrder; } set { SetValue(ref customOrder, value, nameof(CustomOrder), nameof(Order)); } }
 
         /// <inheritdoc/>
         public sealed override bool IsPrimitive => isPrimitive;
