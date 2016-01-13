@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Engine
     /// This processor will take care of adding/removing children of every Entity added/removed in the SceneInstance.
     /// It will also exposes a list of root entities.
     /// </summary>
-    public class HierarchicalProcessor : EntityProcessor<TransformComponent, TransformComponent>
+    public class HierarchicalProcessor : EntityProcessor<TransformComponent>
     {
         private readonly TrackingHashSet<Entity> rootEntities;
 
@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Engine
         public ISet<Entity> RootEntities => rootEntities;
 
         /// <inheritdoc/>
-        protected override TransformComponent GenerateAssociatedData(Entity entity, TransformComponent component)
+        protected override TransformComponent GenerateComponentData(Entity entity, TransformComponent component)
         {
             return component;
         }
@@ -40,16 +40,8 @@ namespace SiliconStudio.Xenko.Engine
             
         }
 
-        protected override void OnEnabledChanged(Entity entity, bool enabled)
-        {
-            foreach (var child in entity.Transform.Children)
-            {
-                EntityManager.SetEnabled(child.Entity, enabled);
-            }
-        }
-
         /// <inheritdoc/>
-        protected override void OnEntityAdding(Entity entity, TransformComponent data)
+        protected override void OnEntityComponentAdding(Entity entity, TransformComponent component, TransformComponent data)
         {
             foreach (var child in data.Children)
             {
@@ -63,7 +55,7 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <inheritdoc/>
-        protected override void OnEntityRemoved(Entity entity, TransformComponent data)
+        protected override void OnEntityComponentRemoved(Entity entity, TransformComponent component, TransformComponent data)
         {
             var entityToRemove = new List<Entity>();
             foreach (var child in data.Children)

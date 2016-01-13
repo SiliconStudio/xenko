@@ -7,7 +7,7 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
-    public class ModelNodeLinkProcessor : EntityProcessor<ModelNodeLinkComponent, ModelNodeLinkComponent>
+    public class ModelNodeLinkProcessor : EntityProcessor<ModelNodeLinkComponent>
     {
         internal ModelProcessor meshProcessor;
 
@@ -16,12 +16,12 @@ namespace SiliconStudio.Xenko.Engine.Processors
         {
         }
 
-        protected override ModelNodeLinkComponent GenerateAssociatedData(Entity entity, ModelNodeLinkComponent component)
+        protected override ModelNodeLinkComponent GenerateComponentData(Entity entity, ModelNodeLinkComponent component)
         {
             return component;
         }
 
-        protected override void OnEntityRemoved(Entity entity, ModelNodeLinkComponent data)
+        protected override void OnEntityComponentRemoved(Entity entity, ModelNodeLinkComponent component, ModelNodeLinkComponent data)
         {
             // Reset TransformLink
             if (entity.Transform.TransformLink is ModelNodeTransformLink)
@@ -30,10 +30,11 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         public override void Draw(RenderContext context)
         {
-            foreach (var item in enabledEntities)
+            foreach (var item in ComponentDatas)
             {
+                var entity = item.Key.Entity;
                 var modelNodeLink = item.Value;
-                var transformComponent = item.Key.Transform;
+                var transformComponent = entity.Transform;
                 var transformLink = transformComponent.TransformLink as ModelNodeTransformLink;
 
                 // Try to use Target, otherwise Parent

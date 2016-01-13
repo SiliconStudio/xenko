@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// <summary>
     /// The processor for <see cref="ModelComponent"/>.
     /// </summary>
-    public class ModelProcessor : EntityProcessor<ModelProcessor.RenderModelItem, ModelComponent>
+    public class ModelProcessor : EntityProcessor<ModelComponent, ModelProcessor.RenderModelItem>
     {
         // TODO: ModelProcessor should be decoupled from RenderModel
         private readonly RenderModelCollection[] allModelGroups;
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
         }
 
-        protected override RenderModelItem GenerateAssociatedData(Entity entity, ModelComponent component)
+        protected override RenderModelItem GenerateComponentData(Entity entity, ModelComponent component)
         {
             return new RenderModelItem(new RenderModel(component), entity.Transform);
         }
@@ -49,13 +49,13 @@ namespace SiliconStudio.Xenko.Engine.Processors
             return entity.Get<ModelComponent>() == component && entity.Transform == associatedData.TransformComponent;
         }
 
-        protected override void OnEntityAdding(Entity entity, RenderModelItem data)
+        protected override void OnEntityComponentAdding(Entity entity, ModelComponent component, RenderModelItem data)
         {
             // Register model view hierarchy update
             entity.Transform.PostOperations.Add(data.TransformOperation = new ModelViewHierarchyTransformOperation(data.ModelComponent));
         }
 
-        protected override void OnEntityRemoved(Entity entity, RenderModelItem data)
+        protected override void OnEntityComponentRemoved(Entity entity, ModelComponent component, RenderModelItem data)
         {
             // Dispose the RenderModel and all associated data
             data.RenderModel.Dispose();
@@ -64,11 +64,11 @@ namespace SiliconStudio.Xenko.Engine.Processors
             entity.Transform.PostOperations.Remove(data.TransformOperation);
         }
 
-        public Dictionary<Entity, RenderModelItem> EntityToRenderModel
+        public Dictionary<ModelComponent, RenderModelItem> EntityToRenderModel
         {
             get
             {
-                return enabledEntities;
+                return ComponentDatas;
             }
         }
 
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             var groupMaskUsed = EntityGroupMask.None;
 
             // Collect models for this frame, and dispatch them to list of group
-            foreach (var matchingEntity in enabledEntities)
+            foreach (var matchingEntity in ComponentDatas)
             {
                 var item = matchingEntity.Value;
                 var renderModel = item.RenderModel;
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
                 }
 
                 // Add the render model to the specified collection group
-                var groupIndex = (int)matchingEntity.Key.Group;
+                var groupIndex = (int)matchingEntity.Key.Entity.Group;
                 groupMaskUsed |= (EntityGroupMask)(1 << groupIndex);
                 var modelCollection = allModelGroups[groupIndex];
                 modelCollection.Add(renderModel);
@@ -140,7 +140,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
         }
 
-        public class RenderModelItem : IEntityComponentNode
+        public class RenderModelItem
         {
             public RenderModelItem(RenderModel renderModel, TransformComponent transformComponent)
             {
@@ -156,13 +156,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
             public readonly TransformComponent TransformComponent;
 
             public ModelViewHierarchyTransformOperation TransformOperation;
-
-            IEntityComponentNode IEntityComponentNode.Next { get; set; }
-
-            EntityComponent IEntityComponentNode.Component
-            {
-                get { return ModelComponent; }
-            }
         }
 
         public struct EntityLink

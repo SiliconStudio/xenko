@@ -14,21 +14,14 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Physics
 {
-    public class PhysicsProcessor : EntityProcessor<PhysicsProcessor.AssociatedData, PhysicsComponent>
+    public class PhysicsProcessor : EntityProcessor<PhysicsComponent, PhysicsProcessor.AssociatedData>
     {
-        public class AssociatedData : IEntityComponentNode
+        public class AssociatedData
         {
             public PhysicsComponent PhysicsComponent;
             public TransformComponent TransformComponent;
             public ModelComponent ModelComponent; //not mandatory, could be null e.g. invisible triggers
             public bool BoneMatricesUpdated;
-
-            IEntityComponentNode IEntityComponentNode.Next { get; set; }
-
-            EntityComponent IEntityComponentNode.Component
-            {
-                get { return PhysicsComponent; }
-            }
         }
 
         private readonly List<PhysicsElementBase> elements = new List<PhysicsElementBase>();
@@ -59,7 +52,7 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        protected override AssociatedData GenerateAssociatedData(Entity entity, PhysicsComponent component)
+        protected override AssociatedData GenerateComponentData(Entity entity, PhysicsComponent component)
         {
             var data = new AssociatedData
             {
@@ -383,7 +376,7 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        protected override void OnEntityAdding(Entity entity, AssociatedData data)
+        protected override void OnEntityComponentAdding(Entity entity, PhysicsComponent component, AssociatedData data)
         {
             //this is mostly required for the game studio gizmos
             if (Simulation.DisableSimulation)
@@ -407,12 +400,12 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        protected override void OnEntityRemoved(Entity entity, AssociatedData data)
+        protected override void OnEntityComponentRemoved(Entity entity, PhysicsComponent component, AssociatedData data)
         {
             //this is mostly required for the game studio gizmos
             if (Simulation.DisableSimulation)
             {
-                foreach (var element in data.PhysicsComponent.Elements)
+                foreach (var element in component.Elements)
                 {
                     if (element == null) continue;
                     var e = (PhysicsElementBase)element;
@@ -421,27 +414,11 @@ namespace SiliconStudio.Xenko.Physics
                 return;
             }
 
-            foreach (var element in data.PhysicsComponent.Elements)
+            foreach (var element in component.Elements)
             {
                 if (element == null) continue;
                 var e = (PhysicsElementBase)element;
                 DeleteElement(e);
-            }
-        }
-
-        protected override void OnEnabledChanged(Entity entity, bool enabled)
-        {
-            if (Simulation.DisableSimulation) return;
-
-            var entityElements = entity.Get<PhysicsComponent>().Elements;
-
-            foreach (var element in entityElements)
-            {
-                var e = (PhysicsElementBase)element;
-                if (e.Collider != null)
-                {
-                    e.Collider.Enabled = enabled;
-                }
             }
         }
 

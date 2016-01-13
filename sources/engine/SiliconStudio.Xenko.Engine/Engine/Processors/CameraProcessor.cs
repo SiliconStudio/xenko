@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// <summary>
     /// The processor for <see cref="CameraComponent"/>.
     /// </summary>
-    public class CameraProcessor : EntityProcessor<CameraComponent, CameraComponent>
+    public class CameraProcessor : EntityProcessor<CameraComponent>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="CameraProcessor"/> class.
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             Order = -10;
         }
 
-        protected override CameraComponent GenerateAssociatedData(Entity entity, CameraComponent component)
+        protected override CameraComponent GenerateComponentData(Entity entity, CameraComponent component)
         {
             return component;
         }
@@ -37,9 +37,9 @@ namespace SiliconStudio.Xenko.Engine.Processors
             Cameras.Clear();
 
             // Collect models for this frame
-            foreach (var matchingEntity in enabledEntities)
+            foreach (var matchingCamera in ComponentDatas)
             {
-                var camera = matchingEntity.Value;
+                var camera = matchingCamera.Value;
 
                 // Skip disabled model components, or model components without a proper model set
                 if (!camera.Enabled)

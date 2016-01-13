@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// <summary>
     /// Manage scripts
     /// </summary>
-    public sealed class ScriptProcessor : EntityProcessor<ScriptProcessor.AssociatedData, ScriptComponent>
+    public sealed class ScriptProcessor : EntityProcessor<ScriptComponent, ScriptProcessor.AssociatedData>
     {
         private ScriptSystem scriptSystem;
 
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         }
 
         /// <inheritdoc/>
-        protected override AssociatedData GenerateAssociatedData(Entity entity, ScriptComponent component)
+        protected override AssociatedData GenerateComponentData(Entity entity, ScriptComponent component)
         {
             return new AssociatedData(component);
         }
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         }
 
         /// <inheritdoc/>
-        protected override void OnEntityAdding(Entity entity, AssociatedData associatedData)
+        protected override void OnEntityComponentAdding(Entity entity, ScriptComponent component, AssociatedData associatedData)
         {
             // Add current list of scripts
             var scriptComponent = (ScriptComponent)associatedData.Component;
@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         }
 
         /// <inheritdoc/>
-        protected override void OnEntityRemoved(Entity entity, AssociatedData associatedData)
+        protected override void OnEntityComponentRemoved(Entity entity, ScriptComponent component, AssociatedData associatedData)
         {
             var scriptComponent = (ScriptComponent)associatedData.Component;
             scriptComponent.Scripts.CollectionChanged -= associatedData.ScriptsChangedDelegate;
@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
         }
 
-        public class AssociatedData : IEntityComponentNode
+        public class AssociatedData
         {
             public EventHandler<TrackingCollectionChangedEventArgs> ScriptsChangedDelegate;
 
@@ -89,8 +89,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
             {
                 Component = component;
             }
-
-            public IEntityComponentNode Next { get; set; }
 
             public EntityComponent Component { get; set; }
         }

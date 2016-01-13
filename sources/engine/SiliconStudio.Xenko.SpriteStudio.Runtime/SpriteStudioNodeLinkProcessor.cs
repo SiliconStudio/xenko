@@ -15,12 +15,12 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             Order = 551;
         }
 
-        protected override SpriteStudioNodeLinkComponent GenerateAssociatedData(Entity entity, SpriteStudioNodeLinkComponent component)
+        protected override SpriteStudioNodeLinkComponent GenerateComponentData(Entity entity, SpriteStudioNodeLinkComponent component)
         {
             return component;
         }
 
-        protected override void OnEntityRemoved(Entity entity, SpriteStudioNodeLinkComponent data)
+        protected override void OnEntityComponentRemoved(Entity entity, SpriteStudioNodeLinkComponent component, SpriteStudioNodeLinkComponent data)
         {
             // Reset TransformLink
             if (entity.Transform.TransformLink is SpriteStudioNodeTransformLink)
@@ -29,10 +29,10 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         public override void Draw(RenderContext context)
         {
-            foreach (var item in enabledEntities)
+            foreach (var item in ComponentDatas)
             {
                 var modelNodeLink = item.Value;
-                var transformComponent = item.Key.Transform;
+                var transformComponent = item.Key.Entity.Transform;
                 var transformLink = transformComponent.TransformLink as SpriteStudioNodeTransformLink;
 
                 // Try to use Target, otherwise Parent

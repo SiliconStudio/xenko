@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class UIComponentProcessor : EntityProcessor<UIComponentProcessor.UIComponentState, UIComponent>
+    internal class UIComponentProcessor : EntityProcessor<UIComponent, UIComponentProcessor.UIComponentState>
     {
         public List<UIComponentState> UIRoots { get; private set; }
 
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             UIRoots = new List<UIComponentState>();
         }
         
-        protected override UIComponentState GenerateAssociatedData(Entity entity, UIComponent component)
+        protected override UIComponentState GenerateComponentData(Entity entity, UIComponent component)
         {
             return new UIComponentState(component, entity.Transform);
         }
@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         public override void Draw(RenderContext gameTime)
         {
             UIRoots.Clear();
-            foreach (var uiStateKeyPair in enabledEntities)
+            foreach (var uiStateKeyPair in ComponentDatas)
             {
                 if (uiStateKeyPair.Value.UIComponent.Enabled)
                 {
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
             }
         }
 
-        public class UIComponentState : IEntityComponentNode
+        public class UIComponentState
         {
             public UIComponentState(UIComponent uiComponent, TransformComponent transformComponent)
             {
@@ -69,13 +69,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
             public Vector3 LastIntersectionPoint;
 
             public Matrix LastRootMatrix;
-
-            IEntityComponentNode IEntityComponentNode.Next { get; set; }
-
-            EntityComponent IEntityComponentNode.Component
-            {
-                get { return UIComponent; }
-            }
         }
     }
 }

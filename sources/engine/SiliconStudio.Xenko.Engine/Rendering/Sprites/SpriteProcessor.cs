@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class SpriteProcessor : EntityProcessor<SpriteProcessor.SpriteComponentState, SpriteComponent>
+    internal class SpriteProcessor : EntityProcessor<SpriteComponent, SpriteProcessor.SpriteComponentState>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         public override void Draw(RenderContext gameTime)
         {
             Sprites.Clear();
-            foreach (var spriteStateKeyPair in enabledEntities)
+            foreach (var spriteStateKeyPair in ComponentDatas)
             {
                 if (spriteStateKeyPair.Value.SpriteComponent.Enabled)
                 {
@@ -39,7 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
         }
 
-        protected override SpriteComponentState GenerateAssociatedData(Entity entity, SpriteComponent component)
+        protected override SpriteComponentState GenerateComponentData(Entity entity, SpriteComponent component)
         {
             return new SpriteComponentState
             {
@@ -55,15 +55,11 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                 entity.Transform == associatedData.TransformComponent;
         }
 
-        public class SpriteComponentState : IEntityComponentNode
+        public class SpriteComponentState
         {
             public SpriteComponent SpriteComponent;
 
             public TransformComponent TransformComponent;
-
-            IEntityComponentNode IEntityComponentNode.Next { get; set; }
-
-            EntityComponent IEntityComponentNode.Component => SpriteComponent;
         }
     }
 }

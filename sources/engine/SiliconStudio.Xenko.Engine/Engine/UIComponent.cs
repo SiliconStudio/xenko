@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Engine
     [Display(9800, "UI", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(UIComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(UIComponentProcessor))]
-    public class UIComponent : ActivableEntityComponent
+    public sealed class UIComponent : ActivableEntityComponent
     {
         public UIComponent()
         {

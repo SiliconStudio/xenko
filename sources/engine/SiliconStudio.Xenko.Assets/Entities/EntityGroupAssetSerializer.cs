@@ -211,7 +211,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         }
 
 
-        public class TransientEntityComponent : EntityComponent
+        public sealed class TransientEntityComponent : EntityComponent
         {
         }
     }
