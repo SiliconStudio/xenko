@@ -40,7 +40,7 @@ namespace SiliconStudio.Quantum.Contents
         /// <inheritdoc/>
         public override void Update(object newValue, object index)
         {
-            var oldValue = Value;
+            var oldValue = Retrieve(index);
             NotifyContentChanging(index, oldValue, newValue);
             if (index != null)
             {

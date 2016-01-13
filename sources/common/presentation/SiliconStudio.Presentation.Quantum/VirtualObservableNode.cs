@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 using SiliconStudio.Core.Extensions;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -9,6 +10,8 @@ namespace SiliconStudio.Presentation.Quantum
     {
         protected readonly Func<object> Getter;
         protected readonly Action<object> Setter;
+        private IContent associatedContent;
+        private bool updatingValue;
 
         static VirtualObservableNode()
         {
@@ -32,6 +35,17 @@ namespace SiliconStudio.Presentation.Quantum
             return node;
         }
 
+        public override void Dispose()
+        {
+            if (associatedContent != null)
+            {
+                associatedContent.Changing -= ContentChanging;
+                associatedContent.Changed -= ContentChanged;
+                associatedContent = null;
+            }
+            base.Dispose();
+        }
+
         public override int? Order { get; }
 
         public override bool HasList => typeof(ICollection).IsAssignableFrom(Type);
@@ -51,9 +65,44 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
+        /// <summary>
+        /// Registers an <see cref="IContent"/> object to this virtual node so when the content is modified, this node will trigger notifications
+        /// of property changes for the <see cref="VirtualObservableNode{T}.TypedValue"/> property.
+        /// </summary>
+        /// <param name="content">The content to register.</param>
+        /// <remarks>Events subscriptions are cleaned when this virtual node is disposed.</remarks>
+        public void RegisterContentForNotifications(IContent content)
+        {
+            if (associatedContent != null)
+                throw new InvalidOperationException("A content has already been registered to this virtual node");
+
+            associatedContent = content;
+            associatedContent.Changing += ContentChanging;
+            associatedContent.Changed += ContentChanged;
+        }
+
         public new void AddCommand(INodeCommandWrapper command)
         {
             base.AddCommand(command);
+        }
+
+        protected void SetTypedValue(object value)
+        {
+            updatingValue = true;
+            SetValue(() => Setter(value), nameof(VirtualObservableNode<object>.TypedValue));
+            updatingValue = false;
+        }
+
+        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        {
+            if (!updatingValue)
+                OnPropertyChanging(nameof(VirtualObservableNode<object>.TypedValue));
+        }
+
+        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        {
+            if (!updatingValue)
+                OnPropertyChanged(nameof(VirtualObservableNode<object>.TypedValue));
         }
     }
 
@@ -68,7 +117,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets the value of this node through a correctly typed property, which is more adapted to binding.
         /// </summary>
-        public T TypedValue { get { return (T)Getter(); } set { SetValue(() => Setter(value)); } }
+        public T TypedValue { get { return (T)Getter(); } set { SetTypedValue(value); } }
 
         /// <inheritdoc/>
         public override Type Type => typeof(T);
