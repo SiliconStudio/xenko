@@ -21,21 +21,6 @@ namespace SiliconStudio.Xenko.Audio
         {
         }
 
-        /// <summary>
-        /// Create the audio engine to the sound base instance.
-        /// </summary>
-        /// <param name="engine">A valid AudioEngine</param>
-        /// <exception cref="ArgumentNullException">The engine argument is null</exception>
-        internal void AttachEngine(AudioEngine engine)
-        {
-            if (engine == null)
-                throw new ArgumentNullException("engine");
-
-            AudioEngine = engine;
-        }
-
-        internal AudioEngine AudioEngine { get; private set; }
-
         internal AudioEngineState EngineState { get { return AudioEngine.State; } }
         
         #region Disposing Utilities

@@ -14,6 +14,12 @@ using Color = SiliconStudio.Core.Mathematics.Color;
 
 namespace SiliconStudio.Xenko.Profiling
 {
+    public enum GameProfilingSorting
+    {
+        ByTime,
+        ByName
+    }
+
     public class GameProfilingSystem : GameSystemBase
     {
         private readonly GcProfiling gcProfiler;
@@ -184,7 +190,17 @@ namespace SiliconStudio.Xenko.Profiling
 
                 profilingResultsDictionary.Clear();
 
-                profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
+                if (SortingMode == GameProfilingSorting.ByTime)
+                {
+                    profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
+                }
+                else
+                {
+                    // Can't be null because we skip those events without values
+                    // ReSharper disable PossibleInvalidOperationException
+                    profilingResults.Sort((x1, x2) => string.Compare(x1.Event.Value.Key.Name, x2.Event.Value.Key.Name, StringComparison.Ordinal));
+                    // ReSharper restore PossibleInvalidOperationException
+                }
 
                 foreach (var result in profilingResults)
                 {
@@ -201,7 +217,17 @@ namespace SiliconStudio.Xenko.Profiling
 
                 scriptsProfilingResultsDictionary.Clear();
 
-                profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
+                if (SortingMode == GameProfilingSorting.ByTime)
+                {
+                    profilingResults.Sort((x1, x2) => Math.Sign(x2.AccumulatedTime - x1.AccumulatedTime));
+                }
+                else
+                {
+                    // Can't be null because we skip those events without values
+                    // ReSharper disable PossibleInvalidOperationException
+                    profilingResults.Sort((x1, x2) => string.Compare(x1.Event.Value.Key.Name, x2.Event.Value.Key.Name, StringComparison.Ordinal));
+                    // ReSharper restore PossibleInvalidOperationException
+                }
 
                 foreach (var result in profilingResults)
                 {
@@ -345,5 +371,7 @@ namespace SiliconStudio.Xenko.Profiling
         public Color4 TextColor { get; set; } = Color.LightGreen;
 
         public SpriteFont Font { get; set; }
+
+        public GameProfilingSorting SortingMode { get; set; } = GameProfilingSorting.ByTime;
     }
 }

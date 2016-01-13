@@ -213,7 +213,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             bloom = ToLoadAndUnload(bloom);
             lightStreak = ToLoadAndUnload(lightStreak);
             lensFlare = ToLoadAndUnload(lensFlare);
-            ssaa = ToLoadAndUnload(ssaa);
+            //this can be null if no SSAA is selected in the editor
+            if(ssaa != null) ssaa = ToLoadAndUnload(ssaa);
             colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
         }
 
@@ -255,7 +256,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             
             var currentInput = input;
 
-            if (depthOfField.Enabled && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
+            if (depthOfField.Enabled && !depthOfField.Faulted && InputCount > 1 && GetInput(1) != null && GetInput(1).IsDepthStencil)
             {
                 // DoF
                 var dofOutput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
@@ -269,7 +270,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Luminance pass (only if tone mapping is enabled)
             // TODO: This is not super pluggable to have this kind of dependencies. Check how to improve this
             var toneMap = colorTransformsGroup.Transforms.Get<ToneMap>();
-            if (colorTransformsGroup.Enabled && toneMap != null && toneMap.Enabled)
+            if (colorTransformsGroup.Enabled && !colorTransformsGroup.Faulted && toneMap != null && toneMap.Enabled)
             {
                 const int LocalLuminanceDownScale = 3;
 
@@ -290,7 +291,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Bright filter pass
             Texture brightTexture = null;
-            if (bloom.Enabled || lightStreak.Enabled || lensFlare.Enabled)
+            if ((bloom.Enabled && !bloom.Faulted) || (lightStreak.Enabled && !lightStreak.Faulted) || (lensFlare.Enabled && !lensFlare.Faulted))
             {
                 brightTexture = NewScopedRenderTarget2D(currentInput.Width, currentInput.Height, currentInput.Format, 1);
 
@@ -300,7 +301,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Bloom pass
-            if (bloom.Enabled)
+            if (bloom.Enabled && !bloom.Faulted)
             {
                 bloom.SetInput(brightTexture);
                 bloom.SetOutput(currentInput);
@@ -308,7 +309,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Light streak pass
-            if (lightStreak.Enabled)
+            if (lightStreak.Enabled && !lightStreak.Faulted)
             {
                 lightStreak.SetInput(brightTexture);
                 lightStreak.SetOutput(currentInput);
@@ -316,7 +317,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Lens flare pass
-            if (lensFlare.Enabled)
+            if (lensFlare.Enabled && !lensFlare.Faulted)
             {
                 lensFlare.SetInput(brightTexture);
                 lensFlare.SetOutput(currentInput);
@@ -325,7 +326,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             var outputForLastEffectBeforeAntiAliasing = output;
 
-            if (ssaa != null && ssaa.Enabled)
+            if (ssaa != null && ssaa.Enabled && !ssaa.Faulted)
             {
                 outputForLastEffectBeforeAntiAliasing = NewScopedRenderTarget2D(output.Width, output.Height, output.Format);
             }
@@ -350,12 +351,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Color transform group pass (tonemap, color grading)
-            var lastEffect = colorTransformsGroup.Enabled ? (ImageEffect)colorTransformsGroup: Scaler;
+            var lastEffect = colorTransformsGroup.Enabled && !colorTransformsGroup.Faulted ? (ImageEffect)colorTransformsGroup: Scaler;
             lastEffect.SetInput(currentInput);
             lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
             lastEffect.Draw(context);
 
-            if (ssaa != null && ssaa.Enabled)
+            if (ssaa != null && ssaa.Enabled && !ssaa.Faulted)
             {
                 ssaa.SetInput(outputForLastEffectBeforeAntiAliasing);
                 ssaa.SetOutput(output);
