@@ -42,6 +42,7 @@
     <Compile Include="Behaviors\BindCurrentToolTipStringBehavior.cs" />
     <Compile Include="Behaviors\ChangeCursorOnSliderThumbBehavior.cs" />
     <Compile Include="Behaviors\CloseWindowBehavior.cs" />
+    <Compile Include="Behaviors\ContainTextAdornerBehavior.cs" />
     <Compile Include="Behaviors\DoubleClickCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\DragOverAutoScrollBehavior.cs" />
     <Compile Include="Behaviors\HyperlinkCloseWindowBehavior.cs" />
@@ -70,6 +71,8 @@
     <Compile Include="Controls\TreeView.cs" />
     <Compile Include="Controls\TreeViewItem.cs" />
     <Compile Include="Controls\TreeViewItemEventArgs.cs" />
+    <Compile Include="Controls\VectorEditingMode.cs" />
+    <Compile Include="Controls\VectorEditor.cs" />
     <Compile Include="Controls\VirtualizingTreePanel.cs" />
     <Compile Include="Controls\Trimming.cs" />
     <Compile Include="Collections\IObservableCollection.cs" />
@@ -93,7 +96,7 @@
     <Compile Include="Controls\RotationEditor.cs" />
     <Compile Include="Controls\TextBoxBase.cs" />
     <Compile Include="Controls\TrimmingSource.cs" />
-    <Compile Include="Controls\VectorEditor.cs" />
+    <Compile Include="Controls\VectorEditorBase.cs" />
     <Compile Include="Core\AnonymousComparer.cs" />
     <Compile Include="Behaviors\CharInputBehavior.cs" />
     <Compile Include="Behaviors\ButtonCloseWindowBehavior.cs" />
@@ -126,6 +129,7 @@
     </Compile>
     <Compile Include="ValueConverters\ConverterHelper.cs" />
     <Compile Include="ValueConverters\ThicknessMultiConverter.cs" />
+    <Compile Include="ValueConverters\VectorEditingModeToBoolean.cs" />
     <Compile Include="Windows\CheckedMessageBox.cs" />
     <Compile Include="XamlMarkdown.cs" />
     <Compile Include="MarkupExtensions\FalseExtension.cs" />
@@ -340,6 +344,11 @@
       <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Strings.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\length-16.png" />
+    <Resource Include="Resources\Images\lock-16.png" />
+    <Resource Include="Resources\Images\unlock-16.png" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

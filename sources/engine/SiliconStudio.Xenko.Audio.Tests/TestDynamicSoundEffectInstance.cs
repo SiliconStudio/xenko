@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             Game.InitializeAssetDatabase();
 
-            defaultEngine = new AudioEngine();
+            defaultEngine = AudioEngineFactory.NewAudioEngine();
         }
 
         [TestFixtureTearDown]

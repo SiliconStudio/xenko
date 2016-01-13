@@ -23,10 +23,14 @@
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
@@ -112,6 +116,38 @@
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
+    <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
+    <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>RadiancePrefilteringGGXNoComputeEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>RadiancePrefilteringGGXNoComputeShader.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringNoCompute.cs" />
+    <Compile Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputeEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LambertianPrefilteringSHNoComputeEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputePass1.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LambertianPrefilteringSHNoComputePass1.xksl</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputePass2.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2312,6 +2348,26 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFMicrofacet.cs</LastGenOutput>
     </None>
+    <None Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>RadiancePrefilteringGGXNoComputeEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>RadiancePrefilteringGGXNoComputeShader.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputeEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LambertianPrefilteringSHNoComputeEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputePass1.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LambertianPrefilteringSHNoComputePass1.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputePass2.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>LambertianPrefilteringSHNoComputePass2.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Images\ColorTransforms\LuminanceToChannelShader.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>LuminanceToChannelShader.cs</LastGenOutput>
@@ -3521,11 +3577,6 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Condition="'$(XenkoEffectCompiler)' == 'true'" Include="..\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
-      <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
-      <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
       <Project>{84deb606-77ed-49cd-9aed-d2b13c1f5a1e}</Project>
       <Name>SiliconStudio.Xenko.Input</Name>
@@ -3547,6 +3598,17 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <Choose>
+    <When Condition="'$(XenkoEffectCompiler)' == 'true'">
+      <ItemGroup Condition="'$(XenkoEffectCompiler)' == 'true'">
+        <ProjectReference Include="..\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
+          <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
+          <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
+          <Private>False</Private>
+        </ProjectReference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

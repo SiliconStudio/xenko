@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public class Int2Editor : VectorEditor<Int2>
+    public class Int2Editor : VectorEditorBase<Int2>
     {
         /// <summary>
         /// Identifies the <see cref="X"/> dependency property.
