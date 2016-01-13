@@ -15,10 +15,14 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup Condition="$(SiliconStudioAudio) == '' AND ('$(SiliconStudioPlatform)' == 'Windows' Or '$(SiliconStudioPlatform)' == 'WindowsStore' Or '$(SiliconStudioPlatform)' == 'WindowsPhone' Or '$(SiliconStudioPlatform)' == 'Windows10')">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
@@ -33,12 +37,16 @@
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.MediaFoundation.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Condition="'$(SiliconStudioAudio)' == 'SDL'" Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
-    </Reference>
-  </ItemGroup>
+  <Choose>
+    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
+      <ItemGroup>
+        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>

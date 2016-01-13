@@ -30,10 +30,14 @@
       <HintPath>$(XenkoSharpDXSdkBinDir)\SharpDX.D3DCompiler.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="Direct3D\ShaderCompiler.cs" />
     <Compile Include="IShaderCompiler.cs" />
