@@ -17,14 +17,24 @@
     <XenkoProjectPlatformDependentWindows>true</XenkoProjectPlatformDependentWindows>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Condition="$(SiliconStudioUI.Contains('SDL'))" Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
+      <ItemGroup>
+        <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>    
   <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>

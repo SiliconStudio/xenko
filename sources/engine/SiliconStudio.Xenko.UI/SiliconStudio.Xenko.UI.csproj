@@ -16,10 +16,14 @@
     <FileAlignment>512</FileAlignment>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>

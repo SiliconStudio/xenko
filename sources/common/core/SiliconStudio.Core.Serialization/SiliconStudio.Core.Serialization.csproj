@@ -16,12 +16,16 @@
     <SiliconStudioAssemblyProcessor>true</SiliconStudioAssemblyProcessor>
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.XML" />
-    <Reference Include="System.XML.Linq" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.XML" />
+        <Reference Include="System.XML.Linq" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
