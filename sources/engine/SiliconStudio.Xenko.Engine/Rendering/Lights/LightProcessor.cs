@@ -32,19 +32,19 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <value>The lights.</value>
         public LightComponentCollection Lights => lightsCollected;
 
-        protected override void OnEntityAdding(Entity entity, LightComponent state)
+        protected override void OnEntityComponentAdding(Entity entity, LightComponent component, LightComponent state)
         {
-            base.OnEntityAdding(entity, state);
+            base.OnEntityComponentAdding(entity, component, state);
             lights.Add(state);
         }
 
-        protected override void OnEntityRemoved(Entity entity, LightComponent state)
+        protected override void OnEntityComponentRemoved(Entity entity, LightComponent component, LightComponent state)
         {
-            base.OnEntityRemoved(entity, state);
+            base.OnEntityComponentRemoved(entity, component, state);
             lights.Remove(state);
         }
 
-        protected override LightComponent GenerateAssociatedData(Entity entity, LightComponent component)
+        protected override LightComponent GenerateComponentData(Entity entity, LightComponent component)
         {
             return component;
         }

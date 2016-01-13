@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// <summary>
     /// A default entity processor for <see cref="SkyboxComponent"/>.
     /// </summary>
-    public class SkyboxProcessor : EntityProcessor<SkyboxComponent, SkyboxComponent>
+    public class SkyboxProcessor : EntityProcessor<SkyboxComponent>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SkyboxProcessor" /> class.
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         public SkyboxComponent ActiveSkyboxBackground { get; private set; }
 
         /// <inheritdoc/>
-        protected override SkyboxComponent GenerateAssociatedData(Entity entity, SkyboxComponent component)
+        protected override SkyboxComponent GenerateComponentData(Entity entity, SkyboxComponent component)
         {
             return component;
         }
@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         {
             ActiveSkyboxBackground = null;
 
-            foreach (var entityKeyPair in matchingEntities)
+            foreach (var entityKeyPair in ComponentDatas)
             {
                 var skybox = entityKeyPair.Value;
                 if (skybox.Enabled && skybox.Skybox != null)

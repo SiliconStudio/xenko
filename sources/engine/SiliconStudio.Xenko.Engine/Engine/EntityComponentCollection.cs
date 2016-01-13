@@ -139,14 +139,22 @@ namespace SiliconStudio.Xenko.Engine
                 throw new ArgumentNullException(nameof(item), "Cannot add a null component");
             }
 
-            var indexOf = IndexOf(item);
-            if (indexOf >= 0)
+            var componentType = item.GetType();
+            var attributes = EntityComponentAttributes.Get(componentType);
+
+            var onlySingleComponent = !attributes.AllowMultipleComponent;
+
+            for (int i = 0; i < Count; i++)
             {
-                if (index == indexOf)
+                var existingItem = this[i];
+                if (ReferenceEquals(existingItem, item) && i != index)
                 {
-                    return;
+                    throw new InvalidOperationException($"Cannot add a same component multiple times. Already set at index [{i}]");
                 }
-                throw new InvalidOperationException($"Cannot add a same component multiple times. Already set at index [{indexOf}]");
+                if (onlySingleComponent && componentType == existingItem.GetType())
+                {
+                    throw new InvalidOperationException($"Cannot add a the component of type [{componentType}] multiple times.");
+                }
             }
 
             if (!AllowReplaceForeignEntity && item.Entity != null)

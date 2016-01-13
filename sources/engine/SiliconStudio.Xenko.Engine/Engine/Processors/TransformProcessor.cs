@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
     /// <summary>
     /// Updates <see cref="TransformComponent.WorldMatrix"/> of entities.
     /// </summary>
-    public class TransformProcessor : EntityProcessor<TransformComponent, TransformComponent>
+    public class TransformProcessor : EntityProcessor<TransformComponent>
     {
         /// <summary>
         /// List of <see cref="TransformComponent"/> of every <see cref="Entity"/> in <see cref="EntityManager.RootEntities"/>.
@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Engine.Processors
         }
 
         /// <inheritdoc/>
-        protected override TransformComponent GenerateAssociatedData(Entity entity, TransformComponent component)
+        protected override TransformComponent GenerateComponentData(Entity entity, TransformComponent component)
         {
             return component;
         }

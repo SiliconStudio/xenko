@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Assets.Tests
 {
     [DataContract("TestEntityComponent")]
-    public class TestEntityComponent : EntityComponent
+    public sealed class TestEntityComponent : EntityComponent
     {
         public Entity EntityLink { get; set; }
 

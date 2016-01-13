@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Engine
     [Display(9600, "Background", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(BackgroundComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(BackgroundComponentProcessor))]
-    public class BackgroundComponent : ActivableEntityComponent
+    public sealed class BackgroundComponent : ActivableEntityComponent
     {
         /// <summary>
         /// Create an empty Background component.

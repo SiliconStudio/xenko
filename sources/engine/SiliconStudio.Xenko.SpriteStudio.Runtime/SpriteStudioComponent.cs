@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(SpriteStudioProcessor))]
     [DefaultEntityComponentRenderer(typeof(SpriteStudioRenderer))]
     [DataSerializerGlobal(null, typeof(List<SpriteStudioNodeState>))]
-    public class SpriteStudioComponent : EntityComponent
+    public sealed class SpriteStudioComponent : EntityComponent
     {
         [DataMember(1)]
         public SpriteStudioSheet Sheet { get; set; }

@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
-    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioProcessor.Data, SpriteStudioComponent>
+    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioComponent, SpriteStudioProcessor.Data>
     {
         public readonly List<Data> Sprites = new List<Data>();
 
@@ -20,20 +16,16 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             Order = 550;
         }
 
-        public class Data : IEntityComponentNode
+        public class Data
         {
             public SpriteStudioComponent SpriteStudioComponent;
             public TransformComponent TransformComponent;
             public AnimationComponent AnimationComponent;
             public SpriteStudioNodeState RootNode;
             public SpriteStudioSheet Sheet;
-
-            IEntityComponentNode IEntityComponentNode.Next { get; set; }
-
-            EntityComponent IEntityComponentNode.Component => SpriteStudioComponent;
         }
 
-        protected override Data GenerateAssociatedData(Entity entity, SpriteStudioComponent component)
+        protected override Data GenerateComponentData(Entity entity, SpriteStudioComponent component)
         {
             return new Data
             {
@@ -51,12 +43,12 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                 entity.Get<AnimationComponent>() == associatedData.AnimationComponent;
         }
 
-        protected override void OnEntityAdding(Entity entity, Data data)
+        protected override void OnEntityComponentAdding(Entity entity, SpriteStudioComponent component, Data data)
         {
             PrepareNodes(data);
         }
 
-        protected override void OnEntityRemoved(Entity entity, Data data)
+        protected override void OnEntityComponentRemoved(Entity entity, SpriteStudioComponent component, Data data)
         {
             data.SpriteStudioComponent.Nodes.Clear();
         }
@@ -231,7 +223,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         public override void Draw(RenderContext context)
         {
             Sprites.Clear();
-            foreach (var spriteStateKeyPair in enabledEntities)
+            foreach (var spriteStateKeyPair in ComponentDatas)
             {
                 if (!PrepareNodes(spriteStateKeyPair.Value))
                     continue;

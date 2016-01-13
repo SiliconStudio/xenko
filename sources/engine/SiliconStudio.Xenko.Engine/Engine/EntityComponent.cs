@@ -12,14 +12,6 @@ using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Engine
 {
-
-    public interface IEntityComponentNode
-    {
-        IEntityComponentNode Next { get; set; }
-
-        EntityComponent Component { get; }
-    }
-
     /// <summary>
     /// Allows a component of the same type to be added multiple time to the same entity (default is <c>false</c>)
     /// </summary>
@@ -71,7 +63,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataSerializer(typeof(EntityComponent.Serializer))]
     [DataContract]
-    public abstract class EntityComponent : IEntityComponentNode
+    public abstract class EntityComponent
     {
         /// <summary>
         /// Gets or sets the owner entity.
@@ -108,9 +100,5 @@ namespace SiliconStudio.Xenko.Engine
                 stream.SerializeExtended(ref entity, mode);
             }
         }
-
-        IEntityComponentNode IEntityComponentNode.Next { get; set; }
-
-        EntityComponent IEntityComponentNode.Component => this;
     }
 }

@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Animations
 {
-    public class AnimationProcessor : EntityProcessor<AnimationProcessor.AssociatedData, AnimationComponent>
+    public class AnimationProcessor : EntityProcessor<AnimationComponent, AnimationProcessor.AssociatedData>
     {
         private readonly FastList<AnimationOperation> animationOperations = new FastList<AnimationOperation>(2);
 
@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Animations
             Order = -500;
         }
 
-        protected override AssociatedData GenerateAssociatedData(Entity entity, AnimationComponent component)
+        protected override AssociatedData GenerateComponentData(Entity entity, AnimationComponent component)
         {
             return new AssociatedData
             {
@@ -34,16 +34,16 @@ namespace SiliconStudio.Xenko.Animations
                 entity.Get<ModelComponent>() == associatedData.ModelComponent;
         }
 
-        protected override void OnEntityAdding(Entity entity, AssociatedData data)
+        protected override void OnEntityComponentAdding(Entity entity, AnimationComponent component, AssociatedData data)
         {
-            base.OnEntityAdding(entity, data);
+            base.OnEntityComponentAdding(entity, component, data);
 
             data.AnimationUpdater = new AnimationUpdater();
         }
 
-        protected override void OnEntityRemoved(Entity entity, AssociatedData data)
+        protected override void OnEntityComponentRemoved(Entity entity, AnimationComponent component, AssociatedData data)
         {
-            base.OnEntityRemoved(entity, data);
+            base.OnEntityComponentRemoved(entity, component, data);
 
             // Return AnimationClipEvaluators to pool
             foreach (var playingAnimation in data.AnimationComponent.PlayingAnimations)
@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Animations
         {
             var time = context.Time;
 
-            foreach (var entity in enabledEntities)
+            foreach (var entity in ComponentDatas)
             {
                 var associatedData = entity.Value;
                 var animationUpdater = associatedData.AnimationUpdater;
@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Animations
                     animationComponent.CurrentFrameResult = associatedData.AnimationClipResult;
 
                     // Update animation data if we have a model component
-                    animationUpdater.Update(entity.Key, associatedData.AnimationClipResult);
+                    animationUpdater.Update(animationComponent.Entity, associatedData.AnimationClipResult);
                 }
 
                 // Update weight animation
@@ -187,16 +187,12 @@ namespace SiliconStudio.Xenko.Animations
             return AnimationOperation.NewPush(playingAnimation.Evaluator, playingAnimation.CurrentTime);
         }
 
-        public class AssociatedData : IEntityComponentNode
+        public class AssociatedData
         {
             public AnimationUpdater AnimationUpdater;
             public ModelComponent ModelComponent;
             public AnimationComponent AnimationComponent;
             public AnimationClipResult AnimationClipResult;
-
-            IEntityComponentNode IEntityComponentNode.Next { get; set; }
-
-            EntityComponent IEntityComponentNode.Component => AnimationComponent;
         }
     }
 }
