@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 // -------------------------------------------------------------------
                 // Calculate Specular prefiltering
                 // -------------------------------------------------------------------
-                var specularRadiancePrefilterGGX = new RadiancePrefilteringGGX(context.DrawEffectContext);
+                var specularRadiancePrefilterGGX = new RadiancePrefilteringGGXNoCompute(context.DrawEffectContext);
 
                 var textureSize = asset.SpecularCubeMapSize <= 0 ? 64 : asset.SpecularCubeMapSize;
                 textureSize = (int)Math.Pow(2, Math.Round(Math.Log(textureSize, 2)));
@@ -161,7 +161,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 var filteringTextureFormat = skyboxTexture.Format.IsHDR() ? skyboxTexture.Format : PixelFormat.R8G8B8A8_UNorm;
 
                 //var outputTexture = Texture.New2D(graphicsDevice, 256, 256, skyboxTexture.Format, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6);
-                using (var outputTexture = Texture.New2D(context.GraphicsDevice, textureSize, textureSize, true, filteringTextureFormat, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6))
+                using (var outputTexture = Texture.New2D(context.GraphicsDevice, textureSize, textureSize, true, filteringTextureFormat, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 6))
                 {
                     specularRadiancePrefilterGGX.RadianceMap = skyboxTexture;
                     specularRadiancePrefilterGGX.PrefilteredRadiance = outputTexture;
