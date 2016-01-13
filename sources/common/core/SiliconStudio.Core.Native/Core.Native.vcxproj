@@ -26,6 +26,21 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <PropertyGroup>
+    <OutDir>$(OutputPath)</OutDir>
+    <IntDir>obj\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{72962F32-12A3-4A36-A003-AFE44FC239A3}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>libcore</RootNamespace>
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <CharacterSet>NotSet</CharacterSet>	
+    <PlatformToolset>v140</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(MSBuildThisFileDirectory)SiliconStudioNative.targets" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ItemGroup>
     <ClInclude Include="lz4_32.h" />
     <ClInclude Include="lz4_64.h" />
@@ -53,21 +68,6 @@
     </ClCompile>
   </ItemGroup>
   <!-- Output folders -->
-  <PropertyGroup>
-    <OutDir>$(OutputPath)</OutDir>
-    <IntDir>obj\</IntDir>
-  </PropertyGroup>
-  <PropertyGroup Label="Globals">
-    <ProjectGuid>{72962F32-12A3-4A36-A003-AFE44FC239A3}</ProjectGuid>
-    <Keyword>Win32Proj</Keyword>
-    <RootNamespace>libcore</RootNamespace>
-    <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <CharacterSet>NotSet</CharacterSet>	
-    <PlatformToolset>v140</PlatformToolset>
-  </PropertyGroup>
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
-  <Import Project="$(MSBuildThisFileDirectory)SiliconStudioNative.targets" />
-  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
   </ImportGroup>
   <ImportGroup Label="PropertySheets">

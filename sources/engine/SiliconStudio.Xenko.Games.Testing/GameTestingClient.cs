@@ -32,7 +32,9 @@ namespace SiliconStudio.Xenko.Games.Testing
 
         public GameTestingClient(string gamePath, PlatformType platform)
         {
-            if(gamePath == null) throw new ArgumentNullException(nameof(gamePath));
+            GameTestingSystem.Initialized = true; //prevent time-outs from test side!!
+
+            if (gamePath == null) throw new ArgumentNullException(nameof(gamePath));
 
             xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
             if(xenkoDir.IsNullOrEmpty()) throw new NullReferenceException("Could not find SiliconStudioXenkoDir, make sure the environment variable is set.");
@@ -96,8 +98,20 @@ namespace SiliconStudio.Xenko.Games.Testing
                 Platform = (int)platform, Tester = true, Cmd = cmd, GameAssembly = gameName
             }).Wait();
 
-            if (!ev.WaitOne(platform == PlatformType.Windows ? 10000 : 20000))
+            var waitMs = 10000;
+            switch (platform)
             {
+                case PlatformType.Android:
+                    waitMs = 20000;
+                    break;
+                case PlatformType.iOS:
+                    waitMs = 40000;
+                    break;
+            }
+
+            if (!ev.WaitOne(waitMs))
+            {
+                socketMessageLayer.Send(new TestAbortedRequest()).Wait();
                 throw new Exception("Time out while launching the game");
             }
 

@@ -75,6 +75,9 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
             if(output == null || (output.Dimension != TextureDimension.Texture2D && output.Dimension != TextureDimension.TextureCube) || output.ArraySize != 6)
                 throw new NotSupportedException("Only array of 2D textures are currently supported as output");
 
+            if (!output.IsUnorderedAccess || output.IsRenderTarget)
+                throw new NotSupportedException("Only non-rendertarget unordered access textures are supported as output");
+
             var input = RadianceMap;
             if(input == null || input.Dimension != TextureDimension.TextureCube)
                 throw new NotSupportedException("Only cubemaps are currently supported as input");

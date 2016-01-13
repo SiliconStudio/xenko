@@ -1,10 +1,9 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && !SILICONSTUDIO_XENKO_SOUND_SDL
 
 using System;
 using System.Reflection;
-using System.Linq;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -17,16 +16,15 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Audio
 {
-
     // We use MediaFoundation.MediaSession on windows desktop to play SoundMusics.
     // The class has an internal thread to process MediaSessionEvents.
-    public partial class AudioEngine
+    public class AudioEngineDesktop : AudioEngineWindows
     {
         /// <summary>
         /// This method is called during engine construction to initialize Windows.Desktop specific components.
         /// </summary>
         /// <remarks>Variables do not need to be locked here since there are no concurrent calls before the end of the construction.</remarks>
-        private void PlatformSpecificInit()
+        internal override void InitImpl()
         {
             // get the GUID of the AudioStreamVolume interface from Class Attributes.
             if (streamAudioVolumeGuid == Guid.Empty)
@@ -35,7 +33,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void PlatformSpecificDispose()
+        internal override void DisposeImpl()
         {
             if (mediaSession != null)
             {
@@ -198,10 +196,10 @@ namespace SiliconStudio.Xenko.Audio
         /// Load a new music into the media session. That is create a new session and a new topology and set the topology of the session.
         /// </summary>
         /// <param name="music"></param>
-        private void LoadNewMusic(SoundMusic music)
+        internal override void LoadMusic(SoundMusic music)
         {
-            if (currentMusic != null || mediaSession != null)
-                throw new AudioSystemInternalException("State of the audio engine invalid at the entry of LoadNewMusic.");
+            if (CurrentMusic != null || mediaSession != null)
+                throw new AudioSystemInternalException("State of the audio engine invalid at the entry of LoadMusic.");
 
             music.Stream.Position = 0;
             mediaInputByteStream = new ByteStream(music.Stream);
@@ -210,7 +208,7 @@ namespace SiliconStudio.Xenko.Audio
             mediaSessionCallback = new MediaSessionCallback(mediaSession, OnMediaSessionEvent);
             mediaSession.SetTopology(SessionSetTopologyFlags.None, topology);
 
-            currentMusic = music;
+            CurrentMusic = music;
         }
 
         private void OnMediaSessionEvent(MediaEvent mEvent)
@@ -238,14 +236,14 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
         
-        private void UpdateMusicVolume()
+        internal override void UpdateMusicVolume()
         {
             // volume factor used in order to adjust Sound Music and Sound Effect Maximum volumes
             const float volumeAdjustFactor = 0.5f;
 
             if (streamVolume != null)
             {
-                var vol = volumeAdjustFactor * currentMusic.Volume;
+                var vol = volumeAdjustFactor * CurrentMusic.Volume;
 
                 // Query number of channels
                 var channelCount = streamVolume.ChannelCount;
@@ -258,36 +256,37 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
         
-        private void PauseCurrentMusic()
+        internal override void PauseMusic()
         {
             mediaSession.Pause();
         }
 
-        private void StopCurrentMusic()
+        internal override void StopMusic()
         {
             mediaSession.Stop();
         }
 
-        private void StartCurrentMusic()
+        internal override void StartMusic()
         {
             mediaSession.Start(null, new Variant ());
         }
 
-        private void ResetMusicPlayer()
+        internal override void ResetMusicPlayer()
         {
+            base.ResetMusicPlayer();
             mediaSession.Close();
         }
         
-        private void RestartCurrentMusic()
+        internal override void RestartMusic()
         {
             mediaSession.Start(null, new Variant { ElementType = VariantElementType.Long, Type = VariantType.Default, Value = (long)0 });
         }
 
-        private void PlatformSpecificProcessMusicReady()
+        internal override void ProcessMusicReadyImpl()
         {
             // The topology of the MediaSession is ready.
 
-            if (!currentMusic.IsDisposed) // disposal of the music can happen between the call to Play and its ready-to-play state notification
+            if (!CurrentMusic.IsDisposed) // disposal of the music can happen between the call to Play and its ready-to-play state notification
             {
                 // Query the Volume interface associated to the new topology
                 IntPtr volumeObj;
@@ -296,7 +295,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessMusicError(SoundMusicEventNotification eventNotification)
+        internal override void ProcessMusicError(SoundMusicEventNotification eventNotification)
         {
             var mediaEvent = (MediaEvent)eventNotification.EventData;
 
@@ -308,15 +307,15 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessMusicMetaData()
+        internal override void ProcessMusicMetaData()
         {
             throw new NotImplementedException();
         }
 
-        private void ProcessPlayerClosed()
+        internal override void ProcessPlayerClosed()
         {
             // The session finished to close, we have to dispose all related object.
-            currentMusic = null;
+            CurrentMusic = null;
 
             mediaSessionCallback.Dispose();
 

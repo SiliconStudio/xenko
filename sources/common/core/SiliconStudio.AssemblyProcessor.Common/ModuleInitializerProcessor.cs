@@ -64,7 +64,7 @@ namespace SiliconStudio.AssemblyProcessor
             if (staticConstructor == null)
             {
                 staticConstructor = new MethodDefinition(".cctor",
-                                                            MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+                                                            MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
                                                             voidType);
                 staticConstructor.Body.GetILProcessor().Append(Instruction.Create(OpCodes.Ret));
 

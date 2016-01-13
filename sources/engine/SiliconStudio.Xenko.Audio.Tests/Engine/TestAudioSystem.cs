@@ -26,10 +26,10 @@ namespace SiliconStudio.Xenko.Audio.Tests.Engine
         [Test]
         public void TestAudioEngine()
         {
-            TestUtilities.CreateAndRunGame(TestAudioEngineImpl, TestUtilities.ExitGame);
+            TestUtilities.CreateAndRunGame(TestInitializeAudioEngine, TestUtilities.ExitGame);
         }
 
-        private void TestAudioEngineImpl(Game game)
+        private void TestInitializeAudioEngine(Game game)
         {
             var audio = game.Audio;
             AudioEngine audioEngine = null;

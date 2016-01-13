@@ -78,7 +78,6 @@ namespace SiliconStudio.Xenko.Games
         private FormWindowState previousWindowState;
         //private DisplayMonitor monitor;
         private bool isUserResizing;
-        private bool isSizeChangedWithoutResizeBegin;
         private bool isActive;
 
         private void GameForm_MinimizedActions(SDL.SDL_WindowEvent e)
@@ -102,21 +101,9 @@ namespace SiliconStudio.Xenko.Games
         private void GameForm_RestoredActions(SDL.SDL_WindowEvent e)
         {
             if (previousWindowState == FormWindowState.Minimized)
-                ResumeRendering?.Invoke(this, EventArgs.Empty);
-
-            var newSize = Size;
-
-            if (!isUserResizing && (!newSize.Equals(cachedSize) || previousWindowState == FormWindowState.Maximized))
             {
-                previousWindowState = FormWindowState.Normal;
-
-                // Only update when cachedSize is != 0
-                if (cachedSize != Size2.Empty)
-                {
-                    isSizeChangedWithoutResizeBegin = true;
-                }
+                ResumeRendering?.Invoke(this, EventArgs.Empty);
             }
-
             previousWindowState = FormWindowState.Normal;
         }
 

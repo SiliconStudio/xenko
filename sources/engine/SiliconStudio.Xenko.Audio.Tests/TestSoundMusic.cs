@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             Game.InitializeAssetDatabase();
 
-            defaultEngine = new AudioEngine();
+            defaultEngine = AudioEngineFactory.NewAudioEngine();
 
             monoInstance = SoundMusic.Load(defaultEngine, OpenDataBaseStream("MusicBip"));
             stereoInstance = SoundMusic.Load(defaultEngine, OpenDataBaseStream("MusicStereo"));
@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
             // 2. Check that the load function throws "ObjectDisposedException" when the audio engine is disposed.
-            var disposedEngine = new AudioEngine();
+            var disposedEngine = AudioEngineFactory.NewAudioEngine();
             disposedEngine.Dispose();
             Assert.Throws<ObjectDisposedException>(() => SoundMusic.Load(disposedEngine, OpenDataBaseStream("EffectToneA")), "SoundMusic.Load did not throw 'ObjectDisposedException' when called with a displosed audio engine.");
             

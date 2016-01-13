@@ -7,7 +7,7 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    public class RectangleFEditor : VectorEditor<RectangleF>
+    public class RectangleFEditor : VectorEditorBase<RectangleF>
     {
         /// <summary>
         /// Identifies the <see cref="RectX"/> dependency property.
