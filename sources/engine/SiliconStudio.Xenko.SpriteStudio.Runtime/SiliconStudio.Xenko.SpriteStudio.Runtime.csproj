@@ -16,10 +16,14 @@
     <SiliconStudioAssemblyProcessorOptions>--serialization --parameter-key</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="Module.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

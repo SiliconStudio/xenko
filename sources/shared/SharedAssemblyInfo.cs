@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #pragma warning disable 436 // The type 'type' in 'assembly' conflicts with the imported type 'type2' in 'assembly' (due to XenkoVersion being duplicated)
 using System;
@@ -35,7 +35,7 @@ namespace SiliconStudio
         /// <summary>
         /// The .NET current assembly version as text, not including pre-release (alpha, beta...) information.
         /// </summary>
-        public const string CurrentAssemblyAsText = "1.5.1";
+        public const string CurrentAssemblyAsText = "1.5.2";
 
         /// <summary>
         /// The Store current version as text, including pre-release (alpha, beta...) information

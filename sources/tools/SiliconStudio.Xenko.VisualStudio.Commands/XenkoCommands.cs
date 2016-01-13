@@ -9,7 +9,6 @@ using EnvDTE;
 using EnvDTE80;
 using Microsoft.VisualStudio.Shell;
 using Microsoft.VisualStudio.Shell.Interop;
-using Microsoft.VisualStudio.TextTemplating.VSHost;
 
 using NShader;
 

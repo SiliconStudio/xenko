@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 
 using NUnit.Framework;
@@ -23,10 +24,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private Texture inputCubemap;
         private Texture outputCubemap;
+        private Texture outputCubemapNoCompute;
         private Texture displayedCubemap;
         private Texture[] displayedViews = new Texture[6];
 
         private RadiancePrefilteringGGX radianceFilter;
+        private RadiancePrefilteringGGXNoCompute radianceFilterNoCompute;
 
         private Int2 screenSize = new Int2(768, 1024);
 
@@ -42,6 +45,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private bool filterAtEachFrame = true;
         private bool hasBeenFiltered;
+        private bool useComputeShader;
+        private bool showOutput = true;
 
         public TestRadiancePrefilteringGgx() : this(false)
         {
@@ -50,7 +55,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         public TestRadiancePrefilteringGgx(bool filterAtEachFrame)
         {
-            CurrentVersion = 2;
+            CurrentVersion = 3;
             this.filterAtEachFrame = filterAtEachFrame;
             GraphicsDeviceManager.PreferredBackBufferWidth = screenSize.X;
             GraphicsDeviceManager.PreferredBackBufferHeight = screenSize.Y;
@@ -71,12 +76,14 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             drawEffectContext = RenderContext.GetShared(Services);
             radianceFilter = new RadiancePrefilteringGGX(drawEffectContext);
+            radianceFilterNoCompute = new RadiancePrefilteringGGXNoCompute(drawEffectContext);
             skipHighestLevel = radianceFilter.DoNotFilterHighestLevel;
 
             spriteBatch = new SpriteBatch(GraphicsDevice);
             inputCubemap = Asset.Load<Texture>("CubeMap");
             outputCubemap = Texture.New2D(GraphicsDevice, outputSize, outputSize, MathUtil.Log2(outputSize), PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.UnorderedAccess, 6).DisposeBy(this);
-            CreateViewsFor(outputCubemap);
+            outputCubemapNoCompute = Texture.New2D(GraphicsDevice, outputSize, outputSize, MathUtil.Log2(outputSize), PixelFormat.R16G16B16A16_Float, TextureFlags.ShaderResource | TextureFlags.RenderTarget, 6).DisposeBy(this);
+            CreateViews();
 
             //RenderSystem.Pipeline.Renderers.Add(new DelegateRenderer(Services) { Render = PrefilterCubeMap });
             //RenderSystem.Pipeline.Renderers.Add(new RenderTargetSetter(Services) { ClearColor = Color.Zero });
@@ -88,12 +95,24 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (!filterAtEachFrame && hasBeenFiltered)
                 return;
 
-            radianceFilter.DoNotFilterHighestLevel = skipHighestLevel;
-            radianceFilter.MipmapGenerationCount = mipmapCount;
-            radianceFilter.SamplingsCount = samplingCounts;
-            radianceFilter.RadianceMap = inputCubemap;
-            radianceFilter.PrefilteredRadiance = outputCubemap;
-            radianceFilter.Draw();
+            if (useComputeShader)
+            {
+                radianceFilter.DoNotFilterHighestLevel = skipHighestLevel;
+                radianceFilter.MipmapGenerationCount = mipmapCount;
+                radianceFilter.SamplingsCount = samplingCounts;
+                radianceFilter.RadianceMap = inputCubemap;
+                radianceFilter.PrefilteredRadiance = outputCubemap;
+                radianceFilter.Draw();
+            }
+            else
+            {
+                radianceFilterNoCompute.DoNotFilterHighestLevel = skipHighestLevel;
+                radianceFilterNoCompute.MipmapGenerationCount = mipmapCount;
+                radianceFilterNoCompute.SamplingsCount = samplingCounts;
+                radianceFilterNoCompute.RadianceMap = inputCubemap;
+                radianceFilterNoCompute.PrefilteredRadiance = outputCubemapNoCompute;
+                radianceFilterNoCompute.Draw();
+            }
 
             hasBeenFiltered = true;
         }
@@ -146,10 +165,22 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 DisplayNextMipmapLevel();
 
             if (Input.IsKeyPressed(Keys.I))
-                CreateViewsFor(inputCubemap);
+            {
+                showOutput = false;
+                CreateViews();
+            }
 
             if (Input.IsKeyPressed(Keys.O))
-                CreateViewsFor(outputCubemap);
+            {
+                showOutput = true;
+                CreateViews();
+            }
+
+            if (Input.IsKeyPressed(Keys.C))
+            {
+                useComputeShader = !useComputeShader;
+                CreateViews();
+            }
 
             if (Input.IsKeyPressed(Keys.S))
                 SaveTexture(GraphicsDevice.BackBuffer, "RadiancePrefilteredGGXCross_level{0}.png".ToFormat(displayedLevel));
@@ -174,6 +205,18 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             displayedLevel = Math.Min(mipmapCount - 1, displayedLevel + 1);
             CreateViewsFor(displayedCubemap);
+        }
+
+        private void CreateViews()
+        {
+            if (showOutput)
+            {
+                CreateViewsFor(useComputeShader ? outputCubemap : outputCubemapNoCompute);
+            }
+            else
+            {
+                CreateViewsFor(inputCubemap);
+            }
         }
 
         private void CreateViewsFor(Texture texture)

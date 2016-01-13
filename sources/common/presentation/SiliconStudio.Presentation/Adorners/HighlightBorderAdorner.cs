@@ -1,5 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Media;
@@ -11,9 +12,6 @@ namespace SiliconStudio.Presentation.Adorners
     /// </summary>
     public class HighlightBorderAdorner : Adorner
     {
-        private Brush renderBrush;
-        private Pen renderPen;
-
         /// <summary>
         /// Identifies the <see cref="AcceptBorderBrush"/> dependency property.
         /// </summary>
@@ -187,25 +185,46 @@ namespace SiliconStudio.Presentation.Adorners
         protected override void OnRender(DrawingContext drawingContext)
         {
             var adornedElementRect = new Rect(AdornedElement.RenderSize);
-
+            Brush renderBrush = null;
+            Pen renderPen = null;
             switch (State)
             {
                 case HighlightAdornerState.HighlightAccept:
-                    renderBrush = AcceptBackgroundBrush.Clone();
-                    renderBrush.Opacity = AcceptBackgroundOpacity;
-                    renderPen = new Pen(AcceptBorderBrush, AcceptBorderThickness);
+                    if (AcceptBackgroundBrush != null)
+                    {
+                        renderBrush = AcceptBackgroundBrush.Clone();
+                        renderBrush.Opacity = AcceptBackgroundOpacity;
+                    }
+                    if (AcceptBorderBrush != null)
+                    {
+                        renderPen = new Pen(AcceptBorderBrush, AcceptBorderThickness);
+                    }
                     drawingContext.DrawRoundedRectangle(renderBrush, renderPen, adornedElementRect, AcceptBorderCornerRadius, AcceptBorderCornerRadius);
                     break;
+
                 case HighlightAdornerState.HighlightRefuse:
-                    renderBrush = RefuseBackgroundBrush.Clone();
-                    renderBrush.Opacity = RefuseBackgroundOpacity;
-                    renderPen = new Pen(RefuseBorderBrush, RefuseBorderThickness);
+                    if (RefuseBackgroundBrush != null)
+                    {
+                        renderBrush = RefuseBackgroundBrush.Clone();
+                        renderBrush.Opacity = RefuseBackgroundOpacity;
+                    }
+                    if (RefuseBorderBrush != null)
+                    {
+                        renderPen = new Pen(RefuseBorderBrush, RefuseBorderThickness);
+                    }
                     drawingContext.DrawRoundedRectangle(renderBrush, renderPen, adornedElementRect, RefuseBorderCornerRadius, RefuseBorderCornerRadius);
                     break;
+
                 case HighlightAdornerState.Visible:
-                    renderBrush = BackgroundBrush.Clone();
-                    renderBrush.Opacity = BackgroundOpacity;
-                    renderPen = new Pen(BorderBrush, BorderThickness);
+                    if (BackgroundBrush != null)
+                    {
+                        renderBrush = BackgroundBrush.Clone();
+                        renderBrush.Opacity = BackgroundOpacity;
+                    }
+                    if (BorderBrush != null)
+                    {
+                        renderPen = new Pen(BorderBrush, BorderThickness);
+                    }
                     drawingContext.DrawRoundedRectangle(renderBrush, renderPen, adornedElementRect, BorderCornerRadius, BorderCornerRadius);
                     break;
             }

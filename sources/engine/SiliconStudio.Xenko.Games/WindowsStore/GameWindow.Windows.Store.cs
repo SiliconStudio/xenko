@@ -203,6 +203,14 @@ namespace SiliconStudio.Xenko.Games
             //clientBounds = new DrawingRectangle(0, 0, (int)swapChainPanel.ActualWidth, (int)swapChainPanel.ActualHeight);
             swapChainPanel.SizeChanged += swapChainPanel_SizeChanged;
             swapChainPanel.CompositionScaleChanged += swapChainPanel_CompositionScaleChanged;
+
+            coreWindow.SizeChanged += CurrentWindowOnSizeChanged;
+        }
+
+        private void CurrentWindowOnSizeChanged(object sender, WindowSizeChangedEventArgs windowSizeChangedEventArgs)
+        {
+            var bounds = windowSizeChangedEventArgs.Size;
+            HandleSizeChanged(sender, bounds);
         }
 
         void swapChainPanel_CompositionScaleChanged(SwapChainPanel sender, object args)
@@ -210,9 +218,9 @@ namespace SiliconStudio.Xenko.Games
             OnClientSizeChanged(sender, EventArgs.Empty);
         }
 
-        private void swapChainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
+        private void HandleSizeChanged(object sender, Windows.Foundation.Size newSize)
         {
-            var bounds = e.NewSize;
+            var bounds = newSize;
 
             // Only apply SwapChain resize when effective orientation is matching current orientation
             // TODO: We might want to handle borders if excplitiely asked in game user settings asset (fixed aspect ratio)
@@ -257,6 +265,12 @@ namespace SiliconStudio.Xenko.Games
             }
 
             OnClientSizeChanged(sender, EventArgs.Empty);
+        }
+
+        private void swapChainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            var bounds = e.NewSize;
+            HandleSizeChanged(sender, bounds);
         }
 
         internal override void Resize(int width, int height)

@@ -29,6 +29,11 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public static readonly DependencyProperty LengthProperty = DependencyProperty.Register("Length", typeof(float), typeof(Vector3Editor), new FrameworkPropertyMetadata(0.0f, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnComponentPropertyChanged, CoerceLengthValue));
 
+        static Vector3Editor()
+        {
+            DefaultStyleKeyProperty.OverrideMetadata(typeof(Vector3Editor), new FrameworkPropertyMetadata(typeof(Vector3Editor)));
+        }
+
         /// <summary>
         /// Gets or sets the X component (in Cartesian coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
@@ -48,7 +53,7 @@ namespace SiliconStudio.Presentation.Controls
         /// Gets or sets the length (in polar coordinate system) of the <see cref="Vector3"/> associated to this control.
         /// </summary>
         public float Length { get { return (float)GetValue(LengthProperty); } set { SetValue(LengthProperty, value); } }
-
+        
         /// <inheritdoc/>
         protected override void UpdateComponentsFromValue(Vector3 value)
         {
@@ -61,21 +66,36 @@ namespace SiliconStudio.Presentation.Controls
         /// <inheritdoc/>
         protected override Vector3 UpdateValueFromComponent(DependencyProperty property)
         {
-            if (property == LengthProperty)
+            switch (EditingMode)
             {
-                var newValue = Value;
-                newValue.Normalize();
-                newValue *= Length;
-                return newValue;
-            }
-            if (property == XProperty)
-                return new Vector3(X, Value.Y, Value.Z);
-            if (property == YProperty)
-                return new Vector3(Value.X, Y, Value.Z);
-            if (property == ZProperty)
-                return new Vector3(Value.X, Value.Y, Z);
+                case VectorEditingMode.Normal:
+                    if (property == XProperty)
+                        return new Vector3(X, Value.Y, Value.Z);
+                    if (property == YProperty)
+                        return new Vector3(Value.X, Y, Value.Z);
+                    if (property == ZProperty)
+                        return new Vector3(Value.X, Value.Y, Z);
+                    break;
 
-            throw new ArgumentException("Property unsupported by method UpdateValueFromComponent.");
+                case VectorEditingMode.AllComponents:
+                    if (property == XProperty)
+                        return new Vector3(X);
+                    if (property == YProperty)
+                        return new Vector3(Y);
+                    if (property == ZProperty)
+                        return new Vector3(Z);
+                    break;
+
+                case VectorEditingMode.Length:
+                    if (property == LengthProperty)
+                        return FromLength(Value, Length);
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(EditingMode));
+            }
+
+            throw new ArgumentException($"Property {property} is unsupported by method {nameof(UpdateValueFromComponent)} in {EditingMode} mode.");
         }
 
         /// <inheritdoc/>
@@ -91,6 +111,14 @@ namespace SiliconStudio.Presentation.Controls
         {
             baseValue = CoerceComponentValue(sender, baseValue);
             return Math.Max(0.0f, (float)baseValue);
+        }
+
+        private static Vector3 FromLength(Vector3 value, float length)
+        {
+            var newValue = value;
+            newValue.Normalize();
+            newValue *= length;
+            return newValue;
         }
     }
 }

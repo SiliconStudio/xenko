@@ -16,10 +16,14 @@
     <SiliconStudioAssemblyProcessorOptions>--auto-module-initializer --serialization</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>Windows</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
