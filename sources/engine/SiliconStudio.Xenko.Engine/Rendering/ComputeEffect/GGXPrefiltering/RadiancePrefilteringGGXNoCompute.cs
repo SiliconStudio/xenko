@@ -12,17 +12,17 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
     /// <summary>
     /// A class for radiance pre-filtering using the GGX distribution function.
     /// </summary>
-    public class RadiancePrefilteringGGX : DrawEffect
+    public class RadiancePrefilteringGGXNoCompute : DrawEffect
     {
         private int samplingsCount;
 
-        private readonly ComputeEffectShader computeShader;
+        private readonly ImageEffectShader shader;
 
         /// <summary>
         /// Gets or sets the boolean indicating if the highest level of mipmaps should be let as-is or pre-filtered.
         /// </summary>
         public bool DoNotFilterHighestLevel { get; set; }
-        
+
         /// <summary>
         /// Gets or sets the input radiance map to pre-filter.
         /// </summary>
@@ -42,10 +42,10 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
         /// Create a new instance of the class.
         /// </summary>
         /// <param name="context">the context</param>
-        public RadiancePrefilteringGGX(RenderContext context)
+        public RadiancePrefilteringGGXNoCompute(RenderContext context)
             : base(context, "RadiancePrefilteringGGX")
         {
-            computeShader = new ComputeEffectShader(context) { ShaderSourceName = "RadiancePrefilteringGGXEffect" };
+            shader = new ImageEffectShader("RadiancePrefilteringGGXNoComputeEffect");
             DoNotFilterHighestLevel = true;
             samplingsCount = 1024;
         }
@@ -60,9 +60,9 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
             set
             {
                 if (value > 1024)
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
 
-                if(!MathUtil.IsPow2(value))
+                if (!MathUtil.IsPow2(value))
                     throw new ArgumentException("The provided value should be a power of 2");
 
                 samplingsCount = Math.Max(1, value);
@@ -72,14 +72,14 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
         protected override void DrawCore(RenderContext context)
         {
             var output = PrefilteredRadiance;
-            if(output == null || (output.Dimension != TextureDimension.Texture2D && output.Dimension != TextureDimension.TextureCube) || output.ArraySize != 6)
+            if (output == null || (output.Dimension != TextureDimension.Texture2D && output.Dimension != TextureDimension.TextureCube) || output.ArraySize != 6)
                 throw new NotSupportedException("Only array of 2D textures are currently supported as output");
 
-            if (!output.IsUnorderedAccess || output.IsRenderTarget)
-                throw new NotSupportedException("Only non-rendertarget unordered access textures are supported as output");
+            if (!output.IsRenderTarget)
+                throw new NotSupportedException("Only render targets are supported as output");
 
             var input = RadianceMap;
-            if(input == null || input.Dimension != TextureDimension.TextureCube)
+            if (input == null || input.Dimension != TextureDimension.TextureCube)
                 throw new NotSupportedException("Only cubemaps are currently supported as input");
 
             var roughness = 0f;
@@ -87,33 +87,34 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
             var levelSize = new Int2(output.Width, output.Height);
             var mipCount = MipmapGenerationCount == 0 ? output.MipLevels : MipmapGenerationCount;
 
-            for (int l = 0; l < mipCount; l++)
+            for (int mipLevel = 0; mipLevel < mipCount; mipLevel++)
             {
-                if (l == 0 && DoNotFilterHighestLevel && input.Width >= output.Width)
+                if (mipLevel == 0 && DoNotFilterHighestLevel && input.Width >= output.Width)
                 {
                     var inputLevel = MathUtil.Log2(input.Width / output.Width);
-                    for (int f = 0; f < 6; f++)
+                    for (int faceIndex = 0; faceIndex < 6; faceIndex++)
                     {
-                        var inputSubresource = inputLevel + f * input.MipLevels;
-                        var outputSubresource = 0 + f * output.MipLevels;
+                        var inputSubresource = inputLevel + faceIndex * input.MipLevels;
+                        var outputSubresource = 0 + faceIndex * output.MipLevels;
                         GraphicsDevice.CopyRegion(input, inputSubresource, null, output, outputSubresource);
                     }
                 }
                 else
                 {
-                    var outputView = output.ToTextureView(ViewType.MipBand, 0, l);
-
-                    computeShader.ThreadGroupCounts = new Int3(levelSize.X, levelSize.Y, faceCount);
-                    computeShader.ThreadNumbers = new Int3(SamplingsCount, 1, 1);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.Roughness, roughness);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.MipmapCount, input.MipLevels - 1);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.RadianceMap, input);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.RadianceMapSize, input.Width);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.FilteredRadiance, outputView);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXParams.NbOfSamplings, SamplingsCount);
-                    computeShader.Draw(context);
-
-                    outputView.Dispose();
+                    for (int faceIndex = 0; faceIndex < faceCount; faceIndex++)
+                    {
+                        using (var outputView = output.ToTextureView(ViewType.Single, faceIndex, mipLevel))
+                        {
+                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeShaderKeys.Face, faceIndex);
+                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeShaderKeys.Roughness, roughness);
+                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeShaderKeys.MipmapCount, input.MipLevels - 1);
+                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeShaderKeys.RadianceMap, input);
+                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeShaderKeys.RadianceMapSize, input.Width);
+                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeParams.NbOfSamplings, SamplingsCount);
+                            shader.SetOutput(outputView);
+                            shader.Draw(context);
+                        }
+                    }
                 }
 
                 if (mipCount > 1)

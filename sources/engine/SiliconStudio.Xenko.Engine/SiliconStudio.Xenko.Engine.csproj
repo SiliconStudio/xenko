@@ -109,6 +109,19 @@
     <Compile Include="Profiling\GcProfiling.cs" />
     <Compile Include="Rendering\Composers\DirectRenderFrameProvider.cs" />
     <Compile Include="Rendering\CameraCullingMode.cs" />
+    <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoCompute.cs" />
+    <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>RadiancePrefilteringGGXNoComputeEffect.xkfx</DependentUpon>
+    </Compile>
+    <Compile Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeShader.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DependentUpon>RadiancePrefilteringGGXNoComputeShader.xksl</DependentUpon>
+    </Compile>
     <Compile Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringNoCompute.cs" />
     <Compile Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputeEffect.cs">
       <AutoGen>True</AutoGen>
@@ -2327,6 +2340,14 @@
     <None Include="Rendering\BRDF\BRDFMicrofacet.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>BRDFMicrofacet.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>RadiancePrefilteringGGXNoComputeEffect.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\ComputeEffect\GGXPrefiltering\RadiancePrefilteringGGXNoComputeShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>RadiancePrefilteringGGXNoComputeShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\ComputeEffect\LambertianPrefiltering\LambertianPrefilteringSHNoComputeEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
