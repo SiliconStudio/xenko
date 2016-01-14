@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.ActionStack;
-using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Commands;
@@ -16,13 +15,11 @@ namespace SiliconStudio.Presentation.Quantum
         private class TokenData<TToken>
         {
             public readonly TToken Token;
-            public readonly TToken AdditionalToken;
             public readonly object Parameter;
 
-            public TokenData(TToken token, TToken additionalToken, object parameter)
+            public TokenData(TToken token, object parameter)
             {
                 Token = token;
-                AdditionalToken = additionalToken;
                 Parameter = parameter;
             }
         }
@@ -42,8 +39,6 @@ namespace SiliconStudio.Presentation.Quantum
         public override string Name => NodeCommand.Name;
 
         public override CombineMode CombineMode => NodeCommand.CombineMode;
-
-        public virtual CancellableCommandBase AdditionalCommand { get; set; }
         
         public INodeCommand NodeCommand { get; }
 
@@ -60,8 +55,7 @@ namespace SiliconStudio.Presentation.Quantum
             var newValue = NodeCommand.Undo(currentValue, nodeToken.Token, out redoToken);
             modelNode.Content.Update(newValue, index);
 
-            var additionalToken = AdditionalCommand?.Undo(nodeToken.AdditionalToken) ?? default(RedoToken);
-            return new RedoToken(new TokenData<RedoToken>(redoToken, additionalToken, nodeToken.Parameter));
+            return new RedoToken(new TokenData<RedoToken>(redoToken, nodeToken.Parameter));
         }
 
         public override UndoToken Redo(RedoToken redoToken)
@@ -77,12 +71,7 @@ namespace SiliconStudio.Presentation.Quantum
             var newValue = NodeCommand.Redo(currentValue, tokenData.Token, out token);
             modelNode.Content.Update(newValue, index);
 
-            var additionalToken = new UndoToken();
-            if (AdditionalCommand != null)
-            {
-                additionalToken = AdditionalCommand.Redo(tokenData.AdditionalToken);
-            }
-            return new UndoToken(token.CanUndo, new TokenData<UndoToken>(token, additionalToken, tokenData.Parameter));
+            return new UndoToken(token.CanUndo, new TokenData<UndoToken>(token, tokenData.Parameter));
         }
 
         protected override UndoToken Do(object parameter)
@@ -97,12 +86,7 @@ namespace SiliconStudio.Presentation.Quantum
             var newValue = NodeCommand.Execute(currentValue, parameter, out token);
             modelNode.Content.Update(newValue, index);
 
-            var additionalToken = new UndoToken();
-            if (AdditionalCommand != null)
-            {
-                additionalToken = AdditionalCommand.Invoke(null);
-            }
-            return new UndoToken(token.CanUndo, new TokenData<UndoToken>(token, additionalToken, parameter));
+            return new UndoToken(token.CanUndo, new TokenData<UndoToken>(token, parameter));
         }
     }
 }
