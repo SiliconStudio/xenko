@@ -18,27 +18,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
         }
     }
 
-    [DataContract()]
-    [DefaultEntityComponentProcessor(typeof(CustomEntityComponentProcessor<CustomEntityComponent>))]
-    [AllowMultipleComponent]
-    public sealed class CustomEntityComponent : CustomEntityComponentBase
-    {
-    }
-
-    [DataContract()]
-    public abstract class CustomEntityComponentBase : EntityComponent
-    {
-        [DataMemberIgnore]
-        public Action<EntityComponent> ComponentDataGenerated;
-
-        [DataMemberIgnore]
-        public Action<EntityComponent> EntityComponentAdded;
-
-        [DataMemberIgnore]
-        public Action<EntityComponent> EntityComponentRemoved;
-    }
-    
-
     public class CustomEntityComponentProcessor<TCustom> : EntityProcessor<TCustom> where TCustom : CustomEntityComponentBase
     {
         protected override TCustom GenerateComponentData(Entity entity, TCustom component)
