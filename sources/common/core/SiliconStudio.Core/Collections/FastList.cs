@@ -170,6 +170,7 @@ namespace SiliconStudio.Core.Collections
 
         public void RemoveAt(int index)
         {
+            if (index < 0 || index >= _size) throw new ArgumentOutOfRangeException(nameof(index));
             _size--;
             if (index < _size)
             {
@@ -195,9 +196,14 @@ namespace SiliconStudio.Core.Collections
 
         public T this[int index]
         {
-            get { return Items[index]; }
+            get
+            {
+                if (index < 0 || index >= _size) throw new ArgumentOutOfRangeException(nameof(index));
+                return Items[index];
+            }
             set
             {
+                if (index < 0 || index >= _size) throw new ArgumentOutOfRangeException(nameof(index));
                 Items[index] = value;
             }
         }
