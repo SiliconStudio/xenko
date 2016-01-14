@@ -83,10 +83,27 @@ namespace SiliconStudio.Core.Collections
 
         public int Count => size;
 
+        /// <summary>
+        /// Gets or sets the element <see cref="T"/> at the specified index.
+        /// </summary>
+        /// <param name="index">The index.</param>
+        /// <value>
+        /// The element <see cref="T"/>.
+        /// </value>
+        /// <returns>The element at the specified index</returns>
+        /// <exception cref="System.ArgumentOutOfRangeException">If index is out of range</exception>
         public T this[int index]
         {
-            get { return items[index]; }
-            set { SetItem(index, value); }
+            get
+            {
+                if (index < 0 || index >= size) throw new ArgumentOutOfRangeException(nameof(index));
+                return items[index];
+            }
+            set
+            {
+                if (index < 0 || index >= size) throw new ArgumentOutOfRangeException(nameof(index));
+                SetItem(index, value);
+            }
         }
 
         public void Add(T item)
@@ -135,6 +152,7 @@ namespace SiliconStudio.Core.Collections
 
         public void Insert(int index, T item)
         {
+            if (index < 0 || index > size) throw new ArgumentOutOfRangeException(nameof(index));
             InsertItem(index, item);
         }
 
@@ -151,6 +169,7 @@ namespace SiliconStudio.Core.Collections
 
         public void RemoveAt(int index)
         {
+            if (index < 0 || index >= size) throw new ArgumentOutOfRangeException(nameof(index));
             RemoveItem(index);
         }
 
