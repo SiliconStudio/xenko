@@ -95,7 +95,7 @@ class DeviceConnectionHelper():
 	
 			# Connect to router
 			router_sock = socket.socket()
-			router_sock.connect((remotehost, 31244))
+			router_sock.connect((remotehost, 31254))
 			
 			print "Starting relay between iOS device and router"
 			
@@ -114,7 +114,7 @@ class DeviceConnectionHelper():
 		self.device.alive = True
 		while self.device.alive and alive:
 			try:
-				device_sock = mux.connect(self.device, 31245)
+				device_sock = mux.connect(self.device, 31255)
 
 				# Start a thread for this connection
 				thread = threading.Thread(target = lambda: self.start_connection(device_sock))
