@@ -3,6 +3,8 @@
 
 using System;
 using NUnit.Framework;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
@@ -28,13 +30,32 @@ namespace SiliconStudio.Xenko.Engine.Tests
             entity.Components.Add(transform);
             Assert.NotNull(entity.Transform);
 
-            Assert.Catch<InvalidOperationException>(() => entity.Components.Add(new TransformComponent()));
+            Assert.Catch<InvalidOperationException>(() => entity.Components.Add(new TransformComponent()), $"Cannot add a component of type [{typeof(TransformComponent)}] multiple times");
 
-
-
+            // Replace Transform
+            var custom = new CustomEntityComponent();
+            entity.Components[0] = custom;
+            Assert.Null(entity.Transform);
         }
+    }
 
+    [DataContract()]
+    [DefaultEntityComponentProcessor(typeof(CustomEntityComponentProcessor<CustomEntityComponent>))]
+    [AllowMultipleComponent]
+    public sealed class CustomEntityComponent : CustomEntityComponentBase
+    {
+    }
 
+    [DataContract()]
+    public abstract class CustomEntityComponentBase : EntityComponent
+    {
+        [DataMemberIgnore]
+        public Action<EntityComponent> ComponentDataGenerated;
 
+        [DataMemberIgnore]
+        public Action<EntityComponent> EntityComponentAdded;
+
+        [DataMemberIgnore]
+        public Action<EntityComponent> EntityComponentRemoved;
     }
 }
