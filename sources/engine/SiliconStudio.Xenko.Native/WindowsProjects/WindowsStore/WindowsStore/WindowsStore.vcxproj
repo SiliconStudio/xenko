@@ -229,7 +229,7 @@
     <ClCompile Include="dllmain.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <Object Include="..\..\..\obj\*.obj" />
+    <Object Include="$(MSBuildThisFileDirectory)\..\..\..\obj\*.obj" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
