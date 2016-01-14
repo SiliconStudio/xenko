@@ -35,12 +35,6 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <inheritdoc/>
-        protected internal override void OnSystemAdd()
-        {
-            
-        }
-
-        /// <inheritdoc/>
         protected override void OnEntityComponentAdding(Entity entity, TransformComponent component, TransformComponent data)
         {
             foreach (var child in data.Children)
