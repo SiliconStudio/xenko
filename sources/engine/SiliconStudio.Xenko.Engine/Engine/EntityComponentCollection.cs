@@ -144,9 +144,15 @@ namespace SiliconStudio.Xenko.Engine
 
             var onlySingleComponent = !attributes.AllowMultipleComponent;
 
+            EntityComponent previousItem = null;
             for (int i = 0; i < Count; i++)
             {
                 var existingItem = this[i];
+                if (index == i)
+                {
+                    previousItem = existingItem;
+                }
+
                 if (ReferenceEquals(existingItem, item) && i != index)
                 {
                     throw new InvalidOperationException($"Cannot add a same component multiple times. Already set at index [{i}]");
@@ -165,16 +171,11 @@ namespace SiliconStudio.Xenko.Engine
             var transform = item as TransformComponent;
             if (transform != null)
             {
-                if (index != 0)
-                {
-                    throw new InvalidOperationException("Only one TransformComponent is allowed");
-                }
-
                 entity.transform = transform;
-            }
-            else if (index == 0)
+            } else if (previousItem is TransformComponent)
             {
-                throw new InvalidOperationException("Only TransformComponent can be added first");
+                // If previous item was a transform component but we are actually replacing it, we should 
+                entity.transform = null;
             }
 
             item.Entity = entity;
