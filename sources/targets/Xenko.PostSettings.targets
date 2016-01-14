@@ -24,14 +24,26 @@
               </ItemGroup>
             </When>
           </Choose>
+          <Choose>
+            <When Condition="'$(AutoIncludeSystemAssembly)' != 'true'">
+              <ItemGroup>
+                <Reference Include="System.Data" />
+                <Reference Include="System.Xaml" />
+              </ItemGroup>
+            </When>
+          </Choose>
+          <Choose>
+            <When Condition="'$(SiliconStudioRuntime)' == ''">
+              <ItemGroup>
+                <Reference Include="PresentationFramework" />
+                <Reference Include="PresentationCore" />
+                <Reference Include="WindowsBase" />
+              </ItemGroup>
+            </When>
+          </Choose>
           <ItemGroup>
-            <Reference Include="System.Data" />
             <Reference Condition="($(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))) OR ($(SiliconStudioUI.Contains('OPENTK')) AND '$(SiliconStudioRuntime)' == '')" Include="System.Drawing" />
             <Reference Condition="$(SiliconStudioUI.Contains('WINFORMS')) OR $(SiliconStudioUI.Contains('WPF'))" Include="System.Windows.Forms" />
-            <Reference Include="PresentationFramework" />
-            <Reference Include="PresentationCore" />
-            <Reference Include="WindowsBase" />
-            <Reference Include="System.Xaml" />
           </ItemGroup>
         </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Android' or '$(SiliconStudioPlatform)' == 'iOS'">
