@@ -15,6 +15,13 @@ namespace SiliconStudio.ActionStack
         IReadOnlyCollection<IActionItem> ActionItems { get; }
 
         /// <summary>
+        /// Gets or sets whether the order of contained action items should be reversed when undoing this action. 
+        /// </summary>
+        /// <remarks>The default value must be <c>true</c> in implementations.</remarks>
+        /// <remarks>In some advanced use cases it is possible that the actions must be undone in the same order that they were done in the first place.</remarks>
+        bool ReverseOrderOnUndo { get; set; }
+
+        /// <summary>
         /// Gets whether the given action item is contained in this aggregate.
         /// </summary>
         /// <param name="actionItem">The action item to look for.</param>
