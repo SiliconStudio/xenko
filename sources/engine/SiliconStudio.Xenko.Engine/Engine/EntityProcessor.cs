@@ -25,21 +25,6 @@ namespace SiliconStudio.Xenko.Engine
         public PropertyContainer Tags;
 
         /// <summary>
-        /// Gets or sets a value indicating whether this <see cref="EntityProcessor"/> is enabled.
-        /// </summary>
-        public bool Enabled { get; set; }
-
-        /// <summary>
-        /// Gets the current entity manager.
-        /// </summary>
-        public EntityManager EntityManager { get; internal set; }
-
-        /// <summary>
-        /// Gets the services.
-        /// </summary>
-        public IServiceRegistry Services { get; internal set; }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="EntityProcessor"/> class.
         /// </summary>
         /// <param name="mainComponentType">Type of the main component.</param>
@@ -79,12 +64,18 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="EntityProcessor"/> is enabled.
+        /// </summary>
+        public bool Enabled { get; set; }
+
+        /// <summary>
         /// Gets the primary component type handled by this processor
         /// </summary>
         public Type MainComponentType { get; }
 
-        /// <summary>Gets the required components for an entity to be added to this entity processor.</summary>
-        /// <value>The required keys.</value>
+        /// <summary>
+        /// Gets the required components for an entity to be added to this entity processor.
+        /// </summary>
         public TypeInfo[] RequiredTypes { get; }
 
         /// <summary>
@@ -95,8 +86,18 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets or sets the order of this processor.
         /// </summary>
-        /// <value>The order.</value>
         public int Order { get; protected set; }
+
+        /// <summary>
+        /// Gets the current entity manager.
+        /// </summary>
+        public EntityManager EntityManager { get; internal set; }
+
+        /// <summary>
+        /// Gets the services.
+        /// </summary>
+        public IServiceRegistry Services { get; internal set; }
+
 
         /// <summary>
         /// Performs work related to this processor.
