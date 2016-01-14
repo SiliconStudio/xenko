@@ -22,16 +22,10 @@ namespace SiliconStudio.Core.Collections
         private int size;
 
         private const int _defaultCapacity = 4;
-        private static readonly T[] _emptyArray;
-
-        static FastCollection()
-        {
-            _emptyArray = new T[0];
-        }
 
         public FastCollection()
         {
-            items = _emptyArray;
+            items = ArrayHelper<T>.Empty;
         }
 
         public FastCollection(IEnumerable<T> collection)
@@ -81,7 +75,7 @@ namespace SiliconStudio.Core.Collections
                     }
                     else
                     {
-                        items = _emptyArray;
+                        items = ArrayHelper<T>.Empty;
                     }
                 }
             }
