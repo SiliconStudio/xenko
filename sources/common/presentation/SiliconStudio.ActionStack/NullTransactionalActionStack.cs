@@ -100,12 +100,12 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
-        public void EndTransaction(string displayName)
+        public void EndTransaction(string displayName, bool reverseOrderOnUndo = true)
         {
         }
 
         /// <inheritdoc/>
-        public void EndTransaction(string displayName, Func<IReadOnlyCollection<IActionItem>, IActionItem> aggregateActionItems)
+        public void EndTransaction(string displayName, AggregateActionItemDelegate aggregateActionItems, bool reverseOrderOnUndo = true)
         {
         }
 

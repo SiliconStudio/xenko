@@ -16,16 +16,6 @@ namespace SiliconStudio.ActionStack
         private readonly IActionItem[] actionItems;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="AggregateActionItem"/> class with the given collection of action items.
-        /// </summary>
-        /// <param name="actionItems">The action items to add to this aggregation.</param>
-        [Obsolete("Use constructor that includes a name argument")]
-        public AggregateActionItem(params IActionItem[] actionItems)
-            : this(null, actionItems)
-        {
-        }
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="AggregateActionItem"/> class with the given name and collection of action items.
         /// </summary>
         /// <param name="name">The name of this action item.</param>
@@ -41,6 +31,9 @@ namespace SiliconStudio.ActionStack
 
         /// <inheritdoc/>
         public IReadOnlyCollection<IActionItem> ActionItems => actionItems;
+
+        /// <inheritdoc/>
+        public bool ReverseOrderOnUndo { get; set; } = true;
 
         /// <inheritdoc/>
         public override bool IsSaved { get { return ActionItems.All(x => x.IsSaved); } set { ActionItems.ForEach(x => x.IsSaved = value); } }
@@ -82,8 +75,16 @@ namespace SiliconStudio.ActionStack
         /// <inheritdoc/>
         protected override void UndoAction()
         {
-            for (var i = actionItems.Length - 1; i >= 0; --i)
-                actionItems[i].Undo();
+            if (ReverseOrderOnUndo)
+            {
+                for (var i = actionItems.Length - 1; i >= 0; --i)
+                    actionItems[i].Undo();
+            }
+            else
+            {
+                foreach (var actionItem in ActionItems)
+                    actionItem.Undo();
+            }
         }
 
         /// <inheritdoc/>
