@@ -61,6 +61,12 @@
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsPhone\WindowsPhone.sln" Targets="Rebuild" Properties="Configuration=$(Configuration);Platform=ARM" StopOnFirstFailure="true" />
   </Target>
   
+  <!-- The following condition $(SiliconStudioPackageBuild) should be removed but for now it prevents teamcity package build -->
+  <Target Name="CompileNativeClang_Windows_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows' and '$(SiliconStudioPackageBuild)' != 'true'" BeforeTargets="Clean">
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x86" />    
+    <MSBuild Projects="$(ProjectDir)\WindowsProjects\WindowsDesktop\WindowsDesktop.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x64" />
+  </Target>
+
   <Target Name="CompileNativeClang_Windows10_Clean" Condition="'$(SiliconStudioPlatform)' == 'Windows10'" BeforeTargets="Clean">
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x86" />
     <MSBuild Projects="$(ProjectDir)\WindowsProjects\Windows10\Windows10.sln" Targets="Clean" Properties="Configuration=$(Configuration);Platform=x64" />
