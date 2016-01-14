@@ -102,12 +102,8 @@ namespace SiliconStudio.Xenko.Engine
         protected override void RemoveItem(int index)
         {
             var item = this[index];
-            if (index == 0)
+            if (item is TransformComponent)
             {
-                if (Count > 1)
-                {
-                    throw new InvalidOperationException("Cannot remove TransformComponent when there are still other components attached");
-                }
                 entity.transform = null;
             }
             item.Entity = null;
@@ -120,10 +116,8 @@ namespace SiliconStudio.Xenko.Engine
 
         protected override void SetItem(int index, EntityComponent item)
         {
-            ValidateItem(index, item);
-
             // Detach entity from previous item
-            var oldItem = this[index];
+            var oldItem = ValidateItem(index, item);
             oldItem.Entity = null;
 
             base.SetItem(index, item);
@@ -132,7 +126,7 @@ namespace SiliconStudio.Xenko.Engine
             entity.ComponentsUpdated(index, oldItem, item);
         }
 
-        private void ValidateItem(int index, EntityComponent item)
+        private EntityComponent ValidateItem(int index, EntityComponent item)
         {
             if (item == null)
             {
@@ -152,14 +146,17 @@ namespace SiliconStudio.Xenko.Engine
                 {
                     previousItem = existingItem;
                 }
+                else
+                {
+                    if (ReferenceEquals(existingItem, item))
+                    {
+                        throw new InvalidOperationException($"Cannot add a same component multiple times. Already set at index [{i}]");
+                    }
 
-                if (ReferenceEquals(existingItem, item) && i != index)
-                {
-                    throw new InvalidOperationException($"Cannot add a same component multiple times. Already set at index [{i}]");
-                }
-                if (onlySingleComponent && componentType == existingItem.GetType())
-                {
-                    throw new InvalidOperationException($"Cannot add a the component of type [{componentType}] multiple times.");
+                    if (onlySingleComponent && componentType == existingItem.GetType())
+                    {
+                        throw new InvalidOperationException($"Cannot add a component of type [{componentType}] multiple times");
+                    }
                 }
             }
 
@@ -179,6 +176,8 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             item.Entity = entity;
+
+            return previousItem;
         }
     }
 }
