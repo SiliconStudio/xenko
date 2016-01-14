@@ -326,5 +326,10 @@ namespace SiliconStudio.Xenko.Engine
         protected EntityProcessor(params Type[] requiredAdditionalTypes) : base(requiredAdditionalTypes)
         {
         }
+
+        protected override bool IsAssociatedDataValid(Entity entity, TComponent component, TComponent associatedData)
+        {
+            return component == associatedData;
+        }
     }
 }
