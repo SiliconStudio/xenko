@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 if (processor.Enabled)
                 {
-                    using (Profiler.Begin(processor.UpdateProfilingKey, "Entities: {0}", enabledEntities.Count))
+                    using (processor.UpdateProfilingState = Profiler.Begin(processor.UpdateProfilingKey, "Entities: {0}", enabledEntities.Count))
                     {
                         processor.Update(gameTime);
                     }
@@ -157,7 +157,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 if (processor.Enabled)
                 {
-                    using (Profiler.Begin(processor.DrawProfilingKey))
+                    using (processor.DrawProfilingState = Profiler.Begin(processor.DrawProfilingKey))
                     {
                         processor.Draw(context);
                     }
