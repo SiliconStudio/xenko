@@ -43,9 +43,9 @@ namespace SiliconStudio.Quantum.Commands
         [Obsolete]
         object Execute(object currentValue, object parameter, out UndoToken undoToken);
 
-        Task<ActionItem> Execute2(IContent content, object index, object parameter);
+        Task<IActionItem> Execute2(IContent content, object index, object parameter);
 
-        Task<ActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
+        Task<IActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
 
         /// <summary>
         /// Undoes an invoke of the node command.

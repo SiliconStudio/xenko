@@ -1,38 +1,58 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using System.Collections.Generic;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
     public class RenameStringKeyCommand : SimpleNodeCommand
     {
-        private struct UndoTokenData
+        private class RenameStringKeyActionItem : SimpleNodeCommandActionItem
         {
-            private readonly object previousIndex;
+            private readonly string oldName;
+            private readonly string newName;
 
-            private readonly object newIndex;
-
-            public UndoTokenData(object previousIndex, object newIndex)
+            public RenameStringKeyActionItem(string name, IContent content, object index, string newName, IEnumerable<IDirtiable> dirtiables)
+                : base(name, content, index, dirtiables)
             {
-                this.previousIndex = previousIndex;
-                this.newIndex = newIndex;
+                oldName = (string)index;
+                this.newName = newName;
             }
 
-            public object PreviousIndex { get { return previousIndex; } }
+            public override bool Do()
+            {
+                RenameKey(oldName, newName);
+                return true;
+            }
 
-            public object NewIndex { get { return newIndex; } }
+            protected override void UndoAction()
+            {
+                RenameKey(newName, oldName);
+            }
+
+            private void RenameKey(string oldKey, string newKey)
+            {
+                var value = Content.Retrieve();
+                var dictionaryDescriptor = TypeDescriptorFactory.Default.Find(value.GetType()) as DictionaryDescriptor;
+                if (dictionaryDescriptor == null)
+                    throw new InvalidOperationException("This command cannot be executed on the given object.");
+
+                var removedObject = dictionaryDescriptor.GetValue(value, oldKey);
+                dictionaryDescriptor.Remove(value, oldKey);
+                dictionaryDescriptor.SetValue(value, newKey, removedObject);
+                Content.Update(value);
+            }
         }
 
         /// <inheritdoc/>
-        public override string Name { get { return "RenameStringKey"; } }
+        public override string Name => "RenameStringKey";
 
         /// <inheritdoc/>
-        public override CombineMode CombineMode { get { return CombineMode.AlwaysCombine; } }
-
+        public override CombineMode CombineMode => CombineMode.AlwaysCombine;
 
         /// <inheritdoc/>
         public override bool CanAttach(ITypeDescriptor descriptor, MemberDescriptorBase memberDescriptor)
@@ -48,38 +68,9 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null && dictionaryDescriptor.KeyType == typeof(string);
         }
 
-        /// <inheritdoc/>
-        protected override object Do(object currentValue, object parameter, out UndoToken undoToken)
+        protected override SimpleNodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
-            var dictionaryDescriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType()) as DictionaryDescriptor;
-            var tuple = parameter as Tuple<object, object>;
-            if (dictionaryDescriptor == null || tuple == null)
-                throw new InvalidOperationException("This command cannot be executed on the given object.");
-
-            var removedObject = dictionaryDescriptor.GetValue(currentValue, tuple.Item1);
-            undoToken = new UndoToken(true, new UndoTokenData(tuple.Item1, tuple.Item2));
-            dictionaryDescriptor.Remove(currentValue, tuple.Item1);
-            dictionaryDescriptor.SetValue(currentValue, tuple.Item2, removedObject);
-
-            return currentValue;
-        }
-
-        /// <inheritdoc/>
-        protected override object Undo(object currentValue, UndoToken undoToken)
-        {
-            var dictionaryDescriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType()) as DictionaryDescriptor;
-            var undoData = (UndoTokenData)undoToken.TokenValue;
-            if (dictionaryDescriptor == null)
-                throw new InvalidOperationException("This command cannot be cancelled on the given object.");
-
-            if (dictionaryDescriptor.ContainsKey(currentValue, undoData.PreviousIndex))
-                throw new InvalidOperationException("Unable to undo remove: the dictionary contains the key to re-add.");
-
-            var removedObject = dictionaryDescriptor.GetValue(currentValue, undoData.NewIndex);
-            dictionaryDescriptor.Remove(currentValue, undoData.NewIndex);
-            dictionaryDescriptor.SetValue(currentValue, undoData.PreviousIndex, removedObject);
-
-            return currentValue;
+            return new RenameStringKeyActionItem(Name, content, index, (string)parameter, dirtiables);
         }
     }
 }
