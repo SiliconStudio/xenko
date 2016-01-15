@@ -4,13 +4,17 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("EntityComponentCollection")]
+    [DebuggerTypeProxy(typeof(CollectionDebugView))]
+    [DebuggerDisplay("Count = {Count}")]
     public class EntityComponentCollection : FastCollection<EntityComponent>
     {
         private readonly Entity entity;
