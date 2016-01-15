@@ -34,6 +34,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             entityManager.EntityAdded += (sender, entity1) => entityAdded.Add(entity1);
             entityManager.EntityRemoved += (sender, entity1) => entityRemoved.Add(entity1);
 
+            // No processors registered by default
             Assert.AreEqual(0, entityManager.Processors.Count);
 
             // ================================================================
@@ -54,20 +55,22 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(entity, entityAdded[0]);
             Assert.AreEqual(0, entityRemoved.Count);
 
-            // We should have 2 processors
-            Assert.AreEqual(2, entityManager.Processors.Count);
+            // We should have 1 processor
+            Assert.AreEqual(1, entityManager.Processors.Count);
 
-            Assert.True(entityManager.Processors[0] is HierarchicalProcessor);
-            Assert.True(entityManager.Processors[1] is TransformProcessor);
+            var transformProcessor = entityManager.Processors[0] as TransformProcessor;
+            Assert.NotNull(transformProcessor);
+
+            Assert.AreEqual(1, transformProcessor.TransformationRoots.Count);
+            // TODO: Check the root entity.Transform
 
             // Check internal mapping of component types => EntityProcessor
             Assert.AreEqual(1, entityManager.MapComponentTypeToProcessors.Count);
             Assert.True(entityManager.MapComponentTypeToProcessors.ContainsKey(typeof(TransformComponent)));
 
             var processorListForTransformComponentType = entityManager.MapComponentTypeToProcessors[typeof(TransformComponent)];
-            Assert.AreEqual(2, processorListForTransformComponentType.Count);
-            Assert.True(processorListForTransformComponentType[0] is HierarchicalProcessor);
-            Assert.True(processorListForTransformComponentType[1] is TransformProcessor);
+            Assert.AreEqual(1, processorListForTransformComponentType.Count);
+            Assert.True(processorListForTransformComponentType[0] is TransformProcessor);
 
             // clear events collector
             componentTypes.Clear();
@@ -92,10 +95,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(0, entityRemoved.Count);
 
             // We should still have 2 processors
-            Assert.AreEqual(2, entityManager.Processors.Count);
-
-            Assert.True(entityManager.Processors[0] is HierarchicalProcessor);
-            Assert.True(entityManager.Processors[1] is TransformProcessor);
+            Assert.AreEqual(1, entityManager.Processors.Count);
+            Assert.AreEqual(2, transformProcessor.TransformationRoots.Count);
 
             componentTypes.Clear();
             entityAdded.Clear();
@@ -113,6 +114,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(0, entityAdded.Count);
             Assert.AreEqual(1, entityRemoved.Count);
             Assert.AreEqual(newEntity, entityRemoved[0]);
+
+            Assert.AreEqual(1, transformProcessor.TransformationRoots.Count);
 
             componentTypes.Clear();
             entityAdded.Clear();
@@ -148,14 +151,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             // Check that component was correctly processed when first adding the entity
             Assert.AreEqual(1, entityManager.Count);
-            Assert.AreEqual(3, entityManager.Processors.Count);
+            Assert.AreEqual(2, entityManager.Processors.Count);
 
             // Verify that the processor has correctly registered the component
             var customProcessor = entityManager.GetProcessor<CustomEntityComponentProcessor>();
             Assert.NotNull(customProcessor);
 
-            Assert.AreEqual(1, customProcessor.RegisteredComponents.Count);
-            Assert.True(customProcessor.RegisteredComponents.ContainsKey(customComponent));
+            Assert.AreEqual(1, customProcessor.CurrentComponentDatas.Count);
+            Assert.True(customProcessor.CurrentComponentDatas.ContainsKey(customComponent));
 
             // Verify that events are correctly propagated
             var expectedEvents = new List<CustomEntityComponentEventArgs>()
@@ -178,8 +181,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             entity.Components.Add(customComponent2);
 
             // Verify that the processor has correctly registered the component
-            Assert.AreEqual(2, customProcessor.RegisteredComponents.Count);
-            Assert.True(customProcessor.RegisteredComponents.ContainsKey(customComponent2));
+            Assert.AreEqual(2, customProcessor.CurrentComponentDatas.Count);
+            Assert.True(customProcessor.CurrentComponentDatas.ContainsKey(customComponent2));
 
             expectedEvents = new List<CustomEntityComponentEventArgs>()
             {
@@ -197,8 +200,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             entity.Components.Remove(customComponent);
 
             // Verify that the processor has correctly removed the component
-            Assert.AreEqual(1, customProcessor.RegisteredComponents.Count);
-            Assert.False(customProcessor.RegisteredComponents.ContainsKey(customComponent));
+            Assert.AreEqual(1, customProcessor.CurrentComponentDatas.Count);
+            Assert.False(customProcessor.CurrentComponentDatas.ContainsKey(customComponent));
 
             Assert.AreEqual(null, customComponent.Entity);
             expectedEvents = new List<CustomEntityComponentEventArgs>()
@@ -216,8 +219,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
             entity.Components.Remove(customComponent2);
 
             // Verify that the processor has correctly removed the component
-            Assert.AreEqual(0, customProcessor.RegisteredComponents.Count);
-            Assert.False(customProcessor.RegisteredComponents.ContainsKey(customComponent2));
+            Assert.AreEqual(0, customProcessor.CurrentComponentDatas.Count);
+            Assert.False(customProcessor.CurrentComponentDatas.ContainsKey(customComponent2));
 
             Assert.AreEqual(null, customComponent2.Entity);
             expectedEvents = new List<CustomEntityComponentEventArgs>()
@@ -228,8 +231,79 @@ namespace SiliconStudio.Xenko.Engine.Tests
             events.Clear();
 
             // The processor is still registered but is not running on any component
-            Assert.AreEqual(3, entityManager.Processors.Count);
+            Assert.AreEqual(2, entityManager.Processors.Count);
             Assert.NotNull(entityManager.GetProcessor<CustomEntityComponentProcessor>());
+        }
+
+        /// <summary>
+        /// Tests when the processor has required types.
+        /// </summary>
+        [Test]
+        public void TestProcessorWithRequiredTypes()
+        {
+            var registry = new ServiceRegistry();
+            var entityManager = new CustomEntityManager(registry);
+
+            var events = new List<CustomEntityComponentEventArgs>();
+            var entity = new Entity()
+            {
+                new CustomEntityComponentWithDependency()
+                {
+                    Changed = evt => events.Add(evt)
+                }
+            };
+            var customComponent = entity.Get<CustomEntityComponentWithDependency>();
+
+            // ================================================================
+            // 1) Add entity, check that processors and required processors are correctly in EntityManager
+            // ================================================================
+
+            entityManager.Add(entity);
+
+            // Check internal processors
+            Assert.AreEqual(2, entityManager.MapComponentTypeToProcessors.Count);
+            Assert.True(entityManager.MapComponentTypeToProcessors.ContainsKey(typeof(TransformComponent)));
+            Assert.True(entityManager.MapComponentTypeToProcessors.ContainsKey(typeof(CustomEntityComponentWithDependency)));
+
+            var customProcessor = entityManager.GetProcessor<CustomEntityComponentProcessorWithDependency>();
+
+            // Because the custom processor has a dependency on TransformComponent, we are checking that the dependencies is correctly registered back in the 
+            // list of processors for TransformComponent that should have a link to the custom processor
+            var processorsForTransform = entityManager.MapComponentTypeToProcessors[typeof(TransformComponent)];
+
+            // there is the HierarchicalProcessor and TransformProcessor
+            Assert.AreEqual(1, processorsForTransform.Count);
+            Assert.NotNull(processorsForTransform.Dependencies);
+            Assert.AreEqual(1, processorsForTransform.Dependencies.Count);
+            Assert.AreEqual(customProcessor, processorsForTransform.Dependencies[0]);
+            
+            // Check that the custom processor is empty
+            var processorsForCustom = entityManager.MapComponentTypeToProcessors[typeof(CustomEntityComponentWithDependency)];
+            Assert.AreEqual(1, processorsForCustom.Count);
+            Assert.Null(processorsForCustom.Dependencies);
+
+            // ================================================================
+            // 2) Override the TransformComponent with a new TransformComponent and check that required Processor are called and updated
+            // ================================================================
+
+            var previousTransform = entity.Transform;
+            var newTransform = new TransformComponent();
+            entity.Components[0] = newTransform;
+
+            // If the entity manager is working property, because the TransformComponent is updated, all processor depending on it
+            // will be called on the entity
+            // We are checking here that the new transform is correctly copied to the custom component by the custom processor.
+            Assert.AreEqual(newTransform, customComponent.Link);
+
+            // ================================================================
+            // 3) Remove TransformComponent
+            // ================================================================
+
+            entity.Components.RemoveAt(0);
+
+            // The link is not updated, but it is ok, as it is an associated data that is no longer part of the processor
+            Assert.AreEqual(newTransform, customComponent.Link);
+            Assert.AreEqual(0, customProcessor.CurrentComponentDatas.Count);
         }
 
         public static void Main()
@@ -303,7 +377,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
     public class CustomEntityComponentProcessor<TCustom> : EntityProcessor<TCustom> where TCustom : CustomEntityComponentBase
     {
-        public Dictionary<TCustom, TCustom> RegisteredComponents => ComponentDatas;
+        public Dictionary<TCustom, TCustom> CurrentComponentDatas => ComponentDatas;
 
         public CustomEntityComponentProcessor(params Type[] requiredAdditionalTypes) : base(requiredAdditionalTypes)
         {
@@ -349,6 +423,12 @@ namespace SiliconStudio.Xenko.Engine.Tests
         protected override bool IsAssociatedDataValid(Entity entity, CustomEntityComponentWithDependency component, CustomEntityComponentWithDependency associatedData)
         {
             return base.IsAssociatedDataValid(entity, component, associatedData) && associatedData.Link == entity.Transform;
+        }
+
+        protected override CustomEntityComponentWithDependency GenerateComponentData(Entity entity, CustomEntityComponentWithDependency component)
+        {
+            component.Link = entity.Transform;
+            return component;
         }
     }
 }
