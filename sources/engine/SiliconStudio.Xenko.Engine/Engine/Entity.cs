@@ -11,6 +11,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using System.Collections.Generic;
+using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -24,7 +26,7 @@ namespace SiliconStudio.Xenko.Engine
     [DataSerializer(typeof(EntitySerializer))]
     [DataStyle(DataStyle.Normal)]
     [DataContract("Entity")]
-    public sealed class Entity : ComponentBase, IEnumerable, IIdentifiable
+    public sealed class Entity : ComponentBase, IEnumerable<EntityComponent>, IIdentifiable
     {
         internal TransformComponent transform;
 
@@ -139,15 +141,25 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Gets a component by the specified key.
+        /// Gets the first component of the specified type.
         /// </summary>
         /// <typeparam name="T">Type of the component</typeparam>
         /// <returns>The component or null if does no exist</returns>
-        /// <exception cref="System.ArgumentNullException">key</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public T Get<T>() where T : EntityComponent, new()
+        public T Get<T>() where T : EntityComponent
         {
             return Components.Get<T>();
+        }
+
+        /// <summary>
+        /// Gets all components of the specified type.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
+        /// <returns>The component or null if does no exist</returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public IEnumerable<T> GetAll<T>() where T : EntityComponent
+        {
+            return Components.GetAll<T>();
         }
 
         /// <summary>
@@ -168,41 +180,23 @@ namespace SiliconStudio.Xenko.Engine
             Owner?.OnComponentChanged(this, index, oldComponent, newComponent);
         }
 
-        internal class EntityDebugView
-        {
-            private readonly Entity entity;
-
-            public EntityDebugView(Entity entity)
-            {
-                this.entity = entity;
-            }
-
-            public string Name
-            {
-                get { return entity.Name; }
-            }
-
-            public Entity[] Children
-            {
-                get
-                {
-                    var transformationComponent = entity.Transform;
-                    if (transformationComponent == null)
-                        return null;
-
-                    return transformationComponent.Children.Select(x => x.Entity).ToArray();
-                }
-            }
-
-            public EntityComponent[] Components
-            {
-                get { return entity.Components.ToArray(); }
-            }
-        }
-
         public override string ToString()
         {
             return $"Entity {Name}";
+        }
+
+        /// <summary>
+        /// Gets the enumerator of <see cref="EntityComponent"/>
+        /// </summary>
+        /// <returns></returns>
+        public FastCollection<EntityComponent>.Enumerator GetEnumerator()
+        {
+            return Components.GetEnumerator();
+        }
+
+        IEnumerator<EntityComponent> IEnumerable<EntityComponent>.GetEnumerator()
+        {
+            return Components.GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -221,6 +215,40 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
+        /// <summary>
+        /// Dedicated Debugger for an entity that displays children from Entity.Transform.Children
+        /// </summary>
+        internal class EntityDebugView
+        {
+            private readonly Entity entity;
+
+            public EntityDebugView(Entity entity)
+            {
+                this.entity = entity;
+            }
+
+            public string Name => entity.Name;
+
+            public Entity[] Children
+            {
+                get
+                {
+                    var transformationComponent = entity.Transform;
+                    if (transformationComponent == null)
+                        return null;
+
+                    return transformationComponent.Children.Select(x => x.Entity).ToArray();
+                }
+            }
+
+            public EntityComponent[] Components => entity.Components.ToArray();
+        }
+
+        /// <summary>
+        /// Specialized serializer
+        /// </summary>
+        /// <seealso cref="Entity" />
+        /// <seealso cref="SiliconStudio.Core.Serialization.IDataSerializerInitializer" />
         internal class EntitySerializer : DataSerializer<Entity>, IDataSerializerInitializer
         {
             private DataSerializer<Guid> guidSerializer;
