@@ -19,7 +19,6 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("TransformComponent")]
     [DataSerializerGlobal(null, typeof(TrackingCollection<TransformComponent>))]
     [DefaultEntityComponentProcessor(typeof(TransformProcessor))]
-    [DefaultEntityComponentProcessor(typeof(HierarchicalProcessor))]
     [Display(0, "Transform", Expand = ExpandRule.Once)]
     public sealed class TransformComponent : EntityComponent //, IEnumerable<TransformComponent> Check why this is not working
     {

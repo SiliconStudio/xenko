@@ -265,7 +265,7 @@ namespace SiliconStudio.Xenko.Engine
 
             entities.Remove(entity);
 
-            if (removeParent)
+            if (removeParent && entity.Transform != null)
             {
                 // Force parent to be null, so that it is removed even if it is not a root node
                 entity.Transform.Parent = null;
