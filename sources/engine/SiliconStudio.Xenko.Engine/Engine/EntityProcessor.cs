@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Rendering;
@@ -177,6 +178,7 @@ namespace SiliconStudio.Xenko.Engine
                         if (typeInfo.IsAssignableFrom(type))
                         {
                             result = true;
+                            break;
                         }
                     }
                     componentTypesSupportedAsRequired.Add(type, result);
@@ -198,6 +200,7 @@ namespace SiliconStudio.Xenko.Engine
     {
         protected readonly Dictionary<TComponent, TData> ComponentDatas = new Dictionary<TComponent, TData>();
         private readonly HashSet<Entity> reentrancyCheck = new HashSet<Entity>();
+        private readonly FastList<Type> checkRequiredTypes = new FastList<Type>();
 
         protected EntityProcessor(params Type[] requiredAdditionalTypes) : base(typeof(TComponent), requiredAdditionalTypes)
         {
@@ -302,18 +305,38 @@ namespace SiliconStudio.Xenko.Engine
 
         private bool EntityMatch(Entity entity)
         {
-            if (HasRequiredComponents)
+            // When a processor has no requirement components, it always match with at least the component of entity
+            if (!HasRequiredComponents)
             {
-                var components = entity.Components;
-                for (int i = 0; i < components.Count; i++)
+                return true;
+            }
+
+            checkRequiredTypes.Clear();
+            for (int i = 0; i < RequiredTypes.Length; i++)
+            {
+                checkRequiredTypes.Add(RequiredTypes[i]);
+            }
+
+            var components = entity.Components;
+            for (int i = 0; i < components.Count; i++)
+            {
+                var componentType = components[i].GetType();
+                for (int j = checkRequiredTypes.Count - 1; j >= 0; j--)
                 {
-                    if (!IsDependentOnComponentType(components[i].GetType()))
+                    if (checkRequiredTypes.Items[j].IsAssignableFrom(componentType))
                     {
-                        return false;
+                        checkRequiredTypes.RemoveAt(j);
+
+                        if (checkRequiredTypes.Count == 0)
+                        {
+                            return true;
+                        }
                     }
                 }
             }
-            return true;
+
+            // If we are here, it means that required types were not found, so return false
+            return false;
         }
     }
 
