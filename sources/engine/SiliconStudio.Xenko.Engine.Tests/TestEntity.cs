@@ -111,14 +111,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
             public EntityComponentEvent(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)
             {
                 Entity = entity;
-                this.index = index;
+                this.Index = index;
                 OldComponent = oldComponent;
                 NewComponent = newComponent;
             }
 
             public readonly Entity Entity;
 
-            public readonly int index;
+            public readonly int Index;
 
             public readonly EntityComponent OldComponent;
 
@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             public bool Equals(EntityComponentEvent other)
             {
-                return Equals(Entity, other.Entity) && index == other.index && Equals(OldComponent, other.OldComponent) && Equals(NewComponent, other.NewComponent);
+                return Equals(Entity, other.Entity) && Index == other.Index && Equals(OldComponent, other.OldComponent) && Equals(NewComponent, other.NewComponent);
             }
 
             public override bool Equals(object obj)
@@ -140,7 +140,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 unchecked
                 {
                     var hashCode = (Entity != null ? Entity.GetHashCode() : 0);
-                    hashCode = (hashCode*397) ^ index;
+                    hashCode = (hashCode*397) ^ Index;
                     hashCode = (hashCode*397) ^ (OldComponent != null ? OldComponent.GetHashCode() : 0);
                     hashCode = (hashCode*397) ^ (NewComponent != null ? NewComponent.GetHashCode() : 0);
                     return hashCode;
