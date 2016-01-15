@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine.Design;
@@ -11,10 +12,17 @@ namespace SiliconStudio.Xenko.Engine.Tests
     [TestFixture]
     public class TestEntity
     {
+        /// <summary>
+        /// Tests Entity, Entity.Transform and Entity.Components
+        /// </summary>
         [Test]
-        public void TestTransformComponent()
+        public void TestComponents()
         {
             var entity = new Entity();
+
+            // Plug an event handler to track events
+            var events = new List<EntityComponentEvent>();
+            entity.Owner = new DelegateEntityComponentNotify(evt => events.Add(evt));
 
             // Make sure that an entity has a transform component
             Assert.NotNull(entity.Transform);
@@ -22,20 +30,132 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(entity.Transform, entity.Components[0]);
 
             // Remove Transform
+            var oldTransform = entity.Transform;
             entity.Components.RemoveAt(0);
             Assert.Null(entity.Transform);
 
-            // Readd transform
+            // Check that events is correctly propagated
+            Assert.AreEqual(new List<EntityComponentEvent>() { new EntityComponentEvent(entity, 0, oldTransform, null) }, events);
+            events.Clear();
+
+            // Re-add transform
             var transform = new TransformComponent();
             entity.Components.Add(transform);
             Assert.NotNull(entity.Transform);
 
-            Assert.Catch<InvalidOperationException>(() => entity.Components.Add(new TransformComponent()), $"Cannot add a component of type [{typeof(TransformComponent)}] multiple times");
+            // Check that events is correctly propagated
+            Assert.AreEqual(new List<EntityComponentEvent>() { new EntityComponentEvent(entity, 0, null, transform) }, events);
+            events.Clear();
+
+            // We cannot add a single component
+            var invalidOpException = Assert.Catch<InvalidOperationException>(() => entity.Components.Add(new TransformComponent()));
+            Assert.AreEqual($"Cannot add a component of type [{typeof(TransformComponent)}] multiple times", invalidOpException.Message);
+
+            invalidOpException = Assert.Catch<InvalidOperationException>(() => entity.Components.Add(transform));
+            Assert.AreEqual("Cannot add a same component multiple times. Already set at index [0]", invalidOpException.Message);
+
+            // We cannot add a null component
+            Assert.Catch<ArgumentNullException>(() => entity.Components.Add(null));
 
             // Replace Transform
             var custom = new CustomEntityComponent();
             entity.Components[0] = custom;
             Assert.Null(entity.Transform);
+
+            // Check that events is correctly propagated
+            Assert.AreEqual(new List<EntityComponentEvent>() { new EntityComponentEvent(entity, 0, transform, custom) }, events);
+            events.Clear();
+
+            // Add again transform component
+            transform = new TransformComponent();
+            entity.Components.Add(transform);
+            Assert.NotNull(entity.Transform);
+            Assert.AreEqual(transform, entity.Components[1]);
+
+            // Check that TransformComponent is on index 1 now
+            Assert.AreEqual(new List<EntityComponentEvent>() { new EntityComponentEvent(entity, 1, null, transform) }, events);
+            events.Clear();
+
+            // Clear components and check that Transform is also removed
+            entity.Components.Clear();
+            Assert.AreEqual(0, entity.Components.Count);
+            Assert.Null(entity.Transform);
+
+            // Check that events is correctly propagated
+            Assert.AreEqual(new List<EntityComponentEvent>()
+            {
+                new EntityComponentEvent(entity, 1, transform, null),
+                new EntityComponentEvent(entity, 0, custom, null),
+            }, events);
+            events.Clear();
+        }
+
+        private class DelegateEntityComponentNotify : IEntityComponentNotify
+        {
+            private readonly Action<EntityComponentEvent> action;
+
+            public DelegateEntityComponentNotify(Action<EntityComponentEvent> action)
+            {
+                if (action == null) throw new ArgumentNullException(nameof(action));
+                this.action = action;
+            }
+
+            public void OnComponentChanged(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)
+            {
+                action(new EntityComponentEvent(entity, index, oldComponent, newComponent));
+            }
+        }
+
+        struct EntityComponentEvent : IEquatable<EntityComponentEvent>
+        {
+            public EntityComponentEvent(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)
+            {
+                Entity = entity;
+                this.index = index;
+                OldComponent = oldComponent;
+                NewComponent = newComponent;
+            }
+
+            public readonly Entity Entity;
+
+            public readonly int index;
+
+            public readonly EntityComponent OldComponent;
+
+            public readonly EntityComponent NewComponent;
+
+            public bool Equals(EntityComponentEvent other)
+            {
+                return Equals(Entity, other.Entity) && index == other.index && Equals(OldComponent, other.OldComponent) && Equals(NewComponent, other.NewComponent);
+            }
+
+            public override bool Equals(object obj)
+            {
+                if (ReferenceEquals(null, obj)) return false;
+                return obj is EntityComponentEvent && Equals((EntityComponentEvent)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    var hashCode = (Entity != null ? Entity.GetHashCode() : 0);
+                    hashCode = (hashCode*397) ^ index;
+                    hashCode = (hashCode*397) ^ (OldComponent != null ? OldComponent.GetHashCode() : 0);
+                    hashCode = (hashCode*397) ^ (NewComponent != null ? NewComponent.GetHashCode() : 0);
+                    return hashCode;
+                }
+            }
+
+            public static bool operator ==(EntityComponentEvent left, EntityComponentEvent right)
+            {
+                return left.Equals(right);
+            }
+
+            public static bool operator !=(EntityComponentEvent left, EntityComponentEvent right)
+            {
+                return !left.Equals(right);
+            }
         }
     }
 
