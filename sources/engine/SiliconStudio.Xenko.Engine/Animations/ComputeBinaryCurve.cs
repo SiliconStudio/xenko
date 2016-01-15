@@ -20,10 +20,15 @@ namespace SiliconStudio.Xenko.Animations
         /// </summary>
         Subtract,
 
+        /// <summary>
+        /// Multiplies the left sampled value by the right sampled value
+        /// </summary>
+        Multiply,
+
     }
 
     /// <summary>
-    /// A node which describes a binary operation between two compute curves
+    /// A node which describes a binary operation between two <see cref="IComputeCurve{T}"/>
     /// </summary>
     /// <typeparam name="T">Sampled data's type</typeparam>
     [DataContract(Inherited = true)]
@@ -45,6 +50,8 @@ namespace SiliconStudio.Xenko.Animations
                 case BinaryCurveOperator.Subtract:
                     return Subtract(lValue, rValue);
 
+                case BinaryCurveOperator.Multiply:
+                    return Multiply(lValue, rValue);
             }
 
             throw new ArgumentException("Invalid Operator argument in ComputeBinaryCurve");
@@ -86,17 +93,7 @@ namespace SiliconStudio.Xenko.Animations
         /// <param name="a">Left value A</param>
         /// <param name="b">Right value B</param>
         /// <returns>The sum A + B</returns>
-        static T Add(T a, T b)
-        {
-            // TODO Test performance
-            ParameterExpression paramA = Expression.Parameter(typeof(T), "a");
-            ParameterExpression paramB = Expression.Parameter(typeof(T), "b");
-            BinaryExpression body = Expression.Add(paramA, paramB);
-
-            Func<T, T, T> add = Expression.Lambda<Func<T, T, T>>(body, paramA, paramB).Compile();
-
-            return add(a, b);
-        }
+        protected abstract T Add(T a, T b);
 
         /// <summary>
         /// Subtracts the right value from the left value and retuns the result
@@ -104,16 +101,14 @@ namespace SiliconStudio.Xenko.Animations
         /// <param name="a">Left value A</param>
         /// <param name="b">Right value B</param>
         /// <returns>The result A - B</returns>
-        static T Subtract(T a, T b)
-        {
-            // TODO Test performance
-            ParameterExpression paramA = Expression.Parameter(typeof(T), "a");
-            ParameterExpression paramB = Expression.Parameter(typeof(T), "b");
-            BinaryExpression body = Expression.Subtract(paramA, paramB);
+        protected abstract T Subtract(T a, T b);
 
-            Func<T, T, T> subtract = Expression.Lambda<Func<T, T, T>>(body, paramA, paramB).Compile();
-
-            return subtract(a, b);
-        }
+        /// <summary>
+        /// Multiplies the left value to the right value and retuns the result
+        /// </summary>
+        /// <param name="a">Left value A</param>
+        /// <param name="b">Right value B</param>
+        /// <returns>The result A * B</returns>
+        protected abstract T Multiply(T a, T b);
     }
 }
