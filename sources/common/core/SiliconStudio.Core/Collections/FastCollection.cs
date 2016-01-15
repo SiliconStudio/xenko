@@ -5,6 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Serializers;
 
@@ -15,6 +16,7 @@ namespace SiliconStudio.Core.Collections
     /// </summary>
     /// <typeparam name="T">Type of elements of this collection </typeparam>
     [DataSerializer(typeof(ListAllSerializer<,>), Mode = DataSerializerGenericMode.TypeAndGenericArguments)]
+    [DebuggerTypeProxy(typeof(CollectionDebugView))]
     [DebuggerDisplay("Count = {Count}")]
     public class FastCollection<T> : IList<T>, IReadOnlyList<T>
     {
