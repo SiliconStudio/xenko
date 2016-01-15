@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
@@ -374,7 +375,9 @@ namespace SiliconStudio.Xenko.Engine
                 }
             }
 
-            foreach (var entity in entities)
+            // NOTE: It is important to perform a ToList() as the TransformProcessor adds children 
+            // entities and modifies the current list of entities
+            foreach (var entity in entities.ToList())
             {
                 CheckEntityWithNewProcessor(entity, processor);
             }
