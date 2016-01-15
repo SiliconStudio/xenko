@@ -29,10 +29,14 @@ namespace SiliconStudio.Xenko.Engine
         // List of all entities, with their respective processors
         private readonly HashSet<Entity> entities;
 
+        // List of processors currently registered
         private readonly TrackingEntityProcessorCollection processors;
 
-        private readonly List<EntityProcessor> pendingProcessors;
-        private readonly Dictionary<Type, EntityProcessorCollectionPerComponentType> mapComponentTypeToProcessors;
+        // use an ordered list to make sure processor are added in the correct order as much as possible
+        private readonly EntityProcessorCollection pendingProcessors; 
+
+        // List of processors per EntityComponent final type
+        internal readonly Dictionary<Type, EntityProcessorCollectionPerComponentType> MapComponentTypeToProcessors;
 
         private readonly List<EntityProcessor> currentDependentProcessors;
         private readonly HashSet<Type> componentTypes;
@@ -70,10 +74,10 @@ namespace SiliconStudio.Xenko.Engine
 
             entities = new HashSet<Entity>();
             processors = new TrackingEntityProcessorCollection(this);
-            pendingProcessors = new List<EntityProcessor>();
+            pendingProcessors = new EntityProcessorCollection();
 
             componentTypes = new HashSet<Type>();
-            mapComponentTypeToProcessors = new Dictionary<Type, EntityProcessorCollectionPerComponentType>();
+            MapComponentTypeToProcessors = new Dictionary<Type, EntityProcessorCollectionPerComponentType>();
 
             currentDependentProcessors = new List<EntityProcessor>(10);
         }
@@ -349,7 +353,7 @@ namespace SiliconStudio.Xenko.Engine
             processor.OnSystemAdd();
 
             // Update processor per types and dependencies
-            foreach (var componentTypeAndProcessors in mapComponentTypeToProcessors)
+            foreach (var componentTypeAndProcessors in MapComponentTypeToProcessors)
             {
                 var componentType = componentTypeAndProcessors.Key;
                 var processorList = componentTypeAndProcessors.Value;
@@ -431,7 +435,7 @@ namespace SiliconStudio.Xenko.Engine
                 }
 
                 var componentType = component.GetType();
-                var processorsForComponent = mapComponentTypeToProcessors[componentType];
+                var processorsForComponent = MapComponentTypeToProcessors[componentType];
                 {
                     for (int j = 0; j < processorsForComponent.Count; j++)
                     {
@@ -464,7 +468,7 @@ namespace SiliconStudio.Xenko.Engine
             var componentType = component.GetType();
             EntityProcessorCollectionPerComponentType processorsForComponent;
 
-            if (mapComponentTypeToProcessors.TryGetValue(componentType, out processorsForComponent))
+            if (MapComponentTypeToProcessors.TryGetValue(componentType, out processorsForComponent))
             {
                 for (int i = 0; i < processorsForComponent.Count; i++)
                 {
@@ -492,7 +496,7 @@ namespace SiliconStudio.Xenko.Engine
                         processorsForComponent.Dependencies.Add(processor);
                     }
                 }
-                mapComponentTypeToProcessors.Add(componentType, processorsForComponent);
+                MapComponentTypeToProcessors.Add(componentType, processorsForComponent);
             }
 
             // Collect dependent processors
@@ -552,7 +556,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// List of processors for a particular component type.
         /// </summary>
-        private class EntityProcessorCollectionPerComponentType : EntityProcessorCollection
+        internal class EntityProcessorCollectionPerComponentType : EntityProcessorCollection
         {
             /// <summary>
             /// The processors that are depending on the component type
