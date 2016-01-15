@@ -84,6 +84,7 @@
     <Compile Include="Engine\Design\ExecutionMode.cs" />
     <Compile Include="Engine\EntityComponentCollection.cs" />
     <Compile Include="Engine\EntityProcessorCollection.cs" />
+    <Compile Include="Engine\IEntityComponentNotify.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
