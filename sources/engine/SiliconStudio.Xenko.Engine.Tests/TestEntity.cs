@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine.Design;
@@ -13,7 +14,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
     public class TestEntity
     {
         /// <summary>
-        /// Tests Entity, Entity.Transform and Entity.Components
+        /// Test various manipulation on Entity.Components with TransformComponent and CustomComponent
         /// </summary>
         [Test]
         public void TestComponents()
@@ -88,6 +89,35 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 new EntityComponentEvent(entity, 0, custom, null),
             }, events);
             events.Clear();
+        }
+
+        /// <summary>
+        /// Tests multiple components.
+        /// </summary>
+        [Test]
+        public void TestMultipleComponents()
+        {
+            // Check that TransformComponent cannot be added multiple times
+            Assert.False(EntityComponentAttributes.Get<TransformComponent>().AllowMultipleComponent);
+
+            // Check that CustomEntityComponent can be added multiple times
+            Assert.True(EntityComponentAttributes.Get<CustomEntityComponent>().AllowMultipleComponent);
+
+            var entity = new Entity();
+
+            var transform = entity.Get<TransformComponent>();
+            Assert.NotNull(transform);
+            Assert.AreEqual(entity.Transform, transform);
+
+            var custom = entity.GetOrCreate<CustomEntityComponent>();
+            Assert.NotNull(custom);
+
+            var custom2 = new CustomEntityComponent();
+            entity.Components.Add(custom2);
+            Assert.AreEqual(custom, entity.Get<CustomEntityComponent>());
+
+            var allComponents = entity.GetAll<CustomEntityComponent>().ToList();
+            Assert.AreEqual(new List<EntityComponent>() { custom, custom2 }, allComponents);
         }
 
         private class DelegateEntityComponentNotify : IEntityComponentNotify
