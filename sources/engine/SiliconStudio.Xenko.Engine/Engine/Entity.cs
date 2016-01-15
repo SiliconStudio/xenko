@@ -29,9 +29,9 @@ namespace SiliconStudio.Xenko.Engine
         internal TransformComponent transform;
 
         /// <summary>
-        /// Internal manager owner of this entity
+        /// Internal owner of this entity
         /// </summary>
-        internal EntityManager Manager;
+        internal IEntityComponentNotify Owner;
 
         /// <summary>
         /// Create a new <see cref="Entity"/> instance.
@@ -162,10 +162,10 @@ namespace SiliconStudio.Xenko.Engine
             Components.Remove<T>();
         }
 
-        internal void ComponentsUpdated(int index, EntityComponent oldComponent, EntityComponent newComponent)
+        internal void OnComponentChanged(int index, EntityComponent oldComponent, EntityComponent newComponent)
         {
-            // Don't use events but directly call the Manager
-            Manager?.NotifyComponentChanged(this, index, oldComponent, newComponent);
+            // Don't use events but directly call the Owner
+            Owner?.OnComponentChanged(this, index, oldComponent, newComponent);
         }
 
         internal class EntityDebugView

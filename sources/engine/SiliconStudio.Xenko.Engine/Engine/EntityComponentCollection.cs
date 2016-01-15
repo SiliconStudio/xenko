@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Engine
             base.InsertItem(index, item);
 
             // Notify the entity about this component being updated
-            entity.ComponentsUpdated(index, null, item);
+            entity.OnComponentChanged(index, null, item);
         }
 
         protected override void RemoveItem(int index)
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Engine
             base.RemoveItem(index);
 
             // Notify the entity about this component being updated
-            entity.ComponentsUpdated(index, item, null);
+            entity.OnComponentChanged(index, item, null);
         }
 
         protected override void SetItem(int index, EntityComponent item)
@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Engine
             base.SetItem(index, item);
 
             // Notify the entity about this component being updated
-            entity.ComponentsUpdated(index, oldItem, item);
+            entity.OnComponentChanged(index, oldItem, item);
         }
 
         private EntityComponent ValidateItem(int index, EntityComponent item)

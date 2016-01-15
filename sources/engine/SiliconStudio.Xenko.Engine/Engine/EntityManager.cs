@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>
     /// Manage a collection of entities.
     /// </summary>
-    public abstract class EntityManager : ComponentBase, IReadOnlySet<Entity>
+    public abstract class EntityManager : ComponentBase, IReadOnlySet<Entity>, IEntityComponentNotify
     {
         // TODO: Make this class threadsafe (current locks aren't sufficients)
 
@@ -206,13 +206,13 @@ namespace SiliconStudio.Xenko.Engine
             if (entities.Contains(entity))
                 return;
 
-            if (entity.Manager != null)
+            if (entity.Owner != null)
             {
                 throw new InvalidOperationException("Cannot add an entity to this entity manager when it is already used by another entity manager");
             }
 
             // Add this entity to our internal hashset
-            entity.Manager = this;
+            entity.Owner = this;
             entities.Add(entity);
             entity.AddReferenceInternal();
 
@@ -272,7 +272,7 @@ namespace SiliconStudio.Xenko.Engine
 
             entity.ReleaseInternal();
 
-            entity.Manager = null;
+            entity.Owner = null;
 
             OnEntityRemoved(entity);
         }
@@ -542,6 +542,11 @@ namespace SiliconStudio.Xenko.Engine
         {
             var handler = ComponentChanged;
             if (handler != null) handler(this, new EntityComponentEventArgs(entity, index, previousComponent, newComponent));
+        }
+
+        void IEntityComponentNotify.OnComponentChanged(Entity entity, int index, EntityComponent oldComponent, EntityComponent newComponent)
+        {
+            NotifyComponentChanged(entity, index, oldComponent, newComponent);
         }
 
         /// <summary>
