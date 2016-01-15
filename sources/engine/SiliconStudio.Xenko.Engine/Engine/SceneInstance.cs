@@ -215,10 +215,7 @@ namespace SiliconStudio.Xenko.Engine
                 return;
             }
 
-            // Initialize processors
-            Processors.Add(new HierarchicalProcessor()); // Order: -1000  - Important to pre-register this processor
-            Processors.Add(new TransformProcessor());    // Order: -100
-            Processors.Add(new CameraProcessor());       // Order: -10    - By default, as a scene without a camera is not really possible
+            // Add Loaded entities
             foreach (var entity in Scene.Entities)
                 Add(entity);
 

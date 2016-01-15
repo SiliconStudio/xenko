@@ -8,6 +8,8 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Engine.Processors;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -16,6 +18,8 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("TransformComponent")]
     [DataSerializerGlobal(null, typeof(TrackingCollection<TransformComponent>))]
+    [DefaultEntityComponentProcessor(typeof(TransformProcessor))]
+    [DefaultEntityComponentProcessor(typeof(HierarchicalProcessor))]
     [Display(0, "Transform", Expand = ExpandRule.Once)]
     public sealed class TransformComponent : EntityComponent //, IEnumerable<TransformComponent> Check why this is not working
     {
