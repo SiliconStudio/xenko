@@ -10,6 +10,9 @@ using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
+    /// <summary>
+    /// Tests for <see cref="Entity"/> and <see cref="EntityComponentCollection"/>.
+    /// </summary>
     [TestFixture]
     public class TestEntity
     {

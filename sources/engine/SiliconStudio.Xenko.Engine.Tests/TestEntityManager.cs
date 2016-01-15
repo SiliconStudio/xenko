@@ -10,6 +10,9 @@ using SiliconStudio.Xenko.Engine.Processors;
 
 namespace SiliconStudio.Xenko.Engine.Tests
 {
+    /// <summary>
+    /// Tests for the <see cref="EntityManager"/>.
+    /// </summary>
     [TestFixture]
     public partial class TestEntityManager
     {
