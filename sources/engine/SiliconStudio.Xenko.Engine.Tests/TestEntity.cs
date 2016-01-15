@@ -190,7 +190,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
     }
 
     [DataContract()]
-    [DefaultEntityComponentProcessor(typeof(CustomEntityComponentProcessor<CustomEntityComponent>))]
+    [DefaultEntityComponentProcessor(typeof(CustomEntityComponentProcessor))]
     [AllowMultipleComponent]
     public sealed class CustomEntityComponent : CustomEntityComponentBase
     {
@@ -199,13 +199,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
     [DataContract()]
     public abstract class CustomEntityComponentBase : EntityComponent
     {
-        [DataMemberIgnore]
-        public Action<EntityComponent> ComponentDataGenerated;
-
-        [DataMemberIgnore]
-        public Action<EntityComponent> EntityComponentAdded;
-
-        [DataMemberIgnore]
-        public Action<EntityComponent> EntityComponentRemoved;
+        public Action<CustomEntityComponentEventArgs> Changed;
     }
 }
