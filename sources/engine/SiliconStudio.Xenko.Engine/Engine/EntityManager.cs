@@ -376,7 +376,7 @@ namespace SiliconStudio.Xenko.Engine
 
             foreach (var entity in entities)
             {
-                CheckEntityWithProcessors(entity, false, false);
+                CheckEntityWithNewProcessor(entity, processor);
             }
         }
 
@@ -459,6 +459,19 @@ namespace SiliconStudio.Xenko.Engine
                 if (collecComponentTypesAndProcessors)
                 {
                     CollectNewProcessorsByComponentType(component.GetType());
+                }
+            }
+        }
+
+        private void CheckEntityWithNewProcessor(Entity entity, EntityProcessor processor)
+        {
+            var components = entity.Components;
+            for (int i = 0; i < components.Count; i++)
+            {
+                var component = components[i];
+                if (processor.Accept(component.GetType()))
+                {
+                    processor.ProcessEntityComponent(entity, component, false);
                 }
             }
         }
