@@ -32,9 +32,6 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 var registry = new ServiceRegistry();
                 var entityManager = new CustomEntityManager(registry);
 
-                entityManager.Processors.Add(new HierarchicalProcessor()); // Order: -1000  - Important to pre-register this processor
-                entityManager.Processors.Add(new TransformProcessor()); // Order: -100
-
                 int dataCount = 0;
                 int entityAddedCount = 0;
                 int entityRemovedCount = 0;
