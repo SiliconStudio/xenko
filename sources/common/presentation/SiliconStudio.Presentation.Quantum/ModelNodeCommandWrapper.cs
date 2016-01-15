@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
@@ -74,7 +74,7 @@ namespace SiliconStudio.Presentation.Quantum
             return new UndoToken(token.CanUndo, new TokenData<UndoToken>(token, tokenData.Parameter));
         }
 
-        protected override UndoToken Do(object parameter)
+        protected override async Task<UndoToken> Do(object parameter)
         {
             UndoToken token;
             object index;
@@ -83,9 +83,14 @@ namespace SiliconStudio.Presentation.Quantum
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
             var currentValue = modelNode.Content.Retrieve(index);
+            var actionItem = await NodeCommand.Execute2(modelNode.Content, index, parameter, Dirtiables);
+            if (actionItem != null)
+            {
+                ServiceProvider.Get<ITransactionalActionStack>().Add(actionItem);
+                return new UndoToken(false);
+            }
             var newValue = NodeCommand.Execute(currentValue, parameter, out token);
             modelNode.Content.Update(newValue, index);
-
             return new UndoToken(token.CanUndo, new TokenData<UndoToken>(token, parameter));
         }
     }

@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using SiliconStudio.ActionStack;
 
 namespace SiliconStudio.Presentation.Commands
 {
+    [Obsolete]
     public class CancellableCommandActionItem : DirtiableActionItem
     {
         private UndoToken undoToken;

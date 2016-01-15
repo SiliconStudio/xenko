@@ -419,18 +419,9 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 Owner.BeginCombinedAction();
                 OnPropertyChanging(nameof(TypedValue));
-                //ChangeInProgress = true;
                 CombinedNodes.ForEach(x => x.Value = value);
                 OnPropertyChanged(nameof(TypedValue));
-                //var changedNodes = ChangedNodes.Where(x => x != this).ToList();
-                //ChangedNodes.Clear();
-                //ChangeInProgress = false;
-                //if (!IsPrimitive)
-                //{
-                //    Refresh();
-                //}
-                //changedNodes.ForEach(x => x.Refresh());
-                string displayName = Owner.FormatCombinedUpdateMessage(this, value);
+                var displayName = Owner.FormatCombinedUpdateMessage(this, value);
                 Owner.EndCombinedAction(displayName, Path, value);
             }
         }

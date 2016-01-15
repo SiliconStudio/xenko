@@ -1,5 +1,10 @@
-﻿using SiliconStudio.ActionStack;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
@@ -31,8 +36,20 @@ namespace SiliconStudio.Quantum.Commands
 
         public abstract object Execute(object currentValue, object parameter, out UndoToken undoToken);
 
+        public Task<ActionItem> Execute2(IContent content, object index, object parameter)
+        {
+            return Execute2(content, index, parameter, Enumerable.Empty<IDirtiable>());
+        }
+
+        public virtual Task<ActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        {
+            return Task.FromResult<ActionItem>(null);
+        }
+
+        [Obsolete]
         public abstract object Undo(object currentValue, UndoToken undoToken, out RedoToken redoToken);
 
+        [Obsolete]
         public abstract object Redo(object currentValue, RedoToken redoToken, out UndoToken undoToken);
 
         /// <inheritdoc/>

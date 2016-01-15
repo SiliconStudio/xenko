@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Presentation.ViewModel;
 
@@ -37,10 +38,10 @@ namespace SiliconStudio.Presentation.Commands
             return new UndoToken(true, new TokenData(parameter, tokenValue));
         }
 
-        protected sealed override UndoToken Do(object parameter)
+        protected sealed override Task<UndoToken> Do(object parameter)
         {
             var tokenValue = Redo(parameter);
-            return new UndoToken(true, new TokenData(parameter, tokenValue));
+            return Task.FromResult(new UndoToken(true, new TokenData(parameter, tokenValue)));
         }
 
         protected abstract void Undo(object parameter, object undoTokenValue);
