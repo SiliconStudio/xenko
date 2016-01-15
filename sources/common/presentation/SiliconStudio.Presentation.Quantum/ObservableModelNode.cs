@@ -83,11 +83,30 @@ namespace SiliconStudio.Presentation.Quantum
         {
             var targetNode = GetTargetNode(SourceNode, Index);
             var targetNodePath = GetTargetNodePath(SourceNode, SourceNodePath, Index);
-
-            foreach (var command in (targetNode ?? SourceNode).Commands)
+            var commandPath = targetNodePath;
+            if (targetNode == SourceNode && Index != null)
             {
-                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, targetNodePath, Owner.Dirtiables);
-                AddCommand(commandWrapper);
+                // TODO: something similar is done in GetTargetNodePath. Check if we can always do it when the target is the source and try to avoid having a targetNodePath and a commandPath.
+                commandPath = targetNodePath.PushElement(Index, GraphNodePath.ElementType.Index);
+            }
+            if (targetNode != SourceNode && targetNode != null)
+            {
+                foreach (var command in targetNode.Commands)
+                {
+                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, commandPath, Owner.Dirtiables);
+                    AddCommand(commandWrapper);
+                }
+            }
+
+            var targetCommandNames = Commands.Select(x => x.Name).ToList();
+            foreach (var command in SourceNode.Commands)
+            {
+                // Add source commands that are not already provided by the target node
+                if (!targetCommandNames.Contains(command.Name))
+                {
+                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, commandPath, Owner.Dirtiables);
+                    AddCommand(commandWrapper);
+                }
             }
 
             if (!isPrimitive && targetNode != null)
@@ -358,7 +377,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
-        /// Retrieves the target node if the given source node content holds a reference or a sequence of references.
+        /// Retrieves the target node if the given source node content holds a reference or a sequence of references, or the given source node otherwise.
         /// </summary>
         /// <param name="sourceNode">The source node for which to retrieve the target node.</param>
         /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references. <c>null</c> otherwise.</param>
@@ -382,7 +401,7 @@ namespace SiliconStudio.Presentation.Quantum
         }
 
         /// <summary>
-        /// Retrieves the path of the target node if the given source node content holds a reference or a sequence of references.
+        /// Retrieves the path of the target node if the given source node content holds a reference or a sequence of references, or the path of the given source node otherwise.
         /// </summary>
         /// <param name="sourceNode">The source node for which to retrieve the target node path.</param>
         /// <param name="sourceNodePath">The path of the source node.</param>

@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
@@ -20,11 +19,11 @@ namespace SiliconStudio.Quantum.Commands
     /// <remarks>No parameter is required when invoking this command.</remarks>
     public class AddNewItemCommand : SimpleNodeCommand
     {
-        public class NodeCommandAddNewItemActionItem : SimpleNodeCommandActionItem
+        private class AddNewItemActionItem : SimpleNodeCommandActionItem
         {
             private object parameter;
 
-            public NodeCommandAddNewItemActionItem(string name, IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+            public AddNewItemActionItem(string name, IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
                 : base(name, content, index, dirtiables)
             {
                 this.parameter = parameter;
@@ -49,8 +48,7 @@ namespace SiliconStudio.Quantum.Commands
                 }
                 else
                 {
-                    var newItem = ObjectFactory.NewInstance(collectionDescriptor.ElementType);
-                    collectionDescriptor.Add(value, parameter ?? newItem);
+                    collectionDescriptor.Add(value, parameter ?? ObjectFactory.NewInstance(collectionDescriptor.ElementType));
                 }
                 Content.Update(value, Index);
                 return true;
@@ -70,6 +68,7 @@ namespace SiliconStudio.Quantum.Commands
                 Content.Update(value, Index);
             }
         }
+
         /// <inheritdoc/>
         public override string Name => "AddNewItem";
 
@@ -94,10 +93,9 @@ namespace SiliconStudio.Quantum.Commands
             return collectionDescriptor.HasAdd && (!elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType.IsAbstract || elementType.IsNullable() || elementType == typeof(string));
         }
 
-        public override Task<ActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        protected override SimpleNodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
-            var actionItem = new NodeCommandAddNewItemActionItem(Name, content, index, parameter, dirtiables);
-            return actionItem.Do() ? Task.FromResult<ActionItem>(actionItem) : null;
+            return new AddNewItemActionItem(Name, content, index, parameter, dirtiables);
         }
     }
 }
