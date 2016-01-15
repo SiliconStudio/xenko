@@ -1,7 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
-using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum.ActionStack;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
@@ -11,11 +16,18 @@ namespace SiliconStudio.Quantum.Commands
     /// </summary>
     public abstract class ChangeValueCommand : SimpleNodeCommand
     {
+        public override Task<ActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        {
+            var currentValue = content.Retrieve(index);
+            var newValue = ChangeValue(currentValue, parameter, false);
+            var actionItem = !Equals(newValue, currentValue) ? new ContentValueChangedActionItem("Change property via command '{Name}'", content, index, currentValue, dirtiables) : null;
+            return Task.FromResult<ActionItem>(actionItem);
+        }
+
         protected override object Do(object currentValue, object parameter, out UndoToken undoToken)
         {
-            var newValue = ChangeValue(currentValue, parameter, false);
-            undoToken = !Equals(newValue, currentValue) ? new UndoToken(true, currentValue) : new UndoToken(false);
-            return newValue;
+            undoToken = new UndoToken(false);
+            return currentValue;
         }
 
         protected override object Undo(object currentValue, UndoToken undoToken)

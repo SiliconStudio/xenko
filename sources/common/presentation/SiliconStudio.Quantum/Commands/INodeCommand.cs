@@ -2,8 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
@@ -37,7 +40,12 @@ namespace SiliconStudio.Quantum.Commands
         /// <param name="parameter">The parameter of the command.</param>
         /// <param name="undoToken">The <see cref="UndoToken"/> that will be passed to the <see cref="Undo"/> method when undoing the execution of this command.</param>
         /// <returns>The new value to assign to the associated object or member.</returns>
+        [Obsolete]
         object Execute(object currentValue, object parameter, out UndoToken undoToken);
+
+        Task<ActionItem> Execute2(IContent content, object index, object parameter);
+
+        Task<ActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
 
         /// <summary>
         /// Undoes an invoke of the node command.
@@ -46,6 +54,7 @@ namespace SiliconStudio.Quantum.Commands
         /// <param name="undoToken">The <see cref="UndoToken"/> that was generated when invoking this command.</param>
         /// <param name="redoToken">The <see cref="RedoToken"/> that will be passed to the <see cref="Redo"/> method when redoing the execution of this command.</param>
         /// <returns>The new value to assign to the associated object or member.</returns>
+        [Obsolete]
         object Undo(object currentValue, UndoToken undoToken, out RedoToken redoToken);
 
         /// <summary>
@@ -55,6 +64,7 @@ namespace SiliconStudio.Quantum.Commands
         /// <param name="redoToken">The <see cref="RedoToken"/> that was generated when undoing this command.</param>
         /// <param name="undoToken">The <see cref="UndoToken"/> that will be passed to the <see cref="Undo"/> method when undoing the execution of this command.</param>
         /// <returns>The new value to assign to the associated object or member.</returns>
+        [Obsolete]
         object Redo(object currentValue, RedoToken redoToken, out UndoToken undoToken);
 
         /// <summary>

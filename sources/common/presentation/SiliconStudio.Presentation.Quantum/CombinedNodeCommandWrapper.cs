@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.ViewModel;
@@ -60,27 +60,28 @@ namespace SiliconStudio.Presentation.Quantum
             return new UndoToken(canUndo, undoTokens);
         }
 
-        protected override UndoToken Do(object parameter)
+        protected override async Task<UndoToken> Do(object parameter)
         {
             ActionStack.BeginTransaction();
-            var undoTokens = new Dictionary<ModelNodeCommandWrapper, UndoToken>();
-            bool canUndo = false;
+            var undoTokens = new Dictionary<ModelNodeCommandWrapper, Task<UndoToken>>();
 
             commands.First().NodeCommand.StartCombinedInvoke();
 
             foreach (var command in commands)
             {
-                var undoToken = command.Invoke(parameter);
-                undoTokens.Add(command, undoToken);
-                canUndo = canUndo || undoToken.CanUndo;
+                var task = command.Invoke(parameter);
+                undoTokens.Add(command, task);
             }
+
+            await Task.WhenAll(undoTokens.Values);
 
             commands.First().NodeCommand.EndCombinedInvoke();
 
             var displayName = "Executing " + Name;
 
-            ActionStack.EndTransaction(displayName, x => new AggregateActionItem(displayName, x.ToArray()));
-            return new UndoToken(canUndo, undoTokens);
+            ActionStack.EndTransaction(displayName);
+            var canUndo = undoTokens.Values.Any(x => x.Result.CanUndo);
+            return new UndoToken(canUndo, undoTokens.ToDictionary(x => x.Key, x=> x.Value.Result));
         }
     }
 }

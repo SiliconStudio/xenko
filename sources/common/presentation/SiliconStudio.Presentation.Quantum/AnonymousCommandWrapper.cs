@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
@@ -50,13 +50,13 @@ namespace SiliconStudio.Presentation.Quantum
 
         public override UndoToken Redo(RedoToken redoToken)
         {
-            return Do(redoToken.TokenValue);
+            return Do(redoToken.TokenValue).Result;
         }
 
-        protected override UndoToken Do(object parameter)
+        protected override Task<UndoToken> Do(object parameter)
         {
             var token = doRedo(parameter);
-            return new UndoToken(undo != null, new NodeCommandBase.TokenData(parameter, token));
+            return Task.FromResult(new UndoToken(undo != null, new NodeCommandBase.TokenData(parameter, token)));
         }
 
         /// <inheritdoc/>

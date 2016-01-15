@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.ViewModel;
 
 namespace SiliconStudio.Presentation.Commands
 {
+    [Obsolete("Cancellable command system will be removed soon and each command will have responsibility to create action items.")]
     public abstract class CancellableCommandBase : CommandBase, ICancellableCommandBase
     {
         private readonly IViewModelServiceProvider serviceProvider;
@@ -34,7 +37,7 @@ namespace SiliconStudio.Presentation.Commands
         /// <inheritdoc/>
         public override void Execute(object parameter)
         {
-            Invoke(parameter);
+            Invoke(parameter).Forget();
         }
 
         /// <summary>
@@ -42,16 +45,12 @@ namespace SiliconStudio.Presentation.Commands
         /// </summary>
         /// <param name="parameter">The command parameter.</param>
         /// <returns>An <see cref="UndoToken"/> that can be used to undo the command.</returns>
-        public UndoToken Invoke(object parameter)
+        public async Task<UndoToken> Invoke(object parameter)
         {
-            // TODO: Improve this - we're discarding any change made directly by the command invoke and create a CommandActionItem after.
-            // NOTE: PickupAssetCommand is currently assuming that there's such a transaction in progress, be sure to check it if changing this.
             var transactionalActionStack = ActionStack as ITransactionalActionStack;
-            // This is needed only for the Do invocation. Action items created during undo/redo, are automatically discarded by design.
             transactionalActionStack?.BeginTransaction();
-            var token = Do(parameter);
-            transactionalActionStack?.DiscardTransaction();
-            CreateActionItem(token);
+            var token = await Do(parameter);
+            transactionalActionStack?.EndTransaction($"Executed {Name}");
             return token;
         }
 
@@ -59,16 +58,6 @@ namespace SiliconStudio.Presentation.Commands
 
         public abstract UndoToken Redo(RedoToken redoToken);
 
-        protected abstract UndoToken Do(object parameter);
-
-        protected virtual IActionItem CreateActionItem(UndoToken token)
-        {
-            if (!token.CanUndo)
-                return null;
-
-            var actionItem = new CancellableCommandActionItem(this, token, Dirtiables);
-            ActionStack.Add(actionItem);
-            return actionItem;
-        }
+        protected abstract Task<UndoToken> Do(object parameter);
     }
 }
