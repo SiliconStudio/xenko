@@ -306,6 +306,47 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(0, customProcessor.CurrentComponentDatas.Count);
         }
 
+        [Test]
+        public void TestEntityAndChildren()
+        {
+            var registry = new ServiceRegistry();
+            var entityManager = new CustomEntityManager(registry);
+
+            // Entity with a sub-Entity
+            var entity = new Entity();
+            entity.AddChild(new Entity());
+
+            // ================================================================
+            // 1) Add entity with sub-entity and check EntityManager and TransformProcessor
+            // ================================================================
+            entityManager.Add(entity);
+            var transformProcessor = entityManager.GetProcessor<TransformProcessor>();
+            Assert.NotNull(transformProcessor);
+
+            Assert.AreEqual(2, entityManager.Count);
+            Assert.AreEqual(1, transformProcessor.TransformationRoots.Count);
+            Assert.True(transformProcessor.TransformationRoots.Contains(entity.Transform));
+
+            // ================================================================
+            // 2) Remove child from entity while the Entity is still in the EntityManager
+            // ================================================================
+            entity.Transform.Children.RemoveAt(0);
+
+            Assert.AreEqual(1, entityManager.Count);
+            Assert.AreEqual(1, transformProcessor.TransformationRoots.Count);
+            Assert.True(transformProcessor.TransformationRoots.Contains(entity.Transform));
+
+            // ================================================================
+            // 3) Add a child to the root entity while the Entity is still in the EntityManager
+            // ================================================================
+            var childEntity = new Entity();
+            entity.AddChild(childEntity);
+
+            Assert.AreEqual(2, entityManager.Count);
+            Assert.AreEqual(1, transformProcessor.TransformationRoots.Count);
+            Assert.True(transformProcessor.TransformationRoots.Contains(entity.Transform));
+        }
+
         public static void Main()
         {
         }
