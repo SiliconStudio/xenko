@@ -34,15 +34,18 @@ echo.
 
 goto exit
 
-
 :ArgsDone
 set XXMSBUILD="\Program Files (x86)\MSBuild\14.0\Bin\MSBuild.exe"
-set _option=/nologo /nr:false /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="Mixed Platforms" /p:SiliconStudioPackageBuild=%__SkipTestBuild%
+set _platform_target=Mixed Platforms
 
-set _extra_option=
+rem Compiling the various solutions
 
 set Project=Xenko.sln
+rem We always compile tests for the main solution
+set __OldSkipTestBuild=%__SkipTestBuild%
+set __SkipTestBuild=false
 call :compile
+set __SkipTestBuild=%__OldSkipTestBuild%
 if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.Direct3D.sln
@@ -66,17 +69,17 @@ call :compile
 if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.WindowsPhone.sln
-set _extra_option=/p:Platform="WindowsPhone"
+set _platform_target=WindowsPhone
 call :compile
 if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.WindowsStore.sln
-set _extra_option=/p:Platform="WindowsStore"
+set _platform_target=WindowsStore
 call :compile
 if %ERRORLEVEL% != 0 goto exit
 
 set Project=Xenko.Windows10.sln
-set _extra_option=/p:Platform="Windows10"
+set _platform_target=Windows10
 call :compile
 if %ERRORLEVEL% != 0 goto exit
 
@@ -84,15 +87,18 @@ goto exit
 
 rem Compile our solution. The following variables needs to be set:
 rem "Project" is the solution name
-rem "_option" are the command line options
-rem "_extra_option" are the extra command line options
+rem "_platform_target" is the platform being targeted
 :compile
-echo Compiling using command line %XXMSBUILD% %_option% %_extra_option% %Project%
+set _option=/nologo /nr:false /m /verbosity:%__BuildVerbosity% /p:Configuration=%__BuildType% /p:Platform="%_platform_target%" /p:SiliconStudioPackageBuild=%__SkipTestBuild% %Project%
+
+echo Compiling using command line %XXMSBUILD% %_option%
 echo.
-%XXMSBUILD%  %_option% %_extra_option% %Project%
+
+rem Launch the build and checkling for an error
+%XXMSBUILD%  %_option%
 if %ERRORLEVEL% != 0 (
     echo Error while compiling project: %Project%
-    echo Command line was: %XXMSBUILD% %_option% %_extra_option% %Project%
+    echo Command line was: %XXMSBUILD% %_option%
     exit /b 1
 ) else (
     echo Done compiling project: %Project%

@@ -26,6 +26,15 @@ feel free to contact us at contact@xenko.com
 
 We gladly accept external contributions. Feel free to submit us pull requests and we will consider them for inclusion.
 
+By submitting suggestions, corrections, or content to this forum you hereby agree to the following terms and conditions:
+
+Any content submitted to these forums will be reviewed to check for accuracy, usability, and direction for the Xenko project. Although all submissions will be considered fairly, Silicon Studio makes no guarantees to accept and or use any submitted content.
+
+If submitted content is accepted for addition or usage in the documentation or system code, Silicon Studio shall thenceforth retain all rights of ownership of the content and reserves the right to edit, revise, re-publish (to a third party, etc.), or remove the content at its leisure. 
+Content containing any offensive material or actions of spam submission or the like will be immediately rejected. Any users who make repeat or continuous actions of the above in either submissions or Git-hub forums will be banned from access to the either process.
+
+After submitting please remain patient while your content is reviewed whereas the process may take some time. All submissions will be answered based on the Xenko team priority. 
+
 Contributors will need to sign electronically a Contributor License Agreement, [available here](doc/ContributorLicenseAgreement.md) (based on Harmony).
 It allows us to use your changes in the commercial version, and relicense code easily (in case we decide to go MIT at some point for example).
 
