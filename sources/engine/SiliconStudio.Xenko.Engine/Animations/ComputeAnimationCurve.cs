@@ -142,15 +142,20 @@ namespace SiliconStudio.Xenko.Animations
 
                 // By this point we know that (firstIndex < nextIndex) and (firstKey < nextKey)
 
-                // TODO Support interpolation methods other than linear
                 var lerpValue = (sampleKey - firstKey)/(nextKey - firstKey);
-                bakedArray[i] = GetInterpolatedValue(KeyFrames[firstIndex].Value, 1 - lerpValue, KeyFrames[nextIndex].Value, lerpValue);
+                var leftValue = KeyFrames[firstIndex].Value;
+                var rightValue = KeyFrames[nextIndex].Value;
+
+                // TODO Support interpolation methods other than linear
+                Linear(ref leftValue, ref rightValue, lerpValue, out bakedArray[i]);
             }
 
             Dirty = false;
         }
 
-        public abstract T GetInterpolatedValue(T value1, float weight1, T value2, float weight2);
+        public abstract void Cubic(ref T value1, ref T value2, ref T value3, ref T value4, float t, out T result);
+
+        public abstract void Linear(ref T value1, ref T value2, float t, out T result);
 
         /// <inheritdoc/>
         public T SampleAt(float location)
@@ -164,7 +169,9 @@ namespace SiliconStudio.Xenko.Animations
             var index = (int) indexLocation;
             var lerpValue = indexLocation - index;
 
-            return GetInterpolatedValue(bakedArray[index], 1f - lerpValue, bakedArray[index + 1], lerpValue);
+            T result;
+            Linear(ref bakedArray[index], ref bakedArray[index + 1], lerpValue, out result);
+            return result;
         }
     }
 }
