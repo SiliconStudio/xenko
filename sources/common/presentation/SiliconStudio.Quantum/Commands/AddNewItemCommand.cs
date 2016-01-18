@@ -17,7 +17,7 @@ namespace SiliconStudio.Quantum.Commands
     /// or an exception will be thrown if T could not be determinated or has no parameterless constructor.
     /// </summary>
     /// <remarks>No parameter is required when invoking this command.</remarks>
-    public class AddNewItemCommand : SimpleNodeCommand
+    public class AddNewItemCommand : ActionItemNodeCommand
     {
         private class AddNewItemActionItem : SimpleNodeCommandActionItem
         {
@@ -93,7 +93,7 @@ namespace SiliconStudio.Quantum.Commands
             return collectionDescriptor.HasAdd && (!elementType.IsClass || elementType.GetConstructor(Type.EmptyTypes) != null || elementType.IsAbstract || elementType.IsNullable() || elementType == typeof(string));
         }
 
-        protected override SimpleNodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        protected override NodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
             return new AddNewItemActionItem(Name, content, index, parameter, dirtiables);
         }

@@ -36,7 +36,7 @@ namespace SiliconStudio.Quantum.Commands
             return result;
         }
 
-        protected override object ChangeValue(object currentValue, object parameter, bool isRedo)
+        protected override object ChangeValue(object currentValue, object parameter)
         {
             if (parameter == SetToNull)
                 return null;

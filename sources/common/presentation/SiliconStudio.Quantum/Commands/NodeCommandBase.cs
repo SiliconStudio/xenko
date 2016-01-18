@@ -42,16 +42,22 @@ namespace SiliconStudio.Quantum.Commands
             return Execute2(content, index, parameter, Enumerable.Empty<IDirtiable>());
         }
 
-        public virtual Task<IActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        public abstract Task<IActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
+
+        [Obsolete]
+        public object Undo(object currentValue, UndoToken undoToken, out RedoToken redoToken)
         {
-            return Task.FromResult<IActionItem>(null);
+            var tokenData = (TokenData)undoToken.TokenValue;
+            redoToken = new RedoToken(tokenData.Parameter);
+            return tokenData.Token.TokenValue;
         }
 
         [Obsolete]
-        public abstract object Undo(object currentValue, UndoToken undoToken, out RedoToken redoToken);
-
-        [Obsolete]
-        public abstract object Redo(object currentValue, RedoToken redoToken, out UndoToken undoToken);
+        public object Redo(object currentValue, RedoToken redoToken, out UndoToken undoToken)
+        {
+            undoToken = new UndoToken(false);
+            return null;
+        }
 
         /// <inheritdoc/>
         public virtual void StartCombinedInvoke()

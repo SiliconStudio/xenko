@@ -4,23 +4,11 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public abstract class SimpleNodeCommandActionItem : DirtiableActionItem
+    public abstract class SimpleNodeCommandActionItem : NodeCommandActionItem
     {
-        protected IContent Content;
-        protected object Index;
-
-        protected SimpleNodeCommandActionItem(string name, IContent content, object index, IEnumerable<IDirtiable> dirtiables) : base(name, dirtiables)
+        protected SimpleNodeCommandActionItem(string name, IContent content, object index, IEnumerable<IDirtiable> dirtiables)
+            : base(name, content, index, dirtiables)
         {
-            Content = content;
-            Index = index;
-        }
-
-        public abstract bool Do();
-
-        protected override void FreezeMembers()
-        {
-            Content = null;
-            Index = null;
         }
 
         protected sealed override void RedoAction()
