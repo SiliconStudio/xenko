@@ -34,9 +34,6 @@ namespace SiliconStudio.Quantum.Commands
         /// <inheritdoc/>
         public abstract bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor);
 
-        [Obsolete]
-        public abstract object Execute(object currentValue, object parameter, out UndoToken undoToken);
-
         public Task<IActionItem> Execute2(IContent content, object index, object parameter)
         {
             return Execute2(content, index, parameter, Enumerable.Empty<IDirtiable>());

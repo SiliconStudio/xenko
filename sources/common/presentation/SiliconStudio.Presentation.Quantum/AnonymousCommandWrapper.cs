@@ -38,22 +38,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override string Name { get; }
 
-        public override RedoToken Undo(UndoToken undoToken)
-        {
-            if (undo == null)
-                throw new InvalidOperationException("This command cannot be cancelled.");
-
-            var tokenData = (NodeCommandBase.TokenData)undoToken.TokenValue;
-            undo(tokenData.Token);
-            return new RedoToken(tokenData.Parameter);
-        }
-
-        public override UndoToken Redo(RedoToken redoToken)
-        {
-            return Do(redoToken.TokenValue).Result;
-        }
-
-        protected override Task<UndoToken> Do(object parameter)
+        protected override Task<UndoToken> InvokeInternal(object parameter)
         {
             var token = doRedo(parameter);
             return Task.FromResult(new UndoToken(undo != null, new NodeCommandBase.TokenData(parameter, token)));
