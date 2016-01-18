@@ -59,6 +59,7 @@
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedBlittableGroup.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedVector4Group.cs" />
     <Compile Include="Animations\AnimationUpdater.cs" />
+    <Compile Include="Animations\ComputeAnimationCurve.cs" />
     <Compile Include="Animations\ComputeBinaryCurve.cs" />
     <Compile Include="Animations\ComputeConstCurve.cs" />
     <Compile Include="Animations\ComputeCurveContracts.cs" />

@@ -42,7 +42,13 @@ namespace SiliconStudio.Xenko.Animations
     /// </summary>
     [DataContract("ComputeAnimationCurveFloat")]
     [Display("Animation")]
-    public class ComputeAnimationCurveFloat : ComputeAnimationCurve<float> { }
+    public class ComputeAnimationCurveFloat : ComputeAnimationCurve<float>
+    {
+        public override float GetInterpolatedValue(float value1, float weight1, float value2, float weight2)
+        {
+            return (value1 * weight1) + (value2 * weight2);
+        }
+    }
 
     /// <summary>
     /// Constant vector4 value for the IComputeCurve interface
@@ -50,6 +56,19 @@ namespace SiliconStudio.Xenko.Animations
     [DataContract("ComputeConstCurveVector4")]
     [Display("Constant")]
     public class ComputeConstCurveVector4 : ComputeConstCurve<Vector4> { }
+
+    /// <summary>
+    /// Constant vector4 value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeAnimationCurveVector4")]
+    [Display("Animation")]
+    public class ComputeAnimationCurveVector4 : ComputeAnimationCurve<Vector4>
+    {
+        public override Vector4 GetInterpolatedValue(Vector4 value1, float weight1, Vector4 value2, float weight2)
+        {
+            return (value1 * weight1) + (value2 * weight2);
+        }
+    }
 
     /// <summary>
     /// Binary operator vector4 value for the IComputeCurve interface
