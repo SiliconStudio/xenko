@@ -15,7 +15,5 @@
 
     <!-- Defines target for Asset compiler TODO: this is hardcoded -->
     <XenkoProjectBuildProfile>Windows_OGL</XenkoProjectBuildProfile>
-    
-    <SiliconStudioPlatformForceMono>true</SiliconStudioPlatformForceMono>
   </PropertyGroup>
 </Project>
