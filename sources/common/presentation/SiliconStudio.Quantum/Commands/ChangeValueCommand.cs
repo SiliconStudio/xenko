@@ -22,7 +22,7 @@ namespace SiliconStudio.Quantum.Commands
             IActionItem actionItem = null;
             if (!Equals(newValue, currentValue))
             {
-                content.Update(index);
+                content.Update(newValue, index);
                 actionItem = new ContentValueChangedActionItem("Change property via command '{Name}'", content, index, currentValue, dirtiables);
             }
             return Task.FromResult(actionItem);
