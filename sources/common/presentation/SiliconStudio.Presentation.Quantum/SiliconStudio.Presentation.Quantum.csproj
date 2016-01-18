@@ -45,7 +45,6 @@
     <Compile Include="View\ObservableNodeTemplateProvider.cs" />
     <Compile Include="View\RangedValueTemplateProvider.cs" />
     <Compile Include="View\TypeMatchTemplateProvider.cs" />
-    <Compile Include="Deprecated_VirtualObservableNode.cs" />
     <Compile Include="VirtualObservableNode.cs" />
   </ItemGroup>
   <ItemGroup>
