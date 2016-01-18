@@ -62,6 +62,7 @@
     <Compile Include="Animations\ComputeAnimationCurve.cs" />
     <Compile Include="Animations\ComputeBinaryCurve.cs" />
     <Compile Include="Animations\ComputeConstCurve.cs" />
+    <Compile Include="Animations\ComputeCurveSampler.cs" />
     <Compile Include="Animations\ComputeCurveContracts.cs" />
     <Compile Include="Animations\ComputeSeparateCurveVector4.cs" />
     <Compile Include="Animations\IComputeCurve.cs" />
