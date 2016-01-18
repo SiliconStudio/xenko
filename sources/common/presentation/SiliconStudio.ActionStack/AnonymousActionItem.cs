@@ -24,8 +24,6 @@ namespace SiliconStudio.ActionStack
         public AnonymousActionItem(string name, IEnumerable<IDirtiable> dirtiables, Action undo, Action redo)
             : base(name, dirtiables)
         {
-            if (undo == null) throw new ArgumentNullException(nameof(undo));
-            if (redo == null) throw new ArgumentNullException(nameof(redo));
             this.undo = undo;
             this.redo = redo;
         }
@@ -40,13 +38,13 @@ namespace SiliconStudio.ActionStack
         /// <inheritdoc/>
         protected override void UndoAction()
         {
-            undo();
+            undo?.Invoke();
         }
 
         /// <inheritdoc/>
         protected override void RedoAction()
         {
-            redo();
+            redo?.Invoke();
         }
     }
 }
