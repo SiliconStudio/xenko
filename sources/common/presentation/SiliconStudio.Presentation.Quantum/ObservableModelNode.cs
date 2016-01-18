@@ -116,15 +116,7 @@ namespace SiliconStudio.Presentation.Quantum
 
             isInitialized = true;
 
-            if (Owner.ObservableViewModelService != null)
-            {
-                foreach (var key in AssociatedData.Keys.ToList())
-                {
-                    RemoveAssociatedData(key);
-                }
-
-                Owner.ObservableViewModelService.NotifyNodeInitialized(this);
-            }
+            Owner.ObservableViewModelService?.NotifyNodeInitialized(this);
 
             FinalizeChildrenInitialization();
 
@@ -365,6 +357,11 @@ namespace SiliconStudio.Presentation.Quantum
             foreach (var child in Children.Cast<ObservableNode>().ToList())
             {
                 RemoveChild(child);
+            }
+
+            foreach (var key in AssociatedData.Keys.ToList())
+            {
+                RemoveAssociatedData(key);
             }
 
             Initialize();
