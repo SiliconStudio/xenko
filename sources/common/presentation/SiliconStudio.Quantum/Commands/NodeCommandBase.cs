@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
@@ -13,18 +12,6 @@ namespace SiliconStudio.Quantum.Commands
     /// </summary>
     public abstract class NodeCommandBase : INodeCommand
     {
-        public struct TokenData
-        {
-            public readonly object Parameter;
-            public readonly UndoToken Token;
-
-            public TokenData(object parameter, UndoToken token)
-            {
-                Parameter = parameter;
-                Token = token;
-            }
-        }
-
         /// <inheritdoc/>
         public abstract string Name { get; }
 
@@ -34,27 +21,12 @@ namespace SiliconStudio.Quantum.Commands
         /// <inheritdoc/>
         public abstract bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor);
 
-        public Task<IActionItem> Execute2(IContent content, object index, object parameter)
+        public Task<IActionItem> Execute(IContent content, object index, object parameter)
         {
-            return Execute2(content, index, parameter, Enumerable.Empty<IDirtiable>());
+            return Execute(content, index, parameter, Enumerable.Empty<IDirtiable>());
         }
 
-        public abstract Task<IActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
-
-        [Obsolete]
-        public object Undo(object currentValue, UndoToken undoToken, out RedoToken redoToken)
-        {
-            var tokenData = (TokenData)undoToken.TokenValue;
-            redoToken = new RedoToken(tokenData.Parameter);
-            return tokenData.Token.TokenValue;
-        }
-
-        [Obsolete]
-        public object Redo(object currentValue, RedoToken redoToken, out UndoToken undoToken)
-        {
-            undoToken = new UndoToken(false);
-            return null;
-        }
+        public abstract Task<IActionItem> Execute(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
 
         /// <inheritdoc/>
         public virtual void StartCombinedInvoke()

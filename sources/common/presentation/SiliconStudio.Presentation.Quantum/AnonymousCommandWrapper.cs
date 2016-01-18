@@ -38,10 +38,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public override string Name { get; }
 
-        protected override Task<UndoToken> InvokeInternal(object parameter)
+        public override Task Invoke(object parameter)
         {
-            var token = doRedo(parameter);
-            return Task.FromResult(new UndoToken(undo != null, new NodeCommandBase.TokenData(parameter, token)));
+            ActionStack?.BeginTransaction();
+            doRedo(parameter);
+            ActionStack?.EndTransaction($"Executed {Name}");
+            return Task.FromResult(0);
         }
 
         /// <inheritdoc/>

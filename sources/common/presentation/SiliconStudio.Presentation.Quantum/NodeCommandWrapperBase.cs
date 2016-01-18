@@ -7,13 +7,9 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Commands;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    /// <summary>
-    /// A base class to wrap one or multiple <see cref="INodeCommand"/> instances into a <see cref="CancellableCommandBase"/>.
-    /// </summary>
     public abstract class NodeCommandWrapperBase : CommandBase, INodeCommandWrapper
     {
         private readonly IViewModelServiceProvider serviceProvider;
@@ -48,7 +44,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets the action stack.
         /// </summary>
-        private IActionStack ActionStack => serviceProvider.Get<IActionStack>();
+        protected ITransactionalActionStack ActionStack => serviceProvider.Get<ITransactionalActionStack>();
 
         /// <inheritdoc/>
         public override void Execute(object parameter)
@@ -60,22 +56,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// Invokes the command and return a token that can be used to undo it.
         /// </summary>
         /// <param name="parameter">The command parameter.</param>
-        /// <returns>An <see cref="UndoToken"/> that can be used to undo the command.</returns>
-        public async Task<UndoToken> Invoke(object parameter)
-        {
-            var transactionalActionStack = ActionStack as ITransactionalActionStack;
-            transactionalActionStack?.BeginTransaction();
-            var token = await InvokeInternal(parameter);
-            transactionalActionStack?.EndTransaction($"Executed {Name}");
-            return token;
-        }
-
-        /// <summary>
-        /// Invokes the command and return a token that can be used to undo it.
-        /// </summary>
-        /// <param name="parameter">The command parameter.</param>
-        /// <returns>An <see cref="UndoToken"/> that can be used to undo the command.</returns>
-        /// <remarks>This method is internally called by <see cref="Invoke"/>.</remarks>
-        protected abstract Task<UndoToken> InvokeInternal(object parameter);
+        /// <returns>A task that completes when the command has finished.</returns>
+        public abstract Task Invoke(object parameter);
     }
 }

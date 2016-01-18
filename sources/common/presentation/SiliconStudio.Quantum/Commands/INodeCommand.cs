@@ -33,29 +33,9 @@ namespace SiliconStudio.Quantum.Commands
         /// <returns></returns>
         bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor);
 
-        Task<IActionItem> Execute2(IContent content, object index, object parameter);
+        Task<IActionItem> Execute(IContent content, object index, object parameter);
 
-        Task<IActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
-
-        /// <summary>
-        /// Undoes an invoke of the node command.
-        /// </summary>
-        /// <param name="currentValue">The current value of the associated object or member.</param>
-        /// <param name="undoToken">The <see cref="UndoToken"/> that was generated when invoking this command.</param>
-        /// <param name="redoToken">The <see cref="RedoToken"/> that will be passed to the <see cref="Redo"/> method when redoing the execution of this command.</param>
-        /// <returns>The new value to assign to the associated object or member.</returns>
-        [Obsolete]
-        object Undo(object currentValue, UndoToken undoToken, out RedoToken redoToken);
-
-        /// <summary>
-        /// Redoes the node command.
-        /// </summary>
-        /// <param name="currentValue">The current value of the associated object or member.</param>
-        /// <param name="redoToken">The <see cref="RedoToken"/> that was generated when undoing this command.</param>
-        /// <param name="undoToken">The <see cref="UndoToken"/> that will be passed to the <see cref="Undo"/> method when undoing the execution of this command.</param>
-        /// <returns>The new value to assign to the associated object or member.</returns>
-        [Obsolete]
-        object Redo(object currentValue, RedoToken redoToken, out UndoToken undoToken);
+        Task<IActionItem> Execute(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
 
         /// <summary>
         /// Notifies the command that the following invokes will be part of a combined execution (the same command being executed multiple times on multiple objects with the same parameters).
