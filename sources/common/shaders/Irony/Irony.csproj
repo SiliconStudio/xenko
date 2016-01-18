@@ -17,11 +17,15 @@
     <UseVSHostingProcess>false</UseVSHostingProcess>
     <XenkoBuildTags>Windows</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+        <Reference Include="System.Xml" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="Parsing\AstInterfaces.cs" />
     <Compile Include="Parsing\Grammar\GrammarError.cs" />

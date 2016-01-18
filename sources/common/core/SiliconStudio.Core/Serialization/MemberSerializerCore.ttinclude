@@ -17,7 +17,7 @@
 <# if (supportsGenerics) { #>
             if (isValueType)
 <# } else { #>
-            if (objType.IsValueType)
+            if (objType.GetTypeInfo().IsValueType)
 <# } #>
             {
 <# if (supportsNullDataSerializer) { #>
@@ -90,7 +90,7 @@
 <# if (supportsNonSealed) { #>
                     // If real type is not expected type, we need to store type info as well.
                     var expectedType = <#= typeExpr #>;
-                    type = <# if (supportsGenerics) { #>isSealed<# } else { #>objType.IsSealed<# } #> ? expectedType : obj.GetType();
+                    type = <# if (supportsGenerics) { #>isSealed<# } else { #>objType.GetTypeInfo().IsSealed<# } #> ? expectedType : obj.GetType();
                     hasTypeInfo = type != expectedType;
                     objectDataSerializer = null;
                     if (hasTypeInfo)
@@ -181,6 +181,7 @@
 <# } #>
 <# if (supportsReuseReferences) { #>
                 var objectReferences = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeReferences) : null;
+                var referenceCallback = reuseReferences ? context.Get(MemberSerializer.ObjectDeserializeCallback) : null;
                 bool isReference = (flags & SerializeClassFlags.IsReference) == SerializeClassFlags.IsReference;
                 index = reuseReferences && !isNull ? stream.ReadInt32() : -1;
 <# } #>
@@ -269,6 +270,12 @@
                     {
                         // Register object so that later references to it are working.
                         objectReferences[index] = obj;
+
+                        // Call Reference Callback
+                        if (referenceCallback != null)
+                        {
+                            referenceCallback(index, obj);
+                        }
                     }
 <# } #>
                 }
