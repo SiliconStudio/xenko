@@ -62,10 +62,6 @@
     <Compile Include="Collections\NonGenericObservableCollectionWrapper.cs" />
     <Compile Include="Collections\NonGenericObservableSetWrapper.cs" />
     <Compile Include="Collections\ObservableSet.cs" />
-    <Compile Include="Commands\CancellableCommandActionItem.cs" />
-    <Compile Include="Commands\CancellableCommandBase.cs" />
-    <Compile Include="Commands\ICancellableCommandBase.cs" />
-    <Compile Include="Commands\SimpleCancellableCommand.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
     <Compile Include="Controls\FilteringComboBoxSort.cs" />
     <Compile Include="Controls\MarkdownTextBlock.cs" />

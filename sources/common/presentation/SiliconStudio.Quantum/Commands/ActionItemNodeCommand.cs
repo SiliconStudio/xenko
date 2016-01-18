@@ -11,15 +11,6 @@ namespace SiliconStudio.Quantum.Commands
 {
     public abstract class ActionItemNodeCommand : NodeCommandBase
     {
-        [Obsolete]
-        public sealed override object Execute(object currentValue, object parameter, out UndoToken undoToken)
-        {
-            UndoToken token;
-            var newValue = Do(currentValue, parameter, out token);
-            undoToken = new UndoToken(token.CanUndo, new TokenData(parameter, token));
-            return newValue;
-        }
-
         public sealed override Task<IActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
             var actionItem = CreateActionItem(content, index, parameter, dirtiables);

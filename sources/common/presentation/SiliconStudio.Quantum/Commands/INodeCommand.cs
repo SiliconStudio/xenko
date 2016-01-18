@@ -33,16 +33,6 @@ namespace SiliconStudio.Quantum.Commands
         /// <returns></returns>
         bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor);
 
-        /// <summary>
-        /// Executes the node command.
-        /// </summary>
-        /// <param name="currentValue">The current value of the associated object or member.</param>
-        /// <param name="parameter">The parameter of the command.</param>
-        /// <param name="undoToken">The <see cref="UndoToken"/> that will be passed to the <see cref="Undo"/> method when undoing the execution of this command.</param>
-        /// <returns>The new value to assign to the associated object or member.</returns>
-        [Obsolete]
-        object Execute(object currentValue, object parameter, out UndoToken undoToken);
-
         Task<IActionItem> Execute2(IContent content, object index, object parameter);
 
         Task<IActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);

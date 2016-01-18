@@ -33,34 +33,7 @@ namespace SiliconStudio.Presentation.Quantum
 
         private ITransactionalActionStack ActionStack => serviceProvider.Get<ITransactionalActionStack>();
 
-        public override RedoToken Undo(UndoToken undoToken)
-        {
-            var undoTokens = (Dictionary<ModelNodeCommandWrapper, UndoToken>)undoToken.TokenValue;
-            var redoTokens = new Dictionary<ModelNodeCommandWrapper, RedoToken>();
-            foreach (var command in commands)
-            {
-                redoTokens[command] = command.Undo(undoTokens[command]);
-            }
-            return new RedoToken(redoTokens);
-        }
-
-        public override UndoToken Redo(RedoToken redoToken)
-        {
-            var redoTokens = (Dictionary<ModelNodeCommandWrapper, RedoToken>)redoToken.TokenValue;
-            var undoTokens = new Dictionary<ModelNodeCommandWrapper, UndoToken>();
-            bool canUndo = false;
-
-            foreach (var command in commands)
-            {
-                var undoToken = command.Redo(redoTokens[command]);
-                undoTokens.Add(command, undoToken);
-                canUndo = canUndo || undoToken.CanUndo;
-            }
-
-            return new UndoToken(canUndo, undoTokens);
-        }
-
-        protected override async Task<UndoToken> Do(object parameter)
+        protected override async Task<UndoToken> InvokeInternal(object parameter)
         {
             ActionStack.BeginTransaction();
             var undoTokens = new Dictionary<ModelNodeCommandWrapper, Task<UndoToken>>();

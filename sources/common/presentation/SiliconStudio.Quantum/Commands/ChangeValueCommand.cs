@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
@@ -16,13 +15,6 @@ namespace SiliconStudio.Quantum.Commands
     /// </summary>
     public abstract class ChangeValueCommand : NodeCommandBase
     {
-        [Obsolete]
-        public override object Execute(object currentValue, object parameter, out UndoToken undoToken)
-        {
-            undoToken = new UndoToken(false);
-            return null;
-        }
-
         public override Task<IActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
             var currentValue = content.Retrieve(index);
