@@ -4,6 +4,12 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Animations
 {
+
+
+    [DataContract("ComputeCurveSamplerVector4")]
+    [Display("Vector4 sampler")]
+    public class ComputeCurveSamplerVector4 : ComputeCurveSampler<Vector4> { }
+
     /// <summary>
     /// Constant float value for the IComputeCurve interface
     /// </summary>
@@ -15,7 +21,7 @@ namespace SiliconStudio.Xenko.Animations
     /// Binary operator float value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeBinaryCurveFloat")]
-    [Display("Operation")]
+    [Display("Binary Operation")]
     public class ComputeBinaryCurveFloat : ComputeBinaryCurve<float>
     {
         /// <inheritdoc/>
@@ -88,7 +94,7 @@ namespace SiliconStudio.Xenko.Animations
     /// Binary operator vector4 value for the IComputeCurve interface
     /// </summary>
     [DataContract("ComputeBinaryCurveVector4")]
-    [Display("Operation")]
+    [Display("Binary Operation")]
     public class ComputeBinaryCurveVector4 : ComputeBinaryCurve<Vector4>
     {
         /// <inheritdoc/>
