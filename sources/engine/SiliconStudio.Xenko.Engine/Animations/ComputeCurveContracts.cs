@@ -44,9 +44,16 @@ namespace SiliconStudio.Xenko.Animations
     [Display("Animation")]
     public class ComputeAnimationCurveFloat : ComputeAnimationCurve<float>
     {
-        public override float GetInterpolatedValue(float value1, float weight1, float value2, float weight2)
+        /// <inheritdoc/>
+        public override void Cubic(ref float value1, ref float value2, ref float value3, ref float value4, float t, out float result)
         {
-            return (value1 * weight1) + (value2 * weight2);
+            result = Interpolator.Cubic(value1, value2, value3, value4, t);
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref float value1, ref float value2, float t, out float result)
+        {
+            result = Interpolator.Linear(value1, value2, t);
         }
     }
 
@@ -64,9 +71,16 @@ namespace SiliconStudio.Xenko.Animations
     [Display("Animation")]
     public class ComputeAnimationCurveVector4 : ComputeAnimationCurve<Vector4>
     {
-        public override Vector4 GetInterpolatedValue(Vector4 value1, float weight1, Vector4 value2, float weight2)
+        /// <inheritdoc/>
+        public override void Cubic(ref Vector4 value1, ref Vector4 value2, ref Vector4 value3, ref Vector4 value4, float t, out Vector4 result)
         {
-            return (value1 * weight1) + (value2 * weight2);
+            Interpolator.Vector4.Cubic(ref value1, ref value2, ref value3, ref value4, t, out result);
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Vector4 value1, ref Vector4 value2, float t, out Vector4 result)
+        {
+            Interpolator.Vector4.Linear(ref value1, ref value2, t, out result);
         }
     }
 
