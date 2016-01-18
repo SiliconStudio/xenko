@@ -9,7 +9,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class RenameStringKeyCommand : SimpleNodeCommand
+    public class RenameStringKeyCommand : ActionItemNodeCommand
     {
         private class RenameStringKeyActionItem : SimpleNodeCommandActionItem
         {
@@ -68,7 +68,7 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null && dictionaryDescriptor.KeyType == typeof(string);
         }
 
-        protected override SimpleNodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        protected override NodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
             return new RenameStringKeyActionItem(Name, content, index, (string)parameter, dirtiables);
         }

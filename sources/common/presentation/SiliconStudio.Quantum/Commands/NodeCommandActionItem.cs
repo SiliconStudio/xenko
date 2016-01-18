@@ -16,7 +16,7 @@ namespace SiliconStudio.Quantum.Commands
             Index = index;
         }
 
-        public abstract void Do();
+        public abstract bool Do();
 
         protected override void FreezeMembers()
         {

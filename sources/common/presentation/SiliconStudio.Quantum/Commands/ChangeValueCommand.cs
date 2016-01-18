@@ -23,24 +23,10 @@ namespace SiliconStudio.Quantum.Commands
             return null;
         }
 
-        [Obsolete]
-        public override object Undo(object currentValue, UndoToken undoToken, out RedoToken redoToken)
-        {
-            redoToken = new RedoToken();
-            return null;
-        }
-
-        [Obsolete]
-        public override object Redo(object currentValue, RedoToken redoToken, out UndoToken undoToken)
-        {
-            undoToken = new UndoToken(false);
-            return null;
-        }
-
         public override Task<IActionItem> Execute2(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
             var currentValue = content.Retrieve(index);
-            var newValue = ChangeValue(currentValue, parameter, false);
+            var newValue = ChangeValue(currentValue, parameter);
             IActionItem actionItem = null;
             if (!Equals(newValue, currentValue))
             {
@@ -50,6 +36,6 @@ namespace SiliconStudio.Quantum.Commands
             return Task.FromResult(actionItem);
         }
 
-        protected abstract object ChangeValue(object currentValue, object parameter, bool isRedo);
+        protected abstract object ChangeValue(object currentValue, object parameter);
     }
 }

@@ -12,7 +12,7 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class AddPrimitiveKeyCommand : SimpleNodeCommand
+    public class AddPrimitiveKeyCommand : ActionItemNodeCommand
     {
         private class AddPrimitiveKeyActionItem : SimpleNodeCommandActionItem
         {
@@ -70,7 +70,7 @@ namespace SiliconStudio.Quantum.Commands
             return !dictionaryDescriptor.KeyType.IsClass || dictionaryDescriptor.KeyType == typeof(string) || dictionaryDescriptor.KeyType.GetConstructor(new Type[0]) != null;
         }
 
-        protected override SimpleNodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        protected override NodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
             return new AddPrimitiveKeyActionItem(Name, content, index, parameter as string, dirtiables);
         }
