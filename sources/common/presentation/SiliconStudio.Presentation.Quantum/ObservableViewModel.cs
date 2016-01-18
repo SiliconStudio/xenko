@@ -71,7 +71,6 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
             var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", modelNode.Content.IsPrimitive, modelNode, new GraphNodePath(modelNode), modelNode.Content.Type, null);
-            Identifier = new ObservableViewModelIdentifier(node.ModelGuid);
             node.Initialize();
             RootNode = node;
             node.CheckConsistency();
@@ -109,7 +108,6 @@ namespace SiliconStudio.Presentation.Quantum
                 rootNodeType = typeof(object);
 
             CombinedObservableNode rootCombinedNode = CombinedObservableNode.Create(combinedViewModel, "Root", null, rootNodeType, rootNodes, null);
-            combinedViewModel.Identifier = new ObservableViewModelIdentifier(rootNodes.Select(x => x.ModelGuid));
             rootCombinedNode.Initialize();
             combinedViewModel.RootNode = rootCombinedNode;
             return combinedViewModel;
@@ -139,11 +137,6 @@ namespace SiliconStudio.Presentation.Quantum
         /// Gets the <see cref="ObservableViewModelService"/> associated to this view model.
         /// </summary>
         public ObservableViewModelService ObservableViewModelService { get; }
-
-        /// <summary>
-        /// Gets an identifier for this view model.
-        /// </summary>
-        public ObservableViewModelIdentifier Identifier { get; private set; }
 
         /// <summary>
         /// Gets the <see cref="NodeContainer"/> used to store Quantum objects.

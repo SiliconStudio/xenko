@@ -34,7 +34,6 @@
     <Compile Include="ObservableModelNode.cs" />
     <Compile Include="ObservableNode.cs" />
     <Compile Include="ObservableViewModelConsistencyException.cs" />
-    <Compile Include="ObservableViewModelIdentifier.cs" />
     <Compile Include="ObservableViewModelService.cs" />
     <Compile Include="SingleObservableNode.cs" />
     <Compile Include="DebugExtensions.cs" />
