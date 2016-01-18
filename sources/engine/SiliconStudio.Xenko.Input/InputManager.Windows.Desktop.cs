@@ -145,7 +145,6 @@ namespace SiliconStudio.Xenko.Input
             }
             else
             {
-                EnsureMapKeys();
                 defaultWndProc = Win32Native.GetWindowLong(uiControl.Handle, Win32Native.WindowLongType.WndProc);
                 // This is needed to prevent garbage collection of the delegate.
                 inputWndProc = WndProc;
@@ -168,7 +167,7 @@ namespace SiliconStudio.Xenko.Input
         private void OnKeyEvent(WinFormsKeys keyCode, bool isKeyUp)
         {
             Keys key;
-            if (mapKeys.TryGetValue(keyCode, out key) && key != Keys.None)
+            if (WinKeys.mapKeys.TryGetValue(keyCode, out key) && key != Keys.None)
             {
                 var type = isKeyUp ? InputEventType.Up : InputEventType.Down;
                 lock (KeyboardInputEvents)
@@ -250,7 +249,7 @@ namespace SiliconStudio.Xenko.Input
         {
             lock (KeyboardInputEvents)
             {
-                foreach (var key in mapKeys)
+                foreach (var key in WinKeys.mapKeys)
                 {
                     var state = Win32Native.GetKeyState((int)key.Key);
                     if ((state & 0x8000) == 0x8000)
