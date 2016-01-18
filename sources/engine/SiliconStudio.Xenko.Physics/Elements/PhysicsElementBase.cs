@@ -333,7 +333,7 @@ namespace SiliconStudio.Xenko.Physics
         public PhysicsProcessor.AssociatedData Data;
 
         [DataMemberIgnore]
-        public Entity DebugEntity;
+        public Entity DebugEntity { get; set; }
 
         public void AddDebugEntity(Scene scene)
         {
