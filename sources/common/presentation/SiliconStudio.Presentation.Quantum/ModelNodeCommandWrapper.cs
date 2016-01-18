@@ -12,18 +12,6 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public class ModelNodeCommandWrapper : NodeCommandWrapperBase
     {
-        private class TokenData<TToken>
-        {
-            public readonly TToken Token;
-            public readonly object Parameter;
-
-            public TokenData(TToken token, object parameter)
-            {
-                Token = token;
-                Parameter = parameter;
-            }
-        }
-
         public readonly GraphNodePath NodePath;
         protected readonly ObservableViewModelService Service;
 
@@ -42,19 +30,20 @@ namespace SiliconStudio.Presentation.Quantum
         
         public INodeCommand NodeCommand { get; }
 
-        protected override async Task<UndoToken> InvokeInternal(object parameter)
+        public override async Task Invoke(object parameter)
         {
+            ActionStack?.BeginTransaction();
             object index;
             var modelNode = NodePath.GetSourceNode(out index);
             if (modelNode == null)
                 throw new InvalidOperationException("Unable to retrieve the node on which to apply the redo operation.");
 
-            var actionItem = await NodeCommand.Execute2(modelNode.Content, index, parameter, Dirtiables);
+            var actionItem = await NodeCommand.Execute(modelNode.Content, index, parameter, Dirtiables);
             if (actionItem != null)
             {
-                ServiceProvider.Get<ITransactionalActionStack>().Add(actionItem);
+                ActionStack?.Add(actionItem);
             }
-            return new UndoToken(false);
+            ActionStack?.EndTransaction($"Executed {Name}");
         }
     }
 }

@@ -14,7 +14,6 @@ namespace SiliconStudio.Presentation.Quantum
     public class CombinedNodeCommandWrapper : NodeCommandWrapperBase
     {
         private readonly IReadOnlyCollection<ModelNodeCommandWrapper> commands;
-        private readonly IViewModelServiceProvider serviceProvider;
 
         public CombinedNodeCommandWrapper(IViewModelServiceProvider serviceProvider, string name, IReadOnlyCollection<ModelNodeCommandWrapper> commands)
             : base(serviceProvider, new HashSet<IDirtiable>(commands.SafeArgument(nameof(commands)).SelectMany(x => x.Dirtiables)))
@@ -24,37 +23,19 @@ namespace SiliconStudio.Presentation.Quantum
             if (commands.Any(x => !ReferenceEquals(x.NodeCommand, commands.First().NodeCommand))) throw new ArgumentException(@"The collection of commands to combine cannot contain different node commands", nameof(commands));
             this.commands = commands;
             Name = name;
-            this.serviceProvider = serviceProvider;
         }
 
         public override string Name { get; }
 
         public override CombineMode CombineMode => CombineMode.DoNotCombine;
 
-        private ITransactionalActionStack ActionStack => serviceProvider.Get<ITransactionalActionStack>();
-
-        protected override async Task<UndoToken> InvokeInternal(object parameter)
+        public override async Task Invoke(object parameter)
         {
-            ActionStack.BeginTransaction();
-            var undoTokens = new Dictionary<ModelNodeCommandWrapper, Task<UndoToken>>();
-
+            ActionStack?.BeginTransaction();
             commands.First().NodeCommand.StartCombinedInvoke();
-
-            foreach (var command in commands)
-            {
-                var task = command.Invoke(parameter);
-                undoTokens.Add(command, task);
-            }
-
-            await Task.WhenAll(undoTokens.Values);
-
+            await Task.WhenAll(commands.Select(x => x.Invoke(parameter)));
             commands.First().NodeCommand.EndCombinedInvoke();
-
-            var displayName = "Executing " + Name;
-
-            ActionStack.EndTransaction(displayName);
-            var canUndo = undoTokens.Values.Any(x => x.Result.CanUndo);
-            return new UndoToken(canUndo, undoTokens.ToDictionary(x => x.Key, x=> x.Value.Result));
+            ActionStack?.EndTransaction($"Executed {Name}");
         }
     }
 }
