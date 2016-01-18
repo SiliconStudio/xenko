@@ -65,21 +65,6 @@ namespace SiliconStudio.Presentation.Quantum
             return observableChild;
         }
 
-        public Deprecated_VirtualObservableNode CreateVirtualChild(string name, Type contentType, int? order, bool isPrimitive, object initialValue, object index, NodeCommandWrapperBase valueChangedCommand, IReadOnlyDictionary<string, object> nodeAssociatedData)
-        {
-            var observableChild = Deprecated_VirtualObservableNode.Create(Owner, name, order, isPrimitive, contentType, initialValue, index, valueChangedCommand);
-            if (nodeAssociatedData != null)
-            {
-                foreach (var data in nodeAssociatedData)
-                {
-                    observableChild.AddAssociatedData(data.Key, data.Value);
-                }
-            }
-            observableChild.FinalizeChildrenInitialization();
-            AddChild(observableChild);
-            return observableChild;
-        }
-
         protected override void OnPropertyChanged(params string[] propertyNames)
         {
             base.OnPropertyChanged(propertyNames);
