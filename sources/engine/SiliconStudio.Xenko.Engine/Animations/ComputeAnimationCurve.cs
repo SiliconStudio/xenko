@@ -13,19 +13,32 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Animations
 {
+    public enum AnimationKeyTangentType
+    {
+        /// <summary>
+        /// Linear - the value is linearly calculated as V1 * (1 - t) + V2 * t
+        /// </summary>
+        Linear,        
+    }
+
     [DataContract]
     [Display("KeyFrame")]
     public class AnimationKeyFrame<T> where T : struct
     {
-        // TODO structs are not copied properly when edited .. ?
-
         private T val;
+        [DataMember(20)]
+        [Display("Value")]
         public T Value { get { return val; } set { val = value; HasChanged = true; } }
 
         private float key;
+        [DataMember(10)]
+        [Display("Key")]
         public float Key { get { return key; } set { key = value; HasChanged = true; } }
 
-        // TODO Interpolation technique
+        private AnimationKeyTangentType tangetType = AnimationKeyTangentType.Linear;
+        [DataMember(30)]
+        [Display("Tangent")]
+        public AnimationKeyTangentType TangetType { get { return tangetType; } set { tangetType = value; HasChanged = true; } }
 
         [DataMemberIgnore]
         public bool HasChanged = true;
@@ -102,26 +115,34 @@ namespace SiliconStudio.Xenko.Animations
             if (sortedKeys.Count <= 0)
                 return new T();
 
-            var thisIndex = 0;
-            while ((thisIndex < sortedKeys.Count - 1) && (sortedKeys[thisIndex + 1].Key <= t))
-                thisIndex++;
+            var leftIndex = 0;
+            while ((leftIndex < sortedKeys.Count - 1) && (sortedKeys[leftIndex + 1].Key <= t))
+                leftIndex++;
 
-            if ((thisIndex >= sortedKeys.Count - 1) || (sortedKeys[thisIndex].Key >= t))
-                return sortedKeys[thisIndex].Value;
+            if ((leftIndex >= sortedKeys.Count - 1) || (sortedKeys[leftIndex].Key >= t))
+                return sortedKeys[leftIndex].Value;
 
-            var nextIndex = thisIndex + 1;
-            if (sortedKeys[thisIndex].Key >= sortedKeys[nextIndex].Key)
-                return sortedKeys[thisIndex].Value;
+            var rightIndex = leftIndex + 1;
+            if (sortedKeys[leftIndex].Key >= sortedKeys[rightIndex].Key)
+                return sortedKeys[leftIndex].Value;
 
             // Lerp between the two values
-            var lerpValue = (t - sortedKeys[thisIndex].Key) / (sortedKeys[nextIndex].Key - sortedKeys[thisIndex].Key);
+            var lerpValue = (t - sortedKeys[leftIndex].Key) / (sortedKeys[rightIndex].Key - sortedKeys[leftIndex].Key);
             T result;
 
-            var leftValue = sortedKeys[thisIndex].Value;
-            var rightValue = sortedKeys[nextIndex].Value;
+            var leftValue = sortedKeys[leftIndex].Value;
+            var rightValue = sortedKeys[rightIndex].Value;
 
-            // TODO Lerp methods other than linear
-            Linear(ref leftValue, ref rightValue, lerpValue, out result);
+            switch (sortedKeys[leftIndex].TangetType)
+            {
+                case AnimationKeyTangentType.Linear:
+                    Linear(ref leftValue, ref rightValue, lerpValue, out result);
+                    break;
+
+                default:
+                    result = leftValue;
+                    break;
+            }
             return result;
         }
 
