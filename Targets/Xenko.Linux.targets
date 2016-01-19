@@ -1,0 +1,32 @@
+<!-- Build file post-included by all Xenko projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+
+  <PropertyGroup>
+    <SiliconStudioNETFrameworkVersion>v4.5</SiliconStudioNETFrameworkVersion>
+  </PropertyGroup>
+  
+  <!-- Embed native libraries -->
+  <ItemGroup>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libfreetype.so" />
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libcore.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libbulletc.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\glsl_optimizer.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libsdl2.so"/>
+    <SiliconStudioEmbeddedNativeLibrary Include="$(SiliconStudioPackageXenkoPlatformBin)\**\libxenkonative.so"/>
+    <!-- Users custom native libraries -->
+    <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.so" />
+  </ItemGroup>
+
+  <!-- On Windows platform automatically add the following references -->
+  <Choose>
+    <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
+      <ItemGroup>
+        <Content Include="@(SiliconStudioEmbeddedNativeLibrary)">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+          <Visible>False</Visible>
+        </Content>
+      </ItemGroup>
+	  </When>
+  </Choose>
+</Project>
