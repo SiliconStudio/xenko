@@ -17,7 +17,11 @@
     <Compile Include="ActionItem.cs" />
     <Compile Include="ActionItemDiscardType.cs" />
     <Compile Include="ActionItemsEventArgs.cs" />
+    <Compile Include="AnonymousActionItem.cs" />
     <Compile Include="CollectionChangedActionItem.cs" />
+    <Compile Include="DirtiableManager.cs" />
+    <Compile Include="DirtinessUpdatedEventArgs.cs" />
+    <Compile Include="IDirtiable.cs" />
     <Compile Include="NamespaceDoc.cs" />
     <Compile Include="Properties\ExceptionMessages.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -36,7 +40,7 @@
     <Compile Include="IActionStack.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="TransactionalActionStack.cs" />
-    <Compile Include="UndoToken.cs" />
+    <Compile Include="DirtiableActionItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -141,7 +141,7 @@ namespace SiliconStudio.Presentation.Controls
         protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
         {
             // base method can handle this event, but we still want to focus on it in this case.
-            bool handled = e.Handled;
+            var handled = e.Handled;
             base.OnMouseLeftButtonDown(e);
             if (!handled && IsEnabled)
             {

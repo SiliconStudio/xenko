@@ -21,6 +21,7 @@ namespace SiliconStudio.Presentation.Collections
         protected T AddedItem;
         protected int AddedIndex;
         private int changeCount;
+        private HashSet<string> propertyNames;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AutoUpdatingSortedObservableCollection{T}"/> class with a comparer.
@@ -42,14 +43,69 @@ namespace SiliconStudio.Presentation.Collections
         {
         }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoUpdatingSortedObservableCollection{T}"/> class with a comparer.
+        /// </summary>
+        /// <param name="comparer">The comparer to use to compare items. If null, the default comparison for the type T will be used.</param>
+        /// <param name="propertyName">The name of the property that should trigger an update of sorting if it changes.</param>
+        /// <param name="otherPropertyNames">The name of additional properties that should trigger an update of sorting if they change.</param>
+        /// <exception cref="InvalidOperationException">No comparer has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
+        public AutoUpdatingSortedObservableCollection(IComparer<T> comparer, string propertyName, params string[] otherPropertyNames)
+            : base(comparer)
+        {
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
+            RegisterPropertyNames(propertyName, otherPropertyNames);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoUpdatingSortedObservableCollection{T}"/> class with a comparison delegate.
+        /// </summary>
+        /// <param name="comparison">The comparison to use to compare items. If null, the default comparison for the type T will be used.</param>
+        /// <param name="propertyName">The name of the property that should trigger an update of sorting if it changes.</param>
+        /// <param name="otherPropertyNames">The name of additional properties that should trigger an update of sorting if they change.</param>
+        /// <exception cref="InvalidOperationException">No comparison has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
+        public AutoUpdatingSortedObservableCollection(Comparison<T> comparison, string propertyName, params string[] otherPropertyNames)
+            : base(comparison)
+        {
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
+            RegisterPropertyNames(propertyName, otherPropertyNames);
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AutoUpdatingSortedObservableCollection{T}"/> class with a comparer.
+        /// </summary>
+        /// <param name="propertyName">The name of the property that should trigger an update of sorting if it changes.</param>
+        /// <param name="otherPropertyNames">The name of additional properties that should trigger an update of sorting if they change.</param>
+        /// <exception cref="InvalidOperationException">No comparer has been provided and the associated type does not implement <see cref="IComparable"/> nor <see cref="IComparable{T}"/>.</exception>
+        public AutoUpdatingSortedObservableCollection(string propertyName, params string[] otherPropertyNames)
+            : base((IComparer<T>)null)
+        {
+            if (propertyName == null) throw new ArgumentNullException(nameof(propertyName));
+            RegisterPropertyNames(propertyName, otherPropertyNames);
+        }
+
+        private void RegisterPropertyNames(string propertyName, params string[] otherPropertyNames)
+        {
+            propertyNames = new HashSet<string> { propertyName };
+            if (otherPropertyNames != null)
+            {
+                foreach (var name in otherPropertyNames)
+                {
+                    propertyNames.Add(name);
+                }
+            }
+        }
         /// <inheritdoc/>
         public override string ToString()
         {
-            return string.Format("{{AutoUpdatingSortedObservableCollection}} Count = {0}", Count);
+            return $"{{AutoUpdatingSortedObservableCollection}} Count = {Count}";
         }
         
         protected virtual void ItemPropertyChanging(object sender, PropertyChangingEventArgs e)
         {
+            if (propertyNames != null && !propertyNames.Contains(e.PropertyName))
+                return;
+
             var item = (T)sender;
             if (ChangingItem != null && !ReferenceEquals(ChangingItem, item))
                 throw new InvalidOperationException("Multiple items in the collection are changing concurrently.");
@@ -63,6 +119,9 @@ namespace SiliconStudio.Presentation.Collections
 
         protected virtual void ItemPropertyChanged(object sender, PropertyChangedEventArgs e)
         {
+            if (propertyNames != null && !propertyNames.Contains(e.PropertyName))
+                return;
+
             var item = (T)sender;
 
             // An object has been added while a property of an existing object has been modified
