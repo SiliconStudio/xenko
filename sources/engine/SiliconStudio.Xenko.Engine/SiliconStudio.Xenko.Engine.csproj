@@ -166,6 +166,11 @@
       <DependentUpon>ToneMapHejl2OperatorShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Images\ColorTransforms\ToneMap\ToneMapKeys.cs" />
+    <Compile Include="Rendering\Images\DepthOfField\CombineFrontCoCShader.cs">
+      <DependentUpon>CombineFrontCoCShader.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
     <Compile Include="Rendering\Materials\ComputeColors\ColorVertexStreamDefinition.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamBase.cs" />
     <Compile Include="Rendering\Materials\ComputeColors\ComputeVertexStreamColor.cs" />
@@ -304,7 +309,6 @@
       <DependentUpon>DirectLightGroupFixed.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
-      <DependentUpon>CombineFrontCoCShader.xksl</DependentUpon>
     </Compile>
     <Compile Include="Rendering\Images\Bloom\Afterimage.cs" />
     <Compile Include="Rendering\Images\Bloom\BloomAfterimageCombineShader.cs">
