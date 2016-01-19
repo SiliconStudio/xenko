@@ -42,13 +42,9 @@ namespace SiliconStudio.Xenko.Assets.Debugging
             // Find scripts that will need reloading
             foreach (var entity in entities)
             {
-                var scriptComponent = entity.Components.Get<ScriptComponent>();
-                if (scriptComponent == null)
-                    continue;
-
-                for (int index = 0; index < scriptComponent.Scripts.Count; index++)
+                for (int index = 0; index < entity.Components.Count; index++)
                 {
-                    var script = scriptComponent.Scripts[index];
+                    var script = entity.Components[index] as ScriptComponent;
                     if (script == null)
                         continue;
 
@@ -69,7 +65,7 @@ namespace SiliconStudio.Xenko.Assets.Debugging
             return reloadedScripts;
         }
 
-        protected virtual Script DeserializeScript(ReloadedScriptEntry reloadedScript)
+        protected virtual ScriptComponent DeserializeScript(ReloadedScriptEntry reloadedScript)
         {
             var eventReader = new EventReader(new MemoryParser(reloadedScript.YamlEvents));
             var scriptCollection = (ScriptCollection)YamlSerializer.Deserialize(eventReader, null, typeof(ScriptCollection), log != null ? new SerializerContextSettings { Logger = new YamlForwardLogger(log) } : null);
@@ -77,7 +73,7 @@ namespace SiliconStudio.Xenko.Assets.Debugging
             return script;
         }
 
-        protected virtual List<ParsingEvent> SerializeScript(Script script)
+        protected virtual List<ParsingEvent> SerializeScript(ScriptComponent script)
         {
             // Wrap script in a ScriptCollection to properly handle errors
             var scriptCollection = new ScriptCollection { script };
@@ -88,7 +84,7 @@ namespace SiliconStudio.Xenko.Assets.Debugging
             return parsingEvents;
         }
 
-        protected virtual ReloadedScriptEntry CreateReloadedScriptEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, Script script)
+        protected virtual ReloadedScriptEntry CreateReloadedScriptEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, ScriptComponent script)
         {
             return new ReloadedScriptEntry(entity, index, parsingEvents);
         }
@@ -96,7 +92,7 @@ namespace SiliconStudio.Xenko.Assets.Debugging
         protected virtual void ReplaceScript(ScriptComponent scriptComponent, ReloadedScriptEntry reloadedScript)
         {
             // TODO: Let PropertyGrid know that we updated the script
-            scriptComponent.Scripts[reloadedScript.ScriptIndex] = DeserializeScript(reloadedScript);
+            scriptComponent.Entity.Components[reloadedScript.ScriptIndex] = DeserializeScript(reloadedScript);
         }
 
         protected class ReloadedScriptEntry

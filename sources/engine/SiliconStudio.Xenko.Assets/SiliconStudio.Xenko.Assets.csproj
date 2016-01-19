@@ -210,7 +210,6 @@
     <Compile Include="Entities\EntityGroupAssetOperations.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
     <Compile Include="Entities\EntityReference.cs" />
-    <Compile Include="Entities\EntityScriptReference.cs" />
     <Compile Include="Entities\EntityGroupAssetSerializer.cs" />
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\IEntityComponentReference.cs" />

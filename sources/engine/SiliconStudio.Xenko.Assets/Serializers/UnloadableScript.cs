@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
     [DataSerializerGlobal(typeof(InvariantObjectCloneSerializer<UnloadableScript>), Profile = "AssetClone")]
     [Display("Error: unable to load this script")]
     [NonInstantiable]
-    public class UnloadableScript : Script
+    public class UnloadableScript : ScriptComponent
     {
         [DataMemberIgnore]
         public List<ParsingEvent> ParsingEvents { get; private set; }

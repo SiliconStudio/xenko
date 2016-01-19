@@ -24,9 +24,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
         [ThreadStatic]
         private static int componentLevel;
 
-        [ThreadStatic]
-        private static int scriptLevel;
-
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             if (CanVisit(typeDescriptor.Type))
@@ -43,16 +40,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 if (objectContext.SerializerContext.IsSerializing)
                 {
                     var entityComponent = objectContext.Instance as EntityComponent;
-                    var entityScript = objectContext.Instance as Script;
                     if (entityComponent != null)
                     {
                         objectContext.Instance = new EntityComponentReference(entityComponent);
-                    }
-                    else if (entityScript != null && scriptLevel > 1)
-                    {
-                        var script = new EntityScriptReference(entityScript);
-                        objectContext.Instance = script;
-                        objectContext.Tag = objectContext.Settings.TagTypeRegistry.TagFromType(entityScript.GetType());
                     }
                     else if (objectContext.Instance is Entity)
                     {
@@ -65,10 +55,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     if (typeof(EntityComponent).IsAssignableFrom(type))
                     {
                         objectContext.Instance = new EntityComponentReference() { ComponentType = type };
-                    }
-                    else if (typeof(Script).IsAssignableFrom(type) && scriptLevel > 1)
-                    {
-                        objectContext.Instance = new EntityScriptReference { ScriptType = objectContext.Descriptor.Type };
                     }
                     else if (type == typeof(Entity))
                     {
@@ -96,7 +82,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 if (!objectContext.SerializerContext.IsSerializing)
                 {
                     var entityComponentReference = objectContext.Instance as EntityComponentReference;
-                    var entityScriptReference = objectContext.Instance as EntityScriptReference;
                     if (entityComponentReference != null)
                     {
                         var entityReference = new Entity { Id = entityComponentReference.EntityId };
@@ -105,18 +90,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         entityComponent.Entity = entityReference;
 
                         objectContext.Instance = entityComponent;
-                    }
-                    else if (entityScriptReference != null)
-                    {
-                        var entityReference = new Entity { Id = entityScriptReference.Entity.Id };
-                        var scriptComponent = new ScriptComponent();
-                        entityReference.Add(scriptComponent);
-
-                        var entityScript = (Script)Activator.CreateInstance(entityScriptReference.ScriptType);
-                        entityScript.Id = entityScriptReference.Id;
-                        scriptComponent.Scripts.Add(entityScript);
-
-                        objectContext.Instance = entityScript;
                     }
                     else if (objectContext.Instance is EntityReference)
                     {
@@ -179,12 +152,8 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 componentLevel++;
             }
-            else if (typeof(Script).IsAssignableFrom(type))
-            {
-                scriptLevel++;
-            }
 
-            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 2 || scriptLevel > 1;
+            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 2;
         }
 
         private static void LeaveNode(Type type)
@@ -197,19 +166,14 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 componentLevel--;
             }
-            else if (typeof(Script).IsAssignableFrom(type))
-            {
-                scriptLevel--;
-            }
 
-            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 2 || scriptLevel > 1;
+            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 2;
         }
 
         public bool CanVisit(Type type)
         {
-            return typeof(EntityGroupAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
+            return typeof(EntityGroupAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
-
 
         public sealed class TransientEntityComponent : EntityComponent
         {
