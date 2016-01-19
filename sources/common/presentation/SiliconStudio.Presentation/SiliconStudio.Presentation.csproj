@@ -62,6 +62,7 @@
     <Compile Include="Collections\NonGenericObservableCollectionWrapper.cs" />
     <Compile Include="Collections\NonGenericObservableSetWrapper.cs" />
     <Compile Include="Collections\ObservableSet.cs" />
+    <Compile Include="Commands\UtilityCommands.cs" />
     <Compile Include="Controls\ExpandableItemsControl.cs" />
     <Compile Include="Controls\FilteringComboBoxSort.cs" />
     <Compile Include="Controls\MarkdownTextBlock.cs" />
