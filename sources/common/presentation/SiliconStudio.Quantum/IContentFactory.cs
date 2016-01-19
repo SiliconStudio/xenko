@@ -6,7 +6,7 @@ using SiliconStudio.Quantum.Contents;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// This interface represents a factory capable of creating <see cref="IContent"/> instances for <see cref="IModelNode"/> object. An <see cref="IContent"/>
+    /// This interface represents a factory capable of creating <see cref="IContent"/> instances for <see cref="IGraphNode"/> object. An <see cref="IContent"/>
     /// object is a wrapper that allows read/write access to the actual value of a node.
     /// </summary>
     public interface IContentFactory

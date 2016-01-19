@@ -1,7 +1,12 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
@@ -28,31 +33,9 @@ namespace SiliconStudio.Quantum.Commands
         /// <returns></returns>
         bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor);
 
-        /// <summary>
-        /// Invokes the node command.
-        /// </summary>
-        /// <param name="currentValue">The current value of the associated object or member.</param>
-        /// <param name="parameter">The parameter of the command.</param>
-        /// <param name="undoToken">The <see cref="UndoToken"/> that will be passed to the <see cref="Undo"/> method when undoing the execution of this command.</param>
-        /// <returns>The new value to assign to the associated object or member.</returns>
-        object Invoke(object currentValue, object parameter, out UndoToken undoToken);
+        Task<IActionItem> Execute(IContent content, object index, object parameter);
 
-        /// <summary>
-        /// Undoes an invoke of the node command.
-        /// </summary>
-        /// <param name="currentValue">The current value of the associated object or member.</param>
-        /// <param name="undoToken">The <see cref="UndoToken"/> that was generated when invoking this command.</param>
-        /// <returns>The new value to assign to the associated object or member.</returns>
-        object Undo(object currentValue, UndoToken undoToken);
-
-        /// <summary>
-        /// Redoes the node command.
-        /// </summary>
-        /// <param name="currentValue">The current value of the associated object or member.</param>
-        /// <param name="parameter">The parameter of the command.</param>
-        /// <param name="undoToken">The <see cref="UndoToken"/> that will be passed to the <see cref="Undo"/> method when undoing the execution of this command.</param>
-        /// <returns>The new value to assign to the associated object or member.</returns>
-        object Redo(object currentValue, object parameter, out UndoToken undoToken);
+        Task<IActionItem> Execute(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables);
 
         /// <summary>
         /// Notifies the command that the following invokes will be part of a combined execution (the same command being executed multiple times on multiple objects with the same parameters).

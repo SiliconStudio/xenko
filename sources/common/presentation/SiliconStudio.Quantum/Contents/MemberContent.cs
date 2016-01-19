@@ -12,19 +12,18 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// An implementation of <see cref="IContent"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentBase, IUpdatableContent
+    public class MemberContent : ContentBase
     {
         protected IContent Container;
-        private readonly ModelContainer modelContainer;
-        private IModelNode modelNode;
+        private readonly NodeContainer nodeContainer;
 
         public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
             : base(nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
         {
-            if (container == null) throw new ArgumentNullException("container");
+            if (container == null) throw new ArgumentNullException(nameof(container));
             Member = member;
             Container = container;
-            modelContainer = nodeBuilder.ModelContainer;
+            nodeContainer = nodeBuilder.NodeContainer;
         }
 
         /// <summary>
@@ -32,40 +31,51 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         public IMemberDescriptor Member { get; protected set; }
 
+        public string Name => OwnerNode?.Name;
+
         /// <inheritdoc/>
-        public sealed override object Value
+        public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
+
+        /// <inheritdoc/>
+        public override void Update(object newValue, object index)
         {
-            get
+            var oldValue = Retrieve(index);
+            NotifyContentChanging(index, oldValue, newValue);
+            if (index != null)
             {
-                if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
-                return Member.Get(Container.Value);
+                var collectionDescriptor = Descriptor as CollectionDescriptor;
+                var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+                if (collectionDescriptor != null)
+                {
+                    collectionDescriptor.SetValue(Value, (int)index, newValue);
+                }
+                else if (dictionaryDescriptor != null)
+                {
+                    dictionaryDescriptor.SetValue(Value, index, newValue);
+                }
+                else
+                    throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
             }
-            set
+            else
             {
                 if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
                 var containerValue = Container.Value;
-                Member.Set(containerValue, value);
+                Member.Set(containerValue, newValue);
 
                 if (Container.Value.GetType().GetTypeInfo().IsValueType)
-                    Container.Value = containerValue;
-
-                if (modelContainer != null && modelNode != null)
-                {
-                    modelContainer.UpdateReferences(modelNode);
-                }
+                    Container.Update(containerValue);
             }
+            UpdateReferences();
+            NotifyContentChanged(index, oldValue, newValue);
         }
 
-        internal void UpdateReferences()
+        private void UpdateReferences()
         {
-            if (modelContainer != null && modelNode != null)
+            var graphNode = OwnerNode as IGraphNode;
+            if (graphNode != null)
             {
-                modelContainer.UpdateReferences(modelNode);
+                nodeContainer?.UpdateReferences(graphNode);
             }
-        }
-        void IUpdatableContent.RegisterOwner(IModelNode node)
-        {
-            modelNode = node;
         }
     }
 }

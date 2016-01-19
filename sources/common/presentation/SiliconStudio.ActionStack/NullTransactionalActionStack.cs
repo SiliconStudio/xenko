@@ -27,134 +27,133 @@ namespace SiliconStudio.ActionStack
 
         }
 
-        /// <inheritdocs/>
-        public bool TransactionInProgress { get { return false; } }
-        
-        /// <inheritdocs/>
-        public IEnumerable<IActionItem> ActionItems { get { return Enumerable.Empty<IActionItem>(); } }
+        /// <inheritdoc/>
+        public bool TransactionInProgress => false;
 
-        /// <inheritdocs/>
-        public bool CanUndo { get { return false; } }
+        /// <inheritdoc/>
+        public IEnumerable<IActionItem> ActionItems => Enumerable.Empty<IActionItem>();
 
-        /// <inheritdocs/>
-        public bool CanRedo { get { return false; } }
+        /// <inheritdoc/>
+        public bool CanUndo => false;
+
+        /// <inheritdoc/>
+        public bool CanRedo => false;
+
+        /// <inheritdoc/>
+        public bool UndoRedoInProgress => false;
 
         // The following events are intentionally never invoked.
-#pragma warning disable 67
-
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public event EventHandler<ActionItemsEventArgs<IActionItem>> ActionItemsAdded;
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public event EventHandler ActionItemsCleared;
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public event EventHandler<EventArgs> TransactionStarted;
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionEnded;
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionCancelled;
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public event EventHandler<ActionItemsEventArgs<IActionItem>> TransactionDiscarded;
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public event EventHandler<DiscardedActionItemsEventArgs<IActionItem>> ActionItemsDiscarded;
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public event EventHandler<ActionItemsEventArgs<IActionItem>> Undone;
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public event EventHandler<ActionItemsEventArgs<IActionItem>> Redone;
 
-#pragma warning restore 67
-
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public IDisposable BeginEndTransaction(string name)
         {
             return new NullDisposable();
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public IDisposable BeginEndTransaction(Func<string> getName)
         {
             return new NullDisposable();
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public IDisposable BeginCancelTransaction()
         {
             return new NullDisposable();
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public IDisposable BeginDiscardTransaction()
         {
             return new NullDisposable();
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public void BeginTransaction()
         {
         }
 
-        /// <inheritdocs/>
-        public void EndTransaction(string displayName)
+        /// <inheritdoc/>
+        public void EndTransaction(string displayName, bool reverseOrderOnUndo = true)
         {
         }
 
-        /// <inheritdocs/>
-        public void EndTransaction(string displayName, Func<IReadOnlyCollection<IActionItem>, IActionItem> aggregateActionItems)
+        /// <inheritdoc/>
+        public void EndTransaction(string displayName, AggregateActionItemDelegate aggregateActionItems, bool reverseOrderOnUndo = true)
         {
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public void CancelTransaction()
         {
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public void DiscardTransaction()
         {
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public IReadOnlyCollection<IActionItem> GetCurrentTransactions()
         {
             // Returns an empty list
             return ActionItems.ToList();
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public void Add(IActionItem item)
         {           
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public void AddRange(IEnumerable<IActionItem> items)
         {
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public void Clear()
         {
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public SavePoint CreateSavePoint(bool markActionsAsSaved)
         {
             return SavePoint.Empty;
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public bool Undo()
         {
             return false;
         }
 
-        /// <inheritdocs/>
+        /// <inheritdoc/>
         public bool Redo()
         {
             return false;

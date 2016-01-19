@@ -11,8 +11,6 @@ using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Collections;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.ViewModel;
-using SiliconStudio.Quantum;
-using SiliconStudio.Quantum.Contents;
 
 using Expression = System.Linq.Expressions.Expression;
 
@@ -21,14 +19,13 @@ namespace SiliconStudio.Presentation.Quantum
     public abstract class ObservableNode : DispatcherViewModel, IObservableNode, IDynamicMetaObjectProvider
     {
         protected static readonly HashSet<string> ReservedNames = new HashSet<string>();
-        private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren));
+        private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren), nameof(Name), nameof(Index), nameof(Order));
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
         private bool isVisible;
         private bool isReadOnly;
         private string displayName;
         private int visibleChildrenCount;
-        
         private List<IObservableNode> initializingChildren = new List<IObservableNode>();
 
         static ObservableNode()
@@ -134,6 +131,11 @@ namespace SiliconStudio.Presentation.Quantum
         public int Level => Parent?.Level + 1 ?? 0;
 
         /// <summary>
+        /// Gets whether this node has been disposed.
+        /// </summary>
+        public bool IsDisposed { get; private set; }
+     
+        /// <summary>
         /// Gets the order number of this node in its parent.
         /// </summary>
         public abstract int? Order { get; }
@@ -152,25 +154,11 @@ namespace SiliconStudio.Presentation.Quantum
         public int VisibleChildrenCount { get { return visibleChildrenCount; } private set { SetValue(ref visibleChildrenCount, value); } }
 
         /// <inheritdoc/>
+        [Obsolete("This event is deprecated, IContent.Changed should be used instead")] // Unless needed for virtual/combined nodes?
         public event EventHandler<EventArgs> ValueChanged;
         
         /// <inheritdoc/>
         public event EventHandler<EventArgs> IsVisibleChanged;
-        
-        /// <summary>
-        /// Gets or sets the flags associated to this node.
-        /// </summary>
-        public ViewModelContentFlags Flags { get; set; }
-
-        /// <summary>
-        /// Gets or sets the serialization flags associated to this node.
-        /// </summary>
-        public ViewModelContentSerializeFlags SerializeFlags { get; set; }
-
-        /// <summary>
-        /// Gets or sets the state flags associated to this node.
-        /// </summary>
-        public ViewModelContentState LoadState { get; set; }
 
         /// <summary>
         /// Indicates whether the given name is reserved for the name of a property in an <see cref="ObservableNode"/>. Any children node with a colliding name will
@@ -192,6 +180,13 @@ namespace SiliconStudio.Presentation.Quantum
         public static string EscapeName(string name)
         {
             return !IsReserved(name) ? name : name + "_";
+        }
+
+        /// <inheritdoc/>
+        public virtual void Dispose()
+        {
+            EnsureNotDisposed();
+            IsDisposed = true;
         }
 
         /// <inheritdoc/>
@@ -294,7 +289,6 @@ namespace SiliconStudio.Presentation.Quantum
                 Name = newName;
             }
             ((ObservableNode)newParent).AddChild(this);
-            UpdateCommandPath();
         }
         
         /// <summary>
@@ -347,14 +341,22 @@ namespace SiliconStudio.Presentation.Quantum
             return new ObservableNodeDynamicMetaObject(parameter, this);
         }
 
-        public void NotifyPropertyChanging(string propertyName)
+        internal void NotifyPropertyChanging(string propertyName)
         {
             OnPropertyChanging(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
         }
 
-        public void NotifyPropertyChanged(string propertyName)
+        internal void NotifyPropertyChanged(string propertyName)
         {
             OnPropertyChanged(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
+        }
+
+        protected void EnsureNotDisposed()
+        {
+            if (IsDisposed)
+            {
+                throw new ObjectDisposedException(Name);
+            }
         }
 
         protected void FinalizeChildrenInitialization()
@@ -514,17 +516,6 @@ namespace SiliconStudio.Presentation.Quantum
                 }
             }
             base.OnPropertyChanged(propertyNames);
-        }
-        private void UpdateCommandPath()
-        {
-            foreach (var commandWrapper in Commands.OfType<NodeCommandWrapperBase>())
-            {
-                commandWrapper.ObservableNodePath = Path;
-            }
-            foreach (var child in Children.OfType<ObservableNode>())
-            {
-                child.UpdateCommandPath();
-            }
         }
 
         private void ChildVisibilityChanged(object sender, EventArgs e)

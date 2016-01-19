@@ -13,7 +13,7 @@ namespace SiliconStudio.ActionStack
         /// <summary>
         /// Gets the array of <see cref="IActionItem"/> related to this event.
         /// </summary>
-        public T[] ActionItems { get; private set; }
+        public T[] ActionItems { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionItemsEventArgs{T}"/> with a single item.
@@ -31,7 +31,7 @@ namespace SiliconStudio.ActionStack
         public ActionItemsEventArgs(T[] actionItems)
         {
             if (actionItems == null)
-                throw new ArgumentNullException("actionItems");
+                throw new ArgumentNullException(nameof(actionItems));
 
             ActionItems = actionItems;
         }

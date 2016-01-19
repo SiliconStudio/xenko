@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         /// </userdoc>
         [DataMember(40)]
         [MemberCollection(ReadOnly = true)]
-        public List<ModelMaterial> Materials { get; private set; }
+        public List<ModelMaterial> Materials { get; }
 
         /// <summary>
         /// Gets or sets the Skeleton.
@@ -77,7 +77,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         /// <inheritdoc/>
         [DataMemberIgnore]
-        public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { return Materials.Select(x => new KeyValuePair<string, MaterialInstance>(x.Name, x.MaterialInstance)); } }
+        public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances => Materials.Select(x => new KeyValuePair<string, MaterialInstance>(x.Name, x.MaterialInstance));
 
         /// <inheritdoc/>
         public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()

@@ -6,7 +6,7 @@ namespace SiliconStudio.Quantum.Tests
 {
     public static class Helper
     {
-        public static void PrintModelContainerContent(ModelContainer container, IModelNode rootNode = null)
+        public static void PrintModelContainerContent(NodeContainer container, IGraphNode rootNode = null)
         {
             Console.WriteLine(@"Container content:");
             Console.WriteLine(@"------------------");
@@ -16,21 +16,21 @@ namespace SiliconStudio.Quantum.Tests
 
             // Print other nodes next
             // TODO: FIXME
-            //foreach (var node in container.Guids.Select(container.GetModelNode).Where(x => x != rootNode))
+            //foreach (var node in container.Guids.Select(container.GetNode).Where(x => x != rootNode))
             //{
             //    Console.WriteLine(node.PrintHierarchy());
             //}
             Console.WriteLine(@"------------------");
         }
 
-        public static void ConsistencyCheck(ModelContainer container, object rootObject)
+        public static void ConsistencyCheck(NodeContainer container, object rootObject)
         {
             var visitor = new ModelConsistencyCheckVisitor(container.NodeBuilder);
-            var model = container.GetModelNode(rootObject);
-            visitor.Check((ModelNode)model, rootObject, rootObject.GetType(), true);
-            foreach (var node in container.Models)
+            var model = container.GetNode(rootObject);
+            visitor.Check((GraphNode)model, rootObject, rootObject.GetType(), true);
+            foreach (var node in container.Nodes)
             {
-                visitor.Check((ModelNode)node, node.Content.Value, node.Content.Type, true);
+                visitor.Check((GraphNode)node, node.Content.Value, node.Content.Type, true);
             }
         }
     }
