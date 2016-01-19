@@ -17,5 +17,11 @@ namespace SiliconStudio.Xenko.Animations
         /// <param name="location">Location to sample at</param>
         /// <returns>Sampled value</returns>
         T SampleAt(float location);
+
+        /// <summary>
+        /// Updates any optimizations in the curve if data has changed.
+        /// </summary>
+        /// <returns><c>true</c> there were changes since the last time; otherwise, <c>false</c>.</returns>
+        bool UpdateChanges();
     }
 }

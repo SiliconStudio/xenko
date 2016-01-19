@@ -25,7 +25,30 @@ namespace SiliconStudio.Xenko.Animations
         [DataMember(10)]
         [Display("Value")]
         [InlineProperty]
-        public T Value { get; set; }
+        public T Value
+        {
+            get { return typeValue; }
+            set
+            {
+                typeValue = value;
+                hasChanged = true;
+            }
+        }
+
+        private T typeValue;
+
+        private bool hasChanged = true;
+        /// <inheritdoc/>
+        public bool UpdateChanges()
+        {
+            if (hasChanged)
+            {
+                hasChanged = false;
+                return true;
+            }
+
+            return false;
+        }
 
         /// <inheritdoc/>
         public T SampleAt(float location)
