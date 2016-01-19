@@ -12,11 +12,10 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// An implementation of <see cref="IContent"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentBase, IUpdatableContent
+    public class MemberContent : ContentBase
     {
         protected IContent Container;
         private readonly NodeContainer nodeContainer;
-        private IGraphNode node;
 
         public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
             : base(nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
@@ -32,7 +31,7 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         public IMemberDescriptor Member { get; protected set; }
 
-        public string Name => node?.Name;
+        public string Name => OwnerNode?.Name;
 
         /// <inheritdoc/>
         public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
@@ -72,16 +71,11 @@ namespace SiliconStudio.Quantum.Contents
 
         private void UpdateReferences()
         {
-            // TODO: move this out of the content to avoid referencing the node (and delete IUpdatableContent)
-            if (nodeContainer != null && node != null)
+            var graphNode = OwnerNode as IGraphNode;
+            if (graphNode != null)
             {
-                nodeContainer.UpdateReferences(node);
+                nodeContainer?.UpdateReferences(graphNode);
             }
-        }
-
-        void IUpdatableContent.RegisterOwner(IGraphNode node)
-        {
-            this.node = node;
         }
     }
 }

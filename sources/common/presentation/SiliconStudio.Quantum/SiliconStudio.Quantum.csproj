@@ -41,7 +41,6 @@
     <Compile Include="IModelBuilderPlugin.cs" />
     <Compile Include="IGuidContainer.cs" />
     <Compile Include="INodeBuilder.cs" />
-    <Compile Include="Contents\IUpdatableContent.cs" />
     <Compile Include="NodeConstructedArgs.cs" />
     <Compile Include="NodeConstructingArgs.cs" />
     <Compile Include="QuantumConsistencyException.cs" />

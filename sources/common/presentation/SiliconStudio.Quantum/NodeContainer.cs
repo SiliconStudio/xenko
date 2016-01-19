@@ -17,7 +17,6 @@ namespace SiliconStudio.Quantum
         private readonly Dictionary<Guid, IGraphNode> nodesByGuid = new Dictionary<Guid, IGraphNode>();
         private readonly IGuidContainer guidContainer;
         private readonly object lockObject = new object();
-        private readonly Dictionary<IContent, WeakReference<IGraphNode>> nodesByContent = new Dictionary<IContent, WeakReference<IGraphNode>>();
 
         /// <summary>
         /// Create a new instance of <see cref="NodeContainer"/>.
@@ -69,27 +68,6 @@ namespace SiliconStudio.Quantum
                 if (guidContainer == null) throw new InvalidOperationException("This NodeContainer has no GuidContainer and can't retrieve Guid associated to a data object.");
                 var guid = guidContainer.GetGuid(rootObject);
                 return guid == Guid.Empty ? null : GetNode(guid);
-            }
-        }
-
-        /// <summary>
-        /// Gets the <see cref="IGraphNode"/> associated to a <see cref="IContent"/>, if it exists.
-        /// </summary>
-        /// <param name="content">The <see cref="IContent"/> instance for which to retrieve the corresponding <see cref="IGraphNode"/></param>
-        /// <returns>An instance of <see cref="IGraphNode"/> that corresponds to the given content if available, <c>null</c> otherwise.</returns>
-        public IGraphNode GetNode(IContent content)
-        {
-            lock (lockObject)
-            {
-                WeakReference<IGraphNode> reference;
-                nodesByContent.TryGetValue(content, out reference);
-                if (reference != null)
-                {
-                    IGraphNode node;
-                    reference.TryGetTarget(out node);
-                    return node;
-                }
-                return null;
             }
         }
 
@@ -211,12 +189,6 @@ namespace SiliconStudio.Quantum
             {
                 // Register reference objects
                 nodesByGuid.Add(result.Guid, result);
-                nodesByContent.Add(result.Content, new WeakReference<IGraphNode>(result));
-                foreach (var child in result.Children.SelectDeep(x => x.Children))
-                {
-                    nodesByContent.Add(child.Content, new WeakReference<IGraphNode>(child));
-                }
-
                 // Create or update nodes of referenced objects
                 UpdateReferences(result);
             }

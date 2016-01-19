@@ -32,7 +32,7 @@ namespace SiliconStudio.Quantum
             Name = name;
             Guid = guid;
 
-            var updatableContent = content as IUpdatableContent;
+            var updatableContent = content as ContentBase;
             updatableContent?.RegisterOwner(this);
         }
 

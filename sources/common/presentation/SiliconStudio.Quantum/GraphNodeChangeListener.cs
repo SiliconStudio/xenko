@@ -17,17 +17,14 @@ namespace SiliconStudio.Quantum
     /// </summary>
     public class GraphNodeChangeListener : IDisposable
     {
-        private readonly NodeContainer container;
         private readonly IGraphNode rootNode;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphNodeChangeListener"/> class.
         /// </summary>
-        /// <param name="container">The node container containing the related root node.</param>
         /// <param name="rootNode">The root node for which to track referenced node changes.</param>
-        public GraphNodeChangeListener(NodeContainer container, IGraphNode rootNode)
+        public GraphNodeChangeListener(IGraphNode rootNode)
         {
-            this.container = container;
             this.rootNode = rootNode;
             foreach (var node in GetAllChildNodes(rootNode))
             {
@@ -58,7 +55,7 @@ namespace SiliconStudio.Quantum
 
         private void ContentChanging(object sender, ContentChangeEventArgs e)
         {
-            var node = container.GetNode(e.Content);
+            var node = e.Content.OwnerNode as IGraphNode;
             if (node != null)
             {
                 foreach (var child in GetAllChildNodes(node))
@@ -73,7 +70,7 @@ namespace SiliconStudio.Quantum
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
-            var node = container.GetNode(e.Content);
+            var node = e.Content.OwnerNode as IGraphNode;
             if (node != null)
             {
                 foreach (var child in GetAllChildNodes(node))
