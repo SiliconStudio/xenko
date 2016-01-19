@@ -174,9 +174,5 @@ namespace SiliconStudio.Xenko.Assets.Entities
         {
             return typeof(EntityGroupAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
-
-        public sealed class TransientEntityComponent : EntityComponent
-        {
-        }
     }
 }

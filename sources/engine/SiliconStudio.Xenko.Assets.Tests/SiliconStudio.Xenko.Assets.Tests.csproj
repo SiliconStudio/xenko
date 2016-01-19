@@ -144,6 +144,7 @@
     <Compile Include="TestEntityGroupAsset.cs" />
     <Compile Include="ModelAssetTests.cs" />
     <Compile Include="TestPackageArchive.cs" />
+    <Compile Include="TestSceneUpgrader.cs" />
     <Compile Include="TexturePackerTests.cs" />
   </ItemGroup>
   <ItemGroup>
