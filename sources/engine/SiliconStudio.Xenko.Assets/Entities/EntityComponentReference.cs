@@ -22,16 +22,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         public EntityComponentReference(EntityComponent entityComponent)
         {
-            this.EntityId = entityComponent.Entity.Id;
-            this.ComponentId = IdentifiableHelper.GetId(entityComponent);
+            this.Entity = new EntityReference() { Id = entityComponent.Entity.Id };
+            this.Id = IdentifiableHelper.GetId(entityComponent);
             this.Value = entityComponent;
         }
 
         [DataMember(10)]
-        public Guid EntityId { get; set; }
+        public EntityReference Entity { get; set; }
 
         [DataMember(20)]
-        public Guid ComponentId { get; set; }
+        public Guid Id { get; set; }
 
         [DataMemberIgnore]
         public EntityComponent Value { get; set; }

@@ -10,9 +10,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
 {
     public interface IEntityComponentReference
     {
-        Guid EntityId { get; }
+        EntityReference Entity { get; }
 
-        Guid ComponentId { get; }
+        Guid Id { get; }
 
         EntityComponent Value { get; }
     }

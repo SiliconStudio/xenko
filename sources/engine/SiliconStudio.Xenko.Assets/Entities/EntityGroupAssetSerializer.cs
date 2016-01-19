@@ -84,9 +84,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var entityComponentReference = objectContext.Instance as EntityComponentReference;
                     if (entityComponentReference != null)
                     {
-                        var entityReference = new Entity { Id = entityComponentReference.EntityId };
+                        var entityReference = new Entity { Id = entityComponentReference.Entity.Id };
                         var entityComponent = (EntityComponent)Activator.CreateInstance(entityComponentReference.ComponentType);
-                        IdentifiableHelper.SetId(entityComponent, entityComponentReference.ComponentId);
+                        IdentifiableHelper.SetId(entityComponent, entityComponentReference.Id);
                         entityComponent.Entity = entityReference;
 
                         objectContext.Instance = entityComponent;
