@@ -147,9 +147,10 @@
   <BitmapImage x:Key="ImageWarningDialog" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/warning-32.png" />
 
   <BitmapImage x:Key="ImageAdvancedEditionVector" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/gear--pencil.png" />
-  <BitmapImage x:Key="ImageLocked" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/lock-16.png" />
-  <BitmapImage x:Key="ImageUnlocked" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/unlock-16.png" />
-  <BitmapImage x:Key="ImageLength" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/length-16.png" />
+  <BitmapImage x:Key="ImageReset" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/eraser.png" />
+  <BitmapImage x:Key="ImageLocked" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/lock.png" />
+  <BitmapImage x:Key="ImageUnlocked" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/lock-unlock.png" />
+  <BitmapImage x:Key="ImageLength" UriSource="pack://application:,,,/SiliconStudio.Presentation;component/Resources/Images/ruler-triangle.png" />
 
   <!--  WINDOWS  -->
   <Style TargetType="Window" x:Key="WindowChromeStyle">
@@ -268,7 +269,7 @@
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading3StyleKey}">
     <!-- note: in HTML4, default H3 font size is 1.17em (see http://www.w3.org/TR/CSS21/sample.html) -->
     <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=1.17}" />
-    <Setter Property="FontWeight" Value="Light" />
+    <Setter Property="FontWeight" Value="Bold" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
   </Style>
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading4StyleKey}">
@@ -276,6 +277,11 @@
     <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}}" />
     <Setter Property="FontWeight" Value="Light" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
+  </Style>
+  <Style TargetType="{x:Type Image}" x:Key="{x:Static local:XamlMarkdown.ImageStyleKey}">
+    <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" />
+    <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}" />
+    <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
   </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
     <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -296,7 +302,7 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"
                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}"
                    Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
-            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
+            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" HyperlinkCommand="{x:Static cmd:UtilityCommands.OpenHyperlinkCommand}" />
           </DockPanel>
         </DataTemplate>
       </Setter.Value>
@@ -4305,17 +4311,10 @@
 
               </DockPanel>
             </Border>
-            <ToggleButton Grid.Column="6" Margin="2,0,0,0" x:Name="ToggleButtonAdvancedOptions" Width="16" Height="16" Background="Transparent" ToolTip="Advanced options"
-                                      ClickMode="Press" IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}">
-              <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageAdvancedEditionVector}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
-            </ToggleButton>
-            <Popup x:Name="Popup" IsOpen="{TemplateBinding IsDropDownOpen}" Placement="Bottom" AllowsTransparency="True"
-                                       MinWidth="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=ctrl:RotationEditor}}" StaysOpen="False"
-                                       PlacementTarget="{Binding RelativeSource={RelativeSource AncestorType=ctrl:RotationEditor}}" PopupAnimation="Slide" VerticalOffset="2">
-              <Border SnapsToDevicePixels="True" Background="{StaticResource BackgroundBrush}" BorderBrush="Black" BorderThickness="1">
-                <Button Command="{x:Static commands:ControlCommands.ResetValueCommand}" Content="Reset value" Margin="6"/>
-              </Border>
-            </Popup>
+            <Button Grid.Column="6" Margin="2,0,0,0" x:Name="ResetButton" Width="16" Height="16" Background="Transparent"
+                    Command="{x:Static commands:ControlCommands.ResetValueCommand}" ToolTip="Reset value">
+              <Image Width="16" Height="16" Margin="-1" Source="{StaticResource ImageReset}" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+            </Button>
           </Grid>
         </ControlTemplate>
       </Setter.Value>

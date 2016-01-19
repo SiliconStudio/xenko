@@ -43,7 +43,7 @@ namespace SiliconStudio.Quantum
         /// <inheritdoc/>
         public void RegisterGuid(Guid guid, object obj)
         {
-            if (obj == null) throw new ArgumentNullException("obj");
+            if (obj == null) throw new ArgumentNullException(nameof(obj));
 
             lock (objectGuids)
             {

@@ -60,6 +60,8 @@ namespace SiliconStudio.Assets
         /// <returns>An <see cref="AssetItem" /> or <c>null</c> if not found.</returns>
         public static AssetItem FindAssetFromAttachedReference(this Package package, object obj)
         {
+            if (obj == null)
+                return null;
             var attachedReference = AttachedReferenceManager.GetAttachedReference(obj);
             return attachedReference != null ? package.FindAsset(attachedReference) : null;
         }
