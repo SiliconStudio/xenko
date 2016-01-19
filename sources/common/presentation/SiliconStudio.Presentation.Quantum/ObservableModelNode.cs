@@ -82,13 +82,18 @@ namespace SiliconStudio.Presentation.Quantum
         internal protected virtual void Initialize()
         {
             var targetNode = GetTargetNode(SourceNode, Index);
-            var targetNodePath = GetTargetNodePath(SourceNode, SourceNodePath, Index);
+            var targetNodePath = SourceNodePath.GetChildPath(SourceNode, targetNode);
+            if (targetNodePath == null || !targetNodePath.IsValid)
+                throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
+
             var commandPath = targetNodePath;
-            if (targetNode == SourceNode && Index != null)
+            if ((!SourceNode.Content.ShouldProcessReference || targetNode == SourceNode || targetNode == null) && Index != null)
             {
-                // TODO: something similar is done in GetTargetNodePath. Check if we can always do it when the target is the source and try to avoid having a targetNodePath and a commandPath.
+                // When the references are not processed or when the value is null, there is no actual target node.
+                // However, the commands need the index to be able to properly set the modified value
                 commandPath = targetNodePath.PushElement(Index, GraphNodePath.ElementType.Index);
             }
+
             if (targetNode != SourceNode && targetNode != null)
             {
                 foreach (var command in targetNode.Commands)
@@ -395,31 +400,6 @@ namespace SiliconStudio.Presentation.Quantum
                 return referenceEnumerable[index].TargetNode;
             }
             return sourceNode;
-        }
-
-        /// <summary>
-        /// Retrieves the path of the target node if the given source node content holds a reference or a sequence of references, or the path of the given source node otherwise.
-        /// </summary>
-        /// <param name="sourceNode">The source node for which to retrieve the target node path.</param>
-        /// <param name="sourceNodePath">The path of the source node.</param>
-        /// <param name="index">The index of the target node, if the source node contains a sequence of references. <c>null</c> otherwise.</param>
-        /// <returns>The path of the corresponding target node if available, or the path of the source node itself if it does not contain any reference or if its content should not process references.</returns>
-        /// <seealso cref="IContent.ShouldProcessReference"/>
-        protected static GraphNodePath GetTargetNodePath(IGraphNode sourceNode, GraphNodePath sourceNodePath, object index)
-        {
-            var targetNode = GetTargetNode(sourceNode, index);
-            var targetNodePath = sourceNodePath.GetChildPath(sourceNode, targetNode);
-            if (targetNodePath == null || !targetNodePath.IsValid)
-                throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
-
-            if ((!sourceNode.Content.ShouldProcessReference || targetNode == null) && index != null)
-            {
-                // When the references are not processed or when the value is null, there is no actual target node.
-                // However, the commands need the index to be able to properly set the modified value
-                targetNodePath = targetNodePath.PushElement(index, GraphNodePath.ElementType.Index);
-            }
-
-            return targetNodePath;
         }
     }
 
