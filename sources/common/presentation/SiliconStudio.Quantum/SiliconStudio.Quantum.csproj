@@ -35,6 +35,7 @@
     <Compile Include="ActionStack\ContentValueChangedActionItem.cs" />
     <Compile Include="DefaultContentFactory.cs" />
     <Compile Include="GraphNodeChangeListener.cs" />
+    <Compile Include="GraphNodeContentLinker.cs" />
     <Compile Include="IContentFactory.cs" />
     <Compile Include="IContentNode.cs" />
     <Compile Include="IModelBuilderPlugin.cs" />
