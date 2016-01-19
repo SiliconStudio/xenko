@@ -2237,7 +2237,6 @@
     <Compile Include="Shaders.Compiler\RemoteEffectCompilerEffectRequested.cs" />
     <Compile Include="Starter\AndroidXenkoActivity.cs" />
     <Compile Include="Engine\Processors\ScriptSystem.cs" />
-    <Compile Include="Engine\Script.cs" />
     <Compile Include="Rendering\Shaders\Camera.cs">
       <DependentUpon>Camera.xksl</DependentUpon>
       <AutoGen>True</AutoGen>

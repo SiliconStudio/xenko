@@ -1,16 +1,13 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Specialized;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
     /// <summary>
     /// Manage scripts
     /// </summary>
-    public sealed class ScriptProcessor : EntityProcessor<ScriptComponent, ScriptProcessor.AssociatedData>
+    public sealed class ScriptProcessor : EntityProcessor<ScriptComponent>
     {
         private ScriptSystem scriptSystem;
 
@@ -21,14 +18,14 @@ namespace SiliconStudio.Xenko.Engine.Processors
         }
 
         /// <inheritdoc/>
-        protected override AssociatedData GenerateComponentData(Entity entity, ScriptComponent component)
+        protected override ScriptComponent GenerateComponentData(Entity entity, ScriptComponent component)
         {
-            return new AssociatedData(component);
+            return component;
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, ScriptComponent component, AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, ScriptComponent component, ScriptComponent associatedData)
         {
-            return component == associatedData.Component;
+            return component == associatedData;
         }
 
         protected internal override void OnSystemAdd()
@@ -37,60 +34,16 @@ namespace SiliconStudio.Xenko.Engine.Processors
         }
 
         /// <inheritdoc/>
-        protected override void OnEntityComponentAdding(Entity entity, ScriptComponent component, AssociatedData associatedData)
+        protected override void OnEntityComponentAdding(Entity entity, ScriptComponent component, ScriptComponent associatedData)
         {
             // Add current list of scripts
-            var scriptComponent = (ScriptComponent)associatedData.Component;
-            foreach (var script in scriptComponent.Scripts)
-            {
-                if(script != null)
-                    scriptSystem.Add(script);
-            }
-
-            // Keep tracking changes to the collection
-            associatedData.ScriptsChangedDelegate = (sender, args) =>
-            {
-                var script = (Script)args.Item;
-                if (script == null)
-                    return; 
-                
-                switch (args.Action)
-                {
-                    case NotifyCollectionChangedAction.Add:
-                        scriptSystem.Add((Script)args.Item);
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        scriptSystem.Remove((Script)args.Item);
-                        break;
-                }
-            };
-            scriptComponent.Scripts.CollectionChanged += associatedData.ScriptsChangedDelegate;
+            scriptSystem.Add(component);
         }
 
         /// <inheritdoc/>
-        protected override void OnEntityComponentRemoved(Entity entity, ScriptComponent component, AssociatedData associatedData)
+        protected override void OnEntityComponentRemoved(Entity entity, ScriptComponent component, ScriptComponent associatedData)
         {
-            var scriptComponent = (ScriptComponent)associatedData.Component;
-            scriptComponent.Scripts.CollectionChanged -= associatedData.ScriptsChangedDelegate;
-            associatedData.ScriptsChangedDelegate = null;
-
-            // Remove scripts
-            foreach (var script in scriptComponent.Scripts)
-            {
-                scriptSystem.Remove(script);
-            }
-        }
-
-        public class AssociatedData
-        {
-            public EventHandler<TrackingCollectionChangedEventArgs> ScriptsChangedDelegate;
-
-            public AssociatedData(ScriptComponent component)
-            {
-                Component = component;
-            }
-
-            public EntityComponent Component { get; set; }
+            scriptSystem.Remove(component);
         }
     }
 }

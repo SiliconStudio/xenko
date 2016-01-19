@@ -6,7 +6,7 @@ using SiliconStudio.Core.Collections;
 namespace SiliconStudio.Xenko.Engine.Design
 {
     [DataContract]
-    public class ScriptCollection : TrackingCollection<Script>
+    public class ScriptCollection : TrackingCollection<ScriptComponent>
     {
         public ScriptCollection()
         {
