@@ -7,7 +7,7 @@ using System.Windows.Input;
 
 namespace SiliconStudio.Presentation.Quantum
 {
-    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged
+    public interface IObservableNode : INotifyPropertyChanging, INotifyPropertyChanged, IDisposable
     {
         /// <summary>
         /// Gets the <see cref="ObservableViewModel"/> that owns this node.

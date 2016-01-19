@@ -1,35 +1,84 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using System.Collections.Generic;
 using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class RemoveItemCommand : NodeCommand
+    public class RemoveItemCommand : ActionItemNodeCommand
     {
-        private struct UndoTokenData
+        private class RemoveItemActionItem : SimpleNodeCommandActionItem
         {
-            private readonly object indexer;
-            private readonly object item;
-            public UndoTokenData(object indexer, object item)
+            private object indexToRemove;
+            private object removedObject;
+
+            public RemoveItemActionItem(string name, IContent content, object index, object indexToRemove, IEnumerable<IDirtiable> dirtiables)
+                : base(name, content, index, dirtiables)
             {
-                this.indexer = indexer;
-                this.item = item;
+                this.indexToRemove = indexToRemove;
             }
 
-            public object Indexer { get { return indexer; } }
+            public override bool Do()
+            {
+                var value = Content.Retrieve(Index);
+                var descriptor = TypeDescriptorFactory.Default.Find(value.GetType());
+                var collectionDescriptor = descriptor as CollectionDescriptor;
+                var dictionaryDescriptor = descriptor as DictionaryDescriptor;
+                if (collectionDescriptor != null)
+                {
+                    removedObject = collectionDescriptor.GetValue(value, indexToRemove);
+                    collectionDescriptor.RemoveAt(value, (int)indexToRemove);
+                }
+                else if (dictionaryDescriptor != null)
+                {
+                    removedObject = dictionaryDescriptor.GetValue(value, indexToRemove);
+                    dictionaryDescriptor.Remove(value, indexToRemove);
+                }
+                else
+                    throw new InvalidOperationException("This command cannot be executed on the given object.");
+                Content.Update(value, Index);
+                return true;
+            }
 
-            public object Item { get { return item; } }
+            protected override void FreezeMembers()
+            {
+                base.FreezeMembers();
+                indexToRemove = null;
+                removedObject = null;
+            }
+
+            protected override void UndoAction()
+            {
+                var value = Content.Retrieve(Index);
+                var descriptor = TypeDescriptorFactory.Default.Find(value.GetType());
+                var collectionDescriptor = descriptor as CollectionDescriptor;
+                var dictionaryDescriptor = descriptor as DictionaryDescriptor;
+                if (collectionDescriptor != null)
+                {
+                    if (collectionDescriptor.HasInsert)
+                        collectionDescriptor.Insert(value, (int)indexToRemove, removedObject);
+                    else
+                        collectionDescriptor.Add(value, removedObject);
+                }
+                else if (dictionaryDescriptor != null)
+                {
+                    if (dictionaryDescriptor.ContainsKey(value, indexToRemove))
+                        throw new InvalidOperationException("Unable to undo remove: the dictionary contains the key to re-add.");
+                    dictionaryDescriptor.SetValue(value, indexToRemove, removedObject);
+                }
+                Content.Update(value, Index);
+            }
         }
 
         /// <inheritdoc/>
-        public override string Name { get { return "RemoveItem"; } }
+        public override string Name => "RemoveItem";
 
         /// <inheritdoc/>
-        public override CombineMode CombineMode { get { return CombineMode.AlwaysCombine; } }
+        public override CombineMode CombineMode => CombineMode.AlwaysCombine;
 
         /// <inheritdoc/>
         public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
@@ -53,53 +102,9 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null;
         }
 
-        /// <inheritdoc/>
-        public override object Invoke(object currentValue, object parameter, out UndoToken undoToken)
+        protected override NodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
-            var descriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType());
-            var collectionDescriptor = descriptor as CollectionDescriptor;
-            var dictionaryDescriptor = descriptor as DictionaryDescriptor;
-            if (collectionDescriptor != null)
-            {
-                var position = (int)parameter;
-                var removedObject = collectionDescriptor.GetValue(currentValue, position);
-                undoToken = new UndoToken(true, new UndoTokenData(parameter, removedObject));
-                collectionDescriptor.RemoveAt(currentValue, position);
-            }
-            else if (dictionaryDescriptor != null)
-            {
-                var removedObject = dictionaryDescriptor.GetValue(currentValue, parameter);
-                undoToken = new UndoToken(true, new UndoTokenData(parameter, removedObject));
-                dictionaryDescriptor.Remove(currentValue, parameter);
-            }
-            else
-                throw new InvalidOperationException("This command cannot be executed on the given object.");
-
-            return currentValue;
-        }
-
-        /// <inheritdoc/>
-        public override object Undo(object currentValue, UndoToken undoToken)
-        {
-            var descriptor = TypeDescriptorFactory.Default.Find(currentValue.GetType());
-            var collectionDescriptor = descriptor as CollectionDescriptor;
-            var dictionaryDescriptor = descriptor as DictionaryDescriptor;
-            var undoData = (UndoTokenData)undoToken.TokenValue;
-            if (collectionDescriptor != null)
-            {
-                var position = (int)undoData.Indexer;
-                if (collectionDescriptor.HasInsert)
-                    collectionDescriptor.Insert(currentValue, position, undoData.Item);
-                else
-                    collectionDescriptor.Add(currentValue, undoData.Item);
-            }
-            else if (dictionaryDescriptor != null)
-            {
-                if (dictionaryDescriptor.ContainsKey(currentValue, undoData.Indexer))
-                    throw new InvalidOperationException("Unable to undo remove: the dictionary contains the key to re-add.");
-                dictionaryDescriptor.SetValue(currentValue, undoData.Indexer, undoData.Item);
-            }
-            return currentValue;
+            return new RemoveItemActionItem(Name, content, index, parameter, dirtiables);
         }
     }
 }

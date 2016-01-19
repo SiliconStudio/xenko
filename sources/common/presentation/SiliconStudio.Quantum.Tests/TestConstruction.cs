@@ -2,17 +2,129 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using NUnit.Framework;
 
 using SiliconStudio.Core;
+using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum.Tests
 {
     [TestFixture]
     public class TestConstruction
     {
-        #region Test class definitions
+        public class PrimitiveMember
+        {
+            public int Member { get; set; }
+        }
+
+        [Test]
+        public void TestPrimitiveMember()
+        {
+            var obj = new PrimitiveMember { Member = 5 };
+
+            var container = new NodeContainer();
+            var node = (GraphNode)container.GetOrCreateNode(obj);
+            Assert.AreEqual(obj, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(PrimitiveMember.Member), node.Children.First().Name);
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            obj.Member = 6;
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            node.Children.First().Content.Update(7);
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+        }
+
+        public class StringMember
+        {
+            public string Member { get; set; }
+        }
+
+        [Test]
+        public void TestStringMember()
+        {
+            var obj = new StringMember { Member = "a" };
+
+            var container = new NodeContainer();
+            var node = (GraphNode)container.GetOrCreateNode(obj);
+            Assert.AreEqual(obj, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(StringMember.Member), node.Children.First().Name);
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            obj.Member = "b";
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            node.Children.First().Content.Update("c");
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+        }
+
+        public class ReferenceMember
+        {
+            public StringMember Member { get; set; }
+        }
+
+        [Test]
+        public void TestReferenceMember()
+        {
+            var obj = new ReferenceMember { Member = new StringMember { Member = "a" } };
+
+            var container = new NodeContainer();
+            var node = container.GetOrCreateNode(obj);
+            Assert.AreEqual(obj, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(ReferenceMember.Member), node.Children.First().Name);
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            Assert.AreEqual(true, node.Children.First().Content.IsReference);
+            Assert.IsInstanceOf<ObjectReference>(node.Children.First().Content.Reference);
+            var reference = (ObjectReference)node.Children.First().Content.Reference;
+            Assert.AreEqual(obj.Member, reference.ObjectValue);
+            Assert.IsNotNull(reference.TargetNode);
+            Assert.AreEqual(obj.Member, reference.TargetNode.Content.Value);
+            node = reference.TargetNode;
+            Assert.AreEqual(obj.Member, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(StringMember.Member), node.Children.First().Name);
+            Assert.AreEqual(obj.Member.Member, node.Children.First().Content.Value);
+            obj.Member.Member = "b";
+            Assert.AreEqual(obj.Member.Member, node.Children.First().Content.Value);
+            node.Children.First().Content.Update("c");
+            Assert.AreEqual(obj.Member.Member, node.Children.First().Content.Value);
+        }
+
+        [Test]
+        public void TestNullReferenceMember()
+        {
+            var obj = new ReferenceMember { Member = null };
+
+            var container = new NodeContainer();
+            var node = container.GetOrCreateNode(obj);
+            Assert.AreEqual(obj, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(ReferenceMember.Member), node.Children.First().Name);
+            Assert.AreEqual(null, node.Children.First().Content.Value);
+            Assert.AreEqual(true, node.Children.First().Content.IsReference);
+            Assert.IsInstanceOf<ObjectReference>(node.Children.First().Content.Reference);
+            var reference = (ObjectReference)node.Children.First().Content.Reference;
+            Assert.AreEqual(null, reference.ObjectValue);
+            Assert.IsNull(reference.TargetNode);
+
+            node.Children.First().Content.Update(new StringMember { Member = "a" });
+            Assert.AreEqual(obj, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(ReferenceMember.Member), node.Children.First().Name);
+            Assert.AreEqual(obj.Member, node.Children.First().Content.Value);
+            Assert.AreEqual(true, node.Children.First().Content.IsReference);
+            Assert.IsInstanceOf<ObjectReference>(node.Children.First().Content.Reference);
+            reference = (ObjectReference)node.Children.First().Content.Reference;
+            Assert.AreEqual(obj.Member, reference.ObjectValue);
+            Assert.IsNotNull(reference.TargetNode);
+            Assert.AreEqual(obj.Member, reference.TargetNode.Content.Value);
+            node = reference.TargetNode;
+            Assert.AreEqual(obj.Member, node.Content.Value);
+            Assert.AreEqual(1, node.Children.Count);
+            Assert.AreEqual(nameof(StringMember.Member), node.Children.First().Name);
+            Assert.AreEqual(obj.Member.Member, node.Children.First().Content.Value);
+        }
+
         public class SimpleObject
         {
             public SimpleObject()
@@ -91,8 +203,6 @@ namespace SiliconStudio.Quantum.Tests
             public SimpleObject NullObject { get; set; }
         }
 
-        #endregion Test class definitions
-
         [Test]
         public void TestNodeConstruction()
         {
@@ -119,8 +229,8 @@ namespace SiliconStudio.Quantum.Tests
                 },
             };
 
-            var container = new ModelContainer();
-            var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
+            var container = new NodeContainer();
+            var node = (GraphNode)container.GetOrCreateNode(obj);
             Helper.PrintModelContainerContent(container, node);
             // Run the consistency check to verify construction.
             Helper.ConsistencyCheck(container, obj);
@@ -130,8 +240,8 @@ namespace SiliconStudio.Quantum.Tests
         public void TestConstructionWithNullObject()
         {
             var obj = new ClassWithNullObject();
-            var container = new ModelContainer();
-            var node = (ModelNode)container.GetOrCreateModelNode(obj, obj.GetType());
+            var container = new NodeContainer();
+            var node = (GraphNode)container.GetOrCreateNode(obj);
             Helper.PrintModelContainerContent(container, node);
             // TODO: Asserts regarding the status of the null value
             // Run the consistency check to verify construction.

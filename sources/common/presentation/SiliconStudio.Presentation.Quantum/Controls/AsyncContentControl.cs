@@ -1,293 +1,295 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
-// This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Windows.Controls;
-using System.Windows;
-using System.Windows.Input;
-using SiliconStudio.Quantum;
-using SiliconStudio.Presentation.Commands;
-using System.Windows.Data;
+﻿//// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+//// This file is distributed under GPL v3. See LICENSE.md for details.
+//using System;
+//using System.Collections.Generic;
+//using System.Linq;
+//using System.Text;
+//using System.Windows.Controls;
+//using System.Windows;
+//using System.Windows.Input;
+//using SiliconStudio.Quantum;
+//using SiliconStudio.Presentation.Commands;
+//using System.Windows.Data;
 
-namespace SiliconStudio.Presentation.Controls
-{
-    public class AsyncContentControl : ContentControl
-    {
-        static AsyncContentControl()
-        {
-            DefaultStyleKeyProperty.OverrideMetadata(typeof(AsyncContentControl), new FrameworkPropertyMetadata(typeof(AsyncContentControl)));
-        }
+// TODO: DEPRECATED, KEPT FOR HISTORY
 
-        public AsyncContentControl()
-        {
-            this.Loaded += OnLoaded;
-        }
+//namespace SiliconStudio.Presentation.Controls
+//{
+//    public class AsyncContentControl : ContentControl
+//    {
+//        static AsyncContentControl()
+//        {
+//            DefaultStyleKeyProperty.OverrideMetadata(typeof(AsyncContentControl), new FrameworkPropertyMetadata(typeof(AsyncContentControl)));
+//        }
 
-        protected override void OnInitialized(EventArgs e)
-        {
-            base.OnInitialized(e);
+//        public AsyncContentControl()
+//        {
+//            this.Loaded += OnLoaded;
+//        }
 
-            UpdateContentStateProperties(LoadState);
+//        protected override void OnInitialized(EventArgs e)
+//        {
+//            base.OnInitialized(e);
 
-            StoreRealContent();
-            UpdateContentProperties();
-        }
+//            UpdateContentStateProperties(LoadState);
 
-        private void OnLoaded(object sender, RoutedEventArgs e)
-        {
-            if (LoadState == ViewModelContentState.NotLoaded && LoadContentOnInitialized)
-                RequestContentLoading();
-        }
+//            StoreRealContent();
+//            UpdateContentProperties();
+//        }
 
-        // === LoadContentOnInitialized =========================================================================================
+//        private void OnLoaded(object sender, RoutedEventArgs e)
+//        {
+//            if (LoadState == ViewModelContentState.NotLoaded && LoadContentOnInitialized)
+//                RequestContentLoading();
+//        }
 
-        public bool LoadContentOnInitialized
-        {
-            get { return (bool)GetValue(LoadContentOnInitializedProperty); }
-            set { SetValue(LoadContentOnInitializedProperty, value); }
-        }
+//        // === LoadContentOnInitialized =========================================================================================
 
-        public static readonly DependencyProperty LoadContentOnInitializedProperty = DependencyProperty.Register(
-            "LoadContentOnInitialized",
-            typeof(bool),
-            typeof(AsyncContentControl),
-            new PropertyMetadata(false));
+//        public bool LoadContentOnInitialized
+//        {
+//            get { return (bool)GetValue(LoadContentOnInitializedProperty); }
+//            set { SetValue(LoadContentOnInitializedProperty, value); }
+//        }
 
-        // === IsContentNotLoaded =========================================================================================
+//        public static readonly DependencyProperty LoadContentOnInitializedProperty = DependencyProperty.Register(
+//            "LoadContentOnInitialized",
+//            typeof(bool),
+//            typeof(AsyncContentControl),
+//            new PropertyMetadata(false));
 
-        public bool IsContentNotLoaded
-        {
-            get { return (bool)GetValue(IsContentNotLoadedProperty); }
-            private set { SetValue(IsContentNotLoadedPropertyKey, value); }
-        }
+//        // === IsContentNotLoaded =========================================================================================
 
-        private static readonly DependencyPropertyKey IsContentNotLoadedPropertyKey = DependencyProperty.RegisterReadOnly(
-            "IsContentNotLoaded",
-            typeof(bool),
-            typeof(AsyncContentControl),
-            new PropertyMetadata());
-        public static readonly DependencyProperty IsContentNotLoadedProperty = IsContentNotLoadedPropertyKey.DependencyProperty;
+//        public bool IsContentNotLoaded
+//        {
+//            get { return (bool)GetValue(IsContentNotLoadedProperty); }
+//            private set { SetValue(IsContentNotLoadedPropertyKey, value); }
+//        }
 
-        // === IsContentLoading =========================================================================================
+//        private static readonly DependencyPropertyKey IsContentNotLoadedPropertyKey = DependencyProperty.RegisterReadOnly(
+//            "IsContentNotLoaded",
+//            typeof(bool),
+//            typeof(AsyncContentControl),
+//            new PropertyMetadata());
+//        public static readonly DependencyProperty IsContentNotLoadedProperty = IsContentNotLoadedPropertyKey.DependencyProperty;
 
-        public bool IsContentLoading
-        {
-            get { return (bool)GetValue(IsContentLoadingProperty); }
-            private set { SetValue(IsContentLoadingPropertyKey, value); }
-        }
+//        // === IsContentLoading =========================================================================================
 
-        private static readonly DependencyPropertyKey IsContentLoadingPropertyKey = DependencyProperty.RegisterReadOnly(
-            "IsContentLoading",
-            typeof(bool),
-            typeof(AsyncContentControl),
-            new PropertyMetadata());
-        public static readonly DependencyProperty IsContentLoadingProperty = IsContentLoadingPropertyKey.DependencyProperty;
+//        public bool IsContentLoading
+//        {
+//            get { return (bool)GetValue(IsContentLoadingProperty); }
+//            private set { SetValue(IsContentLoadingPropertyKey, value); }
+//        }
 
-        // === IsContentLoaded =========================================================================================
+//        private static readonly DependencyPropertyKey IsContentLoadingPropertyKey = DependencyProperty.RegisterReadOnly(
+//            "IsContentLoading",
+//            typeof(bool),
+//            typeof(AsyncContentControl),
+//            new PropertyMetadata());
+//        public static readonly DependencyProperty IsContentLoadingProperty = IsContentLoadingPropertyKey.DependencyProperty;
 
-        public bool IsContentLoaded
-        {
-            get { return (bool)GetValue(IsContentLoadedProperty); }
-            private set { SetValue(IsContentLoadedPropertyKey, value); }
-        }
+//        // === IsContentLoaded =========================================================================================
 
-        private static readonly DependencyPropertyKey IsContentLoadedPropertyKey = DependencyProperty.RegisterReadOnly(
-            "IsContentLoaded",
-            typeof(bool),
-            typeof(AsyncContentControl),
-            new PropertyMetadata());
-        public static readonly DependencyProperty IsContentLoadedProperty = IsContentLoadedPropertyKey.DependencyProperty;
+//        public bool IsContentLoaded
+//        {
+//            get { return (bool)GetValue(IsContentLoadedProperty); }
+//            private set { SetValue(IsContentLoadedPropertyKey, value); }
+//        }
 
-        // === AwaitingContent =========================================================================================
+//        private static readonly DependencyPropertyKey IsContentLoadedPropertyKey = DependencyProperty.RegisterReadOnly(
+//            "IsContentLoaded",
+//            typeof(bool),
+//            typeof(AsyncContentControl),
+//            new PropertyMetadata());
+//        public static readonly DependencyProperty IsContentLoadedProperty = IsContentLoadedPropertyKey.DependencyProperty;
 
-        public object AwaitingContent
-        {
-            get { return GetValue(AwaitingContentProperty); }
-            set { SetValue(AwaitingContentProperty, value); }
-        }
+//        // === AwaitingContent =========================================================================================
 
-        public static readonly DependencyProperty AwaitingContentProperty = DependencyProperty.Register(
-            "AwaitingContent",
-            typeof(object),
-            typeof(AsyncContentControl));
+//        public object AwaitingContent
+//        {
+//            get { return GetValue(AwaitingContentProperty); }
+//            set { SetValue(AwaitingContentProperty, value); }
+//        }
 
-        // === AwaitingContentTemplate =========================================================================================
+//        public static readonly DependencyProperty AwaitingContentProperty = DependencyProperty.Register(
+//            "AwaitingContent",
+//            typeof(object),
+//            typeof(AsyncContentControl));
 
-        public DataTemplate AwaitingContentTemplate
-        {
-            get { return (DataTemplate)GetValue(AwaitingContentTemplateProperty); }
-            set { SetValue(AwaitingContentTemplateProperty, value); }
-        }
+//        // === AwaitingContentTemplate =========================================================================================
 
-        public static readonly DependencyProperty AwaitingContentTemplateProperty = DependencyProperty.Register(
-            "AwaitingContentTemplate",
-            typeof(DataTemplate),
-            typeof(AsyncContentControl));
+//        public DataTemplate AwaitingContentTemplate
+//        {
+//            get { return (DataTemplate)GetValue(AwaitingContentTemplateProperty); }
+//            set { SetValue(AwaitingContentTemplateProperty, value); }
+//        }
 
-        // === AwaitingContentTemplateSelector =========================================================================================
+//        public static readonly DependencyProperty AwaitingContentTemplateProperty = DependencyProperty.Register(
+//            "AwaitingContentTemplate",
+//            typeof(DataTemplate),
+//            typeof(AsyncContentControl));
 
-        public DataTemplateSelector AwaitingContentTemplateSelector
-        {
-            get { return (DataTemplateSelector)GetValue(AwaitingContentTemplateSelectorProperty); }
-            set { SetValue(AwaitingContentTemplateSelectorProperty, value); }
-        }
+//        // === AwaitingContentTemplateSelector =========================================================================================
 
-        public static readonly DependencyProperty AwaitingContentTemplateSelectorProperty = DependencyProperty.Register(
-            "AwaitingContentTemplateSelector",
-            typeof(DataTemplateSelector),
-            typeof(AsyncContentControl));
+//        public DataTemplateSelector AwaitingContentTemplateSelector
+//        {
+//            get { return (DataTemplateSelector)GetValue(AwaitingContentTemplateSelectorProperty); }
+//            set { SetValue(AwaitingContentTemplateSelectorProperty, value); }
+//        }
 
-        // === LoadState =========================================================================================
+//        public static readonly DependencyProperty AwaitingContentTemplateSelectorProperty = DependencyProperty.Register(
+//            "AwaitingContentTemplateSelector",
+//            typeof(DataTemplateSelector),
+//            typeof(AsyncContentControl));
 
-        public ViewModelContentState LoadState
-        {
-            get { return (ViewModelContentState)GetValue(LoadStateProperty); }
-            set { SetValue(LoadStateProperty, value); }
-        }
+//        // === LoadState =========================================================================================
 
-        public static readonly DependencyProperty LoadStateProperty = DependencyProperty.Register(
-            "LoadState",
-            typeof(ViewModelContentState),
-            typeof(AsyncContentControl),
-            new FrameworkPropertyMetadata(ViewModelContentState.NotLoaded, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnLoadStatePropertyChanged),
-            OnValidateLoadStateValue);
+//        public ViewModelContentState LoadState
+//        {
+//            get { return (ViewModelContentState)GetValue(LoadStateProperty); }
+//            set { SetValue(LoadStateProperty, value); }
+//        }
 
-        public static void OnLoadStatePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
-        {
-            var acc = (AsyncContentControl)sender;
-            var oldState = (ViewModelContentState)e.OldValue;
-            var newState = (ViewModelContentState)e.NewValue;
+//        public static readonly DependencyProperty LoadStateProperty = DependencyProperty.Register(
+//            "LoadState",
+//            typeof(ViewModelContentState),
+//            typeof(AsyncContentControl),
+//            new FrameworkPropertyMetadata(ViewModelContentState.NotLoaded, FrameworkPropertyMetadataOptions.BindsTwoWayByDefault, OnLoadStatePropertyChanged),
+//            OnValidateLoadStateValue);
 
-            acc.UpdateContentStateProperties(newState);
-            acc.UpdateContentProperties();
+//        public static void OnLoadStatePropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+//        {
+//            var acc = (AsyncContentControl)sender;
+//            var oldState = (ViewModelContentState)e.OldValue;
+//            var newState = (ViewModelContentState)e.NewValue;
 
-            acc.OnLoadStateChanged(oldState, newState);
-        }
+//            acc.UpdateContentStateProperties(newState);
+//            acc.UpdateContentProperties();
 
-        private void UpdateContentStateProperties(ViewModelContentState newState)
-        {
-            IsContentNotLoaded = newState == ViewModelContentState.NotLoaded;
-            IsContentLoading = newState == ViewModelContentState.Loading;
-            IsContentLoaded = newState == ViewModelContentState.Loaded;
-        }
+//            acc.OnLoadStateChanged(oldState, newState);
+//        }
 
-        protected virtual void OnLoadStateChanged(ViewModelContentState oldValue, ViewModelContentState newValue)
-        {
-            RaiseEvent(new RoutedPropertyChangedEventArgs<ViewModelContentState>(oldValue, newValue, LoadStateChangedEvent));
-        }
+//        private void UpdateContentStateProperties(ViewModelContentState newState)
+//        {
+//            IsContentNotLoaded = newState == ViewModelContentState.NotLoaded;
+//            IsContentLoading = newState == ViewModelContentState.Loading;
+//            IsContentLoaded = newState == ViewModelContentState.Loaded;
+//        }
 
-        public static bool OnValidateLoadStateValue(object value)
-        {
-            return Enum.IsDefined(typeof(ViewModelContentState), value);
-        }
+//        protected virtual void OnLoadStateChanged(ViewModelContentState oldValue, ViewModelContentState newValue)
+//        {
+//            RaiseEvent(new RoutedPropertyChangedEventArgs<ViewModelContentState>(oldValue, newValue, LoadStateChangedEvent));
+//        }
 
-        public static readonly RoutedEvent LoadStateChangedEvent = EventManager.RegisterRoutedEvent(
-            "LoadStateChanged",
-            RoutingStrategy.Bubble,
-            typeof(DependencyPropertyChangedEventHandler),
-            typeof(AsyncContentControl));
+//        public static bool OnValidateLoadStateValue(object value)
+//        {
+//            return Enum.IsDefined(typeof(ViewModelContentState), value);
+//        }
 
-        public event DependencyPropertyChangedEventHandler LoadStateChanged
-        {
-            add { AddHandler(LoadStateChangedEvent, value); }
-            remove { RemoveHandler(LoadStateChangedEvent, value); }
-        }
+//        public static readonly RoutedEvent LoadStateChangedEvent = EventManager.RegisterRoutedEvent(
+//            "LoadStateChanged",
+//            RoutingStrategy.Bubble,
+//            typeof(DependencyPropertyChangedEventHandler),
+//            typeof(AsyncContentControl));
 
-        // === RequestContentLoading =========================================================================================
+//        public event DependencyPropertyChangedEventHandler LoadStateChanged
+//        {
+//            add { AddHandler(LoadStateChangedEvent, value); }
+//            remove { RemoveHandler(LoadStateChangedEvent, value); }
+//        }
 
-        public void RequestContentLoading()
-        {
-            OnRequestContentLoading();
-        }
+//        // === RequestContentLoading =========================================================================================
 
-        protected virtual void OnRequestContentLoading()
-        {
-            var command = LoadContentCommand;
-            if (command != null && command.CanExecute(null)) // TODO: try/catch CanExecute
-                command.Execute(null); // TODO: try/catch Execute
-        }
+//        public void RequestContentLoading()
+//        {
+//            OnRequestContentLoading();
+//        }
 
-        // === LoadContentCommand =========================================================================================
+//        protected virtual void OnRequestContentLoading()
+//        {
+//            var command = LoadContentCommand;
+//            if (command != null && command.CanExecute(null)) // TODO: try/catch CanExecute
+//                command.Execute(null); // TODO: try/catch Execute
+//        }
 
-        public ICommand LoadContentCommand
-        {
-            get { return (ICommand)GetValue(LoadContentCommandProperty); }
-            set { SetValue(LoadContentCommandProperty, value); }
-        }
+//        // === LoadContentCommand =========================================================================================
 
-        public static readonly DependencyProperty LoadContentCommandProperty = DependencyProperty.Register(
-            "LoadContentCommand",
-            typeof(ICommand),
-            typeof(AsyncContentControl));
+//        public ICommand LoadContentCommand
+//        {
+//            get { return (ICommand)GetValue(LoadContentCommandProperty); }
+//            set { SetValue(LoadContentCommandProperty, value); }
+//        }
 
-        // === CancelContentLoadingCommand =========================================================================================
+//        public static readonly DependencyProperty LoadContentCommandProperty = DependencyProperty.Register(
+//            "LoadContentCommand",
+//            typeof(ICommand),
+//            typeof(AsyncContentControl));
 
-        public ICommand CancelContentLoadingCommand
-        {
-            get { return (ICommand)GetValue(CancelContentLoadingCommandProperty); }
-            set { SetValue(CancelContentLoadingCommandProperty, value); }
-        }
+//        // === CancelContentLoadingCommand =========================================================================================
 
-        public static readonly DependencyProperty CancelContentLoadingCommandProperty = DependencyProperty.Register(
-            "CancelContentLoadingCommand",
-            typeof(ICommand),
-            typeof(AsyncContentControl));
+//        public ICommand CancelContentLoadingCommand
+//        {
+//            get { return (ICommand)GetValue(CancelContentLoadingCommandProperty); }
+//            set { SetValue(CancelContentLoadingCommandProperty, value); }
+//        }
 
-        // =====================================================================================
+//        public static readonly DependencyProperty CancelContentLoadingCommandProperty = DependencyProperty.Register(
+//            "CancelContentLoadingCommand",
+//            typeof(ICommand),
+//            typeof(AsyncContentControl));
 
-        private object storedContent;
-        private object storedContentTemplate;
-        private object storedContentTemplateSelector;
+//        // =====================================================================================
 
-        public void StoreRealContent()
-        {
-            storedContent = GetPropertyValue(ContentProperty);
-            storedContentTemplate = GetPropertyValue(ContentTemplateProperty);
-            storedContentTemplateSelector = GetPropertyValue(ContentTemplateSelectorProperty);
-        }
+//        private object storedContent;
+//        private object storedContentTemplate;
+//        private object storedContentTemplateSelector;
 
-        private void UpdateContentProperties()
-        {
-            if (LoadState != ViewModelContentState.Loaded)
-            {
-                SetValue(ContentProperty, AwaitingContent);
-                SetValue(ContentTemplateProperty, AwaitingContentTemplate);
-                SetValue(ContentTemplateSelectorProperty, AwaitingContentTemplateSelector);
-            }
-            else
-            {
-                SetPropertyValue(ContentProperty, storedContent);
-                SetPropertyValue(ContentTemplateProperty, storedContentTemplate);
-                SetPropertyValue(ContentTemplateSelectorProperty, storedContentTemplateSelector);
-            }
-        }
+//        public void StoreRealContent()
+//        {
+//            storedContent = GetPropertyValue(ContentProperty);
+//            storedContentTemplate = GetPropertyValue(ContentTemplateProperty);
+//            storedContentTemplateSelector = GetPropertyValue(ContentTemplateSelectorProperty);
+//        }
 
-        private object GetPropertyValue(DependencyProperty property)
-        {
-            object result = null;
+//        private void UpdateContentProperties()
+//        {
+//            if (LoadState != ViewModelContentState.Loaded)
+//            {
+//                SetValue(ContentProperty, AwaitingContent);
+//                SetValue(ContentTemplateProperty, AwaitingContentTemplate);
+//                SetValue(ContentTemplateSelectorProperty, AwaitingContentTemplateSelector);
+//            }
+//            else
+//            {
+//                SetPropertyValue(ContentProperty, storedContent);
+//                SetPropertyValue(ContentTemplateProperty, storedContentTemplate);
+//                SetPropertyValue(ContentTemplateSelectorProperty, storedContentTemplateSelector);
+//            }
+//        }
 
-            if (BindingOperations.IsDataBound(this, property))
-            {
-                result = BindingOperations.GetBindingBase(this, property);
-                if (result == null)
-                    result = BindingOperations.GetBindingExpressionBase(this, property);
-            }
-            else
-                result = GetValue(property);
+//        private object GetPropertyValue(DependencyProperty property)
+//        {
+//            object result = null;
 
-            return result;
-        }
+//            if (BindingOperations.IsDataBound(this, property))
+//            {
+//                result = BindingOperations.GetBindingBase(this, property);
+//                if (result == null)
+//                    result = BindingOperations.GetBindingExpressionBase(this, property);
+//            }
+//            else
+//                result = GetValue(property);
 
-        private void SetPropertyValue(DependencyProperty property, object value)
-        {
-            if (value is BindingBase)
-                SetBinding(property, (BindingBase)value);
-            else if (value is BindingExpressionBase)
-                SetBinding(property, ((BindingExpressionBase)value).ParentBindingBase);
-            else
-                SetValue(property, value);
-        }
-    }
-}
+//            return result;
+//        }
+
+//        private void SetPropertyValue(DependencyProperty property, object value)
+//        {
+//            if (value is BindingBase)
+//                SetBinding(property, (BindingBase)value);
+//            else if (value is BindingExpressionBase)
+//                SetBinding(property, ((BindingExpressionBase)value).ParentBindingBase);
+//            else
+//                SetValue(property, value);
+//        }
+//    }
+//}
