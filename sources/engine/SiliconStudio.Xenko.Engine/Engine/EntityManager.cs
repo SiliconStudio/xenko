@@ -162,7 +162,8 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         protected internal virtual void Reset()
         {
-            foreach (var entity in entities)
+            var entitiesToRemove = entities.ToList();
+            foreach (var entity in entitiesToRemove)
             {
                 InternalRemoveEntity(entity, true);
             }
