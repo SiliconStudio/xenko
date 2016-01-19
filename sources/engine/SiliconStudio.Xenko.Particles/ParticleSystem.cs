@@ -128,7 +128,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </userdoc>
         [DataMember(10)]
         [Display("Emitters")]
-        [NotNullItems]
+        //[NotNullItems] // This attribute is not supported for non-derived classes
         [MemberCollection(CanReorderItems = true)]
         public SafeList<ParticleEmitter> Emitters
         {
