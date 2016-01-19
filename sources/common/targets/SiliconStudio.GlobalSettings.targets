@@ -55,6 +55,7 @@
 
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsPhone' ">
     <TargetPlatformIdentifier>WindowsPhoneApp</TargetPlatformIdentifier>
+    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
     <TargetPlatformVersion>8.1</TargetPlatformVersion>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_WINDOWS;SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME;SILICONSTUDIO_PLATFORM_WINDOWS_PHONE;NET45;NETFX_CORE;SILVERLIGHT;WINDOWS_PHONE</SiliconStudioPlatformDefines>
@@ -66,6 +67,7 @@
 
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows10' ">
     <TargetPlatformIdentifier>UAP</TargetPlatformIdentifier>
+    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
     <TargetPlatformVersion>10.0.10240.0</TargetPlatformVersion>
     <TargetPlatformMinVersion>10.0.10240.0</TargetPlatformMinVersion>
     <MinimumVisualStudioVersion>14</MinimumVisualStudioVersion>
@@ -131,6 +133,7 @@
   -->
   <PropertyGroup Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
     <SiliconStudioRuntimeDefines>SILICONSTUDIO_RUNTIME_CORECLR</SiliconStudioRuntimeDefines>
+    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
   </PropertyGroup>
 
   <!-- 
@@ -165,6 +168,7 @@
   <PropertyGroup>
     <DefineConstants Condition="'$(SiliconStudioRuntimeDefines)' != ''">$(DefineConstants);$(SiliconStudioRuntimeDefines)</DefineConstants>
     <DefineConstants Condition="'$(SiliconStudioUIDefines)' != ''">$(DefineConstants);$(SiliconStudioUIDefines)</DefineConstants>
+    <DefineConstants Condition="'$(SiliconStudioAudio)' == 'SDL'">$(DefineConstants);SILICONSTUDIO_XENKO_SOUND_SDL</DefineConstants>
   </PropertyGroup>
   
   <!-- Signing -->

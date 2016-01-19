@@ -89,7 +89,7 @@ namespace SiliconStudio.Xenko.Games.Testing
                 Quit();
             });
 
-            Task.Run(() => socketMessageLayer.MessageLoop());
+            var t = Task.Run(() => socketMessageLayer.MessageLoop());
 
             drawActions.Enqueue(async () =>
             {

@@ -3,6 +3,10 @@
 
 #include "XenkoNative.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionColorTextureSwizzle* vertexPointer, void* indexPointer, int vertexStartOffset)
 {
 	float deltaX = 1.0f / drawInfo->TextureSize.X;
@@ -54,4 +58,6 @@ void UpdateBufferValuesFromElementInfo(SpriteDrawInfo* drawInfo, VertexPositionC
 	}
 }
 
-
+#ifdef __cplusplus
+}
+#endif

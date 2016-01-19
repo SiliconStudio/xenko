@@ -58,11 +58,13 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'WindowsPhone' ">
+    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
     <XenkoGraphicsApiDefines>FRAMEWORK_SHADER_USE_SHARPDX;$(XenkoGraphicsApiDefines)</XenkoGraphicsApiDefines>
    
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows10' ">
+    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
     <ProjectLockFile Condition="'$(ProjectLockFile)' == ''">$(MSBuildThisFileDirectory)..\build\project.lock.json</ProjectLockFile>
   </PropertyGroup>
 
@@ -89,6 +91,11 @@
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
     <XenkoGraphicsApiDefines>$(XenkoGraphicsApiDefines);SILICONSTUDIO_XENKO_EFFECT_COMPILER</XenkoGraphicsApiDefines>
     <XenkoEffectCompiler>true</XenkoEffectCompiler>
+  </PropertyGroup>
+
+  <PropertyGroup Condition=" '$(SiliconStudioRuntime)' == 'CoreCLR' ">
+    <SiliconStudioRuntimeDefines>SILICONSTUDIO_RUNTIME_CORECLR</SiliconStudioRuntimeDefines>
+    <AutoIncludeSystemAssembly>true</AutoIncludeSystemAssembly>
   </PropertyGroup>
 
   <PropertyGroup>

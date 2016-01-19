@@ -82,7 +82,9 @@ namespace SiliconStudio.AssemblyProcessor
         /// <param name="method">The method to add to the module init.</param>
         private void CreateModuleInit(MethodDefinition method)
         {
-            const MethodAttributes ModuleInitAttributes = MethodAttributes.Static
+            const MethodAttributes ModuleInitAttributes = MethodAttributes.Private
+                                                          | MethodAttributes.HideBySig
+                                                          | MethodAttributes.Static
                                                           | MethodAttributes.Assembly
                                                           | MethodAttributes.SpecialName
                                                           | MethodAttributes.RTSpecialName;

@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Animations
                                     playingAnimation.CurrentTime = playingAnimation.Clip.Duration;
                                 break;
                             case AnimationRepeatMode.LoopInfinite:
-                                playingAnimation.CurrentTime = TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor)) % playingAnimation.Clip.Duration.Ticks);
+                                playingAnimation.CurrentTime = playingAnimation.Clip.Duration == TimeSpan.Zero ? TimeSpan.Zero : TimeSpan.FromTicks((playingAnimation.CurrentTime.Ticks + (long)(time.Elapsed.Ticks * (double)playingAnimation.TimeFactor)) % playingAnimation.Clip.Duration.Ticks);
                                 break;
                             default:
                                 throw new ArgumentOutOfRangeException();

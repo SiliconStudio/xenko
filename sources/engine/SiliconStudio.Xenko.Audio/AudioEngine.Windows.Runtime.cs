@@ -1,18 +1,18 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME
+#if SILICONSTUDIO_PLATFORM_WINDOWS_RUNTIME && !SILICONSTUDIO_XENKO_SOUND_SDL
 using System;
 using SharpDX.MediaFoundation;
 using SharpDX.Multimedia;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    partial class AudioEngine
+    partial class AudioEngineRuntime: AudioEngineWindows
     {
         private MediaEngine mediaEngine;
         private MediaEngineEx mediaEngineEx;
 
-        private void PlatformSpecificInit()
+        internal override void InitImpl()
         {
             // Setup Media Engine attributes
             using (var attributes = new MediaEngineAttributes { AudioEndpointRole = AudioEndpointRole.Console,
@@ -30,52 +30,43 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void PlatformSpecificDispose()
+        internal override void DisposeImpl()
         {
             mediaEngine.Shutdown();
             mediaEngine.Dispose();
         }
 
-        private void ResetMusicPlayer()
-        {
-            StopCurrentMusic();
-
-            isMusicPlayerReady = false;
-
-            currentMusic = null;
-        }
-
-        private void RestartCurrentMusic()
+        internal override void RestartMusic()
         {
             mediaEngine.CurrentTime = 0;
         }
 
-        private void StartCurrentMusic()
+        internal override void StartMusic()
         {
             mediaEngine.Play();
         }
 
-        private void UpdateMusicVolume()
+        internal override void UpdateMusicVolume()
         {
-            mediaEngine.Volume = currentMusic.Volume;
+            mediaEngine.Volume = CurrentMusic.Volume;
         }
 
-        private void StopCurrentMusic()
+        internal override void StopMusic()
         {
-            PauseCurrentMusic();
-            RestartCurrentMusic();
+            PauseMusic();
+            RestartMusic();
         }
 
-        private void PauseCurrentMusic()
+        internal override void PauseMusic()
         {
             mediaEngine.Pause();
         }
         
-        private void LoadNewMusic(SoundMusic lastPlayRequestMusicInstance)
+        internal override void LoadMusic(SoundMusic music)
         {
-            currentMusic = lastPlayRequestMusicInstance;
+            CurrentMusic = music;
             
-            mediaEngineEx.SetSourceFromByteStream(new ByteStream(currentMusic.Stream), "MP3");
+            mediaEngineEx.SetSourceFromByteStream(new ByteStream(CurrentMusic.Stream), "MP3");
         }
 
         private struct MediaEngineErrorCodes
@@ -108,7 +99,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessMusicError(SoundMusicEventNotification eventNotification)
+        internal override void ProcessMusicError(SoundMusicEventNotification eventNotification)
         {
             if (eventNotification.Event == SoundMusicEvent.ErrorOccurred)
             {
@@ -116,7 +107,7 @@ namespace SiliconStudio.Xenko.Audio
 
                 if (errorCodes.Parameter1 == (long)MediaEngineErr.SourceNotSupported)
                 {
-                    if(currentMusic!=null)
+                    if(CurrentMusic!=null)
                         ResetMusicPlayer();
                     else
                         throw new AudioSystemInternalException("Audio Engine is in an unconsistant state. CurrentMusic is null while Error on Unsupported media was reached.");
@@ -128,19 +119,14 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessMusicMetaData()
+        internal override void ProcessMusicMetaData()
         {
             throw new System.NotImplementedException();
         }
 
-        private void ProcessPlayerClosed()
+        internal override void ProcessPlayerClosed()
         {
             throw new System.NotImplementedException();
-        }
-
-        private void PlatformSpecificProcessMusicReady()
-        {
-            // nothing to do here
         }
     }
 }

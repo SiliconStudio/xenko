@@ -26,6 +26,20 @@ namespace SiliconStudio.Xenko.Engine
         public PropertyContainer Tags;
 
         /// <summary>
+        /// Update Profiling state of this entity processor for the current frame.
+        /// Pay attention this is a struct, use directly.
+        /// Useful to add custom Mark events into processors
+        /// </summary>
+        public ProfilingState UpdateProfilingState;
+
+        /// <summary>
+        /// Draw Profiling state of this entity processor for the current frame.
+        /// Pay attention this is a struct, use directly.
+        /// Useful to add custom Mark events into processors
+        /// </summary>
+        public ProfilingState DrawProfilingState;
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="EntityProcessor"/> class.
         /// </summary>
         /// <param name="mainComponentType">Type of the main component.</param>

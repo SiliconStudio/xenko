@@ -1,0 +1,23 @@
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
+namespace SiliconStudio.Xenko.Rendering.Images
+{
+    /// <summary>
+    /// The second pass of a shader performing Lambertian pre-filtering using Spherical Harmonics
+    /// </summary>
+    class LambertianPrefilteringSHNoComputePass2 : ImageEffectShader, Texturing
+    {   
+        stage override float4 Shading()
+        {
+            float4 result = 0;
+
+            result += Texture0.Sample(PointSampler, streams.TexCoord, int2(-1, 0));
+            result += Texture0.Sample(PointSampler, streams.TexCoord, int2(0, 0));
+            result += Texture0.Sample(PointSampler, streams.TexCoord, int2(0, -1));
+            result += Texture0.Sample(PointSampler, streams.TexCoord, int2(-1, -1));
+
+            return result;
+        }
+    };
+}
