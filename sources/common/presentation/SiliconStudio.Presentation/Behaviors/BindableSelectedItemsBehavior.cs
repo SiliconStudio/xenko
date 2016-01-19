@@ -223,6 +223,9 @@ namespace SiliconStudio.Presentation.Behaviors
             if (updatingCollection)
                 return;
 
+            if (SelectedItems == null)
+                return;
+
             if (AssociatedObject != null)
             {
                 updatingCollection = true;

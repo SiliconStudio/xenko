@@ -21,10 +21,15 @@ namespace SiliconStudio.ActionStack
         bool CanUndo { get; }
 
         /// <summary>
-        /// Gets whether an redo operation can be executed.
+        /// Gets whether a redo operation can be executed.
         /// </summary>
         bool CanRedo { get; }
-        
+
+        /// <summary>
+        /// Gets whether an undo or a redo operation is currently in progress.
+        /// </summary>
+        bool UndoRedoInProgress { get; }
+
         /// <summary>
         /// Raised whenever action items are added to the stack.
         /// </summary>
