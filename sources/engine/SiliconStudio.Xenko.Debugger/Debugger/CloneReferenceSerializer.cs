@@ -40,8 +40,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
         {
             // Also handles Entity, EntityComponent and Script
             return ContentReferenceSerializer.IsReferenceType(type)
-                || type == typeof(Entity) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type)
-                || typeof(Script).IsAssignableFrom(type);
+                   || type == typeof(Entity) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
 
         /// <inheritdoc/>
