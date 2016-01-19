@@ -269,7 +269,7 @@
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading3StyleKey}">
     <!-- note: in HTML4, default H3 font size is 1.17em (see http://www.w3.org/TR/CSS21/sample.html) -->
     <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}, Converter={cvt:Multiply}, ConverterParameter=1.17}" />
-    <Setter Property="FontWeight" Value="Light" />
+    <Setter Property="FontWeight" Value="Bold" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
   </Style>
   <Style TargetType="{x:Type Paragraph}" x:Key="{x:Static local:XamlMarkdown.Heading4StyleKey}">
@@ -277,6 +277,11 @@
     <Setter Property="FontSize" Value="{Binding FontSize, RelativeSource={RelativeSource AncestorType=FlowDocument}}" />
     <Setter Property="FontWeight" Value="Light" />
     <Setter Property="Foreground" Value="WhiteSmoke" />
+  </Style>
+  <Style TargetType="{x:Type Image}" x:Key="{x:Static local:XamlMarkdown.ImageStyleKey}">
+    <Setter Property="Height" Value="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" />
+    <Setter Property="Width" Value="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}" />
+    <Setter Property="RenderOptions.BitmapScalingMode" Value="HighQuality" />
   </Style>
   <Style TargetType="{x:Type wnd:MessageBox}" BasedOn="{StaticResource MessageDialogChromeStyle}">
     <Setter Property="HorizontalContentAlignment" Value="Center" />
@@ -297,7 +302,7 @@
                    HorizontalAlignment="Left" VerticalAlignment="Top" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"
                    Height="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelHeight)}" Width="{Binding RelativeSource={RelativeSource Self}, Path=Source.(BitmapSource.PixelWidth)}"
                    Visibility="{Binding Image, RelativeSource={RelativeSource AncestorType=wnd:MessageBox}, Converter={cvt:Chained {cvt:ObjectToBool}, {cvt:VisibleOrCollapsed}}}" />
-            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" />
+            <ctrl:MarkdownTextBlock Text="{Binding}" VerticalAlignment="Center" HyperlinkCommand="{x:Static cmd:UtilityCommands.OpenHyperlinkCommand}" />
           </DockPanel>
         </DataTemplate>
       </Setter.Value>

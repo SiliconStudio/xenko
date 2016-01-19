@@ -15,12 +15,32 @@ namespace SiliconStudio.Quantum.Contents
         {
         }
 
-        public override object Value
+        internal IContent BoxedStructureOwner { get; set; }
+
+        internal object[] BoxedStructureOwnerIndices { get; set; }
+
+        public override void Update(object newValue, object index)
         {
-            get { return base.Value; }
-            set
+            var oldValue = Retrieve(index);
+            NotifyContentChanging(index, oldValue, Value);
+            if (index != null)
             {
-                SetValue(value);
+                var collectionDescriptor = Descriptor as CollectionDescriptor;
+                var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+                if (collectionDescriptor != null)
+                {
+                    collectionDescriptor.SetValue(Value, (int)index, newValue);
+                }
+                else if (dictionaryDescriptor != null)
+                {
+                    dictionaryDescriptor.SetValue(Value, index, newValue);
+                }
+                else
+                    throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+            }
+            else
+            {
+                SetValue(newValue);
                 if (BoxedStructureOwner != null)
                 {
                     if (BoxedStructureOwnerIndices != null)
@@ -30,17 +50,14 @@ namespace SiliconStudio.Quantum.Contents
                         {
                             currentObj = FetchItem(currentObj, BoxedStructureOwnerIndices[i]);
                         }
-                        SetItem(currentObj, BoxedStructureOwnerIndices[BoxedStructureOwnerIndices.Length - 1], value);
+                        SetItem(currentObj, BoxedStructureOwnerIndices[BoxedStructureOwnerIndices.Length - 1], newValue);
                     }
                     else
-                        BoxedStructureOwner.Value = value;
+                        BoxedStructureOwner.Update(newValue);
                 }
             }
+            NotifyContentChanged(index, oldValue, Value);
         }
-
-        internal IContent BoxedStructureOwner { get; set; }
-
-        internal object[] BoxedStructureOwnerIndices { get; set; }
 
         private static object FetchItem(object enumerable, object index)
         {
@@ -60,7 +77,7 @@ namespace SiliconStudio.Quantum.Contents
                 var indexerMethod = type.GetProperty("Item", valueType, new[] { keyType });
                 return indexerMethod.GetValue(enumerable, new [] { index });
             }
-            throw new ArgumentException(@"Enumerable object has no indexing and is not supported.", "enumerable");
+            throw new ArgumentException(@"Enumerable object has no indexing and is not supported.", nameof(enumerable));
         }
 
         private static void SetItem(object enumerable, object index, object value)
@@ -88,7 +105,7 @@ namespace SiliconStudio.Quantum.Contents
                 indexerMethod.SetValue(enumerable, value, new[] { index });
                 return;
             }
-            throw new ArgumentException(@"Enumerable object has no indexing and is not supported.", "enumerable");
+            throw new ArgumentException(@"Enumerable object has no indexing and is not supported.", nameof(enumerable));
         }
     }
 }

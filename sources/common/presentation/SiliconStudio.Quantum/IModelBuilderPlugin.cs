@@ -10,10 +10,10 @@ namespace SiliconStudio.Quantum
     public interface IModelBuilderPlugin
     {
         /// <summary>
-        /// Processes the specified <see cref="ModelNode"/>.
+        /// Processes the specified <see cref="GraphNode"/>.
         /// </summary>
         /// <param name="nodeBuilder">The node builder.</param>
-        /// <param name="modelNode">The model node.</param>
-        void Process(INodeBuilder nodeBuilder, ModelNode modelNode);
+        /// <param name="graphNode">The model node.</param>
+        void Process(INodeBuilder nodeBuilder, GraphNode graphNode);
     }
 }

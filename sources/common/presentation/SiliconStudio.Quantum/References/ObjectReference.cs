@@ -31,7 +31,7 @@ namespace SiliconStudio.Quantum.References
         /// <summary>
         /// Gets the model node targeted by this reference, if available.
         /// </summary>
-        public IModelNode TargetNode { get; private set; }
+        public IGraphNode TargetNode { get; private set; }
 
         /// <inheritdoc/>
         public object ObjectValue { get { return TargetNode != null ? TargetNode.Content.Value : orphanObject; } }
@@ -69,13 +69,13 @@ namespace SiliconStudio.Quantum.References
         }
 
         /// <summary>
-        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="ModelContainer"/>.
+        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
         /// </summary>
-        /// <param name="modelContainer">The <see cref="ModelContainer"/> used to retrieve or create the target node.</param>
-        public IModelNode SetTarget(ModelContainer modelContainer)
+        /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
+        public IGraphNode SetTarget(NodeContainer nodeContainer)
         {
-            if (modelContainer == null) throw new ArgumentNullException("modelContainer");
-            IModelNode targetNode = modelContainer.GetOrCreateModelNode(ObjectValue, Type);
+            if (nodeContainer == null) throw new ArgumentNullException("nodeContainer");
+            IGraphNode targetNode = nodeContainer.GetOrCreateNode(ObjectValue);
             if (targetNode != null)
             {
                 if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");

@@ -13,32 +13,28 @@ namespace SiliconStudio.ActionStack
     /// </summary>
     public class AggregateActionItem : ActionItem, IAggregateActionItem
     {
-        private readonly IEnumerable<IActionItem> actionItems;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="AggregateActionItem"/> class with the given collection of action items.
-        /// </summary>
-        /// <param name="actionItems">The action items to add to this aggregation.</param>
-        public AggregateActionItem(IEnumerable<IActionItem> actionItems)
-            : this(null, actionItems)
-        {
-        }
+        private readonly IActionItem[] actionItems;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="AggregateActionItem"/> class with the given name and collection of action items.
         /// </summary>
         /// <param name="name">The name of this action item.</param>
         /// <param name="actionItems">The action items to add to this aggregation.</param>
-        public AggregateActionItem(string name, IEnumerable<IActionItem> actionItems)
+        public AggregateActionItem(string name, params IActionItem[] actionItems)
             : base(name)
         {
-            if (actionItems == null) throw new ArgumentNullException("actionItems");
+            if (actionItems == null) throw new ArgumentNullException(nameof(actionItems));
+            if (actionItems.Length == 0) throw new ArgumentException(@"At least one action item must be passed to an AggregateAcitonItem", nameof(actionItems));
+            if (actionItems.Any(x => x == null)) throw new ArgumentException(@"actionItems cannot contain null item.", nameof(actionItems));
             this.actionItems = actionItems;
         }
 
         /// <inheritdoc/>
-        public IEnumerable<IActionItem> ActionItems { get { return actionItems; } }
-        
+        public IReadOnlyCollection<IActionItem> ActionItems => actionItems;
+
+        /// <inheritdoc/>
+        public bool ReverseOrderOnUndo { get; set; } = true;
+
         /// <inheritdoc/>
         public override bool IsSaved { get { return ActionItems.All(x => x.IsSaved); } set { ActionItems.ForEach(x => x.IsSaved = value); } }
 
@@ -72,21 +68,29 @@ namespace SiliconStudio.ActionStack
         /// <inheritdoc/>
         protected override void FreezeMembers()
         {
-            foreach (var actionItem in actionItems.NotNull())
+            foreach (var actionItem in actionItems)
                 actionItem.Freeze();
         }
 
         /// <inheritdoc/>
         protected override void UndoAction()
         {
-            foreach (var actionItem in ActionItems.Reverse().NotNull())
-                actionItem.Undo();
+            if (ReverseOrderOnUndo)
+            {
+                for (var i = actionItems.Length - 1; i >= 0; --i)
+                    actionItems[i].Undo();
+            }
+            else
+            {
+                foreach (var actionItem in ActionItems)
+                    actionItem.Undo();
+            }
         }
 
         /// <inheritdoc/>
         protected override void RedoAction()
         {
-            foreach (var actionItem in ActionItems.NotNull())
+            foreach (var actionItem in ActionItems)
                 actionItem.Redo();
         }
     }
