@@ -4,6 +4,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -44,14 +45,11 @@ namespace SiliconStudio.Xenko.Animations
     [InlineProperty]
     public abstract class ComputeAnimationCurve<T> : Comparer<AnimationKeyFrame<T>>, IComputeCurve<T>  where T : struct
     {
+        // TODO This class will hold an AnimationCurve<T> later
         //[DataMemberIgnore]
-        //public AnimationCurve<T> Animation { get; set; } = new AnimationCurve<T>(); // Do we need one?
+        //public AnimationCurve<T> Animation { get; set; } = new AnimationCurve<T>();
 
         public TrackingCollection<AnimationKeyFrame<T>> KeyFrames { get; set; } = new TrackingCollection<AnimationKeyFrame<T>>();
-
-        private const uint bakedArraySize = 32;
-        [DataMemberIgnore]
-        private T[] bakedArray = new T[bakedArraySize];
 
         [DataMemberIgnore]
         public bool Dirty { get; set; } = true;
@@ -93,90 +91,53 @@ namespace SiliconStudio.Xenko.Animations
             }
         }
 
-        /// <summary>
-        /// Bakes the curve in a fixed-length array for faster access
-        /// </summary>
-        internal void BakeData()
-        {
-            if (!Dirty)
-                return;
-
-            KeyFrames.Sort(this);
-
-            if (KeyFrames.Count <= 0)
-            {
-                var emptyValue = new T();
-                for (var i = 0; i < bakedArraySize; i++)
-                {
-                    bakedArray[i] = emptyValue;
-                }
-
-                Dirty = false;
-                return;
-            }
-
-            // By this point we know that (KeyFrames.Count > 0)
-
-            // Bake keyframes into fixed-size array for fast sampling
-            var firstIndex = 0;
-            var firstKey = KeyFrames[firstIndex].Key;
-            var nextIndex = Math.Min(KeyFrames.Count - 1, firstIndex + 1);
-            var nextKey = KeyFrames[nextIndex].Key;
-
-            for (var i = 0; i < bakedArraySize; i++)
-            {
-                var sampleKey = (i/(float)(bakedArraySize - 1));
-
-                while ((sampleKey >= nextKey) && (firstIndex < KeyFrames.Count - 1))
-                {
-                    firstIndex++;
-                    firstKey = KeyFrames[firstIndex].Key;
-                    nextIndex = Math.Min(KeyFrames.Count - 1, firstIndex + 1);
-                    nextKey = KeyFrames[nextIndex].Key;
-                }
-
-                if ((firstIndex == nextIndex) || (firstKey >= sampleKey) || (firstKey >= nextKey) || (Math.Abs(firstKey - nextKey) <= MathUtil.ZeroTolerance))
-                {
-                    bakedArray[i] = KeyFrames[firstIndex].Value;
-                    continue;
-                }
-
-                // By this point we know that (firstIndex < nextIndex) and (firstKey < nextKey)
-
-                var lerpValue = (sampleKey - firstKey)/(nextKey - firstKey);
-                var leftValue = KeyFrames[firstIndex].Value;
-                var rightValue = KeyFrames[nextIndex].Value;
-
-                // TODO Support interpolation methods other than linear
-                Linear(ref leftValue, ref rightValue, lerpValue, out bakedArray[i]);
-            }
-
-            Dirty = false;
-        }
-
         public abstract void Cubic(ref T value1, ref T value2, ref T value3, ref T value4, float t, out T result);
 
         public abstract void Linear(ref T value1, ref T value2, float t, out T result);
 
-        /// <inheritdoc/>
-        public T SampleAt(float location)
+        /// <summary>
+        /// Unoptimized sampler which searches all the keyframes in order. Intended to be used for baking purposes only
+        /// </summary>
+        /// <param name="t">Location t to sample at, between 0 and 1</param>
+        /// <returns>Sampled and interpolated data value</returns>
+        protected T SampleRaw(float t)
         {
-//            return new T();
+            if (KeyFrames.Count <= 0)
+                return new T();
 
             if (Dirty)
             {
-                BakeData();                
+                KeyFrames.Sort(this);
+                Dirty = false;
             }
 
-            var indexLocation = location * (bakedArraySize - 1);
-            var index = (int) indexLocation;
-            var lerpValue = indexLocation - index;
+            var thisIndex = 0;
+            while ((thisIndex < KeyFrames.Count - 1) && (KeyFrames[thisIndex + 1].Key <= t))
+                thisIndex++;
 
+            if ((thisIndex >= KeyFrames.Count - 1) || (KeyFrames[thisIndex].Key >= t))
+                return KeyFrames[thisIndex].Value;
+
+            var nextIndex = thisIndex + 1;
+            if (KeyFrames[thisIndex].Key >= KeyFrames[nextIndex].Key)
+                return KeyFrames[thisIndex].Value;
+
+            // Lerp between the two values
+            var lerpValue = (t - KeyFrames[thisIndex].Key) / (KeyFrames[nextIndex].Key - KeyFrames[thisIndex].Key);
             T result;
-            var thisIndex = (int)Math.Max(index, 0);
-            var nextIndex = (int)Math.Min(index + 1, bakedArraySize - 1);
-            Linear(ref bakedArray[thisIndex], ref bakedArray[nextIndex], lerpValue, out result);
+
+            var leftValue = KeyFrames[thisIndex].Value;
+            var rightValue = KeyFrames[nextIndex].Value;
+
+            // TODO Lerp methods other than linear
+            Linear(ref leftValue, ref rightValue, lerpValue, out result);
             return result;
+        }
+
+        /// <inheritdoc/>
+        public T SampleAt(float location)
+        {
+            return SampleRaw(location);
         }
     }
 }
