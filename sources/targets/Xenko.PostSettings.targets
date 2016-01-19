@@ -74,7 +74,6 @@
   <!--Temporary define the Build Engine output path-->
   <PropertyGroup>
     <BuildEngineBuildDir Condition="'$(BuildEngineBuildDir)' == ''">$(ProjectDir)$(BaseIntermediateOutputPath)\data</BuildEngineBuildDir>
-    <XenkoProjectBuildProfile Condition="'$(XenkoProjectBuildProfile)' == ''">$(SiliconStudioPlatform)</XenkoProjectBuildProfile>
   </PropertyGroup>
   
   <!-- Add XenkoProject build action -->
@@ -91,7 +90,7 @@
 
   <!-- Target used to compile content (Font/Fx files...) -->
   <Target Name="XenkoProjectBuildTarget">
-    <Exec Condition="'@(XenkoProject)' != '' and Exists('$(XenkoAssetCompilerCommand)') and '$(XenkoDisableAssetCompiler)' == ''" WorkingDirectory="$(TargetDir)" Command="$(XenkoAssetCompilerCommand) --monitor-pipe=&quot;$(XenkoBuildToolMonitorPipeUrl)&quot; --profile=$(XenkoProjectBuildProfile) &quot;@(XenkoProject->'%(rootdir)%(directory)%(filename)%(extension)')&quot;" />
+    <Exec Condition="'@(XenkoProject)' != '' and Exists('$(XenkoAssetCompilerCommand)') and '$(XenkoDisableAssetCompiler)' == ''" WorkingDirectory="$(TargetDir)" Command="$(XenkoAssetCompilerCommand) --monitor-pipe=&quot;$(XenkoBuildToolMonitorPipeUrl)&quot; --profile=$(SiliconStudioPlatform) &quot;@(XenkoProject->'%(rootdir)%(directory)%(filename)%(extension)')&quot;" />
   </Target>
 
   <!-- Target used to clean content (Font/Fx files...) -->
@@ -133,7 +132,7 @@
 
   <Target Name="FindBuildEngineOutputDir">
     <!-- Get the build engine output directory -->
-    <FindBuildEngineOutputDirTask Condition="'@(XenkoProject)' != '' and Exists('$(XenkoSdkToolsDir)BuildTasks\SiliconStudio.Xenko.VisualStudio.BuildTasks.exe')" XenkoProjectPaths="@(XenkoProject)" ProfileName="$(XenkoProjectBuildProfile)">
+    <FindBuildEngineOutputDirTask Condition="'@(XenkoProject)' != '' and Exists('$(XenkoSdkToolsDir)BuildTasks\SiliconStudio.Xenko.VisualStudio.BuildTasks.exe')" XenkoProjectPaths="@(XenkoProject)" ProfileName="$(SiliconStudioPlatform)">
       <Output TaskParameter="BuildOutputDirectory" PropertyName="BuildEngineOutputDirectory" />
     </FindBuildEngineOutputDirTask>
   </Target>
