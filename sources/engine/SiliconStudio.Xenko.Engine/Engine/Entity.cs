@@ -12,6 +12,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using System.Collections.Generic;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Engine
@@ -111,6 +112,7 @@ namespace SiliconStudio.Xenko.Engine
         /// The components stored in this entity.
         /// </summary>
         [DataMember(100, DataMemberMode.Content)]
+        [NotNullItems]
         public EntityComponentCollection Components { get; }
 
         /// <summary>
