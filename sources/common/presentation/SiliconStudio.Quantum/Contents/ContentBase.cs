@@ -12,6 +12,7 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public abstract class ContentBase : IContent
     {
+
         protected ContentBase(ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
         {
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
@@ -20,6 +21,9 @@ namespace SiliconStudio.Quantum.Contents
             IsPrimitive = isPrimitive;
             ShouldProcessReference = true;
         }
+
+        /// <inheritdoc/>
+        public IContentNode OwnerNode { get; private set; }
 
         /// <inheritdoc/>
         public Type Type => Descriptor.Type;
@@ -88,6 +92,13 @@ namespace SiliconStudio.Quantum.Contents
         public override string ToString()
         {
             return "[" + GetType().Name + "]: " + Value;
+        }
+
+        internal void RegisterOwner(IContentNode node)
+        {
+            if (node == null) throw new ArgumentNullException(nameof(node));
+            if (OwnerNode != null) throw new InvalidOperationException("An owner node has already been registered for this content.");
+            OwnerNode = node;
         }
 
         /// <summary>
