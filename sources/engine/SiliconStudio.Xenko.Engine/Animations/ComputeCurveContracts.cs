@@ -4,11 +4,19 @@ using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Animations
 {
-
-
+    /// <summary>
+    /// Sampler container for Vector4 data type
+    /// </summary>
     [DataContract("ComputeCurveSamplerVector4")]
-    [Display("Vector4 sampler")]
-    public class ComputeCurveSamplerVector4 : ComputeCurveSampler<Vector4> { }
+    [Display("Sampler Vector4")]
+    public class ComputeCurveSamplerVector4 : ComputeCurveSampler<Vector4>
+    {
+        /// <inheritdoc/>
+        public override void Linear(ref Vector4 value1, ref Vector4 value2, float t, out Vector4 result)
+        {
+            Interpolator.Vector4.Linear(ref value1, ref value2, t, out result);
+        }
+    }
 
     /// <summary>
     /// Constant float value for the IComputeCurve interface

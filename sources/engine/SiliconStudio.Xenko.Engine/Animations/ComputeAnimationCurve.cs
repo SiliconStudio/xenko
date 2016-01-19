@@ -111,6 +111,7 @@ namespace SiliconStudio.Xenko.Animations
                     bakedArray[i] = emptyValue;
                 }
 
+                Dirty = false;
                 return;
             }
 
@@ -160,6 +161,8 @@ namespace SiliconStudio.Xenko.Animations
         /// <inheritdoc/>
         public T SampleAt(float location)
         {
+//            return new T();
+
             if (Dirty)
             {
                 BakeData();                
@@ -170,7 +173,9 @@ namespace SiliconStudio.Xenko.Animations
             var lerpValue = indexLocation - index;
 
             T result;
-            Linear(ref bakedArray[index], ref bakedArray[index + 1], lerpValue, out result);
+            var thisIndex = (int)Math.Max(index, 0);
+            var nextIndex = (int)Math.Min(index + 1, bakedArraySize - 1);
+            Linear(ref bakedArray[thisIndex], ref bakedArray[nextIndex], lerpValue, out result);
             return result;
         }
     }
