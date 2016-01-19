@@ -5,6 +5,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
@@ -19,21 +20,15 @@ namespace SiliconStudio.Xenko.Animations
         // TODO structs are not copied properly when edited .. ?
 
         private T val;
-        public T Value { get { return val; } set { val = value; parentCurve?.SetDirty(); } }
+        public T Value { get { return val; } set { val = value; HasChanged = true; } }
 
         private float key;
-        public float Key { get { return key; } set { key = value; parentCurve?.SetDirty(); } }
+        public float Key { get { return key; } set { key = value; HasChanged = true; } }
 
         // TODO Interpolation technique
 
         [DataMemberIgnore]
-        private ComputeAnimationCurve<T> parentCurve;
-
-        public void SetParent(ComputeAnimationCurve<T> parentCurve)
-        {
-            this.parentCurve = parentCurve;
-        }
-
+        public bool HasChanged = true;
     }
 
     /// <summary>
@@ -51,19 +46,36 @@ namespace SiliconStudio.Xenko.Animations
 
         public TrackingCollection<AnimationKeyFrame<T>> KeyFrames { get; set; } = new TrackingCollection<AnimationKeyFrame<T>>();
 
-        [DataMemberIgnore]
-        public bool Dirty { get; set; } = true;
-        public void SetDirty()
+        // TODO This list will become AnimationCurve<T>
+        private FastList<AnimationKeyFrame<T>> sortedKeys = new FastList<AnimationKeyFrame<T>>(); 
+
+        private int framesCount = 0;
+        private bool HasChanged()
         {
-            Dirty = true;
+            if (framesCount != KeyFrames.Count)
+                return true;
+
+            for (var i = 0; i < framesCount; i++)
+                if (KeyFrames[i].HasChanged)
+                    return true;
+
+            return false;
         }
 
-        /// <summary>
-        /// Default constructor. Adds an event for rebaking the curve data when keyframe points change.
-        /// </summary>
-        protected ComputeAnimationCurve()
+        /// <inheritdoc/>
+        public bool UpdateChanges()
         {
-            KeyFrames.CollectionChanged += KeyFramesChanged;
+            if (!HasChanged())
+                return false;
+
+            sortedKeys.Clear();
+            sortedKeys.AddRange(KeyFrames.ToArray());
+            sortedKeys.Sort(this);
+
+            framesCount = KeyFrames.Count;
+            for (var i = 0; i < framesCount; i++)
+                KeyFrames[i].HasChanged = false;
+            return true;
         }
 
         /// <inheritdoc/>
@@ -74,21 +86,6 @@ namespace SiliconStudio.Xenko.Animations
             if (y == null) return  1;
 
             return (x.Key < y.Key) ? -1 : (x.Key > y.Key) ? 1 : 0;
-        }
-
-        /// <summary>
-        /// Called when the keyframes' tracking collection has changed
-        /// </summary>
-        /// <param name="sender">The sending object</param>
-        /// <param name="e">The event arguments</param>
-        private void KeyFramesChanged(object sender, TrackingCollectionChangedEventArgs e)
-        {
-            Dirty = true;
-
-            for (var i = 0; i < KeyFrames.Count; i++)
-            {
-                KeyFrames[i].SetParent(this);
-            }
         }
 
         public abstract void Cubic(ref T value1, ref T value2, ref T value3, ref T value4, float t, out T result);
@@ -102,32 +99,26 @@ namespace SiliconStudio.Xenko.Animations
         /// <returns>Sampled and interpolated data value</returns>
         protected T SampleRaw(float t)
         {
-            if (KeyFrames.Count <= 0)
+            if (sortedKeys.Count <= 0)
                 return new T();
 
-            if (Dirty)
-            {
-                KeyFrames.Sort(this);
-                Dirty = false;
-            }
-
             var thisIndex = 0;
-            while ((thisIndex < KeyFrames.Count - 1) && (KeyFrames[thisIndex + 1].Key <= t))
+            while ((thisIndex < sortedKeys.Count - 1) && (sortedKeys[thisIndex + 1].Key <= t))
                 thisIndex++;
 
-            if ((thisIndex >= KeyFrames.Count - 1) || (KeyFrames[thisIndex].Key >= t))
-                return KeyFrames[thisIndex].Value;
+            if ((thisIndex >= sortedKeys.Count - 1) || (sortedKeys[thisIndex].Key >= t))
+                return sortedKeys[thisIndex].Value;
 
             var nextIndex = thisIndex + 1;
-            if (KeyFrames[thisIndex].Key >= KeyFrames[nextIndex].Key)
-                return KeyFrames[thisIndex].Value;
+            if (sortedKeys[thisIndex].Key >= sortedKeys[nextIndex].Key)
+                return sortedKeys[thisIndex].Value;
 
             // Lerp between the two values
-            var lerpValue = (t - KeyFrames[thisIndex].Key) / (KeyFrames[nextIndex].Key - KeyFrames[thisIndex].Key);
+            var lerpValue = (t - sortedKeys[thisIndex].Key) / (sortedKeys[nextIndex].Key - sortedKeys[thisIndex].Key);
             T result;
 
-            var leftValue = KeyFrames[thisIndex].Value;
-            var rightValue = KeyFrames[nextIndex].Value;
+            var leftValue = sortedKeys[thisIndex].Value;
+            var rightValue = sortedKeys[nextIndex].Value;
 
             // TODO Lerp methods other than linear
             Linear(ref leftValue, ref rightValue, lerpValue, out result);

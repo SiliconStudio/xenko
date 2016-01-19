@@ -13,9 +13,24 @@ namespace SiliconStudio.Xenko.Animations
     [DataContract(Inherited = true)]
     public abstract class ComputeCurveSampler<T> where T : struct
     {
+        private IComputeCurve<T> curve;
+
         [NotNull]
+        [DataMember(10)]
         [Display("Curve")]
-        public IComputeCurve<T> Curve { get; set; }
+        public IComputeCurve<T> Curve
+        {
+            get
+            {
+                return curve;
+            }
+
+            set
+            {
+                curve = value;
+                hasChanged = true;
+            }
+        }
 
         protected ComputeCurveSampler()
         {
@@ -65,7 +80,7 @@ namespace SiliconStudio.Xenko.Animations
         /// </summary>
         private void BakeData()
         {
-            if (Curve == null)
+            if (curve == null)
             {
                 var emptyValue = new T();
                 for (var i = 0; i < bakedArraySize; i++)
@@ -79,15 +94,23 @@ namespace SiliconStudio.Xenko.Animations
             for (var i = 0; i < bakedArraySize; i++)
             {
                 var t = i/(float)(bakedArraySize - 1);
-                bakedArray[i] = Curve.SampleAt(t);
+                bakedArray[i] = curve.SampleAt(t);
             }
         }
 
+        private bool hasChanged = true;
+
+        /// <inheritdoc/>
         public bool UpdateChanges()
         {
-            // TODO Check if it needs updating
-            BakeData();
-            return true;
+            if (hasChanged || (curve?.UpdateChanges() ?? false))
+            {
+                BakeData();
+                hasChanged = false;
+                return true;
+            }
+
+            return false;
         }
     }
 }
