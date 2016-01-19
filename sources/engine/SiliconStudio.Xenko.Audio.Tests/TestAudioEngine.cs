@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             try
             {
-                var engine = new AudioEngine();
+                var engine = AudioEngineFactory.NewAudioEngine();
                 engine.Dispose();
             }
             catch (Exception e)
@@ -47,8 +47,8 @@ namespace SiliconStudio.Xenko.Audio.Tests
         [Test]
         public void TestDispose()
         {
-            var crossDisposedEngine = new AudioEngine(); 
-            var engine = new AudioEngine();
+            var crossDisposedEngine = AudioEngineFactory.NewAudioEngine(); 
+            var engine = AudioEngineFactory.NewAudioEngine();
             crossDisposedEngine.Dispose(); // Check there no Dispose problems with sereval cross-disposed instances. 
 
             // Create some SoundEffects
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         [Test]
         public void TestGetLeastSignificativeSoundEffect()
         {
-            var engine = new AudioEngine();
+            var engine = AudioEngineFactory.NewAudioEngine();
 
             //////////////////////////////////////////
             // 1. Test that it returns null by default
@@ -171,7 +171,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         public void TestState()
         {
             // test initial state
-            var engine = new AudioEngine();
+            var engine = AudioEngineFactory.NewAudioEngine();
             Assert.AreEqual(AudioEngineState.Running, engine.State);
 
             // test state after pause
@@ -199,7 +199,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         [Test]
         public void TestPauseAudio()
         {
-            var engine = new AudioEngine();
+            var engine = AudioEngineFactory.NewAudioEngine();
             
             // create a sound effect instance
             SoundEffect soundEffect;
@@ -275,7 +275,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         [Test]
         public void TestResumeAudio()
         {
-            var engine = new AudioEngine();
+            var engine = AudioEngineFactory.NewAudioEngine();
 
             // create a sound effect instance
             SoundEffect soundEffect;

@@ -43,9 +43,15 @@
     <Reference Include="BulletSharp">
       <HintPath>..\..\..\deps\BulletPhysics\$(XenkoBulletPlatform)\$(XenkoBulletSignedDir)BulletSharp.dll</HintPath>
     </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
   </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <Compile Include="Bullet2PhysicsSystem.cs" />
     <Compile Include="Collision.cs" />

@@ -10,62 +10,6 @@ using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Audio
 {
-
-    /// <summary>
-    /// Describe an play action that a SoundMusic can request to the AudioEngine
-    /// </summary>
-    internal enum SoundMusicAction
-    {
-        Play,
-        Pause,
-        Stop,
-        Volume,
-    }
-
-    /// <summary>
-    /// A SoundMusic action request aimed for the AudioEngine.
-    /// </summary>
-    internal struct SoundMusicActionRequest
-    {
-        public SoundMusic Requester;
-
-        public SoundMusicAction RequestedAction;
-
-        public SoundMusicActionRequest(SoundMusic requester, SoundMusicAction request)
-        {
-            Requester = requester;
-            RequestedAction = request;
-        }
-    }
-
-    /// <summary>
-    /// A <see cref="SoundMusic"/> event.
-    /// </summary>
-    internal enum SoundMusicEvent
-    {
-        ErrorOccurred,
-        MetaDataLoaded,
-        ReadyToBePlayed,
-        EndOfTrackReached,
-        MusicPlayerClosed,
-    }
-
-    /// <summary>
-    /// A notification of an SoundMusic event.
-    /// </summary>
-    internal struct SoundMusicEventNotification
-    {
-        public SoundMusicEvent Event;
-
-        public object EventData;
-
-        public SoundMusicEventNotification(SoundMusicEvent mEvent, object eventData)
-        {
-            Event = mEvent;
-            EventData = eventData;
-        }
-    }
-
     /// <summary>
     /// Represents the audio engine. 
     /// In current version, the audio engine necessarily creates its context on the default audio hardware of the device.
@@ -77,7 +21,7 @@ namespace SiliconStudio.Xenko.Audio
     /// <seealso cref="SoundEffect.Load"/>
     /// <seealso cref="SoundMusic.Load"/>
     /// <seealso cref="DynamicSoundEffectInstance"/>
-    public sealed partial class AudioEngine : ComponentBase
+    public abstract class AudioEngine : ComponentBase
     {
         /// <summary>
         /// The logger of the audio engine.
@@ -89,7 +33,7 @@ namespace SiliconStudio.Xenko.Audio
         /// </summary>
         /// <param name="sampleRate">The desired sample rate of the audio graph. 0 let the engine choose the best value depending on the hardware.</param>
         /// <exception cref="AudioInitializationException">Initialization of the audio engine failed. May be due to memory problems or missing audio hardware.</exception>
-        public AudioEngine(uint sampleRate = 0)
+        protected AudioEngine(uint sampleRate = 0)
             : this(null, sampleRate)
         {
         }
@@ -110,11 +54,93 @@ namespace SiliconStudio.Xenko.Audio
 
             AudioSampleRate = sampleRate;
 
-            AudioEngineImpl(device);
+            InitializeAudioEngine(device);
 
             ++nbOfAudioEngineInstances;
         }
 
+        #region Audio Engine Platform specific
+        /// <summary>
+        /// Initialize audio engine for <paramref name="device"/>.
+        /// </summary>
+        /// <param name="device">Device to use for initialization</param>
+        internal abstract void InitializeAudioEngine(AudioDevice device);
+
+        /// <summary>
+        /// Platform specific implementation of <see cref="PauseAudio"/>.
+        /// </summary>
+        /// <remarks>Needs to be overriden if required by platform.</remarks>
+        internal virtual void PauseAudioImpl() {}
+
+        /// <summary>
+        /// Platform specific implementation of <see cref="ResumeAudio"/>.
+        /// </summary>
+        /// <remarks>Needs to be overriden if required by platform.</remarks>
+        internal virtual void ResumeAudioImpl() { }
+
+        /// <summary>
+        /// Platform specifc implementation of <see cref="Destroy"/>.
+        /// </summary>
+        internal abstract void DestroyAudioEngine();
+
+        /// <summary>
+        /// Load a music to be played via <see cref="StartMusic"/>.
+        /// </summary>
+        /// <param name="music">Music to be played</param>
+        internal abstract void LoadMusic(SoundMusic music);
+
+        /// <summary>
+        /// Start playing <see cref="CurrentMusic"/>.
+        /// </summary>
+        internal abstract void StartMusic();
+
+        /// <summary>
+        /// Pause music. Use <see cref="RestartMusic"/> to resume.
+        /// </summary>
+        internal abstract void PauseMusic();
+
+        /// <summary>
+        /// Stop music.
+        /// </summary>
+        internal abstract void StopMusic();
+
+        /// <summary>
+        /// Restart Music.
+        /// </summary>
+        internal virtual void RestartMusic()
+        {
+            StopMusic();
+            StartMusic();   
+        }
+
+        /// <summary>
+        /// Update audio volume based on <code>CurrentMusic.Volume</code>
+        /// </summary>
+        internal abstract void UpdateMusicVolume();
+
+        /// <summary>
+        /// Reset music player. <c>CurrentMusic</c> is reset to null.
+        /// </summary>
+        internal virtual void ResetMusicPlayer()
+        {
+            // Stop music if it was playing and reset <c>CurrentMusic</c> to null.
+            StopMusic();
+            CurrentMusic = null;
+
+            // Reset state of player
+            isMusicPlayerReady = false;
+        }
+
+        /// <summary>
+        /// Platform specific implementation of ProcessMusicReady.
+        /// </summary>
+        internal virtual void ProcessMusicReadyImpl() {}
+
+        internal abstract void ProcessPlayerClosed();
+        internal abstract void ProcessMusicMetaData();
+        internal abstract void ProcessMusicError(SoundMusicEventNotification eventNotification);
+#endregion
+            
         /// <summary>
         /// Get the list of the audio hardware available on the device.
         /// </summary>
@@ -125,7 +151,7 @@ namespace SiliconStudio.Xenko.Audio
             throw new NotImplementedException();
         }
 
-        private static int nbOfAudioEngineInstances;
+        protected static int nbOfAudioEngineInstances;
 
         /// <summary>
         /// The list of the sounds that have been paused by the call to <see cref="PauseAudio"/> and should be resumed by <see cref="ResumeAudio"/>.
@@ -150,7 +176,12 @@ namespace SiliconStudio.Xenko.Audio
         /// <summary>
         /// The current state of the <see cref="AudioEngine"/>.
         /// </summary>
-        public AudioEngineState State { get; private set; }
+        public AudioEngineState State { get; protected set; }
+
+        /// <summary>
+        /// The music that is currently playing or the last music that have been played.
+        /// </summary>
+        public SoundMusic CurrentMusic { get; protected set; }
 
         /// <summary>
         /// Pause the audio engine. That is, pause all the currently playing <see cref="SoundInstanceBase"/>, and block any future play until <see cref="ResumeAudio"/> is called.
@@ -162,7 +193,7 @@ namespace SiliconStudio.Xenko.Audio
 
             State = AudioEngineState.Paused;
 
-            PauseAudioPlatformSpecific();
+            PauseAudioImpl();
 
             pausedSounds.Clear();
             foreach (var sound in notDisposedSounds)
@@ -198,7 +229,7 @@ namespace SiliconStudio.Xenko.Audio
 
             State = AudioEngineState.Running;
 
-            ResumeAudioPlatformSpecific();
+            ResumeAudioImpl();
 
             foreach (var playableSound in pausedSounds)
             {
@@ -303,7 +334,7 @@ namespace SiliconStudio.Xenko.Audio
 
             --nbOfAudioEngineInstances;
 
-            DestroyImpl();
+            DestroyAudioEngine();
         }
 
         /// <summary>
@@ -319,11 +350,6 @@ namespace SiliconStudio.Xenko.Audio
         {
             musicActionRequests.Enqueue(request);
         }
-
-        /// <summary>
-        /// The music that is currently playing or the last music that have been played.
-        /// </summary>
-        private SoundMusic currentMusic;
 
         private void QueueLastPendingRequests(Dictionary<SoundMusicAction, bool> requestAftPlay, SoundMusic requester)
         {
@@ -364,27 +390,27 @@ namespace SiliconStudio.Xenko.Audio
                 return;
 
             // postpone the proccess of the requests to next Update if there exist a media session but it is not ready yet to be played.
-            if (currentMusic != null && !isMusicPlayerReady)
+            if (CurrentMusic != null && !isMusicPlayerReady)
                 return;
             
             // now analyse the list of requests to determine the actions to performs
-            var lastPlayRequestMusicInstance = currentMusic;    // the last SoundMusic instance that asked for a Play-Request.
+            var lastPlayRequestMusicInstance = CurrentMusic;    // the last SoundMusic instance that asked for a Play-Request.
             var actionRequestedAftLastPlay = new Dictionary<SoundMusicAction, bool> // Specify if there is Request to the given Action after the Play-Request of the last played music.
                 {
                     { SoundMusicAction.Pause, false },
                     { SoundMusicAction.Stop, false },
                     { SoundMusicAction.Volume, false }
                 };
-            var shouldRestartCurrentMusic = false;
-            var shouldStartCurrentMusic = false;
+            var shouldRestartMusic = false;
+            var shouldStartMusic = false;
 
             foreach (var actionRequest in musicActionRequests.DequeueAsList())
             {
                 if (actionRequest.RequestedAction == SoundMusicAction.Play)
                 {
                     lastPlayRequestMusicInstance = actionRequest.Requester;
-                    shouldRestartCurrentMusic = shouldRestartCurrentMusic || lastPlayRequestMusicInstance != currentMusic || actionRequestedAftLastPlay[SoundMusicAction.Stop];
-                    shouldStartCurrentMusic = true;
+                    shouldRestartMusic = shouldRestartMusic || lastPlayRequestMusicInstance != CurrentMusic || actionRequestedAftLastPlay[SoundMusicAction.Stop];
+                    shouldStartMusic = true;
                     foreach (var action in actionRequestedAftLastPlay.Keys.ToArray())
                         actionRequestedAftLastPlay[action] = false;
                 }
@@ -395,7 +421,7 @@ namespace SiliconStudio.Xenko.Audio
             }
 
             // perform the action depending on the request analysis.
-            if (currentMusic == null)
+            if (CurrentMusic == null)
             {
                 // there is currently no music loaded. 
                 // => just load the last music to play and queue subsequent pause/stop/volume requests
@@ -406,10 +432,10 @@ namespace SiliconStudio.Xenko.Audio
 
                 // Load the music corresponding to the last play-request.
                 if(!lastPlayRequestMusicInstance.IsDisposed) // music can be disposed by the user before the call to Update.
-                    LoadNewMusic(lastPlayRequestMusicInstance);
+                    LoadMusic(lastPlayRequestMusicInstance);
 
                 // Queue the remaining waiting requests
-                QueueLastPendingRequests(actionRequestedAftLastPlay, currentMusic);
+                QueueLastPendingRequests(actionRequestedAftLastPlay, CurrentMusic);
             }
             else
             {
@@ -417,27 +443,27 @@ namespace SiliconStudio.Xenko.Audio
                 //  - if another music need to be played => close the session and queue Play/Pause/Stop/Volume requests
                 //  - else => perform Play/Pause/Stop/Volume request on the current music.
 
-                if (currentMusic != lastPlayRequestMusicInstance) // need to change the music
+                if (CurrentMusic != lastPlayRequestMusicInstance) // need to change the music
                 {
                     ResetMusicPlayer();
                     musicActionRequests.Enqueue(new SoundMusicActionRequest(lastPlayRequestMusicInstance, SoundMusicAction.Play));
                     QueueLastPendingRequests(actionRequestedAftLastPlay, lastPlayRequestMusicInstance);
                 }
-                else if(!currentMusic.IsDisposed)// apply requests on current music.
+                else if(!CurrentMusic.IsDisposed)// apply requests on current music.
                 {
-                    if (shouldRestartCurrentMusic)
-                        RestartCurrentMusic();
+                    if (shouldRestartMusic)
+                        RestartMusic();
 
-                    if (shouldStartCurrentMusic)
-                        StartCurrentMusic();
+                    if (shouldStartMusic)
+                        StartMusic();
 
                     if (actionRequestedAftLastPlay[SoundMusicAction.Volume])
                         UpdateMusicVolume();
 
                     if (actionRequestedAftLastPlay[SoundMusicAction.Stop])
-                        StopCurrentMusic();
+                        StopMusic();
                     else if (actionRequestedAftLastPlay[SoundMusicAction.Pause])
-                        PauseCurrentMusic();
+                        PauseMusic();
                 }
                 else // current music has been disposed.
                 {
@@ -448,46 +474,46 @@ namespace SiliconStudio.Xenko.Audio
 
         private void ProcessMusicEnded()
         {
-            if (currentMusic == null || currentMusic.IsDisposed) //this event is asynchronous so the music can be disposed by the user meanwhile.
+            if (CurrentMusic == null || CurrentMusic.IsDisposed) //this event is asynchronous so the music can be disposed by the user meanwhile.
                 return;
 
             // If the music need to be looped, we start it again.
-            if (currentMusic.IsLooped && !currentMusic.ShouldExitLoop && currentMusic.PlayState != SoundPlayState.Stopped)
+            if (CurrentMusic.IsLooped && !CurrentMusic.ShouldExitLoop && CurrentMusic.PlayState != SoundPlayState.Stopped)
             {
-                RestartCurrentMusic(); // restart the sound to simulate looping.
-                StartCurrentMusic();
+                RestartMusic(); // restart the sound to simulate looping.
+                StartMusic();
             }
-            // otherwise we set the state of currentMusic to "stopped"
+            // otherwise we set the state of CurrentMusic to "stopped"
             else
             {
-                currentMusic.SetStateToStopped();
+                CurrentMusic.SetStateToStopped();
             }
         }
 
         private void ProcessMusicReady()
         {
-            PlatformSpecificProcessMusicReady();
+            ProcessMusicReadyImpl();
 
             isMusicPlayerReady = true;
 
-            if (!currentMusic.IsDisposed) // disposal of the music can happen between the call to Play and its ready-to-play state notification
+            if (!CurrentMusic.IsDisposed) // disposal of the music can happen between the call to Play and its ready-to-play state notification
             {
                 // Adjust the volume before starting to play.
                 UpdateMusicVolume();
 
                 // Play the music
-                StartCurrentMusic();
+                StartMusic();
             }
         }
 
         /// <summary>
         /// The music MediaEvents that arrrived since last update.
         /// </summary>
-        private readonly ThreadSafeQueue<SoundMusicEventNotification> musicMediaEvents = new ThreadSafeQueue<SoundMusicEventNotification>();
+        internal readonly ThreadSafeQueue<SoundMusicEventNotification> musicMediaEvents = new ThreadSafeQueue<SoundMusicEventNotification>();
 
-        private bool isMusicPlayerReady;
+        protected bool isMusicPlayerReady;
 
-        private void ProccessQueuedMediaSessionEvents()
+        protected void ProccessQueuedMediaSessionEvents()
         {
             foreach (var eventNotification in musicMediaEvents.DequeueAsList())
             {

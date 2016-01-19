@@ -11,7 +11,8 @@ namespace SiliconStudio.Core.IO
 {
     public class NativeFile
     {
-        private const string KERNEL_FILE = "api-ms-win-core-file-l1-2-0.dll";
+        private const string KERNEL_FILE2 = "api-ms-win-core-file-l2-1-1.dll";
+        private const string KERNEL_FILE = "api-ms-win-core-file-l1-2-1.dll";
 
         [DllImport(KERNEL_FILE, EntryPoint = "GetFileAttributesExW", CharSet = CharSet.Unicode, SetLastError = true, BestFitMapping = false)]
         [return: MarshalAs(UnmanagedType.Bool)]
@@ -39,7 +40,7 @@ namespace SiliconStudio.Core.IO
             public uint FileSizeLow;
         }
 
-        [DllImport(KERNEL_FILE, EntryPoint = "MoveFileExW", SetLastError = true, CharSet = CharSet.Unicode, BestFitMapping = false)]
+        [DllImport(KERNEL_FILE2, EntryPoint = "MoveFileExW", SetLastError = true, CharSet = CharSet.Unicode, BestFitMapping = false)]
         static extern bool MoveFileEx(String src, String dst, uint flags);
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

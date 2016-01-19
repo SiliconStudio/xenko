@@ -30,7 +30,6 @@ using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Windows;
-using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Markup;
@@ -104,17 +103,17 @@ namespace SiliconStudio.Presentation
 
         public ICommand HyperlinkCommand { get; set; }
 
-        private Style CodeStyle => codeStyle ?? (codeStyle = (Style)Application.Current.FindResource(CodeStyleKey));
+        private Style CodeStyle => codeStyle ?? (codeStyle = (Style)Application.Current?.TryFindResource(CodeStyleKey));
 
-        private Style DocumentStyle => documentStyle ?? (documentStyle = (Style)Application.Current.FindResource(DocumentStyleKey));
+        private Style DocumentStyle => documentStyle ?? (documentStyle = (Style)Application.Current?.TryFindResource(DocumentStyleKey));
 
-        private Style Heading1Style => heading1Style ?? (heading1Style = (Style)Application.Current.FindResource(Heading1StyleKey));
+        private Style Heading1Style => heading1Style ?? (heading1Style = (Style)Application.Current?.TryFindResource(Heading1StyleKey));
 
-        private Style Heading2Style => heading2Style ?? (heading2Style = (Style)Application.Current.FindResource(Heading2StyleKey));
+        private Style Heading2Style => heading2Style ?? (heading2Style = (Style)Application.Current?.TryFindResource(Heading2StyleKey));
 
-        private Style Heading3Style => heading3Style ?? (heading3Style = (Style)Application.Current.FindResource(Heading3StyleKey));
+        private Style Heading3Style => heading3Style ?? (heading3Style = (Style)Application.Current?.TryFindResource(Heading3StyleKey));
 
-        private Style Heading4Style => heading4Style ?? (heading4Style = (Style)Application.Current.FindResource(Heading4StyleKey));
+        private Style Heading4Style => heading4Style ?? (heading4Style = (Style)Application.Current?.TryFindResource(Heading4StyleKey));
 
         public FlowDocument Transform(string text)
         {

@@ -17,10 +17,14 @@
     <SiliconStudioPlatformDependent>true</SiliconStudioPlatformDependent>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <!-- Include platform dependent assembly when specified -->
   <Choose>
     <When Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone' or '$(SiliconStudioPlatform)' == 'Windows10'">

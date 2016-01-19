@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             Game.InitializeAssetDatabase();
 
-            engine = new AudioEngine();
+            engine = AudioEngineFactory.NewAudioEngine();
 
             using (var stream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read))
             {
