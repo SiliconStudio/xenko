@@ -16,7 +16,6 @@ namespace SiliconStudio.Xenko.Input
 {
     internal class InputManagerSDL: InputManagerWindows<Window>
     {
-
         public InputManagerSDL(IServiceRegistry registry) : base(registry)
         {
             HasKeyboard = true;
@@ -86,7 +85,6 @@ namespace SiliconStudio.Xenko.Input
 
             _pointerClock.Restart();
 
-            EnsureMapKeys();
             Control.KeyDownActions += e => OnKeyEvent(e, false);
             Control.KeyUpActions += e => OnKeyEvent(e, true);
             Control.FocusGainedActions += e => OnUiControlGotFocus();
@@ -110,7 +108,7 @@ namespace SiliconStudio.Xenko.Input
             lock (KeyboardInputEvents)
             {
                 Keys key;
-                if (MapKeys.TryGetValue(e.keysym.sym, out key) && key != Keys.None)
+                if (SDLKeys.mapKeys.TryGetValue(e.keysym.sym, out key) && key != Keys.None)
                 {
                     var type = isKeyUp ? InputEventType.Up : InputEventType.Down;
                     KeyboardInputEvents.Add(new KeyboardInputEvent { Key = key, Type = type });
@@ -186,7 +184,7 @@ namespace SiliconStudio.Xenko.Input
                     {
                         SDL.SDL_Keycode keyCode = SDL.SDL_GetKeyFromScancode((SDL.SDL_Scancode) i);
                         Keys key;
-                        if (MapKeys.TryGetValue(keyCode, out key) && key != Keys.None)
+                        if (SDLKeys.mapKeys.TryGetValue(keyCode, out key) && key != Keys.None)
                         {
                             KeyboardInputEvents.Add(new KeyboardInputEvent
                             {
@@ -239,211 +237,215 @@ namespace SiliconStudio.Xenko.Input
         private readonly Stopwatch _pointerClock;
         private Point _capturedPosition;
         private bool _wasMouseVisibleBeforeCapture;
-        private static readonly Dictionary<SDL.SDL_Keycode, Keys> MapKeys = new Dictionary<SDL.SDL_Keycode, Keys>();
 
-        private static void AddKeys(SDL.SDL_Keycode fromKey, Keys toKey)
-        {
-            if (!MapKeys.ContainsKey(fromKey))
-            {
-                MapKeys.Add(fromKey, toKey);
-            }
-        }
+    }
 
-        private static void EnsureMapKeys()
+    /// <summary>
+    /// Mapping between <see cref="SDL.SDL_Keycode"/> and <see cref="SiliconStudio.Xenko.Input.Keys"/> needed for
+    /// translating SDL key events into Xenko ones.
+    /// </summary>
+    static class SDLKeys
+    {
+        /// <summary>
+        /// Map between SDL keys and Xenko keys.
+        /// </summary>
+        internal static readonly Dictionary<SDL.SDL_Keycode, Keys> mapKeys = NewMapKeys();
+
+        /// <summary>
+        /// Create a mapping between <see cref="SDL.SDL_Keycode"/> and <see cref="SiliconStudio.Xenko.Input.Keys"/>
+        /// </summary>
+        /// <remarks>Not all <see cref="SiliconStudio.Xenko.Input.Keys"/> have a corresponding SDL entries. For the moment they are commented out in the code below.</remarks>
+        /// <returns>A new map.</returns>
+        private static Dictionary<SDL.SDL_Keycode, Keys> NewMapKeys()
         {
-            lock (MapKeys)
-            {
-                if (MapKeys.Count > 0)
-                {
-                    return;
-                }
-                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.None);
-                AddKeys(SDL.SDL_Keycode.SDLK_CANCEL, Keys.Cancel);
-                AddKeys(SDL.SDL_Keycode.SDLK_BACKSPACE, Keys.Back);
-                AddKeys(SDL.SDL_Keycode.SDLK_TAB, Keys.Tab);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_TAB, Keys.Tab);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.LineFeed);
-                AddKeys(SDL.SDL_Keycode.SDLK_CLEAR, Keys.Clear);
-                AddKeys(SDL.SDL_Keycode.SDLK_CLEARAGAIN, Keys.Clear);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_CLEAR, Keys.Clear);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_CLEARENTRY, Keys.Clear);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_ENTER, Keys.Enter);
-                AddKeys(SDL.SDL_Keycode.SDLK_RETURN, Keys.Return);
-                AddKeys(SDL.SDL_Keycode.SDLK_RETURN2, Keys.Return);
-                AddKeys(SDL.SDL_Keycode.SDLK_PAUSE, Keys.Pause);
-                AddKeys(SDL.SDL_Keycode.SDLK_CAPSLOCK, Keys.Capital);
-                AddKeys(SDL.SDL_Keycode.SDLK_CAPSLOCK, Keys.CapsLock);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.HangulMode);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.KanaMode);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.JunjaMode);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.FinalMode);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.HanjaMode);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.KanjiMode);
-                AddKeys(SDL.SDL_Keycode.SDLK_ESCAPE, Keys.Escape);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.ImeConvert);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.ImeNonConvert);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.ImeAccept);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.ImeModeChange);
-                AddKeys(SDL.SDL_Keycode.SDLK_SPACE, Keys.Space);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_SPACE, Keys.Space);
-                AddKeys(SDL.SDL_Keycode.SDLK_PAGEUP, Keys.PageUp);
-                AddKeys(SDL.SDL_Keycode.SDLK_PRIOR, Keys.Prior);
-//                AddKeys(SDL.SDL_Keycode.SDLK_PAGEDOWN, Keys.Next); // Next is the same as PageDown
-                AddKeys(SDL.SDL_Keycode.SDLK_PAGEDOWN, Keys.PageDown);
-                AddKeys(SDL.SDL_Keycode.SDLK_END, Keys.End);
-                AddKeys(SDL.SDL_Keycode.SDLK_HOME, Keys.Home);
-                AddKeys(SDL.SDL_Keycode.SDLK_AC_HOME, Keys.Home);
-                AddKeys(SDL.SDL_Keycode.SDLK_LEFT, Keys.Left);
-                AddKeys(SDL.SDL_Keycode.SDLK_UP, Keys.Up);
-                AddKeys(SDL.SDL_Keycode.SDLK_RIGHT, Keys.Right);
-                AddKeys(SDL.SDL_Keycode.SDLK_DOWN, Keys.Down);
-                AddKeys(SDL.SDL_Keycode.SDLK_SELECT, Keys.Select);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Print);
-                AddKeys(SDL.SDL_Keycode.SDLK_EXECUTE, Keys.Execute);
-                AddKeys(SDL.SDL_Keycode.SDLK_PRINTSCREEN, Keys.PrintScreen);
-//                AddKeys(SDL.SDL_Keycode.SDLK_PRINTSCREEN, Keys.Snapshot); // Snapshot is the same as PageDown
-                AddKeys(SDL.SDL_Keycode.SDLK_INSERT, Keys.Insert);
-                AddKeys(SDL.SDL_Keycode.SDLK_DELETE, Keys.Delete);
-                AddKeys(SDL.SDL_Keycode.SDLK_HELP, Keys.Help);
-                AddKeys(SDL.SDL_Keycode.SDLK_1, Keys.D0);
-                AddKeys(SDL.SDL_Keycode.SDLK_2, Keys.D2);
-                AddKeys(SDL.SDL_Keycode.SDLK_3, Keys.D3);
-                AddKeys(SDL.SDL_Keycode.SDLK_4, Keys.D4);
-                AddKeys(SDL.SDL_Keycode.SDLK_5, Keys.D5);
-                AddKeys(SDL.SDL_Keycode.SDLK_6, Keys.D6);
-                AddKeys(SDL.SDL_Keycode.SDLK_7, Keys.D7);
-                AddKeys(SDL.SDL_Keycode.SDLK_8, Keys.D8);
-                AddKeys(SDL.SDL_Keycode.SDLK_9, Keys.D9);
-                AddKeys(SDL.SDL_Keycode.SDLK_a, Keys.A);
-                AddKeys(SDL.SDL_Keycode.SDLK_b, Keys.B);
-                AddKeys(SDL.SDL_Keycode.SDLK_c, Keys.C);
-                AddKeys(SDL.SDL_Keycode.SDLK_d, Keys.D);
-                AddKeys(SDL.SDL_Keycode.SDLK_e, Keys.E);
-                AddKeys(SDL.SDL_Keycode.SDLK_f, Keys.F);
-                AddKeys(SDL.SDL_Keycode.SDLK_g, Keys.G);
-                AddKeys(SDL.SDL_Keycode.SDLK_h, Keys.H);
-                AddKeys(SDL.SDL_Keycode.SDLK_i, Keys.I);
-                AddKeys(SDL.SDL_Keycode.SDLK_j, Keys.J);
-                AddKeys(SDL.SDL_Keycode.SDLK_k, Keys.K);
-                AddKeys(SDL.SDL_Keycode.SDLK_l, Keys.L);
-                AddKeys(SDL.SDL_Keycode.SDLK_m, Keys.M);
-                AddKeys(SDL.SDL_Keycode.SDLK_n, Keys.N);
-                AddKeys(SDL.SDL_Keycode.SDLK_o, Keys.O);
-                AddKeys(SDL.SDL_Keycode.SDLK_p, Keys.P);
-                AddKeys(SDL.SDL_Keycode.SDLK_q, Keys.Q);
-                AddKeys(SDL.SDL_Keycode.SDLK_r, Keys.R);
-                AddKeys(SDL.SDL_Keycode.SDLK_s, Keys.S);
-                AddKeys(SDL.SDL_Keycode.SDLK_t, Keys.T);
-                AddKeys(SDL.SDL_Keycode.SDLK_u, Keys.U);
-                AddKeys(SDL.SDL_Keycode.SDLK_v, Keys.V);
-                AddKeys(SDL.SDL_Keycode.SDLK_w, Keys.W);
-                AddKeys(SDL.SDL_Keycode.SDLK_x, Keys.X);
-                AddKeys(SDL.SDL_Keycode.SDLK_y, Keys.Y);
-                AddKeys(SDL.SDL_Keycode.SDLK_z, Keys.Z);
-                AddKeys(SDL.SDL_Keycode.SDLK_LGUI, Keys.LeftWin);
-                AddKeys(SDL.SDL_Keycode.SDLK_RGUI, Keys.RightWin);
-                AddKeys(SDL.SDL_Keycode.SDLK_APPLICATION, Keys.Apps); // TODO: Verify value.
-                AddKeys(SDL.SDL_Keycode.SDLK_SLEEP, Keys.Sleep);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_0, Keys.NumPad0);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_1, Keys.NumPad1);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_2, Keys.NumPad2);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_3, Keys.NumPad3);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_4, Keys.NumPad4);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_5, Keys.NumPad5);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_6, Keys.NumPad6);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_7, Keys.NumPad7);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_8, Keys.NumPad8);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_9, Keys.NumPad9);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_MULTIPLY, Keys.Multiply);
-                AddKeys(SDL.SDL_Keycode.SDLK_PLUS, Keys.Add);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_PLUS, Keys.Add);
-                AddKeys(SDL.SDL_Keycode.SDLK_SEPARATOR, Keys.Separator);
-                AddKeys(SDL.SDL_Keycode.SDLK_MINUS, Keys.Subtract);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_MINUS, Keys.Subtract);
-                AddKeys(SDL.SDL_Keycode.SDLK_DECIMALSEPARATOR, Keys.Decimal);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_DECIMAL, Keys.Decimal);
-                AddKeys(SDL.SDL_Keycode.SDLK_KP_DIVIDE, Keys.Divide);
-                AddKeys(SDL.SDL_Keycode.SDLK_F1, Keys.F1);
-                AddKeys(SDL.SDL_Keycode.SDLK_F2, Keys.F2);
-                AddKeys(SDL.SDL_Keycode.SDLK_F3, Keys.F3);
-                AddKeys(SDL.SDL_Keycode.SDLK_F4, Keys.F4);
-                AddKeys(SDL.SDL_Keycode.SDLK_F5, Keys.F5);
-                AddKeys(SDL.SDL_Keycode.SDLK_F6, Keys.F6);
-                AddKeys(SDL.SDL_Keycode.SDLK_F7, Keys.F7);
-                AddKeys(SDL.SDL_Keycode.SDLK_F8, Keys.F8);
-                AddKeys(SDL.SDL_Keycode.SDLK_F9, Keys.F9);
-                AddKeys(SDL.SDL_Keycode.SDLK_F10, Keys.F10);
-                AddKeys(SDL.SDL_Keycode.SDLK_F11, Keys.F11);
-                AddKeys(SDL.SDL_Keycode.SDLK_F12, Keys.F12);
-                AddKeys(SDL.SDL_Keycode.SDLK_F13, Keys.F13);
-                AddKeys(SDL.SDL_Keycode.SDLK_F14, Keys.F14);
-                AddKeys(SDL.SDL_Keycode.SDLK_F15, Keys.F15);
-                AddKeys(SDL.SDL_Keycode.SDLK_F16, Keys.F16);
-                AddKeys(SDL.SDL_Keycode.SDLK_F17, Keys.F17);
-                AddKeys(SDL.SDL_Keycode.SDLK_F18, Keys.F18);
-                AddKeys(SDL.SDL_Keycode.SDLK_F19, Keys.F19);
-                AddKeys(SDL.SDL_Keycode.SDLK_F20, Keys.F20);
-                AddKeys(SDL.SDL_Keycode.SDLK_F21, Keys.F21);
-                AddKeys(SDL.SDL_Keycode.SDLK_F22, Keys.F22);
-                AddKeys(SDL.SDL_Keycode.SDLK_F23, Keys.F23);
-                AddKeys(SDL.SDL_Keycode.SDLK_F24, Keys.F24);
-                AddKeys(SDL.SDL_Keycode.SDLK_NUMLOCKCLEAR, Keys.NumLock);
-                AddKeys(SDL.SDL_Keycode.SDLK_SCROLLLOCK, Keys.Scroll);
-                AddKeys(SDL.SDL_Keycode.SDLK_LSHIFT, Keys.LeftShift);
-                AddKeys(SDL.SDL_Keycode.SDLK_RSHIFT, Keys.RightShift);
-                AddKeys(SDL.SDL_Keycode.SDLK_LCTRL, Keys.LeftCtrl);
-                AddKeys(SDL.SDL_Keycode.SDLK_RCTRL, Keys.RightCtrl);
-                AddKeys(SDL.SDL_Keycode.SDLK_LALT, Keys.LeftAlt);
-                AddKeys(SDL.SDL_Keycode.SDLK_RALT, Keys.RightAlt);
-                AddKeys(SDL.SDL_Keycode.SDLK_AC_BACK, Keys.BrowserBack);
-                AddKeys(SDL.SDL_Keycode.SDLK_AC_FORWARD, Keys.BrowserForward);
-                AddKeys(SDL.SDL_Keycode.SDLK_AC_REFRESH, Keys.BrowserRefresh);
-                AddKeys(SDL.SDL_Keycode.SDLK_AC_STOP, Keys.BrowserStop);
-                AddKeys(SDL.SDL_Keycode.SDLK_AC_SEARCH, Keys.BrowserSearch);
-                AddKeys(SDL.SDL_Keycode.SDLK_AC_BOOKMARKS, Keys.BrowserFavorites);
-                AddKeys(SDL.SDL_Keycode.SDLK_AC_HOME, Keys.BrowserHome);
-                AddKeys(SDL.SDL_Keycode.SDLK_AUDIOMUTE, Keys.VolumeMute);
-                AddKeys(SDL.SDL_Keycode.SDLK_VOLUMEDOWN, Keys.VolumeDown);
-                AddKeys(SDL.SDL_Keycode.SDLK_VOLUMEUP, Keys.VolumeUp);
-                AddKeys(SDL.SDL_Keycode.SDLK_AUDIONEXT, Keys.MediaNextTrack);
-                AddKeys(SDL.SDL_Keycode.SDLK_AUDIOPREV, Keys.MediaPreviousTrack);
-                AddKeys(SDL.SDL_Keycode.SDLK_AUDIOSTOP, Keys.MediaStop);
-                AddKeys(SDL.SDL_Keycode.SDLK_AUDIOPLAY, Keys.MediaPlayPause);
-                AddKeys(SDL.SDL_Keycode.SDLK_MAIL, Keys.LaunchMail);
-                AddKeys(SDL.SDL_Keycode.SDLK_MEDIASELECT, Keys.SelectMedia);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.LaunchApplication1);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.LaunchApplication2);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Oem1);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemSemicolon);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemPlus);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemComma);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemMinus);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemPeriod);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Oem2);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemQuestion);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Oem3);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemTilde);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Oem4);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemOpenBrackets);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Oem5);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemPipe);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Oem6);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemCloseBrackets);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Oem7);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemQuotes);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Oem8);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Oem102);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemBackslash);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Attn);
-                AddKeys(SDL.SDL_Keycode.SDLK_CRSEL, Keys.CrSel);
-                AddKeys(SDL.SDL_Keycode.SDLK_EXSEL, Keys.ExSel);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.EraseEof);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Play);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Zoom);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.NoName);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.Pa1);
-//                AddKeys(SDL.SDL_Keycode.SDLK_UNKNOWN, Keys.OemClear);
-            }
+            var map = new Dictionary<SDL.SDL_Keycode, Keys>(200); 
+            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.None;
+            map [SDL.SDL_Keycode.SDLK_CANCEL] = Keys.Cancel;
+            map [SDL.SDL_Keycode.SDLK_BACKSPACE] = Keys.Back;
+            map [SDL.SDL_Keycode.SDLK_TAB] = Keys.Tab;
+            map [SDL.SDL_Keycode.SDLK_KP_TAB] = Keys.Tab;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.LineFeed;
+            map [SDL.SDL_Keycode.SDLK_CLEAR] = Keys.Clear;
+            map [SDL.SDL_Keycode.SDLK_CLEARAGAIN] = Keys.Clear;
+            map [SDL.SDL_Keycode.SDLK_KP_CLEAR] = Keys.Clear;
+            map [SDL.SDL_Keycode.SDLK_KP_CLEARENTRY] = Keys.Clear;
+            map [SDL.SDL_Keycode.SDLK_KP_ENTER] = Keys.Enter;
+            map [SDL.SDL_Keycode.SDLK_RETURN] = Keys.Return;
+            map [SDL.SDL_Keycode.SDLK_RETURN2] = Keys.Return;
+            map [SDL.SDL_Keycode.SDLK_PAUSE] = Keys.Pause;
+            map [SDL.SDL_Keycode.SDLK_CAPSLOCK] = Keys.Capital;
+            map [SDL.SDL_Keycode.SDLK_CAPSLOCK] = Keys.CapsLock;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.HangulMode;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.KanaMode;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.JunjaMode;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.FinalMode;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.HanjaMode;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.KanjiMode;
+            map [SDL.SDL_Keycode.SDLK_ESCAPE] = Keys.Escape;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.ImeConvert;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.ImeNonConvert;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.ImeAccept;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.ImeModeChange;
+            map [SDL.SDL_Keycode.SDLK_SPACE] = Keys.Space;
+            map [SDL.SDL_Keycode.SDLK_KP_SPACE] = Keys.Space;
+            map [SDL.SDL_Keycode.SDLK_PAGEUP] = Keys.PageUp;
+            map [SDL.SDL_Keycode.SDLK_PRIOR] = Keys.Prior;
+//            map [SDL.SDL_Keycode.SDLK_PAGEDOWN] = Keys.Next); // Next is the same as PageDo;
+            map [SDL.SDL_Keycode.SDLK_PAGEDOWN] = Keys.PageDown;
+            map [SDL.SDL_Keycode.SDLK_END] = Keys.End;
+            map [SDL.SDL_Keycode.SDLK_HOME] = Keys.Home;
+            map [SDL.SDL_Keycode.SDLK_AC_HOME] = Keys.Home;
+            map [SDL.SDL_Keycode.SDLK_LEFT] = Keys.Left;
+            map [SDL.SDL_Keycode.SDLK_UP] = Keys.Up;
+            map [SDL.SDL_Keycode.SDLK_RIGHT] = Keys.Right;
+            map [SDL.SDL_Keycode.SDLK_DOWN] = Keys.Down;
+            map [SDL.SDL_Keycode.SDLK_SELECT] = Keys.Select;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Print;
+            map [SDL.SDL_Keycode.SDLK_EXECUTE] = Keys.Execute;
+            map [SDL.SDL_Keycode.SDLK_PRINTSCREEN] = Keys.PrintScreen;
+//            map [SDL.SDL_Keycode.SDLK_PRINTSCREEN] = Keys.Snapshot); // Snapshot is the same as PageDo;
+            map [SDL.SDL_Keycode.SDLK_INSERT] = Keys.Insert;
+            map [SDL.SDL_Keycode.SDLK_DELETE] = Keys.Delete;
+            map [SDL.SDL_Keycode.SDLK_HELP] = Keys.Help;
+            map [SDL.SDL_Keycode.SDLK_1] = Keys.D0;
+            map [SDL.SDL_Keycode.SDLK_2] = Keys.D2;
+            map [SDL.SDL_Keycode.SDLK_3] = Keys.D3;
+            map [SDL.SDL_Keycode.SDLK_4] = Keys.D4;
+            map [SDL.SDL_Keycode.SDLK_5] = Keys.D5;
+            map [SDL.SDL_Keycode.SDLK_6] = Keys.D6;
+            map [SDL.SDL_Keycode.SDLK_7] = Keys.D7;
+            map [SDL.SDL_Keycode.SDLK_8] = Keys.D8;
+            map [SDL.SDL_Keycode.SDLK_9] = Keys.D9;
+            map [SDL.SDL_Keycode.SDLK_a] = Keys.A;
+            map [SDL.SDL_Keycode.SDLK_b] = Keys.B;
+            map [SDL.SDL_Keycode.SDLK_c] = Keys.C;
+            map [SDL.SDL_Keycode.SDLK_d] = Keys.D;
+            map [SDL.SDL_Keycode.SDLK_e] = Keys.E;
+            map [SDL.SDL_Keycode.SDLK_f] = Keys.F;
+            map [SDL.SDL_Keycode.SDLK_g] = Keys.G;
+            map [SDL.SDL_Keycode.SDLK_h] = Keys.H;
+            map [SDL.SDL_Keycode.SDLK_i] = Keys.I;
+            map [SDL.SDL_Keycode.SDLK_j] = Keys.J;
+            map [SDL.SDL_Keycode.SDLK_k] = Keys.K;
+            map [SDL.SDL_Keycode.SDLK_l] = Keys.L;
+            map [SDL.SDL_Keycode.SDLK_m] = Keys.M;
+            map [SDL.SDL_Keycode.SDLK_n] = Keys.N;
+            map [SDL.SDL_Keycode.SDLK_o] = Keys.O;
+            map [SDL.SDL_Keycode.SDLK_p] = Keys.P;
+            map [SDL.SDL_Keycode.SDLK_q] = Keys.Q;
+            map [SDL.SDL_Keycode.SDLK_r] = Keys.R;
+            map [SDL.SDL_Keycode.SDLK_s] = Keys.S;
+            map [SDL.SDL_Keycode.SDLK_t] = Keys.T;
+            map [SDL.SDL_Keycode.SDLK_u] = Keys.U;
+            map [SDL.SDL_Keycode.SDLK_v] = Keys.V;
+            map [SDL.SDL_Keycode.SDLK_w] = Keys.W;
+            map [SDL.SDL_Keycode.SDLK_x] = Keys.X;
+            map [SDL.SDL_Keycode.SDLK_y] = Keys.Y;
+            map [SDL.SDL_Keycode.SDLK_z] = Keys.Z;
+            map [SDL.SDL_Keycode.SDLK_LGUI] = Keys.LeftWin;
+            map [SDL.SDL_Keycode.SDLK_RGUI] = Keys.RightWin;
+            map [SDL.SDL_Keycode.SDLK_APPLICATION] = Keys.Apps; // TODO: Verify value
+            map [SDL.SDL_Keycode.SDLK_SLEEP] = Keys.Sleep;
+            map [SDL.SDL_Keycode.SDLK_KP_0] = Keys.NumPad0;
+            map [SDL.SDL_Keycode.SDLK_KP_1] = Keys.NumPad1;
+            map [SDL.SDL_Keycode.SDLK_KP_2] = Keys.NumPad2;
+            map [SDL.SDL_Keycode.SDLK_KP_3] = Keys.NumPad3;
+            map [SDL.SDL_Keycode.SDLK_KP_4] = Keys.NumPad4;
+            map [SDL.SDL_Keycode.SDLK_KP_5] = Keys.NumPad5;
+            map [SDL.SDL_Keycode.SDLK_KP_6] = Keys.NumPad6;
+            map [SDL.SDL_Keycode.SDLK_KP_7] = Keys.NumPad7;
+            map [SDL.SDL_Keycode.SDLK_KP_8] = Keys.NumPad8;
+            map [SDL.SDL_Keycode.SDLK_KP_9] = Keys.NumPad9;
+            map [SDL.SDL_Keycode.SDLK_KP_MULTIPLY] = Keys.Multiply;
+            map [SDL.SDL_Keycode.SDLK_PLUS] = Keys.Add;
+            map [SDL.SDL_Keycode.SDLK_KP_PLUS] = Keys.Add;
+            map [SDL.SDL_Keycode.SDLK_SEPARATOR] = Keys.Separator;
+            map [SDL.SDL_Keycode.SDLK_MINUS] = Keys.Subtract;
+            map [SDL.SDL_Keycode.SDLK_KP_MINUS] = Keys.Subtract;
+            map [SDL.SDL_Keycode.SDLK_DECIMALSEPARATOR] = Keys.Decimal;
+            map [SDL.SDL_Keycode.SDLK_KP_DECIMAL] = Keys.Decimal;
+            map [SDL.SDL_Keycode.SDLK_KP_DIVIDE] = Keys.Divide;
+            map [SDL.SDL_Keycode.SDLK_F1] = Keys.F1;
+            map [SDL.SDL_Keycode.SDLK_F2] = Keys.F2;
+            map [SDL.SDL_Keycode.SDLK_F3] = Keys.F3;
+            map [SDL.SDL_Keycode.SDLK_F4] = Keys.F4;
+            map [SDL.SDL_Keycode.SDLK_F5] = Keys.F5;
+            map [SDL.SDL_Keycode.SDLK_F6] = Keys.F6;
+            map [SDL.SDL_Keycode.SDLK_F7] = Keys.F7;
+            map [SDL.SDL_Keycode.SDLK_F8] = Keys.F8;
+            map [SDL.SDL_Keycode.SDLK_F9] = Keys.F9;
+            map [SDL.SDL_Keycode.SDLK_F10] = Keys.F10;
+            map [SDL.SDL_Keycode.SDLK_F11] = Keys.F11;
+            map [SDL.SDL_Keycode.SDLK_F12] = Keys.F12;
+            map [SDL.SDL_Keycode.SDLK_F13] = Keys.F13;
+            map [SDL.SDL_Keycode.SDLK_F14] = Keys.F14;
+            map [SDL.SDL_Keycode.SDLK_F15] = Keys.F15;
+            map [SDL.SDL_Keycode.SDLK_F16] = Keys.F16;
+            map [SDL.SDL_Keycode.SDLK_F17] = Keys.F17;
+            map [SDL.SDL_Keycode.SDLK_F18] = Keys.F18;
+            map [SDL.SDL_Keycode.SDLK_F19] = Keys.F19;
+            map [SDL.SDL_Keycode.SDLK_F20] = Keys.F20;
+            map [SDL.SDL_Keycode.SDLK_F21] = Keys.F21;
+            map [SDL.SDL_Keycode.SDLK_F22] = Keys.F22;
+            map [SDL.SDL_Keycode.SDLK_F23] = Keys.F23;
+            map [SDL.SDL_Keycode.SDLK_F24] = Keys.F24;
+            map [SDL.SDL_Keycode.SDLK_NUMLOCKCLEAR] = Keys.NumLock;
+            map [SDL.SDL_Keycode.SDLK_SCROLLLOCK] = Keys.Scroll;
+            map [SDL.SDL_Keycode.SDLK_LSHIFT] = Keys.LeftShift;
+            map [SDL.SDL_Keycode.SDLK_RSHIFT] = Keys.RightShift;
+            map [SDL.SDL_Keycode.SDLK_LCTRL] = Keys.LeftCtrl;
+            map [SDL.SDL_Keycode.SDLK_RCTRL] = Keys.RightCtrl;
+            map [SDL.SDL_Keycode.SDLK_LALT] = Keys.LeftAlt;
+            map [SDL.SDL_Keycode.SDLK_RALT] = Keys.RightAlt;
+            map [SDL.SDL_Keycode.SDLK_AC_BACK] = Keys.BrowserBack;
+            map [SDL.SDL_Keycode.SDLK_AC_FORWARD] = Keys.BrowserForward;
+            map [SDL.SDL_Keycode.SDLK_AC_REFRESH] = Keys.BrowserRefresh;
+            map [SDL.SDL_Keycode.SDLK_AC_STOP] = Keys.BrowserStop;
+            map [SDL.SDL_Keycode.SDLK_AC_SEARCH] = Keys.BrowserSearch;
+            map [SDL.SDL_Keycode.SDLK_AC_BOOKMARKS] = Keys.BrowserFavorites;
+            map [SDL.SDL_Keycode.SDLK_AC_HOME] = Keys.BrowserHome;
+            map [SDL.SDL_Keycode.SDLK_AUDIOMUTE] = Keys.VolumeMute;
+            map [SDL.SDL_Keycode.SDLK_VOLUMEDOWN] = Keys.VolumeDown;
+            map [SDL.SDL_Keycode.SDLK_VOLUMEUP] = Keys.VolumeUp;
+            map [SDL.SDL_Keycode.SDLK_AUDIONEXT] = Keys.MediaNextTrack;
+            map [SDL.SDL_Keycode.SDLK_AUDIOPREV] = Keys.MediaPreviousTrack;
+            map [SDL.SDL_Keycode.SDLK_AUDIOSTOP] = Keys.MediaStop;
+            map [SDL.SDL_Keycode.SDLK_AUDIOPLAY] = Keys.MediaPlayPause;
+            map [SDL.SDL_Keycode.SDLK_MAIL] = Keys.LaunchMail;
+            map [SDL.SDL_Keycode.SDLK_MEDIASELECT] = Keys.SelectMedia;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.LaunchApplication1;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.LaunchApplication2;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Oem1;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemSemicolon;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemPlus;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemComma;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemMinus;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemPeriod;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Oem2;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemQuestion;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Oem3;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemTilde;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Oem4;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemOpenBrackets;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Oem5;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemPipe;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Oem6;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemCloseBrackets;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Oem7;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemQuotes;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Oem8;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Oem102;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemBackslash;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Attn;
+            map [SDL.SDL_Keycode.SDLK_CRSEL] = Keys.CrSel;
+            map [SDL.SDL_Keycode.SDLK_EXSEL] = Keys.ExSel;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.EraseEof;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Play;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Zoom;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.NoName;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.Pa1;
+//            map [SDL.SDL_Keycode.SDLK_UNKNOWN] = Keys.OemClear;
+            return map;
         }
     }
 }

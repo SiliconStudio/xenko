@@ -11,9 +11,15 @@
     <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorDefaultOptions)</SiliconStudioAssemblyProcessorOptions>
     <XenkoBuildTags>*</XenkoBuildTags>
   </PropertyGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
@@ -30,6 +36,7 @@
     <Compile Include="Requests\ScreenshotStored.cs" />
     <Compile Include="Requests\StatusMessageRequest.cs" />
     <Compile Include="Requests\TapSimulationRequest.cs" />
+    <Compile Include="Requests\TestAbortedRequest.cs" />
     <Compile Include="Requests\TestRequestBase.cs" />
     <Compile Include="GameTestingSystem.cs" />
     <Compile Include="Requests\TestEndedRequest.cs" />

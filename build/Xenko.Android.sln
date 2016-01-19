@@ -1,7 +1,7 @@
 
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "30-Core", "30-Core", "{2E93E2B5-4500-4E47-9B65-E705218AB578}"
 EndProject
@@ -17,6 +17,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		SiliconStudio.PostSettings.Local.targets = SiliconStudio.PostSettings.Local.targets
 		..\sources\common\targets\SiliconStudio.PostSettings.targets = ..\sources\common\targets\SiliconStudio.PostSettings.targets
 		..\sources\common\targets\SiliconStudio.PreSettings.targets = ..\sources\common\targets\SiliconStudio.PreSettings.targets
+		..\sources\common\targets\SiliconStudio.Windows.CoreCLR.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows.CoreCLR.Cpp.targets
+		..\sources\common\targets\SiliconStudio.Windows.CoreCLR.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CoreCLR.CSharp.targets
 		..\sources\common\targets\SiliconStudio.Windows.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows.Cpp.targets
 		..\sources\common\targets\SiliconStudio.Windows.CSharp.targets = ..\sources\common\targets\SiliconStudio.Windows.CSharp.targets
 		..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets = ..\sources\common\targets\SiliconStudio.Windows10.Cpp.targets
@@ -29,7 +31,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
 		Xenko.build = Xenko.build
 		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
+		Xenko.Direct3D.CoreCLR.PreSettings.Local.targets = Xenko.Direct3D.CoreCLR.PreSettings.Local.targets
 		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
+		Xenko.OpenGL.CoreCLR.PreSettings.Local.targets = Xenko.OpenGL.CoreCLR.PreSettings.Local.targets
 		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
 		Xenko.OpenGLES.PreSettings.Local.targets = Xenko.OpenGLES.PreSettings.Local.targets
 		..\sources\targets\Xenko.PostSettings.References.targets = ..\sources\targets\Xenko.PostSettings.References.targets
@@ -51,6 +55,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTa
 		..\Targets\Xenko.Android.targets = ..\Targets\Xenko.Android.targets
 		..\Targets\Xenko.iOS.targets = ..\Targets\Xenko.iOS.targets
 		..\Targets\Xenko.targets = ..\Targets\Xenko.targets
+		..\Targets\Xenko.Windows.CoreCLR.targets = ..\Targets\Xenko.Windows.CoreCLR.targets
 		..\Targets\Xenko.Windows.targets = ..\Targets\Xenko.Windows.targets
 		..\Targets\Xenko.Windows10.targets = ..\Targets\Xenko.Windows10.targets
 		..\Targets\Xenko.WindowsPhone.targets = ..\Targets\Xenko.WindowsPhone.targets
@@ -118,6 +123,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.11_0.Android", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.11_0\SiliconStudio.Xenko.Graphics.Tests.11_0.Android.csproj", "{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Games.Testing", "..\sources\engine\SiliconStudio.Xenko.Games.Testing\SiliconStudio.Xenko.Games.Testing.csproj", "{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Native", "..\sources\engine\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj", "{1DBBC150-F085-43EF-B41D-27C72D133770}"
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -439,6 +446,18 @@ Global
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Testing|Android.ActiveCfg = Release|Android
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Testing|Android.Build.0 = Release|Android
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9}.Testing|Android.Deploy.0 = Release|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|Android.ActiveCfg = Release|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|Android.Build.0 = Release|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.AppStore|Android.Deploy.0 = Release|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|Android.ActiveCfg = Debug|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|Android.Build.0 = Debug|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Debug|Android.Deploy.0 = Debug|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Release|Android.ActiveCfg = Release|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Release|Android.Build.0 = Release|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Release|Android.Deploy.0 = Release|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|Android.ActiveCfg = Release|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|Android.Build.0 = Release|Android
+		{1DBBC150-F085-43EF-B41D-27C72D133770}.Testing|Android.Deploy.0 = Release|Android
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -470,5 +489,6 @@ Global
 		{570B0FF9-246F-4C6C-8384-F6BE1887A4A9} = {4C142567-C42B-40F5-B092-798882190209}
 		{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7} = {4C142567-C42B-40F5-B092-798882190209}
 		{B84ECB15-5E3F-4BD1-AB87-333BAE9B70F9} = {4C142567-C42B-40F5-B092-798882190209}
+		{1DBBC150-F085-43EF-B41D-27C72D133770} = {4C142567-C42B-40F5-B092-798882190209}
 	EndGlobalSection
 EndGlobal

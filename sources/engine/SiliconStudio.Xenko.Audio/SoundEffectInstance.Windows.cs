@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS
+#if SILICONSTUDIO_PLATFORM_WINDOWS && !SILICONSTUDIO_XENKO_SOUND_SDL
 
 using System;
 
@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.Audio
         internal SourceVoice SourceVoice;
 
         internal void CreateVoice(WaveFormat format)
-        {   
+        {
             SourceVoice = new SourceVoice(AudioEngine.XAudio2, format.ToSharpDX(), VoiceFlags.None, 2f, true); // '2f' -> allow to modify pitch up to one octave, 'true' -> enable callback
             SourceVoice.StreamEnd += Stop;
         }

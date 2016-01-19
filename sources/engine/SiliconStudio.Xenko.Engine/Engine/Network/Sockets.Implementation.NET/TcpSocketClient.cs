@@ -60,7 +60,7 @@ namespace Sockets.Plugin
             if (secure)
             {
                 var secureStream = new SslStream(_writeStream, true, (sender, cert, chain, sslPolicy) => ServerValidationCallback(sender, cert, chain, sslPolicy));
-                secureStream.AuthenticateAsClient(address, null, System.Security.Authentication.SslProtocols.Tls, false);
+                await secureStream.AuthenticateAsClientAsync(address, null, System.Security.Authentication.SslProtocols.Tls, false);
                 _secureStream = secureStream;
             }            
         }
@@ -96,7 +96,12 @@ namespace Sockets.Plugin
         public Task DisconnectAsync()
         {
             return Task.Run(() => {
+#if !SILICONSTUDIO_RUNTIME_CORECLR
+                    // As long as we target .NET 4.5 we cannot use `Dispose'.
                 _backingTcpClient.Close();
+#else
+                _backingTcpClient.Dispose();
+#endif
                 _secureStream = null;
             });
         }
@@ -171,7 +176,13 @@ namespace Sockets.Plugin
 
         private void InitializeWriteStream()
         {
+#if !SILICONSTUDIO_RUNTIME_CORECLR
             _writeStream = _bufferSize != 0 ? (Stream)new BufferedStream(_backingTcpClient.GetStream(), _bufferSize) : _backingTcpClient.GetStream();
+#else
+                // Note that BufferedStream is planned for a future release of CoreFX, so once this 
+                // is available we can remove the #if.
+            _writeStream = _backingTcpClient.GetStream();
+#endif
         }
 
         private void Dispose(bool disposing)

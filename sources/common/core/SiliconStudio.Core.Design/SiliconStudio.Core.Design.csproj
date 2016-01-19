@@ -15,10 +15,14 @@
     <TargetFrameworkVersion>$(TargetFrameworkVersionToolLow)</TargetFrameworkVersion>
     <XenkoBuildTags>WindowsTools</XenkoBuildTags>
   </PropertyGroup>
-  <ItemGroup Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-  </ItemGroup>
+  <Choose>
+    <When Condition=" '$(AutoIncludeSystemAssembly)' != 'true'">
+      <ItemGroup>
+        <Reference Include="System" />
+        <Reference Include="System.Core" />
+      </ItemGroup>
+    </When>
+  </Choose>
   <!-- Include platform dependent assembly when specified -->
   <Choose>
     <When Condition="'$(SiliconStudioPlatform)' == 'WindowsStore' or '$(SiliconStudioPlatform)' == 'WindowsPhone' or '$(SiliconStudioPlatform)' == 'Windows10'">
@@ -65,6 +69,7 @@
     <Compile Include="Reflection\IAttributeRegistry.cs" />
     <Compile Include="Reflection\IDataCustomVisitor.cs" />
     <Compile Include="Reflection\IDataVisitor.cs" />
+    <Compile Include="Reflection\IdentifiableHelper.cs" />
     <Compile Include="Reflection\IMemberDescriptor.cs" />
     <Compile Include="Reflection\ITypeDescriptor.cs" />
     <Compile Include="Reflection\ITypeDescriptorFactory.cs" />

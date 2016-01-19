@@ -2,10 +2,9 @@
 Id: 016f522f-7283-4bd5-a8b1-03056f2c80bd
 Tags: []
 Source: 5875a604-ea72-4efb-8d1b-dcdbf2f324b5:StaticFonts/Arial13
-FontDataFile: ../../../../data/tests/PrecompileFonts/Aria13l.xkimg
+FontDataFile: ../../../../data/tests/PrecompileFonts/Arial13 (Precompiled).png
 BaseOffset: 16.2584648
 DefaultLineSpacing: 19.93164
-FontName: 
 Glyphs:
     -   BitmapIndex: 0
         Character: 32
@@ -487,5 +486,6 @@ Glyphs:
         Offset: {X: 1.0, Y: -11.0}
         Subrect: {X: 111, Y: 85, Width: 10, Height: 11}
         XAdvance: 13.0
-Kernings: null
+Kernings: []
+FontName: Arial
 Size: 13.0

@@ -103,13 +103,23 @@
         <Reference Include="SiliconStudio.Xenko.SpriteStudio.Runtime">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll</HintPath>
         </Reference>
-        <Reference Condition="'$(SiliconStudioAutoTesting)' == 'true'" Include="SiliconStudio.Xenko.Games.Testing">
-          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.Testing.dll</HintPath>
+        <Reference Include="SiliconStudio.Xenko.Native">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Native.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
   </Choose>
 
+  <Choose>
+    <When Condition="'$(SiliconStudioAutoTesting)' == 'true'">
+      <ItemGroup>
+        <Reference Include="SiliconStudio.Xenko.Games.Testing">
+          <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.Testing.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  
   <!-- 
   *****************************************************************************************************************************
   Platform specific
@@ -124,7 +134,8 @@
   <!-- Include platform specific targets -->
   <Import Condition="Exists('$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).targets')"
           Project="$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).targets"/>
-  
+  <Import Condition="Exists('$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).$(SiliconStudioRuntime).targets')"
+          Project="$(MSBuildThisFileDirectory)\$(MSBuildThisFileName).$(SiliconStudioPlatform).$(SiliconStudioRuntime).targets"/>
   <!-- 
   *****************************************************************************************************************************
   Assembly Processor
@@ -140,6 +151,7 @@
       <!-- Physics and SpriteStudio assembly is actually hard coded/referenced here, remove once a better system is in place! -->
       <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Physics.dll"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.SpriteStudio.Runtime.dll"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Native.dll"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAutoTesting)' == 'true'">$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.Testing.dll"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)"</SiliconStudioAssemblyProcessorCommand>

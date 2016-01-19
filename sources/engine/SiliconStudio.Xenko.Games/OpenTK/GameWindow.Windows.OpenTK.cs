@@ -1,11 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && (SILICONSTUDIO_XENKO_UI_WINFORMS || SILICONSTUDIO_XENKO_UI_WPF)
-using System;
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
 using System.Diagnostics;
-using System.Threading;
-using System.Windows.Forms;
-
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
@@ -89,7 +85,8 @@ namespace SiliconStudio.Xenko.Games
                 height = gameForm.Height;
             }
 
-            gameForm.ClientSize = new System.Drawing.Size(width, height);
+            // Update gameForm.ClientSize with (width, height)
+            Resize(width, height);
 
             gameForm.MouseEnter += GameWindowForm_MouseEnter;
             gameForm.MouseLeave += GameWindowForm_MouseLeave;
@@ -140,7 +137,7 @@ namespace SiliconStudio.Xenko.Games
         {
             if (!isMouseVisible && !isMouseCurrentlyHidden)
             {
-                Cursor.Hide();
+                gameForm.CursorVisible = false;
                 isMouseCurrentlyHidden = true;
             }
         }
@@ -149,7 +146,7 @@ namespace SiliconStudio.Xenko.Games
         {
             if (isMouseCurrentlyHidden)
             {
-                Cursor.Show();
+                gameForm.CursorVisible = true;
                 isMouseCurrentlyHidden = false;
             }
         }
@@ -169,13 +166,13 @@ namespace SiliconStudio.Xenko.Games
                     {
                         if (isMouseCurrentlyHidden)
                         {
-                            Cursor.Show();
+                            gameForm.CursorVisible = true;
                             isMouseCurrentlyHidden = false;
                         }
                     }
                     else if (!isMouseCurrentlyHidden)
                     {
-                        Cursor.Hide();
+                        gameForm.CursorVisible = false;
                         isMouseCurrentlyHidden = true;
                     }
                 }
@@ -205,7 +202,13 @@ namespace SiliconStudio.Xenko.Games
 
         internal override void Resize(int width, int height)
         {
-            gameForm.ClientSize = new System.Drawing.Size(width, height);
+            // Unfortunately on OpenTK, depending on how you compile it, it may use System.Drawing.Size or
+            // OpenTK.Size. To avoid having to put the exact type, we will use C# inference to guess the right
+            // type at compile time which will depend on the OpenTK.dll used to compile this code.
+            var size = gameForm.ClientSize;
+            size.Width = width;
+            size.Height = height;
+            gameForm.ClientSize = size;
         }
 
         public override bool IsBorderLess

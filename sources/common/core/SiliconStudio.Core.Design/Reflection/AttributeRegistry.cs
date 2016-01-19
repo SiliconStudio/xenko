@@ -14,7 +14,7 @@ namespace SiliconStudio.Core.Reflection
     /// </summary>
     public class AttributeRegistry : IAttributeRegistry
     {
-        private readonly Dictionary<MemberInfoKey, IReadOnlyCollection<Attribute>> cachedAttributes = new Dictionary<MemberInfoKey, IReadOnlyCollection<Attribute>>();
+        private readonly Dictionary<MemberInfoKey, List<Attribute>> cachedAttributes = new Dictionary<MemberInfoKey, List<Attribute>>();
         private readonly Dictionary<MemberInfo, List<Attribute>> registeredAttributes = new Dictionary<MemberInfo, List<Attribute>>();
 
         /// <summary>
@@ -23,12 +23,12 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="memberInfo">The reflection member.</param>
         /// <param name="inherit">if set to <c>true</c> includes inherited attributes.</param>
         /// <returns>An enumeration of <see cref="Attribute"/>.</returns>
-        public virtual IReadOnlyCollection<Attribute> GetAttributes(MemberInfo memberInfo, bool inherit = true)
+        public virtual List<Attribute> GetAttributes(MemberInfo memberInfo, bool inherit = true)
         {
             var key = new MemberInfoKey(memberInfo, inherit);
 
             // Use a cache of attributes
-            IReadOnlyCollection<Attribute> attributes;
+            List<Attribute> attributes;
             lock (cachedAttributes)
             {
                 if (cachedAttributes.TryGetValue(key, out attributes))
@@ -47,7 +47,7 @@ namespace SiliconStudio.Core.Reflection
                     attributesToCache.AddRange(registered);
                 }
 
-                attributes = attributesToCache.AsReadOnly();
+                attributes = attributesToCache;
 
                 // Add to the cache
                 cachedAttributes.Add(key, attributes);

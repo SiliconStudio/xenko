@@ -6,6 +6,8 @@ using System;
 using SiliconStudio.Xenko.Graphics.SDL;
 using SiliconStudio.Core.Mathematics;
 using SDL2;
+using System.Reflection;
+using System.Linq;
 
 namespace SiliconStudio.Xenko.Games
 {
@@ -13,13 +15,13 @@ namespace SiliconStudio.Xenko.Games
     /// <summary>
     /// Default Rendering Form on SDL based applications.
     /// </summary>
-    public class GameFormSdl : Window
+    public class GameFormSDL : Window
     {
 #region Initialization
         /// <summary>
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
-        public GameFormSdl() : this("Xenko Game")
+        public GameFormSDL() : this(GameContext.ProductName)
         {
         }
 
@@ -27,7 +29,7 @@ namespace SiliconStudio.Xenko.Games
         /// Initializes a new instance of the <see cref="GameForm"/> class.
         /// </summary>
         /// <param name="text">The text.</param>
-        public GameFormSdl(String text) : base(text)
+        public GameFormSDL(string text) : base(text)
         {
             Size = new Size2(800, 600);
             ResizeBeginActions += GameForm_ResizeBeginActions;
@@ -76,7 +78,6 @@ namespace SiliconStudio.Xenko.Games
         private FormWindowState previousWindowState;
         //private DisplayMonitor monitor;
         private bool isUserResizing;
-        private bool isSizeChangedWithoutResizeBegin;
         private bool isActive;
 
         private void GameForm_MinimizedActions(SDL.SDL_WindowEvent e)
@@ -100,21 +101,9 @@ namespace SiliconStudio.Xenko.Games
         private void GameForm_RestoredActions(SDL.SDL_WindowEvent e)
         {
             if (previousWindowState == FormWindowState.Minimized)
-                ResumeRendering?.Invoke(this, EventArgs.Empty);
-
-            var newSize = Size;
-
-            if (!isUserResizing && (!newSize.Equals(cachedSize) || previousWindowState == FormWindowState.Maximized))
             {
-                previousWindowState = FormWindowState.Normal;
-
-                // Only update when cachedSize is != 0
-                if (cachedSize != Size2.Empty)
-                {
-                    isSizeChangedWithoutResizeBegin = true;
-                }
+                ResumeRendering?.Invoke(this, EventArgs.Empty);
             }
-
             previousWindowState = FormWindowState.Normal;
         }
 

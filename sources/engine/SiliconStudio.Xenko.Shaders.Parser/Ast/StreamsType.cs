@@ -155,7 +155,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Ast
         /// <returns></returns>
         public static StreamsType Parse(string name)
         {
-            return AllTypes.FirstOrDefault(textureType => System.String.Compare(name, textureType.Name.Text, true, CultureInfo.InvariantCulture) == 0);
+            return AllTypes.FirstOrDefault(textureType => CultureInfo.InvariantCulture.CompareInfo.Compare(name, textureType.Name.Text, CompareOptions.None) == 0);
         }
     }
 }

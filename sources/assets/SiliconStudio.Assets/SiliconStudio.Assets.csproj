@@ -60,10 +60,12 @@
     <Compile Include="Analysis\ContentLinkType.cs" />
     <Compile Include="Analysis\PackageAnalysis.cs" />
     <Compile Include="Analysis\PackageAnalysisParameters.cs" />
+    <Compile Include="Analysis\PackageAssetTemplatingAnalysis.cs" />
     <Compile Include="Analysis\PackageSessionAnalysisBase.cs" />
     <Compile Include="AssetCloner.cs" />
     <Compile Include="Analysis\AssetCollision.cs" />
     <Compile Include="AssetClonerFlags.cs" />
+    <Compile Include="AssetComposite.cs" />
     <Compile Include="AssetImport.cs" />
     <Compile Include="AssetImporterParameters.cs" />
     <Compile Include="AssetImportExtensions.cs" />
@@ -106,7 +108,6 @@
     <Compile Include="Diff\DiffMemberAttribute.cs" />
     <Compile Include="Diff\IDiffKey.cs" />
     <Compile Include="Diff\IDiffProxy.cs" />
-    <Compile Include="Diff\IDiffResolver.cs" />
     <Compile Include="DirectoryHelper.cs" />
     <Compile Include="EmptyAssetUpgrader.cs" />
     <Compile Include="FileVersionManager.cs" />
@@ -122,7 +123,7 @@
     <Compile Include="Compiler\FailedCommand.cs" />
     <Compile Include="Diff\MergeResult.cs" />
     <Compile Include="IAssetCompileTimeDependencies.cs" />
-    <Compile Include="IAssetPartContainer.cs" />
+    <Compile Include="IAssetComposite.cs" />
     <Compile Include="IAssetUpgrader.cs" />
     <Compile Include="IDirtyable.cs" />
     <Compile Include="IFileSynchronizable.cs" />

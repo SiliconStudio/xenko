@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
         {
             Game.InitializeAssetDatabase();
 
-            defaultEngine = new AudioEngine();
+            defaultEngine = AudioEngineFactory.NewAudioEngine();
 
             validWavStream = AssetManager.FileProvider.OpenStream("EffectBip", VirtualFileMode.Open, VirtualFileAccess.Read);
         }
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Audio.Tests
 
             ///////////////////////////////////////////////////////////////////////////////////////////////////////
             // 2. Check that the load function throws "ObjectDisposedException" when the audio engine is disposed.
-            var disposedEngine = new AudioEngine();
+            var disposedEngine = AudioEngineFactory.NewAudioEngine();
             disposedEngine.Dispose();
             validWavStream.Seek(0, SeekOrigin.Begin);
             Assert.Throws<ObjectDisposedException>(() => SoundEffect.Load(disposedEngine, validWavStream), "SoundEffect.Load did not throw 'ObjectDisposedException' when called with a displosed audio engine.");

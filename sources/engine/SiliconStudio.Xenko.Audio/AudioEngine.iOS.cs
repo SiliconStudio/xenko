@@ -9,12 +9,12 @@ using Foundation;
 
 namespace SiliconStudio.Xenko.Audio
 {
-    public partial class AudioEngine
+    public class AudioEngineiOS: AudioEngine
     {
         private AVAudioPlayer audioPlayer;
         private bool currentMusicDataTypeIsUnsupported;
 
-        private void AudioEngineImpl(AudioDevice device)
+        internal override void InitializeAudioEngine(AudioDevice device)
         {
             if (nbOfAudioEngineInstances == 0)
                 ActivateAudioSession();
@@ -60,25 +60,25 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void DestroyImpl()
+        internal override void DestroyAudioEngine()
         {
             ResetMusicPlayer();
         }
 
-        private void LoadNewMusic(SoundMusic lastPlayRequestMusicInstance)
+        internal override void LoadMusic(SoundMusic music)
         {
             if(audioPlayer != null)
                 throw new AudioSystemInternalException("Tried to create a new AudioPlayer but the current instance was not freed.");
 
-            currentMusic = lastPlayRequestMusicInstance;
+            CurrentMusic = music;
 
             currentMusicDataTypeIsUnsupported = false;
 
             NSError loadError;
 
-            // TODO: Avoid allocating twice the music size (i.e. by using NSData.FromBytesNoCopy on currentMusic.Stream.GetBuffer())
-            currentMusic.Stream.Position = 0;
-            audioPlayer = AVAudioPlayer.FromData(NSData.FromStream(currentMusic.Stream), out loadError);
+            // TODO: Avoid allocating twice the music size (i.e. by using NSData.FromBytesNoCopy on CurrentMusic.Stream.GetBuffer())
+            CurrentMusic.Stream.Position = 0;
+            audioPlayer = AVAudioPlayer.FromData(NSData.FromStream(CurrentMusic.Stream), out loadError);
 
             if (loadError != null)
             {
@@ -100,8 +100,8 @@ namespace SiliconStudio.Xenko.Audio
             if (!audioPlayer.PrepareToPlay())
             {
                 // this happens sometimes when we put the application on background when starting to play.
-                var currentMusicName = currentMusic.Name;
-                currentMusic.SetStateToStopped();
+                var currentMusicName = CurrentMusic.Name;
+                CurrentMusic.SetStateToStopped();
                 ResetMusicPlayer();
 
                 Logger.Warning("The music '{0}' failed to prepare to play.", currentMusicName);
@@ -126,18 +126,14 @@ namespace SiliconStudio.Xenko.Audio
             musicMediaEvents.Enqueue(new SoundMusicEventNotification(SoundMusicEvent.ErrorOccurred, e));
         }
 
-        private void ResetMusicPlayer()
+        internal override void ResetMusicPlayer()
         {
-            currentMusic = null;
-
-            if (audioPlayer != null)
-            {
-                audioPlayer.Dispose();
-                audioPlayer = null;
-            }
+            base.ResetMusicPlayer();
+            audioPlayer?.Dispose();
+            audioPlayer = null;
         }
 
-        private void StopCurrentMusic()
+        internal override void StopMusic()
         {
             if(audioPlayer == null)
                 return;
@@ -146,7 +142,7 @@ namespace SiliconStudio.Xenko.Audio
             audioPlayer.CurrentTime = 0;
         }
 
-        private void PauseCurrentMusic()
+        internal override void PauseMusic()
         {
             if (audioPlayer == null)
                 return;
@@ -154,15 +150,15 @@ namespace SiliconStudio.Xenko.Audio
             audioPlayer.Pause();
         }
 
-        private void UpdateMusicVolume()
+        internal override void UpdateMusicVolume()
         {
             if (audioPlayer == null)
                 return;
 
-            audioPlayer.Volume = currentMusic.Volume;
+            audioPlayer.Volume = CurrentMusic.Volume;
         }
 
-        private void StartCurrentMusic()
+        internal override void StartMusic()
         {
             if (audioPlayer == null)
                 return;
@@ -170,26 +166,21 @@ namespace SiliconStudio.Xenko.Audio
             if (!audioPlayer.Play())
             {
                 // this happens sometimes when we put the application on background when starting to play.
-                var currentMusicName = currentMusic.Name;
-                currentMusic.SetStateToStopped();
+                var currentMusicName = CurrentMusic.Name;
+                CurrentMusic.SetStateToStopped();
                 ResetMusicPlayer();
 
                 Logger.Warning("The music '{0}' failed to start playing.", currentMusicName);
             }
         }
 
-        private void RestartCurrentMusic()
+        internal override void RestartMusic()
         {
-            StopCurrentMusic();
-            StartCurrentMusic();
+            StopMusic();
+            StartMusic();
         }
 
-        private void PlatformSpecificProcessMusicReady()
-        {
-            // nothing to do here.
-        }
-
-        private void ProcessMusicError(SoundMusicEventNotification eventNotification)
+        internal override void ProcessMusicError(SoundMusicEventNotification eventNotification)
         {
             if (eventNotification.Event == SoundMusicEvent.ErrorOccurred)
             {
@@ -198,7 +189,7 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessMusicMetaData()
+        internal override void ProcessMusicMetaData()
         {
             var errorMsg = "Try to play a music with other format than PCM or MP3.";
             var errorInFormat = currentMusicDataTypeIsUnsupported;
@@ -220,17 +211,19 @@ namespace SiliconStudio.Xenko.Audio
             }
         }
 
-        private void ProcessPlayerClosed()
+        internal override void ProcessPlayerClosed()
         {
             throw new AudioSystemInternalException("Should never arrive here. (Used only by windows implementation.");
         }
 
-        private void PauseAudioPlatformSpecific()
+        /// <inheritDoc/>
+        internal override void PauseAudioImpl()
         {
             // todo: Should we Inactivate the audio session here?
         }
 
-        private void ResumeAudioPlatformSpecific()
+        /// <inheritDoc/>
+        internal override void ResumeAudioImpl()
         {
             ActivateAudioSession();
         }

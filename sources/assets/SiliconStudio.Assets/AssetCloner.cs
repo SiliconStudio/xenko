@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.IO;
 
@@ -20,7 +21,7 @@ namespace SiliconStudio.Assets
         private readonly object streamOrValueType;
 
         private readonly List<object> invariantObjects;
-        private readonly Dictionary<object, int> objectReferences;
+        private readonly object[] objectReferences;
 
         public static SerializerSelector ClonerSelector { get; internal set; }
         public static PropertyKey<List<object>> InvariantObjectListProperty = new PropertyKey<List<object>>("InvariantObjectList", typeof(AssetCloner));
@@ -39,6 +40,7 @@ namespace SiliconStudio.Assets
         {
             this.flags = flags;
             invariantObjects = null;
+            objectReferences = null;
 
             // Clone only if value is not a value type
             if (value != null && !value.GetType().IsValueType)
@@ -58,14 +60,21 @@ namespace SiliconStudio.Assets
                 writer.Flush();
 
                 // Retrieve back object references
-                objectReferences = writer.Context.Get(MemberSerializer.ObjectSerializeReferences);
+                var objectRefs = writer.Context.Get(MemberSerializer.ObjectSerializeReferences);
+                if (objectRefs != null)
+                {
+                    objectReferences = new object[objectRefs.Count];
+                    foreach (var objRef in objectRefs)
+                    {
+                        objectReferences[objRef.Value] = objRef.Key;
+                    }
+                }
 
                 streamOrValueType = stream;
             }
             else
             {
                 streamOrValueType = value;
-                objectReferences = null;
             }
         }
 
@@ -86,33 +95,26 @@ namespace SiliconStudio.Assets
                     : ContentSerializerContext.AttachedReferenceSerialization.AsSerializableVersion;
                 reader.Context.Set(InvariantObjectListProperty, invariantObjects);
                 reader.Context.Set(ContentSerializerContext.SerializeAttachedReferenceProperty, refFlag);
+                reader.Context.Set(MemberSerializer.ObjectDeserializeCallback, OnObjectDeserialized);
                 object newObject = null;
                 reader.SerializeExtended(ref newObject, ArchiveMode.Deserialize);
-
-                // If there are any references, we would like to copy all dynamic properties from ShadowObject to the new instances
-                if (objectReferences != null)
-                {
-                    var newObjectReferences = reader.Context.Get(MemberSerializer.ObjectDeserializeReferences);
-                    foreach (var objRef in objectReferences)
-                    {
-                        var innerObject = objRef.Key;
-                        var newInnerObject = newObjectReferences[objRef.Value];
-                        // Copy only when objects are non-null
-                        if (innerObject != null && newInnerObject != null)
-                        {
-                            ShadowObject.CopyDynamicProperties(innerObject, newInnerObject);
-                            if ((flags & AssetClonerFlags.RemoveOverrides) != 0)
-                            {
-                                Override.RemoveFrom(newInnerObject);
-                            }
-                        }
-                    }
-                }
-
                 return newObject;
             }
             // Else this is a value type, so it is cloned automatically
             return streamOrValueType;
+        }
+
+        private void OnObjectDeserialized(int i, object newObject)
+        {
+            if (objectReferences != null && newObject != null)
+            {
+                var previousObject = objectReferences[i];
+                ShadowObject.CopyDynamicProperties(previousObject, newObject);
+                if ((flags & AssetClonerFlags.RemoveOverrides) != 0)
+                {
+                    Override.RemoveFrom(newObject);
+                }
+            }
         }
 
         /// <summary>

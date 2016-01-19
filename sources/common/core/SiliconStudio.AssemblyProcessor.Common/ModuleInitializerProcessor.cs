@@ -57,10 +57,6 @@ namespace SiliconStudio.AssemblyProcessor
 
         public static MethodDefinition OpenModuleConstructor(AssemblyDefinition assembly, out Instruction returnInstruction)
         {
-            var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(assembly);
-            if (mscorlibAssembly == null)
-                throw new InvalidOperationException("Missing mscorlib.dll from assembly");
-
             // Get or create module static constructor
             var voidType = assembly.MainModule.TypeSystem.Void;
             var moduleClass = assembly.MainModule.Types.First(t => t.Name == "<Module>");
@@ -68,7 +64,7 @@ namespace SiliconStudio.AssemblyProcessor
             if (staticConstructor == null)
             {
                 staticConstructor = new MethodDefinition(".cctor",
-                                                            MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
+                                                            MethodAttributes.Private | MethodAttributes.HideBySig | MethodAttributes.Static | MethodAttributes.SpecialName | MethodAttributes.RTSpecialName,
                                                             voidType);
                 staticConstructor.Body.GetILProcessor().Append(Instruction.Create(OpCodes.Ret));
 
