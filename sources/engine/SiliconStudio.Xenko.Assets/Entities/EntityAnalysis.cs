@@ -78,22 +78,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                         }
                     }
                 }
-                else if (entityLink.EntityScript != null)
-                {
-                    var containingEntity = entityLink.EntityScript.Entity;
-                    if (containingEntity == null)
-                    {
-                        throw new InvalidOperationException("Found a reference to a script which doesn't have any entity");
-                    }
-
-                    EntityDesign realEntity;
-                    if (entityHierarchy.Entities.TryGetValue(containingEntity.Id, out realEntity))
-                    {
-                        obj = realEntity.Entity.Components.OfType<ScriptComponent>().SelectMany(t => t.Scripts).FirstOrDefault(x => x.Id == entityLink.EntityScript.Id);
-                        if (obj == entityLink.EntityScript)
-                            continue;
-                    }
-                }
                 else
                 {
                     EntityDesign realEntity;
@@ -209,11 +193,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     if (settings != null)
                         currentReferencer = settings;
                 }
-                if (scriptComponentDepth != 2 && obj is Script)
-                {
-                    Result.EntityReferences.Add(new EntityLink(currentReferencer, (Script)obj, CurrentPath.Clone()));
-                    processObject = false;
-                }
 
                 if (obj is EntityComponent || obj is SceneSettings)
                     componentDepth++;
@@ -235,9 +214,6 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 if (obj is EntityComponent)
                     return true;
 
-                if (obj is Script)
-                    return true;
-
                 if (obj is SceneSettings)
                     return true;
 
@@ -250,14 +226,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
             public readonly ComponentBase Referencer;
             public readonly Entity Entity;
             public readonly EntityComponent EntityComponent;
-            public readonly Script EntityScript;
             public readonly MemberPath Path;
 
             public EntityLink(ComponentBase referencer, Entity entity, MemberPath path)
             {
                 Referencer = referencer;
                 Entity = entity;
-                EntityScript = null;
                 EntityComponent = null;
                 Path = path;
             }
@@ -266,17 +240,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
             {
                 Referencer = referencer;
                 Entity = null;
-                EntityScript = null;
                 EntityComponent = entityComponent;
-                Path = path;
-            }
-
-            public EntityLink(ComponentBase referencer, Script script, MemberPath path)
-            {
-                Referencer = referencer;
-                Entity = null;
-                EntityScript = script;
-                EntityComponent = null;
                 Path = path;
             }
         }

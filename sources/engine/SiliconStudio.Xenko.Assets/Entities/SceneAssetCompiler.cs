@@ -50,15 +50,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     result.Warning(string.Format("The entity [{0}:{1}] has a sprite component that does not reference any sprite group.", urlInStorage, entityData.Entity.Name));
                 }
-                if (scriptComponent != null)
+                if (scriptComponent is UnloadableScript)
                 {
-                    foreach (var script in scriptComponent.Scripts)
-                    {
-                        if (script is UnloadableScript)
-                        {
-                            result.Error(string.Format("The entity [{0}:{1}] reference an invalid script '{2}'.", urlInStorage, entityData.Entity.Name, script.GetType().Name));
-                        }
-                    }
+                    result.Error(string.Format("The entity [{0}:{1}] reference an invalid script '{2}'.", urlInStorage, entityData.Entity.Name, scriptComponent.GetType().Name));
                 }
             }
 
