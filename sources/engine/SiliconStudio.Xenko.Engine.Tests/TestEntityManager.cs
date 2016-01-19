@@ -302,7 +302,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             entity.Components.RemoveAt(0);
 
             // The link is not updated, but it is ok, as it is an associated data that is no longer part of the processor
-            Assert.AreEqual(newTransform, customComponent.Link);
+            Assert.AreEqual(null, customComponent.Link);
             Assert.AreEqual(0, customProcessor.CurrentComponentDatas.Count);
         }
 
@@ -345,6 +345,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(2, entityManager.Count);
             Assert.AreEqual(1, transformProcessor.TransformationRoots.Count);
             Assert.True(transformProcessor.TransformationRoots.Contains(entity.Transform));
+
+            // ================================================================
+            // 3) Remove top level entity
+            // ================================================================
+            entityManager.Remove(entity);
+
+            Assert.AreEqual(0, entityManager.Count);
+            Assert.AreEqual(0, transformProcessor.TransformationRoots.Count);
         }
 
         public static void Main()
@@ -470,6 +478,12 @@ namespace SiliconStudio.Xenko.Engine.Tests
         {
             component.Link = entity.Transform;
             return component;
+        }
+
+        protected override void OnEntityComponentRemoved(Entity entity, CustomEntityComponentWithDependency component, CustomEntityComponentWithDependency data)
+        {
+            base.OnEntityComponentRemoved(entity, component, data);
+            component.Link = null;
         }
     }
 }
