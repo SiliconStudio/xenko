@@ -52,6 +52,30 @@ namespace SiliconStudio.Core.Storage
             this.hash4 = hash4;
         }
 
+        public static ObjectId Combine(ObjectId left, ObjectId right)
+        {
+            // Note: we don't carry (probably not worth the performance hit)
+            return new ObjectId
+            {
+                hash1 = left.hash1 * 3 + right.hash1,
+                hash2 = left.hash2 * 3 + right.hash2,
+                hash3 = left.hash3 * 3 + right.hash3,
+                hash4 = left.hash4 * 3 + right.hash4,
+            };
+        }
+
+        public static void Combine(ref ObjectId left, ref ObjectId right, out ObjectId result)
+        {
+            // Note: we don't carry (probably not worth the performance hit)
+            result = new ObjectId
+            {
+                hash1 = left.hash1 * 3 + right.hash1,
+                hash2 = left.hash2 * 3 + right.hash2,
+                hash3 = left.hash3 * 3 + right.hash3,
+                hash4 = left.hash4 * 3 + right.hash4,
+            };
+        }
+
         /// <summary>
         /// Performs an explicit conversion from <see cref="ObjectId"/> to <see cref="byte[]"/>.
         /// </summary>
