@@ -36,6 +36,23 @@ namespace SiliconStudio.Xenko.Animations
     [InlineProperty]
     public abstract class ComputeBinaryCurve<T> : IComputeCurve<T> where T : struct
     {
+        private bool hasChanged = true;
+        private BinaryCurveOperator operatorMethod = BinaryCurveOperator.Add;
+        private IComputeCurve<T> leftChild;
+        private IComputeCurve<T> rightChild;
+
+        /// <inheritdoc/>
+        public bool UpdateChanges()
+        {
+            if (hasChanged)
+            {
+                hasChanged = false;
+                return true;
+            }
+
+            return (leftChild?.UpdateChanges() ?? false) || (rightChild?.UpdateChanges() ?? false);
+        }
+
         /// <inheritdoc/>
         public T SampleAt(float location)
         {
@@ -65,7 +82,15 @@ namespace SiliconStudio.Xenko.Animations
         /// </userdoc>
         [DataMember(10)]
         [InlineProperty]
-        public BinaryCurveOperator Operator { get; set; } = BinaryCurveOperator.Add;
+        public BinaryCurveOperator Operator
+        {
+            get { return operatorMethod; }
+            set
+            {
+                operatorMethod = value;
+                hasChanged = true;
+            }
+        }
 
         /// <summary>
         /// The left child node
@@ -75,7 +100,15 @@ namespace SiliconStudio.Xenko.Animations
         /// </userdoc>
         [DataMember(20)]
         [Display("Left")]
-        public IComputeCurve<T> LeftChild { get; set; }
+        public IComputeCurve<T> LeftChild
+        {
+            get { return leftChild; }
+            set
+            {
+                leftChild = value;
+                hasChanged = true;
+            }
+        }
 
         /// <summary>
         /// The right child node
@@ -85,7 +118,15 @@ namespace SiliconStudio.Xenko.Animations
         /// </userdoc>
         [DataMember(30)]
         [Display("Right")]
-        public IComputeCurve<T> RightChild { get; set; }
+        public IComputeCurve<T> RightChild
+        {
+            get { return rightChild; }
+            set
+            {
+                rightChild = value;
+                hasChanged = true;
+            }
+        }
 
         /// <summary>
         /// Adds the left value to the right value and retuns their sum
