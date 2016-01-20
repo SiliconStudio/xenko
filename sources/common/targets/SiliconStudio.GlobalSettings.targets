@@ -79,7 +79,16 @@
     <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-win10\</NUnitLiteBinDir>
   </PropertyGroup>
-  
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Linux' ">
+    <!-- Limited version used by tools but that doesn't require installation of .NET on most computers (4.5.1 is default of many OS, 4.5.2/4.6 isn't) -->
+    <TargetFrameworkVersionToolLow>v4.5.1</TargetFrameworkVersionToolLow>
+    <TargetFrameworkVersionTool>v4.5.2</TargetFrameworkVersionTool>
+    <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_LINUX;NET45</SiliconStudioPlatformDefines>
+    <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
     <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID;NET45</SiliconStudioPlatformDefines>
