@@ -364,7 +364,7 @@ namespace SiliconStudio.Xenko.Graphics
             return ParameterKeys.FindByName(name) ?? (binding.Count > 1 ? (ParameterKey)ParameterKeys.New<T[]>(name) : ParameterKeys.New<T>(name));
         }
 
-        private void UpdateKeyIndices()
+        private unsafe void UpdateKeyIndices()
         {
             // TODO: For now, rebuild indices after processing
             // This code is ugly (esp. constant buffer one), it needs to be done directly within processing (as soon as new system is adopted)
@@ -414,12 +414,30 @@ namespace SiliconStudio.Xenko.Graphics
                 var cb = internalValue.Value.Object as ParameterConstantBuffer;
                 if (cb != null)
                 {
+                    // We will generate a unique hash that depends on cbuffer layout (to easily detect if they differ when binding a new effect)
+                    // TODO: currently done at runtime, but it should better be done at compile time
+                    var hashBuilder = new ObjectIdBuilder();
+                    hashBuilder.Write(cb.ConstantBufferDesc.Name);
+                    hashBuilder.Write(cb.ConstantBufferDesc.Size);
+
                     for (int i = 0; i < cb.ConstantBufferDesc.Members.Length; ++i)
                     {
                         var member = cb.ConstantBufferDesc.Members[i];
                         member.Param.KeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, member.Param.Key);
                         cb.ConstantBufferDesc.Members[i] = member;
+
+                        hashBuilder.Write(member.Param.RawName);
+                        hashBuilder.Write(member.SourceOffset);
+                        hashBuilder.Write(member.SourceOffset);
+                        hashBuilder.Write(member.Offset);
+                        hashBuilder.Write(member.Count);
+                        hashBuilder.Write(member.Size);
+                        hashBuilder.Write(member.RowCount);
+                        hashBuilder.Write(member.ColumnCount);
                     }
+
+                    // Update the hash
+                    cb.ConstantBufferDesc.Hash = hashBuilder.ComputeHash();
                 }
             }
 
