@@ -38,16 +38,17 @@ namespace SiliconStudio.Core.Reflection
 
                 // Else retrieve all default attributes
                 var defaultAttributes = Attribute.GetCustomAttributes(memberInfo, inherit);
-                var attributesToCache = defaultAttributes.ToList();
+                IEnumerable<Attribute> attributesToCache = defaultAttributes;
 
                 // And add registered attributes
                 List<Attribute> registered;
                 if (registeredAttributes.TryGetValue(memberInfo, out registered))
                 {
-                    attributesToCache.AddRange(registered);
+                    // Remove "real" attributes overridden by manually registered attributes
+                    attributesToCache = registered.Concat(defaultAttributes.Where(x => GetUsage(x).AllowMultiple || registered.All(y => y.GetType() != x.GetType())));
                 }
 
-                attributes = attributesToCache;
+                attributes = attributesToCache.ToList();
 
                 // Add to the cache
                 cachedAttributes.Add(key, attributes);
@@ -71,11 +72,17 @@ namespace SiliconStudio.Core.Reflection
                     attributes = new List<Attribute>();
                     registeredAttributes.Add(memberInfo, attributes);
                 }
-                attributes.Add(attribute);
+                // Insert it in the first position to ensure it will override same attributes from base classes when using First
+                attributes.Insert(0, attribute);
 
                 cachedAttributes.Remove(new MemberInfoKey(memberInfo, true));
                 cachedAttributes.Remove(new MemberInfoKey(memberInfo, false));
             }
+        }
+
+        private static AttributeUsageAttribute GetUsage(Attribute attribute)
+        {
+            return Attribute.GetCustomAttribute(attribute.GetType(), typeof(AttributeUsageAttribute)) as AttributeUsageAttribute;
         }
 
         private struct MemberInfoKey : IEquatable<MemberInfoKey>
