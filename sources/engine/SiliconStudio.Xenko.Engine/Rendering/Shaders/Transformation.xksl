@@ -2,7 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 class Transformation
 {
-    cbuffer PerFrame {
+    cbuffer PerView {
         // View matrix. Default to Matrix.Identity.
         stage float4x4 View;
         // Inverse View matrix. Default to Matrix.Inverse(View)
@@ -21,7 +21,7 @@ class Transformation
         stage float4 EyeMS;
     };
 
-    cbuffer PerObject {
+    cbuffer PerDraw {
         // World matrix. Default to Matrix.Identity.
         stage float4x4 World;
         // World matrix. Default to Matrix.Identity.
