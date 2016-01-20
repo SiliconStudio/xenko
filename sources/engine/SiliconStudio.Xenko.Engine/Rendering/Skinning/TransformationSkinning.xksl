@@ -18,7 +18,10 @@
 
 class TransformationSkinning : TransformationBase, PositionStream4, Transformation
 {
-    stage float4x4 BlendMatrixArray[SkinningMaxBones];
+    cbuffer PerDraw
+    {
+        stage float4x4 BlendMatrixArray[SkinningMaxBones];
+    }
 
     stage stream float4 BlendWeights : BLENDWEIGHT;
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES

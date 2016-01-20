@@ -225,11 +225,11 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
 
                 if (context.IsNotPixelStage)
                 {
-                    shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset, 0.0f);
+                    shaderSource = new ShaderClassSource("ComputeColorTextureLodScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset, 0.0f, "PerMaterial");
                 }
                 else
                 {
-                    shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset);
+                    shaderSource = new ShaderClassSource("ComputeColorTextureScaledOffsetDynamicSampler", textureKey, usedTexcoord, samplerKey, channelStr, textureScale, textureOffset, "PerMaterial");
                 }
             }
 
