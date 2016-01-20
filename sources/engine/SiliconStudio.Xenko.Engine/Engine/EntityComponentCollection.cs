@@ -19,9 +19,12 @@ namespace SiliconStudio.Xenko.Engine
     {
         private readonly Entity entity;
 
+        internal EntityComponentCollection()
+        {
+        }
+
         internal EntityComponentCollection(Entity entity)
         {
-            if (entity == null) throw new ArgumentNullException(nameof(entity));
             this.entity = entity;
         }
 
@@ -100,7 +103,7 @@ namespace SiliconStudio.Xenko.Engine
             base.InsertItem(index, item);
 
             // Notify the entity about this component being updated
-            entity.OnComponentChanged(index, null, item);
+            entity?.OnComponentChanged(index, null, item);
         }
 
         protected override void RemoveItem(int index)
@@ -115,7 +118,7 @@ namespace SiliconStudio.Xenko.Engine
             base.RemoveItem(index);
 
             // Notify the entity about this component being updated
-            entity.OnComponentChanged(index, item, null);
+            entity?.OnComponentChanged(index, item, null);
         }
 
         protected override void SetItem(int index, EntityComponent item)
@@ -127,7 +130,7 @@ namespace SiliconStudio.Xenko.Engine
             base.SetItem(index, item);
 
             // Notify the entity about this component being updated
-            entity.OnComponentChanged(index, oldItem, item);
+            entity?.OnComponentChanged(index, oldItem, item);
         }
 
         private EntityComponent ValidateItem(int index, EntityComponent item)
@@ -164,22 +167,26 @@ namespace SiliconStudio.Xenko.Engine
                 }
             }
 
-            if (!AllowReplaceForeignEntity && item.Entity != null)
+            if (!AllowReplaceForeignEntity && entity != null && item.Entity != null)
             {
                 throw new InvalidOperationException($"This component is already attached to entity [{item.Entity}] and cannot be attached to [{entity}]");
             }
 
-            var transform = item as TransformComponent;
-            if (transform != null)
+            if (entity != null)
             {
-                entity.transform = transform;
-            } else if (previousItem is TransformComponent)
-            {
-                // If previous item was a transform component but we are actually replacing it, we should 
-                entity.transform = null;
-            }
+                var transform = item as TransformComponent;
+                if (transform != null)
+                {
+                    entity.transform = transform;
+                }
+                else if (previousItem is TransformComponent)
+                {
+                    // If previous item was a transform component but we are actually replacing it, we should 
+                    entity.transform = null;
+                }
 
-            item.Entity = entity;
+                item.Entity = entity;
+            }
 
             return previousItem;
         }

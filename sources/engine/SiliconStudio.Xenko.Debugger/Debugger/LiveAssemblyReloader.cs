@@ -9,16 +9,14 @@ using SharpYaml;
 using SharpYaml.Events;
 using SharpYaml.Serialization;
 using SiliconStudio.Core;
-using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets.Debugging;
+using SiliconStudio.Xenko.Debugger.Target;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Engine.Processors;
 
-namespace SiliconStudio.Xenko.Debugger.Target
+namespace SiliconStudio.Xenko.Debugger
 {
     public class LiveAssemblyReloader : AssemblyReloader
     {
@@ -42,7 +40,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
             CloneReferenceSerializer.References = new List<object>();
 
             var loadedAssembliesSet = new HashSet<Assembly>(assembliesToUnregister);
-            var reloadedScripts = CollectReloadedScriptEntries(loadedAssembliesSet);
+            var reloadedComponents = CollectReloadedComponentEntries(loadedAssembliesSet);
 
             foreach (var assembly in assembliesToUnregister)
             {
@@ -67,7 +65,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
             }
 
             // First pass of deserialization: recreate the scripts
-            foreach (ReloadedScriptEntryLive reloadedScript in reloadedScripts)
+            foreach (ReloadedComponentEntryLive reloadedScript in reloadedComponents)
             {
                 // Try to create object
                 var objectStart = reloadedScript.YamlEvents.OfType<SharpYaml.Events.MappingStart>().FirstOrDefault();
@@ -76,10 +74,10 @@ namespace SiliconStudio.Xenko.Debugger.Target
                     // Get type info
                     var objectStartTag = objectStart.Tag;
                     bool alias;
-                    var scriptType = YamlSerializer.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag, out alias);
-                    if (scriptType != null)
+                    var componentType = YamlSerializer.GetSerializerSettings().TagTypeRegistry.TypeFromTag(objectStartTag, out alias);
+                    if (componentType != null)
                     {
-                        reloadedScript.NewScript = (ScriptComponent)Activator.CreateInstance(scriptType);
+                        reloadedScript.NewComponent = (EntityComponent)Activator.CreateInstance(componentType);
                     }
                 }
             }
@@ -88,89 +86,92 @@ namespace SiliconStudio.Xenko.Debugger.Target
             // As a result, any script references processed by Yaml serializer will point to updated objects (script reference cycle will work!)
             for (int index = 0; index < CloneReferenceSerializer.References.Count; index++)
             {
-                var script = CloneReferenceSerializer.References[index] as ScriptComponent;
-                if (script != null)
+                var component = CloneReferenceSerializer.References[index] as EntityComponent;
+                if (component != null)
                 {
-                    var reloadedScript = reloadedScripts.Cast<ReloadedScriptEntryLive>().FirstOrDefault(x => x.OriginalScript == script);
-                    if (reloadedScript != null)
+                    var reloadedComponent = reloadedComponents.Cast<ReloadedComponentEntryLive>().FirstOrDefault(x => x.OriginalComponent == component);
+                    if (reloadedComponent != null)
                     {
-                        CloneReferenceSerializer.References[index] = reloadedScript.NewScript;
+                        CloneReferenceSerializer.References[index] = reloadedComponent.NewComponent;
                     }
                 }
             }
 
             // Third pass: deserialize
-            RestoreReloadedScriptEntries(reloadedScripts);
+            RestoreReloadedComponentEntries(reloadedComponents);
 
             CloneReferenceSerializer.References = null;
         }
 
-        protected override ReloadedScriptEntry CreateReloadedScriptEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, ScriptComponent script)
+        protected override ReloadedComponentEntry CreateReloadedComponentEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, EntityComponent component)
         {
-            return new ReloadedScriptEntryLive(entity, index, parsingEvents, script);
+            return new ReloadedComponentEntryLive(entity, index, parsingEvents, component);
         }
 
-        protected override ScriptComponent DeserializeScript(ReloadedScriptEntry reloadedScript)
+        protected override EntityComponent DeserializeComponent(ReloadedComponentEntry reloadedComponent)
         {
-            var eventReader = new EventReader(new MemoryParser(reloadedScript.YamlEvents));
-            var scriptCollection = new ScriptCollection();
+            var eventReader = new EventReader(new MemoryParser(reloadedComponent.YamlEvents));
+            var components = new EntityComponentCollection();
 
-            // Use the newly created script during second pass for proper cycle deserialization
-            var newScript = ((ReloadedScriptEntryLive)reloadedScript).NewScript;
-            if (newScript != null)
-                scriptCollection.Add(newScript);
+            // Use the newly created component during second pass for proper cycle deserialization
+            var newComponent = ((ReloadedComponentEntryLive)reloadedComponent).NewComponent;
+            if (newComponent != null)
+                components.Add(newComponent);
 
-            // Try to create script first
-            YamlSerializer.Deserialize(eventReader, scriptCollection, typeof(ScriptCollection));
-            var script = scriptCollection.Count == 1 ? scriptCollection[0] : null;
-            return script;
+            // Try to create component first
+            YamlSerializer.Deserialize(eventReader, components, typeof(EntityComponentCollection));
+            var component = components.Count == 1 ? components[0] : null;
+            return component;
         }
 
-        protected override List<ParsingEvent> SerializeScript(ScriptComponent script)
+        protected override List<ParsingEvent> SerializeComponent(EntityComponent component)
         {
-            // Wrap script in a ScriptCollection to properly handle errors
-            var scriptCollection = new ScriptCollection { script };
+            // Wrap component in a EntityComponentCollection to properly handle errors
+            var components = new Entity { component }.Components;
 
             // Serialize with Yaml layer
             var parsingEvents = new List<ParsingEvent>();
-            // We also want to serialize live scripting variables
+            // We also want to serialize live component variables
             var serializerContextSettings = new SerializerContextSettings { MemberMask = DataMemberAttribute.DefaultMask | ScriptComponent.LiveScriptingMask };
-            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), scriptCollection, typeof(ScriptCollection), serializerContextSettings);
+            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), components, typeof(EntityComponentCollection), serializerContextSettings);
             return parsingEvents;
         }
 
-        protected override void ReplaceScript(ScriptComponent scriptComponent, ReloadedScriptEntry reloadedScript)
+        protected override void ReplaceComponent(EntityComponent entityComponent, ReloadedComponentEntry reloadedComponent)
         {
-            // Create new script instance
-            var newScript = DeserializeScript(reloadedScript);
+            // Create new component instance
+            var newComponent = DeserializeComponent(reloadedComponent);
 
-            // Dispose and unregister old script (and their MicroThread, if any)
-            var oldScript = (ScriptComponent)scriptComponent.Entity.Components[reloadedScript.ScriptIndex];
+            // Dispose and unregister old component (and their MicroThread, if any)
+            var oldComponent = entityComponent.Entity.Components[reloadedComponent.ComponentIndex];
 
             // Flag scripts as being live reloaded
-            if (game != null)
+            if (game != null && oldComponent is ScriptComponent)
             {
-                game.Script.LiveReload(oldScript, newScript);
+                game.Script.LiveReload((ScriptComponent)oldComponent, (ScriptComponent)newComponent);
             }
 
-            // Replace with new script
-            // TODO: Remove script before serializing it, so cancellation code can run
-            scriptComponent.Entity.Components[reloadedScript.ScriptIndex] = newScript;
+            // Replace with new component
+            // TODO: Remove component before serializing it, so cancellation code can run
+            entityComponent.Entity.Components[reloadedComponent.ComponentIndex] = newComponent;
 
-            // TODO: Dispose on script?
-            // oldScript.Dispose();
+            // TODO: Dispose or Cancel on script?
+            if (oldComponent is ScriptComponent)
+            {
+                ((ScriptComponent)oldComponent).Cancel();
+            }
         }
 
-        protected class ReloadedScriptEntryLive : ReloadedScriptEntry
+        protected class ReloadedComponentEntryLive : ReloadedComponentEntry
         {
-            // Original scripts
-            public readonly ScriptComponent OriginalScript;
-            public ScriptComponent NewScript;
+            // Original component
+            public readonly EntityComponent OriginalComponent;
+            public EntityComponent NewComponent;
 
-            public ReloadedScriptEntryLive(Entity entity, int scriptIndex, List<ParsingEvent> yamlEvents, ScriptComponent originalScript)
-                : base(entity, scriptIndex, yamlEvents)
+            public ReloadedComponentEntryLive(Entity entity, int componentIndex, List<ParsingEvent> yamlEvents, EntityComponent originalComponent)
+                : base(entity, componentIndex, yamlEvents)
             {
-                OriginalScript = originalScript;
+                OriginalComponent = originalComponent;
             }
         }
     }

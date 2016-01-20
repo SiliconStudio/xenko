@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 using SharpYaml;
 using SharpYaml.Events;
@@ -23,88 +24,79 @@ namespace SiliconStudio.Xenko.Assets.Debugging
         protected ILogger log;
         protected readonly List<Entity> entities = new List<Entity>();
 
-        protected virtual void RestoreReloadedScriptEntries(List<ReloadedScriptEntry> reloadedScripts)
+        protected virtual void RestoreReloadedComponentEntries(List<ReloadedComponentEntry> reloadedComponents)
         {
-            foreach (var reloadedScript in reloadedScripts)
+            foreach (var reloadedComponent in reloadedComponents)
             {
-                var scriptComponent = reloadedScript.Entity.Components.Get<ScriptComponent>();
-                if (scriptComponent == null) // Should not happpen
-                    continue;
-
-                ReplaceScript(scriptComponent, reloadedScript);
+                var componentToReload = reloadedComponent.Entity.Components[reloadedComponent.ComponentIndex];
+                ReplaceComponent(componentToReload, reloadedComponent);
             }
         }
 
-        protected virtual List<ReloadedScriptEntry> CollectReloadedScriptEntries(HashSet<Assembly> loadedAssembliesSet)
+        protected virtual List<ReloadedComponentEntry> CollectReloadedComponentEntries(HashSet<Assembly> loadedAssembliesSet)
         {
-            var reloadedScripts = new List<ReloadedScriptEntry>();
+            var reloadedScripts = new List<ReloadedComponentEntry>();
 
-            // Find scripts that will need reloading
+            // Find components that will need reloading
             foreach (var entity in entities)
             {
                 for (int index = 0; index < entity.Components.Count; index++)
                 {
-                    var script = entity.Components[index] as ScriptComponent;
-                    if (script == null)
+                    var component = entity.Components[index];
+
+                    var componentType = component.GetType();
+
+                    // We force both scripts that were just unloaded and UnloadableComponent (from previous failure) to try to reload
+                    if (!loadedAssembliesSet.Contains(componentType.Assembly) && componentType != typeof(UnloadableComponent))
                         continue;
 
-                    var scriptType = script.GetType();
-
-                    // We force both scripts that were just unloaded and UnloadableScript (from previous failure) to try to reload
-                    if (!loadedAssembliesSet.Contains(scriptType.Assembly) && scriptType != typeof(UnloadableScript))
-                        continue;
-
-                    var parsingEvents = SerializeScript(script);
+                    var parsingEvents = SerializeComponent(component);
 
                     // TODO: Serialize Scene script too (async?) -- doesn't seem necessary even for complex cases
                     // (i.e. referencing assets, entities and/or scripts) but still a ref counting check might be good
 
-                    reloadedScripts.Add(CreateReloadedScriptEntry(entity, index, parsingEvents, script));
+                    reloadedScripts.Add(CreateReloadedComponentEntry(entity, index, parsingEvents, component));
                 }
             }
             return reloadedScripts;
         }
 
-        protected virtual ScriptComponent DeserializeScript(ReloadedScriptEntry reloadedScript)
+        protected virtual EntityComponent DeserializeComponent(ReloadedComponentEntry reloadedComponent)
         {
-            var eventReader = new EventReader(new MemoryParser(reloadedScript.YamlEvents));
-            var scriptCollection = (ScriptCollection)YamlSerializer.Deserialize(eventReader, null, typeof(ScriptCollection), log != null ? new SerializerContextSettings { Logger = new YamlForwardLogger(log) } : null);
-            var script = scriptCollection.Count == 1 ? scriptCollection[0] : null;
-            return script;
+            var components = new EntityComponentCollection();
+            var eventReader = new EventReader(new MemoryParser(reloadedComponent.YamlEvents));
+            var componentCollection = (EntityComponentCollection)YamlSerializer.Deserialize(eventReader, components, typeof(EntityComponentCollection), log != null ? new SerializerContextSettings { Logger = new YamlForwardLogger(log) } : null);
+            var component = componentCollection.FirstOrDefault();
+            return component;
         }
 
-        protected virtual List<ParsingEvent> SerializeScript(ScriptComponent script)
+        protected virtual List<ParsingEvent> SerializeComponent(EntityComponent component)
         {
-            // Wrap script in a ScriptCollection to properly handle errors
-            var scriptCollection = new ScriptCollection { script };
+            var components = new EntityComponentCollection() { component };
 
             // Serialize with Yaml layer
             var parsingEvents = new List<ParsingEvent>();
-            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), scriptCollection, typeof(ScriptCollection));
+            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), components, typeof(EntityComponentCollection));
             return parsingEvents;
         }
 
-        protected virtual ReloadedScriptEntry CreateReloadedScriptEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, ScriptComponent script)
+        protected virtual ReloadedComponentEntry CreateReloadedComponentEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, EntityComponent component)
         {
-            return new ReloadedScriptEntry(entity, index, parsingEvents);
+            return new ReloadedComponentEntry(entity, index, parsingEvents);
         }
 
-        protected virtual void ReplaceScript(ScriptComponent scriptComponent, ReloadedScriptEntry reloadedScript)
-        {
-            // TODO: Let PropertyGrid know that we updated the script
-            scriptComponent.Entity.Components[reloadedScript.ScriptIndex] = DeserializeScript(reloadedScript);
-        }
+        protected abstract void ReplaceComponent(EntityComponent entityComponent, ReloadedComponentEntry reloadedComponent);
 
-        protected class ReloadedScriptEntry
+        protected class ReloadedComponentEntry
         {
             public readonly Entity Entity;
-            public readonly int ScriptIndex;
+            public readonly int ComponentIndex;
             public readonly List<ParsingEvent> YamlEvents;
 
-            public ReloadedScriptEntry(Entity entity, int scriptIndex, List<ParsingEvent> yamlEvents)
+            public ReloadedComponentEntry(Entity entity, int componentIndex, List<ParsingEvent> yamlEvents)
             {
                 Entity = entity;
-                ScriptIndex = scriptIndex;
+                ComponentIndex = componentIndex;
                 YamlEvents = yamlEvents;
             }
         }

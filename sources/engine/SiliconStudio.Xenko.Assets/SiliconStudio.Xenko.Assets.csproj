@@ -252,8 +252,8 @@
     <Compile Include="RenderFrames\RenderFrameAsset.cs" />
     <Compile Include="RenderFrames\RenderFrameAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
-    <Compile Include="Serializers\ScriptCollectionSerializer.cs" />
-    <Compile Include="Serializers\UnloadableScript.cs" />
+    <Compile Include="Serializers\EntityComponentCollectionSerializer.cs" />
+    <Compile Include="Serializers\UnloadableComponent.cs" />
     <Compile Include="Skyboxes\ISkyboxModel.cs" />
     <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
     <Compile Include="Skyboxes\SkyboxAsset.cs" />
