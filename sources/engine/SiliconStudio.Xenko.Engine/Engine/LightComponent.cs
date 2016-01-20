@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Internal id used to identify a light component
         /// </summary>
-        internal readonly int Id;
+        public readonly int Id;
 
         /// <summary>
         /// Gets or sets the type of the light.
@@ -99,13 +99,13 @@ namespace SiliconStudio.Xenko.Engine
         /// The bounding box of this light in WS after the <see cref="LightProcessor"/> has been applied (readonly field).
         /// </summary>
         [DataMemberIgnore]
-        internal BoundingBox BoundingBox;
+        public BoundingBox BoundingBox;
 
         /// <summary>
         /// The bounding box extents of this light in WS after the <see cref="LightProcessor"/> has been applied (readonly field).
         /// </summary>
         [DataMemberIgnore]
-        internal BoundingBoxExt BoundingBoxExt;
+        public BoundingBoxExt BoundingBoxExt;
 
         /// <summary>
         /// The determines whether this instance has a valid bounding box (readonly field).

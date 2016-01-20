@@ -7,6 +7,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Shaders;
@@ -110,6 +111,11 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             throw new ArgumentException("Parameter resource binding not found.", "value");
+        }
+
+        public void ApplyProgram(GraphicsDevice graphicsDevice)
+        {
+            PrepareApply(graphicsDevice);
         }
 
         public void Apply(GraphicsDevice graphicsDevice, EffectParameterCollectionGroup parameterCollectionGroup, bool applyEffectStates)

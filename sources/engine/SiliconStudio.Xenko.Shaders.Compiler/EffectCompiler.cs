@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
             // Convert the AST to HLSL
             var writer = new SiliconStudio.Shaders.Writer.Hlsl.HlslWriter
             {
-                EnablePreprocessorLine = true // Allow to output links to original xksl via #line pragmas
+                EnablePreprocessorLine = false // Allow to output links to original pdxsl via #line pragmas
             };
             writer.Visit(parsingResult.Shader);
             var shaderSourceText = writer.Text;

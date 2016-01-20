@@ -761,7 +761,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="stage">The shader stage.</param>
         /// <param name="slot">The binding slot.</param>
         /// <param name="buffer">The constant buffer to set.</param>
-        internal void SetConstantBuffer(ShaderStage stage, int slot, Buffer buffer)
+        public void SetConstantBuffer(ShaderStage stage, int slot, Buffer buffer)
         {
             if (stage == ShaderStage.None)
                 throw new ArgumentException("Cannot use Stage.None", "stage");
@@ -782,7 +782,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="stage">The shader stage.</param>
         /// <param name="slot">The binding slot.</param>
         /// <param name="samplerState">The sampler state to set.</param>
-        internal void SetSamplerState(ShaderStage stage, int slot, SamplerState samplerState)
+        public void SetSamplerState(ShaderStage stage, int slot, SamplerState samplerState)
         {
             if (stage == ShaderStage.None)
                 throw new ArgumentException("Cannot use Stage.None", "stage");
@@ -802,7 +802,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="stage">The shader stage.</param>
         /// <param name="slot">The binding slot.</param>
         /// <param name="shaderResourceView">The shader resource view.</param>
-        internal void SetShaderResourceView(ShaderStage stage, int slot, GraphicsResource shaderResourceView)
+        public void SetShaderResourceView(ShaderStage stage, int slot, GraphicsResource shaderResourceView)
         {
             shaderStages[(int)stage - 1].SetShaderResource(slot, shaderResourceView != null ? shaderResourceView.NativeShaderResourceView : null);
         }
@@ -814,7 +814,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="slot">The slot.</param>
         /// <param name="unorderedAccessView">The unordered access view.</param>
         /// <exception cref="System.ArgumentException">Invalid stage.;stage</exception>
-        internal void SetUnorderedAccessView(ShaderStage stage, int slot, GraphicsResource unorderedAccessView)
+        public void SetUnorderedAccessView(ShaderStage stage, int slot, GraphicsResource unorderedAccessView)
         {
             if (stage != ShaderStage.Compute)
                 throw new ArgumentException("Invalid stage.", "stage");
@@ -822,13 +822,13 @@ namespace SiliconStudio.Xenko.Graphics
             NativeDeviceContext.ComputeShader.SetUnorderedAccessView(slot, unorderedAccessView != null ? unorderedAccessView.NativeUnorderedAccessView : null);
         }
 
-        internal unsafe void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
+        public unsafe void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
         {
             if (resource == null) throw new ArgumentNullException("resource");
             NativeDeviceContext.UpdateSubresource(*(SharpDX.DataBox*)Interop.Cast(ref databox), resource.NativeResource, subResourceIndex);
         }
 
-        internal unsafe void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox, ResourceRegion region)
+        public unsafe void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox, ResourceRegion region)
         {
             if (resource == null) throw new ArgumentNullException("resource");
             NativeDeviceContext.UpdateSubresource(*(SharpDX.DataBox*)Interop.Cast(ref databox), resource.NativeResource, subResourceIndex, *(SharpDX.Direct3D11.ResourceRegion*)Interop.Cast(ref region));

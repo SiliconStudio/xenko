@@ -1231,7 +1231,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        internal InternalValue GetInternalValue(ParameterKey key)
+        public InternalValue GetInternalValue(ParameterKey key)
         {
             int index = GetKeyIndex(key);
             if (index == -1)
