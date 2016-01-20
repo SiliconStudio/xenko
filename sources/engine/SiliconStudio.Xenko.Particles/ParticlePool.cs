@@ -60,6 +60,9 @@ namespace SiliconStudio.Xenko.Particles
             if (newCapacity < 0 || newCapacity == ParticleCapacity)
                 return;
 
+            if (nextFreeIndex > newCapacity)
+                nextFreeIndex = newCapacity;
+
             RelocatePool(ParticleSize, newCapacity, CapacityChangedRelocate);
         }
 
