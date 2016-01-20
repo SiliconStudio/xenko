@@ -60,6 +60,10 @@ set Project=Xenko.Direct3D.CoreCLR.sln
 call :compile
 if %ERRORLEVEL% != 0 goto exit
 
+set Project=Xenko.Linux.sln
+call :compile
+if %ERRORLEVEL% != 0 goto exit
+
 set Project=Xenko.OpenGL.sln
 call :compile
 if %ERRORLEVEL% != 0 goto exit
