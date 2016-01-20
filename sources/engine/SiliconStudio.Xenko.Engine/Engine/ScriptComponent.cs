@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>
     /// Script component.
     /// </summary>
-    [DataContract("ScriptComponent")]
+    [DataContract("ScriptComponent", Inherited = true)]
     [DefaultEntityComponentProcessor(typeof(ScriptProcessor), ExecutionMode = ExecutionMode.Runtime)]
     [Display(1000, "Script", Expand = ExpandRule.Once)]
     [AllowMultipleComponents]

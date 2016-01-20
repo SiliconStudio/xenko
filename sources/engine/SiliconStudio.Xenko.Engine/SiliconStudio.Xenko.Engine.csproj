@@ -343,7 +343,6 @@
       <DependentUpon>ThresholdAlphaCoCFront.xksl</DependentUpon>
     </Compile>
     <Compile Include="Engine\Processors\RenderModelCollection.cs" />
-    <Compile Include="Engine\Design\ScriptCollection.cs" />
     <Compile Include="Engine\Processors\CameraProcessor.cs" />
     <Compile Include="Engine\Processors\CameraProjectionMode.cs" />
     <Compile Include="Rendering\Composers\SceneCameraSlot.cs" />

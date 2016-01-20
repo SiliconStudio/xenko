@@ -13,7 +13,6 @@ using SharpYaml.Serialization.Logging;
 using SharpYaml.Serialization.Serializers;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Assets.Serializers
 {
@@ -22,17 +21,17 @@ namespace SiliconStudio.Xenko.Assets.Serializers
     /// If main script type is missing (usually due to broken assemblies), it will keep the Yaml representation so that it can be properly saved alter.
     /// </summary>
     [YamlSerializerFactory]
-    internal class ScriptCollectionSerializer : CollectionSerializer
+    internal class EntityComponentCollectionSerializer : CollectionSerializer
     {
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
             var type = typeDescriptor.Type;
-            return type == typeof(ScriptCollection) ? this : null;
+            return type == typeof(EntityComponentCollection) ? this : null;
         }
 
         protected override void ReadAddCollectionItem(ref ObjectContext objectContext, Type elementType, CollectionDescriptor collectionDescriptor, object thisObject, int index)
         {
-            var scriptCollection = (ScriptCollection)objectContext.Instance;
+            var scriptCollection = (EntityComponentCollection)objectContext.Instance;
 
             object value = null;
             bool needAdd = true; // If we could get existing value, no need add to collection
@@ -78,9 +77,9 @@ namespace SiliconStudio.Xenko.Assets.Serializers
 
                 var log = objectContext.SerializerContext.ContextSettings.Logger;
                 if (log != null)
-                    log.Log(LogLevel.Warning, ex, string.Format("Could not deserialize script {0}", typeName));
+                    log.Log(LogLevel.Warning, ex, $"Could not deserialize script {typeName}");
 
-                return new UnloadableScript(parsingEvents, typeName);
+                return new UnloadableComponent(parsingEvents, typeName);
             }
             finally
             {
@@ -94,7 +93,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
         protected override void WriteCollectionItem(ref ObjectContext objectContext, object item, Type itemType)
         {
             // Check if we have a Yaml representation (in case loading failed)
-            var unloadableScript = item as UnloadableScript;
+            var unloadableScript = item as UnloadableComponent;
             if (unloadableScript != null)
             {
                 var writer = objectContext.Writer;
