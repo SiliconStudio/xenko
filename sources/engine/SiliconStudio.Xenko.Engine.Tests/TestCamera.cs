@@ -163,7 +163,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             SetCamera();
 
-            while (!IsDisposed)
+            while (true)
             {
                 UpdateCamera();
 
