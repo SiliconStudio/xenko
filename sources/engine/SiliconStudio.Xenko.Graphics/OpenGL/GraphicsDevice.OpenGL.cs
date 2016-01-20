@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Graphics
         private OpenTK.Graphics.IGraphicsContext graphicsContext;
         private OpenTK.Platform.IWindowInfo windowInfo;
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
         private OpenTK.GameWindow gameWindow;
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private AndroidGameView gameWindow;

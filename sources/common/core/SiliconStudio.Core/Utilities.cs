@@ -48,7 +48,7 @@ namespace SiliconStudio.Core
 #else
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         private const string MemcpyDll = "msvcrt.dll";
-#elif SILICONSTUDIO_PLATFORM_ANDROID
+#elif SILICONSTUDIO_PLATFORM_ANDROID || SILICONSTUDIO_PLATFORM_LINUX
         private const string MemcpyDll = "libc.so";
 #elif SILICONSTUDIO_PLATFORM_IOS
         private const string MemcpyDll = ObjCRuntime.Constants.SystemLibrary;
