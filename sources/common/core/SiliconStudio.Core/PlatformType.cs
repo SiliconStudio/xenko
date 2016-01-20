@@ -42,5 +42,10 @@ namespace SiliconStudio.Core
         /// The Windows 10 OS.
         /// </summary>
         Windows10,
+
+        /// <summary>
+        /// The Linux OS.
+        /// </summary>
+        Linux,
     }
 }
