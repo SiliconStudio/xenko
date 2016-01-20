@@ -209,10 +209,19 @@ namespace SiliconStudio.Xenko.Particles
         #region Update
 
         /// <summary>
+        /// Call this update when the <see cref="ParticleSystem"/> is paused to only update the renreding information
+        /// </summary>
+        /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> containing this emitter</param>
+        public void UpdatePaused(ParticleSystem parentSystem)
+        {
+            UpdateLocations(parentSystem);
+        }
+
+        /// <summary>
         /// Updates the emitter and all its particles, and applies all updaters and spawners.
         /// </summary>
         /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>
-        /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> hosting this emitter</param>
+        /// <param name="parentSystem">The parent <see cref="ParticleSystem"/> containing this emitter</param>
         public void Update(float dt, ParticleSystem parentSystem)
         {
             if (!delayInit)
@@ -220,43 +229,7 @@ namespace SiliconStudio.Xenko.Particles
                 DelayedInitialization(parentSystem);
             }
 
-            drawPosition = parentSystem.Translation;
-            drawRotation = parentSystem.Rotation;
-            drawScale    = parentSystem.UniformScale;
-
-            if (simulationSpace == EmitterSimulationSpace.World)
-            {
-                // Update sub-systems
-                initialDefaultFields.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
-
-                foreach (var initializer in Initializers)
-                {
-                    initializer.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
-                }
-
-                foreach (var updater in Updaters)
-                {
-                    updater.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
-                }
-            }
-            else
-            {
-                var posIdentity = new Vector3(0, 0, 0);
-                var rotIdentity = new Quaternion(0, 0, 0, 1);
-
-                // Update sub-systems
-                initialDefaultFields.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
-
-                foreach (var initializer in Initializers)
-                {
-                    initializer.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
-                }
-
-                foreach (var updater in Updaters)
-                {
-                    updater.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
-                }
-            }
+            UpdateLocations(parentSystem);
 
             EnsurePoolCapacity();
 
@@ -330,6 +303,51 @@ namespace SiliconStudio.Xenko.Particles
             foreach (var updater in Updaters)
             {
                 updater.RestartSimulation();
+            }
+        }
+
+        /// <summary>
+        /// Updates the location matrices of all elements. Needs to be called even when the particle system is paused for updating the render positions
+        /// </summary>
+        /// <param name="parentSystem"><see cref="ParticleSystem"/> containing this emitter</param>
+        private void UpdateLocations(ParticleSystem parentSystem)
+        {
+            drawPosition = parentSystem.Translation;
+            drawRotation = parentSystem.Rotation;
+            drawScale = parentSystem.UniformScale;
+
+            if (simulationSpace == EmitterSimulationSpace.World)
+            {
+                // Update sub-systems
+                initialDefaultFields.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+
+                foreach (var initializer in Initializers)
+                {
+                    initializer.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                }
+
+                foreach (var updater in Updaters)
+                {
+                    updater.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                }
+            }
+            else
+            {
+                var posIdentity = new Vector3(0, 0, 0);
+                var rotIdentity = new Quaternion(0, 0, 0, 1);
+
+                // Update sub-systems
+                initialDefaultFields.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
+
+                foreach (var initializer in Initializers)
+                {
+                    initializer.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
+                }
+
+                foreach (var updater in Updaters)
+                {
+                    updater.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
+                }
             }
         }
 

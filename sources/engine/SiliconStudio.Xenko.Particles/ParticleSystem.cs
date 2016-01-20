@@ -186,7 +186,17 @@ namespace SiliconStudio.Xenko.Particles
 
             // If the particle system is paused skip the rest of the update state
             if (isPaused)
+            {
+                foreach (var particleEmitter in Emitters)
+                {
+                    if (particleEmitter.Enabled)
+                    {
+                        particleEmitter.UpdatePaused(this);
+                    }
+                }
+
                 return;
+            }
 
             foreach (var particleEmitter in Emitters)
             {
