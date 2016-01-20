@@ -101,6 +101,17 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
+        /// Settings class which contains miscellaneous settings for the particle system
+        /// </summary>
+        /// <userdoc>
+        /// Miscellaneous settings for the particle system. These settings are intended to be shared and are set during authoring of the particle system
+        /// </userdoc>
+        [DataMember(3)]
+        [NotNull]
+        [Display("Settings")]
+        public ParticleSystemSettings Settings { get; set; } = new ParticleSystemSettings();
+
+        /// <summary>
         /// AABB of this Particle System
         /// </summary>
         /// <userdoc>
@@ -198,6 +209,34 @@ namespace SiliconStudio.Xenko.Particles
                 return;
             }
 
+            // If the particle system hasn't started yet do it now
+            //  This includes warming up the system by simulating the emitters in background
+            if (!hasStarted)
+            {
+                hasStarted = true;
+                if (Settings.WarmupTime > 0)
+                {
+                    var remainingTime = Settings.WarmupTime;
+                    var timeStep = 1f/30f;
+                    while (remainingTime > 0)
+                    {
+                        var warmingUp = Math.Min(remainingTime, timeStep);
+
+                        foreach (var particleEmitter in Emitters)
+                        {
+                            if (particleEmitter.Enabled)
+                            {
+                                particleEmitter.Update(warmingUp, this);
+                            }
+                        }
+
+                        remainingTime -= warmingUp;
+                    }
+                    
+                }
+            }
+
+            // Update all the emitters by delta time
             foreach (var particleEmitter in Emitters)
             {
                 if (particleEmitter.Enabled)
@@ -241,17 +280,43 @@ namespace SiliconStudio.Xenko.Particles
             {
                 particleEmitter.RestartSimulation();
             }
+
+            hasStarted = false;
         }
 
+        /// <summary>
+        /// isPaused shows if the simulation progresses by delta time every frame or no
+        /// </summary>
         private bool isPaused = false;
 
         /// <summary>
-        /// Pauses or unpauses the particle system simulation
+        /// hasStarted shows if the simulation has started yet or no
         /// </summary>
-        /// <param name="paused"><c>true</c> to pause, <c>false</c> to play (unpause)</param>
-        public void SetPaused(bool paused)
+        private bool hasStarted = false;
+
+        /// <summary>
+        /// Pauses the particle system simulation
+        /// </summary>
+        public void Pause()
         {
-            isPaused = paused;
+            isPaused = true;
+        }
+
+        /// <summary>
+        /// Use to both start a new simulation or continue a paused one
+        /// </summary>
+        public void Play()
+        {
+            isPaused = false;
+        }
+
+        /// <summary>
+        /// Stops the particle simulation by resetting it to its initial state and pausing it
+        /// </summary>
+        public void Stop()
+        {
+            RestartSimulation();
+            isPaused = true;
         }
     }
 }

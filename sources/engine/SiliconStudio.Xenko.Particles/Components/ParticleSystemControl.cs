@@ -57,16 +57,15 @@ namespace SiliconStudio.Xenko.Particles.Components
                 switch (Control)
                 {
                     case StateControl.Play:
-                        particleSystem.SetPaused(false);
+                        particleSystem.Play();
                         break;
 
                     case StateControl.Pause:
-                        particleSystem.SetPaused(true);
+                        particleSystem.Pause();
                         break;
 
                     case StateControl.Stop:
-                        particleSystem.RestartSimulation();
-                        particleSystem.SetPaused(true);
+                        particleSystem.Stop();
                         break;
                 }
 
