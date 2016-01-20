@@ -66,6 +66,14 @@
   <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES' ">
       <Choose>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'Linux'">
+          <ItemGroup>
+            <Reference Include="OpenTK">
+              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+        </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <ItemGroup>
             <Reference Include="OpenTK">
@@ -103,7 +111,7 @@
       <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+  <ItemGroup Condition="('$(SiliconStudioPlatform)' == 'Android') OR ('$(SiliconStudioPlatform)' == 'Linux')">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoDependenciesDir)SharpFont\Android\Release\SharpFont.dll</HintPath>
