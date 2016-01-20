@@ -68,12 +68,6 @@ namespace SiliconStudio.Xenko.Particles.Components
                 Quaternion.RotationMatrix(ref rotMatrix, out particleSystem.Rotation);
             }
 
-            // TODO Editor control only
-            {
-                var particleSystemControl = state.ParticleSystemComponent.Control;
-                particleSystemControl.Update(deltaTime * speed, particleSystem);
-            }
-
             particleSystem.Update(deltaTime * speed);
         }
 
