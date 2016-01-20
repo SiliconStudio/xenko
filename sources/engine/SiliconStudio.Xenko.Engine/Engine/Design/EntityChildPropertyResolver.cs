@@ -42,9 +42,7 @@ namespace SiliconStudio.Xenko.Engine.Design
             if (type == null)
                 throw new InvalidOperationException($"Can't find a type with alias {typeName}; did you properly set a DataContractAttribute with this alias?");
 
-            var field = type.GetRuntimeField(indexerName.Substring(dotIndex + 1));
-
-            return new EntityComponentPropertyAccessor((PropertyKey)field.GetValue(null));
+            return new EntityComponentPropertyAccessor(type);
         }
 
         class EntityChildPropertyAccessor : UpdatableCustomAccessor
@@ -110,15 +108,15 @@ namespace SiliconStudio.Xenko.Engine.Design
 
         private class EntityComponentPropertyAccessor : UpdatableCustomAccessor
         {
-            private readonly PropertyKey propertyKey;
+            private readonly Type componentType;
 
-            public EntityComponentPropertyAccessor(PropertyKey propertyKey)
+            public EntityComponentPropertyAccessor(Type componentType)
             {
-                this.propertyKey = propertyKey;
+                this.componentType = componentType;
             }
 
             /// <inheritdoc/>
-            public override Type MemberType => propertyKey.PropertyType;
+            public override Type MemberType => componentType;
 
             /// <inheritdoc/>
             public override void GetBlittable(IntPtr obj, IntPtr data)
@@ -148,16 +146,31 @@ namespace SiliconStudio.Xenko.Engine.Design
             public override object GetObject(IntPtr obj)
             {
                 var entity = UpdateEngineHelper.PtrToObject<Entity>(obj);
-                throw new NotImplementedException();
-                //return entity.Components[propertyKey];
+                var components = entity.Components;
+                for (int i = 0; i < components.Count; i++)
+                {
+                    var component = components[i];
+                    if (componentType.IsAssignableFrom(component.GetType()))
+                    {
+                        return component;
+                    }
+                }
+                return null;
             }
 
             /// <inheritdoc/>
             public override void SetObject(IntPtr obj, object data)
             {
                 var entity = UpdateEngineHelper.PtrToObject<Entity>(obj);
-                throw new NotImplementedException();
-                //entity.Components[propertyKey] = data;
+                var components = entity.Components;
+                for (int i = 0; i < components.Count; i++)
+                {
+                    var component = components[i];
+                    if (componentType.IsAssignableFrom(component.GetType()))
+                    {
+                        components[i] = (EntityComponent)data;
+                    }
+                }
             }
         }
     }
