@@ -38,6 +38,11 @@ namespace SiliconStudio.Xenko.Particles
         public bool Enabled { get; set; } = true;
 
         /// <summary>
+        /// Resets the current state to the module's initial state
+        /// </summary>
+        internal virtual void RestartSimulation() { }
+
+        /// <summary>
         /// Should this Particle Module's bounds be displayed as a debug draw
         /// </summary>
         /// <userdoc>

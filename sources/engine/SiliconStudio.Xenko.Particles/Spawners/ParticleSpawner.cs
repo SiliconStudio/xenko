@@ -93,6 +93,12 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         [DataMemberIgnore]
         private float stateDuration = 0f;
 
+        internal virtual void RestartSimulation()
+        {
+            state = SpawnerState.Inactive;
+            stateDuration = 0f;
+        }
+
         [DataMemberIgnore]
         private RandomSeed randomSeed = new RandomSeed(0);
 

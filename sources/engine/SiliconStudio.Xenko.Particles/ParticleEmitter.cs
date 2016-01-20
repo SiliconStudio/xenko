@@ -315,6 +315,24 @@ namespace SiliconStudio.Xenko.Particles
 
         }
 
+        public void RestartSimulation()
+        {
+            Dirty = true;
+            pool.SetCapacity(0);
+
+            // Restart all spawners
+            foreach (var spawner in Spawners)
+            {
+                spawner.RestartSimulation();
+            }
+
+            // Restart all updaters
+            foreach (var updater in Updaters)
+            {
+                updater.RestartSimulation();
+            }
+        }
+
         /// <summary>
         /// Should be called before the other methods from <see cref="Update"/> to ensure the pool has sufficient capacity to handle all particles.
         /// </summary>
@@ -429,10 +447,10 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="dt">Delta time, elapsed time since the last call, in seconds</param>
         private unsafe void SpawnNewParticles(float dt)
         {
-            foreach (var spawnerBase in Spawners)
+            foreach (var spawner in Spawners)
             {
-                if (spawnerBase.Enabled)
-                    spawnerBase.SpawnNew(dt, this);
+                if (spawner.Enabled)
+                    spawner.SpawnNew(dt, this);
             }
 
             var capacity = pool.ParticleCapacity;
