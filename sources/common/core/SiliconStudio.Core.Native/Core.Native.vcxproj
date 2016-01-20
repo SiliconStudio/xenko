@@ -35,7 +35,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>libcore</RootNamespace>
     <ConfigurationType>DynamicLibrary</ConfigurationType>
-    <CharacterSet>NotSet</CharacterSet>	
+    <CharacterSet>NotSet</CharacterSet>
     <PlatformToolset>v140</PlatformToolset>
   </PropertyGroup>
   <Import Project="$(MSBuildThisFileDirectory)SiliconStudioNative.targets" />
@@ -66,6 +66,7 @@
     <ClCompile Include="lz4\lz4hc.c">
       <ExcludedFromBuild>true</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="XInputChecker.cpp" />
   </ItemGroup>
   <!-- Output folders -->
   <ImportGroup Label="ExtensionSettings">
