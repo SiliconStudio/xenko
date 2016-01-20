@@ -39,14 +39,12 @@ namespace SiliconStudio.Xenko.Animations
         }
 
         /// <summary>
-        /// Samples the compute curve at the specified location, usually in the [0 .. 1] range
+        /// Evaluates the compute curve's value at the specified location, usually in the [0 .. 1] range
         /// </summary>
         /// <param name="location">Location to sample at</param>
         /// <returns>Sampled value</returns>
-        public T SampleAt(float t)
+        public T Evaluate(float t)
         {
-            //return Curve?.SampleAt(t) ?? new T();
-
             var indexLocation = t * (bakedArraySize - 1);
             var index = (int)indexLocation;
             var lerpValue = indexLocation - index;
@@ -94,7 +92,7 @@ namespace SiliconStudio.Xenko.Animations
             for (var i = 0; i < bakedArraySize; i++)
             {
                 var t = i/(float)(bakedArraySize - 1);
-                bakedArray[i] = curve.SampleAt(t);
+                bakedArray[i] = curve.Evaluate(t);
             }
         }
 

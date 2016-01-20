@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Mathematics;
@@ -65,9 +63,9 @@ namespace SiliconStudio.Xenko.Animations
             }
         }
 
-        public Vector4 SampleAt(float t)
+        public Vector4 Evaluate(float t)
         {
-            return new Vector4(X.SampleAt(t), Y.SampleAt(t), Z.SampleAt(t), W.SampleAt(t));            
+            return new Vector4(X.Evaluate(t), Y.Evaluate(t), Z.Evaluate(t), W.Evaluate(t));            
         }
 
         private bool hasChanged = true;

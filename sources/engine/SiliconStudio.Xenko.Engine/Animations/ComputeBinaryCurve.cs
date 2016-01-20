@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Linq.Expressions;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
 
@@ -54,10 +53,10 @@ namespace SiliconStudio.Xenko.Animations
         }
 
         /// <inheritdoc/>
-        public T SampleAt(float location)
+        public T Evaluate(float location)
         {
-            var lValue = LeftChild?.SampleAt(location) ?? new T();
-            var rValue = RightChild?.SampleAt(location) ?? new T();
+            var lValue = LeftChild?.Evaluate(location) ?? new T();
+            var rValue = RightChild?.Evaluate(location) ?? new T();
 
             switch (Operator)
             {

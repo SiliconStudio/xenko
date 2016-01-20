@@ -12,11 +12,11 @@ namespace SiliconStudio.Xenko.Animations
     public interface IComputeCurve<out T> where T : struct
     {
         /// <summary>
-        /// Samples the compute curve at the specified location, usually in the [0 .. 1] range
+        /// Evaluates the compute curve's value at the specified location, usually in the [0 .. 1] range
         /// </summary>
         /// <param name="location">Location to sample at</param>
         /// <returns>Sampled value</returns>
-        T SampleAt(float location);
+        T Evaluate(float location);
 
         /// <summary>
         /// Updates any optimizations in the curve if data has changed.
