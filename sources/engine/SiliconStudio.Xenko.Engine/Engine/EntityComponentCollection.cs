@@ -140,7 +140,7 @@ namespace SiliconStudio.Xenko.Engine
             var componentType = item.GetType();
             var attributes = EntityComponentAttributes.Get(componentType);
 
-            var onlySingleComponent = !attributes.AllowMultipleComponent;
+            var onlySingleComponent = !attributes.AllowMultipleComponents;
 
             EntityComponent previousItem = null;
             for (int i = 0; i < Count; i++)

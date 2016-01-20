@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Engine
     /// Allows a component of the same type to be added multiple time to the same entity (default is <c>false</c>)
     /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
-    public class AllowMultipleComponentAttribute : EntityComponentAttributeBase
+    public class AllowMultipleComponentsAttribute : EntityComponentAttributeBase
     {
     }
 }
