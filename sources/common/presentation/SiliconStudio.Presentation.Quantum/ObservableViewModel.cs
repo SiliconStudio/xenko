@@ -4,12 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics.Contracts;
 using System.Linq;
-
+using SiliconStudio.ActionStack;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Services;
 using SiliconStudio.Presentation.ViewModel;
-using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -21,11 +20,11 @@ namespace SiliconStudio.Presentation.Quantum
     /// <param name="baseName">The base name of this node. Can be null if <see paramref="index"/> is not. If so a name will be automatically generated from the index.</param>
     /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
     /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
-    /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given node.</param>
+    /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
     /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
     /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
     /// <returns>A new instance of <see cref="ObservableModelNode"/> corresponding to the given parameters.</returns>
-    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index);
+    public delegate ObservableModelNode CreateNodeDelegate(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index);
 
     public class ObservableViewModel : EditableViewModel, IDisposable
     {
@@ -34,8 +33,7 @@ namespace SiliconStudio.Presentation.Quantum
         public const string HasCommandPrefix = "HasCommand_";
         public const string HasAssociatedDataPrefix = "HasAssociatedData_";
 
-        private readonly IEnumerable<IDirtiableViewModel> dirtiables;
-        private readonly HashSet<string> nodeChangeList = new HashSet<string>();
+        private readonly HashSet<string> combinedNodeChanges = new HashSet<string>();
         private IObservableNode rootNode;
         private ObservableViewModel parent;
 
@@ -48,16 +46,15 @@ namespace SiliconStudio.Presentation.Quantum
         /// Initializes a new instance of the <see cref="ObservableViewModel"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
-        /// <param name="modelContainer">A <see cref="ModelContainer"/> to use to build view model nodes.</param>
-        /// <param name="dirtiables">The list of <see cref="IDirtiableViewModel"/> objects linked to this view model.</param>
-        private ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IEnumerable<IDirtiableViewModel> dirtiables)
+        /// <param name="nodeContainer">A <see cref="NodeContainer"/> to use to build view model nodes.</param>
+        /// <param name="dirtiables">The list of <see cref="IDirtiable"/> objects linked to this view model.</param>
+        private ObservableViewModel(IViewModelServiceProvider serviceProvider, NodeContainer nodeContainer, IEnumerable<IDirtiable> dirtiables)
             : base(serviceProvider)
         {
-            if (modelContainer == null) throw new ArgumentNullException(nameof(modelContainer));
+            if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
             if (dirtiables == null) throw new ArgumentNullException(nameof(dirtiables));
-            ModelContainer = modelContainer;
-            this.dirtiables = dirtiables;
-            this.dirtiables.ForEach(x => x.DirtinessUpdated += DirtinessUpdated);
+            NodeContainer = nodeContainer;
+            Dirtiables = dirtiables;
             ObservableViewModelService = serviceProvider.Get<ObservableViewModelService>();
             Logger = GlobalLogger.GetLogger(DefaultLoggerName);
         }
@@ -66,15 +63,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// Initializes a new instance of the <see cref="ObservableViewModel"/> class.
         /// </summary>
         /// <param name="serviceProvider">A service provider that can provide a <see cref="IDispatcherService"/> and an <see cref="ObservableViewModelService"/> to use for this view model.</param>
-        /// <param name="modelContainer">A <see cref="ModelContainer"/> to use to build view model nodes.</param>
+        /// <param name="nodeContainer">A <see cref="NodeContainer"/> to use to build view model nodes.</param>
         /// <param name="modelNode">The root model node of the view model to generate.</param>
-        /// <param name="dirtiables">The list of <see cref="IDirtiableViewModel"/> objects linked to this view model.</param>
-        public ObservableViewModel(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IModelNode modelNode, IEnumerable<IDirtiableViewModel> dirtiables)
-            : this(serviceProvider, modelContainer, dirtiables.SafeArgument("dirtiables").ToList())
+        /// <param name="dirtiables">The list of <see cref="IDirtiable"/> objects linked to this view model.</param>
+        public ObservableViewModel(IViewModelServiceProvider serviceProvider, NodeContainer nodeContainer, IGraphNode modelNode, IEnumerable<IDirtiable> dirtiables)
+            : this(serviceProvider, nodeContainer, dirtiables.SafeArgument("dirtiables").ToList())
         {
             if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
-            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", modelNode.Content.IsPrimitive, modelNode, new ModelNodePath(modelNode), modelNode.Content.Type, null);
-            Identifier = new ObservableViewModelIdentifier(node.ModelGuid);
+            var node = ObservableViewModelService.ObservableNodeFactory(this, "Root", modelNode.Content.IsPrimitive, modelNode, new GraphNodePath(modelNode), modelNode.Content.Type, null);
             node.Initialize();
             RootNode = node;
             node.CheckConsistency();
@@ -83,13 +79,14 @@ namespace SiliconStudio.Presentation.Quantum
         /// <inheritdoc/>
         public void Dispose()
         {
-            Dirtiables.ForEach(x => x.DirtinessUpdated -= DirtinessUpdated);
+            RootNode.Children.SelectDeep(x => x.Children).ForEach(x => x.Dispose());
+            RootNode.Dispose();
         }
 
-        public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, ModelContainer modelContainer, IReadOnlyCollection<ObservableViewModel> viewModels)
+        public static ObservableViewModel CombineViewModels(IViewModelServiceProvider serviceProvider, NodeContainer nodeContainer, IReadOnlyCollection<ObservableViewModel> viewModels)
         {
             if (viewModels == null) throw new ArgumentNullException(nameof(viewModels));
-            var combinedViewModel = new ObservableViewModel(serviceProvider, modelContainer, viewModels.SelectMany(x => x.Dirtiables));
+            var combinedViewModel = new ObservableViewModel(serviceProvider, nodeContainer, viewModels.SelectMany(x => x.Dirtiables));
 
             var rootNodes = new List<ObservableModelNode>();
             foreach (var viewModel in viewModels)
@@ -111,14 +108,13 @@ namespace SiliconStudio.Presentation.Quantum
                 rootNodeType = typeof(object);
 
             CombinedObservableNode rootCombinedNode = CombinedObservableNode.Create(combinedViewModel, "Root", null, rootNodeType, rootNodes, null);
-            combinedViewModel.Identifier = new ObservableViewModelIdentifier(rootNodes.Select(x => x.ModelGuid));
             rootCombinedNode.Initialize();
             combinedViewModel.RootNode = rootCombinedNode;
             return combinedViewModel;
         }
 
         /// <inheritdoc/>
-        public override IEnumerable<IDirtiableViewModel> Dirtiables => dirtiables;
+        public override IEnumerable<IDirtiable> Dirtiables { get; }
 
         /// <summary>
         /// Gets the root node of this observable view model.
@@ -143,14 +139,9 @@ namespace SiliconStudio.Presentation.Quantum
         public ObservableViewModelService ObservableViewModelService { get; }
 
         /// <summary>
-        /// Gets an identifier for this view model.
+        /// Gets the <see cref="NodeContainer"/> used to store Quantum objects.
         /// </summary>
-        public ObservableViewModelIdentifier Identifier { get; private set; }
-
-        /// <summary>
-        /// Gets the <see cref="ModelContainer"/> used to store Quantum objects.
-        /// </summary>
-        public ModelContainer ModelContainer { get; }
+        public NodeContainer NodeContainer { get; }
 
         /// <summary>
         /// Gets the <see cref="Logger"/> associated to this view model.
@@ -158,9 +149,10 @@ namespace SiliconStudio.Presentation.Quantum
         public Logger Logger { get; private set; }
 
         /// <summary>
-        /// Raised when the dirtiness of the related <see cref="Dirtiables"/> is updated after a property change.
+        /// Raised when the value of an <see cref="IObservableNode"/> contained into this view model has changed.
         /// </summary>
-        public event EventHandler<ObservableViewModelDirtinessUpdatedArgs> ViewModelDirtinessUpdated;
+        /// <remarks>If this view model contains <see cref="CombinedObservableNode"/> instances, this event will be raised only once, at the end of the transaction.</remarks>
+        public event EventHandler<ObservableViewModelNodeValueChangedArgs> NodeValueChanged;
 
         [Pure]
         public IObservableNode ResolveObservableNode(string path)
@@ -181,17 +173,8 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void NotifyNodeChanged(string observableNodePath)
         {
-            if (parent != null)
-                parent.nodeChangeList.Add(observableNodePath);
-            else
-                nodeChangeList.Add(observableNodePath);
-        }
-
-        internal void RegisterAction(string observableNodePath, ViewModelActionItem actionItem)
-        {
-            // This must be done before adding the action item to the stack!
-            NotifyNodeChanged(observableNodePath);
-            ActionStack.Add(actionItem);
+            parent?.combinedNodeChanges.Add(observableNodePath);
+            NodeValueChanged?.Invoke(this, new ObservableViewModelNodeValueChangedArgs(this, observableNodePath));
         }
 
         internal void BeginCombinedAction()
@@ -201,25 +184,21 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void EndCombinedAction(string displayName, string observableNodePath, object value)
         {
-            ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, ObservableViewModelService, observableNodePath, Identifier, x));
-        }
-
-        private void DirtinessUpdated(object sender, DirtinessUpdatedEventArgs e)
-        {
-            var handler = ViewModelDirtinessUpdated;
-            if (handler != null && nodeChangeList.Count > 0)
+            var handler = NodeValueChanged;
+            if (handler != null)
             {
-                foreach (var nodeChange in nodeChangeList)
+                foreach (var nodeChange in combinedNodeChanges)
                 {
-                    handler(this, new ObservableViewModelDirtinessUpdatedArgs(this, nodeChange));
+                    handler(this, new ObservableViewModelNodeValueChangedArgs(this, nodeChange));
                 }
             }
-            nodeChangeList.Clear();
+            combinedNodeChanges.Clear();
+            ActionStack.EndTransaction(displayName);
         }
 
-        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
+        private static ObservableModelNode DefaultCreateNode(ObservableViewModel viewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index)
         {
-            return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, modelNodePath, contentType, index);
+            return ObservableModelNode.Create(viewModel, baseName, isPrimitive, modelNode, graphNodePath, contentType, index);
         }
     }
 }

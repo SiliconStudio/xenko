@@ -3,12 +3,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Presentation.Core;
-using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
 
 namespace SiliconStudio.Presentation.Quantum
@@ -58,16 +56,10 @@ namespace SiliconStudio.Presentation.Quantum
                 DisplayName = provider();
         }
 
-        public VirtualObservableNode CreateVirtualChild(string name, Type contentType, int? order, bool isPrimitive, object initialValue, object index = null, NodeCommandWrapperBase valueChangedCommand = null, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
+        public VirtualObservableNode CreateVirtualChild(string name, Type contentType, bool isPrimitive, int? order, object index, Func<object> getter, Action<object> setter, IReadOnlyDictionary<string, object> nodeAssociatedData = null)
         {
-            var observableChild = VirtualObservableNode.Create(Owner, name, order, isPrimitive, contentType, initialValue, index, valueChangedCommand);
-            if (nodeAssociatedData != null)
-            {
-                foreach (var data in nodeAssociatedData)
-                {
-                    observableChild.AddAssociatedData(data.Key, data.Value);
-                }
-            }
+            var observableChild = VirtualObservableNode.Create(Owner, name, contentType, isPrimitive, order, index, getter, setter);
+            nodeAssociatedData?.ForEach(x => observableChild.AddAssociatedData(x.Key, x.Value));
             observableChild.FinalizeChildrenInitialization();
             AddChild(observableChild);
             return observableChild;
@@ -83,11 +75,6 @@ namespace SiliconStudio.Presentation.Quantum
                     DisplayName = DisplayNameProvider();
                 }
             }
-        }
-
-        protected void RegisterValueChangedAction(string path, ViewModelActionItem actionItem)
-        {
-            Owner.RegisterAction(path, actionItem);
         }
 
         private void SetName(string nodeName)

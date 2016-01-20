@@ -26,7 +26,6 @@ namespace SiliconStudio.Xenko.Engine
         private Model model;
         private SkeletonUpdater skeleton;
         private bool modelViewHierarchyDirty = true;
-        private readonly List<Material> materials = new List<Material>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponent"/> class.
@@ -78,10 +77,8 @@ namespace SiliconStudio.Xenko.Engine
         /// </value>
         /// <userdoc>The list of materials to use with the model. This list overrides the default materials of the model.</userdoc>
         [DataMember(20)]
-        public List<Material> Materials
-        {
-            get { return materials; }
-        }
+        [Category]
+        public List<Material> Materials { get; } = new List<Material>();
 
         [DataMemberIgnore, DataMemberUpdatable]
         [DataMember]
@@ -128,7 +125,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <value>The parameters.</value>
         [DataMemberIgnore]
-        public ParameterCollection Parameters { get; private set; }
+        public ParameterCollection Parameters { get; }
 
         /// <summary>
         /// Gets the bounding box in world space.

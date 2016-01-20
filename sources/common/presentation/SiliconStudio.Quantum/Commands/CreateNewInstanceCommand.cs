@@ -9,6 +9,7 @@ namespace SiliconStudio.Quantum.Commands
 {
     public class CreateNewInstanceCommand : ChangeValueCommand
     {
+        public const string CommandName = "CreateNewInstance";
         private static readonly object SetToNullObject = new object();
 
         /// <summary>
@@ -17,7 +18,7 @@ namespace SiliconStudio.Quantum.Commands
         public static object SetToNull { get { return SetToNullObject; } }
 
         /// <inheritdoc/>
-        public override string Name { get { return "CreateNewInstance"; } }
+        public override string Name => CommandName;
 
         /// <inheritdoc/>
         public override CombineMode CombineMode { get { return CombineMode.CombineOnlyForAll; } }
@@ -35,7 +36,7 @@ namespace SiliconStudio.Quantum.Commands
             return result;
         }
 
-        protected override object ChangeValue(object currentValue, object parameter, bool isRedo)
+        protected override object ChangeValue(object currentValue, object parameter)
         {
             if (parameter == SetToNull)
                 return null;

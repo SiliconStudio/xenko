@@ -22,7 +22,7 @@ namespace SiliconStudio.ActionStack
         /// <summary>
         /// Gets the identifier of the action item pointed by the current marker.
         /// </summary>
-        public Guid ActionItemIdentifier { get; private set; }
+        public Guid ActionItemIdentifier { get; }
 
         /// <summary>
         /// Empty save point.
