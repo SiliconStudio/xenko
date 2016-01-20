@@ -11,6 +11,8 @@ namespace SiliconStudio.Quantum.Commands
 {
     public class RemoveItemCommand : ActionItemNodeCommand
     {
+        public const string StaticName = "RemoveItem";
+
         private class RemoveItemActionItem : SimpleNodeCommandActionItem
         {
             private object indexToRemove;
@@ -75,7 +77,7 @@ namespace SiliconStudio.Quantum.Commands
         }
 
         /// <inheritdoc/>
-        public override string Name => "RemoveItem";
+        public override string Name => StaticName;
 
         /// <inheritdoc/>
         public override CombineMode CombineMode => CombineMode.AlwaysCombine;
