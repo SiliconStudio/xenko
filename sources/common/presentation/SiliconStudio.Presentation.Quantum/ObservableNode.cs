@@ -6,9 +6,9 @@ using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Collections;
+using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.ViewModel;
 
@@ -307,7 +307,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="name">The name of the command to look for.</param>
         /// <returns>The corresponding command, or <c>null</c> if no command with the given name exists.</returns>
-        public ICommand GetCommand(string name)
+        public ICommandBase GetCommand(string name)
         {
             name = EscapeName(name);
             return Commands.FirstOrDefault(x => x.Name == name);
