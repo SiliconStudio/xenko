@@ -43,6 +43,7 @@
     <Compile Include="Materials\UVBuilderScroll.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="ParticleLocator.cs" />
+    <Compile Include="ParticleSystemSettings.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\ParticleBatch.bytecodeSRgbTex0.OpenGLES.Level_9_1.cs" />

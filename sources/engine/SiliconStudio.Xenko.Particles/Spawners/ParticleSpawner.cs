@@ -59,6 +59,10 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         Dead,
     }
 
+    /// <summary>
+    /// <see cref="ParticleSpawner"/> governs the rate at which new particles are emitted into the <see cref="ParticleEmitter"/>
+    /// Multiple spawners with different triggering conditions can be part of the same <see cref="ParticleEmitter"/>
+    /// </summary>
     [DataContract("ParticleSpawner")]
     public abstract class ParticleSpawner 
     {
