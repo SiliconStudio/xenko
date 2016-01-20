@@ -168,7 +168,7 @@ namespace SiliconStudio.Assets
 
         public override string ToString()
         {
-            return Id.ToString();
+            return $"{GetType().Name}: {Id}";
         }
     }
 }

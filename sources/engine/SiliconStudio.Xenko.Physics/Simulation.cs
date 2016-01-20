@@ -4,7 +4,10 @@
 using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
 
@@ -139,19 +142,21 @@ namespace SiliconStudio.Xenko.Physics
 
         readonly List<ContactPoint> newContactsFastCache = new List<ContactPoint>();
         readonly List<ContactPoint> updatedContactsFastCache = new List<ContactPoint>();
-        readonly List<ContactPoint> deletedContactsFastCache = new List<ContactPoint>();
+        readonly HashSet<ContactPoint> aliveContactsFastCache = new HashSet<ContactPoint>();
         readonly List<Collision> alivePairsFastCache = new List<Collision>();
         readonly HashSet<Collision> processedPairsFastCache = new HashSet<Collision>();
         readonly Queue<Collision> removedPairsFastCache = new Queue<Collision>();
 
         readonly Queue<Collision> collisionsQueue = new Queue<Collision>();
-        readonly Queue<ContactPoint> contactsQueue = new Queue<ContactPoint>(); 
+        readonly Queue<ContactPoint> contactsQueue = new Queue<ContactPoint>();
 
         internal void ProcessContacts()
         {
             var contactsProfiler = Profiler.Begin(PhysicsProfilingKeys.ContactsProfilingKey);
 
             processedPairsFastCache.Clear();
+            newContactsFastCache.Clear();
+            updatedContactsFastCache.Clear();
             var numManifolds = collisionWorld.Dispatcher.NumManifolds;
             for (var i = 0; i < numManifolds; i++)
             {
@@ -189,10 +194,6 @@ namespace SiliconStudio.Xenko.Physics
                     continue;
                 }
 
-                newContactsFastCache.Clear();
-                updatedContactsFastCache.Clear();
-                deletedContactsFastCache.Clear();
-
                 if (newPair)
                 {
                     if (collisionsQueue.Count > 0)
@@ -215,19 +216,17 @@ namespace SiliconStudio.Xenko.Physics
                     colB.Collisions.Add(pair);
                     alivePairsFastCache.Add(pair);
                 }
-                else
-                {
-                    foreach (var contact in pair.Contacts)
-                    {
-                        deletedContactsFastCache.Add(contact);
-                    }
-                }
 
                 processedPairsFastCache.Add(pair);
 
                 for (var y = 0; y < numContacts; y++)
                 {
                     var cp = manifold.GetContactPoint(y);
+
+                    if (cp.Distance > 0.0f)
+                    {
+                        continue;
+                    }
 
                     ContactPoint contact = null;
                     var newContact = true;
@@ -239,27 +238,21 @@ namespace SiliconStudio.Xenko.Physics
                         break;
                     }
 
-                    //contactsProfilingState.Mark();
-
                     if (newContact)
                     {
                         contact = contactsQueue.Count > 0 ? contactsQueue.Dequeue() : new ContactPoint();
-
-                        contact.Distance = cp.Distance;
-                        contact.PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z);
-                        contact.PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z);
-                        contact.Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z);
                         contact.Pair = pair;
                         contact.Handle = GCHandle.Alloc(contact);
-
                         cp.UserPersistentPtr = GCHandle.ToIntPtr(contact.Handle);
-
                         pair.Contacts.Add(contact);
                     }
-                    else
-                    {
-                        deletedContactsFastCache.Remove(contact);
-                    }
+
+                    contact.Distance = cp.Distance;
+                    contact.PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z);
+                    contact.PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z);
+                    contact.Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z);
+
+                    aliveContactsFastCache.Add(contact);
 
                     if (newContact)
                     {
@@ -271,10 +264,10 @@ namespace SiliconStudio.Xenko.Physics
                     }
                 }
 
-                //deliver async events
-
                 if (newPair)
                 {
+                    //deliver new pair events
+
                     //are we the first pair we detect?
                     if (colA.Collisions.Count == 1)
                     {
@@ -302,73 +295,50 @@ namespace SiliconStudio.Xenko.Physics
                     {
                         colB.NewPairChannel.Send(pair);
                     }
-                }
-
-                foreach (var contact in newContactsFastCache)
-                {
-                    while (contact.Pair.NewContactChannel.Balance < 0)
-                    {
-                        contact.Pair.NewContactChannel.Send(contact);
-                    }
-                }
-
-                foreach (var contact in updatedContactsFastCache)
-                {
-                    while (contact.Pair.ContactUpdateChannel.Balance < 0)
-                    {
-                        contact.Pair.ContactUpdateChannel.Send(contact);
-                    }
-                }
-
-                foreach (var contact in deletedContactsFastCache)
-                {
-                    while (contact.Pair.ContactEndedChannel.Balance < 0)
-                    {
-                        contact.Pair.ContactEndedChannel.Send(contact);
-                    }
-
-                    pair.Contacts.Remove(contact);
-
-                    contact.Handle.Free();
-                    contactsQueue.Enqueue(contact);
-                }
-
-                if (pair.Contacts.Count == 0)
-                {
-                    colA.Collisions.Remove(pair);
-                    colB.Collisions.Remove(pair);
-                    alivePairsFastCache.Remove(pair);
-                    collisionsQueue.Enqueue(pair);
-
-                    while (colA.PairEndedChannel.Balance < 0)
-                    {
-                        colA.PairEndedChannel.Send(pair);
-                    }
-
-                    while (colB.PairEndedChannel.Balance < 0)
-                    {
-                        colB.PairEndedChannel.Send(pair);
-                    }
-
-                    if (colA.Collisions.Count == 0)
-                    {
-                        while (colA.AllPairsEndedChannel.Balance < 0)
-                        {
-                            colA.AllPairsEndedChannel.Send(pair);
-                        }
-                    }
-
-                    if (colB.Collisions.Count == 0)
-                    {
-                        while (colB.AllPairsEndedChannel.Balance < 0)
-                        {
-                            colB.AllPairsEndedChannel.Send(pair);
-                        }
-                    }
-                }
+                }          
             }
 
-            //Sometimes narrowphase is skipped it seems and we might get some stuck pair!
+            //deliver new contact events
+            foreach (var contact in newContactsFastCache)
+            {
+                while (contact.Pair.NewContactChannel.Balance < 0)
+                {
+                    contact.Pair.NewContactChannel.Send(contact);
+                }
+
+                aliveContactsFastCache.Remove(contact);
+            }
+
+            foreach (var contact in updatedContactsFastCache)
+            {
+                while (contact.Pair.ContactUpdateChannel.Balance < 0)
+                {
+                    contact.Pair.ContactUpdateChannel.Send(contact);
+                }
+
+                aliveContactsFastCache.Remove(contact);
+            }
+
+            //process contacts removal
+            foreach (var contact in aliveContactsFastCache)
+            {
+                while (contact.Pair.ContactEndedChannel.Balance < 0)
+                {
+                    contact.Pair.ContactEndedChannel.Send(contact);
+                }
+
+                contact.Pair.Contacts.Remove(contact);
+                if (contact.Pair.Contacts.Count == 0)
+                {
+                    removedPairsFastCache.Enqueue(contact.Pair);
+                }
+
+                contact.Handle.Free();
+                contactsQueue.Enqueue(contact);
+            }
+
+            aliveContactsFastCache.Clear();
+
             foreach (var pair in alivePairsFastCache)
             {
                 if (!processedPairsFastCache.Contains(pair))
