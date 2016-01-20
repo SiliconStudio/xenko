@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Gets a boolean indicating whether the <see cref="EntityComponent"/> is supporting multiple components of the same type on an entity.
         /// </summary>
-        public readonly bool AllowMultipleComponents ;
+        public readonly bool AllowMultipleComponents;
 
         /// <summary>
         /// Gets the attributes for the specified type.
