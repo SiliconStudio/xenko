@@ -217,5 +217,16 @@ namespace SiliconStudio.Xenko.Particles
                 }
             }
         }
+
+        /// <summary>
+        /// Restarts the particle system, resetting all values to their initial state
+        /// </summary>
+        public void RestartSimulation()
+        {
+            foreach (var particleEmitter in Emitters)
+            {
+                particleEmitter.RestartSimulation();
+            }
+        }
     }
 }

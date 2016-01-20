@@ -39,6 +39,10 @@ namespace SiliconStudio.Xenko.Particles.Components
             }
         }
 
+        [DataMember(1)]
+        [Display("Editor control")]
+        public ParticleSystemControl Control = new ParticleSystemControl();
+
         /// <summary>
         /// The color shade will be applied to all particles (via their materials) during rendering.
         /// The shade acts as a color scale multiplication, making the color darker. White shade is neutral.
