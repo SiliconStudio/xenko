@@ -184,6 +184,10 @@ namespace SiliconStudio.Xenko.Particles
         {
             BoundingShape.Dirty = true;
 
+            // If the particle system is paused skip the rest of the update state
+            if (isPaused)
+                return;
+
             foreach (var particleEmitter in Emitters)
             {
                 if (particleEmitter.Enabled)
@@ -227,6 +231,17 @@ namespace SiliconStudio.Xenko.Particles
             {
                 particleEmitter.RestartSimulation();
             }
+        }
+
+        private bool isPaused = false;
+
+        /// <summary>
+        /// Pauses or unpauses the particle system simulation
+        /// </summary>
+        /// <param name="paused"><c>true</c> to pause, <c>false</c> to play (unpause)</param>
+        public void SetPaused(bool paused)
+        {
+            isPaused = paused;
         }
     }
 }

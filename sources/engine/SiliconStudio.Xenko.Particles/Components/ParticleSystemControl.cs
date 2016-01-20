@@ -34,6 +34,12 @@ namespace SiliconStudio.Xenko.Particles.Components
             }
         }
 
+        [DataMember(30)]
+        public StateControl Control = StateControl.Play;
+
+        [DataMemberIgnore]
+        private StateControl oldControl = StateControl.Play;
+
         [DataMemberIgnore]
         public float resetSeconds = 5f;
 
@@ -45,6 +51,32 @@ namespace SiliconStudio.Xenko.Particles.Components
 
         public void Update(float dt, ParticleSystem particleSystem)
         {
+            // Check if state has changed
+            if (oldControl != Control)
+            {
+                switch (Control)
+                {
+                    case StateControl.Play:
+                        particleSystem.SetPaused(false);
+                        break;
+
+                    case StateControl.Pause:
+                        particleSystem.SetPaused(true);
+                        break;
+
+                    case StateControl.Stop:
+                        particleSystem.RestartSimulation();
+                        particleSystem.SetPaused(true);
+                        break;
+                }
+
+                oldControl = Control;
+            }
+
+            // If the particle system is not currently playing, skip updating the time
+            if (Control != StateControl.Play)
+                return;
+
             totalElapsedTime += dt;
             currentElapsedTime += dt;
 

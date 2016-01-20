@@ -25,6 +25,7 @@
     <Compile Include="Components\ParticleSystemComponentRenderer.cs" />
     <Compile Include="Components\ParticleSystemControl.cs" />
     <Compile Include="Components\ParticleSystemProcessor.cs" />
+    <Compile Include="Components\StateControl.cs" />
     <Compile Include="DebugDraw\DebugDrawShape.cs" />
     <Compile Include="Initializers\Initial3DRotationSeed.cs" />
     <Compile Include="Initializers\InitialColorSeed.cs" />
