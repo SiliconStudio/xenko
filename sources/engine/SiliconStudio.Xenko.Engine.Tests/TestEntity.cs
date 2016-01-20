@@ -101,10 +101,10 @@ namespace SiliconStudio.Xenko.Engine.Tests
         public void TestMultipleComponents()
         {
             // Check that TransformComponent cannot be added multiple times
-            Assert.False(EntityComponentAttributes.Get<TransformComponent>().AllowMultipleComponent);
+            Assert.False(EntityComponentAttributes.Get<TransformComponent>().AllowMultipleComponents);
 
             // Check that CustomEntityComponent can be added multiple times
-            Assert.True(EntityComponentAttributes.Get<CustomEntityComponent>().AllowMultipleComponent);
+            Assert.True(EntityComponentAttributes.Get<CustomEntityComponent>().AllowMultipleComponents);
 
             var entity = new Entity();
 
@@ -194,7 +194,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
     [DataContract()]
     [DefaultEntityComponentProcessor(typeof(CustomEntityComponentProcessor))]
-    [AllowMultipleComponent]
+    [AllowMultipleComponents]
     public sealed class CustomEntityComponent : CustomEntityComponentBase
     {
     }

@@ -13,15 +13,15 @@ namespace SiliconStudio.Xenko.Engine
     {
         private static readonly Dictionary<Type, EntityComponentAttributes> ComponentAttributes = new Dictionary<Type, EntityComponentAttributes>();
 
-        private EntityComponentAttributes(bool allowMultipleComponent)
+        private EntityComponentAttributes(bool allowMultipleComponents)
         {
-            AllowMultipleComponent = allowMultipleComponent;
+            AllowMultipleComponents = allowMultipleComponents;
         }
 
         /// <summary>
         /// Gets a boolean indicating whether the <see cref="EntityComponent"/> is supporting multiple components of the same type on an entity.
         /// </summary>
-        public readonly bool AllowMultipleComponent ;
+        public readonly bool AllowMultipleComponents ;
 
         /// <summary>
         /// Gets the attributes for the specified type.
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 if (!ComponentAttributes.TryGetValue(type, out attributes))
                 {
-                    attributes = new EntityComponentAttributes(type.GetTypeInfo().GetCustomAttribute<AllowMultipleComponentAttribute>() != null);
+                    attributes = new EntityComponentAttributes(type.GetTypeInfo().GetCustomAttribute<AllowMultipleComponentsAttribute>() != null);
                     ComponentAttributes.Add(type, attributes);
                 }
             }

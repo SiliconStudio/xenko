@@ -457,7 +457,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
     [DataContract()]
     [DefaultEntityComponentProcessor(typeof(CustomEntityComponentProcessorWithDependency))]
-    [AllowMultipleComponent]
+    [AllowMultipleComponents]
     public sealed class CustomEntityComponentWithDependency : CustomEntityComponentBase
     {
         public TransformComponent Link;

@@ -60,7 +60,7 @@
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedVector4Group.cs" />
     <Compile Include="Animations\AnimationUpdater.cs" />
     <Compile Include="Engine\ActivableEntityComponent.cs" />
-    <Compile Include="Engine\AllowMultipleComponentAttribute.cs" />
+    <Compile Include="Engine\AllowMultipleComponentsAttribute.cs" />
     <Compile Include="Engine\AsyncScript.cs" />
     <Compile Include="Animations\AnimationBlendOperation.cs" />
     <Compile Include="Animations\AnimationBlender.cs" />
