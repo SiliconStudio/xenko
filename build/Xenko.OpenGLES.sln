@@ -3,8 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 14.0.23107.0
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "99-Obsolete", "99-Obsolete", "{20D8EF89-880B-4B1A-B002-6BB1C087B705}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "30-Core", "30-Core", "{2E93E2B5-4500-4E47-9B65-E705218AB578}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "50-Engine", "50-Engine", "{4C142567-C42B-40F5-B092-798882190209}"
@@ -32,8 +30,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		..\store.config = ..\store.config
 		Xenko.Android.PreSettings.Local.targets = Xenko.Android.PreSettings.Local.targets
 		Xenko.build = Xenko.build
-		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
 		Xenko.Direct3D.CoreCLR.PreSettings.Local.targets = Xenko.Direct3D.CoreCLR.PreSettings.Local.targets
+		..\sources\targets\Xenko.GlobalSettings.targets = ..\sources\targets\Xenko.GlobalSettings.targets
 		Xenko.iOS.PreSettings.Local.targets = Xenko.iOS.PreSettings.Local.targets
 		Xenko.OpenGL.CoreCLR.PreSettings.Local.targets = Xenko.OpenGL.CoreCLR.PreSettings.Local.targets
 		Xenko.OpenGL.PreSettings.Local.targets = Xenko.OpenGL.PreSettings.Local.targets
@@ -70,8 +68,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine"
 	ProjectSection(ProjectDependencies) = postProject
 		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F} = {F2D52EDB-BC17-4243-B06D-33CD20F87A7F}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ScriptShader", "..\sources\scripts\ScriptShader\ScriptShader.csproj", "{457D4B45-85B9-4098-8389-6CBC012D140F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics", "..\sources\engine\SiliconStudio.Xenko.Graphics\SiliconStudio.Xenko.Graphics.csproj", "{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}"
 EndProject
@@ -151,10 +147,8 @@ Global
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{9ac6d791-811e-4d6a-b08e-93f0093ef268}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{5863574d-7a55-49bc-8e65-babb74d8e66e}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{2fca2d8b-b10f-4dca-9847-4221f74ba586}*SharedItemsImports = 4
-		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
-		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
+		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{52e37dda-584d-4c91-8ea3-e3d67c8acb0c}*SharedItemsImports = 4
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{d0db401e-6f96-46d0-ba9b-493b9c0777f1}*SharedItemsImports = 4
 		..\sources\common\presentation\SiliconStudio.Markdown\SiliconStudio.Markdown.projitems*{43b62674-aa8b-4531-ba27-855ca2580145}*SharedItemsImports = 13
 		..\sources\editor\SiliconStudio.Eula\SiliconStudio.Eula.projitems*{950badd0-ad5a-4f58-87ec-4adaecbea89b}*SharedItemsImports = 13
@@ -194,26 +188,6 @@ Global
 		{C121A566-555E-42B9-9B0A-1696529A9088}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{C121A566-555E-42B9-9B0A-1696529A9088}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{C121A566-555E-42B9-9B0A-1696529A9088}.Testing|Win32.ActiveCfg = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.AppStore|Win32.ActiveCfg = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Release|Win32.ActiveCfg = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Testing|Any CPU.ActiveCfg = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Testing|Any CPU.Build.0 = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
-		{457D4B45-85B9-4098-8389-6CBC012D140F}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -823,7 +797,6 @@ Global
 	GlobalSection(NestedProjects) = preSolution
 		{D2A80DA7-3C1A-4A73-BE85-0B28847EA44C} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{C121A566-555E-42B9-9B0A-1696529A9088} = {4C142567-C42B-40F5-B092-798882190209}
-		{457D4B45-85B9-4098-8389-6CBC012D140F} = {20D8EF89-880B-4B1A-B002-6BB1C087B705}
 		{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5} = {4C142567-C42B-40F5-B092-798882190209}
 		{A8F8D125-7A22-489F-99BC-9A02F545A17F} = {4C142567-C42B-40F5-B092-798882190209}
 		{01700344-CF44-482C-BEBC-60213B0F844C} = {4C142567-C42B-40F5-B092-798882190209}
