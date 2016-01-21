@@ -1,8 +1,12 @@
-﻿#define DEBUG_CanvasView
-
-// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+#define DEBUG_CanvasView
+
 using System;
+using System.Collections.ObjectModel;
+using System.Collections.Specialized;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 
@@ -23,6 +27,13 @@ namespace SiliconStudio.Presentation.Controls
         /// The name of the part for the <see cref="Canvas"/>.
         /// </summary>
         private const string CanvasPartName = "PART_Canvas";
+        
+        /// <summary>
+        /// Identifies the <see cref="Items"/> dependency property.
+        /// </summary>
+        public static readonly DependencyProperty ItemsProperty =
+            DependencyProperty.Register(nameof(Items), typeof(ObservableCollection<ICanvasViewItem>), typeof(CanvasView), new PropertyMetadata(null, OnItemsPropertyChanged));
+
 
         /// <summary>
         /// The canvas.
@@ -36,6 +47,82 @@ namespace SiliconStudio.Presentation.Controls
         static CanvasView()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CanvasView), new FrameworkPropertyMetadata(typeof(CanvasView)));
+        }
+
+        public ObservableCollection<ICanvasViewItem> Items
+        {
+            get { return (ObservableCollection<ICanvasViewItem>)GetValue(ItemsProperty); }
+            set { SetValue(ItemsProperty, value); }
+        }
+
+        private static void OnItemsPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            var view = (CanvasView)sender;
+
+            var items = e.OldValue as ObservableCollection<ICanvasViewItem>;
+            if (items != null)
+            {
+                items.CollectionChanged -= view.ItemsCollectionChanged;
+                view.DetachItems(items);
+            }
+
+            items = e.NewValue as ObservableCollection<ICanvasViewItem>;
+            if (items != null)
+            {
+                items.CollectionChanged += view.ItemsCollectionChanged;
+                view.AttachItems(items);
+            }
+        }
+
+        private void AttachItems(IEnumerable<ICanvasViewItem> items)
+        {
+            foreach (var item in items)
+            {
+                item.Attach(this);
+            }
+        }
+
+        private void DetachItems(IEnumerable<ICanvasViewItem> items)
+        {
+            foreach (var item in items)
+            {
+                item.Detach(this);
+            }
+        }
+
+        private void ItemsCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            switch (e.Action)
+            {
+                case NotifyCollectionChangedAction.Move:
+                    return;
+
+                case NotifyCollectionChangedAction.Reset:
+                    var items = sender as ObservableCollection<ICanvasViewItem>;
+                    if (items != null)
+                    {
+                        DetachItems(items);
+                        AttachItems(items);
+                    }
+                    return;
+
+                case NotifyCollectionChangedAction.Add:
+                case NotifyCollectionChangedAction.Remove:
+                case NotifyCollectionChangedAction.Replace:
+                    if (e.OldItems != null)
+                    {
+                        DetachItems(e.OldItems.Cast<ICanvasViewItem>());
+                    }
+            
+                    if (e.NewItems != null)
+                    {
+                        AttachItems(e.NewItems.Cast<ICanvasViewItem>());
+                    }
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public override void OnApplyTemplate()
@@ -61,22 +148,15 @@ namespace SiliconStudio.Presentation.Controls
 
         private IList<Point>[] pointLists;
 
-        private readonly Color[] colors = {
-            Colors.Aqua,
-            Colors.Bisque,
-            Colors.Brown,
-            Colors.Green,
-            Colors.HotPink,
-            Colors.Khaki,
-            Colors.Maroon,
-            Colors.Navy,
-            Colors.Orange,
+        private readonly Color[] colors =
+        {
+            Colors.Aqua, Colors.Bisque, Colors.Brown, Colors.Green, Colors.HotPink, Colors.Khaki, Colors.Maroon, Colors.Navy, Colors.Orange,
         };
 
         public CanvasView()
         {
             this.timer = new Timer(OnTimerElapsed);
-            this.function = (t, x, a) => Math.Cos(t * a) * (x == 0 ? 1 : Math.Sin(x * a) / x);
+            this.function = (t, x, a) => Math.Cos(t*a)*(x == 0 ? 1 : Math.Sin(x*a)/x);
 
             Loaded += OnLoaded;
         }
@@ -97,11 +177,11 @@ namespace SiliconStudio.Presentation.Controls
         {
             lock (this.syncRoot)
             {
-                var t = this.watch.ElapsedMilliseconds * 0.001;
+                var t = this.watch.ElapsedMilliseconds*0.001;
                 for (var i = 0; i < pointLists.Length; ++i)
                 {
                     var points = pointLists[i];
-                    var a = 0.5 + i * 0.05;
+                    var a = 0.5 + i*0.05;
                     points.Clear();
                     for (double x = -5; x <= 5; x += 0.1)
                     {
