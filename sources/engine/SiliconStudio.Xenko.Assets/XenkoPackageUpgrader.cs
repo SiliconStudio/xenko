@@ -440,7 +440,7 @@ namespace SiliconStudio.Xenko.Assets
             public NewComponentsCodeUpgrader()
             {
                 regexGetComponent = new Regex(@"\.Get\(([A-Za-z0-9_]*Component)\.Key\)");
-                regexInheritScript = new Regex(@"class\s+(.*?):\s*Script(\W?)");
+                regexInheritScript = new Regex(@"class\s+(.*?):\s*Script(\W)");
             }
 
             public bool UpgradeProject(MSBuildWorkspace workspace, UFile projectPath)
@@ -453,10 +453,16 @@ namespace SiliconStudio.Xenko.Assets
                 var fileContents = File.ReadAllText(syntaxTree.FilePath);
                 var newFileContents = fileContents;
 
+                // Handle Scripts
                 newFileContents = newFileContents.Replace("Get(ScriptComponent.Key).Scripts", "GetAll<ScriptComponent>()");
                 newFileContents = newFileContents.Replace("Get<ScriptComponent>().Scripts", "GetAll<ScriptComponent>()");
                 newFileContents = regexGetComponent.Replace(newFileContents, @".Get<$1>()");
                 newFileContents = regexInheritScript.Replace(newFileContents, "class $1 : ScriptComponent$2");
+
+                // Handle Physics
+                newFileContents = newFileContents.Replace("Get(PhysicsComponent.Key).Elements", "GetAll<PhysicsComponent>()");
+                newFileContents = newFileContents.Replace("Get<PhysicsComponent>().Elements", "GetAll<ScriptComponent>()");
+                newFileContents = newFileContents.Replace("Get<PhysicsComponent>()[0]", "Get<PhysicsComponent>()");
 
                 // Save file if there were any changes
                 if (newFileContents != fileContents)
