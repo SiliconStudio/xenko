@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         /// <inheritdoc/>
         [DataMemberIgnore]
-        public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { return Type != null ? Type.MaterialInstances : Enumerable.Empty<KeyValuePair<string, MaterialInstance>>(); } }
+        public List<ModelMaterial> Materials => Type?.MaterialInstances.Select(x => new ModelMaterial { Name = x.Key, MaterialInstance = x.Value }).ToList() ?? new List<ModelMaterial>();
 
         private class Upgrader : AssetUpgraderBase
         {
