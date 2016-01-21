@@ -154,6 +154,25 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
+        /// Gets the index'th component of the specified type. See remarks.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
+        /// <param name="index">The index'th component to select.</param>
+        /// <returns>The component or null if does no exist</returns>
+        /// <remarks>
+        /// <ul>
+        /// <li>If index &gt; 0, it will take the index'th component of the specified <typeparamref name="T"/>.</li>
+        /// <li>An index == 0 is equivalent to calling <see cref="Get{T}()"/></li>
+        /// <li>if index &lt; 0, it will start from the end of the list to the beginning. A value of -1 means the first last component.</li>
+        /// </ul>
+        /// </remarks>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Get<T>(int index) where T : EntityComponent
+        {
+            return Components.Get<T>(index);
+        }
+
+        /// <summary>
         /// Gets all components of the specified type.
         /// </summary>
         /// <typeparam name="T">Type of the component</typeparam>

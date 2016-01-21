@@ -57,6 +57,34 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public T Get<T>(int index) where T : EntityComponent
+        {
+            if (index < 0)
+            {
+                for (int i = Count - 1; i >= 0; i--)
+                {
+                    var item = this[i] as T;
+                    if (item != null && ++index == 0)
+                    {
+                        return item;
+                    }
+                }
+            }
+            else
+            {
+                for (int i = 0; i < this.Count; i++)
+                {
+                    var item = this[i] as T;
+                    if (item != null && index-- == 0)
+                    {
+                        return item;
+                    }
+                }
+            }
+            return null;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove<T>() where T : EntityComponent
         {
             for (int i = 0; i < this.Count; i++)
