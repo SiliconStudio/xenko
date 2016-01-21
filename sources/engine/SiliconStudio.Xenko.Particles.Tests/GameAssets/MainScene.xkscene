@@ -1,0 +1,63 @@
+!SceneAsset
+Id: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084
+SerializedVersion: 18
+Tags: []
+Hierarchy:
+    RootEntities:
+        - 6d2b02df-329f-4e05-b299-69f96d39c763
+        - ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
+    Entities:
+        -   Entity:
+                Name: Camera
+                Components:
+                    CameraComponent.Key:
+                        Projection: Perspective
+                    TransformComponent.Key:
+                        Position: {X: 0.0, Y: 3.0, Z: 0.0}
+                        Rotation: {W: 0.707106769, X: -0.707106769, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                Id: 6d2b02df-329f-4e05-b299-69f96d39c763
+            Design:
+                Folder: null
+        -   Entity:
+                Name: Ambient light
+                Components:
+                    LightComponent.Key:
+                        Type: !LightAmbient
+                            Color: !ColorRgbProvider
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                    TransformComponent.Key:
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
+            Design:
+                Folder: null
+    SceneSettings:
+        GraphicsCompositor: !SceneGraphicsCompositorLayers
+            Cameras:
+                -   Name: null
+                    Camera:
+                        Entity: {Id: 6d2b02df-329f-4e05-b299-69f96d39c763}
+                        Component: CameraComponent.Key
+            Layers: []
+            Master:
+                Name: SceneGraphicsLayer
+                Output: !MasterRenderFrameProvider {}
+                Renderers:
+                    - !ClearRenderFrameRenderer
+                        Color: {R: 0.0, G: 0.0, B: 0.0, A: 1.0}
+                        Output: !CurrentRenderFrameProvider {}
+                    - !SceneCameraRenderer
+                        Mode: !CameraRendererModeForward {}
+                        Camera:
+                            Index: 0
+                        Output: !CurrentRenderFrameProvider {}
+                        Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+        EditorSettings:
+            GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+            SceneUnit: 1.0
+            Mode: !SceneEditorGraphicsModeLDRSettings
+                BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
