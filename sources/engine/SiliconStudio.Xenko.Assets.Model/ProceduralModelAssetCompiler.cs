@@ -2,8 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Threading.Tasks;
-
-using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
@@ -11,7 +9,7 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
-namespace SiliconStudio.Xenko.Assets.ProceduralModels
+namespace SiliconStudio.Xenko.Assets.Model
 {
     internal class ProceduralModelAssetCompiler : AssetCompilerBase<ProceduralModelAsset>
     {
