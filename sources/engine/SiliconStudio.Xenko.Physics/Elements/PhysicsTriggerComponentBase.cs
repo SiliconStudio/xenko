@@ -1,10 +1,11 @@
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
 {
-    [DataContract("PhysicsTriggerElementBase")]
-    [Display(40, "PhysicsTriggerElementBase")]
-    public abstract class PhysicsTriggerElementBase : PhysicsElementBase
+    [DataContract("PhysicsTriggerComponentBase")]
+    [Display(40, "PhysicsTriggerComponentBase")]
+    public abstract class PhysicsTriggerComponentBase : PhysicsComponent
     {
         private bool isTrigger;
 
@@ -28,15 +29,10 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        [DataMemberIgnore]
-        public override Collider Collider
+        protected override void OnColliderUpdated()
         {
-            get { return base.Collider; }
-            internal set
-            {
-                base.Collider = value;
-                IsTrigger = isTrigger;
-            }
+            base.OnColliderUpdated();
+            IsTrigger = isTrigger;
         }
     }
 }

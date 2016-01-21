@@ -1,18 +1,24 @@
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
 {
-    [DataContract("CharacterElement")]
+    [DataContract("CharacterComponent")]
     [Display(40, "Character")]
-    public class CharacterElement : PhysicsElementBase
+    public sealed class CharacterComponent : PhysicsComponent
     {
-        public CharacterElement()
+        public CharacterComponent()
         {
             StepHeight = 0.1f;
         }
 
-        public override Types Type => Types.CharacterController;
+        [DataMemberIgnore]
+        public new Character Collider
+        {
+            get { return (Character)base.Collider; }
+            set { base.Collider = value; }
+        }
 
         /// <summary>
         /// Gets or sets the height of the character step.
@@ -159,18 +165,40 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        [DataMemberIgnore]
-        public override Collider Collider
+
+        protected override void OnColliderUpdated()
         {
-            get { return base.Collider; }
-            internal set
+            base.OnColliderUpdated();
+            FallSpeed = fallSpeed;
+            MaxSlope = maxSlope;
+            JumpSpeed = jumpSpeed;
+            Gravity = gravity;
+        }
+
+        protected override void OnAttach()
+        {
+            base.OnAttach();
+
+            var ch = Simulation.CreateCharacter(ColliderShape, StepHeight);
+
+            Collider = ch;
+            Collider.Entity = Entity;
+            UpdatePhysicsTransformation(); //this will set position and rotation of the collider
+
+            if (IsDefaultGroup)
             {
-                base.Collider = value;
-                FallSpeed = fallSpeed;
-                MaxSlope = maxSlope;
-                JumpSpeed = jumpSpeed;
-                Gravity = gravity;
+                Simulation.AddCharacter(ch, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
             }
+            else
+            {
+                Simulation.AddCharacter(ch, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
+            }
+        }
+
+        protected override void OnDetach()
+        {
+            base.OnDetach();
+            Simulation.RemoveCharacter(Collider);
         }
     }
 }

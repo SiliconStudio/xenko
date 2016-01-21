@@ -1,17 +1,21 @@
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
 {
-    [DataContract("RigidbodyElement")]
+    [DataContract("RigidbodyComponent")]
     [Display(40, "Rigidbody")]
-    public class RigidbodyElement : PhysicsSkinnedElementBase
+    public sealed class RigidbodyComponent : PhysicsSkinnedComponentBase
     {
-        public override Types Type => InternalCollider != null
-            ? (((RigidBody)InternalCollider).Type == RigidBodyTypes.Kinematic ? Types.KinematicRigidBody : Types.DynamicRigidBody)
-            : (isKinematic ? Types.KinematicRigidBody : Types.DynamicRigidBody);
-
         private bool isKinematic;
+
+        [DataMemberIgnore]
+        public new RigidBody Collider
+        {
+            get { return (RigidBody)base.Collider; }
+            set { base.Collider = value; }
+        }
 
         [DataMember(75)]
         public bool IsKinematic
@@ -195,19 +199,125 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        [DataMemberIgnore]
-        public override Collider Collider
+        protected override void OnColliderUpdated()
         {
-            get { return base.Collider; }
-            internal set
+            base.OnColliderUpdated();
+            Mass = mass;
+            LinearDamping = linearDamping;
+            AngularDamping = angularDamping;
+            OverrideGravity = overrideGravity;
+            Gravity = gravity;
+        }
+
+        protected override void OnAttach()
+        {
+            base.OnAttach();
+
+            var rb = Simulation.CreateRigidBody(ColliderShape);
+
+            rb.Entity = Entity;
+            rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
+            rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(ref transform);
+            Collider = rb;
+            UpdatePhysicsTransformation(); //this will set position and rotation of the collider
+
+            rb.Type = IsKinematic ? RigidBodyTypes.Kinematic : RigidBodyTypes.Dynamic;
+            if (rb.Mass == 0.0f) rb.Mass = 1.0f;
+
+            if (IsDefaultGroup)
             {
-                base.Collider = value;
-                Mass = mass;
-                LinearDamping = linearDamping;
-                AngularDamping = angularDamping;
-                OverrideGravity = overrideGravity;
-                Gravity = gravity;
+                Simulation.AddRigidBody(rb, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
+            }
+            else
+            {
+                Simulation.AddRigidBody(rb, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
             }
         }
+
+        protected override void OnDetach()
+        {
+            base.OnDetach();
+
+            var rb = Collider;
+            var constraints = rb.LinkedConstraints.ToArray();
+            foreach (var c in constraints)
+            {
+                Simulation.RemoveConstraint(c);
+                c.Dispose();
+            }
+
+            Simulation.RemoveRigidBody(rb);
+        }
+
+        protected internal override void OnUpdateDraw()
+        {
+            base.OnUpdateDraw();
+
+            //write to ModelViewHierarchy
+            var model = Data.ModelComponent;
+            if (Collider != null && Collider.Type == RigidBodyTypes.Dynamic)
+            {
+                model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
+
+                if (DebugEntity != null)
+                {
+                    Vector3 scale, pos;
+                    Quaternion rot;
+                    BoneWorldMatrixOut.Decompose(out scale, out rot, out pos);
+                    DebugEntity.Transform.Position = pos;
+                    DebugEntity.Transform.Rotation = rot;
+                }
+            }
+        }
+    
+        //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
+        private void RigidBodySetWorldTransform(ref Matrix physicsTransform)
+        {
+            Data.PhysicsComponent.Simulation.SimulationProfiler.Mark();
+            Data.PhysicsComponent.Simulation.UpdatedRigidbodies++;
+
+            if (BoneIndex == -1)
+            {
+                UpdateTransformationComponent(ref physicsTransform);
+            }
+            else
+            {
+                UpdateBoneTransformation(ref physicsTransform);
+            }
+
+            if (DebugEntity == null) return;
+
+            Vector3 scale, pos;
+            Quaternion rot;
+            physicsTransform.Decompose(out scale, out rot, out pos);
+            DebugEntity.Transform.Position = pos;
+            DebugEntity.Transform.Rotation = rot;
+        }
+
+        //This is valid for Dynamic rigidbodies (called once at initialization)
+        //and Kinematic rigidbodies, called every simulation tick (if body not sleeping) to let the physics engine know where the kinematic body is.
+        private void RigidBodyGetWorldTransform(out Matrix physicsTransform)
+        {
+            Data.PhysicsComponent.Simulation.SimulationProfiler.Mark();
+            Data.PhysicsComponent.Simulation.UpdatedRigidbodies++;
+
+            if (BoneIndex == -1)
+            {
+                DerivePhysicsTransformation(out physicsTransform);
+            }
+            else
+            {
+                DeriveBonePhysicsTransformation(out physicsTransform);
+            }
+
+            if (DebugEntity == null) return;
+
+            Vector3 scale, pos;
+            Quaternion rot;
+            physicsTransform.Decompose(out scale, out rot, out pos);
+            DebugEntity.Transform.Position = pos;
+            DebugEntity.Transform.Rotation = rot;
+        }
+
     }
 }

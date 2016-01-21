@@ -580,6 +580,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                 var mapEntityComponents = new Dictionary<string, Dictionary<string, Tuple<string, dynamic>>>();
                 var newScriptComponentsPerEntity = new Dictionary<string, List<dynamic>>();
+                var newPhysicsComponentsPerEntity = new Dictionary<string, List<dynamic>>();
 
                 // Collect current order of known components
                 // We will use this order to add components in order to the new component list
@@ -622,6 +623,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
                                 newScripts.Add(script);
                             }
                         }
+                        else if (componentKey == "PhysicsComponent.Key")
+                        {
+                            var newPhysics = new List<dynamic>();
+                            newPhysicsComponentsPerEntity.Add(entityId, newPhysics);
+
+                            foreach (var newPhysic in component.Value.Elements)
+                            {
+                                newPhysics.Add(newPhysic);
+                            }
+                        }
                         else
                         {
                             componentKey = GetComponentNameFromKey(componentKey);
@@ -646,21 +657,37 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     // Order components
                     var orderedComponents = newComponents.ToList();
 
-                    // Add scripts
+                    // Convert scripts to ScriptComponents
                     List<dynamic> scripts;
                     if (newScriptComponentsPerEntity.TryGetValue(entityId, out scripts))
                     {
-                        foreach (var script in scripts)
+                        foreach (var component in scripts)
                         {
                             // Update Script to ScriptComponent
-                            var scriptId = (string)script.Id;
-                            script.RemoveChild("Id");
-                            script["~Id"] = scriptId;
+                            var componentId = (string)component.Id;
+                            component.RemoveChild("Id");
+                            component["~Id"] = componentId;
 
-                            var scriptNode = (DynamicYamlMapping)script;
-                            var scriptType = scriptNode.Node.Tag.Substring(1);
+                            var componentNode = (DynamicYamlMapping)component;
+                            var componentType = componentNode.Node.Tag.Substring(1);
 
-                            orderedComponents.Add(new KeyValuePair<string, Tuple<string, dynamic>>(scriptType, new Tuple<string, dynamic>(scriptId, script)));
+                            orderedComponents.Add(new KeyValuePair<string, Tuple<string, dynamic>>(componentType, new Tuple<string, dynamic>(componentId, component)));
+                        }
+                    }
+
+                    // Convert PhysicsElements to PhysicsComponents
+                    List<dynamic> physics;
+                    if (newPhysicsComponentsPerEntity.TryGetValue(entityId, out physics))
+                    {
+                        foreach (var component in physics)
+                        {
+                            // Update Script to ScriptComponent
+                            var componentId = (string)component["~Id"];
+                            var componentNode = (DynamicYamlMapping)component;
+                            var componentType = componentNode.Node.Tag.Substring(1);
+                            componentType = componentType.Replace("Element", "Component");
+
+                            orderedComponents.Add(new KeyValuePair<string, Tuple<string, dynamic>>(componentType, new Tuple<string, dynamic>(componentId, component)));
                         }
                     }
 
