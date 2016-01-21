@@ -1,5 +1,7 @@
 #include <Windows.h>
 
+//Borrowed from: https://msdn.microsoft.com/en-us/library/windows/desktop/ee417014(v=vs.85).aspx#XInput_and_DirectInput_Side_by_Side
+
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 
 #include <wbemidl.h>
