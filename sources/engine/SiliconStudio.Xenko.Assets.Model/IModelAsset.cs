@@ -2,8 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-using SiliconStudio.Core;
-using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Assets.Model
 {
@@ -13,9 +11,11 @@ namespace SiliconStudio.Xenko.Assets.Model
     public interface IModelAsset
     {
         /// <summary>
-        /// Gets the collection of material instances associated with the model.
+        /// The materials.
         /// </summary>
-        [Display(Browsable = false)]
-        IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get; }
+        /// <userdoc>
+        /// The list of materials in the model.
+        /// </userdoc>
+        List<ModelMaterial> Materials { get; }
     }
 }
