@@ -706,7 +706,7 @@ namespace SiliconStudio.Xenko.Particles
         /// Leave it 0 for unlimited (automatic) pool size. If positive, it limits the maximum number of living particles this Emitter can have at any given time.
         /// </userdoc>
         [DataMember(5)]
-        [Display("Maximum particles")]
+        [Display("Max particles")]
         public int MaxParticlesOverride
         {
             get { return maxParticlesOverride; }
@@ -729,7 +729,7 @@ namespace SiliconStudio.Xenko.Particles
         /// When a new particle is born it will have at least that much Lifetime remaining (in seconds)
         /// </userdoc>
         [DataMember(8)]
-        [Display("Particle's min lifetime")]
+        [Display("Lifespan min")]
         public float ParticleMinLifetime
         {
             get { return particleMinLifetime; }
@@ -752,7 +752,7 @@ namespace SiliconStudio.Xenko.Particles
         /// When a new particle is born it will have at most that much Lifetime remaining (in seconds)
         /// </userdoc>
         [DataMember(10)]
-        [Display("Particle's max lifetime")]
+        [Display("Lifespan max")]
         public float ParticleMaxLifetime
         {
             get { return particleMaxLifetime; }
@@ -775,7 +775,7 @@ namespace SiliconStudio.Xenko.Particles
         /// World space particles persist in world space after they are born and do not automatically change with the Emitter. Local space particles persist in the Emitter's local space and follow it whenever the Emitter's locator changes.
         /// </userdoc>
         [DataMember(11)]
-        [Display("Simulation Space")]
+        [Display("Space")]
         public EmitterSimulationSpace SimulationSpace
         {
             get { return simulationSpace; }
@@ -956,7 +956,7 @@ namespace SiliconStudio.Xenko.Particles
         /// All random numbers in the Particle System are based on a seed. If you use deterministic seeds, your particles will always behave the same way every time you start the simulation.
         /// </userdoc>
         [DataMember(12)]
-        [Display("Random seed base")]
+        [Display("Randomize")]
         public EmitterRandomSeedMethod RandomSeedMethod
         {
             get
