@@ -6,20 +6,15 @@ using System.Globalization;
 using System.Linq;
 using SharpYaml;
 using SharpYaml.Serialization;
-
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Extensions;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Yaml;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.ProceduralModels;
 
-namespace SiliconStudio.Xenko.Assets.ProceduralModels
+namespace SiliconStudio.Xenko.Assets.Model
 {
     /// <summary>
     /// The geometric primitive asset.
@@ -61,7 +56,7 @@ namespace SiliconStudio.Xenko.Assets.ProceduralModels
 
         /// <inheritdoc/>
         [DataMemberIgnore]
-        public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { return Type != null ? Type.MaterialInstances : Enumerable.Empty<KeyValuePair<string, MaterialInstance>>(); } }
+        public List<ModelMaterial> Materials => Type?.MaterialInstances.Select(x => new ModelMaterial { Name = x.Key, MaterialInstance = x.Value }).ToList() ?? new List<ModelMaterial>();
 
         private class Upgrader : AssetUpgraderBase
         {
