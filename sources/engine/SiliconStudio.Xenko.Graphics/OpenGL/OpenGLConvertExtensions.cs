@@ -393,13 +393,12 @@ namespace SiliconStudio.Xenko.Graphics
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                     if (!graphicsDevice.HasExtTextureFormatBGRA8888)
                         throw new NotSupportedException();
-#endif
-                    internalFormat = graphicsDevice.currentVersionMajor < 3 ? SrgbAlpha : Srgb8Alpha8;
-#if SILICONSTUDIO_PLATFORM_IOS
+
                     format = graphicsDevice.currentVersionMajor < 3 ? (PixelFormatGl)SrgbAlpha : (PixelFormatGl)ExtTextureFormatBgra8888.BgraExt;
 #else
                     format = graphicsDevice.currentVersionMajor < 3 ? (PixelFormatGl)SrgbAlpha : (PixelFormatGl)PixelFormatGl.Bgra;
 #endif
+                    internalFormat = graphicsDevice.currentVersionMajor < 3 ? SrgbAlpha : Srgb8Alpha8;                    
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
