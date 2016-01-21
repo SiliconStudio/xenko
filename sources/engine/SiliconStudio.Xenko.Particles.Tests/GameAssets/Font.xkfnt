@@ -1,0 +1,18 @@
+!SpriteFont
+Id: 538255f3-de32-465e-b749-c73978ccd75e
+Tags: []
+Source: 
+FontName: Courier New
+Size: 12.0
+Style: Regular
+IsDynamic: true
+DefaultCharacter: ' '
+CharacterSet: 
+CharacterRegions:
+    -   Start: ' '
+        End: "\x7F"
+AntiAlias: Aliased
+NoPremultiply: false
+Spacing: 0.0
+LineSpacing: 0.0
+UseKerning: false
