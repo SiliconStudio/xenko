@@ -17,6 +17,7 @@
     <Compile Include="AnimationAssetCompiler.cs" />
     <Compile Include="AssimpAssetImporter.cs" />
     <Compile Include="FbxAssetImporter.cs" />
+    <Compile Include="IModelAsset.cs" />
     <Compile Include="ImportAssimpCommand.cs" />
     <Compile Include="ImportFbxCommand.cs" />
     <Compile Include="ImportModelCommand.cs" />
@@ -30,6 +31,8 @@
     <Compile Include="ModelMaterial.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="NodeInformation.cs" />
+    <Compile Include="ProceduralModelAsset.cs" />
+    <Compile Include="ProceduralModelAssetCompiler.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkeletonAsset.cs" />
     <Compile Include="SkeletonAssetCompiler.cs" />
