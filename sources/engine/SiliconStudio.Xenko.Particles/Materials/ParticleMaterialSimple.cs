@@ -36,7 +36,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(20)]
         [DataMemberRange(0, 1, 0.001, 0.1)]
-        [Display("Alpha-Additive")]
+        [Display("Alpha-Add")]
         public float AlphaAdditive { get; set; } = 0f;
 
         /// <summary>
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// The default option is no culling, other possible options are back-face culling and front-face culling. Culling both faces at the same time is not an option.
         /// </userdoc>
         [DataMember(40)]
-        [Display("Face culling")]
+        [Display("Culling")]
         public ParticleMaterialCulling FaceCulling;
 
         protected bool HasColorField { get; private set; } = false;

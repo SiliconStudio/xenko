@@ -17,7 +17,7 @@ using SiliconStudio.Xenko.Shaders;
 namespace SiliconStudio.Xenko.Particles.Materials
 {
     [DataContract("ParticleMaterialComputeColor")]
-    [Display("DynamicColor")]
+    [Display("DynamicEmissive")]
     public class ParticleMaterialComputeColor : ParticleMaterialSimple
     {
         [DataMemberIgnore]
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// If left blank, the texture coordinates will be the original ones from the shape builder, usually (0, 0, 1, 1). Or you can define a custom texture coordinate builder which modifies the original coordinates for the sprite.
         /// </userdoc>
         [DataMember(200)]
-        [Display("Texture coordinates")]
+        [Display("UV coords")]
         public UVBuilder UVBuilder;
 
         [DataMemberIgnore]
