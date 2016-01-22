@@ -8,8 +8,8 @@
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SiliconStudio.Xenko.Input.Tests</RootNamespace>
-    <AssemblyName>SiliconStudio.Xenko.Input.Tests</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Particles.Tests</RootNamespace>
+    <AssemblyName>SiliconStudio.Xenko.Particles.Tests</AssemblyName>
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AndroidApplication>true</AndroidApplication>
@@ -32,7 +32,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Input.Tests.xkpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Particles.Tests.xkpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Android' ">
     <DebugSymbols>true</DebugSymbols>
@@ -124,9 +124,9 @@
       <Name>SiliconStudio.Core.Mathematics</Name>
       <Private>False</Private>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
-      <Project>{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}</Project>
-      <Name>SiliconStudio.Xenko.Input</Name>
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj">
+      <Project>{f32fda80-b6dd-47a8-8681-437e2c0d3f31}</Project>
+      <Name>SiliconStudio.Xenko.Particles</Name>
       <Private>False</Private>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
@@ -191,11 +191,10 @@
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Compile Include="BasicInputTest.cs" />
-    <Compile Include="AdvancedInputTest.cs" />
+    <Compile Include="GameTest.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="SensorGameTest.cs" />
-    <None Include="SiliconStudio.Xenko.Input.Tests.xkpkg" />
+    <Compile Include="SimpleTest.cs" />
+    <None Include="SiliconStudio.Xenko.Particles.Tests.xkpkg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />

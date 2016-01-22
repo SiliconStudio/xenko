@@ -9,8 +9,8 @@
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
-    <RootNamespace>SiliconStudio.Xenko.Input.Tests</RootNamespace>
-    <AssemblyName>SiliconStudioXenkoInputTests</AssemblyName>
+    <RootNamespace>SiliconStudio.Xenko.Particles.Tests</RootNamespace>
+    <AssemblyName>SiliconStudioXenkoParticlesTests</AssemblyName>
     <BaseIntermediateOutputPath>obj\</BaseIntermediateOutputPath>
     <SiliconStudioPlatform>iOS</SiliconStudioPlatform>
     <SiliconStudioBuildProfile>iOS</SiliconStudioBuildProfile>
@@ -22,7 +22,7 @@
     <SiliconStudioAssemblySign>true</SiliconStudioAssemblySign>
   </PropertyGroup>
   <PropertyGroup>
-    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Input.Tests.xkpkg</SiliconStudioCurrentPackagePath>
+    <SiliconStudioCurrentPackagePath>$(MSBuildThisFileDirectory)SiliconStudio.Xenko.Particles.Tests.xkpkg</SiliconStudioCurrentPackagePath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>true</DebugSymbols>
@@ -140,9 +140,9 @@
       <Project>{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}</Project>
       <Name>SiliconStudio.Core.Mathematics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
-      <Project>{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}</Project>
-      <Name>SiliconStudio.Xenko.Input</Name>
+    <ProjectReference Include="..\..\..\sources\engine\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj">
+      <Project>{f32fda80-b6dd-47a8-8681-437e2c0d3f31}</Project>
+      <Name>SiliconStudio.Xenko.Particles</Name>
     </ProjectReference>
     <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\..\..\sources\engine\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
       <Project>{E8B3553F-A79F-4E50-B75B-ACEE771C320C}</Project>
@@ -194,11 +194,10 @@
     </ProjectReference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Compile Include="BasicInputTest.cs" />
-    <Compile Include="AdvancedInputTest.cs" />
+    <Compile Include="GameTest.cs" />
     <Compile Include="Module.cs" />
-    <Compile Include="SensorGameTest.cs" />
-    <None Include="SiliconStudio.Xenko.Input.Tests.xkpkg" />
+    <Compile Include="SimpleTest.cs" />
+    <None Include="SiliconStudio.Xenko.Particles.Tests.xkpkg" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Icon.png" Label="Xenko.DoNotSync" />
