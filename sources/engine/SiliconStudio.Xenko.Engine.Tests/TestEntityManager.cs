@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using NUnit.Framework;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Engine.Processors;
 
@@ -313,8 +314,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
             var entityManager = new CustomEntityManager(registry);
 
             // Entity with a sub-Entity
+            var childEntity0 = new Entity();
             var entity = new Entity();
-            entity.AddChild(new Entity());
+            entity.AddChild(childEntity0);
 
             // ================================================================
             // 1) Add entity with sub-entity and check EntityManager and TransformProcessor
@@ -353,6 +355,41 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             Assert.AreEqual(0, entityManager.Count);
             Assert.AreEqual(0, transformProcessor.TransformationRoots.Count);
+        }
+
+        [Test]
+        public void TestReset()
+        {
+            var registry = new ServiceRegistry();
+            var entityManager = new CustomEntityManager(registry);
+
+            // Entity with a sub-Entity
+            var childEntity0 = new Entity();
+            var entity = new Entity();
+            entity.AddChild(childEntity0);
+
+            // ================================================================
+            // 1) Add entity with sub-entity and check EntityManager and TransformProcessor
+            // ================================================================
+            entityManager.Add(entity);
+            var transformProcessor = entityManager.GetProcessor<TransformProcessor>();
+            Assert.NotNull(transformProcessor);
+
+            Assert.AreEqual(2, entityManager.Count);
+            Assert.AreEqual(1, transformProcessor.TransformationRoots.Count);
+            Assert.True(transformProcessor.TransformationRoots.Contains(entity.Transform));
+
+            // ================================================================
+            // 2) Reset the manager
+            // ================================================================
+            entityManager.Reset();
+
+            Assert.AreEqual(0, entityManager.Count);
+            Assert.AreEqual(0, entityManager.MapComponentTypeToProcessors.Count);
+            Assert.AreEqual(0, entityManager.Processors.Count);
+            Assert.AreEqual(0, transformProcessor.TransformationRoots.Count);
+            Assert.Null(transformProcessor.EntityManager);
+            Assert.Null(entity.Owner);
         }
 
         public static void Main()
