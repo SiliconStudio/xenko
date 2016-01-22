@@ -64,12 +64,12 @@ namespace SiliconStudio.Presentation
         /// </summary>
         /// <param name="point"></param>
         /// <param name="size"></param>
-        /// <param name="fillColor"></param>
-        /// <param name="strokeColor"></param>
-        /// <param name="thickness"></param>
-        /// <param name="lineJoin"></param>
-        /// <param name="dashArray"></param>
-        /// <param name="dashOffset"></param>
+        /// <param name="fillColor">The color of the shape's interior.</param>
+        /// <param name="strokeColor">The color of the shape's outline.</param>
+        /// <param name="thickness">The wifdth of the shape's outline.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
         public void DrawEllipse(Point point, Size size, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
         {
@@ -87,14 +87,35 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
+        /// Draws a straight line between <paramref name="p1"/> and <paramref name="p2"/>.
+        /// </summary>
+        /// <param name="p1"></param>
+        /// <param name="p2"></param>
+        /// <param name="strokeColor">The color of the shape's outline.</param>
+        /// <param name="thickness">The wifdth of the shape's outline.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        public void DrawLine(Point p1, Point p2, Color strokeColor,
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+        {
+            var line = Create<Line>();
+            SetStroke(line, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            line.X1 = p1.X;
+            line.Y1 = p1.Y;
+            line.X2 = p2.X;
+            line.Y2 = p2.Y;
+        }
+
+        /// <summary>
         /// Draws line segments in the canvas.
         /// </summary>
         /// <param name="points"></param>
-        /// <param name="strokeColor"></param>
-        /// <param name="thickness"></param>
-        /// <param name="lineJoin"></param>
-        /// <param name="dashArray"></param>
-        /// <param name="dashOffset"></param>
+        /// <param name="strokeColor">The color of the shape's outline.</param>
+        /// <param name="thickness">The wifdth of the shape's outline.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
         public void DrawLineSegments(ICollection<Point> points, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
         {
@@ -131,11 +152,11 @@ namespace SiliconStudio.Presentation
         /// </summary>
         /// <param name="points"></param>
         /// <param name="fillColor"></param>
-        /// <param name="strokeColor"></param>
-        /// <param name="thickness"></param>
-        /// <param name="lineJoin"></param>
-        /// <param name="dashArray"></param>
-        /// <param name="dashOffset"></param>
+        /// <param name="strokeColor">The color of the shape's outline.</param>
+        /// <param name="thickness">The wifdth of the shape's outline.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
         public void DrawPolygon(ICollection<Point> points, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
         {
@@ -151,18 +172,16 @@ namespace SiliconStudio.Presentation
         /// Draws a polyline in the canvas.
         /// </summary>
         /// <param name="points"></param>
-        /// <param name="strokeColor"></param>
-        /// <param name="thickness"></param>
-        /// <param name="lineJoin"></param>
-        /// <param name="dashArray"></param>
-        /// <param name="dashOffset"></param>
+        /// <param name="strokeColor">The color of the shape's outline.</param>
+        /// <param name="thickness">The wifdth of the shape's outline.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
         public void DrawPolyline(ICollection<Point> points, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
         {
             var polyline = Create<Polyline>();
-
             SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, dashOffset);
-
             polyline.Points = new PointCollection(points);
         }
 
@@ -170,12 +189,12 @@ namespace SiliconStudio.Presentation
         /// Draws a rectangle in the canvas.
         /// </summary>
         /// <param name="rect"></param>
-        /// <param name="fillColor"></param>
-        /// <param name="strokeColor"></param>
-        /// <param name="thickness"></param>
-        /// <param name="lineJoin"></param>
-        /// <param name="dashArray"></param>
-        /// <param name="dashOffset"></param>
+        /// <param name="fillColor">The color of the shape's interior.</param>
+        /// <param name="strokeColor">The color of the shape's outline.</param>
+        /// <param name="thickness">The wifdth of the shape's outline.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
         public void DrawRectangle(Rect rect, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
         {
@@ -194,7 +213,7 @@ namespace SiliconStudio.Presentation
         /// Draws text in the canvas.
         /// </summary>
         /// <param name="point"></param>
-        /// <param name="color"></param>
+        /// <param name="color">The color of the text.</param>
         /// <param name="text"></param>
         /// <param name="fontFamily"></param>
         /// <param name="fontSize"></param>
