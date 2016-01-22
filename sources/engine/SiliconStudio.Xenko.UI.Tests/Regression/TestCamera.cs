@@ -164,7 +164,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
 
             SetCamera();
 
-            while (!IsDisposed)
+            while (true)
             {
                 UpdateCamera();
 
