@@ -165,7 +165,7 @@
       <Project>{FB06C76A-6BB7-40BE-9AFA-FEC13B045FB5}</Project>
       <Name>SiliconStudio.Xenko.Graphics</Name>
     </ProjectReference>
-    <ProjectReference Include="..\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
+    <ProjectReference Condition="'$(SiliconStudioPlatform)' == 'Windows'" Include="..\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj">
       <Project>{e8b3553f-a79f-4e50-b75b-acee771c320c}</Project>
       <Name>SiliconStudio.Xenko.Shaders.Compiler</Name>
     </ProjectReference>
