@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     class ShadowMapFilterVsm : ShadowMapFilterBase
     {
-        cbuffer PerPass
+        cbuffer PerLighting
         {
             float BleedingFactor;
             float MinVariance;
