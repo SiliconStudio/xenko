@@ -63,20 +63,36 @@ namespace SiliconStudio.Xenko.Assets.Debugging
 
         protected virtual EntityComponent DeserializeComponent(ReloadedComponentEntry reloadedComponent)
         {
-            var components = new EntityComponentCollection();
+            // Use an entity to deserialize the component 
+            var entity = new Entity();
+            entity.Components.Clear();
+            
             var eventReader = new EventReader(new MemoryParser(reloadedComponent.YamlEvents));
-            var componentCollection = (EntityComponentCollection)YamlSerializer.Deserialize(eventReader, components, typeof(EntityComponentCollection), log != null ? new SerializerContextSettings { Logger = new YamlForwardLogger(log) } : null);
-            var component = componentCollection.FirstOrDefault();
+            YamlSerializer.Deserialize(eventReader, entity, typeof(Entity), log != null ? new SerializerContextSettings { Logger = new YamlForwardLogger(log) } : null);
+            var component = entity.Components.FirstOrDefault();
+            entity.Components.Clear();
             return component;
         }
 
         protected virtual List<ParsingEvent> SerializeComponent(EntityComponent component)
         {
-            var components = new EntityComponentCollection() { component };
+            // Use an entity to deserialize the component 
+
+            // In order to do this, we need to save the parent entity of the component being deserialized
+            var previousEntity = component.Entity;
+            component.Entity = null;
+
+            var entity = new Entity();
+            entity.Components.Clear();
+            entity.Components.Add(component);
 
             // Serialize with Yaml layer
             var parsingEvents = new List<ParsingEvent>();
-            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), components, typeof(EntityComponentCollection));
+            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), entity, typeof(Entity));
+
+            entity.Components.Clear();
+            component.Entity = previousEntity;
+
             return parsingEvents;
         }
 

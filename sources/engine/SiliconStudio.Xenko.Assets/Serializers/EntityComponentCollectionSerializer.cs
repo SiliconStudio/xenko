@@ -33,17 +33,19 @@ namespace SiliconStudio.Xenko.Assets.Serializers
         {
             var scriptCollection = (EntityComponentCollection)objectContext.Instance;
 
-            object value = null;
+            EntityComponent value = null;
             bool needAdd = true; // If we could get existing value, no need add to collection
-            if (scriptCollection.Count > index)
+            if (index < scriptCollection.Count)
             {
                 value = scriptCollection[index];
                 needAdd = false;
             }
 
-            value = ReadCollectionItem(ref objectContext, value, elementType);
+            value = (EntityComponent)ReadCollectionItem(ref objectContext, value, elementType);
             if (needAdd)
-                collectionDescriptor.CollectionAdd(thisObject, value);
+            {
+                scriptCollection.Add(value);
+            }
         }
 
         /// <inheritdoc/>
