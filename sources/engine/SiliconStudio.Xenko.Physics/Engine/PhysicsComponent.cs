@@ -9,9 +9,10 @@ using SiliconStudio.Xenko.Physics;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("PhysicsComponent", Inherited = true)]
-    [Display(3000, "Physics", Expand = ExpandRule.Once)]
+    [Display("Physics", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     [AllowMultipleComponents]
+    [ComponentOrder(3000)]
     public abstract class PhysicsComponent : EntityComponent, IPhysicsElement
     {
         protected PhysicsComponent()

@@ -6,7 +6,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("PhysicsSkinnedComponentBase")]
-    [Display(40, "PhysicsSkinnedComponentBase")]
+    [Display("PhysicsSkinnedComponentBase")]
     public abstract class PhysicsSkinnedComponentBase : PhysicsTriggerComponentBase
     {
         /// <summary>

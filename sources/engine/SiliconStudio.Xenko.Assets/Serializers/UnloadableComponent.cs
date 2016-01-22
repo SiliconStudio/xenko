@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Assets.Serializers
     /// Yaml representation is kept as is, so that it can be properly saved again.
     /// </summary>
     [DataSerializerGlobal(typeof(InvariantObjectCloneSerializer<UnloadableComponent>), Profile = "AssetClone")]
-    [Display(1001, "Error: unable to load this script")]
+    [Display("Error: unable to load this script")]
     [AllowMultipleComponents]
     [NonInstantiable]
     public sealed class UnloadableComponent : EntityComponent

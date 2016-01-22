@@ -15,8 +15,9 @@ namespace SiliconStudio.Xenko.Engine
     /// Describes the camera projection and view.
     /// </summary>
     [DataContract("CameraComponent")]
-    [Display(13000, "Camera", Expand = ExpandRule.Once)]
+    [Display("Camera", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(CameraComponentRenderer), -1000)]
+    [ComponentOrder(13000)]
     public sealed class CameraComponent : ActivableEntityComponent
     {
         public const float DefaultAspectRatio = 16.0f / 9.0f;

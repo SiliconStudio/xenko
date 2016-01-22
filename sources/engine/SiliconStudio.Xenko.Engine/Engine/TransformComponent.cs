@@ -19,7 +19,8 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract("TransformComponent")]
     [DataSerializerGlobal(null, typeof(TrackingCollection<TransformComponent>))]
     [DefaultEntityComponentProcessor(typeof(TransformProcessor))]
-    [Display(0, "Transform", Expand = ExpandRule.Once)]
+    [Display("Transform", Expand = ExpandRule.Once)]
+    [ComponentOrder(0)]
     public sealed class TransformComponent : EntityComponent //, IEnumerable<TransformComponent> Check why this is not working
     {
         private static readonly TransformOperation[] emptyTransformOperations = new TransformOperation[0];

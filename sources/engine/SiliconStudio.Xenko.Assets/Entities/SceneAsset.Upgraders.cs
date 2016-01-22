@@ -594,9 +594,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     {
                         continue;
                     }
-                    var displayAttribute = knownComponent.GetCustomAttribute<DisplayAttribute>() ?? new DisplayAttribute(defaultComponentOrder);
+                    var order = knownComponent.GetCustomAttribute<ComponentOrderAttribute>(true)?.Order ?? defaultComponentOrder;
 
-                    mapComponentOrder[componentName] = displayAttribute.Order ?? defaultComponentOrder;
+                    mapComponentOrder[componentName] = order;
                 }
                 mapComponentOrder["ScriptComponent"] = 1000;
 

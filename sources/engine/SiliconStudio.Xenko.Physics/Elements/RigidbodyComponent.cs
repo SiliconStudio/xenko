@@ -5,7 +5,7 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("RigidbodyComponent")]
-    [Display(40, "Rigidbody")]
+    [Display("Rigidbody")]
     public sealed class RigidbodyComponent : PhysicsSkinnedComponentBase
     {
         private bool isKinematic;

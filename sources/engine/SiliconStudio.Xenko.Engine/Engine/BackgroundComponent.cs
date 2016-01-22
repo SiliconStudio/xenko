@@ -16,9 +16,10 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a background to an <see cref="Entity"/>.
     /// </summary>
     [DataContract("BackgroundComponent")]
-    [Display(9600, "Background", Expand = ExpandRule.Once)]
+    [Display("Background", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(BackgroundComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(BackgroundComponentProcessor))]
+    [ComponentOrder(9600)]
     public sealed class BackgroundComponent : ActivableEntityComponent
     {
         /// <summary>
