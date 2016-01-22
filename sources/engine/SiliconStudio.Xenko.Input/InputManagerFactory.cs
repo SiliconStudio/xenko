@@ -86,7 +86,7 @@ namespace SiliconStudio.Xenko.Input
 
         private static InputManager NewInputManagerSDL(IServiceRegistry registry)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_UI_SDL
+#if SILICONSTUDIO_XENKO_UI_SDL
             return new InputManagerSDL(registry);
 #else
             return null;
