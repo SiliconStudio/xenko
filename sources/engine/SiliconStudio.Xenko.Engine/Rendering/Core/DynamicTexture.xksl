@@ -8,6 +8,9 @@
 /// </remarks>
 class DynamicTexture<LinkType TTexture>
 {
-    [Link("TTexture")]
-    stage Texture2D Texture;
+    rgroup PerMaterial
+    {
+        [Link("TTexture")]
+        stage Texture2D Texture;
+    }
 };

@@ -1338,8 +1338,8 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 
             foreach (var group in groupedVarList)
             {
-                var cbufferName = group.FirstOrDefault().GetTag(XenkoTags.ConstantBuffer) as ConstantBuffer;
-                var cbuffer = new ConstantBuffer { Type = SiliconStudio.Shaders.Ast.Hlsl.ConstantBufferType.Constant, Name = cbufferName.Name.Text };
+                var originalCbuffer = (ConstantBuffer)group.First().GetTag(XenkoTags.ConstantBuffer);
+                var cbuffer = new ConstantBuffer { Type = originalCbuffer.Type, Name = originalCbuffer.Name.Text };
                 cbuffer.Members.AddRange(group);
 
                 MixedShader.Members.Add(cbuffer);
