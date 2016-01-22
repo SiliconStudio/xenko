@@ -388,15 +388,20 @@ namespace SiliconStudio.Xenko.Graphics
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
                 case PixelFormat.B8G8R8A8_UNorm_SRgb:
                     // TODO: Check on iOS/Android and OpenGL 3
-                    internalFormat = graphicsDevice.currentVersionMajor < 3 ? SrgbAlpha : Srgb8Alpha8;
-                    format = graphicsDevice.currentVersionMajor < 3 ? (PixelFormatGl)SrgbAlpha : PixelFormatGl.Bgra;
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
+                    if (!graphicsDevice.HasExtTextureFormatBGRA8888)
+                        throw new NotSupportedException();
+
+                    format = graphicsDevice.currentVersionMajor < 3 ? (PixelFormatGl)SrgbAlpha : (PixelFormatGl)ExtTextureFormatBgra8888.BgraExt;
+#else
+                    format = graphicsDevice.currentVersionMajor < 3 ? (PixelFormatGl)SrgbAlpha : (PixelFormatGl)PixelFormatGl.Bgra;
+#endif
+                    internalFormat = graphicsDevice.currentVersionMajor < 3 ? SrgbAlpha : Srgb8Alpha8;                    
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
                     break;
-#endif
                 case PixelFormat.R16_Float:
                     internalFormat = R16f;
                     format = PixelFormatGl.Red;
