@@ -8,6 +8,9 @@
 /// </remarks>
 class DynamicSampler<LinkType TSampler>
 {
-    [Link("TSampler")]
-    stage SamplerState Sampler;
+    rgroup PerMaterial
+    {
+        [Link("TSampler")]
+        stage SamplerState Sampler;
+    }
 };
