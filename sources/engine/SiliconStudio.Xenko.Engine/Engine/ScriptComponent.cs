@@ -25,8 +25,9 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("ScriptComponent", Inherited = true)]
     [DefaultEntityComponentProcessor(typeof(ScriptProcessor), ExecutionMode = ExecutionMode.Runtime)]
-    [Display(1000, "Script", Expand = ExpandRule.Once)]
+    [Display("Script", Expand = ExpandRule.Once)]
     [AllowMultipleComponents]
+    [ComponentOrder(1000)]
     public abstract class ScriptComponent : EntityComponent, IScriptContext
     {
         internal const uint LiveScriptingMask = 128;

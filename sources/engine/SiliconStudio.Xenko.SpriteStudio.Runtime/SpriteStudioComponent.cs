@@ -13,10 +13,11 @@ using SiliconStudio.Xenko.Updater;
 namespace SiliconStudio.Xenko.Engine
 {
     [DataContract("SpriteStudioComponent")]
-    [Display(9900, "Sprite Studio", Expand = ExpandRule.Once)]
+    [Display("Sprite Studio", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(SpriteStudioProcessor))]
     [DefaultEntityComponentRenderer(typeof(SpriteStudioRenderer))]
     [DataSerializerGlobal(null, typeof(List<SpriteStudioNodeState>))]
+    [ComponentOrder(9900)]
     public sealed class SpriteStudioComponent : EntityComponent
     {
         [DataMember(1)]

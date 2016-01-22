@@ -11,8 +11,9 @@ namespace SiliconStudio.Xenko.Engine
     /// A link to a scene that is rendered by a parent <see cref="Scene"/>.
     /// </summary>
     [DataContract("ChildSceneComponent")]
-    [Display(11200, "Child scene", Expand = ExpandRule.Once)]
+    [Display("Child scene", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
+    [ComponentOrder(11200)]
     public sealed class ChildSceneComponent : ActivableEntityComponent
     {
         private Scene scene;

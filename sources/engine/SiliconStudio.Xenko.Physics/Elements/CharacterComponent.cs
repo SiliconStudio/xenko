@@ -5,7 +5,7 @@ using SiliconStudio.Xenko.Engine;
 namespace SiliconStudio.Xenko.Physics
 {
     [DataContract("CharacterComponent")]
-    [Display(40, "Character")]
+    [Display("Character")]
     public sealed class CharacterComponent : PhysicsComponent
     {
         public CharacterComponent()
