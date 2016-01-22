@@ -25,6 +25,7 @@
     <Compile Include="CombineMode.cs" />
     <Compile Include="Commands\CreateNewInstanceCommand.cs" />
     <Compile Include="Commands\ChangeValueCommand.cs" />
+    <Compile Include="Commands\MoveItemCommand.cs" />
     <Compile Include="Commands\NodeCommandActionItem.cs" />
     <Compile Include="Commands\NodeCommandBase.cs" />
     <Compile Include="Commands\ActionItemNodeCommand.cs" />
