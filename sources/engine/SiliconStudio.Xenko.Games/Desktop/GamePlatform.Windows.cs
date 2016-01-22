@@ -32,7 +32,7 @@ namespace SiliconStudio.Xenko.Games
         public GamePlatformWindows(GameBase game) : base(game)
         {
             IsBlockingRun = true;
-#if SILICONSTUDIO_RUNTIME_CORECLR
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_RUNTIME_CORECLR
                 // This is required by the Audio subsystem of SharpDX.
             Win32Native.CoInitialize(IntPtr.Zero);
 #endif
