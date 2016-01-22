@@ -58,5 +58,12 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="parameter">The command parameter.</param>
         /// <returns>A task that completes when the command has finished.</returns>
         public abstract Task Invoke(object parameter);
+
+        /// <inheritdoc/>
+        public override string ToString()
+        {
+            var name = Name;
+            return !string.IsNullOrEmpty(name) ? $"{{{GetType().Name}: {name}}}" : base.ToString();
+        }
     }
 }
