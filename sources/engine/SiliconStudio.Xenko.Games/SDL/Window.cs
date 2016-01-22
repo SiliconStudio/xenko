@@ -28,9 +28,13 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <param name="title">Title of the window, see Text property.</param>
         public Window(string title)
         {
-                // Create the SDL window and then extract the native handle.
-            SdlHandle = SDL.SDL_CreateWindow(title, SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 640, 480,
-                SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN);
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+            var flags = SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN | SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL;
+#else
+            var flags = SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN;
+#endif
+            // Create the SDL window and then extract the native handle.
+            SdlHandle = SDL.SDL_CreateWindow(title, SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 640, 480, flags);
 
             if (SdlHandle == IntPtr.Zero)
             {
@@ -38,6 +42,14 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             }
             else
             {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                var context = SDL.SDL_GL_CreateContext(SdlHandle);
+                // The external context must be made current to initialize OpenGL
+                SDL.SDL_GL_MakeCurrent(SdlHandle, context);
+
+                OpenGLContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(context), SDL.SDL_GL_GetProcAddress, () => new OpenTK.ContextHandle(SDL.SDL_GL_GetCurrentContext()));
+#endif
+
                 SDL.SDL_SysWMinfo info = default(SDL.SDL_SysWMinfo);
                 SDL.SDL_VERSION(out info.version);
                 SDL.SDL_bool res = SDL.SDL_GetWindowWMInfo(SdlHandle, ref info);
@@ -49,6 +61,8 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                     Handle = info.info.win.window;
+#elif SILICONSTUDIO_PLATFORM_LINUX
+                    Handle = info.info.x11.window;
 #endif
                 }
             }
@@ -448,7 +462,14 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// </summary>
         public IntPtr SdlHandle { get; private set; }
 
-#region Disposal
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+        /// <summary>
+        /// The OpenGL Context if any
+        /// </summary>
+        public OpenTK.Graphics.GraphicsContext OpenGLContext;
+#endif
+
+        #region Disposal
         /// <inheritDoc/>
         ~Window()
         {
