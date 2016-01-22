@@ -188,14 +188,23 @@ namespace SiliconStudio.Xenko.Particles
         private void ModulesChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             var module = e.Item as ParticleModule;
+            if (module == null)
+                return;
+
             switch (e.Action)
             {
                 case NotifyCollectionChangedAction.Add:
-                    module?.RequiredFields.ForEach(AddRequiredField);
+                    for (int i = 0; i < module.RequiredFields.Count; i++)
+                    {
+                        AddRequiredField(module.RequiredFields[i]);
+                    }
                     break;
 
                 case NotifyCollectionChangedAction.Remove:
-                    module?.RequiredFields.ForEach(RemoveRequiredField);
+                    for (int i = 0; i < module.RequiredFields.Count; i++)
+                    {
+                        RemoveRequiredField(module.RequiredFields[i]);
+                    }
                     break;
             }
         }

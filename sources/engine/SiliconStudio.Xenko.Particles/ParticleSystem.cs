@@ -258,15 +258,15 @@ namespace SiliconStudio.Xenko.Particles
             {
                 if (particleEmitter.Enabled)
                 {
-                    try
-                    {
+                    //try
+                    //{
                         particleEmitter.Draw(device, context, ref viewMatrix, ref projMatrix, ref invViewMatrix, color);
-                    }
-                    catch (Exception e)
-                    {
-                        System.Console.WriteLine(e);
-                        throw;
-                    }
+                    //}
+                    //catch (Exception e)
+                    //{
+                    //    System.Console.WriteLine(e);
+                    //    throw;
+                    //}
                 }
             }
         }
