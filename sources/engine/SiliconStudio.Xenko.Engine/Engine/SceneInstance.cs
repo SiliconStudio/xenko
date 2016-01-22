@@ -202,6 +202,15 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
+        protected internal override void Reset()
+        {
+            if (previousScene != null)
+            {
+                previousScene.Entities.CollectionChanged -= Entities_CollectionChanged;
+            }
+            base.Reset();
+        }
+
         private void Load()
         {
             previousScene = Scene;
@@ -220,7 +229,7 @@ namespace SiliconStudio.Xenko.Engine
                 Add(entity);
 
             // Listen to future changes in Scene.Entities
-            scene.Entities.CollectionChanged += Entities_CollectionChanged;
+            Scene.Entities.CollectionChanged += Entities_CollectionChanged;
 
             // TODO: RendererTypes could be done outside this instance.
             HandleRendererTypes();
