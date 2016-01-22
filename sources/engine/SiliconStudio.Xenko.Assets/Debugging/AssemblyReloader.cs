@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Assets.Debugging
             foreach (var reloadedComponent in reloadedComponents)
             {
                 var componentToReload = reloadedComponent.Entity.Components[reloadedComponent.ComponentIndex];
-                ReplaceComponent(componentToReload, reloadedComponent);
+                ReplaceComponent(reloadedComponent);
             }
         }
 
@@ -70,6 +70,8 @@ namespace SiliconStudio.Xenko.Assets.Debugging
             var eventReader = new EventReader(new MemoryParser(reloadedComponent.YamlEvents));
             YamlSerializer.Deserialize(eventReader, entity, typeof(Entity), log != null ? new SerializerContextSettings { Logger = new YamlForwardLogger(log) } : null);
             var component = entity.Components.FirstOrDefault();
+
+            // Make sure to clear the components so that the component is detached from the entity.
             entity.Components.Clear();
             return component;
         }
@@ -101,7 +103,7 @@ namespace SiliconStudio.Xenko.Assets.Debugging
             return new ReloadedComponentEntry(entity, index, parsingEvents);
         }
 
-        protected abstract void ReplaceComponent(EntityComponent entityComponent, ReloadedComponentEntry reloadedComponent);
+        protected abstract void ReplaceComponent(ReloadedComponentEntry reloadedComponent);
 
         protected class ReloadedComponentEntry
         {

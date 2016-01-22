@@ -137,13 +137,13 @@ namespace SiliconStudio.Xenko.Debugger
             return parsingEvents;
         }
 
-        protected override void ReplaceComponent(EntityComponent entityComponent, ReloadedComponentEntry reloadedComponent)
+        protected override void ReplaceComponent(ReloadedComponentEntry reloadedComponent)
         {
             // Create new component instance
             var newComponent = DeserializeComponent(reloadedComponent);
 
             // Dispose and unregister old component (and their MicroThread, if any)
-            var oldComponent = entityComponent.Entity.Components[reloadedComponent.ComponentIndex];
+            var oldComponent = reloadedComponent.Entity.Components[reloadedComponent.ComponentIndex];
 
             // Flag scripts as being live reloaded
             if (game != null && oldComponent is ScriptComponent)
@@ -153,7 +153,7 @@ namespace SiliconStudio.Xenko.Debugger
 
             // Replace with new component
             // TODO: Remove component before serializing it, so cancellation code can run
-            entityComponent.Entity.Components[reloadedComponent.ComponentIndex] = newComponent;
+            reloadedComponent.Entity.Components[reloadedComponent.ComponentIndex] = newComponent;
 
             // TODO: Dispose or Cancel on script?
             if (oldComponent is ScriptComponent)
