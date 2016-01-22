@@ -4,7 +4,7 @@ using MonoTouch.UIKit;
 using SiliconStudio.Xenko.Effects;
 using SiliconStudio.Xenko.Starter;
 
-namespace SiliconStudio.Xenko.Input.Tests
+namespace SiliconStudio.Xenko.Particles.Tests
 {
     public class Application
     {
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Input.Tests
         {
             RuntimeHelpers.RunModuleConstructor(typeof(MaterialKeys).Module.ModuleHandle);
 
-            Game = new InputTestGame2();
+            //Game = new InputTestGame2();
 
             return base.FinishedLaunching(app, options);
         }

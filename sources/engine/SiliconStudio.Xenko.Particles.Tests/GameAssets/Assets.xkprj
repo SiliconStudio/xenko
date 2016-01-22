@@ -7,12 +7,12 @@ BuildConfiguration:
             Platform: Windows
             GraphicsPlatform: Direct3D
             GraphicsProfile: Level_11_0
-            OutputDirectory: ../../../../Bin/Windows-AnyCPU-Direct3D/data/SiliconStudio.Xenko.Input.Tests
+            OutputDirectory: ../../../../Bin/Windows-AnyCPU-Direct3D/data/SiliconStudio.Xenko.Particles.Tests
         Windows_OGL: !XenkoProjectBuildProfile
             Platform: Windows
             GraphicsPlatform: OpenGLCore
             GraphicsProfile: Level_9_1
-            OutputDirectory: ../../../../Bin/Windows-AnyCPU-OpenGL/data/SiliconStudio.Xenko.Input.Tests
+            OutputDirectory: ../../../../Bin/Windows-AnyCPU-OpenGL/data/SiliconStudio.Xenko.Particles.Tests
         Android: !XenkoProjectBuildProfile
             Platform: Android
             GraphicsPlatform: OpenGLES20
@@ -22,7 +22,7 @@ BuildConfiguration:
             Platform: iOS
             GraphicsPlatform: OpenGLES20
             GraphicsProfile: Level_9_1
-            OutputDirectory: ../../../../Bin/iOS-AnyCPU-OpenGLES/data/SiliconStudio.Xenko.Input.Tests
+            OutputDirectory: ../../../../Bin/iOS-AnyCPU-OpenGLES/data/SiliconStudio.Xenko.Particles.Tests
 ExplicitFolders: []
 PluginReferences: []
 PackageReferences: []
