@@ -170,6 +170,8 @@ namespace SiliconStudio.Xenko.Engine
 
             entities.Clear();
             componentTypes.Clear();
+            MapComponentTypeToProcessors.Clear();
+            pendingProcessors.Clear();
             processors.Clear();
         }
 
@@ -386,6 +388,18 @@ namespace SiliconStudio.Xenko.Engine
 
         private void OnProcessorRemoved(EntityProcessor processor)
         {
+            // Remove the procsesor from any list
+            foreach (var componentTypeAndProcessors in MapComponentTypeToProcessors)
+            {
+                var processorList = componentTypeAndProcessors.Value;
+
+                processorList.Remove(processor);
+                if (processorList.Dependencies != null)
+                {
+                    processorList.Dependencies.Remove(processor);
+                }
+            }
+
             processor.OnSystemRemove();
             processor.Services = null;
             processor.EntityManager = null;
@@ -421,6 +435,7 @@ namespace SiliconStudio.Xenko.Engine
             if (currentDependentProcessors.Count > 0)
             {
                 UpdateDependentProcessors(entity, oldComponent, newComponent);
+                currentDependentProcessors.Clear();
             }
 
             // Notify component changes
