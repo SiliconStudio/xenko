@@ -18,6 +18,8 @@ using System.Runtime.CompilerServices;
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Games" + SiliconStudio.PublicKeys.Default)]
 [assembly: InternalsVisibleTo("SiliconStudio.Xenko.Graphics.Regression" + SiliconStudio.PublicKeys.Default)]
 
+[assembly: InternalsVisibleTo("RenderArchitecture.Game" + SiliconStudio.PublicKeys.Default)]
+
 #if !SILICONSTUDIO_SIGNED
 [assembly: InternalsVisibleTo("SiliconStudio.ImageComparerService")]
 #endif
