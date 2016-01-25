@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
 
     /// <summary>
     /// The <see cref="ParticleSorterLiving"/> collects all living particles, rather than sorting them
-    /// It is useful
+    /// It is useful for some pool policies, like Ring, which iterate over all particles, not only living ones
     /// </summary>
     public class ParticleSorterLiving : ParticleSorter 
     {
