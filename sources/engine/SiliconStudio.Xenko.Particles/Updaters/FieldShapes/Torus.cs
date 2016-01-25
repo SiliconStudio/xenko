@@ -98,7 +98,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters.FieldShapes
             awayAxis = -projectedPosition;
             awayAxis.Normalize();
 
-            aroundAxis = Vector3.Cross(awayAxis, alongAxis);
+            aroundAxis = Vector3.Cross(alongAxis, awayAxis);
 
             return totalStrength;
         }

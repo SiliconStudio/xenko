@@ -192,6 +192,7 @@
     <Reference Include="System.Core" />
     <Compile Include="GameTest.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="ParticleForcesTest.cs" />
     <Compile Include="ParticlePoolTest.cs" />
     <Compile Include="SimpleTest.cs" />
     <None Include="SiliconStudio.Xenko.Particles.Tests.xkpkg" />
