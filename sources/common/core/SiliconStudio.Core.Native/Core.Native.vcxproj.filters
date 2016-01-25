@@ -19,6 +19,9 @@
     <ClCompile Include="lz4hc_64.cpp">
       <Filter>sources</Filter>
     </ClCompile>
+    <ClCompile Include="XInputChecker.cpp">
+      <Filter>sources</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="lz4\lz4.h">
