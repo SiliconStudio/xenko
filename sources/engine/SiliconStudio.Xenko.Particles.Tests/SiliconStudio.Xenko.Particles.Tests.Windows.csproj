@@ -124,6 +124,10 @@
       <Name>SiliconStudio.Xenko.Graphics.Regression</Name>
       <Private>False</Private>
     </ProjectReference>
+    <ProjectReference Include="..\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj">
+      <Project>{84deb606-77ed-49cd-9aed-d2b13c1f5a1e}</Project>
+      <Name>SiliconStudio.Xenko.Input</Name>
+    </ProjectReference>
     <ProjectReference Include="..\SiliconStudio.Xenko.Particles\SiliconStudio.Xenko.Particles.csproj">
       <Project>{f32fda80-b6dd-47a8-8681-437e2c0d3f31}</Project>
       <Name>SiliconStudio.Xenko.Particles</Name>
