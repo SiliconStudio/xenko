@@ -151,6 +151,7 @@
   <ItemGroup>
     <Compile Include="GameTest.cs" />
     <Compile Include="Module.cs" />
+    <Compile Include="ParticlePoolTest.cs" />
     <Compile Include="SimpleTest.cs" />
   </ItemGroup>
   <ItemGroup>
