@@ -2,13 +2,16 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.BuildEngine;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.TextureConverter;
 using SiliconStudio.Xenko.Assets.SpriteFont.Compiler;
+using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Font;
 
@@ -22,7 +25,7 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
         {
             if (!EnsureSourceExists(result, asset, assetAbsolutePath))
                 return;
-            
+
             result.BuildSteps = new AssetBuildStep(AssetItem) { new PrecompiledSpriteFontCommand(urlInStorage, asset) };
         }
 
@@ -40,18 +43,13 @@ namespace SiliconStudio.Xenko.Assets.SpriteFont
 
             protected override Task<ResultStatus> DoCommandOverride(ICommandContext commandContext)
             {
-                using (var imageStream = File.OpenRead(AssetParameters.FontDataFile))
+                using (var texTool = new TextureTool())
+                using (var texImage = texTool.Load(AssetParameters.FontDataFile, AssetParameters.IsSrgb))
                 {
-                    Image image;
-                    try
-                    {
-                        image = Image.Load(imageStream, AssetParameters.IsSrgb);
-                    }
-                    catch (FontNotFoundException ex)
-                    {
-                        commandContext.Logger.Error("The file [{0}] is not a proper image file.", ex.FontName);
-                        return Task.FromResult(ResultStatus.Failed);
-                    }
+                    //make sure we are RGBA and not BGRA
+                    texTool.Convert(texImage, AssetParameters.IsSrgb ? PixelFormat.R8G8B8A8_UNorm_SRgb : PixelFormat.R8G8B8A8_UNorm);
+
+                    var image = texTool.ConvertToXenkoImage(texImage);
 
                     Graphics.SpriteFont staticFont = FontDataFactory.NewStatic(
                         FontHelper.PointsToPixels(AssetParameters.Size),
