@@ -1,13 +1,15 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.Updaters.FieldShapes;
 
 namespace SiliconStudio.Xenko.Particles.Tests
 {
-    class ParticleForcesTest
+    internal class ParticleForcesTest
     {
         [Test]
         public void ForceFieldShapes()
@@ -103,8 +105,88 @@ namespace SiliconStudio.Xenko.Particles.Tests
             Assert.That(alongAxis, Is.EqualTo(new Vector3(0, 0, -1)));
             Assert.That(awayAxis, Is.EqualTo(new Vector3(1, 0, 0)));
             Assert.That(aroundAxis, Is.EqualTo(new Vector3(0, -1, 0)));
+        }
 
+        [Test]
+        public void Sorting()
+        {
+            var customFieldDesc = new ParticleFieldDescription<UInt32>("SomeField", 0);
+
+            const int maxParticles = 4;
+            var pool = new ParticlePool(0, maxParticles);
+
+            const bool forceCreation = true;
+            pool.FieldExists(ParticleFields.Position, forceCreation); // Force creation of the position field
+            pool.FieldExists(ParticleFields.RemainingLife, forceCreation); // Force creation of the life field
+            pool.FieldExists(customFieldDesc, forceCreation); // Force creation of the custom field we just declared
+
+            // We can extract them before the tight loop on all living particles
+            var posField = pool.GetField(ParticleFields.Position);
+            var lifeField = pool.GetField(ParticleFields.RemainingLife);
+            var customField = pool.GetField(customFieldDesc);
+
+            // Ad 4 particles
+            var particle1 = pool.AddParticle();
+            var particle2 = pool.AddParticle();
+            var particle3 = pool.AddParticle();
+            var particle4 = pool.AddParticle();
+
+            particle1.Set(customField, (uint)1);
+            particle2.Set(customField, (uint)2);
+            particle3.Set(customField, (uint)3);
+            particle4.Set(customField, (uint)4);
+
+            particle1.Set(lifeField, 0.4f);
+            particle2.Set(lifeField, 0.8f);
+            particle3.Set(lifeField, 0.2f);
+            particle4.Set(lifeField, 0.6f);
+
+            particle1.Set(posField, new Vector3(0, 0, 3));
+            particle2.Set(posField, new Vector3(0, 0, 9));
+            particle3.Set(posField, new Vector3(0, 0, 5));
+            particle4.Set(posField, new Vector3(0, 0, 1));
+
+            // Don't sort
+            uint[] sortedNone = { 1, 2, 3, 4 }; // List of expected values
+            {
+                var i = 0;
+                foreach (var particle in pool)
+                {
+                    Assert.That(particle.Get(customField), Is.EqualTo(sortedNone[i++]));
+                }
+            }
+
+            // Sort by depth
+            uint[] sortedDepth = { 4, 1, 3, 2 }; // List of expected values
+            {
+                GetSortIndex<Vector3> sortByDepth = value => value.Z;
+
+                var depthSorter = new ParticleSorterCustom<Vector3>(pool, ParticleFields.Position, sortByDepth);
+                depthSorter.Sort();
+
+                var i = 0;
+                foreach (var particle in depthSorter)
+                {
+                    Assert.That(particle.Get(customField), Is.EqualTo(sortedDepth[i++]));
+                }
+            }
+
+            // Sort by age
+            uint[] sortedAge = { 3, 1, 4, 2 }; // List of expected values
+            {
+                GetSortIndex<float> sortByAge = value => { return value; };
+
+                var ageSorter = new ParticleSorterCustom<float>(pool, ParticleFields.Life, sortByAge);
+                ageSorter.Sort();
+
+                var i = 0;
+                foreach (var particle in ageSorter)
+                {
+                    Assert.That(particle.Get(customField), Is.EqualTo(sortedAge[i++]));
+                }
+            }
 
         }
+
     }
 }
