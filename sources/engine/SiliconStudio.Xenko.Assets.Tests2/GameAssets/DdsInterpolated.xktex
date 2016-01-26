@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../data/tests/SmallDdsInterpolated.dds
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
+    ~Id: 8ef74201-a970-4062-9a2f-4666269d91ab
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

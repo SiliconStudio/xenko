@@ -6,6 +6,7 @@ Source: ../../../data/tests/SmallJpeg.jpg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Alpha: Interpolated
 ~Base:
+    ~Id: 75d9f174-cc81-4ada-b3e7-79a45486b517
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

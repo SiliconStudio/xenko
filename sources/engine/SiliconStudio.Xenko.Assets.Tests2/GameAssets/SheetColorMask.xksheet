@@ -7,15 +7,18 @@ ColorKeyColor: {R: 0, G: 182, B: 246, A: 255}
 ColorKeyEnabled: true
 Alpha: Mask
 Packing:
+    ~Id: 5948d51e-f2fd-49a2-a425-680360c2bb34
     Enabled: false
 Sprites:
-    -   Source: ../../../data/tests/SmallPngNoAlpha.png
+    -   ~Id: 01055763-0680-4227-a960-7cb56f324169
+        Source: ../../../data/tests/SmallPngNoAlpha.png
         Name: Frame 0
         TextureRegion: {X: 0, Y: 0, Width: 32, Height: 32}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/SmallPngNoAlpha.png
+    -   ~Id: c0137e79-024b-46a9-8c11-d8e0a5f582a8
+        Source: ../../../data/tests/SmallPngNoAlpha.png
         Name: Frame 0
         TextureRegion: {X: 34, Y: 2, Width: 30, Height: 30}
         Center: {X: 0.0, Y: 0.0}
