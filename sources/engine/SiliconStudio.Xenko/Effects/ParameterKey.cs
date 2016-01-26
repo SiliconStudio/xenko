@@ -41,6 +41,8 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public int Length { get; private set; }
 
+        public abstract int Size { get; }
+
         internal void SetName(string name)
         {
             if (name == null) throw new ArgumentNullException("name");
@@ -220,6 +222,8 @@ namespace SiliconStudio.Xenko.Rendering
 
         [DataMemberIgnore]
         public ParameterKeyValueMetadata<T> DefaultValueMetadataT { get; private set; }
+
+        public override int Size => Interop.SizeOf<T>();
 
         public override string ToString()
         {
