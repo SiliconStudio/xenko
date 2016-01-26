@@ -31,6 +31,7 @@
     <Compile Include="Commands\ActionItemNodeCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
     <Compile Include="Commands\SimpleNodeCommandActionItem.cs" />
+    <Compile Include="Commands\SyncNodeCommand.cs" />
     <Compile Include="Contents\ContentChangeEventArgs.cs" />
     <Compile Include="Contents\OverridableMemberContent.cs" />
     <Compile Include="ActionStack\ContentValueChangedActionItem.cs" />
