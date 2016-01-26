@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../data/tests/SmallPngMask.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
+    ~Id: 903ca00a-f07d-44cc-b0d1-5e3343d09afd
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

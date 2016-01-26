@@ -3,7 +3,9 @@ Id: 803f9930-27d0-4178-8ce3-dfdf8b235cb5
 Tags: []
 Source: ../../../data/tests/audio/90-bboc1-stero.ogg
 ~Base:
+    ~Id: b5f6eb9b-1216-4689-b8c5-2b5947f18790
     Location: --import--
     Asset: !SoundEffect
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        Source: 

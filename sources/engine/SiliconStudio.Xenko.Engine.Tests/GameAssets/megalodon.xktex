@@ -6,6 +6,7 @@ Source: ../../../data/tests/megalodon/megalodon.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 PremultiplyAlpha: false
 ~Base:
+    ~Id: 5fbd8cc7-179b-4a24-a0d5-3548eddf4df0
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

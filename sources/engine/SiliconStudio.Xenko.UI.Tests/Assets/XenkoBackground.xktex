@@ -6,6 +6,7 @@ Source: ../../../data/tests/XenkoBackground.jpg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: Color32Bits
 ~Base:
+    ~Id: 78c67d45-8289-4515-9ae4-02a556d8582b
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
