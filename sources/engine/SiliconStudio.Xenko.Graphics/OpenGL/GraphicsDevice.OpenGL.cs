@@ -38,6 +38,12 @@ using FramebufferAttachment = OpenTK.Graphics.ES30.FramebufferSlot;
 using OpenTK.Graphics.OpenGL;
 #endif
 
+#if SILICONSTUDIO_XENKO_UI_SDL
+using WindowState = SiliconStudio.Xenko.Graphics.SDL.FormWindowState;
+#else
+using WindowState = OpenTK.WindowState;
+#endif
+
 // TODO: remove these when OpenTK API is consistent between OpenGL, mobile OpenGL ES and desktop OpenGL ES
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
 #if SILICONSTUDIO_PLATFORM_MONO_MOBILE
@@ -157,7 +163,11 @@ namespace SiliconStudio.Xenko.Graphics
         private OpenTK.Platform.IWindowInfo windowInfo;
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+#if SILICONSTUDIO_XENKO_UI_SDL
+        private SiliconStudio.Xenko.Graphics.SDL.Window gameWindow;
+#else
         private OpenTK.GameWindow gameWindow;
+#endif
 #elif SILICONSTUDIO_PLATFORM_ANDROID
         private AndroidGameView gameWindow;
 #elif SILICONSTUDIO_PLATFORM_IOS
@@ -2174,9 +2184,14 @@ namespace SiliconStudio.Xenko.Graphics
 
         protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_PLATFORM_LINUX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+#if SILICONSTUDIO_XENKO_UI_SDL
+            gameWindow = (SiliconStudio.Xenko.Graphics.SDL.Window) windowHandle.NativeHandle;
+            graphicsContext = gameWindow.OpenGLContext;
+#else
             gameWindow = (OpenTK.GameWindow)windowHandle.NativeHandle;
             graphicsContext = gameWindow.Context;
+#endif
 #elif SILICONSTUDIO_PLATFORM_ANDROID
             // Force a reference to AndroidGameView from OpenTK 0.9, otherwise linking will fail in release mode for MonoDroid.
             typeof (opentkold::OpenTK.Platform.Android.AndroidGameView).ToString();
@@ -2462,8 +2477,8 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                return gameWindow.WindowState == OpenTK.WindowState.Fullscreen;
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+                return gameWindow.WindowState == WindowState.Fullscreen;
 #else
                 throw new NotImplementedException();
 #endif
@@ -2471,9 +2486,9 @@ namespace SiliconStudio.Xenko.Graphics
 
             set
             {
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-                if (value ^ (gameWindow.WindowState == OpenTK.WindowState.Fullscreen))
-                    gameWindow.WindowState = value ? OpenTK.WindowState.Fullscreen : OpenTK.WindowState.Normal;
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX
+                if (value ^ (gameWindow.WindowState == WindowState.Fullscreen))
+                    gameWindow.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
 #else
                 throw new NotImplementedException();
 #endif
