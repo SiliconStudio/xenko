@@ -1,0 +1,79 @@
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
+
+namespace RenderArchitecture.Effects
+{
+    shader TestEffect
+    {
+        using params LightingKeys;
+        using params MaterialKeys;
+
+        // -----------------------------------------------
+        // Transform vertex stream
+        // -----------------------------------------------
+        // Come after material surface per vertex
+        mixin TransformationBase;
+        mixin NormalStream;
+        mixin TransformationWAndVP;
+
+        // -----------------------------------------------
+        // Performs normal mapping (in case of no-skinning, otherwise it is overloaded below)
+        // -----------------------------------------------
+        if (MaterialKeys.HasNormalMap)
+        {
+            mixin NormalFromNormalMapping;
+        }
+        else
+        {
+            mixin NormalFromMesh;
+        }
+
+        //mixin TestShader;
+
+        // -----------------------------------------------
+        // Mix material and lighting shading for Pixel Shader
+        // -----------------------------------------------
+        var extensionPixelStageSurfaceShaders = MaterialKeys.PixelStageSurfaceShaders;
+        if (extensionPixelStageSurfaceShaders != null)
+        {
+            mixin MaterialSurfacePixelStageCompositor;
+            mixin compose materialPixelStage = (extensionPixelStageSurfaceShaders);
+            mixin compose streamInitializerPixelStage = MaterialKeys.PixelStageStreamInitializer;
+
+            var extensionPixelStageSurfaceFilter = MaterialKeys.PixelStageSurfaceFilter;
+            if (extensionPixelStageSurfaceFilter != null)
+            {
+                mixin (extensionPixelStageSurfaceFilter);
+            }
+        }
+
+        // -----------------------------------------------
+        // Add light groups
+        // -----------------------------------------------
+        var directLightGroups = LightingKeys.DirectLightGroups;
+        if (directLightGroups != null)
+        {
+            foreach(var directLightGroup in directLightGroups)
+            {
+                // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
+                mixin compose directLightGroups += (directLightGroup);
+            }
+        }
+
+        // -----------------------------------------------
+        // Add environment light groups
+        // -----------------------------------------------
+        var environmentLights = LightingKeys.EnvironmentLights;
+        if (environmentLights != null)
+        {
+            foreach(var environmentLight in environmentLights)
+            {
+                // Use parenthesis (...) to avoid lightGroup to be interpreted as a mixin named "lightGroup"
+                mixin compose environmentLights += (environmentLight);
+            }
+        }
+
+        mixin child GBuffer;
+        mixin child ShadowMapCaster;
+    }
+}

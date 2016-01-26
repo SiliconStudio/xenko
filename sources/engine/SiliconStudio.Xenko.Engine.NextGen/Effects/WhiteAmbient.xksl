@@ -1,0 +1,17 @@
+// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+namespace SiliconStudio.Xenko.Rendering.Lights
+{
+    /// <summary>
+    /// Defines a simple environment light
+    /// </summary>
+    class WhiteAmbient : EnvironmentLight, MaterialPixelShadingStream
+    {
+        override void PrepareEnvironmentLight()
+        {
+            float3 lightColor = float3(1.0f, 1.0f, 1.0f) * streams.matAmbientOcclusion;
+            streams.envLightDiffuseColor = lightColor;
+            streams.envLightSpecularColor = lightColor;
+        }
+    };
+}

@@ -1,0 +1,7 @@
+class TestShader : ShaderBase, Texturing
+{
+    stage override void PSMain() 
+    {
+        streams.ColorTarget = float4(1.0, 1.0, 1.0, 1.0);
+    }
+};
