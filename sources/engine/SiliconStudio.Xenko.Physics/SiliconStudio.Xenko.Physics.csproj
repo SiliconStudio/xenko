@@ -96,8 +96,6 @@
     <Compile Include="Shapes\Box2DColliderShape.cs" />
     <Compile Include="Shapes\BoxColliderShape.cs" />
     <Compile Include="Shapes\CapsuleColliderShape.cs" />
-    <Compile Include="Character.cs" />
-    <Compile Include="Collider.cs" />
     <Compile Include="ColliderShape.cs" />
     <Compile Include="Shapes\CompoundColliderShape.cs" />
     <Compile Include="Constraints\ConeTwistConstraint.cs" />
@@ -111,7 +109,6 @@
     <Compile Include="Constraints\Generic6DoFSpringConstraint.cs" />
     <Compile Include="Constraints\HingeConstraint.cs" />
     <Compile Include="Constraints\Point2PointConstraint.cs" />
-    <Compile Include="RigidBody.cs" />
     <Compile Include="Constraints\RotationalLimitMotor.cs" />
     <Compile Include="Constraints\SliderConstraint.cs" />
     <Compile Include="Shapes\SphereColliderShape.cs" />
