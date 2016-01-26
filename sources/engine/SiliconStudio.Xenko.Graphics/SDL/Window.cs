@@ -10,6 +10,9 @@ namespace SiliconStudio.Xenko.Graphics.SDL
     using SDL2;
 
     public class Window: IDisposable
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+        , OpenTK.Platform.IWindowInfo
+#endif
     {
 #region Initialization
         /// <summary>
@@ -20,6 +23,10 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
                 // Disable effect of doing Alt+F4
             SDL.SDL_SetHint(SDL.SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4, "1");
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+            int res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK, (int)SDL.SDL_GLprofile.SDL_GL_CONTEXT_PROFILE_CORE);
+            res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_DOUBLEBUFFER, 1);
+#endif
         }
 
         /// <summary>
@@ -42,14 +49,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             }
             else
             {
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-                var context = SDL.SDL_GL_CreateContext(SdlHandle);
-                // The external context must be made current to initialize OpenGL
-                SDL.SDL_GL_MakeCurrent(SdlHandle, context);
-
-                OpenGLContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(context), SDL.SDL_GL_GetProcAddress, () => new OpenTK.ContextHandle(SDL.SDL_GL_GetCurrentContext()));
-#endif
-
                 SDL.SDL_SysWMinfo info = default(SDL.SDL_SysWMinfo);
                 SDL.SDL_VERSION(out info.version);
                 SDL.SDL_bool res = SDL.SDL_GetWindowWMInfo(SdlHandle, ref info);
@@ -65,8 +64,21 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                     Handle = info.info.x11.window;
 #endif
                 }
+                Application.RegisterWindow(this);
+                Application.ProcessEvents();
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                var context = SDL.SDL_GL_CreateContext(SdlHandle);
+                if (context == IntPtr.Zero)
+                {
+                    throw new Exception("Cannot create OpenGL context: " + SDL.SDL_GetError());
+                }
+                // The external context must be made current to initialize OpenGL
+                SDL.SDL_GL_MakeCurrent(SdlHandle, context);
+
+                OpenGLContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(context), SDL.SDL_GL_GetProcAddress, () => new OpenTK.ContextHandle(SDL.SDL_GL_GetCurrentContext()));
+#endif
             }
-            Application.RegisterWindow(this);
         }
 #endregion
 
@@ -464,9 +476,30 @@ namespace SiliconStudio.Xenko.Graphics.SDL
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         /// <summary>
+        /// The SDL window handle required when we implement IWindowInfo.
+        /// </summary>
+        IntPtr OpenTK.Platform.IWindowInfo.Handle {
+            get
+            {
+                return SdlHandle;
+            }
+        }
+
+        /// <summary>
+        /// Current instance as seen as a IWindowInfo.
+        /// </summary>
+        public OpenTK.Platform.IWindowInfo WindowInfo
+        {
+            get
+            {
+                return this;
+            }
+        }
+
+        /// <summary>
         /// The OpenGL Context if any
         /// </summary>
-        public OpenTK.Graphics.GraphicsContext OpenGLContext;
+        public OpenTK.Graphics.IGraphicsContext OpenGLContext;
 #endif
 
         #region Disposal
