@@ -5,5 +5,5 @@ Source: ../../../../data/tests/cube/cube.fbx
 SourceHash: 2471e6b1be7106f3e68cf790e9306164
 ScaleImport: 0.0
 Nodes:
-    - {Name: RootNode, Depth: 0}
-    - {Name: pCube1, Depth: 1}
+    - {~Id: 26c07856-55bc-4e2e-a97a-c723f04e9079, Name: RootNode, Depth: 0}
+    - {~Id: a61503f4-7e95-4988-85e3-e56d7822afc4, Name: pCube1, Depth: 1}

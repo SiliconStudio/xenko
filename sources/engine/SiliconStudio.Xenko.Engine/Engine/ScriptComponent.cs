@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Engine
     [ComponentOrder(1000)]
     public abstract class ScriptComponent : EntityComponent, IScriptContext
     {
-        internal const uint LiveScriptingMask = 128;
+        public const uint LiveScriptingMask = 128;
 
         private IGraphicsDeviceService graphicsDeviceService;
         private Logger logger;

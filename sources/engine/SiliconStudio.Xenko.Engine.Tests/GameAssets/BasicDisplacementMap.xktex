@@ -9,6 +9,7 @@ Hint: Grayscale
 GenerateMipmaps: false
 PremultiplyAlpha: false
 ~Base:
+    ~Id: 77a450d2-6509-4030-a68b-65afe6dea05c
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
