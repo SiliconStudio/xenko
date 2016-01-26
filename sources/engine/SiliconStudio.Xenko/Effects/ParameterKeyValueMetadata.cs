@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -11,6 +13,8 @@ namespace SiliconStudio.Xenko.Rendering
         public abstract void SetupDefaultValue(ParameterCollection parameterCollection, ParameterKey parameterKey, bool addDependencies);
 
         public abstract ParameterDynamicValue DefaultDynamicValue { get; }
+
+        public abstract bool WriteBuffer(IntPtr dest, int alignment = 1);
     }
 
     /// <summary>
@@ -53,6 +57,20 @@ namespace SiliconStudio.Xenko.Rendering
         public override ParameterDynamicValue DefaultDynamicValue
         {
             get { return DefaultDynamicValueT; }
+        }
+
+        public override unsafe bool WriteBuffer(IntPtr dest, int alignment = 1)
+        {
+            // We only support structs (not sure how to deal with arrays yet
+            if (typeof(T).IsValueType)
+            {
+                // Struct copy
+                var value = DefaultValue;
+                Interop.CopyInline((void*)dest, ref value);
+                return true;
+            }
+
+            return false;
         }
 
         public override object GetDefaultValue()
