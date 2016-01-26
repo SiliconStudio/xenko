@@ -80,9 +80,10 @@ namespace SiliconStudio.Xenko.Physics
         {
             component.Attach(data);
 
-            if (component is CharacterComponent)
+            var character = component as CharacterComponent;
+            if (character != null)
             {
-                characters.Add((CharacterComponent)component);
+                characters.Add(character);
             }
 
             if (colliderShapesRendering)
@@ -138,9 +139,9 @@ namespace SiliconStudio.Xenko.Physics
             //characters need manual updating
             foreach (var element in characters)
             {
-                if(!element.Collider.Enabled) continue;
+                if(!element.Enabled) continue;
 
-                var worldTransform = element.Collider.PhysicsWorldTransform;
+                var worldTransform = element.PhysicsWorldTransform;
                 element.UpdateTransformationComponent(ref worldTransform);
 
                 if (element.DebugEntity != null)

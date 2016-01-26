@@ -5,6 +5,8 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Physics;
+using System.Collections.Generic;
+using SiliconStudio.Core.MicroThreading;
 
 namespace SiliconStudio.Xenko.Engine
 {
@@ -13,8 +15,14 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     [AllowMultipleComponents]
     [ComponentOrder(3000)]
-    public abstract class PhysicsComponent : EntityComponent, IPhysicsElement
+    public abstract class PhysicsComponent : EntityComponent
     {
+        static PhysicsComponent()
+        {
+            // Preload proper libbulletc native library (depending on CPU type)
+            NativeLibrary.PreloadLibrary("libbulletc.dll");
+        }
+
         protected PhysicsComponent()
         {
             CanScaleShape = true;
@@ -24,29 +32,22 @@ namespace SiliconStudio.Xenko.Engine
             {
                 ColliderShapeChanged = true;
             };
+
+            FirstCollisionChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
+            NewPairChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
+            PairEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
+            AllPairsEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
         }
 
         [DataMemberIgnore]
-        public Simulation Simulation { get; internal set; }
-
-        [DataMemberIgnore]
-        internal PhysicsDebugShapeRendering DebugShapeRendering;
+        internal BulletSharp.CollisionObject NativeCollisionObject;
 
         /// <userdoc>
         /// The reference to the collider Shape of this element.
         /// </userdoc>
         [DataMember(200)]
         [Category]
-        public TrackingCollection<IInlineColliderShapeDesc> ColliderShapes { get; private set; }
-
-        [DataMemberIgnore]
-        public bool ColliderShapeChanged { get; private set; }
-
-        [DataMemberIgnore]
-        public ColliderShape ColliderShape { get; private set; }
-
-        [DataMemberIgnore]
-        public bool CanScaleShape { get; private set; }
+        public TrackingCollection<IInlineColliderShapeDesc> ColliderShapes { get; }
 
         /// <summary>
         /// Gets or sets the collision group.
@@ -72,13 +73,7 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(40)]
         public CollisionFilterGroupFlags CanCollideWith { get; set; }
 
-        protected bool IsDefaultGroup
-        {
-            get
-            {
-                return CanCollideWith == 0 || CollisionGroup == 0;
-            }
-        }
+        protected bool IsDefaultGroup => CanCollideWith == 0 || CollisionGroup == 0;
 
         private bool processCollisions = true;
 
@@ -93,24 +88,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </userdoc>
         [Display("Collision events")]
         [DataMember(45)]
-        public virtual bool ProcessCollisions
-        {
-            get
-            {
-                return InternalCollider?.ContactsAlwaysValid ?? processCollisions;
-            }
-            set
-            {
-                if (InternalCollider != null)
-                {
-                    InternalCollider.ContactsAlwaysValid = value;
-                }
-                else
-                {
-                    processCollisions = value;
-                }
-            }
-        }
+        public virtual bool ProcessCollisions { get; set; }
 
         private bool enabled = true;
 
@@ -128,22 +106,26 @@ namespace SiliconStudio.Xenko.Engine
         {
             get
             {
-                return InternalCollider?.Enabled ?? enabled;
+                return enabled;
             }
             set
             {
-                if (InternalCollider != null)
+                enabled = value;
+
+                if (NativeCollisionObject == null) return;
+
+                if (enabled)
                 {
-                    InternalCollider.Enabled = value;
+                    NativeCollisionObject.ForceActivationState(canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation);
                 }
                 else
                 {
-                    enabled = value;
+                    NativeCollisionObject.ForceActivationState(BulletSharp.ActivationState.DisableSimulation);
                 }
             }
         }
 
-        private bool canSleep = false;
+        private bool canSleep;
 
         /// <summary>
         /// Gets or sets if this element can enter sleep state
@@ -159,19 +141,36 @@ namespace SiliconStudio.Xenko.Engine
         {
             get
             {
-                return InternalCollider?.CanSleep ?? canSleep;
+                return canSleep;
             }
             set
             {
-                if (InternalCollider != null)
+                canSleep = value;
+
+                if (NativeCollisionObject == null) return;
+
+                if (enabled)
                 {
-                    InternalCollider.CanSleep = value;
-                }
-                else
-                {
-                    canSleep = value;
+                    NativeCollisionObject.ActivationState = value ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation;
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this instance is active (awake).
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if this instance is active; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsActive => NativeCollisionObject?.IsActive ?? false;
+
+        /// <summary>
+        /// Attempts to awake the collider.
+        /// </summary>
+        /// <param name="forceActivation">if set to <c>true</c> [force activation].</param>
+        public void Activate(bool forceActivation = false)
+        {
+            NativeCollisionObject?.Activate(forceActivation);
         }
 
         private float restitution;
@@ -190,17 +189,15 @@ namespace SiliconStudio.Xenko.Engine
         {
             get
             {
-                return InternalCollider?.Restitution ?? restitution;
+                return restitution;
             }
             set
             {
-                if (InternalCollider != null)
+                restitution = value;
+
+                if (NativeCollisionObject != null)
                 {
-                    InternalCollider.Restitution = value;
-                }
-                else
-                {
-                    restitution = value;
+                    NativeCollisionObject.Restitution = restitution;
                 }
             }
         }
@@ -221,17 +218,15 @@ namespace SiliconStudio.Xenko.Engine
         {
             get
             {
-                return InternalCollider?.Friction ?? friction;
+                return friction;
             }
             set
             {
-                if (InternalCollider != null)
+                friction = value;
+
+                if (NativeCollisionObject != null)
                 {
-                    InternalCollider.Friction = value;
-                }
-                else
-                {
-                    friction = value;
+                    NativeCollisionObject.Friction = friction;
                 }
             }
         }
@@ -247,48 +242,151 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>
         /// The rolling friction of this element
         /// </userdoc>
-        [DataMember(70)]
+        [DataMember(66)]
         public float RollingFriction
         {
             get
             {
-                return InternalCollider?.RollingFriction ?? rollingFriction;
+                return rollingFriction;
             }
             set
             {
-                if (InternalCollider != null)
+                rollingFriction = value;
+
+                if (NativeCollisionObject != null)
                 {
-                    InternalCollider.RollingFriction = value;
+                    NativeCollisionObject.RollingFriction = rollingFriction;
                 }
-                else
+            }
+        }
+
+        private float ccdMotionThreshold;
+
+        [DataMember(67)]
+        public float CcdMotionThreshold
+        {
+            get
+            {
+                return ccdMotionThreshold;
+            }
+            set
+            {
+                ccdMotionThreshold = value;
+
+                if (NativeCollisionObject != null)
                 {
-                    rollingFriction = value;
+                    NativeCollisionObject.CcdMotionThreshold = ccdMotionThreshold;
+                }
+            }
+        }
+
+        private float ccdSweptSphereRadius;
+
+        [DataMember(68)]
+        public float CcdSweptSphereRadius
+        {
+            get
+            {
+                return ccdSweptSphereRadius;
+            }
+            set
+            {
+                ccdSweptSphereRadius = value;
+
+                if (NativeCollisionObject != null)
+                {
+                    NativeCollisionObject.CcdSweptSphereRadius = ccdSweptSphereRadius;
                 }
             }
         }
 
         #region Ignore or Private/Internal
 
-        protected Collider InternalCollider;
+        [DataMemberIgnore]
+        public List<Collision> Collisions { get; } = new List<Collision>();
 
         [DataMemberIgnore]
-        public virtual Collider Collider
+        internal Channel<Collision> FirstCollisionChannel;
+
+        public ChannelMicroThreadAwaiter<Collision> FirstCollision()
+        {
+            return FirstCollisionChannel.Receive();
+        }
+
+        [DataMemberIgnore]
+        internal Channel<Collision> NewPairChannel;
+
+        public ChannelMicroThreadAwaiter<Collision> NewCollision()
+        {
+            return NewPairChannel.Receive();
+        }
+
+        [DataMemberIgnore]
+        internal Channel<Collision> PairEndedChannel;
+
+        public ChannelMicroThreadAwaiter<Collision> CollisionEnded()
+        {
+            return PairEndedChannel.Receive();
+        }
+
+        [DataMemberIgnore]
+        internal Channel<Collision> AllPairsEndedChannel;
+
+        public ChannelMicroThreadAwaiter<Collision> AllCollisionsEnded()
+        {
+            return AllPairsEndedChannel.Receive();
+        }
+
+        [DataMemberIgnore]
+        public Simulation Simulation { get; internal set; }
+
+        [DataMemberIgnore]
+        internal PhysicsDebugShapeRendering DebugShapeRendering;
+
+        [DataMemberIgnore]
+        public bool ColliderShapeChanged { get; private set; }
+
+        [DataMemberIgnore]
+        protected ColliderShape ProtectedColliderShape;
+
+        [DataMemberIgnore]
+        public virtual ColliderShape ColliderShape
         {
             get
             {
-                if (InternalCollider == null)
-                {
-                    throw new Exception("Collider is null, please make sure that you are trying to access this object after it is added to the game entities ( Entities.Add(entity) ).");
-                }
-
-                return InternalCollider;
+                return ProtectedColliderShape;
             }
-            internal set
+            set
             {
-                InternalCollider = value;
-                OnColliderUpdated();
+                ProtectedColliderShape = value;
+                if (NativeCollisionObject != null) NativeCollisionObject.CollisionShape = value.InternalShape;               
             }
         }
+
+        [DataMemberIgnore]
+        public bool CanScaleShape { get; private set; }
+
+        [DataMemberIgnore]
+        public Matrix PhysicsWorldTransform
+        {
+            get
+            {
+                return NativeCollisionObject.WorldTransform;
+            }
+            set
+            {
+                NativeCollisionObject.WorldTransform = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the tag.
+        /// </summary>
+        /// <value>
+        /// The tag.
+        /// </value>
+        [DataMemberIgnore]
+        public string Tag { get; set; }
 
         [DataMemberIgnore]
         public Matrix BoneWorldMatrix;
@@ -317,17 +415,6 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
-        protected virtual void OnColliderUpdated()
-        {
-            //set possibly pre-set properties
-            ProcessCollisions = processCollisions;
-            Enabled = enabled;
-            CanSleep = canSleep;
-            Restitution = restitution;
-            Friction = friction;
-            RollingFriction = rollingFriction;
-        }
-
         public void RemoveDebugEntity(Scene scene)
         {
             if (DebugEntity == null) return;
@@ -346,7 +433,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <returns></returns>
         internal void DerivePhysicsTransformation(out Matrix derivedTransformation)
         {
-            var entity = Collider.Entity;
+            var entity = Entity;
 
             Quaternion rotation;
             Vector3 translation;
@@ -416,7 +503,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="physicsTransform"></param>
         internal void UpdateTransformationComponent(ref Matrix physicsTransform)
         {
-            var entity = Collider.Entity;
+            var entity = Entity;
 
             if (ColliderShape.LocalOffset != Vector3.Zero || ColliderShape.LocalRotation != Quaternion.Identity)
             {
@@ -488,7 +575,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 DeriveBonePhysicsTransformation(out t);
             }
-            Collider.PhysicsWorldTransform = t;
+            PhysicsWorldTransform = t;
         }
 
         public void ComposeShape()
@@ -564,7 +651,7 @@ namespace SiliconStudio.Xenko.Engine
 
             if (ColliderShapes.Count == 0) return; //no shape no purpose
 
-            if (ColliderShape == null) this.ComposeShape();
+            if (ColliderShape == null) ComposeShape();
 
             if (ColliderShape == null) return; //no shape no purpose
 
@@ -583,33 +670,38 @@ namespace SiliconStudio.Xenko.Engine
                 return;
             }
 
-            //might be possible that this element was not valid during creation so it would be already null
-            if (InternalCollider == null) return;
-
             // Actually call the detach
             OnDetach();
 
-            // Then dispose the collider
-            Collider.Dispose();
             if (ColliderShape != null && !ColliderShape.IsPartOfAsset)
             {
                 ColliderShape.Dispose();
             }
-            Collider = null;
         }
 
         protected virtual void OnAttach()
         {
-            
+            //set pre-set post deserialization properties
+            ProcessCollisions = processCollisions;
+            Enabled = enabled;
+            CanSleep = canSleep;
+            Restitution = restitution;
+            Friction = friction;
+            RollingFriction = rollingFriction;
+            CcdMotionThreshold = ccdMotionThreshold;
+            CcdSweptSphereRadius = ccdSweptSphereRadius;
         }
 
         protected virtual void OnDetach()
         {
+            if (NativeCollisionObject == null) return;
+            NativeCollisionObject.Dispose();
+            NativeCollisionObject = null;
         }
 
         internal void UpdateBones()
         {
-            if (!Collider.Enabled)
+            if (!Enabled)
             {
                 return;
             }
@@ -619,7 +711,7 @@ namespace SiliconStudio.Xenko.Engine
 
         internal void UpdateDraw()
         {
-            if (!Collider.Enabled)
+            if (!Enabled)
             {
                 return;
             }

@@ -14,24 +14,32 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                return InternalCollider?.IsTrigger ?? isTrigger;
+                return isTrigger;
             }
             set
             {
-                if (InternalCollider == null)
+                isTrigger = value;
+
+                if (NativeCollisionObject == null) return;
+
+                if (isTrigger)
                 {
-                    isTrigger = value;
+                    NativeCollisionObject.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
                 }
                 else
                 {
-                    InternalCollider.IsTrigger = value;
+                    if (NativeCollisionObject.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.NoContactResponse))
+                    {
+                        NativeCollisionObject.CollisionFlags ^= BulletSharp.CollisionFlags.NoContactResponse;
+                    }
                 }
             }
         }
 
-        protected override void OnColliderUpdated()
+        protected override void OnAttach()
         {
-            base.OnColliderUpdated();
+            base.OnAttach();
+            //set pre-set post deserialization properties
             IsTrigger = isTrigger;
         }
     }

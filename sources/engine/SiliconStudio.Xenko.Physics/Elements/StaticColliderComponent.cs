@@ -8,29 +8,40 @@ namespace SiliconStudio.Xenko.Physics
     {
         protected override void OnAttach()
         {
+            NativeCollisionObject = new BulletSharp.CollisionObject
+            {
+                CollisionShape = ColliderShape.InternalShape,
+                ContactProcessingThreshold = !Simulation.CanCcd ? 1e18f : 1e30f,
+                UserObject = this
+            };
+
+            NativeCollisionObject.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
+
+            if (ColliderShape.NeedsCustomCollisionCallback)
+            {
+                NativeCollisionObject.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+            }
+
+            //this will set all the properties in the native side object
             base.OnAttach();
 
-            var c = Simulation.CreateCollider(ColliderShape);
-
-            Collider = c; //required by the next call
-            Collider.Entity = Entity; //required by the next call
             UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
             if (IsDefaultGroup)
             {
-                Simulation.AddCollider(c, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
+                Simulation.AddCollider(this, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
             }
             else
             {
-                Simulation.AddCollider(c, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
+                Simulation.AddCollider(this, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
             }
         }
 
         protected override void OnDetach()
         {
-            base.OnDetach();
+            Simulation.RemoveCollider(this);
 
-            Simulation.RemoveCollider(Collider);
+            base.OnDetach();
         }
     }
 }

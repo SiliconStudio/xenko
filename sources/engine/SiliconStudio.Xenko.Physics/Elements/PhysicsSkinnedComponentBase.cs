@@ -24,29 +24,30 @@ namespace SiliconStudio.Xenko.Physics
 
         protected override void OnAttach()
         {
-            if (!NodeName.IsNullOrEmpty() && Data.ModelComponent?.Skeleton != null)
+            base.OnAttach();
+
+            if (NodeName.IsNullOrEmpty() || Data.ModelComponent?.Skeleton == null) return;
+
+            if (!Data.BoneMatricesUpdated)
             {
-                if (!Data.BoneMatricesUpdated)
-                {
-                    Vector3 position, scaling;
-                    Quaternion rotation;
-                    Entity.Transform.WorldMatrix.Decompose(out scaling, out rotation, out position);
-                    var isScalingNegative = scaling.X * scaling.Y * scaling.Z < 0.0f;
-                    Data.ModelComponent.Skeleton.NodeTransformations[0].LocalMatrix = Entity.Transform.WorldMatrix;
-                    Data.ModelComponent.Skeleton.NodeTransformations[0].IsScalingNegative = isScalingNegative;
-                    Data.ModelComponent.Skeleton.UpdateMatrices();
-                    Data.BoneMatricesUpdated = true;
-                }
-
-                BoneIndex = Data.ModelComponent.Skeleton.Nodes.IndexOf(x => x.Name == this.NodeName);
-
-                if (BoneIndex == -1)
-                {
-                    throw new InvalidOperationException("The specified NodeName doesn't exist in the model hierarchy.");
-                }
-
-                BoneWorldMatrixOut = BoneWorldMatrix = Data.ModelComponent.Skeleton.NodeTransformations[BoneIndex].WorldMatrix;
+                Vector3 position, scaling;
+                Quaternion rotation;
+                Entity.Transform.WorldMatrix.Decompose(out scaling, out rotation, out position);
+                var isScalingNegative = scaling.X * scaling.Y * scaling.Z < 0.0f;
+                Data.ModelComponent.Skeleton.NodeTransformations[0].LocalMatrix = Entity.Transform.WorldMatrix;
+                Data.ModelComponent.Skeleton.NodeTransformations[0].IsScalingNegative = isScalingNegative;
+                Data.ModelComponent.Skeleton.UpdateMatrices();
+                Data.BoneMatricesUpdated = true;
             }
+
+            BoneIndex = Data.ModelComponent.Skeleton.Nodes.IndexOf(x => x.Name == this.NodeName);
+
+            if (BoneIndex == -1)
+            {
+                throw new InvalidOperationException("The specified NodeName doesn't exist in the model hierarchy.");
+            }
+
+            BoneWorldMatrixOut = BoneWorldMatrix = Data.ModelComponent.Skeleton.NodeTransformations[BoneIndex].WorldMatrix;
         }
     }
 }
