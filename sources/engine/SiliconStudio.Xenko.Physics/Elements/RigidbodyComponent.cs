@@ -1,6 +1,6 @@
+using System.Collections.Generic;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -8,29 +8,49 @@ namespace SiliconStudio.Xenko.Physics
     [Display("Rigidbody")]
     public sealed class RigidbodyComponent : PhysicsSkinnedComponentBase
     {
-        private bool isKinematic;
+        [DataMemberIgnore]
+        internal BulletSharp.RigidBody InternalRigidBody;
+
+        internal delegate void GetWorldTransformDelegate(out Matrix transform);
 
         [DataMemberIgnore]
-        public new RigidBody Collider
+        internal GetWorldTransformDelegate GetWorldTransformCallback;
+
+        internal delegate void SetWorldTransformDelegate(Matrix transform);
+
+        [DataMemberIgnore]
+        internal SetWorldTransformDelegate SetWorldTransformCallback;
+
+        [DataMemberIgnore]
+        internal XenkoMotionState MotionState;
+
+        /// <summary>
+        /// Gets the linked constraints.
+        /// </summary>
+        /// <value>
+        /// The linked constraints.
+        /// </value>
+        [DataMemberIgnore]
+        public List<Constraint> LinkedConstraints { get; }
+
+        public RigidbodyComponent()
         {
-            get { return (RigidBody)base.Collider; }
-            set { base.Collider = value; }
+            LinkedConstraints = new List<Constraint>();
+            MotionState = new XenkoMotionState(this);
         }
+
+        private bool isKinematic;
 
         [DataMember(75)]
         public bool IsKinematic
         {
-            get { return InternalCollider != null ? ((RigidBody)InternalCollider).Type == RigidBodyTypes.Kinematic : isKinematic; }
+            get { return isKinematic; }
             set
             {
-                if (InternalCollider != null)
-                {
-                    ((RigidBody)InternalCollider).Type = value ? RigidBodyTypes.Kinematic : RigidBodyTypes.Dynamic;
-                }
-                else
-                {
-                    isKinematic = value;
-                }
+                isKinematic = value;
+
+                if (InternalRigidBody == null) return;
+                RigidBodyType = value ? RigidBodyTypes.Kinematic : RigidBodyTypes.Dynamic;
             }
         }
 
@@ -50,20 +70,43 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                var c = (RigidBody)InternalCollider;
-                return c?.Mass ?? mass;
+                return mass;
             }
             set
             {
-                var c = (RigidBody)InternalCollider;
-                if (c != null)
-                {
-                    c.Mass = value;
-                }
-                else
-                {
-                    mass = value;
-                }
+                mass = value;
+
+                if(InternalRigidBody == null) return;
+
+                var inertia = ColliderShape.InternalShape.CalculateLocalInertia(value);
+                InternalRigidBody.SetMassProps(value, inertia);
+                InternalRigidBody.UpdateInertiaTensor(); //this was the major headache when I had to debug Slider and Hinge constraint
+            }
+        }
+
+        /// <summary>
+        /// Gets the collider shape.
+        /// </summary>
+        /// <value>
+        /// The collider shape.
+        /// </value>
+        public override ColliderShape ColliderShape
+        {
+            get
+            {
+                return ProtectedColliderShape;
+            }
+            set
+            {
+                ProtectedColliderShape = value;
+
+                if (InternalRigidBody == null) return;
+
+                NativeCollisionObject.CollisionShape = value.InternalShape;
+
+                var inertia = ProtectedColliderShape.InternalShape.CalculateLocalInertia(mass);
+                InternalRigidBody.SetMassProps(mass, inertia);
+                InternalRigidBody.UpdateInertiaTensor(); //this was the major headache when I had to debug Slider and Hinge constraint
             }
         }
 
@@ -83,20 +126,13 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                var c = (RigidBody)InternalCollider;
-                return c?.LinearDamping ?? linearDamping;
+                return linearDamping;
             }
             set
             {
-                var c = (RigidBody)InternalCollider;
-                if (c != null)
-                {
-                    c.LinearDamping = value;
-                }
-                else
-                {
-                    linearDamping = value;
-                }
+                linearDamping = value;
+
+                InternalRigidBody?.SetDamping(value, AngularDamping);
             }
         }
 
@@ -116,20 +152,13 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                var c = (RigidBody)InternalCollider;
-                return c?.AngularDamping ?? angularDamping;
+                return angularDamping;
             }
             set
             {
-                var c = (RigidBody)InternalCollider;
-                if (c != null)
-                {
-                    c.AngularDamping = value;
-                }
-                else
-                {
-                    angularDamping = value;
-                }
+                angularDamping = value;
+
+                InternalRigidBody?.SetDamping(LinearDamping, value);
             }
         }
 
@@ -149,19 +178,27 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                var c = (RigidBody)InternalCollider;
-                return c?.OverrideGravity ?? overrideGravity;
+                return overrideGravity;
             }
             set
             {
-                var c = (RigidBody)InternalCollider;
-                if (c != null)
+                overrideGravity = value;
+
+                if (InternalRigidBody == null) return;
+
+                if (value)
                 {
-                    c.OverrideGravity = value;
+                    if (InternalRigidBody.Flags.HasFlag(BulletSharp.RigidBodyFlags.DisableWorldGravity)) return;
+
+                    // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
+                    InternalRigidBody.Flags |= BulletSharp.RigidBodyFlags.DisableWorldGravity;
                 }
                 else
                 {
-                    overrideGravity = value;
+                    if (!InternalRigidBody.Flags.HasFlag(BulletSharp.RigidBodyFlags.DisableWorldGravity)) return;
+
+                    // ReSharper disable once BitwiseOperatorOnEnumWithoutFlags
+                    InternalRigidBody.Flags ^= BulletSharp.RigidBodyFlags.DisableWorldGravity;
                 }
             }
         }
@@ -182,71 +219,145 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                var c = (RigidBody)InternalCollider;
-                return c?.Gravity ?? gravity;
+                return gravity;
             }
             set
             {
-                var c = (RigidBody)InternalCollider;
-                if (c != null)
+                gravity = value;
+
+                if (InternalRigidBody != null)
                 {
-                    c.Gravity = value;
-                }
-                else
-                {
-                    gravity = value;
+                    InternalRigidBody.Gravity = value;
                 }
             }
         }
 
-        protected override void OnColliderUpdated()
+        private RigidBodyTypes type;
+
+        /// <summary>
+        /// Gets or sets the type.
+        /// </summary>
+        /// <value>
+        /// The type.
+        /// </value>
+        [DataMemberIgnore]
+        public RigidBodyTypes RigidBodyType
         {
-            base.OnColliderUpdated();
+            get
+            {
+                return type;
+            }
+            set
+            {
+                type = value;
+
+                if (InternalRigidBody == null) return;
+
+                switch (value)
+                {
+                    case RigidBodyTypes.Dynamic:
+                        if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
+                        if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
+                        if (InternalRigidBody != null && Simulation != null && !OverrideGravity) InternalRigidBody.Gravity = Simulation.Gravity;
+                        if (InternalRigidBody != null)
+                        {
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.LinearVelocity = Vector3.Zero;
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.AngularVelocity = Vector3.Zero;
+                        }
+                        break;
+
+                    case RigidBodyTypes.Static:
+                        if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.KinematicObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.KinematicObject;
+                        InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.StaticObject;
+                        if (InternalRigidBody != null && !OverrideGravity) InternalRigidBody.Gravity = Vector3.Zero;
+                        if (InternalRigidBody != null)
+                        {
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.LinearVelocity = Vector3.Zero;
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.AngularVelocity = Vector3.Zero;
+                        }
+                        break;
+
+                    case RigidBodyTypes.Kinematic:
+                        if (InternalRigidBody.CollisionFlags.HasFlag(BulletSharp.CollisionFlags.StaticObject)) InternalRigidBody.CollisionFlags ^= BulletSharp.CollisionFlags.StaticObject;
+                        InternalRigidBody.CollisionFlags |= BulletSharp.CollisionFlags.KinematicObject;
+                        if (InternalRigidBody != null && !OverrideGravity) InternalRigidBody.Gravity = Vector3.Zero;
+                        if (InternalRigidBody != null)
+                        {
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.LinearVelocity = Vector3.Zero;
+                            InternalRigidBody.InterpolationAngularVelocity = Vector3.Zero;
+                            InternalRigidBody.AngularVelocity = Vector3.Zero;
+                        }
+                        break;
+                }
+            }
+        }
+
+        protected override void OnAttach()
+        {
+            InternalRigidBody = new BulletSharp.RigidBody(0.0f, MotionState, ColliderShape.InternalShape, Vector3.Zero)
+            {
+                UserObject = this
+            };
+
+            NativeCollisionObject = InternalRigidBody;
+
+            NativeCollisionObject.ContactProcessingThreshold = !Simulation.CanCcd ? 1e18f : 1e30f;
+
+            if (ColliderShape.NeedsCustomCollisionCallback)
+            {
+                NativeCollisionObject.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+            }
+
+            if (ColliderShape.Is2D) //set different defaults for 2D shapes
+            {
+                InternalRigidBody.LinearFactor = new Vector3(1.0f, 1.0f, 0.0f);
+                InternalRigidBody.AngularFactor = new Vector3(0.0f, 0.0f, 1.0f);
+            }
+
+            var inertia = ColliderShape.InternalShape.CalculateLocalInertia(mass);
+            InternalRigidBody.SetMassProps(mass, inertia);
+            InternalRigidBody.UpdateInertiaTensor(); //this was the major headache when I had to debug Slider and Hinge constraint
+
+            base.OnAttach();
+
             Mass = mass;
             LinearDamping = linearDamping;
             AngularDamping = angularDamping;
             OverrideGravity = overrideGravity;
             Gravity = gravity;
-        }
+            RigidBodyType = IsKinematic ? RigidBodyTypes.Kinematic : RigidBodyTypes.Dynamic;
 
-        protected override void OnAttach()
-        {
-            base.OnAttach();
+            GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
+            SetWorldTransformCallback = transform => RigidBodySetWorldTransform(ref transform);
 
-            var rb = Simulation.CreateRigidBody(ColliderShape);
-
-            rb.Entity = Entity;
-            rb.GetWorldTransformCallback = (out Matrix transform) => RigidBodyGetWorldTransform(out transform);
-            rb.SetWorldTransformCallback = transform => RigidBodySetWorldTransform(ref transform);
-            Collider = rb;
             UpdatePhysicsTransformation(); //this will set position and rotation of the collider
-
-            rb.Type = IsKinematic ? RigidBodyTypes.Kinematic : RigidBodyTypes.Dynamic;
-            if (rb.Mass == 0.0f) rb.Mass = 1.0f;
 
             if (IsDefaultGroup)
             {
-                Simulation.AddRigidBody(rb, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
+                Simulation.AddRigidBody(this, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
             }
             else
             {
-                Simulation.AddRigidBody(rb, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
+                Simulation.AddRigidBody(this, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
             }
         }
 
         protected override void OnDetach()
         {
-            base.OnDetach();
-
-            var rb = Collider;
-            var constraints = rb.LinkedConstraints.ToArray();
-            foreach (var c in constraints)
+            foreach (var c in LinkedConstraints)
             {
                 Simulation.RemoveConstraint(c);
                 c.Dispose();
             }
 
-            Simulation.RemoveRigidBody(rb);
+            Simulation.RemoveRigidBody(this);
+
+            base.OnDetach();
         }
 
         protected internal override void OnUpdateDraw()
@@ -255,19 +366,17 @@ namespace SiliconStudio.Xenko.Physics
 
             //write to ModelViewHierarchy
             var model = Data.ModelComponent;
-            if (Collider != null && Collider.Type == RigidBodyTypes.Dynamic)
-            {
-                model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
+            if (type != RigidBodyTypes.Dynamic) return;
 
-                if (DebugEntity != null)
-                {
-                    Vector3 scale, pos;
-                    Quaternion rot;
-                    BoneWorldMatrixOut.Decompose(out scale, out rot, out pos);
-                    DebugEntity.Transform.Position = pos;
-                    DebugEntity.Transform.Rotation = rot;
-                }
-            }
+            model.Skeleton.NodeTransformations[BoneIndex].WorldMatrix = BoneWorldMatrixOut;
+
+            if (DebugEntity == null) return;
+
+            Vector3 scale, pos;
+            Quaternion rot;
+            BoneWorldMatrixOut.Decompose(out scale, out rot, out pos);
+            DebugEntity.Transform.Position = pos;
+            DebugEntity.Transform.Rotation = rot;
         }
     
         //This is called by the physics engine to update the transformation of Dynamic rigidbodies.
@@ -319,5 +428,128 @@ namespace SiliconStudio.Xenko.Physics
             DebugEntity.Transform.Rotation = rot;
         }
 
+        /// <summary>
+        /// Gets the total torque.
+        /// </summary>
+        /// <value>
+        /// The total torque.
+        /// </value>
+        public Vector3 TotalTorque => InternalRigidBody.TotalTorque;
+
+        /// <summary>
+        /// Applies the impulse.
+        /// </summary>
+        /// <param name="impulse">The impulse.</param>
+        public void ApplyImpulse(Vector3 impulse)
+        {
+            InternalRigidBody.ApplyCentralImpulse(impulse);
+        }
+
+        /// <summary>
+        /// Applies the impulse.
+        /// </summary>
+        /// <param name="impulse">The impulse.</param>
+        /// <param name="localOffset">The local offset.</param>
+        public void ApplyImpulse(Vector3 impulse, Vector3 localOffset)
+        {
+            InternalRigidBody.ApplyImpulse(impulse, localOffset);
+        }
+
+        /// <summary>
+        /// Applies the force.
+        /// </summary>
+        /// <param name="force">The force.</param>
+        public void ApplyForce(Vector3 force)
+        {
+            InternalRigidBody.ApplyCentralForce(force);
+        }
+
+        /// <summary>
+        /// Applies the force.
+        /// </summary>
+        /// <param name="force">The force.</param>
+        /// <param name="localOffset">The local offset.</param>
+        public void ApplyForce(Vector3 force, Vector3 localOffset)
+        {
+            InternalRigidBody.ApplyForce(force, localOffset);
+        }
+
+        /// <summary>
+        /// Applies the torque.
+        /// </summary>
+        /// <param name="torque">The torque.</param>
+        public void ApplyTorque(Vector3 torque)
+        {
+            InternalRigidBody.ApplyTorque(torque);
+        }
+
+        /// <summary>
+        /// Applies the torque impulse.
+        /// </summary>
+        /// <param name="torque">The torque.</param>
+        public void ApplyTorqueImpulse(Vector3 torque)
+        {
+            InternalRigidBody.ApplyTorqueImpulse(torque);
+        }
+
+        /// <summary>
+        /// Gets or sets the angular velocity.
+        /// </summary>
+        /// <value>
+        /// The angular velocity.
+        /// </value>
+        [DataMemberIgnore]
+        public Vector3 AngularVelocity
+        {
+            get { return InternalRigidBody.AngularVelocity; }
+            set { InternalRigidBody.AngularVelocity = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the linear velocity.
+        /// </summary>
+        /// <value>
+        /// The linear velocity.
+        /// </value>
+        [DataMemberIgnore]
+        public Vector3 LinearVelocity
+        {
+            get { return InternalRigidBody.LinearVelocity; }
+            set { InternalRigidBody.LinearVelocity = value; }
+        }
+
+        /// <summary>
+        /// Gets the total force.
+        /// </summary>
+        /// <value>
+        /// The total force.
+        /// </value>
+        public Vector3 TotalForce => InternalRigidBody.TotalForce;
+
+        /// <summary>
+        /// Gets or sets the angular factor.
+        /// </summary>
+        /// <value>
+        /// The angular factor.
+        /// </value>
+        [DataMemberIgnore]
+        public Vector3 AngularFactor
+        {
+            get { return InternalRigidBody.AngularFactor; }
+            set { InternalRigidBody.AngularFactor = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the linear factor.
+        /// </summary>
+        /// <value>
+        /// The linear factor.
+        /// </value>
+        [DataMemberIgnore]
+        public Vector3 LinearFactor
+        {
+            get { return InternalRigidBody.LinearFactor; }
+            set { InternalRigidBody.LinearFactor = value; }
+        }
     }
 }

@@ -1,5 +1,6 @@
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
@@ -13,11 +14,12 @@ namespace SiliconStudio.Xenko.Physics
             StepHeight = 0.1f;
         }
 
-        [DataMemberIgnore]
-        public new Character Collider
+        /// <summary>
+        /// Jumps this instance.
+        /// </summary>
+        public void Jump()
         {
-            get { return (Character)base.Collider; }
-            set { base.Collider = value; }
+            KinematicCharacter.Jump();
         }
 
         /// <summary>
@@ -49,20 +51,13 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                var c = (Character)InternalCollider;
-                return c?.FallSpeed ?? fallSpeed;
+                return fallSpeed;
             }
             set
             {
-                var c = (Character)InternalCollider;
-                if (c != null)
-                {
-                    c.FallSpeed = value;
-                }
-                else
-                {
-                    fallSpeed = value;
-                }
+                fallSpeed = value;
+                
+                KinematicCharacter?.SetFallSpeed(value);
             }
         }
 
@@ -82,19 +77,15 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                var c = (Character)InternalCollider;
-                return c?.MaxSlope ?? maxSlope;
+                return maxSlope;
             }
             set
             {
-                var c = (Character)InternalCollider;
-                if (c != null)
+                maxSlope = value;
+
+                if (KinematicCharacter != null)
                 {
-                    c.MaxSlope = value;
-                }
-                else
-                {
-                    maxSlope = value;
+                    KinematicCharacter.MaxSlope = value;
                 }
             }
         }
@@ -115,20 +106,13 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                var c = (Character)InternalCollider;
-                return c?.JumpSpeed ?? jumpSpeed;
+                return jumpSpeed;
             }
             set
             {
-                var c = (Character)InternalCollider;
-                if (c != null)
-                {
-                    c.JumpSpeed = value;
-                }
-                else
-                {
-                    jumpSpeed = value;
-                }
+                jumpSpeed = value;
+
+                KinematicCharacter?.SetJumpSpeed(value);
             }
         }
 
@@ -148,57 +132,95 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                var c = (Character)InternalCollider;
-                return c?.Gravity ?? gravity;
+                return gravity;
             }
             set
             {
-                var c = (Character)InternalCollider;
-                if (c != null)
+                gravity = value;
+
+                if (KinematicCharacter != null)
                 {
-                    c.Gravity = value;
-                }
-                else
-                {
-                    gravity = value;
+                    KinematicCharacter.Gravity = -value;
                 }
             }
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this instance is on the ground.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> if this instance is grounded; otherwise, <c>false</c>.
+        /// </value>
+        public bool IsGrounded => KinematicCharacter.OnGround();
 
-        protected override void OnColliderUpdated()
+        /// <summary>
+        /// Teleports the specified target position.
+        /// </summary>
+        /// <param name="targetPosition">The target position.</param>
+        public void Teleport(Vector3 targetPosition)
         {
-            base.OnColliderUpdated();
+            KinematicCharacter.Warp(targetPosition);
+        }
+
+        /// <summary>
+        /// Moves the specified movement.
+        /// </summary>
+        /// <param name="movement">The movement.</param>
+        public void Move(Vector3 movement)
+        {
+            KinematicCharacter.SetWalkDirection(movement);
+        }
+
+        [DataMemberIgnore]
+        internal BulletSharp.KinematicCharacterController KinematicCharacter;
+
+        protected override void OnAttach()
+        {
+            NativeCollisionObject = new BulletSharp.PairCachingGhostObject
+            {
+                CollisionShape = ColliderShape.InternalShape,
+                UserObject = this
+            };
+
+            NativeCollisionObject.CollisionFlags |= BulletSharp.CollisionFlags.CharacterObject;
+
+            if (ColliderShape.NeedsCustomCollisionCallback)
+            {
+                NativeCollisionObject.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
+            }
+
+            NativeCollisionObject.ContactProcessingThreshold = !Simulation.CanCcd ? 1e18f : 1e30f;
+
+            KinematicCharacter = new BulletSharp.KinematicCharacterController((BulletSharp.PairCachingGhostObject)NativeCollisionObject, (BulletSharp.ConvexShape)ColliderShape.InternalShape, StepHeight);
+
+            base.OnAttach();
+
             FallSpeed = fallSpeed;
             MaxSlope = maxSlope;
             JumpSpeed = jumpSpeed;
             Gravity = gravity;
-        }
 
-        protected override void OnAttach()
-        {
-            base.OnAttach();
-
-            var ch = Simulation.CreateCharacter(ColliderShape, StepHeight);
-
-            Collider = ch;
-            Collider.Entity = Entity;
             UpdatePhysicsTransformation(); //this will set position and rotation of the collider
 
             if (IsDefaultGroup)
             {
-                Simulation.AddCharacter(ch, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
+                Simulation.AddCharacter(this, CollisionFilterGroupFlags.DefaultFilter, CollisionFilterGroupFlags.AllFilter);
             }
             else
             {
-                Simulation.AddCharacter(ch, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
+                Simulation.AddCharacter(this, (CollisionFilterGroupFlags)CollisionGroup, CanCollideWith);
             }
         }
 
         protected override void OnDetach()
         {
+            Simulation.RemoveCharacter(this);
+
+            if (KinematicCharacter == null) return;
+            KinematicCharacter.Dispose();
+            KinematicCharacter = null;
+
             base.OnDetach();
-            Simulation.RemoveCharacter(Collider);
         }
     }
 }
