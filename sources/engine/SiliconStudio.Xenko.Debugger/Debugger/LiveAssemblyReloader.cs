@@ -18,17 +18,18 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Debugger
 {
-    public class LiveAssemblyReloader : AssemblyReloader
+    public class LiveAssemblyReloader
     {
         private readonly AssemblyContainer assemblyContainer;
         private readonly List<Assembly> assembliesToUnregister;
         private readonly List<Assembly> assembliesToRegister;
         private readonly Game game;
+        private readonly List<Entity> entities = new List<Entity>();
 
         public LiveAssemblyReloader(Game game, AssemblyContainer assemblyContainer, List<Assembly> assembliesToUnregister, List<Assembly> assembliesToRegister)
         {
             if (game != null)
-                this.entities.AddRange(game.SceneSystem.SceneInstance);
+                entities.AddRange(game.SceneSystem.SceneInstance);
             this.game = game;
             this.assemblyContainer = assemblyContainer;
             this.assembliesToUnregister = assembliesToUnregister;
@@ -40,8 +41,16 @@ namespace SiliconStudio.Xenko.Debugger
             CloneReferenceSerializer.References = new List<object>();
 
             var loadedAssembliesSet = new HashSet<Assembly>(assembliesToUnregister);
-            var reloadedComponents = CollectReloadedComponentEntries(loadedAssembliesSet);
+            var reloadedComponents = new List<ReloadedComponentEntryLive>();
+            var componentsToReload = AssemblyReloader.CollectComponentsToReload(entities, loadedAssembliesSet);
+            foreach (var componentToReload in componentsToReload)
+            {
+                var parsingEvents = SerializeComponent(componentToReload.Component);
+                // TODO: Serialize Scene script too (async?) -- doesn't seem necessary even for complex cases
+                // (i.e. referencing assets, entities and/or scripts) but still a ref counting check might be good
+                reloadedComponents.Add(new ReloadedComponentEntryLive(componentToReload.Entity, componentToReload.Index, parsingEvents, componentToReload.Component));
 
+            }
             foreach (var assembly in assembliesToUnregister)
             {
                 // Unregisters assemblies that have been registered in Package.Load => Package.LoadAssemblyReferencesForPackage
@@ -68,7 +77,7 @@ namespace SiliconStudio.Xenko.Debugger
             foreach (ReloadedComponentEntryLive reloadedScript in reloadedComponents)
             {
                 // Try to create object
-                var objectStart = reloadedScript.YamlEvents.OfType<SharpYaml.Events.MappingStart>().FirstOrDefault();
+                var objectStart = reloadedScript.YamlEvents.OfType<MappingStart>().FirstOrDefault();
                 if (objectStart != null)
                 {
                     // Get type info
@@ -89,7 +98,7 @@ namespace SiliconStudio.Xenko.Debugger
                 var component = CloneReferenceSerializer.References[index] as EntityComponent;
                 if (component != null)
                 {
-                    var reloadedComponent = reloadedComponents.Cast<ReloadedComponentEntryLive>().FirstOrDefault(x => x.OriginalComponent == component);
+                    var reloadedComponent = reloadedComponents.FirstOrDefault(x => x.OriginalComponent == component);
                     if (reloadedComponent != null)
                     {
                         CloneReferenceSerializer.References[index] = reloadedComponent.NewComponent;
@@ -98,32 +107,18 @@ namespace SiliconStudio.Xenko.Debugger
             }
 
             // Third pass: deserialize
-            RestoreReloadedComponentEntries(reloadedComponents);
+            reloadedComponents.ForEach(ReplaceComponent);
 
             CloneReferenceSerializer.References = null;
         }
 
-        protected virtual void RestoreReloadedComponentEntries(List<ReloadedComponentEntry> reloadedComponents)
-        {
-            foreach (var reloadedComponent in reloadedComponents)
-            {
-                var componentToReload = reloadedComponent.Entity.Components[reloadedComponent.ComponentIndex];
-                ReplaceComponent(reloadedComponent);
-            }
-        }
-
-        protected override ReloadedComponentEntry CreateReloadedComponentEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, EntityComponent component)
-        {
-            return new ReloadedComponentEntryLive(entity, index, parsingEvents, component);
-        }
-
-        protected override EntityComponent DeserializeComponent(ReloadedComponentEntry reloadedComponent)
+        private static EntityComponent DeserializeComponent(ReloadedComponentEntryLive reloadedComponent)
         {
             var eventReader = new EventReader(new MemoryParser(reloadedComponent.YamlEvents));
             var components = new EntityComponentCollection();
 
             // Use the newly created component during second pass for proper cycle deserialization
-            var newComponent = ((ReloadedComponentEntryLive)reloadedComponent).NewComponent;
+            var newComponent = reloadedComponent.NewComponent;
             if (newComponent != null)
                 components.Add(newComponent);
 
@@ -133,7 +128,7 @@ namespace SiliconStudio.Xenko.Debugger
             return component;
         }
 
-        protected override List<ParsingEvent> SerializeComponent(EntityComponent component)
+        protected List<ParsingEvent> SerializeComponent(EntityComponent component)
         {
             // Wrap component in a EntityComponentCollection to properly handle errors
             var components = new Entity { component }.Components;
@@ -146,7 +141,7 @@ namespace SiliconStudio.Xenko.Debugger
             return parsingEvents;
         }
 
-        protected override void ReplaceComponent(ReloadedComponentEntry reloadedComponent)
+        private void ReplaceComponent(ReloadedComponentEntryLive reloadedComponent)
         {
             // Create new component instance
             var newComponent = DeserializeComponent(reloadedComponent);
@@ -165,21 +160,23 @@ namespace SiliconStudio.Xenko.Debugger
             reloadedComponent.Entity.Components[reloadedComponent.ComponentIndex] = newComponent;
 
             // TODO: Dispose or Cancel on script?
-            if (oldComponent is ScriptComponent)
-            {
-                ((ScriptComponent)oldComponent).Cancel();
-            }
+            (oldComponent as ScriptComponent)?.Cancel();
         }
 
-        protected class ReloadedComponentEntryLive : ReloadedComponentEntry
+        private class ReloadedComponentEntryLive
         {
             // Original component
+            public readonly Entity Entity;
+            public readonly int ComponentIndex;
+            public readonly List<ParsingEvent> YamlEvents;
             public readonly EntityComponent OriginalComponent;
             public EntityComponent NewComponent;
 
             public ReloadedComponentEntryLive(Entity entity, int componentIndex, List<ParsingEvent> yamlEvents, EntityComponent originalComponent)
-                : base(entity, componentIndex, yamlEvents)
             {
+                Entity = entity;
+                ComponentIndex = componentIndex;
+                YamlEvents = yamlEvents;
                 OriginalComponent = originalComponent;
             }
         }
