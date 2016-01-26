@@ -1,0 +1,11 @@
+using SiliconStudio.Xenko.Rendering;
+using SiliconStudio.Xenko.Rendering.Materials;
+
+namespace RenderArchitecture.Effects
+{
+    // Spawn a sub-shader for the shadow map caster pass
+    partial shader GBuffer
+    {
+        mixin GBufferShader;
+    };
+}

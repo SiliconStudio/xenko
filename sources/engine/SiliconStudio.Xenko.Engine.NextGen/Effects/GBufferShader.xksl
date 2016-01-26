@@ -1,0 +1,8 @@
+class GBufferShader : ShaderBase, Texturing, NormalStream
+{
+    stage override void PSMain() 
+    {
+        // TODO: View Space instead of world space (but we don't care much for testing)
+        streams.ColorTarget = float4(streams.normalWS, 1.0f);
+    }
+};
