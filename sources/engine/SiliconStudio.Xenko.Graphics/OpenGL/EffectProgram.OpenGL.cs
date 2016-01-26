@@ -28,9 +28,9 @@ namespace SiliconStudio.Xenko.Graphics
     {
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         // The ProgramParameter.ActiveUniformBlocks enum is not defined in OpenTK for OpenGL ES
-        public const ProgramParameter XkActiveUniformBlocks = (ProgramParameter)0x8A36;
+        public const GetProgramParameterName XkActiveUniformBlocks = (GetProgramParameterName)0x8A36;
 #else
-        public const ProgramParameter XkActiveUniformBlocks = ProgramParameter.ActiveUniformBlocks;
+        public const GetProgramParameterName XkActiveUniformBlocks = GetProgramParameterName.ActiveUniformBlocks;
 #endif
 
         private LoggerResult reflectionResult = new LoggerResult();
@@ -112,7 +112,6 @@ namespace SiliconStudio.Xenko.Graphics
                             break;
                         default:
                             throw new Exception("Unsupported shader stage");
-                            break;
                     }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
@@ -138,7 +137,7 @@ namespace SiliconStudio.Xenko.Graphics
 
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 // Mark program as retrievable (necessary for later GL.GetProgramBinary).
-                GL.ProgramParameter(resourceId, AssemblyProgramParameterArb.ProgramBinaryRetrievableHint, 1);
+                GL.ProgramParameter(resourceId, ProgramParameterName.ProgramBinaryRetrievableHint, 1);
 #endif
 
                 // Link OpenGL program
@@ -146,7 +145,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // Check link results
                 int linkStatus;
-                GL.GetProgram(resourceId, ProgramParameter.LinkStatus, out linkStatus);
+                GL.GetProgram(resourceId, GetProgramParameterName.LinkStatus, out linkStatus);
                 if (linkStatus != 1)
                 {
                     var infoLog = GL.GetProgramInfoLog(resourceId);
@@ -157,7 +156,7 @@ namespace SiliconStudio.Xenko.Graphics
                 {
                     // Build attributes list for shader signature
                     int activeAttribCount;
-                    GL.GetProgram(resourceId, ProgramParameter.ActiveAttributes, out activeAttribCount);
+                    GL.GetProgram(resourceId, GetProgramParameterName.ActiveAttributes, out activeAttribCount);
 
                     for (int activeAttribIndex = 0; activeAttribIndex < activeAttribCount; ++activeAttribIndex)
                     {
@@ -377,10 +376,9 @@ namespace SiliconStudio.Xenko.Graphics
                 // Register "NoSampler", required by HLSL=>GLSL translation to support HLSL such as texture.Load().
                 var noSampler = new EffectParameterResourceData { Param = { RawName = "NoSampler", KeyName = "NoSampler", Class = EffectParameterClass.Sampler }, SlotStart = -1 };
                 Reflection.ResourceBindings.Add(noSampler);
-                bool usingSamplerNoSampler = false;
 
                 int activeUniformCount;
-                GL.GetProgram(resourceId, ProgramParameter.ActiveUniforms, out activeUniformCount);
+                GL.GetProgram(resourceId, GetProgramParameterName.ActiveUniforms, out activeUniformCount);
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 var uniformTypes = new int[activeUniformCount];
                 GL.GetActiveUniforms(resourceId, activeUniformCount, Enumerable.Range(0, activeUniformCount).ToArray(), ActiveUniformParameter.UniformType, uniformTypes);
@@ -489,7 +487,6 @@ namespace SiliconStudio.Xenko.Graphics
                 int textureUnitCount = 0;
 
                 const int sbCapacity = 128;
-                int length;
                 var sb = new StringBuilder(sbCapacity);
 
                 for (int activeUniformIndex = 0; activeUniformIndex < activeUniformCount; ++activeUniformIndex)
@@ -500,6 +497,7 @@ namespace SiliconStudio.Xenko.Graphics
 #else
                     ActiveUniformType uniformType;
                     int uniformCount;
+                    int length;
                     GL.GetActiveUniform(resourceId, activeUniformIndex, sbCapacity, out length, out uniformCount, out uniformType, sb);
                     var uniformName = sb.ToString();
                     //int uniformSize;
