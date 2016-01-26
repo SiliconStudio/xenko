@@ -6,6 +6,7 @@ Source: ../../../data/tests/SmallPngInterpolated.png
 ColorKeyEnabled: true
 ColorKeyColor: {R: 115, G: 68, B: 26, A: 86}
 ~Base:
+    ~Id: d6023d06-4481-4375-9cfb-2c6cf7633909
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

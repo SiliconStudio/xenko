@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../data/tests/SmallPngInterpolated.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
+    ~Id: 4d467ddf-df43-4bbe-a3e7-64c6239ea152
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
