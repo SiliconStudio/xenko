@@ -4,23 +4,58 @@
 using System.Collections.Generic;
 using System.Reflection;
 using SharpYaml.Events;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Assets.Serializers;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Debugging
 {
-    /// <summary>
-    /// Helper to reload game assemblies at runtime. It will update currently running scripts.
-    /// </summary>
-    public abstract class AssemblyReloader
+    public class ComponentToReload
     {
-        protected ILogger log;
-        protected readonly List<Entity> entities = new List<Entity>();
-
-        protected List<ReloadedComponentEntry> CollectReloadedComponentEntries(HashSet<Assembly> loadedAssembliesSet)
+        public ComponentToReload(Entity entity, EntityComponent component, int index)
         {
-            var reloadedScripts = new List<ReloadedComponentEntry>();
+            Entity = entity;
+            Component = component;
+            Index = index;
+            ParsingEvents = null;
+        }
+
+        public Entity Entity { get; }
+
+        public EntityComponent Component { get; }
+
+        public int Index { get; }
+
+        public List<ParsingEvent> ParsingEvents { get; set; }
+    }
+
+    public class ReloadedComponentEntry
+    {
+        public readonly Entity Entity;
+        public readonly int ComponentIndex;
+        public readonly List<ParsingEvent> YamlEvents;
+
+        public ReloadedComponentEntry(Entity entity, int componentIndex, List<ParsingEvent> yamlEvents)
+        {
+            Entity = entity;
+            ComponentIndex = componentIndex;
+            YamlEvents = yamlEvents;
+        }
+    }
+
+    /// <summary>
+    /// Helper class to reload game assemblies at runtime.
+    /// </summary>
+    public static class AssemblyReloader
+    {
+        /// <summary>
+        /// Collects all the component to reload from a collection of entities, 
+        /// </summary>
+        /// <param name="entities"></param>
+        /// <param name="loadedAssembliesSet"></param>
+        /// <returns></returns>
+        public static List<ComponentToReload> CollectComponentsToReload(List<Entity> entities, HashSet<Assembly> loadedAssembliesSet)
+        {
+            var result = new List<ComponentToReload>();
 
             // Find components that will need reloading
             foreach (var entity in entities)
@@ -35,37 +70,12 @@ namespace SiliconStudio.Xenko.Assets.Debugging
                     if (!loadedAssembliesSet.Contains(componentType.Assembly) && componentType != typeof(UnloadableComponent))
                         continue;
 
-                    var parsingEvents = SerializeComponent(component);
-
                     // TODO: Serialize Scene script too (async?) -- doesn't seem necessary even for complex cases
                     // (i.e. referencing assets, entities and/or scripts) but still a ref counting check might be good
-
-                    reloadedScripts.Add(CreateReloadedComponentEntry(entity, index, parsingEvents, component));
+                    result.Add(new ComponentToReload(entity, component, index));
                 }
             }
-            return reloadedScripts;
-        }
-
-        protected abstract EntityComponent DeserializeComponent(ReloadedComponentEntry reloadedComponent);
-
-        protected abstract List<ParsingEvent> SerializeComponent(EntityComponent component);
-
-        protected abstract ReloadedComponentEntry CreateReloadedComponentEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, EntityComponent component);
-
-        protected abstract void ReplaceComponent(ReloadedComponentEntry reloadedComponent);
-
-        protected class ReloadedComponentEntry
-        {
-            public readonly Entity Entity;
-            public readonly int ComponentIndex;
-            public readonly List<ParsingEvent> YamlEvents;
-
-            public ReloadedComponentEntry(Entity entity, int componentIndex, List<ParsingEvent> yamlEvents)
-            {
-                Entity = entity;
-                ComponentIndex = componentIndex;
-                YamlEvents = yamlEvents;
-            }
+            return result;
         }
     }
 }
