@@ -1,63 +1,156 @@
 !SceneAsset
 Id: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084
-SerializedVersion: 18
+SerializedVersion: {Xenko: 1.5.0-alpha02}
 Tags: []
 Hierarchy:
+    ~Id: 202c3abe-924a-4d6f-a118-505f52fd3c3b
     RootEntities:
         - 6d2b02df-329f-4e05-b299-69f96d39c763
         - ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
+        - d5a8b0cd-e46b-49fc-afad-f82a3de522a7
     Entities:
         -   Entity:
+                Id: 6d2b02df-329f-4e05-b299-69f96d39c763
                 Name: Camera
                 Components:
                     CameraComponent.Key:
+                        ~Id: 4f95637b-669c-48eb-84a0-2069cf38ca06
                         Projection: Perspective
                     TransformComponent.Key:
-                        Position: {X: 0.0, Y: 3.0, Z: 0.0}
-                        Rotation: {W: 0.707106769, X: -0.707106769, Y: 0.0, Z: 0.0}
+                        ~Id: 1ddedd9b-be04-4d67-a3ea-3cc74bde2ea3
+                        Position: {X: 0.0, Y: 3.0, Z: 4.356315}
+                        Rotation: {W: 0.985297143, X: -0.1708495, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
-                Id: 6d2b02df-329f-4e05-b299-69f96d39c763
-            Design:
-                Folder: null
+            Design: {}
         -   Entity:
-                Name: Ambient light
+                Id: d5a8b0cd-e46b-49fc-afad-f82a3de522a7
+                Name: Empty Particle System
                 Components:
-                    LightComponent.Key:
-                        Type: !LightAmbient
-                            Color: !ColorRgbProvider
-                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                    ParticleSystemComponent.Key:
+                        ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
+                        Control:
+                            ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
+                            ResetSeconds: 5.0
+                            Control: Play
+                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                        Speed: 1.0
+                        ParticleSystem:
+                            ~Id: 5ecd44e2-814d-4e34-b8c9-0409458fc16c
+                            Settings:
+                                ~Id: 12c60c42-8584-4880-9c4e-c4be829646c8
+                            BoundingShape: !BoundingBoxStatic
+                                ~Id: 614d164c-bcde-4001-9795-e49a1781c957
+                                Minimum: {X: -1.0, Y: -1.0, Z: -1.0}
+                                Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
+                            Emitters:
+                                -   ~Id: e50de5ab-984a-4304-8c65-caae9be1bee9
+                                    MaxParticlesOverride: 0
+                                    ParticleMinLifetime: 1.0
+                                    ParticleMaxLifetime: 1.0
+                                    SimulationSpace: World
+                                    RandomSeedMethod: Time
+                                    SortingPolicy: None
+                                    ShapeBuilder: !ShapeBuilderBillboard
+                                        ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
+                                    Material: !ParticleMaterialComputeColor
+                                        ~Id: 6aad8458-e3fb-44c9-9493-d3846f2fb5cb
+                                        AlphaAdditive: 0.0
+                                        FaceCulling: CullNone
+                                        ComputeColor: !ComputeTextureColor
+                                            FallbackValue:
+                                                Value: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                                            Scale: {X: 1.0, Y: 1.0}
+                                            Offset: {X: 0.0, Y: 0.0}
+                                            Swizzle: null
+                                        UVBuilder: null
+                                    Spawners:
+                                        - !SpawnerPerSecond
+                                            ~Id: 9e7b2f33-8813-414c-9ce7-b73b8c7be0b9
+                                            LoopCondition: Looping
+                                            Delay: {X: 0.0, Y: 0.0}
+                                            Duration: {X: 1.0, Y: 1.0}
+                                            SpawnCount: 100.0
+                                    Initializers:
+                                        - !InitialSizeSeed
+                                            ~Id: 5733b5fd-90fc-4742-b835-617dbff8eeb6
+                                            InheritLocation: Scale
+                                            ParticleLocator:
+                                                ~Id: 93881fb3-bcd7-4e73-bdbe-4d36f66ad2e8
+                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
+                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            SeedOffset: 0
+                                            RandomSize: {X: 0.05, Y: 0.1}
+                                        - !InitialVelocitySeed
+                                            ~Id: 589eef0c-43c4-4bc0-b99b-d8a217838aae
+                                            InheritLocation: Position, Rotation, Scale
+                                            ParticleLocator:
+                                                ~Id: 9f577c31-4289-4fee-bc60-0843b810119a
+                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
+                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            SeedOffset: 0
+                                            VelocityMin: {X: -1.0, Y: 3.0, Z: -1.0}
+                                            VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
+                                    Updaters: []
                     TransformComponent.Key:
+                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+            Design: {}
+        -   Entity:
                 Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
-            Design:
-                Folder: null
-    SceneSettings:
-        GraphicsCompositor: !SceneGraphicsCompositorLayers
-            Cameras:
-                -   Name: null
+                Name: Ambient light
+                Components:
+                    LightComponent.Key:
+                        ~Id: f38002e2-0e52-47dd-a781-cf788f34c7db
+                        Type: !LightAmbient
+                            ~Id: 8512f3b7-5949-40f1-86ba-98f07120e8ac
+                            Color: !ColorRgbProvider
+                                ~Id: 9694e4bb-491c-422f-9579-b5fedbc2daff
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+                    TransformComponent.Key:
+                        ~Id: 0c102230-2808-4463-aef3-c0fdcd8a214e
+                        Position: {X: 0.0, Y: 3.10216951, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+            Design: {}
+SceneSettings:
+    ~Id: 67c7e12a-6cf3-4d39-9e42-e663686a9a97
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: d5644f9f-1ea9-42d7-94ee-30a0404e4c62
+        Cameras:
+            -   ~Id: f36880de-93d1-4ac0-b392-65f59929638c
+                Name: null
+                Camera:
+                    Entity: {Id: 6d2b02df-329f-4e05-b299-69f96d39c763}
+                    Component: CameraComponent.Key
+        Layers: []
+        Master:
+            ~Id: 64bf7052-c17e-438a-9984-77ac4ca25966
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: 317b52bf-f9ae-4a93-a006-cf3664cf605d
+                    Color: {R: 0.0, G: 0.0, B: 0.0, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: 635b97b5-a2c1-4584-b15a-15f8f2daca90
+                    Mode: !CameraRendererModeForward
+                        ~Id: 6710f190-af88-41e2-b97f-5656f5cd6039
                     Camera:
-                        Entity: {Id: 6d2b02df-329f-4e05-b299-69f96d39c763}
-                        Component: CameraComponent.Key
-            Layers: []
-            Master:
-                Name: SceneGraphicsLayer
-                Output: !MasterRenderFrameProvider {}
-                Renderers:
-                    - !ClearRenderFrameRenderer
-                        Color: {R: 0.0, G: 0.0, B: 0.0, A: 1.0}
-                        Output: !CurrentRenderFrameProvider {}
-                    - !SceneCameraRenderer
-                        Mode: !CameraRendererModeForward {}
-                        Camera:
-                            Index: 0
-                        Output: !CurrentRenderFrameProvider {}
-                        Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-        EditorSettings:
-            GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-            SceneUnit: 1.0
-            Mode: !SceneEditorGraphicsModeLDRSettings
-                BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+    EditorSettings:
+        ~Id: 904590b1-c5a6-489e-91f1-58e56ce90d12
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: b6b7fd6a-b9a6-422f-855f-45c82cf893a2
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
