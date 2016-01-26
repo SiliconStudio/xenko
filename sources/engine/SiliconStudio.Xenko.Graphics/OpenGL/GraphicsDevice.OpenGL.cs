@@ -2287,7 +2287,7 @@ namespace SiliconStudio.Xenko.Graphics
 #else
             deviceCreationWindowInfo = windowInfo;
             deviceCreationContext = new GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
-            GraphicsContext.CurrentContext.MakeCurrent(null);
+            GraphicsContext.CurrentContext.MakeCurrent(windowInfo);
 #endif
 
             // Create default OpenGL State objects
