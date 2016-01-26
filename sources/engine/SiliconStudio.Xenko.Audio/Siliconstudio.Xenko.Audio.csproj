@@ -38,7 +38,7 @@
     </Reference>
   </ItemGroup>
   <Choose>
-    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
+    <When Condition="$(SiliconStudioUI.Contains('SDL')) OR '$(SiliconStudioAudio)' == 'SDL'">
       <ItemGroup>
         <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
