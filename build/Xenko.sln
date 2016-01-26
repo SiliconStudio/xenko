@@ -354,6 +354,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Assets.Tests2", "..\sources\engine\SiliconStudio.Xenko.Assets.Tests2\SiliconStudio.Xenko.Assets.Tests2.csproj", "{370ADF53-DFFA-461E-B72A-1302C0A0DE00}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Particles.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Particles.Tests\SiliconStudio.Xenko.Particles.Tests.Windows.csproj", "{33CC6216-3F30-4B5A-BB29-C5B47EFFA713}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
