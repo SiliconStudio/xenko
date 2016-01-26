@@ -27,7 +27,9 @@ namespace SiliconStudio.Xenko.Rendering
         private EffectCompilerBase compiler;
         private readonly Dictionary<string, List<CompilerResults>> earlyCompilerCache = new Dictionary<string, List<CompilerResults>>();
         private Dictionary<EffectBytecode, Effect> cachedEffects = new Dictionary<EffectBytecode, Effect>();
+#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
         private DirectoryWatcher directoryWatcher;
+#endif
         private bool isInitialized;
 
         /// <summary>
