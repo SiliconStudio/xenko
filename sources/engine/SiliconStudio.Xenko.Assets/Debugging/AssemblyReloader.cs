@@ -2,17 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-using System.Linq;
 using System.Reflection;
-using SharpYaml;
 using SharpYaml.Events;
-using SharpYaml.Serialization;
-using SiliconStudio.Assets.Serializers;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets.Serializers;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Design;
 
 namespace SiliconStudio.Xenko.Assets.Debugging
 {
@@ -24,16 +18,7 @@ namespace SiliconStudio.Xenko.Assets.Debugging
         protected ILogger log;
         protected readonly List<Entity> entities = new List<Entity>();
 
-        protected virtual void RestoreReloadedComponentEntries(List<ReloadedComponentEntry> reloadedComponents)
-        {
-            foreach (var reloadedComponent in reloadedComponents)
-            {
-                var componentToReload = reloadedComponent.Entity.Components[reloadedComponent.ComponentIndex];
-                ReplaceComponent(reloadedComponent);
-            }
-        }
-
-        protected virtual List<ReloadedComponentEntry> CollectReloadedComponentEntries(HashSet<Assembly> loadedAssembliesSet)
+        protected List<ReloadedComponentEntry> CollectReloadedComponentEntries(HashSet<Assembly> loadedAssembliesSet)
         {
             var reloadedScripts = new List<ReloadedComponentEntry>();
 
@@ -61,47 +46,11 @@ namespace SiliconStudio.Xenko.Assets.Debugging
             return reloadedScripts;
         }
 
-        protected virtual EntityComponent DeserializeComponent(ReloadedComponentEntry reloadedComponent)
-        {
-            // Use an entity to deserialize the component 
-            var entity = new Entity();
-            entity.Components.Clear();
-            
-            var eventReader = new EventReader(new MemoryParser(reloadedComponent.YamlEvents));
-            YamlSerializer.Deserialize(eventReader, entity, typeof(Entity), log != null ? new SerializerContextSettings { Logger = new YamlForwardLogger(log) } : null);
-            var component = entity.Components.FirstOrDefault();
+        protected abstract EntityComponent DeserializeComponent(ReloadedComponentEntry reloadedComponent);
 
-            // Make sure to clear the components so that the component is detached from the entity.
-            entity.Components.Clear();
-            return component;
-        }
+        protected abstract List<ParsingEvent> SerializeComponent(EntityComponent component);
 
-        protected virtual List<ParsingEvent> SerializeComponent(EntityComponent component)
-        {
-            // Use an entity to deserialize the component 
-
-            // In order to do this, we need to save the parent entity of the component being deserialized
-            var previousEntity = component.Entity;
-            component.Entity = null;
-
-            var entity = new Entity();
-            entity.Components.Clear();
-            entity.Components.Add(component);
-
-            // Serialize with Yaml layer
-            var parsingEvents = new List<ParsingEvent>();
-            YamlSerializer.Serialize(new ParsingEventListEmitter(parsingEvents), entity, typeof(Entity));
-
-            entity.Components.Clear();
-            component.Entity = previousEntity;
-
-            return parsingEvents;
-        }
-
-        protected virtual ReloadedComponentEntry CreateReloadedComponentEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, EntityComponent component)
-        {
-            return new ReloadedComponentEntry(entity, index, parsingEvents);
-        }
+        protected abstract ReloadedComponentEntry CreateReloadedComponentEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, EntityComponent component);
 
         protected abstract void ReplaceComponent(ReloadedComponentEntry reloadedComponent);
 

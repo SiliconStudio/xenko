@@ -103,6 +103,15 @@ namespace SiliconStudio.Xenko.Debugger
             CloneReferenceSerializer.References = null;
         }
 
+        protected virtual void RestoreReloadedComponentEntries(List<ReloadedComponentEntry> reloadedComponents)
+        {
+            foreach (var reloadedComponent in reloadedComponents)
+            {
+                var componentToReload = reloadedComponent.Entity.Components[reloadedComponent.ComponentIndex];
+                ReplaceComponent(reloadedComponent);
+            }
+        }
+
         protected override ReloadedComponentEntry CreateReloadedComponentEntry(Entity entity, int index, List<ParsingEvent> parsingEvents, EntityComponent component)
         {
             return new ReloadedComponentEntryLive(entity, index, parsingEvents, component);
