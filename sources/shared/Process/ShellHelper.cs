@@ -2,10 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System.Collections.Generic;
 using System.Diagnostics;
+using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio
 {
-    public partial class ShellHelper
+    public class ShellHelper
     {
         /// <summary>
         /// Run the process and get the output without deadlocks.
@@ -53,6 +54,39 @@ namespace SiliconStudio
                     RedirectStandardOutput = true,
                 });
         }
+        public static int RunProcessAndRedirectToLogger(string command, string parameters, string workingDirectory, LoggerResult logger)
+        {
+            var process = new Process
+            {
+                StartInfo = new ProcessStartInfo(command)
+                {
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardError = true,
+                    RedirectStandardOutput = true,
+                    WorkingDirectory = workingDirectory,
+                    Arguments = parameters,
+                }
+            };
+
+            process.Start();
+
+            DataReceivedEventHandler outputDataReceived = (_, args) => LockProcessAndAddDataToLogger(process, logger, false, args);
+            DataReceivedEventHandler errorDataReceived = (_, args) => LockProcessAndAddDataToLogger(process, logger, true, args);
+
+            process.OutputDataReceived += outputDataReceived;
+            process.ErrorDataReceived += errorDataReceived;
+            process.BeginOutputReadLine();
+            process.BeginErrorReadLine();
+            process.WaitForExit();
+            process.CancelOutputRead();
+            process.CancelErrorRead();
+
+            process.OutputDataReceived -= outputDataReceived;
+            process.ErrorDataReceived -= errorDataReceived;
+
+            return process.ExitCode;
+        }
 
         /// <summary>
         /// Lock the process and save the string.
@@ -67,6 +101,27 @@ namespace SiliconStudio
                 lock (process)
                 {
                     output.Add(args.Data);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Lock the process and save the string.
+        /// </summary>
+        /// <param name="process">The current process.</param>
+        /// <param name="logger">Logger were out current process.</param>
+        /// <param name="isError">Is this the error output or the standard one?</param>
+        /// <param name="args">arguments of the process.</param>
+        private static void LockProcessAndAddDataToLogger(Process process, LoggerResult logger, bool isError, DataReceivedEventArgs args)
+        {
+            if (!string.IsNullOrEmpty(args.Data))
+            {
+                lock (process)
+                {
+                    if (isError)
+                        logger.Error(args.Data);
+                    else
+                        logger.Info(args.Data);
                 }
             }
         }
