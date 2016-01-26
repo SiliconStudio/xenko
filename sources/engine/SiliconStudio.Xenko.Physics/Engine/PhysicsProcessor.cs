@@ -40,6 +40,7 @@ namespace SiliconStudio.Xenko.Physics
             : base(typeof(TransformComponent))
         {
         }
+        public Simulation Simulation => simulation;
 
         internal void RenderColliderShapes(bool enabled)
         {

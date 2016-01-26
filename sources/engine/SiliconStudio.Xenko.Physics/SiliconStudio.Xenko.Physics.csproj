@@ -81,6 +81,7 @@
     <Compile Include="IRelative.cs" />
     <Compile Include="Module.cs" />
     <Compile Include="PhysicsProfilingKeys.cs" />
+    <Compile Include="PhysicsScriptComponentExtensions.cs" />
     <Compile Include="XenkoMotionState.cs" />
     <Compile Include="PhysicsDebugEffect.cs" />
     <Compile Include="Shaders.Bytecode\PhysicsDebugEffect.bytecode.Direct3D11.Level_9_3.cs" />
