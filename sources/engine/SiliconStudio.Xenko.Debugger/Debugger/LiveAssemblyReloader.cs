@@ -18,26 +18,15 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Debugger
 {
-    public class LiveAssemblyReloader
+    public static class LiveAssemblyReloader
     {
-        private readonly AssemblyContainer assemblyContainer;
-        private readonly List<Assembly> assembliesToUnregister;
-        private readonly List<Assembly> assembliesToRegister;
-        private readonly Game game;
-        private readonly List<Entity> entities = new List<Entity>();
-
-        public LiveAssemblyReloader(Game game, AssemblyContainer assemblyContainer, List<Assembly> assembliesToUnregister, List<Assembly> assembliesToRegister)
+        public static void Reload(Game game, AssemblyContainer assemblyContainer, List<Assembly> assembliesToUnregister, List<Assembly> assembliesToRegister)
         {
+            List<Entity> entities = new List<Entity>();
+
             if (game != null)
                 entities.AddRange(game.SceneSystem.SceneInstance);
-            this.game = game;
-            this.assemblyContainer = assemblyContainer;
-            this.assembliesToUnregister = assembliesToUnregister;
-            this.assembliesToRegister = assembliesToRegister;
-        }
 
-        public void Reload()
-        {
             CloneReferenceSerializer.References = new List<object>();
 
             var loadedAssembliesSet = new HashSet<Assembly>(assembliesToUnregister);
@@ -107,7 +96,7 @@ namespace SiliconStudio.Xenko.Debugger
             }
 
             // Third pass: deserialize
-            reloadedComponents.ForEach(ReplaceComponent);
+            reloadedComponents.ForEach(x => ReplaceComponent(game, x));
 
             CloneReferenceSerializer.References = null;
         }
@@ -128,7 +117,7 @@ namespace SiliconStudio.Xenko.Debugger
             return component;
         }
 
-        protected List<ParsingEvent> SerializeComponent(EntityComponent component)
+        private static List<ParsingEvent> SerializeComponent(EntityComponent component)
         {
             // Wrap component in a EntityComponentCollection to properly handle errors
             var components = new Entity { component }.Components;
@@ -141,7 +130,7 @@ namespace SiliconStudio.Xenko.Debugger
             return parsingEvents;
         }
 
-        private void ReplaceComponent(ReloadedComponentEntryLive reloadedComponent)
+        private static void ReplaceComponent(Game game, ReloadedComponentEntryLive reloadedComponent)
         {
             // Create new component instance
             var newComponent = DeserializeComponent(reloadedComponent);
