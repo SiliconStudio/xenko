@@ -130,6 +130,19 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         }
 
         /// <summary>
+        /// Process all available events.
+        /// </summary>
+        public static void ProcessEvents()
+        {
+            SDL.SDL_Event e;
+            SDL.SDL_PumpEvents();
+            while (SDL.SDL_PollEvent(out e) > 0)
+            {
+                Application.ProcessEvent(e);
+            }
+        }
+
+        /// <summary>
         /// Process a single event and dispatch it to the right window.
         /// </summary>
         public static void ProcessEvent(SDL.SDL_Event e)
