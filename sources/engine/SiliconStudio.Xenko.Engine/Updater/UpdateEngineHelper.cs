@@ -24,8 +24,8 @@ namespace SiliconStudio.Xenko.Updater
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static T PtrToObject<T>(IntPtr obj) where T : class
         {
-            object convObj; // TEMP XAMARIN AOT FIX -- DOES NOT WORK FOR VALUE TYPE PROPERTIES
 #if IL
+            object convObj; // TEMP XAMARIN AOT FIX -- DOES NOT WORK FOR VALUE TYPE PROPERTIES
             ldarg obj
             stloc convObj // TEMP XAMARIN AOT FIX -- DOES NOT WORK FOR VALUE TYPE PROPERTIES
             ldloc convObj // TEMP XAMARIN AOT FIX -- DOES NOT WORK FOR VALUE TYPE PROPERTIES
