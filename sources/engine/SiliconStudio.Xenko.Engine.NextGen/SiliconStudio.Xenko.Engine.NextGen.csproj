@@ -170,20 +170,20 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BufferPool.cs" />
-    <Compile Include="Data\Properties.cs">
+    <Compile Include="Graphics\BufferPool.cs" />
+    <Compile Include="Rendering\Properties.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Properties.tt</DependentUpon>
     </Compile>
-    <Compile Include="CustomGame.cs" />
-    <Compile Include="DescriptorPool.cs" />
-    <Compile Include="DescriptorSetEntry.cs" />
-    <Compile Include="DescriptorSetLayout.cs" />
-    <Compile Include="DescriptorSetLayoutEntry.cs" />
-    <Compile Include="DescriptorSetLayoutBuilder.cs" />
-    <Compile Include="DescriptorTypeCount.cs" />
-    <Compile Include="EffectBinder.cs" />
+    <Compile Include="Engine.NextGen\CustomGame.cs" />
+    <Compile Include="Graphics\DescriptorPool.cs" />
+    <Compile Include="Graphics\DescriptorSetEntry.cs" />
+    <Compile Include="Graphics\DescriptorSetLayout.cs" />
+    <Compile Include="Graphics\DescriptorSetLayoutEntry.cs" />
+    <Compile Include="Graphics\DescriptorSetLayoutBuilder.cs" />
+    <Compile Include="Graphics\DescriptorTypeCount.cs" />
+    <Compile Include="Rendering\EffectBinder.cs" />
     <Compile Include="Effects\GBuffer.cs">
       <DependentUpon>GBuffer.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -214,58 +214,58 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>TestShader.xksl</DependentUpon>
     </Compile>
-    <Compile Include="EffectValidator.cs" />
-    <Compile Include="Module.cs" />
-    <Compile Include="RenderArchitectureApp.cs" />
+    <Compile Include="Rendering\EffectValidator.cs" />
+    <Compile Include="Engine.NextGen\Module.cs" />
+    <Compile Include="Engine.NextGen\RenderArchitectureApp.cs" />
     <Compile Include="Rendering\ValueParameter.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
-    <Compile Include="Nodes\ViewNodeReference.cs" />
-    <Compile Include="Renderers\INextGenEntityComponentRenderer.cs" />
-    <Compile Include="Renderers\LightComponentCollection.cs" />
-    <Compile Include="Renderers\LightComponentCollectionGroup.cs" />
-    <Compile Include="Renderers\LightComponentForwardRenderer.cs" />
-    <Compile Include="Renderers\NextGenEntityComponentRendererBase.cs" />
-    <Compile Include="Renderers\NextGenEntityComponentRendererBatch.cs" />
-    <Compile Include="Renderers\NextGenModelProcessor.cs" />
-    <Compile Include="Renderers\NextGenRenderer.cs" />
-    <Compile Include="Nodes\EffectObjectNode.cs" />
-    <Compile Include="Nodes\StaticObjectNodeReference.cs" />
-    <Compile Include="RenderEffect.cs" />
-    <Compile Include="RenderFeatures\EffectDescriptorSetReference.cs" />
-    <Compile Include="RenderFeatures\ConstantBufferOffsetReference.cs" />
-    <Compile Include="RenderFeatures\ConstantBufferHelper.cs" />
-    <Compile Include="RenderFeatures\DataArrayInfo.cs" />
-    <Compile Include="RenderFeatures\EffectPermutationSlot.cs" />
-    <Compile Include="RenderFeatures\MaterialRenderFeature.cs" />
-    <Compile Include="RenderFeatures\MeshRenderFeature.cs" />
-    <Compile Include="NextGenRenderSystem.cs" />
-    <Compile Include="RenderFeatures\NextGenSpriteProcessor.cs" />
-    <Compile Include="RenderFeatures\RenderFeature.cs" />
-    <Compile Include="RenderFeatures\RenderSprite.cs" />
-    <Compile Include="RenderFeatures\RootEffectRenderFeature.cs" />
-    <Compile Include="RenderFeatures\RootRenderFeature.cs" />
-    <Compile Include="RenderFeatures\ForwardLightingRenderFeature.cs" />
-    <Compile Include="RenderFeatures\SpriteRenderFeature.cs" />
+    <Compile Include="Rendering\Nodes\ViewNodeReference.cs" />
+    <Compile Include="Rendering\INextGenEntityComponentRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
+    <Compile Include="Rendering\Lights\LightComponentCollectionGroup.cs" />
+    <Compile Include="Rendering\Lights\LightComponentForwardRenderer.cs" />
+    <Compile Include="Rendering\NextGenEntityComponentRendererBase.cs" />
+    <Compile Include="Rendering\NextGenEntityComponentRendererBatch.cs" />
+    <Compile Include="Rendering\NextGenModelProcessor.cs" />
+    <Compile Include="Rendering\NextGenRenderer.cs" />
+    <Compile Include="Rendering\Nodes\EffectObjectNode.cs" />
+    <Compile Include="Rendering\Nodes\StaticObjectNodeReference.cs" />
+    <Compile Include="Rendering\RenderEffect.cs" />
+    <Compile Include="Rendering\EffectDescriptorSetReference.cs" />
+    <Compile Include="Rendering\ConstantBufferOffsetReference.cs" />
+    <Compile Include="Graphics\ConstantBuffer2.cs" />
+    <Compile Include="Rendering\DataArrayInfo.cs" />
+    <Compile Include="Rendering\EffectPermutationSlot.cs" />
+    <Compile Include="Rendering\Materials\MaterialRenderFeature.cs" />
+    <Compile Include="Rendering\MeshRenderFeature.cs" />
+    <Compile Include="Rendering\NextGenRenderSystem.cs" />
+    <Compile Include="Rendering\Sprites\NextGenSpriteProcessor.cs" />
+    <Compile Include="Rendering\RenderFeature.cs" />
+    <Compile Include="Rendering\Sprites\RenderSprite.cs" />
+    <Compile Include="Rendering\RootEffectRenderFeature.cs" />
+    <Compile Include="Rendering\RootRenderFeature.cs" />
+    <Compile Include="Rendering\Lights\ForwardLightingRenderFeature.cs" />
+    <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />
     <Compile Include="Rendering\ResourceParameter.cs" />
-    <Compile Include="RenderModel.cs" />
-    <Compile Include="Nodes\ObjectNode.cs" />
-    <Compile Include="Nodes\ViewObjectNode.cs" />
-    <Compile Include="RenderStage.cs" />
-    <Compile Include="RenderView.cs" />
-    <Compile Include="RenderFeatures\SkinningRenderFeature.cs" />
-    <Compile Include="Nodes\RenderNode.cs" />
-    <Compile Include="RenderFeatures\SubRenderFeatureBase.cs" />
-    <Compile Include="RenderFeatures\TransformRenderFeature.cs" />
-    <Compile Include="DescriptorSet.cs" />
-    <Compile Include="RenderViewFeature.cs" />
-    <Compile Include="RenderViewFeatureStage.cs" />
-    <Compile Include="ResourceGroup.cs" />
-    <Compile Include="ResourceGroupLayout.cs" />
-    <Compile Include="TestCamera.cs" />
+    <Compile Include="Rendering\RenderModel.cs" />
+    <Compile Include="Rendering\Nodes\ObjectNode.cs" />
+    <Compile Include="Rendering\Nodes\ViewObjectNode.cs" />
+    <Compile Include="Rendering\RenderStage.cs" />
+    <Compile Include="Rendering\RenderView.cs" />
+    <Compile Include="Rendering\SkinningRenderFeature.cs" />
+    <Compile Include="Rendering\Nodes\RenderNode.cs" />
+    <Compile Include="Rendering\SubRenderFeature.cs" />
+    <Compile Include="Rendering\TransformRenderFeature.cs" />
+    <Compile Include="Graphics\DescriptorSet.cs" />
+    <Compile Include="Rendering\RenderViewFeature.cs" />
+    <Compile Include="Rendering\RenderViewFeatureStage.cs" />
+    <Compile Include="Rendering\ResourceGroup.cs" />
+    <Compile Include="Rendering\ResourceGroupLayout.cs" />
+    <Compile Include="Engine.NextGen\TestCamera.cs" />
     <None Include="SiliconStudio.Xenko.Engine.NextGen.xkpkg" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Data\Properties.tt">
+    <Content Include="Rendering\Properties.tt">
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>Properties.cs</LastGenOutput>
     </Content>
@@ -276,6 +276,7 @@
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
   </ItemGroup>
+  <ItemGroup />
   <Import Condition="'$(SiliconStudioRuntime)' == ''" Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SiliconStudioPackageProps)" Condition="Exists('$(SiliconStudioPackageProps)')" />
   <Import Project="$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets" Condition="Exists('$(SiliconStudioXenkoDir)\sources\targets\Xenko.UnitTests.targets')" />

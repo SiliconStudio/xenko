@@ -1,4 +1,4 @@
-namespace RenderArchitecture
+namespace SiliconStudio.Xenko.Rendering
 {
     public struct ValueParameter<T> where T : struct
     {
