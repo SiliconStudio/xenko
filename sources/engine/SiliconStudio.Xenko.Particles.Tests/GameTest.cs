@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
@@ -39,11 +40,25 @@ namespace SiliconStudio.Xenko.Particles.Tests
         {
             await base.LoadContent();
 
+            // TODO Load the respective scenes here
+            var assetManager = Services.GetSafeServiceAs<AssetManager>();
+
+
+            SceneSystem.SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>("Scene01"));
+
+//            SceneSystem.SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>("MainScene"));
+
+            //// Preload the scene if it exists
+            //if (SceneSystem.InitialSceneUrl != null && assetManager.Exists(SceneSystem.InitialSceneUrl))
+            //{
+            //    SceneSystem.SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>(SceneSystem.InitialSceneUrl));
+            //}
+
             // TODO My custom code here
-//            font = Asset.Load<SpriteFont>("Font");
-//            teapot = Asset.Load<Model>("Teapot");
-//            batch = new SpriteBatch(GraphicsDevice);
-        
+            //            font = Asset.Load<SpriteFont>("Font");
+            //            teapot = Asset.Load<Model>("Teapot");
+            //            batch = new SpriteBatch(GraphicsDevice);
+
         }
 
 

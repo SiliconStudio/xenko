@@ -1,5 +1,5 @@
 !SceneAsset
-Id: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084
+Id: 9a462c4a-207b-4a29-8ea3-748cb3dad8da
 SerializedVersion: {Xenko: 1.5.0-alpha02}
 Tags: []
 Hierarchy:
@@ -9,7 +9,8 @@ Hierarchy:
         - ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
         - d5a8b0cd-e46b-49fc-afad-f82a3de522a7
         - 5a2e386a-dd36-44fc-9fce-50aba2fd9c59
-        - b444e30e-7137-404b-b1b2-d0b210d0f9d9
+        - fcec7ab6-2d12-4bae-8578-f8b471d1039b
+        - 810b0ab2-469f-4c05-a409-2a5c9144804a
     Entities:
         -   Entity:
                 Id: 5a2e386a-dd36-44fc-9fce-50aba2fd9c59
@@ -112,18 +113,18 @@ Hierarchy:
                         Children: []
             Design: {}
         -   Entity:
-                Id: b444e30e-7137-404b-b1b2-d0b210d0f9d9
-                Name: ProceduralModel
+                Id: 810b0ab2-469f-4c05-a409-2a5c9144804a
+                Name: ProceduralModel (2)
                 Components:
                     ModelComponent.Key:
-                        ~Id: d98e9b84-7356-43dd-b5ac-9ad84c474371
+                        ~Id: e90eda64-74a4-48d9-984a-3a4d882987ea
                         Model: 7f74ef46-cba9-4feb-b94a-1d1d056f4d4c:ProceduralModel
                         Materials: []
                     TransformComponent.Key:
-                        ~Id: d6d53bf7-cdf6-4c37-9e1a-830253e2374f
-                        Position: {X: -0.9325819, Y: 0.0, Z: -0.496650219}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        ~Id: cccc600d-17c6-46bb-9504-fcedc9f7465d
+                        Position: {X: -3.295479, Y: 0.0, Z: -2.19959855}
+                        Rotation: {W: 0.892187655, X: 0.0, Y: -0.4516649, Z: 0.0}
+                        Scale: {X: 2.13437629, Y: 2.13437629, Z: 2.13437629}
                         Children: []
             Design: {}
         -   Entity:
@@ -199,9 +200,9 @@ Hierarchy:
                                     Updaters: []
                     TransformComponent.Key:
                         ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
-                        Position: {X: -1.72430182, Y: 0.0, Z: -0.4078943}
+                        Position: {X: -1.5, Y: 0.0, Z: 0.0}
                         Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.300628841, Y: 0.300628841, Z: 0.300628841}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
             Design: {}
         -   Entity:
@@ -218,6 +219,92 @@ Hierarchy:
                     TransformComponent.Key:
                         ~Id: 0c102230-2808-4463-aef3-c0fdcd8a214e
                         Position: {X: 0.0, Y: 3.10216951, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+            Design: {}
+        -   Entity:
+                Id: fcec7ab6-2d12-4bae-8578-f8b471d1039b
+                Name: Yellow
+                Components:
+                    ParticleSystemComponent.Key:
+                        ~Id: 03ba1655-2cdf-4188-be7f-3aee48bc5c33
+                        Control:
+                            ~Id: f7168581-4bfd-406c-80bd-33d92fbc0010
+                            ResetSeconds: 5.0
+                            Control: Play
+                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                        Speed: 1.0
+                        ParticleSystem:
+                            ~Id: e9a431c1-ee8f-497d-aa89-7264e53704ff
+                            Settings:
+                                ~Id: 1cacf43f-b003-4647-b6e9-1aeb379a2ef7
+                            BoundingShape: !BoundingBoxStatic
+                                ~Id: 61256b5f-807e-4438-a352-39f8da21925e
+                                Minimum: {X: -1.0, Y: -1.0, Z: -1.0}
+                                Maximum: {X: 1.0, Y: 1.0, Z: 1.0}
+                            Emitters:
+                                -   ~Id: 2f358bda-327a-4282-929d-6b008539842b
+                                    MaxParticlesOverride: 0
+                                    ParticleMinLifetime: 1.0
+                                    ParticleMaxLifetime: 1.0
+                                    SimulationSpace: World
+                                    RandomSeedMethod: Time
+                                    SortingPolicy: None
+                                    ShapeBuilder: !ShapeBuilderBillboard
+                                        ~Id: eb5b6cfb-ce56-458c-b9fb-ab16054a42a1
+                                    Material: !ParticleMaterialComputeColor
+                                        ~Id: d2dcdec0-a7c7-4e29-973e-f7a7f4ffa90d
+                                        AlphaAdditive: 0.0
+                                        FaceCulling: CullNone
+                                        ComputeColor: !ComputeVertexStreamColor
+                                            Stream: !ColorVertexStreamDefinition
+                                                ~Id: a39f532b-1ce4-4eae-ad27-0ca4bc4ba16e
+                                        UVBuilder: null
+                                    Spawners:
+                                        - !SpawnerPerSecond
+                                            ~Id: ded36271-fd9f-429e-9e3c-07fbe2ec7158
+                                            LoopCondition: Looping
+                                            Delay: {X: 0.0, Y: 0.0}
+                                            Duration: {X: 1.0, Y: 1.0}
+                                            SpawnCount: 100.0
+                                    Initializers:
+                                        - !InitialSizeSeed
+                                            ~Id: 2e83f154-8304-4011-8786-497bc463c34b
+                                            InheritLocation: Scale
+                                            ParticleLocator:
+                                                ~Id: f295520d-b26a-4d45-b981-aa1a1af2575b
+                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
+                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            SeedOffset: 0
+                                            RandomSize: {X: 0.1, Y: 0.2}
+                                        - !InitialVelocitySeed
+                                            ~Id: 47934215-b75b-4b6e-b8ca-cf97818f4b71
+                                            InheritLocation: Position, Rotation, Scale
+                                            ParticleLocator:
+                                                ~Id: 547f3fd9-b636-419b-b4eb-b0fa27f7d1f0
+                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
+                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            SeedOffset: 0
+                                            VelocityMin: {X: -1.0, Y: 2.0, Z: -1.0}
+                                            VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
+                                        - !InitialColorSeed
+                                            ~Id: b4099ba1-12e2-4e9d-a3ca-20cc144e7de0
+                                            InheritLocation: Position, Rotation, Scale
+                                            ParticleLocator:
+                                                ~Id: e198294e-9a36-475a-818c-f056dac96973
+                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
+                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            SeedOffset: 0
+                                            ColorMin: {R: 0.987499952, G: 1.0, B: 0.0, A: 1.0}
+                                            ColorMax: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                                    Updaters: []
+                    TransformComponent.Key:
+                        ~Id: c513a19d-55d3-47e9-b763-f33c7812ab85
+                        Position: {X: -1.0, Y: 0.0, Z: -3.0}
                         Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
