@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Windows.Forms;
 
 namespace SiliconStudio.ExecServer
 {
@@ -16,8 +17,7 @@ namespace SiliconStudio.ExecServer
         public static int Main(string[] args)
         {
             var serverApp = new ExecServerApp();
-            var result = serverApp.Run(args);
-            return result;
+            return serverApp.Run(args);
         }
     }
 }
