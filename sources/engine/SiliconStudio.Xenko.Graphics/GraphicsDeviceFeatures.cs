@@ -76,6 +76,13 @@ namespace SiliconStudio.Xenko.Graphics
             get { return this.mapFeaturesPerFormat[(int)dxgiFormat]; }
         }
 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+        // Defined here to avoid CS0282 warning if defined in GraphicsDeviceFeatures.OpenGL.cs
+        internal string Vendor;
+        internal string Renderer;
+        internal IList<string> SupportedExtensions;
+#endif
+
         /// <summary>
         /// The features exposed for a particular format.
         /// </summary>
