@@ -1,6 +1,6 @@
 !MaterialAsset
 Id: db59d494-42a0-4470-aadf-5c629cd67e3f
-SerializedVersion: 1
+SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Attributes:
     Diffuse: !MaterialDiffuseMapFeature
@@ -10,6 +10,7 @@ Attributes:
                 Value: {R: 0.698039234, G: 0.8616177, B: 0.9764706, A: 1.0}
             Scale: {X: 1.0, Y: 1.0}
             Offset: {X: 0.0, Y: 0.0}
+            Swizzle: null
     DiffuseModel: !MaterialDiffuseLambertModelFeature {}
     Overrides:
         UVScale: {X: 1.0, Y: 1.0}
