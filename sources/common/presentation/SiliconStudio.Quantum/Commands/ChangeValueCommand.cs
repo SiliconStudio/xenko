@@ -4,7 +4,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
-using SiliconStudio.Quantum.ActionStack;
 using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
@@ -19,13 +18,11 @@ namespace SiliconStudio.Quantum.Commands
         {
             var currentValue = content.Retrieve(index);
             var newValue = ChangeValue(currentValue, parameter);
-            IActionItem actionItem = null;
             if (!Equals(newValue, currentValue))
             {
                 content.Update(newValue, index);
-                actionItem = new ContentValueChangedActionItem("Change property via command '{Name}'", content, index, currentValue, dirtiables);
             }
-            return Task.FromResult(actionItem);
+            return Task.FromResult<IActionItem>(null);
         }
 
         protected abstract object ChangeValue(object currentValue, object parameter);

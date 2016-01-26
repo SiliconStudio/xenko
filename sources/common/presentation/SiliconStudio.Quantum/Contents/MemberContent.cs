@@ -37,10 +37,10 @@ namespace SiliconStudio.Quantum.Contents
         public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
 
         /// <inheritdoc/>
-        public override void Update(object newValue, object index)
+        public override void Update(object newValue, object index = null)
         {
             var oldValue = Retrieve(index);
-            NotifyContentChanging(index, oldValue, newValue);
+            NotifyContentChanging(index, ContentChangeType.ValueChange, oldValue, newValue);
             if (index != null)
             {
                 var collectionDescriptor = Descriptor as CollectionDescriptor;
@@ -66,7 +66,74 @@ namespace SiliconStudio.Quantum.Contents
                     Container.Update(containerValue);
             }
             UpdateReferences();
-            NotifyContentChanged(index, oldValue, newValue);
+            NotifyContentChanged(index, ContentChangeType.ValueChange, oldValue, newValue);
+        }
+
+        public override void Add(object newItem)
+        {
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            if (collectionDescriptor != null)
+            {
+                var index = collectionDescriptor.GetCollectionCount(Value);
+                NotifyContentChanging(index, ContentChangeType.CollectionAdd, null, newItem);
+                    collectionDescriptor.Add(Value, newItem);
+
+                UpdateReferences();
+                NotifyContentChanged(index, ContentChangeType.CollectionAdd, null, newItem);
+            }
+            else
+                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+        }
+
+        public override void Add(object itemIndex, object newItem)
+        {
+            NotifyContentChanging(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+            if (collectionDescriptor != null)
+            {
+                var index = (int)itemIndex;
+                if (collectionDescriptor.GetCollectionCount(Value) == index)
+                {
+                    collectionDescriptor.Add(Value, newItem);
+                }
+                else
+                {
+                    collectionDescriptor.Insert(Value, index, newItem);
+                }
+            }
+            else if (dictionaryDescriptor != null)
+            {
+                dictionaryDescriptor.SetValue(Value, itemIndex, newItem);
+            }
+            else
+                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+
+            UpdateReferences();
+            NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
+        }
+
+        public override void Remove(object itemIndex)
+        {
+            if (itemIndex == null) throw new ArgumentNullException(nameof(itemIndex));
+            var oldValue = Retrieve(itemIndex);
+            NotifyContentChanging(itemIndex, ContentChangeType.CollectionRemove, oldValue, null);
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+            if (collectionDescriptor != null)
+            {
+                var index = (int)itemIndex;
+                collectionDescriptor.RemoveAt(Value, index);
+            }
+            else if (dictionaryDescriptor != null)
+            {
+                dictionaryDescriptor.Remove(Value, itemIndex);
+            }
+            else
+                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+
+            UpdateReferences();
+            NotifyContentChanged(itemIndex, ContentChangeType.CollectionRemove, oldValue, null);
         }
 
         private void UpdateReferences()
