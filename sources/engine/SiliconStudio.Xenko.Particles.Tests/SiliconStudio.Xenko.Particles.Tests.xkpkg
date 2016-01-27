@@ -64,6 +64,8 @@ RootAssets:
     - a9177559-c511-4f71-9e1e-dc54c5a79b0f:small_uv
     - ae4ecc1b-0b47-4c9d-ac8e-7f9720913084:MainScene
     - 9a462c4a-207b-4a29-8ea3-748cb3dad8da:Scene01
+    - e28ed348-02ed-45c4-8437-538a39fdbb6c:VisualTestInitializers
+    - a9ba28ad-d83b-4957-8ed6-42863c1d903c:VisualTestSpawners
     - d311c28e-39fc-44ff-a4bc-f4a9d8c5fc53:SpriteSheet
     - d6330082-6ae6-474b-8f0d-28f7bc4f3c4a:round
     - d8993778-e45d-4f2f-9995-69a6980398d6:Arial

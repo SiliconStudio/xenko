@@ -10,7 +10,6 @@ Hierarchy:
         - d5a8b0cd-e46b-49fc-afad-f82a3de522a7
         - 5a2e386a-dd36-44fc-9fce-50aba2fd9c59
         - fcec7ab6-2d12-4bae-8578-f8b471d1039b
-        - 810b0ab2-469f-4c05-a409-2a5c9144804a
     Entities:
         -   Entity:
                 Id: 5a2e386a-dd36-44fc-9fce-50aba2fd9c59
@@ -110,21 +109,6 @@ Hierarchy:
                         Position: {X: 0.0, Y: 3.0, Z: 4.36206532}
                         Rotation: {W: 0.985297143, X: -0.1708495, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
-            Design: {}
-        -   Entity:
-                Id: 810b0ab2-469f-4c05-a409-2a5c9144804a
-                Name: ProceduralModel (2)
-                Components:
-                    ModelComponent.Key:
-                        ~Id: e90eda64-74a4-48d9-984a-3a4d882987ea
-                        Model: 7f74ef46-cba9-4feb-b94a-1d1d056f4d4c:ProceduralModel
-                        Materials: []
-                    TransformComponent.Key:
-                        ~Id: cccc600d-17c6-46bb-9504-fcedc9f7465d
-                        Position: {X: -3.295479, Y: 0.0, Z: -2.19959855}
-                        Rotation: {W: 0.892187655, X: 0.0, Y: -0.4516649, Z: 0.0}
-                        Scale: {X: 2.13437629, Y: 2.13437629, Z: 2.13437629}
                         Children: []
             Design: {}
         -   Entity:
