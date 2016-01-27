@@ -16,9 +16,6 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class Shader
     {
-        // Used for separate shader objects
-        private int shaderProgramId;
-
         private Shader(GraphicsDevice device, ShaderStage shaderStage, byte[] shaderStageBytecode)
             : base(device)
         {
