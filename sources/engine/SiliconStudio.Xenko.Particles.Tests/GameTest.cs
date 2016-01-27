@@ -1,24 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
-using NUnit.Framework;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
-using SiliconStudio.Core.Serialization.Assets;
-using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Sprites;
-using SiliconStudio.Xenko.UI;
-using SiliconStudio.Xenko.UI.Controls;
-using SiliconStudio.Xenko.UI.Panels;
-using SiliconStudio.Xenko.Input;
-using SiliconStudio.Xenko.Particles.Components;
 
 
 namespace SiliconStudio.Xenko.Particles.Tests
@@ -35,35 +20,11 @@ namespace SiliconStudio.Xenko.Particles.Tests
             AutoLoadDefaultSettings = true;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1, };
         }
-
-        protected override async Task LoadContent()
-        {
-            await base.LoadContent();
-
-            // TODO Load the respective scenes here
-            var assetManager = Services.GetSafeServiceAs<AssetManager>();
-
-
-//            SceneSystem.SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>("Scene01"));
-
-            SceneSystem.SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>("MainScene"));
-
-            //// Preload the scene if it exists
-            //if (SceneSystem.InitialSceneUrl != null && assetManager.Exists(SceneSystem.InitialSceneUrl))
-            //{
-            //    SceneSystem.SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>(SceneSystem.InitialSceneUrl));
-            //}
-
-            // TODO My custom code here
-            //            font = Asset.Load<SpriteFont>("Font");
-            //            teapot = Asset.Load<Model>("Teapot");
-            //            batch = new SpriteBatch(GraphicsDevice);
-
-        }
-
-
+        
         protected override void Update(GameTime gameTime)
         {
+            // TODO Override time so that each frame has the same duration
+
             base.Update(gameTime);            
         }
 
@@ -79,6 +40,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
                 // TODO Do something based on frame count? Maybe take a screenshot
             }
 
+            // TODO Run the game for X frames then take a screenshot
+
           //  GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
             
         }
@@ -89,13 +52,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
             {
                 game.Run();
             }
-        }
-
-        [Test]
-        public void RunSensorTest()
-        {
-            RunGameTest(new GameTest());
-        }
+        }        
     }
 }
 
