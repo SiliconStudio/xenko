@@ -72,8 +72,17 @@ namespace SiliconStudio.Xenko.Physics
         {
             foreach (var simulation in scenes)
             {
-                simulation.Simulation.Simulate(deltaTime);
-                simulation.Simulation.ProcessContacts();
+                                simulation.Simulation.CacheContacts();
+                                var contactsTask = new Task(() => simulation.Simulation.ProcessContacts());
+
+                                contactsTask.Start();
+                                simulation.Simulation.Simulate(deltaTime);
+                                contactsTask.Wait();
+
+                                simulation.Simulation.SendEvents();
+               
+//                simulation.Simulation.Simulate(deltaTime);
+//                simulation.Simulation.ProcessContacts2();
             }
         }
 
