@@ -6,6 +6,8 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Physics;
 using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
 
 namespace SiliconStudio.Xenko.Engine
@@ -37,6 +39,14 @@ namespace SiliconStudio.Xenko.Engine
             NewPairChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
             PairEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
             AllPairsEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
+
+            Collisions.CollectionChanged += (sender, args) =>
+            {
+                if (args.Action == NotifyCollectionChangedAction.Remove)
+                {
+                     //Debugger.Break();
+                }
+            };
         }
 
         [DataMemberIgnore]
@@ -303,7 +313,7 @@ namespace SiliconStudio.Xenko.Engine
         #region Ignore or Private/Internal
 
         [DataMemberIgnore]
-        public List<Collision> Collisions { get; } = new List<Collision>();
+        public TrackingCollection<Collision> Collisions { get; } = new TrackingCollection<Collision>();
 
         [DataMemberIgnore]
         internal Channel<Collision> FirstCollisionChannel;

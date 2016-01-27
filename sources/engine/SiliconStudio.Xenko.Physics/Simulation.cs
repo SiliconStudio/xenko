@@ -157,15 +157,12 @@ namespace SiliconStudio.Xenko.Physics
         {
             public PhysicsComponent ColA;
             public PhysicsComponent ColB;
-            public float Distance;
-            public Vector3 Normal;
-            public Vector3 PositionOnA;
-            public Vector3 PositionOnB;
-            public ContactPoint Contact;
             public bool NewContact;
+            public ContactPoint ContactPoint;
         }
 
         readonly List<ContactInfo> lastFrameContacts = new List<ContactInfo>();
+        readonly Dictionary<BulletSharp.ManifoldPoint, ContactPoint> contactsCache = new Dictionary<BulletSharp.ManifoldPoint, ContactPoint>();
 
         internal void CacheContacts()
         {
@@ -197,36 +194,37 @@ namespace SiliconStudio.Xenko.Physics
 
                     if (cp.Distance > 0.0f)
                     {
-                        cp.UserPersistentData = null;
                         continue;
                     }
 
                     var info = new ContactInfo
                     {
                         ColA = colA,
-                        ColB = colB,
-                        Distance = cp.Distance,
-                        Normal = cp.NormalWorldOnB,
-                        PositionOnA = cp.PositionWorldOnA,
-                        PositionOnB = cp.PositionWorldOnB
+                        ColB = colB
                     };
 
-                    var contact = (ContactPoint)cp.UserPersistentData;
-                    if (contact == null)
+                    if (cp.LifeTime == 1) //New contact
                     {
-                        contact = contactsQueue.Count > 0 ? contactsQueue.Dequeue() : new ContactPoint();
-                        cp.UserPersistentData = contact;
+                        info.ContactPoint = contactsQueue.Count > 0 ? contactsQueue.Dequeue() : new ContactPoint();
+                        info.ContactPoint.Collision = null;
                         info.NewContact = true;
-                        contact.Collision = null;
+                        contactsCache[cp] = info.ContactPoint;
                     }
-                    else if (cp.LifeTime == 1)
+                    else
                     {
-                        //this is a new contact, (recycled by bullet possibly)
-                        info.NewContact = true;
-                        contact.Collision = null;
+                        if (!contactsCache.TryGetValue(cp, out info.ContactPoint))
+                        {
+                            info.ContactPoint = contactsQueue.Count > 0 ? contactsQueue.Dequeue() : new ContactPoint();
+                            info.ContactPoint.Collision = null;
+                            info.NewContact = true;
+                            contactsCache[cp] = info.ContactPoint;
+                        }
                     }
 
-                    info.Contact = contact;
+                    info.ContactPoint.Distance = cp.Distance;
+                    info.ContactPoint.Normal = cp.NormalWorldOnB;
+                    info.ContactPoint.PositionOnA = cp.PositionWorldOnA;
+                    info.ContactPoint.PositionOnB = cp.PositionWorldOnB;
 
                     lastFrameContacts.Add(info);
                 }
@@ -245,63 +243,60 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var contactInfo in lastFrameContacts)
             {
-                var contact = contactInfo.Contact;
+                var collision = contactInfo.ContactPoint.Collision;
 
-                if (contact.Collision == null)
+                if (collision == null)
                 {
                     //find if a collision already existed
                     foreach (var col in contactInfo.ColA.Collisions)
                     {
                         if ((col.ColliderA != contactInfo.ColA || col.ColliderB != contactInfo.ColB) && (col.ColliderA != contactInfo.ColB || col.ColliderB != contactInfo.ColA)) continue;
-                        contact.Collision = col;
+                        collision = col;
                         break;
                     }
-
-                    //if it's still null we need to create a new collision 
-                    if (contact.Collision == null)
-                    {
-                        //new collision
-                        if (collisionsQueue.Count > 0)
-                        {
-                            contact.Collision = collisionsQueue.Dequeue();
-                        }
-                        else
-                        {
-                            contact.Collision = new Collision
-                            {
-                                Contacts = new List<ContactPoint>()
-                            };
-                        }
-
-                        contact.Collision.ColliderA = contactInfo.ColA;
-                        contact.Collision.ColliderB = contactInfo.ColB;
-                        contact.Collision.Contacts.Clear();
-
-                        contactInfo.ColA.Collisions.Add(contact.Collision);
-                        contactInfo.ColB.Collisions.Add(contact.Collision);
-
-                        newCollisionsCache.Add(contact.Collision);
-                    }
                 }
+
+                //if it's still null we need to create a new collision 
+                if (collision == null)
+                {
+                    //new collision
+                    if (collisionsQueue.Count > 0)
+                    {
+                        collision = collisionsQueue.Dequeue();
+                    }
+                    else
+                    {
+                        collision = new Collision
+                        {
+                            Contacts = new List<ContactPoint>()
+                        };
+                    }
+
+                    collision.ColliderA = contactInfo.ColA;
+                    collision.ColliderB = contactInfo.ColB;
+                    collision.Contacts.Clear();
+
+                    contactInfo.ColA.Collisions.Add(collision);
+                    contactInfo.ColB.Collisions.Add(collision);
+
+                    newCollisionsCache.Add(collision);
+                }
+
+                contactInfo.ContactPoint.Collision = collision;
 
                 if (contactInfo.NewContact)
                 {
-                    contact.Collision.Contacts.Add(contact);
+                    collision.Contacts.Add(contactInfo.ContactPoint);
 
-                    newContactsFastCache.Add(contact);
+                    newContactsFastCache.Add(contactInfo.ContactPoint);
                 }
                 else
                 {
-                    updatedContactsCache.Add(contact);
+                    updatedContactsCache.Add(contactInfo.ContactPoint);
                 }
 
-                contact.Distance = contactInfo.Distance;
-                contact.PositionOnA = contactInfo.PositionOnA;
-                contact.PositionOnB = contactInfo.PositionOnB;
-                contact.Normal = contactInfo.Normal;
-
                 //prevent removal of processed contacts
-                lastFrameContactPoints.Remove(contact);
+                lastFrameContactPoints.Remove(contactInfo.ContactPoint);
             }
 
             //these contacts did not persist
@@ -335,7 +330,7 @@ namespace SiliconStudio.Xenko.Physics
 
             foreach (var processedContactPoint in lastFrameContacts)
             {
-                lastFrameContactPoints.Add(processedContactPoint.Contact);
+                lastFrameContactPoints.Add(processedContactPoint.ContactPoint);
             }
 
             contactsProfiler.End("Contacts: {0}", processedContactPoints.Count);
