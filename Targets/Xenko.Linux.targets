@@ -13,7 +13,7 @@
     <SiliconStudioEmbeddedNativeLibrary Condition="'$(SiliconStudioCurrentPackagePath)' != ''" Include="$(SiliconStudioUserLibrariesPath)\$(SiliconStudioPlatform)\**\*.so" />
   </ItemGroup>
 
-  <!-- On Windows platform automatically add the following references -->
+  <!-- On Linux platform automatically add the following references -->
   <Choose>
     <When Condition=" '$(SiliconStudioIsExecutable)' == 'true'">
       <ItemGroup>
@@ -24,5 +24,15 @@
         </Content>
       </ItemGroup>
 	  </When>
+  </Choose>
+
+  <Choose>
+    <When Condition="'$(SiliconStudioUnitTest)' != 'true'">
+      <ItemGroup>
+        <Reference Include="OpenTK">
+          <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(SiliconStudioPackageXenkoPlatformBin)\OpenTK.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
   </Choose>
 </Project>
