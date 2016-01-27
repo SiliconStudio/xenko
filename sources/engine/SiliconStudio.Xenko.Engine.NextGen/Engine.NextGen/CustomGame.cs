@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
     {
         private TestCamera camera;
         protected Scene Scene;
-        protected Entity Camera = new Entity { new CameraComponent() };
+        protected Entity Camera = new Entity();
         private SceneGraphicsCompositorLayers graphicsCompositor;
 
         private Model model;

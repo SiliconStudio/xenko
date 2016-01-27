@@ -12,7 +12,6 @@ namespace SiliconStudio.Quantum.Contents
             : base(nodeBuilder, container, member, isPrimitive, reference)
         {
             Override = container.Value.GetOverride(member);
-            
         }
 
         public OverrideType Override { get { return Container.Value.GetOverride(Member); } set { Container.Value.SetOverride(Member, value); } }

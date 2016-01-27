@@ -12,9 +12,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     {
         EntityReference Entity { get; }
 
-        PropertyKey Component { get; }
-
-        Type ComponentType { get; }
+        Guid Id { get; }
 
         EntityComponent Value { get; }
     }

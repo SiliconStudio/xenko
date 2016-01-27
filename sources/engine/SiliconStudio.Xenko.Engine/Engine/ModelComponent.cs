@@ -16,13 +16,12 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a <see cref="Model"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("ModelComponent")]
-    [Display(11000, "Model", Expand = ExpandRule.Once)]
+    [Display("Model", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
     [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
+    [ComponentOrder(11000)]
     public sealed class ModelComponent : ActivableEntityComponent, IModelInstance
     {
-        public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
-
         private Model model;
         private SkeletonUpdater skeleton;
         private bool modelViewHierarchyDirty = true;
@@ -218,11 +217,6 @@ namespace SiliconStudio.Xenko.Engine
             // Update the bounds
             BoundingBox = modelBoundingBox;
             BoundingSphere = modelBoundingSphere;
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../data/tests/SmallJpeg.jpg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
+    ~Id: 20c6299a-b258-4981-babd-83d0b51fa4c2
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

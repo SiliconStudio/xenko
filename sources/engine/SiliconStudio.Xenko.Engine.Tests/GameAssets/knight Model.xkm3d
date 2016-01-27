@@ -6,17 +6,24 @@ Tags: []
 Source: ../../../data/tests/knight/scenes/knight.fbx
 SourceHash: b0dc28bd79ba6cd2fed575b8855b52fc
 Materials:
-    -   Name: c100_chr_ch00_Knight_KINGHT_iron
+    -   ~Id: 6021f794-2266-41a4-85a4-d20acb5cc218
+        Name: c100_chr_ch00_Knight_KINGHT_iron
         MaterialInstance:
+            ~Id: 683a1674-56d1-40d0-b5f7-723abdab2744
             Material: 6bacdf7e-6538-4cfa-a035-0807aee89e2c:c100_chr_ch00_Knight_KINGHT_iron
-    -   Name: c100_chr_ch00_Knight_KINGHT
+    -   ~Id: 36f9175b-5002-4609-bf20-fe7345f22c98
+        Name: c100_chr_ch00_Knight_KINGHT
         MaterialInstance:
+            ~Id: 4487f3fb-ded0-406c-8e7b-650e77e2387d
             Material: c88b7d39-bb04-407f-92e4-69f2dcfef378:c100_chr_ch00_Knight_KINGHT
-    -   Name: c100_chr_ch00_Knight_SWORD1
+    -   ~Id: e3cebfcd-97cc-4a9e-9552-615f8125c70e
+        Name: c100_chr_ch00_Knight_SWORD1
         MaterialInstance:
+            ~Id: f1f9ba08-0ea6-4114-b237-0fc9fc2102c8
             Material: 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
 Skeleton: 167cca61-5761-4cc3-b27b-f080a31e4f43:knight Skeleton
 ~Base:
+    ~Id: e887c6d1-507b-43c6-93f0-3ed4dbb73ea7
     Location: --import--
     Asset: !Model
         Id: 00000000-0000-0000-0000-000000000000
@@ -26,13 +33,19 @@ Skeleton: 167cca61-5761-4cc3-b27b-f080a31e4f43:knight Skeleton
         Source: 
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Materials:
-            -   Name: c100_chr_ch00_Knight_KINGHT_iron
+            -   ~Id: 9ff85288-2abe-4966-adf9-621f5cbd1d50
+                Name: c100_chr_ch00_Knight_KINGHT_iron
                 MaterialInstance:
+                    ~Id: fafb0c52-a314-42a6-a4c7-cee0c2c33f88
                     Material: 6bacdf7e-6538-4cfa-a035-0807aee89e2c:c100_chr_ch00_Knight_KINGHT_iron
-            -   Name: c100_chr_ch00_Knight_KINGHT
+            -   ~Id: d05a527b-51c9-4dea-ad64-a013cb6e316e
+                Name: c100_chr_ch00_Knight_KINGHT
                 MaterialInstance:
+                    ~Id: a5df8bfa-658d-4ce1-a327-971a23cc5ecf
                     Material: c88b7d39-bb04-407f-92e4-69f2dcfef378:c100_chr_ch00_Knight_KINGHT
-            -   Name: c100_chr_ch00_Knight_SWORD1
+            -   ~Id: 97888580-15b4-4372-832c-dd044fcf0c64
+                Name: c100_chr_ch00_Knight_SWORD1
                 MaterialInstance:
+                    ~Id: a9426fd7-a411-4924-9e21-b3ab02ab5b26
                     Material: 32a944cf-8bb5-413b-9998-36a85b12dcc5:c100_chr_ch00_Knight_SWORD1
         Skeleton: null
