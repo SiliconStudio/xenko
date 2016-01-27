@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
             var assetManager = Services.GetSafeServiceAs<AssetManager>();
 
-            SceneSystem.SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>("Scene01"));
+            SceneSystem.SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>("VisualTestSpawners"));
         }
 
         [Test]
