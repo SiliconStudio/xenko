@@ -3,6 +3,10 @@
 
 using System;
 using System.IO;
+using System.Threading.Tasks;
+using SiliconStudio.Core;
+using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Graphics.Regression;
@@ -15,6 +19,11 @@ namespace SiliconStudio.Xenko.Particles.Tests
     /// </summary>
     class GameTest : GameTestBase
     {
+        // Breaking changes
+        //  Please update the version number every time there is a breaking change to the particle engine and write down what has been changed
+//        const int ParticleTestVersion = 1;  // Initial tests
+        const int ParticleTestVersion = 2;  // Changed the tests on purpose to check if the tests fail
+
         // Local screenshots
         private readonly string xenkoDir;
         private readonly string assemblyName;
@@ -22,14 +31,11 @@ namespace SiliconStudio.Xenko.Particles.Tests
         private readonly string platformName;
         private int screenShots;
 
-
         public GameTest(string name)
         {
             screenShots = 0;
             testName = name;
             xenkoDir = Environment.GetEnvironmentVariable("SiliconStudioXenkoDir");
-//            var gamePath = "Particles";
-//            assemblyName = Path.GetFileNameWithoutExtension(gamePath);
             assemblyName = System.Reflection.Assembly.GetExecutingAssembly().GetName().Name;
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -38,7 +44,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
             Directory.CreateDirectory(xenkoDir + "\\screenshots\\");
 #endif
 
-            CurrentVersion = 1;
+            CurrentVersion = ParticleTestVersion;
             AutoLoadDefaultSettings = true;
             GraphicsDeviceManager.PreferredGraphicsProfile = new[] { GraphicsProfile.Level_9_1, };
             
@@ -47,18 +53,27 @@ namespace SiliconStudio.Xenko.Particles.Tests
             TargetElapsedTime = TimeSpan.FromTicks(10000000 / 60); // target elapsed time is by default 60Hz
         }
 
+        protected override async Task LoadContent()
+        {
+            await base.LoadContent();
+
+            var assetManager = Services.GetSafeServiceAs<AssetManager>();
+
+            // Make sure you have created a Scene with the same name (testName) in your XenkoGameStudio project.
+            // The scene should be included in the build as Root and copied together with the other 
+            //  assets to the /GameAssets directory contained in this assembly's directory
+            // Finally, make sure the scene is also added to the SiliconStudio.Xenko.Particles.Tests.xkpkg
+            //  and it has a proper uid. Example (for the VisualTestSpawners scene):
+            //     - a9ba28ad-d83b-4957-8ed6-42863c1d903c:VisualTestSpawners
+            SceneSystem.SceneInstance = new SceneInstance(Services, assetManager.Load<Scene>(testName));
+        }
+
         protected override void RegisterTests()
         {
             base.RegisterTests();
 
+            // Take a screenshot after 60 frames
             FrameGameSystem.TakeScreenshot(60);
-
-            //FrameGameSystem.Draw(EmptyDraw).TakeScreenshot();
-        }
-
-        private void EmptyDraw()
-        {
-            
         }
 
         protected override void Update(GameTime gameTime)
@@ -66,8 +81,6 @@ namespace SiliconStudio.Xenko.Particles.Tests
             // Do not update the state while a screenshot is being requested
             if (ScreenshotRequested)
                 return;
-
-            // TODO Override time so that each frame has the same duration
 
             base.Update(gameTime);
 
@@ -88,12 +101,13 @@ namespace SiliconStudio.Xenko.Particles.Tests
             ScreenshotRequested = true;
         }
 
-        protected void SaveCurrentFrameBufferToHDD()
+        protected void SaveCurrentFrameBufferToHdd()
         {
-            var Filename = xenkoDir + "\\screenshots\\" + assemblyName + "." + platformName + "_" + testName + "_" + screenShots + ".png";
+            // SaveTexture is only defined for Windows and is only used to test the screenshots locally
+            var filename = xenkoDir + "\\screenshots\\" + assemblyName + "." + platformName + "_" + testName + "_" + screenShots + ".png";
             screenShots++;
 
-            SaveTexture(GraphicsDevice.BackBuffer, Filename);
+            SaveTexture(GraphicsDevice.BackBuffer, filename);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -103,10 +117,13 @@ namespace SiliconStudio.Xenko.Particles.Tests
             if (!ScreenshotRequested)
                 return;
 
-            SaveCurrentFrameBufferToHDD();
+            SaveCurrentFrameBufferToHdd();
             ScreenshotRequested = false;
         }
 
+        /// <summary>
+        /// This is useful if you want to run all the tests on your own machine and compare images
+        /// </summary>
         public static void Main()
         {
             using (var game = new GameTest("GameTest")) { game.Run(); }

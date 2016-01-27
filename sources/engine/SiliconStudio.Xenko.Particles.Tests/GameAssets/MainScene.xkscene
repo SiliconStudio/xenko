@@ -27,6 +27,7 @@ Hierarchy:
                             ~Id: 5ecd44e2-814d-4e34-b8c9-0409458fc16c
                             Settings:
                                 ~Id: 12c60c42-8584-4880-9c4e-c4be829646c8
+                                WarmupTime: 1.0
                             BoundingShape: !BoundingBoxStatic
                                 ~Id: 614d164c-bcde-4001-9795-e49a1781c957
                                 Minimum: {X: -1.0, Y: -1.0, Z: -1.0}
@@ -37,7 +38,7 @@ Hierarchy:
                                     ParticleMinLifetime: 1.0
                                     ParticleMaxLifetime: 1.0
                                     SimulationSpace: World
-                                    RandomSeedMethod: Time
+                                    RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
@@ -127,6 +128,7 @@ Hierarchy:
                             ~Id: 5ecd44e2-814d-4e34-b8c9-0409458fc16c
                             Settings:
                                 ~Id: 12c60c42-8584-4880-9c4e-c4be829646c8
+                                WarmupTime: 1.0
                             BoundingShape: !BoundingBoxStatic
                                 ~Id: 614d164c-bcde-4001-9795-e49a1781c957
                                 Minimum: {X: -1.0, Y: -1.0, Z: -1.0}
@@ -137,7 +139,7 @@ Hierarchy:
                                     ParticleMinLifetime: 1.0
                                     ParticleMaxLifetime: 1.0
                                     SimulationSpace: World
-                                    RandomSeedMethod: Time
+                                    RandomSeedMethod: Fixed
                                     SortingPolicy: None
                                     ShapeBuilder: !ShapeBuilderBillboard
                                         ~Id: 1b978f44-7e7f-4cb3-8f3e-6055a427369e
