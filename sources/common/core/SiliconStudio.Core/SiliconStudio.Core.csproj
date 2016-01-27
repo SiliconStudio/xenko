@@ -31,7 +31,6 @@
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="SiliconStudio.Core.dll.config" />
   </ItemGroup>
   <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
