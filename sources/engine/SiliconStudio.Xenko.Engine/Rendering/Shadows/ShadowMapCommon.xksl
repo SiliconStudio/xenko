@@ -7,14 +7,20 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     /// </summary>
     class ShadowMapCommon
     {
-        [Link("ShadowMap.Texture")]
-        Texture2D ShadowMapTexture;
+        rgroup PerLighting
+        {
+            [Link("ShadowMap.Texture")]
+            Texture2D ShadowMapTexture;
+        }
 
-        [Link("ShadowMap.TextureSize")]
-        float2 ShadowMapTextureSize;
+        cbuffer PerLighting
+        {
+            [Link("ShadowMap.TextureSize")]
+            float2 ShadowMapTextureSize;
 
-        [Link("ShadowMap.TextureTexelSize")]
-        float2 ShadowMapTextureTexelSize;
-        // TODO: We could have different types (Texture2DArray for optimized paths, TextureCube for omni...etc.)
+            [Link("ShadowMap.TextureTexelSize")]
+            float2 ShadowMapTextureTexelSize;
+            // TODO: We could have different types (Texture2DArray for optimized paths, TextureCube for omni...etc.)
+        }
     };
 }
