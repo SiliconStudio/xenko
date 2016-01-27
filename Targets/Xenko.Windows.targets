@@ -24,9 +24,10 @@
       <ItemGroup>
         <Reference Include="SiliconStudio.Xenko.Shaders.Compiler">
           <HintPath>$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Shaders.Compiler.dll</HintPath>
+          <Private Condition="'$(SiliconStudioUnitTest)' == 'true'">False</Private>
         </Reference>
 
-        <Content Include="@(SiliconStudioEmbeddedNativeLibrary)">
+        <Content Condition="'$(SiliconStudioUnitTest)' != 'true'" Include="@(SiliconStudioEmbeddedNativeLibrary)">
           <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
           <Visible>False</Visible>
