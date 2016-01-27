@@ -19,7 +19,7 @@ namespace SiliconStudio.ExecServer
         /// <param name="executablePath">Path of the executable to launch</param>
         /// <param name="arguments">Arguments of the executable</param>
         /// <param name="processId">The process id returned if launch was successfull</param>
-        public static bool LaunchProcess(string executablePath, string arguments, out int processId)
+        public static bool LaunchProcess(string executablePath, string arguments, out IntPtr processHandle, out int processId)
         {
             //var startInfo = new ProcessStartInfo
             //{
@@ -43,9 +43,11 @@ namespace SiliconStudio.ExecServer
             tSec.nLength = Marshal.SizeOf(tSec);
             var result =  CreateProcessW(executablePath, "\"" + executablePath + "\" " + arguments, ref pSec, ref tSec, false, CREATE_DEFAULT_ERROR_MODE | CREATE_NO_WINDOW | DETACHED_PROCESS, IntPtr.Zero, Path.GetDirectoryName(executablePath), ref lpStartupInfo, out pInfo);
 
+            processHandle = IntPtr.Zero;
             processId = 0;
             if (result)
             {
+                processHandle = pInfo.hProcess;
                 processId = pInfo.dwProcessId;
             }
             return result;
