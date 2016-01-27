@@ -26,8 +26,8 @@ namespace SiliconStudio.Core.Reflection
 
                     // Early exit if we don't need to add a unique identifier to a type
                     result = !( type == typeof(string)
-                            || type.IsValueType
-                            || type.IsArray
+                            || type.GetTypeInfo().IsValueType
+                            || type.GetTypeInfo().IsArray
                             || TypeHelper.IsCollection(type)
                             || TypeHelper.IsDictionary(type)
                             || nonIdentifiable != null);
