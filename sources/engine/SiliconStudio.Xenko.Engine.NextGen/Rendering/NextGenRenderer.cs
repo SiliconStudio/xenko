@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering
         public override string ModelEffect { get; set; }
 
         public bool Shadows { get; set; } = true;
-        public bool GBuffer { get; set; } = true;
+        public bool GBuffer { get; set; } = false;
 
         protected override void InitializeCore()
         {
@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering
             Extract(context);
 
             // Update lights
-            lightComponentForwardRenderer.Draw(context);
+            //lightComponentForwardRenderer.Draw(context);
 
             // Perform most of computations
             Prepare();
@@ -141,18 +141,18 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Shadow maps
             // TODO: Move that to a class that will handle all the details of shadow mapping
-            if (Shadows && shadowRenderViews.Count > 0)
-            {
-                var shadowmap = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource));
-                GraphicsDevice.Clear(shadowmap, DepthStencilClearOptions.DepthBuffer);
-                GraphicsDevice.PushState();
-                GraphicsDevice.SetDepthTarget(shadowmap);
-                foreach (var shadowmapRenderView in shadowRenderViews)
-                {
-                    Draw(RenderSystem, shadowmapRenderView, shadowmapRenderStage);
-                }
-                GraphicsDevice.PopState();
-            }
+            //if (Shadows && shadowRenderViews.Count > 0)
+            //{
+            //    var shadowmap = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource));
+            //    GraphicsDevice.Clear(shadowmap, DepthStencilClearOptions.DepthBuffer);
+            //    GraphicsDevice.PushState();
+            //    GraphicsDevice.SetDepthTarget(shadowmap);
+            //    foreach (var shadowmapRenderView in shadowRenderViews)
+            //    {
+            //        Draw(RenderSystem, shadowmapRenderView, shadowmapRenderStage);
+            //    }
+            //    GraphicsDevice.PopState();
+            //}
 
             Draw(RenderSystem, mainRenderView, mainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
