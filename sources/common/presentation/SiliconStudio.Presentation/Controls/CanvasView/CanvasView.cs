@@ -32,28 +32,34 @@ SOFTWARE.
 using System;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media;
 using System.Windows.Threading;
 
 namespace SiliconStudio.Presentation.Controls
 {
     [TemplatePart(Name = CanvasPartName, Type = typeof(Canvas))]
-    public class CanvasView : Control
+    public sealed class CanvasView : Control
     {
         /// <summary>
         /// The name of the part for the <see cref="Canvas"/>.
         /// </summary>
         private const string CanvasPartName = "PART_Canvas";
-        
+
+        /// <summary>
+        /// Identifies the <see cref="IsCanvasValid"/> dependency property key.
+        /// </summary>
+        public static readonly DependencyPropertyKey IsCanvasValidPropertyKey =
+            DependencyProperty.RegisterReadOnly(nameof(IsCanvasValid), typeof(bool), typeof(CanvasView), new PropertyMetadata(true));
+        /// <summary>
+        /// Identifies the <see cref="IsCanvasValid"/> dependency property.
+        /// </summary>
+        private static readonly DependencyProperty IsCanvasValidProperty = IsCanvasValidPropertyKey.DependencyProperty;
         /// <summary>
         /// Identifies the <see cref="Model"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ModelProperty =
             DependencyProperty.Register(nameof(Model), typeof(ICanvasViewItem), typeof(CanvasView), new PropertyMetadata(null, OnModelPropertyChanged));
 
-        /// <summary>
-        /// Backing field for the <see cref="IsCanvasValid"/> property.
-        /// </summary>
-        private volatile bool isCanvasValid;
         /// <summary>
         /// The renderer.
         /// </summary>
@@ -64,16 +70,17 @@ namespace SiliconStudio.Presentation.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CanvasView), new FrameworkPropertyMetadata(typeof(CanvasView)));
         }
 
-        public CanvasView()
-        {
-            isCanvasValid = true;
-        }
+        public Rect CanvasBounds { get; private set; }
 
         /// <summary>
         /// Returns True if the current rendering is valid. False otherwise.
         /// </summary>
         /// <remarks>When the value is False, it means that the canvas will be redrawn at the end of this frame.</remarks>
-        public bool IsCanvasValid => isCanvasValid;
+        public bool IsCanvasValid
+        {
+            get { return (bool)GetValue(IsCanvasValidProperty); }
+            private set { SetValue(IsCanvasValidPropertyKey, value); }
+        }
 
         public ICanvasViewItem Model
         {
@@ -107,7 +114,7 @@ namespace SiliconStudio.Presentation.Controls
 
             InvalidateCanvas();
         }
-        
+
         /// <summary>
         /// Invalidates the canvas. The <see cref="Model"/> will render it only once, after all non-idle operations are completed
         /// (<see cref="DispatcherPriority.Background"/> priority). Thus it is safe to call it every time the canvas should be redraw
@@ -115,16 +122,21 @@ namespace SiliconStudio.Presentation.Controls
         /// </summary>
         public void InvalidateCanvas()
         {
-            if (renderer == null || Model == null || !isCanvasValid)
+            if (renderer == null || Model == null || !IsCanvasValid)
                 return;
 
             // This ensure that the canvas will be rendered only once all changes have been made.
-            isCanvasValid = false;
+            IsCanvasValid = false;
             Dispatcher.InvokeAsync(() =>
             {
                 renderer.Clear();
                 Model.Render(renderer);
-                isCanvasValid = true;
+                Dispatcher.InvokeAsync(() =>
+                {
+                    // We must wait after the canvas is rendered to get correct values
+                    CanvasBounds = VisualTreeHelper.GetDescendantBounds(this.renderer.Canvas);
+                    IsCanvasValid = true;
+                }, DispatcherPriority.Loaded);
             }, DispatcherPriority.Background);
         }
     }
