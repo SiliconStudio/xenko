@@ -11,6 +11,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
 {
     class VisualTestSpawners : GameTest
     {
+        public VisualTestSpawners() : base("VisualTestSpawners") { }
+
         protected override async Task LoadContent()
         {
             await base.LoadContent();
