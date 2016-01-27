@@ -41,7 +41,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private readonly Dictionary<object, IDisposable> sharedDataPerDevice;
         private readonly Dictionary<object, IDisposable> sharedDataPerDeviceContext = new Dictionary<object, IDisposable>();
-        private VertexArrayObject newVertexArrayObject;
         private GraphicsPresenter presenter;
 
         // Current states

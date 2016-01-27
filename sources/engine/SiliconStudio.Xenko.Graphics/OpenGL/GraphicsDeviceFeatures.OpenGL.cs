@@ -38,9 +38,6 @@ namespace SiliconStudio.Xenko.Graphics
     /// </remarks>
     public partial struct GraphicsDeviceFeatures
     {
-        internal string Vendor;
-        internal string Renderer;
-        internal IList<string> SupportedExtensions;
 
         internal GraphicsDeviceFeatures(GraphicsDevice deviceRoot)
         {
@@ -60,7 +57,7 @@ namespace SiliconStudio.Xenko.Graphics
                 SupportedExtensions = new string[numExtensions];
                 for (int extensionIndex = 0; extensionIndex < numExtensions; ++extensionIndex)
                 {
-                    SupportedExtensions[extensionIndex] = GL.GetString(StringName.Extensions, extensionIndex);
+                    SupportedExtensions[extensionIndex] = GL.GetString(StringNameIndexed.Extensions, extensionIndex);
                 }
 #endif
             }
