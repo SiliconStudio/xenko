@@ -1,6 +1,6 @@
 !Package
 Id: 6d251236-da95-409a-8f4b-7d42ae1fd32c
-SerializedVersion: 2
+SerializedVersion: {Assets: 0.0.2}
 Tags: []
 Meta:
     Name: SiliconStudio.Xenko.Particles.Tests
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.4.0-beta
+            Version: 1.5.0-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -58,16 +58,10 @@ ExplicitFolders: []
 Bundles: []
 TemplateFolders: []
 RootAssets:
-    - 538255f3-de32-465e-b749-c73978ccd75e:Font
-    - 7f74ef46-cba9-4feb-b94a-1d1d056f4d4c:ProceduralModel
-    - 9d573a79-80ff-46c3-bb45-dbfec2ac9766:Teapot
-    - a9177559-c511-4f71-9e1e-dc54c5a79b0f:small_uv
-    - ae4ecc1b-0b47-4c9d-ac8e-7f9720913084:MainScene
+    - 1fd5f460-a348-8fdb-11a0-05833fd7b79a:EffectCompileLog
     - 9a462c4a-207b-4a29-8ea3-748cb3dad8da:Scene01
-    - e28ed348-02ed-45c4-8437-538a39fdbb6c:VisualTestInitializers
+    - 9d573a79-80ff-46c3-bb45-dbfec2ac9766:Teapot
     - a9ba28ad-d83b-4957-8ed6-42863c1d903c:VisualTestSpawners
-    - d311c28e-39fc-44ff-a4bc-f4a9d8c5fc53:SpriteSheet
-    - d6330082-6ae6-474b-8f0d-28f7bc4f3c4a:round
-    - d8993778-e45d-4f2f-9995-69a6980398d6:Arial
+    - ae4ecc1b-0b47-4c9d-ac8e-7f9720913084:MainScene
     - db59d494-42a0-4470-aadf-5c629cd67e3f:Material
-    - 5b8431e7-5f2b-4161-99c9-4a0fd2be8f8d:EffectCompileLog
+    - e28ed348-02ed-45c4-8437-538a39fdbb6c:VisualTestInitializers
