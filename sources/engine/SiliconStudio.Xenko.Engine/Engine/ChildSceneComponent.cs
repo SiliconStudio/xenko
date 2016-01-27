@@ -11,8 +11,9 @@ namespace SiliconStudio.Xenko.Engine
     /// A link to a scene that is rendered by a parent <see cref="Scene"/>.
     /// </summary>
     [DataContract("ChildSceneComponent")]
-    [Display(11200, "Child scene", Expand = ExpandRule.Once)]
+    [Display("Child scene", Expand = ExpandRule.Once)]
     [DefaultEntityComponentProcessor(typeof(ChildSceneProcessor))]
+    [ComponentOrder(11200)]
     public sealed class ChildSceneComponent : ActivableEntityComponent
     {
         private Scene scene;
@@ -20,8 +21,6 @@ namespace SiliconStudio.Xenko.Engine
         // Used by the ChildSceneProcessor
         [DataMemberIgnore]
         internal SceneInstance SceneInstance;
-        
-        public readonly static PropertyKey<ChildSceneComponent> Key = new PropertyKey<ChildSceneComponent>("Key", typeof(ChildSceneComponent));
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ChildSceneComponent"/> class.
@@ -54,11 +53,6 @@ namespace SiliconStudio.Xenko.Engine
                 if (SceneInstance != null)
                     SceneInstance.Scene = null; // unload the current scene, so that it can be unloaded from memory directly (without having to wait one frame)
             }
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

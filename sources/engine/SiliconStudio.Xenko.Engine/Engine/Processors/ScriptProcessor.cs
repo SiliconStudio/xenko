@@ -1,34 +1,31 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System;
-using System.Collections.Specialized;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Collections;
 
 namespace SiliconStudio.Xenko.Engine.Processors
 {
     /// <summary>
     /// Manage scripts
     /// </summary>
-    public sealed class ScriptProcessor : EntityProcessor<ScriptProcessor.AssociatedData>
+    public sealed class ScriptProcessor : EntityProcessor<ScriptComponent>
     {
         private ScriptSystem scriptSystem;
 
-        public ScriptProcessor() : base(ScriptComponent.Key)
+        public ScriptProcessor()
         {
             // Script processor always running before others
             Order = -100000;
         }
 
         /// <inheritdoc/>
-        protected override AssociatedData GenerateAssociatedData(Entity entity)
+        protected override ScriptComponent GenerateComponentData(Entity entity, ScriptComponent component)
         {
-            return new AssociatedData(entity.Get<ScriptComponent>());
+            return component;
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, ScriptComponent component, ScriptComponent associatedData)
         {
-            return entity.Get(ScriptComponent.Key) == associatedData.Component;
+            return component == associatedData;
         }
 
         protected internal override void OnSystemAdd()
@@ -37,57 +34,16 @@ namespace SiliconStudio.Xenko.Engine.Processors
         }
 
         /// <inheritdoc/>
-        protected override void OnEntityAdding(Entity entity, AssociatedData associatedData)
+        protected override void OnEntityComponentAdding(Entity entity, ScriptComponent component, ScriptComponent associatedData)
         {
             // Add current list of scripts
-            foreach (var script in associatedData.Component.Scripts)
-            {
-                if(script != null)
-                    scriptSystem.Add(script);
-            }
-
-            // Keep tracking changes to the collection
-            associatedData.ScriptsChangedDelegate = (sender, args) =>
-            {
-                var script = (Script)args.Item;
-                if (script == null)
-                    return; 
-                
-                switch (args.Action)
-                {
-                    case NotifyCollectionChangedAction.Add:
-                        scriptSystem.Add((Script)args.Item);
-                        break;
-                    case NotifyCollectionChangedAction.Remove:
-                        scriptSystem.Remove((Script)args.Item);
-                        break;
-                }
-            };
-            associatedData.Component.Scripts.CollectionChanged += associatedData.ScriptsChangedDelegate;
+            scriptSystem.Add(component);
         }
 
         /// <inheritdoc/>
-        protected override void OnEntityRemoved(Entity entity, AssociatedData associatedData)
+        protected override void OnEntityComponentRemoved(Entity entity, ScriptComponent component, ScriptComponent associatedData)
         {
-            associatedData.Component.Scripts.CollectionChanged -= associatedData.ScriptsChangedDelegate;
-            associatedData.ScriptsChangedDelegate = null;
-
-            // Remove scripts
-            foreach (var script in associatedData.Component.Scripts)
-            {
-                scriptSystem.Remove(script);
-            }
-        }
-
-        public class AssociatedData
-        {
-            public ScriptComponent Component;
-            public EventHandler<TrackingCollectionChangedEventArgs> ScriptsChangedDelegate;
-
-            public AssociatedData(ScriptComponent component)
-            {
-                Component = component;
-            }
+            scriptSystem.Remove(component);
         }
     }
 }

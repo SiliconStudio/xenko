@@ -8,6 +8,7 @@ using System.Collections.Immutable;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -22,7 +23,7 @@ using SiliconStudio.Xenko.Assets.Effect;
 
 namespace SiliconStudio.Xenko.Assets
 {
-    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.5.0-beta")]
+    [PackageUpgrader(XenkoConfig.PackageName, "1.0.0-beta01", "1.6.0-beta")]
     public class XenkoPackageUpgrader : PackageUpgrader
     {
         public override bool Upgrade(PackageSession session, ILogger log, Package dependentPackage, PackageDependency dependency, Package dependencyPackage, IList<PackageLoadingAssetFile> assetFiles)
@@ -312,80 +313,163 @@ namespace SiliconStudio.Xenko.Assets
         {
             if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
             {
-                // Only load workspace for C# assemblies (default includes VB but not added as a NuGet package)
-                var csharpWorkspaceAssemblies = new[] { Assembly.Load("Microsoft.CodeAnalysis.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.CSharp.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.Workspaces.Desktop") };
-                var workspace = MSBuildWorkspace.Create(ImmutableDictionary<string, string>.Empty, MefHostServices.Create(csharpWorkspaceAssemblies));
-
-                var tasks = dependentPackage.Profiles
-                    .SelectMany(profile => profile.ProjectReferences)
-                    .Select(projectReference => UPath.Combine(dependentPackage.RootDirectory, projectReference.Location))
-                    .Distinct()
-                    .Select(projectFullPath => Task.Run(() => UpgradeProject(workspace, projectFullPath)))
-                    .ToArray();
-
-                Task.WaitAll(tasks);
+                UpgradeCode(dependentPackage, new RenameToXenkoCodeUpgrader());
+            }
+            else if (dependency.Version.MinVersion < new PackageVersion("1.6.0-beta"))
+            {
+                UpgradeCode(dependentPackage, new NewComponentsCodeUpgrader());
             }
 
             return true;
         }
 
-        private async Task UpgradeProject(MSBuildWorkspace workspace, UFile projectPath)
+        private void UpgradeCode(Package dependentPackage, ICodeUpgrader codeUpgrader)
         {
-            // Upgrade .csproj file
-            // TODO: Use parsed file?
-            var fileContents = File.ReadAllText(projectPath);
+            if (dependentPackage == null) throw new ArgumentNullException(nameof(dependentPackage));
+            if (codeUpgrader == null) throw new ArgumentNullException(nameof(codeUpgrader));
 
-            // Rename referenced to the package, shaders and effects
-            var newFileContents = fileContents.Replace(".pdx", ".xk");
+            var csharpWorkspaceAssemblies = new[] { Assembly.Load("Microsoft.CodeAnalysis.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.CSharp.Workspaces"), Assembly.Load("Microsoft.CodeAnalysis.Workspaces.Desktop") };
+            var workspace = MSBuildWorkspace.Create(ImmutableDictionary<string, string>.Empty, MefHostServices.Create(csharpWorkspaceAssemblies));
 
-            // Rename variables
-            newFileContents = newFileContents.Replace("Paradox", "Xenko");
+            var tasks = dependentPackage.Profiles
+                .SelectMany(profile => profile.ProjectReferences)
+                .Select(projectReference => UPath.Combine(dependentPackage.RootDirectory, projectReference.Location))
+                .Distinct()
+                .Select(projectFullPath => Task.Run(async () =>
+                {
+                    if (codeUpgrader.UpgradeProject(workspace, projectFullPath))
+                    {
+                        // Upgrade source code
+                        var project = await workspace.OpenProjectAsync(projectFullPath.ToWindowsPath());
+                        var compilation = await project.GetCompilationAsync();
+                        var subTasks = compilation.SyntaxTrees.Select(syntaxTree => Task.Run(() => codeUpgrader.UpgradeSourceFile(syntaxTree))).ToList();
 
-            // Save file if there were any changes
-            if (newFileContents != fileContents)
-            {
-                File.WriteAllText(projectPath, newFileContents);
-            }
+                        await Task.WhenAll(subTasks);
+                    }
+                }))
+                .ToArray();
 
-            // Upgrade source code
-            var project = await workspace.OpenProjectAsync(projectPath.ToWindowsPath());
-            var compilation = await project.GetCompilationAsync();
-            var tasks = compilation.SyntaxTrees.Select(syntaxTree => Task.Run(() => UpgradeSourceFile(syntaxTree))).ToList();
-
-            await Task.WhenAll(tasks);
+            Task.WaitAll(tasks);
         }
 
-        // TODO: Reverted to simple regex, to upgrade text in .pdxfx's generated code files. Should use syntax analysis again.
-        private async Task UpgradeSourceFile(SyntaxTree syntaxTree)
+        /// <summary>
+        /// Base interface for code upgrading
+        /// </summary>
+        private interface ICodeUpgrader
         {
-            var fileContents = File.ReadAllText(syntaxTree.FilePath);
+            /// <summary>
+            /// Upgrades the specified project file
+            /// </summary>
+            /// <param name="workspace">The msbuild workspace</param>
+            /// <param name="projectPath">A path to a csproj file</param>
+            /// <returns><c>true</c> if <see cref="UpgradeSourceFile"/> should be called for each files in the project; otherwise <c>false</c></returns>
+            bool UpgradeProject(MSBuildWorkspace workspace, UFile projectPath);
 
-            // Rename referenced to the package, shaders and effects
-            var newFileContents = fileContents.Replace(".pdx", ".xk");
+            /// <summary>
+            /// Upgrades the specified file 
+            /// </summary>
+            /// <param name="syntaxTree">The syntaxtree of the file</param>
+            /// <returns>An upgrade task</returns>
+            Task UpgradeSourceFile(SyntaxTree syntaxTree);
+        }
 
-            // Rename variables
-            newFileContents = newFileContents.Replace("Paradox", "Xenko");
-
-            // Save file if there were any changes
-            if (newFileContents != fileContents)
+        /// <summary>
+        /// Code upgrader for renaming to Xenko
+        /// </summary>
+        private class RenameToXenkoCodeUpgrader : ICodeUpgrader
+        {
+            public bool UpgradeProject(MSBuildWorkspace workspace, UFile projectPath)
             {
-                File.WriteAllText(syntaxTree.FilePath, newFileContents);
+                // Upgrade .csproj file
+                // TODO: Use parsed file?
+                var fileContents = File.ReadAllText(projectPath);
+
+                // Rename referenced to the package, shaders and effects
+                var newFileContents = fileContents.Replace(".pdx", ".xk");
+
+                // Rename variables
+                newFileContents = newFileContents.Replace("Paradox", "Xenko");
+
+                // Save file if there were any changes
+                if (newFileContents != fileContents)
+                {
+                    File.WriteAllText(projectPath, newFileContents);
+                }
+                return true;
             }
 
-            //var root = await syntaxTree.GetRootAsync();
-            //var rewriter = new RenamingRewriter();
-            //var newRoot = rewriter.Visit(root);
+            // TODO: Reverted to simple regex, to upgrade text in .pdxfx's generated code files. Should use syntax analysis again.
+            public async Task UpgradeSourceFile(SyntaxTree syntaxTree)
+            {
+                var fileContents = File.ReadAllText(syntaxTree.FilePath);
 
-            //if (newRoot != root)
-            //{
-            //    var newSyntaxTree = syntaxTree.WithRootAndOptions(newRoot, syntaxTree.Options);
-            //    var sourceText = await newSyntaxTree.GetTextAsync();
+                // Rename referenced to the package, shaders and effects
+                var newFileContents = fileContents.Replace(".pdx", ".xk");
 
-            //    using (var textWriter = new StreamWriter(syntaxTree.FilePath))
-            //    {
-            //        sourceText.Write(textWriter);
-            //    }
-            //}
+                // Rename variables
+                newFileContents = newFileContents.Replace("Paradox", "Xenko");
+
+                // Save file if there were any changes
+                if (newFileContents != fileContents)
+                {
+                    File.WriteAllText(syntaxTree.FilePath, newFileContents);
+                }
+
+                //var root = await syntaxTree.GetRootAsync();
+                //var rewriter = new RenamingRewriter();
+                //var newRoot = rewriter.Visit(root);
+
+                //if (newRoot != root)
+                //{
+                //    var newSyntaxTree = syntaxTree.WithRootAndOptions(newRoot, syntaxTree.Options);
+                //    var sourceText = await newSyntaxTree.GetTextAsync();
+
+                //    using (var textWriter = new StreamWriter(syntaxTree.FilePath))
+                //    {
+                //        sourceText.Write(textWriter);
+                //    }
+                //}
+            }
+        }
+
+        private class NewComponentsCodeUpgrader : ICodeUpgrader
+        {
+            private readonly Regex regexGetComponent;
+            private readonly Regex regexInheritScript;
+
+            public NewComponentsCodeUpgrader()
+            {
+                regexGetComponent = new Regex(@"\.Get\(([A-Za-z0-9_]*Component)\.Key\)");
+                regexInheritScript = new Regex(@"class\s+(.*?):\s*Script(\W)");
+            }
+
+            public bool UpgradeProject(MSBuildWorkspace workspace, UFile projectPath)
+            {
+                return true;
+            }
+
+            public async Task UpgradeSourceFile(SyntaxTree syntaxTree)
+            {
+                var fileContents = File.ReadAllText(syntaxTree.FilePath);
+                var newFileContents = fileContents;
+
+                // Handle Scripts
+                newFileContents = newFileContents.Replace("Get(ScriptComponent.Key).Scripts", "GetAll<ScriptComponent>()");
+                newFileContents = newFileContents.Replace("Get<ScriptComponent>().Scripts", "GetAll<ScriptComponent>()");
+                newFileContents = regexGetComponent.Replace(newFileContents, @".Get<$1>()");
+                newFileContents = regexInheritScript.Replace(newFileContents, "class $1 : ScriptComponent$2");
+
+                // Handle Physics
+                newFileContents = newFileContents.Replace("Get(PhysicsComponent.Key).Elements", "GetAll<PhysicsComponent>()");
+                newFileContents = newFileContents.Replace("Get<PhysicsComponent>().Elements", "GetAll<ScriptComponent>()");
+                newFileContents = newFileContents.Replace("Get<PhysicsComponent>()[0]", "Get<PhysicsComponent>()");
+
+                // Save file if there were any changes
+                if (newFileContents != fileContents)
+                {
+                    File.WriteAllText(syntaxTree.FilePath, newFileContents);
+                }
+            }
         }
 
         private class RenamingRewriter : CSharpSyntaxRewriter

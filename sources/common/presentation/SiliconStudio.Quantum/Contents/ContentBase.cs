@@ -12,7 +12,6 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public abstract class ContentBase : IContent
     {
-
         protected ContentBase(ITypeDescriptor descriptor, bool isPrimitive, IReference reference)
         {
             if (descriptor == null) throw new ArgumentNullException(nameof(descriptor));
@@ -86,7 +85,16 @@ namespace SiliconStudio.Quantum.Contents
         }
 
         /// <inheritdoc/>
-        public abstract void Update(object newValue, object index);
+        public abstract void Update(object newValue, object index = null);
+
+        /// <inheritdoc/>
+        public abstract void Add(object newItem);
+
+        /// <inheritdoc/>
+        public abstract void Add(object itemIndex, object newItem);
+
+        /// <inheritdoc/>
+        public abstract void Remove(object itemIndex);
 
         /// <inheritdoc/>
         public override string ToString()
@@ -105,11 +113,12 @@ namespace SiliconStudio.Quantum.Contents
         /// Raises the <see cref="Changing"/> event with the given parameters.
         /// </summary>
         /// <param name="index">The index where the change occurred, if applicable. <c>null</c> otherwise.</param>
+        /// <param name="changeType">The type of change that occurred.</param>
         /// <param name="oldValue">The old value of this content.</param>
         /// <param name="newValue">The new value of this content.</param>
-        protected void NotifyContentChanging(object index, object oldValue, object newValue)
+        protected void NotifyContentChanging(object index, ContentChangeType changeType, object oldValue, object newValue)
         {
-            var args = new ContentChangeEventArgs(this, index, oldValue, newValue);
+            var args = new ContentChangeEventArgs(this, index, changeType, oldValue, newValue);
             PrepareChange?.Invoke(this, args);
             Changing?.Invoke(this, args);
         }
@@ -118,11 +127,12 @@ namespace SiliconStudio.Quantum.Contents
         /// Raises the <see cref="Changed"/> event with the given parameters.
         /// </summary>
         /// <param name="index">The index where the change occurred, if applicable. <c>null</c> otherwise.</param>
+        /// <param name="changeType">The type of change that occurred.</param>
         /// <param name="oldValue">The old value of this content.</param>
         /// <param name="newValue">The new value of this content.</param>
-        protected void NotifyContentChanged(object index, object oldValue, object newValue)
+        protected void NotifyContentChanged(object index, ContentChangeType changeType, object oldValue, object newValue)
         {
-            var args = new ContentChangeEventArgs(this, index, oldValue, newValue);
+            var args = new ContentChangeEventArgs(this, index, changeType, oldValue, newValue);
             Changed?.Invoke(this, args);
             FinalizeChange?.Invoke(this, args);
         }

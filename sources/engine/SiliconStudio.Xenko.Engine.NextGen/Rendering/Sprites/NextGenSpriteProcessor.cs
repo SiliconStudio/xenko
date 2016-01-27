@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class NextGenSpriteProcessor : EntityProcessor<RenderSprite>
+    internal class NextGenSpriteProcessor : EntityProcessor<SpriteComponent, RenderSprite>
     {
         private NextGenRenderSystem renderSystem;
 
@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// Initializes a new instance of the <see cref="NextGenSpriteProcessor"/> class.
         /// </summary>
         public NextGenSpriteProcessor(NextGenRenderSystem renderSystem)
-            : base(SpriteComponent.Key, TransformComponent.Key)
+            : base(typeof(TransformComponent))
         {
             this.renderSystem = renderSystem;
             Sprites = new List<RenderSprite>();
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         public override void Draw(RenderContext gameTime)
         {
             Sprites.Clear();
-            foreach (var spriteStateKeyPair in enabledEntities)
+            foreach (var spriteStateKeyPair in ComponentDatas)
             {
                 if (spriteStateKeyPair.Value.SpriteComponent.Enabled)
                 {
@@ -35,30 +35,30 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
         }
 
-        protected override void OnEntityAdding(Entity entity, RenderSprite data)
+        protected override void OnEntityComponentAdding(Entity entity, SpriteComponent spriteComponent, RenderSprite data)
         {
             renderSystem.RenderObjects.Add(data);
         }
 
-        protected override void OnEntityRemoved(Entity entity, RenderSprite data)
+        protected override void OnEntityComponentRemoved(Entity entity, SpriteComponent spriteComponent, RenderSprite data)
         {
             renderSystem.RenderObjects.Remove(data);
         }
 
-        protected override RenderSprite GenerateAssociatedData(Entity entity)
+        protected override RenderSprite GenerateComponentData(Entity entity, SpriteComponent spriteComponent)
         {
             return new RenderSprite
             {
-                SpriteComponent = entity.Get(SpriteComponent.Key),
-                TransformComponent = entity.Get(TransformComponent.Key),
+                SpriteComponent = spriteComponent,
+                TransformComponent = entity.Transform,
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, RenderSprite associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, SpriteComponent spriteComponent, RenderSprite associatedData)
         {
             return
-                entity.Get(SpriteComponent.Key) == associatedData.SpriteComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+                spriteComponent == associatedData.SpriteComponent &&
+                entity.Transform == associatedData.TransformComponent;
         }
     }
 }

@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Runtime.CompilerServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization;
 
@@ -11,9 +10,9 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>
     /// Base class for <see cref="Entity"/> components.
     /// </summary>
-    [DataSerializer(typeof(EntityComponent.Serializer))]
+    [DataSerializer(typeof(Serializer))]
     [DataContract]
-    public abstract class EntityComponent : ComponentBase
+    public abstract class EntityComponent
     {
         /// <summary>
         /// Gets or sets the owner entity.
@@ -38,27 +37,6 @@ namespace SiliconStudio.Xenko.Engine
                     throw new InvalidOperationException(string.Format("Entity on this instance [{0}] cannot be null", GetType().Name));
                 return Entity;
             }
-        }
-
-        /// <summary>
-        /// The default key this component is associated to.
-        /// </summary>
-        public abstract PropertyKey GetDefaultKey();
-
-        /// <summary>
-        /// Gets the default key for the specified entity component type.
-        /// </summary>
-        /// <typeparam name="T">An entity component type</typeparam>
-        /// <returns>PropertyKey.</returns>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static PropertyKey GetDefaultKey<T>() where T : EntityComponent, new()
-        {
-            return EntityComponentHelper<T>.DefaultKey;
-        }
-
-        struct EntityComponentHelper<T> where T : EntityComponent, new()
-        {
-            public static readonly PropertyKey DefaultKey = new T().GetDefaultKey();
         }
 
         internal class Serializer : DataSerializer<EntityComponent>

@@ -1,6 +1,6 @@
 !Package
 Id: 6d251236-da95-409a-8f4b-7d42ae1fd32c
-SerializedVersion: 2
+SerializedVersion: {Assets: 0.0.2}
 Tags: []
 Meta:
     Name: SiliconStudio.Xenko.Input.Tests
@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.4.0-beta
+            Version: 1.6.0-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:

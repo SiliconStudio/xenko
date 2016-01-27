@@ -6,11 +6,14 @@ Tags: []
 Source: ../../../../data/tests/cube/cube.fbx
 SourceHash: 2471e6b1be7106f3e68cf790e9306164
 Materials:
-    -   Name: lambert1
+    -   ~Id: 0919d873-480a-46d0-9b66-ab35aa592900
+        Name: lambert1
         MaterialInstance:
+            ~Id: 3b76215f-0a83-47a5-a1af-573e6221d88c
             Material: ed1bbd82-0078-4d58-9544-ff7e47697d77:Cube/lambert1
 Skeleton: e1b4aa1c-e0ab-409b-bbe4-a5fa0c1afc8d:Cube/cube Model Skeleton
 ~Base:
+    ~Id: 7bd23173-4eae-4f94-bb4c-01d7736e6207
     Location: --import--
     Asset: !Model
         Id: 00000000-0000-0000-0000-000000000000
@@ -20,7 +23,9 @@ Skeleton: e1b4aa1c-e0ab-409b-bbe4-a5fa0c1afc8d:Cube/cube Model Skeleton
         Source: 
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Materials:
-            -   Name: lambert1
+            -   ~Id: b3e69ba6-0a28-46ef-b5ed-79424fb62644
+                Name: lambert1
                 MaterialInstance:
+                    ~Id: 3acb3e99-cc43-42bf-ad17-838c5e795248
                     Material: ed1bbd82-0078-4d58-9544-ff7e47697d77:Cube/lambert1
         Skeleton: null

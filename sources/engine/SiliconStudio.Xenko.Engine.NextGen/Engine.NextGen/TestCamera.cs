@@ -164,7 +164,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
             SetCamera();
 
-            while (!IsDisposed)
+            while (!CancellationToken.IsCancellationRequested)
             {
                 UpdateCamera();
 
@@ -388,7 +388,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
         {
             var boundingSphere = new BoundingSphere();
 
-            var model = rootEntity.Get(ModelComponent.Key);
+            var model = rootEntity.Get<ModelComponent>();
             if (model != null && model.Model != null)
             {
                 var boundingBox = model.Model.BoundingBox;
