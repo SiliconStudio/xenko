@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Engine
     /// <summary>
     /// A script which can be implemented as an async microthread.
     /// </summary>
-    public abstract class AsyncScript : Script
+    public abstract class AsyncScript : ScriptComponent
     {
         [DataMemberIgnore]
         internal MicroThread MicroThread;

@@ -70,14 +70,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Scene.Entities.Add(foreground);
             Scene.Entities.Add(background);
 
-            spriteComponent = ball.Get(SpriteComponent.Key);
-            transfoComponent = ball.Get(TransformComponent.Key);
+            spriteComponent = ball.Get<SpriteComponent>();
+            transfoComponent = ball.Get<TransformComponent>();
             
             var decorationScalings = new Vector3(areaSize.X, areaSize.Y, 1);
-            background.Get(TransformComponent.Key).Scale = decorationScalings;
-            foreground.Get(TransformComponent.Key).Scale = decorationScalings/2;
-            background.Get(TransformComponent.Key).Position = new Vector3(0, 0, -1);
-            foreground.Get(TransformComponent.Key).Position = new Vector3(0, 0, 1);
+            background.Get<TransformComponent>().Scale = decorationScalings;
+            foreground.Get<TransformComponent>().Scale = decorationScalings/2;
+            background.Get<TransformComponent>().Position = new Vector3(0, 0, -1);
+            foreground.Get<TransformComponent>().Position = new Vector3(0, 0, 1);
 
             SpriteAnimation.Play(spriteComponent, 0, spriteComponent.SpriteProvider.SpritesCount-1, AnimationRepeatMode.LoopInfinite, 30);
         }

@@ -3,7 +3,7 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using System.Reflection;
 
 namespace SiliconStudio.Core.Reflection
 {
@@ -22,15 +22,15 @@ namespace SiliconStudio.Core.Reflection
             {
                 if (!IdentifiableTypes.TryGetValue(type, out result))
                 {
-                    var attributes = TypeDescriptorFactory.Default.AttributeRegistry.GetAttributes(type);
+                    var nonIdentifiable = type.GetTypeInfo().GetCustomAttribute<NonIdentifiableAttribute>();
 
                     // Early exit if we don't need to add a unique identifier to a type
                     result = !( type == typeof(string)
                             || type.IsValueType
                             || type.IsArray
-                            || CollectionDescriptor.IsCollection(type)
-                            || DictionaryDescriptor.IsDictionary(type)
-                            || attributes.OfType<NonIdentifiableAttribute>().Any());
+                            || TypeHelper.IsCollection(type)
+                            || TypeHelper.IsDictionary(type)
+                            || nonIdentifiable != null);
 
                     IdentifiableTypes.Add(type, result);
                 }
@@ -38,19 +38,27 @@ namespace SiliconStudio.Core.Reflection
             return result;
         }
 
-        public static Guid GetId(object instance)
+        public static bool TryGetId(object instance, out Guid id)
         {
-            var shadow = ShadowObject.GetShadow(instance);
+            var shadow = ShadowObject.Get(instance);
             if (shadow == null)
             {
-                return Guid.Empty;
+                id = Guid.Empty;
+                return false;
             }
+            id = shadow.GetId(instance);
+            return true;
+        }
+
+        public static Guid GetId(object instance)
+        {
+            var shadow = ShadowObject.GetOrCreate(instance);
             return shadow.GetId(instance);
         }
 
         public static void SetId(object instance, Guid id)
         {
-            var shadow = ShadowObject.GetShadow(instance);
+            var shadow = ShadowObject.GetOrCreate(instance);
             shadow?.SetId(instance, id);
         }
     }

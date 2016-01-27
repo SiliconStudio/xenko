@@ -16,13 +16,12 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a background to an <see cref="Entity"/>.
     /// </summary>
     [DataContract("BackgroundComponent")]
-    [Display(9600, "Background", Expand = ExpandRule.Once)]
+    [Display("Background", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(BackgroundComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(BackgroundComponentProcessor))]
-    public class BackgroundComponent : ActivableEntityComponent
+    [ComponentOrder(9600)]
+    public sealed class BackgroundComponent : ActivableEntityComponent
     {
-        public static PropertyKey<BackgroundComponent> Key = new PropertyKey<BackgroundComponent>("Key", typeof(BackgroundComponent));
-
         /// <summary>
         /// Create an empty Background component.
         /// </summary>
@@ -48,10 +47,5 @@ namespace SiliconStudio.Xenko.Engine
         [DefaultValue(1.0f)]
         [DataMemberRange(0.0, 100.0, 0.01f, 1.0f)]
         public float Intensity { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

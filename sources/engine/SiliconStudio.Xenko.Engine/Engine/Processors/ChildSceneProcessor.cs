@@ -19,7 +19,6 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// Initializes a new instance of the <see cref="ChildSceneProcessor"/> class.
         /// </summary>
         public ChildSceneProcessor()
-            : base(ChildSceneComponent.Key)
         {
         }
 
@@ -40,19 +39,19 @@ namespace SiliconStudio.Xenko.Engine.Processors
             return component.SceneInstance;
         }
 
-        protected override ChildSceneComponent GenerateAssociatedData(Entity entity)
+        protected override ChildSceneComponent GenerateComponentData(Entity entity, ChildSceneComponent component)
         {
-            return entity.Get<ChildSceneComponent>();
+            return component;
         }
 
-        protected override void OnEntityAdding(Entity entity, ChildSceneComponent component)
+        protected override void OnEntityComponentAdding(Entity entity, ChildSceneComponent component1, ChildSceneComponent component)
         {
             // safe guard for infinite recursion when setting component child scene on the scene that contains it.
             var scene = ContainingScene != component.Scene ? component.Scene : null;
             component.SceneInstance = new SceneInstance(EntityManager.Services, scene, EntityManager.ExecutionMode);
         }
 
-        protected override void OnEntityRemoved(Entity entity, ChildSceneComponent component)
+        protected override void OnEntityComponentRemoved(Entity entity, ChildSceneComponent component1, ChildSceneComponent component)
         {
             if (component != null)
             {
@@ -63,8 +62,10 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         public override void Update(GameTime time)
         {
-            foreach (var childComponent in enabledEntities.Values)
+            foreach (var childComponentKeyPair in ComponentDatas)
             {
+                var childComponent = childComponentKeyPair.Key;
+
                 if (childComponent.Enabled)
                 {
                     UpdateSceneInstance(childComponent);
@@ -75,8 +76,10 @@ namespace SiliconStudio.Xenko.Engine.Processors
 
         public override void Draw(RenderContext context)
         {
-            foreach (ChildSceneComponent childComponent in enabledEntities.Values)
+            foreach (var childComponentKeyPair in ComponentDatas)
             {
+                var childComponent = childComponentKeyPair.Key;
+
                 if (childComponent.Enabled)
                 {
                     UpdateSceneInstance(childComponent);

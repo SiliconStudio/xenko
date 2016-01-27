@@ -4,13 +4,14 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.ServiceModel;
-using System.ServiceModel.Channels;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Binding = System.ServiceModel.Channels.Binding;
 
 namespace SiliconStudio.ExecServer
 {
@@ -29,10 +30,10 @@ namespace SiliconStudio.ExecServer
 
         private const string DisableExecServerAppDomainCaching = "DisableExecServerAppDomainCaching";
         private const int MaxRetryStartedProcess = 10;
-        private const int RetryStartedProcessWait = 500; // in ms
+        private const int RetryStartedProcessWait = 100; // in ms
 
-        private const int MaxRetryCount = 1800 * 100; // * 10msec => 30 min
-        private const int RetryWait = 10; // in ms
+        private const int MaxRetryCount = 1800 * 100; // * 1s
+        private const int RetryWait = 50; // in ms
 
         /// <summary>
         /// Runs the specified arguments copy.
@@ -63,7 +64,24 @@ namespace SiliconStudio.ExecServer
                 var executablePath = ExtractPath(args, "executable");
                 var cpu = int.Parse(args[0]);
                 args.RemoveAt(0);
-                RunServer(executablePath, cpu);
+                try
+                {
+                    RunServer(executablePath, cpu);
+                }
+                catch (Exception ex)
+                {
+                    try
+                    {
+                        var pid = Process.GetCurrentProcess().Id;
+                        var logPath = GetExecServerErrorLogFilePath(executablePath, pid);
+                        File.AppendAllText(logPath, $"Unexpected error while trying to run ExecServerApp [{executablePath}]. Exception: {ex}");
+                    }
+                    catch (Exception)
+                    {
+                        // Don't try to log an error
+                    }
+                    return 1;
+                }
                 return 0;
             }
             else
@@ -80,6 +98,11 @@ namespace SiliconStudio.ExecServer
                 var result = RunClient(executablePath, workingDirectory, environmentVariables, args);
                 return result;
             }
+        }
+
+        private static string GetExecServerErrorLogFilePath(string executablePath, int pid)
+        {
+            return Path.Combine(Path.GetDirectoryName(executablePath), $"XenkoExecServer.pid{pid}.log");
         }
 
         /// <summary>
@@ -155,6 +178,7 @@ namespace SiliconStudio.ExecServer
                     {
                         int numberTriesAfterRunProcess = 0;
                         var address = GetEndpointAddress(executablePath, serverInstanceIndex);
+                        int processId = 0;
 
                     TrySameConnectionAgain:
                         var redirectLog = new RedirectLogger();
@@ -197,7 +221,11 @@ namespace SiliconStudio.ExecServer
                             if (numberTriesAfterRunProcess++ == 0)
                             {
                                 // The server is not running, we need to run it
-                                RunServerProcess(executablePath, serverInstanceIndex);
+                                if (!RunServerProcess(executablePath, serverInstanceIndex, out processId))
+                                {
+                                    Console.WriteLine("Unexpected error, while launching process [{0}]", execServerPath);
+                                    return -300;
+                                }
                             }
 
                             if (numberTriesAfterRunProcess > MaxRetryStartedProcess)
@@ -208,7 +236,43 @@ namespace SiliconStudio.ExecServer
 
                             // Wait for the process to startup before trying again
                             Console.WriteLine("Waiting {0}ms for the proxy server to start and connect to it", RetryStartedProcessWait);
+
                             Thread.Sleep(RetryStartedProcessWait);
+
+                            // Check that the sever we tried to launch is still running, if not we have a severe error
+                            if (processId != 0)
+                            {
+                                string errorWithProcess = null;
+
+                                try
+                                {
+                                    using (var process = Process.GetProcessById(processId))
+                                    {
+                                        if (process.HasExited)
+                                        {
+                                            errorWithProcess = $"Unexpected error: ExecServerApp has exited with the return code: {process.ExitCode}";
+                                        }
+                                    }
+                                }
+                                catch (Exception ex)
+                                {
+                                    errorWithProcess = $"Unexpected error: ExecServerApp has exited: {ex.Message}";
+                                }
+
+                                if (errorWithProcess != null)
+                                {
+                                    Console.WriteLine(errorWithProcess);
+
+                                    var logPath = GetExecServerErrorLogFilePath(executablePath, processId);
+                                    if (File.Exists(logPath))
+                                    {
+                                        Console.WriteLine(File.ReadAllText(logPath));
+                                        File.Delete(logPath);
+                                    }
+                                    return -300;
+                                }
+                            }
+
                             goto TrySameConnectionAgain;
                         }
                         catch (Exception e)
@@ -293,7 +357,7 @@ namespace SiliconStudio.ExecServer
         /// </summary>
         /// <param name="executablePath">The executable path.</param>
         /// <param name="serverInstanceIndex">The server instance index.</param>
-        private void RunServerProcess(string executablePath, int serverInstanceIndex)
+        private bool RunServerProcess(string executablePath, int serverInstanceIndex, out int processId)
         {
             var originalExecServerAppPath = typeof(ExecServerApp).Assembly.Location;
             var originalTime = File.GetLastWriteTimeUtc(originalExecServerAppPath);
@@ -333,10 +397,7 @@ namespace SiliconStudio.ExecServer
             // Handling directly the creation of the process with Win32 function solves this. Not sure why.
             // TODO: We might want the process to not inherit environment
             var arguments = string.Format("/server \"{0}\" {1}", executablePath, serverInstanceIndex);
-            if (!ProcessHelper.LaunchProcess(execServerPath, arguments))
-            {
-                Console.WriteLine("Error, unable to launch process [{0}]", execServerPath);
-            }
+            return ProcessHelper.LaunchProcess(execServerPath, arguments, out processId);
         }
 
         private static string GetEndpointAddress(string executablePath, int serverInstanceIndex)

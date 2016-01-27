@@ -3,6 +3,7 @@
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Sprites;
@@ -103,7 +104,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 // Update the sprite batch
                 var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? (spriteComp.PremultipliedAlpha ? device.BlendStates.AlphaBlend : device.BlendStates.NonPremultiplied) : device.BlendStates.Opaque;
-                var currentEffect = isPicking? GetOrCreatePickingSpriteEffect(): spriteComp.Tags.Get(IsEntitySelected)? GetOrCreateSelectedSpriteEffect(): null; // TODO remove this code when material are available
+                var currentEffect = isPicking? GetOrCreatePickingSpriteEffect(): ShadowObject.IsObjectSelected(spriteComp) ? GetOrCreateSelectedSpriteEffect(): null; // TODO remove this code when material are available
                 if (previousEffect != currentEffect || blendState != previousBlendState || depthStencilState != previousDepthStencilState)
                 {
                     if (hasBegin)

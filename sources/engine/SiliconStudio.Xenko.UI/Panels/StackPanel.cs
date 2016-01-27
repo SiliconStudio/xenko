@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.UI.Panels
@@ -61,9 +62,9 @@ namespace SiliconStudio.Xenko.UI.Panels
         /// The list of the visible children having the same order as in <see cref="Panel.Children"/>. 
         /// </summary>
         /// <remarks>This list is valid on when <see cref="ItemVirtualizationEnabled"/> is <value>true</value></remarks>
-        private readonly List<UIElement> visibleChildren = new List<UIElement>();
+        private readonly FastCollection<UIElement> visibleChildren = new FastCollection<UIElement>();
 
-        private readonly List<UIElement> cachedVisibleChildren = new List<UIElement>();
+        private readonly FastCollection<UIElement> cachedVisibleChildren = new FastCollection<UIElement>();
 
         private Vector3 extent;
 
@@ -206,7 +207,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             }
 
             // measure all the children
-            var children = ItemVirtualizationEnabled ? visibleChildren : Children.UnderlyingList;
+            var children = ItemVirtualizationEnabled ? visibleChildren : Children;
             foreach (var child in children)
                 child.Measure(childAvailableSizeWithMargins);
 
@@ -297,7 +298,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             elementBounds.Add(0);
 
             // arrange all the children
-            var children = ItemVirtualizationEnabled ? visibleChildren : Children.UnderlyingList;
+            var children = ItemVirtualizationEnabled ? visibleChildren : Children;
             foreach (var child in children)
             {
                 var startBound = elementBounds[elementBounds.Count - 1];
@@ -787,7 +788,7 @@ namespace SiliconStudio.Xenko.UI.Panels
             return child.RenderSize[dimension] + child.Margin[dimension] + child.Margin[dimension + 3];
         }
 
-        protected internal override List<UIElement> HitableChildren
+        protected internal override FastCollection<UIElement> HitableChildren
         {
             get { return visibleChildren; }
         }
