@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Physics
 
         public Vector3 PositionOnB;
 
-        public Collision Pair;
+        public Collision Collision;
 
         internal GCHandle Handle;
     }
