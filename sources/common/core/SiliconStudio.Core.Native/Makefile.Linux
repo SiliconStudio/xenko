@@ -1,3 +1,5 @@
+#To compile for 32-bit or 64-bit, add the -m32 or -m64 depending on the plaform
+#you are running onto.
 
 SRC_DIR=.
 OBJ_DIR=obj
