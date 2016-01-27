@@ -171,6 +171,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Graphics\BufferPool.cs" />
+    <Compile Include="Rendering\EffectInstanceParameters.cs" />
     <Compile Include="Rendering\Properties.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
