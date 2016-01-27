@@ -18,15 +18,14 @@ namespace SiliconStudio.Core.Reflection
                 return false;
             }
 
-            if (typeof(ICollection).IsAssignableFrom(type))
+            if (typeof(ICollection).GetTypeInfo().IsAssignableFrom(type))
             {
                 return true;
             }
 
-            var interfaces = type.GetTypeInfo().GetInterfaces();
-            for (int i = 0; i < interfaces.Length; i++)
+            foreach(var iType in type.GetTypeInfo().ImplementedInterfaces)
             {
-                var typeInfo = interfaces[i].GetTypeInfo();
+                var typeInfo = iType.GetTypeInfo();
                 if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(ICollection<>))
                 {
                     return true;
@@ -39,15 +38,14 @@ namespace SiliconStudio.Core.Reflection
         public static bool IsDictionary(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (typeof(IDictionary).IsAssignableFrom(type))
+            if (typeof(IDictionary).GetTypeInfo().IsAssignableFrom(type))
             {
                 return true;
             }
 
-            var interfaces = type.GetTypeInfo().GetInterfaces();
-            for (int i = 0; i < interfaces.Length; i++)
+            foreach (var iType in type.GetTypeInfo().ImplementedInterfaces)
             {
-                var typeInfo = interfaces[i].GetTypeInfo();
+                var typeInfo = iType.GetTypeInfo();
                 if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(IDictionary<,>))
                 {
                     return true;
