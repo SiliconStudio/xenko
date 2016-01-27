@@ -100,6 +100,10 @@ namespace SiliconStudio.Xenko.Games
                 while (SDL.SDL_PollEvent(out e) != 0)
                 {
                     Application.ProcessEvent(e);
+                    if (e.type == SDL.SDL_EventType.SDL_QUIT)
+                    {
+                        isControlAlive = false;
+                    }
                 }
             }
 
