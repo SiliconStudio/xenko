@@ -47,9 +47,9 @@ namespace SiliconStudio.Xenko.Engine.Design
             foreach (var currentEntity in ParameterContainerExtensions.CollectEntityTree(entity))
             {
                 clonedObjects.Add(currentEntity);
-                foreach (var component in currentEntity.Components.Where(x => x.Value is EntityComponent))
+                foreach (var component in currentEntity.Components)
                 {
-                    clonedObjects.Add(component.Value);
+                    clonedObjects.Add(component);
                 }
             } 
             

@@ -17,13 +17,12 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a <see cref="Sprite"/> to an <see cref="Entity"/>. It could be an animated sprite.
     /// </summary>
     [DataContract("SpriteComponent")]
-    [Display(10000, "Sprite", Expand = ExpandRule.Once)]
+    [Display("Sprite", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(SpriteComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(SpriteProcessor))]
+    [ComponentOrder(10000)]
     public sealed class SpriteComponent : ActivableEntityComponent
     {
-        public static PropertyKey<SpriteComponent> Key = new PropertyKey<SpriteComponent>("Key", typeof(SpriteComponent));
-
         /// <summary>
         /// The group of sprites associated to the component.
         /// </summary>
@@ -159,11 +158,6 @@ namespace SiliconStudio.Xenko.Engine
                 var info = Animations.Dequeue();
                 RecycleSpriteIndicesList(info.SpriteIndices);
             }
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

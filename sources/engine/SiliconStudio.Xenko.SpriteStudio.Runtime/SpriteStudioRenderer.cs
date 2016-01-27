@@ -1,6 +1,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
@@ -155,7 +156,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                     }
 
                     var blendState = isPicking ? device.BlendStates.Opaque : renderItems.HasTransparency ? spriteBlending : device.BlendStates.Opaque;
-                    var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : spriteState.SpriteStudioComponent.Tags.Get(IsEntitySelected) ? GetOrCreateSelectedSpriteEffect() : null;
+                    var currentEffect = isPicking ? GetOrCreatePickingSpriteEffect() : ShadowObject.IsObjectSelected(spriteState.SpriteStudioComponent) ? GetOrCreateSelectedSpriteEffect() : null;
                     // TODO remove this code when material are available
                     if (previousEffect != currentEffect || blendState != previousBlendState || depthStencilState != previousDepthStencilState)
                     {

@@ -4,7 +4,9 @@ Tags: []
 Source: ../../../data/tests/audio/90-bboc1-stero.wav
 ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
 ~Base:
+    ~Id: 82cf7291-f276-4b0b-a5e2-dbe88def7b9d
     Location: --import--
     Asset: !SoundEffect
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        Source: 

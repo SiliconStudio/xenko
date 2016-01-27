@@ -248,7 +248,7 @@ namespace SiliconStudio.Core.Reflection
         /// <returns><c>true</c> if the specified type is collection; otherwise, <c>false</c>.</returns>
         public static bool IsCollection(Type type)
         {
-            return !type.IsArray && (typeof(ICollection).IsAssignableFrom(type) || type.HasInterface(typeof(ICollection<>)) || typeof(IList).IsAssignableFrom(type));
+            return TypeHelper.IsCollection(type);
         }
 
         protected override bool PrepareMember(MemberDescriptorBase member)

@@ -99,8 +99,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Attach model processor (which will register meshes to render system)
             var sceneInstance = SceneInstance.GetCurrent(Context);
-            sceneInstance.AddProcessor(new NextGenModelProcessor(RenderSystem));
-            sceneInstance.AddProcessor(new NextGenSpriteProcessor(RenderSystem));
+            sceneInstance.Processors.Add(new NextGenModelProcessor(RenderSystem));
+            sceneInstance.Processors.Add(new NextGenSpriteProcessor(RenderSystem));
 
             lightComponentForwardRenderer = new LightComponentForwardRenderer();
             lightComponentForwardRenderer.Initialize(Context);

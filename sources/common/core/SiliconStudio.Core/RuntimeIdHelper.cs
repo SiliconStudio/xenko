@@ -19,6 +19,11 @@ namespace SiliconStudio.Core
         /// <returns>An unique runtime identifier (32bits)</returns>
         public static int ToRuntimeId(object instance)
         {
+            if (instance == null)
+            {
+                return 0;
+            }
+
             lock (RuntimeIds)
             {
                 object rtid;

@@ -11,6 +11,9 @@ namespace SiliconStudio.Assets
         [ModuleInitializer]
         public static void Initialize()
         {
+            // Shadow object is always enabled when we are using assets, so we force it here
+            ShadowObject.Enable = true;
+
             // Make sure that this assembly is registered
             AssemblyRegistry.Register(typeof(Module).Assembly, AssemblyCommonCategories.Assets);
         }

@@ -3,20 +3,20 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public class NextGenModelProcessor : EntityProcessor<RenderModel>
+    public class NextGenModelProcessor : EntityProcessor<ModelComponent, RenderModel>
     {
         private NextGenRenderSystem renderSystem;
 
-        public Dictionary<Entity, RenderModel> RenderModels => enabledEntities;
+        public Dictionary<ModelComponent, RenderModel> RenderModels => ComponentDatas;
 
-        public NextGenModelProcessor(NextGenRenderSystem renderSystem) : base(ModelComponent.Key, TransformComponent.Key)
+        public NextGenModelProcessor(NextGenRenderSystem renderSystem) : base(typeof(TransformComponent))
         {
             this.renderSystem = renderSystem;
         }
 
-        protected override RenderModel GenerateAssociatedData(Entity entity)
+        protected override RenderModel GenerateComponentData(Entity entity, ModelComponent component)
         {
-            var modelComponent = entity.Get(ModelComponent.Key);
+            var modelComponent = entity.Get<ModelComponent>();
             var renderModel = new RenderModel(modelComponent);
 
             return renderModel;
@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Note: we are rebuilding RenderMeshes every frame
             // TODO: check if it wouldn't be better to add/remove directly in CheckMeshes()?
-            foreach (var entity in enabledEntities)
+            foreach (var entity in ComponentDatas)
             {
                 var renderModel = entity.Value;
 

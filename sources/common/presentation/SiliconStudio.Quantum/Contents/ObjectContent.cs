@@ -23,7 +23,22 @@ namespace SiliconStudio.Quantum.Contents
 
         public override object Value => value;
 
-        public override void Update(object newValue, object index)
+        public override void Update(object newValue, object index = null)
+        {
+            throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+        }
+
+        public override void Add(object itemIndex, object newItem)
+        {
+            throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+        }
+
+        public override void Add(object newItem)
+        {
+            throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
+        }
+
+        public override void Remove(object itemIndex)
         {
             throw new InvalidOperationException("An ObjectContent value cannot be modified after it has been constructed");
         }
