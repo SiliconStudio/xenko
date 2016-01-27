@@ -178,6 +178,17 @@ Hierarchy:
                                             SeedOffset: 0
                                             ColorMin: {R: 1.0, G: 0.0, B: 0.0, A: 1.0}
                                             ColorMax: {R: 0.237500191, G: 0.0, B: 1.0, A: 1.0}
+                                        - !InitialRotationSeed
+                                            ~Id: 3b79b771-8db2-4770-a2ae-bfde91e8d66f
+                                            InheritLocation: Position, Rotation, Scale
+                                            ParticleLocator:
+                                                ~Id: 1a51e3e8-a8e8-4764-b09c-6ca629b21f65
+                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
+                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            SeedOffset: 0
+                                            AngularRotationMin: -120.0
+                                            AngularRotationMax: 120.0
                                     Updaters: []
                     TransformComponent.Key:
                         ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
@@ -243,7 +254,7 @@ Hierarchy:
                                             LoopCondition: Looping
                                             Delay: {X: 0.0, Y: 0.0}
                                             Duration: {X: 1.0, Y: 1.0}
-                                            SpawnCount: 1.0
+                                            SpawnCount: 3.0
                                             Framerate: 60.0
                                     Initializers:
                                         - !InitialSizeSeed
@@ -265,8 +276,19 @@ Hierarchy:
                                                 Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
                                                 Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
-                                            VelocityMin: {X: -1.0, Y: 3.0, Z: -1.0}
-                                            VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            VelocityMin: {X: -1.0, Y: 3.0, Z: 0.0}
+                                            VelocityMax: {X: 1.0, Y: 3.0, Z: 0.0}
+                                        - !InitialPositionSeed
+                                            ~Id: 0d2f7b6e-448c-4f3f-afd8-d78c4ccf7bd9
+                                            InheritLocation: Position, Rotation, Scale
+                                            ParticleLocator:
+                                                ~Id: b25eb655-1333-4c2c-a916-9b3ca82b75a6
+                                                Translation: {X: 0.0, Y: 0.0, Z: 0.0}
+                                                Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                                                Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                                            SeedOffset: 0
+                                            PositionMin: {X: -1.0, Y: 1.0, Z: 0.0}
+                                            PositionMax: {X: 1.0, Y: 1.0, Z: 0.0}
                                     Updaters: []
                     TransformComponent.Key:
                         ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
