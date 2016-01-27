@@ -1,11 +1,11 @@
 !Texture
-Id: 7f29f133-ed1d-4bd8-910d-c91a45f12445
+Id: 46b85e14-2e22-4314-a1bd-07ee43a08fd8
 SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
-Source: ../../../data/tests/ef00_smoke.png
+Source: ../../../data/tests/ef00_smoke02.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
-    ~Id: a9e84596-0a92-4033-9a1c-0b68ceede725
+    ~Id: 70462a29-0eeb-495f-b29b-586994551baf
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

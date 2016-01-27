@@ -14,8 +14,7 @@
     <FileAlignment>512</FileAlignment>
     <AndroidApplication>true</AndroidApplication>
     <AndroidResgenFile>Resources\Resource.Designer.cs</AndroidResgenFile>
-    <AndroidUseLatestPlatformSdk>
-    </AndroidUseLatestPlatformSdk>
+    <AndroidUseLatestPlatformSdk></AndroidUseLatestPlatformSdk>
     <AndroidManifest>Properties\AndroidManifest.xml</AndroidManifest>
     <AndroidSupportedAbis>armeabi,armeabi-v7a,x86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
@@ -210,6 +209,8 @@
     <Compile Include="ParticleForcesTest.cs" />
     <Compile Include="ParticlePoolTest.cs" />
     <Compile Include="SimpleTest.cs" />
+    <Compile Include="VisualTestInitializers.cs" />
+    <Compile Include="VisualTestSpawners.cs" />
     <None Include="SiliconStudio.Xenko.Particles.Tests.xkpkg" />
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Xamarin\Android\Xamarin.Android.CSharp.targets" />

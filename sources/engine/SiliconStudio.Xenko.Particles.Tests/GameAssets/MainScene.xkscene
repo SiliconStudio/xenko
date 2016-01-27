@@ -47,7 +47,7 @@ Hierarchy:
                                         FaceCulling: CullNone
                                         ComputeColor: !ComputeVertexStreamColor
                                             Stream: !ColorVertexStreamDefinition
-                                                ~Id: 4a5521f1-ec87-47bc-9af5-6ca2d6415227
+                                                ~Id: 6decc263-dda2-4ee1-9214-8da371718827
                                         UVBuilder: null
                                     Spawners:
                                         - !SpawnerPerSecond
@@ -79,16 +79,16 @@ Hierarchy:
                                             VelocityMin: {X: -1.0, Y: 3.0, Z: -1.0}
                                             VelocityMax: {X: 1.0, Y: 1.0, Z: 1.0}
                                         - !InitialColorSeed
-                                            ~Id: 525dc33a-4e6c-4513-a6db-2b68497f8c69
+                                            ~Id: 6c408ca4-d580-44eb-bb3a-fb98d6ade070
                                             InheritLocation: Position, Rotation, Scale
                                             ParticleLocator:
-                                                ~Id: 0b37e34e-15ce-426f-9e2e-38fbe69a2c6d
+                                                ~Id: da17661a-d7b5-4bad-a513-92f7111bce25
                                                 Translation: {X: 0.0, Y: 0.0, Z: 0.0}
                                                 Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
                                                 Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                                             SeedOffset: 0
                                             ColorMin: {R: 1.0, G: 0.0, B: 0.0, A: 1.0}
-                                            ColorMax: {R: 0.0, G: 0.362499952, B: 1.0, A: 1.0}
+                                            ColorMax: {R: 0.237500191, G: 0.0, B: 1.0, A: 1.0}
                                     Updaters: []
                     TransformComponent.Key:
                         ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455

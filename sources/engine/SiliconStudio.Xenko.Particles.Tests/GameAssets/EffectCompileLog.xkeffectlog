@@ -99,3 +99,108 @@ UsedParameters:
         GenericArguments:
             - COLOR0
             - rgba
+---
+!EffectCompileRequest
+~Id: 641059d6-4164-4943-990d-079f8fff0018
+EffectName: XenkoForwardShadingEffect
+UsedParameters:
+    CompilerParameters.DebugKey: true
+    CompilerParameters.GraphicsPlatformKey: Direct3D11
+    CompilerParameters.GraphicsProfileKey: Level_11_0
+    Lighting.DirectLightGroups: []
+    Lighting.EnvironmentLights:
+        - !ShaderMixinSource
+            ~Id: 7011c4ac-deec-4282-9b57-04fbcc3b378e
+            Compositions: {}
+            Macros: []
+            Mixins:
+                -   ~Id: 863732ec-23fb-41e9-ba16-5ff00cdc2e40
+                    ClassName: LightSimpleAmbient
+            Name: null
+    Material.HasNormalMap: false
+    Material.HasSkinningPosition: false
+    Material.PixelStageStreamInitializer: !ShaderMixinSource
+        ~Id: 08a3d90e-d6e9-40b3-8ec2-dd938e46d042
+        Compositions: {}
+        Macros: []
+        Mixins:
+            -   ~Id: 6fc8f250-230b-46b4-8adf-0bd65aa77299
+                ClassName: MaterialStream
+            -   ~Id: 1722b7e9-5378-48c3-bab7-7acaecf19611
+                ClassName: MaterialPixelShadingStream
+        Name: null
+    Material.PixelStageSurfaceFilter: null
+    Material.PixelStageSurfaceShaders: !ShaderMixinSource
+        ~Id: f0612c62-0587-4f39-be19-66de67ac05b5
+        Compositions:
+            layers: !ShaderArraySource
+                ~Id: fb68ac4e-1e6c-4d2c-99d3-ffaae2257b7f
+                Values:
+                    - !ShaderMixinSource
+                        ~Id: 5fba678e-e704-4c91-be61-af2afd2f4252
+                        Compositions:
+                            diffuseMap: !ShaderClassSource
+                                ~Id: 296702cd-655f-43b5-bbba-bde37980cedf
+                                ClassName: ComputeColorConstantColorLink
+                                GenericArguments:
+                                    - Material.DiffuseValue
+                        Macros: []
+                        Mixins:
+                            -   ~Id: 321c4f7b-4ee2-478b-80cb-a2b22d4ee9dc
+                                ClassName: MaterialSurfaceDiffuse
+                        Name: null
+                    - !ShaderMixinSource
+                        ~Id: 826c4f01-19bf-49d1-a356-b6df9f61ace3
+                        Compositions:
+                            surfaces: !ShaderArraySource
+                                ~Id: 7e3961e0-8d74-4af9-8c89-c8ed007a4341
+                                Values:
+                                    - !ShaderClassSource
+                                        ~Id: e2d49978-4377-4fb5-a7a0-913b0dcdfac6
+                                        ClassName: MaterialSurfaceShadingDiffuseLambert
+                                        GenericArguments:
+                                            - false
+                        Macros: []
+                        Mixins:
+                            -   ~Id: 8af5be5f-2ee1-4582-a6d0-e2d1a74d70b0
+                                ClassName: MaterialSurfaceLightingAndShading
+                        Name: null
+        Macros: []
+        Mixins:
+            -   ~Id: b3d4f227-aae8-40d1-b5aa-334395270b25
+                ClassName: MaterialSurfaceArray
+        Name: null
+    Material.TessellationShader: null
+    Material.VertexStageSurfaceShaders: null
+    XenkoEffectBase.ExtensionPostVertexStageShader: null
+---
+!EffectCompileRequest
+~Id: 424bda8b-3a1b-46c8-a66a-609ed23d957f
+EffectName: ParticleEffect
+UsedParameters:
+    CompilerParameters.DebugKey: true
+    CompilerParameters.GraphicsPlatformKey: Direct3D11
+    CompilerParameters.GraphicsProfileKey: Level_11_0
+    ParticleBase.BaseColor: !ShaderClassSource
+        ~Id: dbea3673-3a83-4515-a669-45c6cdcc97d9
+        ClassName: ComputeColorConstantColorLink
+        GenericArguments:
+            - ParticleBase.EmissiveValue
+---
+!EffectCompileRequest
+~Id: ae910aca-9a15-4116-9563-fb1d9840b546
+EffectName: ParticleEffect
+UsedParameters:
+    CompilerParameters.DebugKey: true
+    CompilerParameters.GraphicsPlatformKey: Direct3D11
+    CompilerParameters.GraphicsProfileKey: Level_11_0
+    ParticleBase.BaseColor: !ShaderClassSource
+        ~Id: 0987fae1-2e79-4076-a15e-445950c1876b
+        ClassName: ComputeColorTextureScaledOffsetDynamicSampler
+        GenericArguments:
+            - ParticleBase.EmissiveMap
+            - TEXCOORD0
+            - Material.Sampler.i0
+            - rgba
+            - Material.TextureScale
+            - Material.TextureOffset
