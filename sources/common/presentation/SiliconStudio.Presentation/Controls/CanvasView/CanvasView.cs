@@ -51,14 +51,29 @@ namespace SiliconStudio.Presentation.Controls
             DependencyProperty.Register(nameof(Model), typeof(ICanvasViewItem), typeof(CanvasView), new PropertyMetadata(null, OnModelPropertyChanged));
 
         /// <summary>
+        /// Backing field for the <see cref="IsCanvasValid"/> property.
+        /// </summary>
+        private volatile bool isCanvasValid;
+        /// <summary>
         /// The renderer.
         /// </summary>
         private CanvasRenderer renderer;
-
+        
         static CanvasView()
         {
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CanvasView), new FrameworkPropertyMetadata(typeof(CanvasView)));
         }
+
+        public CanvasView()
+        {
+            isCanvasValid = true;
+        }
+
+        /// <summary>
+        /// Returns True if the current rendering is valid. False otherwise.
+        /// </summary>
+        /// <remarks>When the value is False, it means that the canvas will be redrawn at the end of this frame.</remarks>
+        public bool IsCanvasValid => isCanvasValid;
 
         public ICanvasViewItem Model
         {
@@ -92,29 +107,25 @@ namespace SiliconStudio.Presentation.Controls
 
             InvalidateCanvas();
         }
-
+        
+        /// <summary>
+        /// Invalidates the canvas. The <see cref="Model"/> will render it only once, after all non-idle operations are completed
+        /// (<see cref="DispatcherPriority.Background"/> priority). Thus it is safe to call it every time the canvas should be redraw
+        /// even when other operations are coming.
+        /// </summary>
         public void InvalidateCanvas()
         {
-            if (renderer == null || Model == null)
+            if (renderer == null || Model == null || !isCanvasValid)
                 return;
 
-            BeginInvoke(() =>
+            // This ensure that the canvas will be rendered only once all changes have been made.
+            isCanvasValid = false;
+            Dispatcher.InvokeAsync(() =>
             {
                 renderer.Clear();
                 Model.Render(renderer);
-            });
-        }
-
-        private void BeginInvoke(Action action)
-        {
-            if (!Dispatcher.CheckAccess())
-            {
-                Dispatcher.InvokeAsync(action, DispatcherPriority.Background);
-            }
-            else
-            {
-                action();
-            }
+                isCanvasValid = true;
+            }, DispatcherPriority.Background);
         }
     }
 }
