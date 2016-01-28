@@ -1,3 +1,6 @@
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -5,9 +8,6 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Physics;
-using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
 using SiliconStudio.Core.MicroThreading;
 
 namespace SiliconStudio.Xenko.Engine
