@@ -2,6 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 #if (SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX) && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
 using OpenTK;
+#if SILICONSTUDIO_XENKO_UI_SDL
+using WindowState = SiliconStudio.Xenko.Graphics.SDL.FormWindowState;
+using OpenGLWindow = SiliconStudio.Xenko.Graphics.SDL.Window;
+#else
+using WindowState = OpenTK.WindowState;
+using OpenGLWindow = OpenTK.GameWindow;
+#endif
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -30,11 +37,11 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-                return ((OpenTK.GameWindow)Description.DeviceWindowHandle.NativeHandle).WindowState == WindowState.Fullscreen;
+                return ((OpenGLWindow)Description.DeviceWindowHandle.NativeHandle).WindowState == WindowState.Fullscreen;
             }
             set
             {
-                var gameWindow = (OpenTK.GameWindow)Description.DeviceWindowHandle.NativeHandle;
+                var gameWindow = (OpenGLWindow)Description.DeviceWindowHandle.NativeHandle;
                 if (gameWindow.Exists)
                     gameWindow.WindowState = value ? WindowState.Fullscreen : WindowState.Normal;
             }
