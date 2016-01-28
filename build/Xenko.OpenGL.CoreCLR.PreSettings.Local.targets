@@ -11,6 +11,7 @@
     <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
     <SiliconStudioRuntime Condition=" '$(SiliconStudioRuntime)' == '' ">CoreCLR</SiliconStudioRuntime>
     <SiliconStudioBuildDirExtension Condition=" '$(SiliconStudioBuildDirExtension)' == '' ">CoreCLR</SiliconStudioBuildDirExtension>
-    <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">OPENTK</SiliconStudioUI>
+    <SiliconStudioUI Condition=" '$(SiliconStudioUI)' == '' ">SDL;OPENTK</SiliconStudioUI>
+    <SiliconStudioAudio>SDL</SiliconStudioAudio>
   </PropertyGroup>
 </Project>
