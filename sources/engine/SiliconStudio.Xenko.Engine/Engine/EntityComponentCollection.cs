@@ -31,7 +31,10 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// This property is only used when merging
         /// </summary>
-        internal bool AllowReplaceForeignEntity { get; set; } = true;
+        /// <remarks>
+        /// NOTE: This property set to true internally in some very rare case (merging)
+        /// </remarks>
+        internal bool AllowReplaceForeignEntity { get; set; }
 
         protected override void ClearItems()
         {
