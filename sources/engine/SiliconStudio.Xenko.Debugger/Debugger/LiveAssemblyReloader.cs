@@ -37,9 +37,9 @@ namespace SiliconStudio.Xenko.Debugger
                 var parsingEvents = SerializeComponent(componentToReload.Component);
                 // TODO: Serialize Scene script too (async?) -- doesn't seem necessary even for complex cases
                 // (i.e. referencing assets, entities and/or scripts) but still a ref counting check might be good
-                reloadedComponents.Add(new ReloadedComponentEntryLive(componentToReload.Entity, componentToReload.Index, parsingEvents, componentToReload.Component));
-
+                reloadedComponents.Add(new ReloadedComponentEntryLive(componentToReload, parsingEvents));
             }
+
             foreach (var assembly in assembliesToUnregister)
             {
                 // Unregisters assemblies that have been registered in Package.Load => Package.LoadAssemblyReferencesForPackage
@@ -154,20 +154,23 @@ namespace SiliconStudio.Xenko.Debugger
 
         private class ReloadedComponentEntryLive
         {
-            // Original component
-            public readonly Entity Entity;
-            public readonly int ComponentIndex;
-            public readonly List<ParsingEvent> YamlEvents;
-            public readonly EntityComponent OriginalComponent;
-            public EntityComponent NewComponent;
+            private readonly ComponentToReload componentToReload;
 
-            public ReloadedComponentEntryLive(Entity entity, int componentIndex, List<ParsingEvent> yamlEvents, EntityComponent originalComponent)
+            public ReloadedComponentEntryLive(ComponentToReload componentToReload, List<ParsingEvent> parsingEvents)
             {
-                Entity = entity;
-                ComponentIndex = componentIndex;
-                YamlEvents = yamlEvents;
-                OriginalComponent = originalComponent;
+                this.componentToReload = componentToReload;
+                YamlEvents = parsingEvents;
             }
+
+            public Entity Entity => componentToReload.Entity;
+
+            public int ComponentIndex => componentToReload.Index;
+
+            public readonly List<ParsingEvent> YamlEvents;
+
+            public EntityComponent OriginalComponent => componentToReload.Component;
+
+            public EntityComponent NewComponent { get; set; }
         }
     }
 }

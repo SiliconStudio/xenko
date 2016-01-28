@@ -78,14 +78,17 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
 
         private void ActionItemModified(object sender, ActionItemsEventArgs<IActionItem> e)
         {
-            foreach (var actionItem in ActionItems)
-                actionItem.Refresh();
+            Dispatcher.Invoke(() =>
+            {
+                foreach (var actionItem in ActionItems)
+                    actionItem.Refresh();
+            });
         }
 
         private void ActionItemsDiscarded(object sender, DiscardedActionItemsEventArgs<IActionItem> e)
         {
             var actionsToRemove = e.ActionItems.Select(x => actionItems.FirstOrDefault(y => y.ActionItem.Identifier == x.Identifier)).ToList();
-            actionsToRemove.ForEach(x => actionItems.Remove(x));
+            Dispatcher.Invoke(() => actionsToRemove.ForEach(x => actionItems.Remove(x)));
         }
 
         private void ActionItemsCleared(object sender, EventArgs e)
@@ -95,7 +98,7 @@ namespace SiliconStudio.Presentation.ViewModel.ActionStack
 
         private void ActionItemsAdded(object sender, ActionItemsEventArgs<IActionItem> e)
         {
-            e.ActionItems.ForEach(x => actionItems.Add(new ActionItemViewModel(ServiceProvider, x)));
+            Dispatcher.Invoke(() => e.ActionItems.ForEach(x => actionItems.Add(new ActionItemViewModel(ServiceProvider, x))));
         }
     }
 }
