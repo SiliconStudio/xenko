@@ -4,6 +4,7 @@
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
@@ -47,6 +48,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </userdoc>
         [DataMember(200)]
         [Category]
+        [NotNullItems]
         public TrackingCollection<IInlineColliderShapeDesc> ColliderShapes { get; }
 
         /// <summary>

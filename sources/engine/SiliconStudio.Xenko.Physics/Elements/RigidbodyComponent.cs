@@ -93,6 +93,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The collider shape.
         /// </value>
+        [DataMemberIgnore]
         public override ColliderShape ColliderShape
         {
             get
