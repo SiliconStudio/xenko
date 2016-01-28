@@ -12,6 +12,9 @@ using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.Xenko.Engine
 {
+    /// <summary>
+    /// A collection of <see cref="EntityComponent"/> managed exclusively by the <see cref="Entity"/>.
+    /// </summary>
     [DataContract("EntityComponentCollection")]
     [DebuggerTypeProxy(typeof(CollectionDebugView))]
     [DebuggerDisplay("Count = {Count}")]
@@ -31,17 +34,16 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// This property is only used when merging
         /// </summary>
-        internal bool AllowReplaceForeignEntity { get; set; } = true;
+        /// <remarks>
+        /// NOTE: This property set to true internally in some very rare case (merging)
+        /// </remarks>
+        internal bool AllowReplaceForeignEntity { get; set; }
 
-        protected override void ClearItems()
-        {
-            for (int i = Count - 1; i >= 0; i--)
-            {
-                RemoveItem(i);
-            }
-            base.ClearItems();
-        }
-
+        /// <summary>
+        /// Gets the first component of the specified type or derived type.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
+        /// <returns>The first component or null if it was not found</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Get<T>() where T : EntityComponent
         {
@@ -56,6 +58,19 @@ namespace SiliconStudio.Xenko.Engine
             return null;
         }
 
+        /// <summary>
+        /// Gets the index'th component of the specified type or derived type.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
+        /// <param name="index">Index of the component of the same type</param>
+        /// <returns>The component or null if it was not found</returns>
+        /// <remarks>
+        /// <ul>
+        /// <li>If index &gt; 0, it will take the index'th component of the specified <typeparamref name="T"/>.</li>
+        /// <li>An index == 0 is equivalent to calling <see cref="Get{T}()"/></li>
+        /// <li>if index &lt; 0, it will start from the end of the list to the beginning. A value of -1 means the first last component.</li>
+        /// </ul>
+        /// </remarks>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public T Get<T>(int index) where T : EntityComponent
         {
@@ -84,6 +99,10 @@ namespace SiliconStudio.Xenko.Engine
             return null;
         }
 
+        /// <summary>
+        /// Removes the first component of the specified type or derived type.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove<T>() where T : EntityComponent
         {
@@ -98,6 +117,10 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
+        /// <summary>
+        /// Removes all components of the specified type or derived type.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void RemoveAll<T>() where T : EntityComponent
         {
@@ -111,6 +134,11 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
+        /// <summary>
+        /// Gets all the components of the specified type or derived type.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
+        /// <returns>An iterator on the component matching the specified type</returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public IEnumerable<T> GetAll<T>() where T : EntityComponent
         {
@@ -122,6 +150,15 @@ namespace SiliconStudio.Xenko.Engine
                     yield return item;
                 }
             }
+        }
+
+        protected override void ClearItems()
+        {
+            for (int i = Count - 1; i >= 0; i--)
+            {
+                RemoveItem(i);
+            }
+            base.ClearItems();
         }
 
         protected override void InsertItem(int index, EntityComponent item)

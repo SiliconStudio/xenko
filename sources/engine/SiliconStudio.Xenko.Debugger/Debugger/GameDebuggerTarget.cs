@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Debugger.Target
         // For now, it uses default one, but later we should probably have one per game debugger session
         private readonly AssemblyContainer assemblyContainer = AssemblyContainer.Default;
 
-        private string projectName;
+        private string projectName = String.Empty;
         private readonly Dictionary<DebugAssembly, Assembly> loadedAssemblies = new Dictionary<DebugAssembly, Assembly>();
         private int currentDebugAssemblyIndex;
         private Game game;

@@ -2,19 +2,19 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Mono.Cecil;
 using Mono.Cecil.Cil;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.AssemblyProcessor.Serializers
 {
     internal class CecilSerializerContext
     {
-        private readonly ILogger log;
+        private readonly TextWriter log;
 
-        public CecilSerializerContext(AssemblyDefinition assembly, ILogger log)
+        public CecilSerializerContext(AssemblyDefinition assembly, TextWriter log)
         {
             Assembly = assembly;
             SerializableTypesProfiles = new Dictionary<string, ProfileInfo>();
@@ -216,7 +216,7 @@ namespace SiliconStudio.AssemblyProcessor.Serializers
                 {
                     ComplexClassSerializerGenerator.IgnoreMember(serializableItem.MemberInfo);
                     if (!isInterface)
-                        log.Log(new LogMessage(log.Module, LogMessageType.Warning, string.Format("Member {0} does not have a valid serializer. Add [DataMemberIgnore], turn the member non-public, or add a [DataContract] to it's type.", serializableItem.MemberInfo)));
+                        log.Write($"Warning: Member {serializableItem.MemberInfo} does not have a valid serializer. Add [DataMemberIgnore], turn the member non-public, or add a [DataContract] to it's type.");
                 }
             }
         }

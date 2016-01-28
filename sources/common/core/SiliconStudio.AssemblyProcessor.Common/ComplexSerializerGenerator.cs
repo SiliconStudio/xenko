@@ -4,14 +4,7 @@ using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Text.RegularExpressions;
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
 using Mono.Cecil;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -22,24 +15,24 @@ namespace SiliconStudio.AssemblyProcessor
     {
         public static CodeDomProvider codeDomProvider = new Microsoft.CSharp.CSharpCodeProvider();
 
-        public static string GenerateSerializationAssembly(BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, ILogger log)
+        public static string GenerateSerializationAssembly(BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, TextWriter log)
         {
             // Create the serializer code generator
             var serializerGenerator = new ComplexSerializerCodeGenerator(assemblyResolver, assembly, log);
 
             // Register default serialization profile (to help AOT generic instantiation of serializers)
-            RegisterDefaultSerializationProfile(assemblyResolver, assembly, serializerGenerator);
+            RegisterDefaultSerializationProfile(assemblyResolver, assembly, serializerGenerator, log);
 
             // Generate serializer code
             return serializerGenerator.TransformText();
         }
 
-        private static void RegisterDefaultSerializationProfile(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly, ComplexSerializerCodeGenerator generator)
+        private static void RegisterDefaultSerializationProfile(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly, ComplexSerializerCodeGenerator generator, TextWriter log)
         {
             var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(assembly);
             if (mscorlibAssembly == null)
             {
-                Console.WriteLine("Missing mscorlib.dll from assembly {0}", assembly.FullName);
+                log.WriteLine("Missing mscorlib.dll from assembly {0}", assembly.FullName);
                 throw new InvalidOperationException("Missing mscorlib.dll from assembly");
             }
 

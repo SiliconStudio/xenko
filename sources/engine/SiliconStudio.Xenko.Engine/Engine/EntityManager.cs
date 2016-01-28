@@ -37,10 +37,10 @@ namespace SiliconStudio.Xenko.Engine
         private readonly EntityProcessorCollection pendingProcessors; 
 
         // List of processors per EntityComponent final type
-        internal readonly Dictionary<Type, EntityProcessorCollectionPerComponentType> MapComponentTypeToProcessors;
+        internal readonly Dictionary<TypeInfo, EntityProcessorCollectionPerComponentType> MapComponentTypeToProcessors;
 
         private readonly List<EntityProcessor> currentDependentProcessors;
-        private readonly HashSet<Type> componentTypes;
+        private readonly HashSet<TypeInfo> componentTypes;
         private int addEntityLevel = 0;
 
         /// <summary>
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Occurs when a new component type is added.
         /// </summary>
-        public event EventHandler<Type> ComponentTypeAdded;
+        public event EventHandler<TypeInfo> ComponentTypeAdded;
 
         /// <summary>
         /// Occurs when a component changed for an entity (Added or removed)
@@ -77,8 +77,8 @@ namespace SiliconStudio.Xenko.Engine
             processors = new TrackingEntityProcessorCollection(this);
             pendingProcessors = new EntityProcessorCollection();
 
-            componentTypes = new HashSet<Type>();
-            MapComponentTypeToProcessors = new Dictionary<Type, EntityProcessorCollectionPerComponentType>();
+            componentTypes = new HashSet<TypeInfo>();
+            MapComponentTypeToProcessors = new Dictionary<TypeInfo, EntityProcessorCollectionPerComponentType>();
 
             currentDependentProcessors = new List<EntityProcessor>(10);
         }
@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets the list of component types from the entities..
         /// </summary>
         /// <value>The registered component types.</value>
-        public IEnumerable<Type> ComponentTypes => componentTypes;
+        public IEnumerable<TypeInfo> ComponentTypes => componentTypes;
 
         public virtual void Update(GameTime gameTime)
         {
@@ -285,7 +285,7 @@ namespace SiliconStudio.Xenko.Engine
             OnEntityRemoved(entity);
         }
 
-        private void CollectNewProcessorsByComponentType(Type componentType)
+        private void CollectNewProcessorsByComponentType(TypeInfo componentType)
         {
             if (componentTypes.Contains(componentType))
             {
@@ -296,7 +296,7 @@ namespace SiliconStudio.Xenko.Engine
             OnComponentTypeAdded(componentType);
 
             // Automatically collect processors that are used by this component
-            var processorAttributes = componentType.GetTypeInfo().GetCustomAttributes<DefaultEntityComponentProcessorAttribute>();
+            var processorAttributes = componentType.GetCustomAttributes<DefaultEntityComponentProcessorAttribute>();
             foreach (var processorAttributeType in processorAttributes)
             {
                 var processorType = AssemblyRegistry.GetType(processorAttributeType.TypeName);
@@ -414,7 +414,7 @@ namespace SiliconStudio.Xenko.Engine
             // If we have a new component we can try to collect processors for it
             if (newComponent != null)
             {
-                CollectNewProcessorsByComponentType(newComponent.GetType());
+                CollectNewProcessorsByComponentType(newComponent.GetType().GetTypeInfo());
                 RegisterPendingProcessors();
             }
 
@@ -453,7 +453,7 @@ namespace SiliconStudio.Xenko.Engine
                     continue;
                 }
 
-                var componentType = component.GetType();
+                var componentType = component.GetType().GetTypeInfo();
                 var processorsForComponent = MapComponentTypeToProcessors[componentType];
                 {
                     for (int j = 0; j < processorsForComponent.Count; j++)
@@ -477,7 +477,7 @@ namespace SiliconStudio.Xenko.Engine
                 CheckEntityComponentWithProcessors(entity, component, forceRemove, null);
                 if (collecComponentTypesAndProcessors)
                 {
-                    CollectNewProcessorsByComponentType(component.GetType());
+                    CollectNewProcessorsByComponentType(component.GetType().GetTypeInfo());
                 }
             }
         }
@@ -488,7 +488,7 @@ namespace SiliconStudio.Xenko.Engine
             for (int i = 0; i < components.Count; i++)
             {
                 var component = components[i];
-                if (processor.Accept(component.GetType()))
+                if (processor.Accept(component.GetType().GetTypeInfo()))
                 {
                     processor.ProcessEntityComponent(entity, component, false);
                 }
@@ -497,7 +497,7 @@ namespace SiliconStudio.Xenko.Engine
 
         private void CheckEntityComponentWithProcessors(Entity entity, EntityComponent component, bool forceRemove, List<EntityProcessor> dependentProcessors)
         {
-            var componentType = component.GetType();
+            var componentType = component.GetType().GetTypeInfo();
             EntityProcessorCollectionPerComponentType processorsForComponent;
 
             if (MapComponentTypeToProcessors.TryGetValue(componentType, out processorsForComponent))
@@ -556,7 +556,7 @@ namespace SiliconStudio.Xenko.Engine
             return GetEnumerator();
         }
 
-        protected virtual void OnComponentTypeAdded(Type obj)
+        protected virtual void OnComponentTypeAdded(TypeInfo obj)
         {
             var handler = ComponentTypeAdded;
             if (handler != null) handler(this, obj);

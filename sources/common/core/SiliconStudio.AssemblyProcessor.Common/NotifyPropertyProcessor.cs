@@ -16,7 +16,7 @@ namespace SiliconStudio.AssemblyProcessor
     /// This class is no longer used now.
     /// TODO: Check if we need to keep this around
     /// </summary>
-    public class NotifyPropertyProcessor : IAssemblyDefinitionProcessor
+    internal class NotifyPropertyProcessor : IAssemblyDefinitionProcessor
     {
         private TypeReference voidType, stringType, objectType;
 

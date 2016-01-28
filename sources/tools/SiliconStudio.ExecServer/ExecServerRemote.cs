@@ -20,8 +20,8 @@ namespace SiliconStudio.ExecServer
     {
         public const int BusyReturnCode = -8000;
 
-        private const int ShutdownExecServerAfterSeconds = 10 * 60;
-        private const int DisposeAppDomainsAfterSeconds = 60;
+        private const int ShutdownExecServerAfterSeconds = 60;
+        private const int DisposeAppDomainsAfterSeconds = 40;
         private const int ShutdownExecServerAfterSecondsMain = 30 * 60;
         private const int DisposeAppDomainsAfterSecondsMain = 3 * 60;
 

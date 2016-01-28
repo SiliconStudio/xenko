@@ -42,6 +42,7 @@ namespace SiliconStudio.Xenko.Graphics
         private SharpDX.Direct3D11.InputLayout currentInputLayout;
         private VertexArrayObject currentVertexArrayObject;
         private VertexArrayLayout currentVertexArrayLayout;
+        private VertexArrayObject newVertexArrayObject;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsDevice" /> class using the default GraphicsAdapter
