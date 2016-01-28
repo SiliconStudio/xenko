@@ -24,40 +24,37 @@ namespace SiliconStudio.Xenko.Audio
     /// the processor set the <see cref="AudioEmitter"/> reference of the <see cref="AudioSystem"/> to null 
     /// but do not remove the <see cref="AudioListenerComponent"/> from its collection.
     /// </remarks>
-    public class AudioListenerProcessor : EntityProcessor<AudioListenerProcessor.AssociatedData>
+    public class AudioListenerProcessor : EntityProcessor<AudioListenerComponent, AudioListenerProcessor.AssociatedData>
     {
         /// <summary>
         /// Reference to the <see cref="AudioSystem"/> of the game instance.
         /// </summary>
         private AudioSystem audioSystem;
 
-        // expose internal member to allow debug (use directly matchingEntities if not for debug uses)
-        internal Dictionary<Entity, AssociatedData> MatchingEntitiesForDebug => matchingEntities;
-
         /// <summary>
         /// Create a new instance of AudioListenerProcessor.
         /// </summary>
         public AudioListenerProcessor()
-            : base(AudioListenerComponent.Key, TransformComponent.Key)
+            : base(typeof(AudioListenerComponent))
         {
         }
 
-        protected override AssociatedData GenerateAssociatedData(Entity entity)
+        protected override AssociatedData GenerateComponentData(Entity entity, AudioListenerComponent component)
         {
             // Initialize TransformComponent and ListenerComponent fields of the matchingEntities' AssociatedData.
             // other fields are initialized in OnEntityAdded or OnListenerCollectionChanged
             return new AssociatedData
             {
-                TransformComponent = entity.Get(TransformComponent.Key),
-                ListenerComponent = entity.Get(AudioListenerComponent.Key)
+                TransformComponent = entity.Transform,
+                ListenerComponent = component
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, AssociatedData associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, AudioListenerComponent component, AssociatedData associatedData)
         {
             return
-                entity.Get(AudioListenerComponent.Key) == associatedData.ListenerComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+                component == associatedData.ListenerComponent &&
+                entity.Transform == associatedData.TransformComponent;
         }
 
         protected internal override void OnSystemAdd()
@@ -80,9 +77,9 @@ namespace SiliconStudio.Xenko.Audio
                 audioSystem.Listeners[audioListenerComp] = null;
         }
 
-        protected override void OnEntityAdding(Entity entity, AssociatedData data)
+        protected override void OnEntityComponentAdding(Entity entity, AudioListenerComponent component, AssociatedData data)
         {
-            base.OnEntityAdding(entity, data);
+            base.OnEntityComponentAdding(entity, component, data);
 
             // initialize the AudioEmitter and mark it for update if it is present in the AudioSystem collection.
             if (audioSystem.Listeners.ContainsKey(data.ListenerComponent))
@@ -105,9 +102,9 @@ namespace SiliconStudio.Xenko.Audio
             audioSystem.Listeners[data.ListenerComponent] = data.AudioListener;
         }
 
-        protected override void OnEntityRemoved(Entity entity, AssociatedData data)
+        protected override void OnEntityComponentRemoved(Entity entity, AudioListenerComponent component, AssociatedData data)
         {
-            base.OnEntityRemoved(entity, data);
+            base.OnEntityComponentRemoved(entity, component, data);
 
             // set the reference to the AudioEmitter of AudioSystem to null since not valid anymore.
             if (audioSystem.Listeners.ContainsKey(data.ListenerComponent))
@@ -120,7 +117,7 @@ namespace SiliconStudio.Xenko.Audio
         {
             base.Draw(context);
 
-            foreach (var listenerData in matchingEntities.Values)
+            foreach (var listenerData in ComponentDatas.Values)
             {
                 if(!listenerData.ShouldBeComputed)  // skip all updates if the listener is not used.
                     continue;
@@ -148,7 +145,7 @@ namespace SiliconStudio.Xenko.Audio
             if (!args.CollectionChanged) // no keys have been added or removed, only one of the values changed
                 return;
 
-            var listenersData = matchingEntities.Values.Where(x => x.ListenerComponent == args.Key);
+            var listenersData = ComponentDatas.Values.Where(x => x.ListenerComponent == args.Key);
 
             if (args.Action == NotifyCollectionChangedAction.Add)   // A new listener have been added
             {
@@ -164,13 +161,13 @@ namespace SiliconStudio.Xenko.Audio
                     listenerData.ShouldBeComputed = false;
             }
         }
-        
+
         public class AssociatedData
         {
             /// <summary>
             /// Boolean indicating whether the AudioEmitter need to be updated for the current loop turn or not.
             /// </summary>
-            public bool ShouldBeComputed;       
+            public bool ShouldBeComputed;
 
             /// <summary>
             /// The <see cref="Audio.AudioListener"/> associated to the below <see cref="AudioListenerComponent"/>.

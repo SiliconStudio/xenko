@@ -93,6 +93,16 @@
       </Choose>
     </When>
   </Choose>
+  <Choose>
+    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
+      <ItemGroup>
+        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+      </ItemGroup>
+    </When>
+  </Choose>
   <ItemGroup>
     <None Include="..\..\..\deps\freetype-2.5.3\$(SiliconStudioPlatform)\$(Configuration)\**\*.*">
       <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>

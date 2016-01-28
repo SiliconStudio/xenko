@@ -16,8 +16,7 @@ namespace SiliconStudio.ExecServer
         public static int Main(string[] args)
         {
             var serverApp = new ExecServerApp();
-            var result = serverApp.Run(args);
-            return result;
+            return serverApp.Run(args);
         }
     }
 }

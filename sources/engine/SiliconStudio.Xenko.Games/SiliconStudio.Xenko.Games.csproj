@@ -155,16 +155,6 @@
   <ItemGroup>
     <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'" />
   </ItemGroup>
-  <Choose>
-    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
-      <ItemGroup>
-        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-      </ItemGroup>
-    </When>
-  </Choose>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

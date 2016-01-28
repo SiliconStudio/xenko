@@ -10,13 +10,13 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
     /// <summary>
     /// The processor in charge of updating and drawing the entities having sprite components.
     /// </summary>
-    internal class SpriteProcessor : EntityProcessor<SpriteProcessor.SpriteComponentState>
+    internal class SpriteProcessor : EntityProcessor<SpriteComponent, SpriteProcessor.SpriteComponentState>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
         /// </summary>
         public SpriteProcessor()
-            : base(SpriteComponent.Key, TransformComponent.Key)
+            : base(typeof(TransformComponent))
         {
             Sprites = new List<SpriteComponentState>();
         }
@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         public override void Draw(RenderContext gameTime)
         {
             Sprites.Clear();
-            foreach (var spriteStateKeyPair in enabledEntities)
+            foreach (var spriteStateKeyPair in ComponentDatas)
             {
                 if (spriteStateKeyPair.Value.SpriteComponent.Enabled)
                 {
@@ -39,20 +39,20 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             }
         }
 
-        protected override SpriteComponentState GenerateAssociatedData(Entity entity)
+        protected override SpriteComponentState GenerateComponentData(Entity entity, SpriteComponent component)
         {
             return new SpriteComponentState
             {
-                SpriteComponent = entity.Get(SpriteComponent.Key),
-                TransformComponent = entity.Get(TransformComponent.Key),
+                SpriteComponent = component,
+                TransformComponent = entity.Transform,
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, SpriteComponentState associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, SpriteComponent component, SpriteComponentState associatedData)
         {
             return
-                entity.Get(SpriteComponent.Key) == associatedData.SpriteComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+                component == associatedData.SpriteComponent &&
+                entity.Transform == associatedData.TransformComponent;
         }
 
         public class SpriteComponentState

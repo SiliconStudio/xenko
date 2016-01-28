@@ -1,13 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup>
-    <SiliconStudioPlatform>Windows</SiliconStudioPlatform>
-    <XenkoGraphicsApi>Direct3D11</XenkoGraphicsApi>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <UseVSHostingProcess>false</UseVSHostingProcess>
   </PropertyGroup>
-  <Import Project="..\..\targets\SiliconStudio.PreSettings.targets" />
   <PropertyGroup>
     <ProductVersion>8.0.30703</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
@@ -15,18 +10,38 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>SiliconStudio.AssemblyProcessor</RootNamespace>
     <AssemblyName>SiliconStudio.AssemblyProcessor</AssemblyName>
-    <XenkoBuildTags>WindowsTools</XenkoBuildTags>
-    <SiliconStudioAssemblyProcessor>false</SiliconStudioAssemblyProcessor>
+    <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>  
   <ItemGroup>
     <Reference Include="Mono.Cecil">
-      <HintPath>$(SiliconStudioDependenciesDir)Mono.Cecil\Mono.Cecil.dll</HintPath>
+      <HintPath>..\..\deps\Mono.Cecil\Mono.Cecil.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Cecil.Rocks">
-      <HintPath>$(SiliconStudioDependenciesDir)Mono.Cecil\Mono.Cecil.Rocks.dll</HintPath>
+      <HintPath>..\..\deps\Mono.Cecil\Mono.Cecil.Rocks.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Options">
-      <HintPath>$(SiliconStudioDependenciesDir)Mono.Options\Mono.Options.dll</HintPath>
+      <HintPath>..\..\deps\Mono.Options\Mono.Options.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -47,7 +62,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
-  <Import Project="$(SiliconStudioPostSettingsTargets)" />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

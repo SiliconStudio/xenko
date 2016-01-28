@@ -5,8 +5,13 @@ namespace SiliconStudio.Core
     /// <summary>
     /// Describes the platform operating system.
     /// </summary>
+#if ASSEMBLY_PROCESSOR
+    internal enum PlatformType
+#else
     [DataContract("PlatformType")]
     public enum PlatformType
+#endif
+
     {
         /// <summary>
         /// This is shared across platforms

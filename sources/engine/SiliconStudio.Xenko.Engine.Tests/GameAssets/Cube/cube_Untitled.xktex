@@ -7,6 +7,7 @@ ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Alpha: Interpolated
 ~Base:
+    ~Id: 31d4b421-410f-47cd-a987-435d4168807e
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

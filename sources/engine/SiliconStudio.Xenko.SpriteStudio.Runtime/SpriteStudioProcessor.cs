@@ -1,21 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Diagnostics;
+﻿using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 {
-    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioProcessor.Data>
+    public class SpriteStudioProcessor : EntityProcessor<SpriteStudioComponent, SpriteStudioProcessor.Data>
     {
         public readonly List<Data> Sprites = new List<Data>();
 
         public SpriteStudioProcessor()
-            : base(SpriteStudioComponent.Key, TransformComponent.Key)
+            : base(typeof(TransformComponent), typeof(AnimationComponent))
         {
             Order = 550;
         }
@@ -29,30 +25,30 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             public SpriteStudioSheet Sheet;
         }
 
-        protected override Data GenerateAssociatedData(Entity entity)
+        protected override Data GenerateComponentData(Entity entity, SpriteStudioComponent component)
         {
             return new Data
             {
-                SpriteStudioComponent = entity.Get<SpriteStudioComponent>(),
+                SpriteStudioComponent = component,
                 TransformComponent = entity.Transform,
                 AnimationComponent = entity.Get<AnimationComponent>()
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, Data associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, SpriteStudioComponent component, Data associatedData)
         {
             return
-                entity.Get(SpriteStudioComponent.Key) == associatedData.SpriteStudioComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent &&
-                entity.Get(AnimationComponent.Key) == associatedData.AnimationComponent;
+                component == associatedData.SpriteStudioComponent &&
+                entity.Transform == associatedData.TransformComponent &&
+                entity.Get<AnimationComponent>() == associatedData.AnimationComponent;
         }
 
-        protected override void OnEntityAdding(Entity entity, Data data)
+        protected override void OnEntityComponentAdding(Entity entity, SpriteStudioComponent component, Data data)
         {
             PrepareNodes(data);
         }
 
-        protected override void OnEntityRemoved(Entity entity, Data data)
+        protected override void OnEntityComponentRemoved(Entity entity, SpriteStudioComponent component, Data data)
         {
             data.SpriteStudioComponent.Nodes.Clear();
         }
@@ -227,7 +223,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         public override void Draw(RenderContext context)
         {
             Sprites.Clear();
-            foreach (var spriteStateKeyPair in enabledEntities)
+            foreach (var spriteStateKeyPair in ComponentDatas)
             {
                 if (!PrepareNodes(spriteStateKeyPair.Value))
                     continue;

@@ -12,44 +12,12 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class AddPrimitiveKeyCommand : ActionItemNodeCommand
+    public class AddPrimitiveKeyCommand : SyncNodeCommand
     {
-        private class AddPrimitiveKeyActionItem : SimpleNodeCommandActionItem
-        {
-            private readonly string keyName;
-            private object newKey;
-
-            public AddPrimitiveKeyActionItem(string name, IContent content, object index, string keyName, IEnumerable<IDirtiable> dirtiables)
-                : base(name, content, index, dirtiables)
-            {
-                this.keyName = keyName;
-            }
-
-            public override bool Do()
-            {
-                var value = Content.Retrieve(Index);
-                var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
-                newKey = dictionaryDescriptor.KeyType != typeof(string) ? Activator.CreateInstance(dictionaryDescriptor.KeyType) : GenerateStringKey(value, dictionaryDescriptor, keyName);
-                object newItem = null;
-                // TODO: Find a better solution that doesn't require to reference Core.Serialization (and unreference this assembly)
-                if (!dictionaryDescriptor.ValueType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
-                    newItem = !dictionaryDescriptor.ValueType.IsAbstract ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
-                dictionaryDescriptor.SetValue(value, newKey, newItem);
-                Content.Update(value, Index);
-                return true;
-            }
-
-            protected override void UndoAction()
-            {
-                var value = Content.Retrieve(Index);
-                var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
-                dictionaryDescriptor.Remove(value, newKey);
-                Content.Update(value, Index);
-            }
-        }
+        public const string StaticName = "AddPrimitiveKey";
 
         /// <inheritdoc/>
-        public override string Name => "AddPrimitiveKey";
+        public override string Name => StaticName;
 
         /// <inheritdoc/>
         public override CombineMode CombineMode => CombineMode.CombineOnlyForAll;
@@ -70,11 +38,18 @@ namespace SiliconStudio.Quantum.Commands
             return !dictionaryDescriptor.KeyType.IsClass || dictionaryDescriptor.KeyType == typeof(string) || dictionaryDescriptor.KeyType.GetConstructor(new Type[0]) != null;
         }
 
-        protected override NodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        protected override IActionItem ExecuteSync(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
-            return new AddPrimitiveKeyActionItem(Name, content, index, parameter as string, dirtiables);
+            var value = content.Retrieve(index);
+            var dictionaryDescriptor = (DictionaryDescriptor)TypeDescriptorFactory.Default.Find(value.GetType());
+            var newKey = dictionaryDescriptor.KeyType != typeof(string) ? Activator.CreateInstance(dictionaryDescriptor.KeyType) : GenerateStringKey(value, dictionaryDescriptor, parameter as string);
+            object newItem = null;
+            // TODO: Find a better solution that doesn't require to reference Core.Serialization (and unreference this assembly)
+            if (!dictionaryDescriptor.ValueType.GetCustomAttributes(typeof(ContentSerializerAttribute), true).Any())
+                newItem = !dictionaryDescriptor.ValueType.IsAbstract ? Activator.CreateInstance(dictionaryDescriptor.ValueType) : null;
+            content.Add(newKey, newItem);
+            return null;
         }
-
 
         private static object GenerateStringKey(object value, ITypeDescriptor descriptor, string baseValue)
         {

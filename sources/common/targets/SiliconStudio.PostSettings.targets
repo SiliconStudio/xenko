@@ -59,6 +59,8 @@
   <!-- Import the specific compiler targets for the selected platform/language -->
   <Import Condition="'$(SiliconStudioCompilerTargetsEnable)' != 'false'" Project="$(SiliconStudioCompilerTargets)" />
   
+  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SolutionDir)\..\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe"/>
+  
   <Target Name="RunSiliconStudioAssemblyProcessor" AfterTargets="CoreCompile" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true' and '$(SiliconStudioAssemblyProcessorPath)' != '' and '$(SiliconStudioAssemblyProcessorGlobal)' == 'true' and '$(SiliconStudioAssemblyProcessorOptions)' != '' ">
     <PropertyGroup Condition="'$(XenkoUserBuild)' != 'true'">
       <!-- Add SiliconStudio.Core path to assembly search directory -->
@@ -74,18 +76,11 @@
       <SiliconStudioAssemblyProcessorOptions Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --signkeyfile="$(AssemblyOriginatorKeyFile)"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(DocumentationFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --docfile="$(DocumentationFile)"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --Werror</SiliconStudioAssemblyProcessorOptions>
-      <SiliconStudioAssemblyProcessorCommand>"$(SiliconStudioAssemblyProcessorPath)" $(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)" --delete-output-on-error</SiliconStudioAssemblyProcessorCommand>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)" --delete-output-on-error</SiliconStudioAssemblyProcessorOptions>
     </PropertyGroup>
 
     <!-- Run assembly processor -->
-    <Message Importance="High" Text="SiliconStudio AssemblyProcessor: $(SiliconStudioAssemblyProcessorCommand)"/>
-    <Exec Command="$(SiliconStudioAssemblyProcessorCommand)">
-      <Output TaskParameter="ExitCode" PropertyName="SiliconStudioAssemblyProcessorErrorCode"/>
-    </Exec>
-
-    <!-- If assembly processor failed, delete file (to make sure non-processed assemblies are never used) and emit error -->
-    <Delete Condition="$(SiliconStudioAssemblyProcessorErrorCode) != 0" Files="$(IntermediateOutputPath)$(TargetName)$(TargetExt)"/>
-    <Error Condition="$(SiliconStudioAssemblyProcessorErrorCode) != 0" Text='AssemblyProcessor command "$(SiliconStudioAssemblyProcessorCommand)" exited with error $(SiliconStudioAssemblyProcessorErrorCode)'/>
+    <AssemblyProcessorTask Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
   </Target>
 
   <Target Name="SetPrivateOnProjectReferences" BeforeTargets="BeforeCompile">

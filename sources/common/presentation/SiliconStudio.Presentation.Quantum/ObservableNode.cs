@@ -6,9 +6,9 @@ using System.Collections.ObjectModel;
 using System.Dynamic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Input;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.Collections;
+using SiliconStudio.Presentation.Commands;
 using SiliconStudio.Presentation.Core;
 using SiliconStudio.Presentation.ViewModel;
 
@@ -22,6 +22,7 @@ namespace SiliconStudio.Presentation.Quantum
         private readonly AutoUpdatingSortedObservableCollection<IObservableNode> children = new AutoUpdatingSortedObservableCollection<IObservableNode>(new AnonymousComparer<IObservableNode>(CompareChildren), nameof(Name), nameof(Index), nameof(Order));
         private readonly ObservableCollection<INodeCommandWrapper> commands = new ObservableCollection<INodeCommandWrapper>();
         private readonly Dictionary<string, object> associatedData = new Dictionary<string, object>();
+        private readonly List<string> changingProperties = new List<string>();
         private bool isVisible;
         private bool isReadOnly;
         private string displayName;
@@ -307,7 +308,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="name">The name of the command to look for.</param>
         /// <returns>The corresponding command, or <c>null</c> if no command with the given name exists.</returns>
-        public ICommand GetCommand(string name)
+        public ICommandBase GetCommand(string name)
         {
             name = EscapeName(name);
             return Commands.FirstOrDefault(x => x.Name == name);
@@ -343,12 +344,19 @@ namespace SiliconStudio.Presentation.Quantum
 
         internal void NotifyPropertyChanging(string propertyName)
         {
-            OnPropertyChanging(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
+            if (!changingProperties.Contains(propertyName))
+            {
+                changingProperties.Add(propertyName);
+                OnPropertyChanging(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
+            }
         }
 
         internal void NotifyPropertyChanged(string propertyName)
         {
-            OnPropertyChanged(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
+            if (changingProperties.Remove(propertyName))
+            {
+                OnPropertyChanged(propertyName, ObservableViewModel.HasChildPrefix + propertyName);
+            }
         }
 
         protected void EnsureNotDisposed()
@@ -363,13 +371,13 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (initializingChildren != null)
             {
-                OnPropertyChanging("Children");
+                OnPropertyChanging(nameof(Children));
                 foreach (var child in initializingChildren)
                 {
                     children.Add(child);
                 }
                 initializingChildren = null;
-                OnPropertyChanged("Children");
+                OnPropertyChanged(nameof(Children));
             }
         }
 

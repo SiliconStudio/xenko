@@ -6,6 +6,7 @@ Source: ../../../data/tests/round.bmp
 ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
+    ~Id: aea4914c-12a6-46c6-b185-e83175af008e
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

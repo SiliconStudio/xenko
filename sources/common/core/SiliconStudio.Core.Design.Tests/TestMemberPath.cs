@@ -276,7 +276,7 @@ namespace SiliconStudio.Core.Design.Tests
             memberPath.Push(ListClassDesc, 0);
 
             var referenceElt = new MyClass();
-            referenceElt.SetId(Guid.NewGuid());
+            IdentifiableHelper.SetId(referenceElt, Guid.NewGuid());
 
             var reference = new MyClass { Subs = { referenceElt } };
             var dual = new MyClass();
@@ -312,10 +312,10 @@ namespace SiliconStudio.Core.Design.Tests
             var dualElt1 = new MyClass { Sub = new MyClass { Value = 2 } };
             var dualElt2 = new MyClass { Sub = new MyClass { Value = 3 } };
             var brokenDual = new MyClass();
-            referenceElt.SetId(id);
-            dualElt1.SetId(id);
-            dualElt2.SetId(id);
-            brokenDual.SetId(id);
+            IdentifiableHelper.SetId(referenceElt, id);
+            IdentifiableHelper.SetId(dualElt1, id);
+            IdentifiableHelper.SetId(dualElt2, id);
+            IdentifiableHelper.SetId(brokenDual, id);
 
             var reference = new MyClass { Subs = { new MyClass(), referenceElt } };
             var dual = new MyClass { Subs = { new MyClass(), new MyClass(), dualElt1, brokenDual, new MyClass(), dualElt2 } };

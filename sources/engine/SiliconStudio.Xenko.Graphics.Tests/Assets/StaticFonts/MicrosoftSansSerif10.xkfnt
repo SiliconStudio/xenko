@@ -1,5 +1,6 @@
 !SpriteFont
 Id: bf28a16e-9945-4f3f-87e3-815b61944bef
+SerializedVersion: {Xenko: 1.5.0-alpha09}
 Tags: []
 Source: 
 FontName: Microsoft Sans Serif
@@ -12,7 +13,6 @@ CharacterRegions:
     -   Start: ' '
         End: "\x7F"
 AntiAlias: ClearType
-IsNotPremultiply: false
 Spacing: 0.0
 LineSpacing: 0.0
 UseKerning: false
