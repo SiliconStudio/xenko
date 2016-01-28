@@ -185,15 +185,23 @@ namespace SiliconStudio.Xenko.Engine
         }
 
         /// <summary>
-        /// Gets a component by the specified key.
+        /// Removes the first component of the specified type or derived type.
         /// </summary>
         /// <typeparam name="T">Type of the component</typeparam>
-        /// <returns>The component or null if does no exist</returns>
-        /// <exception cref="System.ArgumentNullException">key</exception>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Remove<T>() where T : EntityComponent
         {
             Components.Remove<T>();
+        }
+
+        /// <summary>
+        /// Removes all components of the specified type or derived type.
+        /// </summary>
+        /// <typeparam name="T">Type of the component</typeparam>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void RemoveAll<T>() where T : EntityComponent
+        {
+            Components.RemoveAll<T>();
         }
 
         internal void OnComponentChanged(int index, EntityComponent oldComponent, EntityComponent newComponent)
