@@ -13,7 +13,8 @@ namespace SiliconStudio.Core.Reflection
         public static bool IsCollection(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (type.IsArray)
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsArray)
             {
                 return false;
             }
@@ -23,10 +24,10 @@ namespace SiliconStudio.Core.Reflection
                 return true;
             }
 
-            foreach(var iType in type.GetTypeInfo().ImplementedInterfaces)
+            foreach(var iType in typeInfo.ImplementedInterfaces)
             {
-                var typeInfo = iType.GetTypeInfo();
-                if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(ICollection<>))
+                var iTypeInfo = iType.GetTypeInfo();
+                if (iTypeInfo.IsGenericType && iTypeInfo.GetGenericTypeDefinition() == typeof(ICollection<>))
                 {
                     return true;
                 }
