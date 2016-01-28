@@ -24,8 +24,12 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 // Disable effect of doing Alt+F4
             SDL.SDL_SetHint(SDL.SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4, "1");
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+            // Set our OpenGL version. It has to be done before any SDL window creation
+            // SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions are disabled
             int res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK, (int)SDL.SDL_GLprofile.SDL_GL_CONTEXT_PROFILE_CORE);
-            res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_DOUBLEBUFFER, 1);
+            // 4.2 is the lowest version we support.
+            res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+            res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION, 2);
 #endif
         }
 
@@ -67,11 +71,21 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 Application.ProcessEvents();
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                // Set our OpenGL attributes.
+                int res;
+
+                // Turn on double buffering with a 24bit Z buffer.
+                res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_DOUBLEBUFFER, 1);
+
                 var context = SDL.SDL_GL_CreateContext(SdlHandle);
                 if (context == IntPtr.Zero)
                 {
                     throw new Exception("Cannot create OpenGL context: " + SDL.SDL_GetError());
                 }
+
+                // This makes our buffer swap syncronized with the monitor's vertical refresh
+                SDL.SDL_GL_SetSwapInterval (1);
+
                 // The external context must be made current to initialize OpenGL
                 SDL.SDL_GL_MakeCurrent(SdlHandle, context);
 
