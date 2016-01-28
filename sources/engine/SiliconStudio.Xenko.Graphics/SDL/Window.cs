@@ -383,6 +383,11 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
             switch (e.type)
             {
+                case SDL.SDL_EventType.SDL_QUIT:
+                        // When SDL sends a SDL_QUIT message, we have actually clicked on the close button.
+                    CloseActions?.Invoke();
+                    break;
+
                 case SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN:
                     PointerButtonPressActions?.Invoke(e.button);
                     break;
