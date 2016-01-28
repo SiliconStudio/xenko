@@ -252,8 +252,14 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
             get
             {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                int w, h;
+                SDL.SDL_GL_GetDrawableSize(SdlHandle, out w, out h);
+                return new Size2(w, h);
+#else
                 SDL.SDL_Surface *surfPtr = (SDL.SDL_Surface *) SDL.SDL_GetWindowSurface(SdlHandle);
                 return new Size2(surfPtr->w, surfPtr->h);
+#endif
             }
             set
             {
@@ -270,8 +276,14 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
             get
             {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                int w, h;
+                SDL.SDL_GL_GetDrawableSize(SdlHandle, out w, out h);
+                return new Rectangle(0, 0, w, h);
+#else
                 SDL.SDL_Surface *surfPtr = (SDL.SDL_Surface *) SDL.SDL_GetWindowSurface(SdlHandle);
                 return new Rectangle(0, 0, surfPtr->w, surfPtr->h);
+#endif
             }
             set
             {
