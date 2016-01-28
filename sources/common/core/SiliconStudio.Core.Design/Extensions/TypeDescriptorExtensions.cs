@@ -11,8 +11,10 @@ namespace SiliconStudio.Core.Extensions
 {
     public static class TypeDescriptorExtensions
     {
-        private static readonly List<Type> allTypes = new List<Type>();
-        private static readonly List<Assembly> allAssemblies = new List<Assembly>();
+        private static readonly List<Type> AllInstantiableTypes = new List<Type>();
+        private static readonly List<Type> AllTypes = new List<Type>();
+        private static readonly List<Assembly> AllAssemblies = new List<Assembly>();
+        private static readonly Dictionary<Type, List<Type>> InheritableInstantiableTypes = new Dictionary<Type, List<Type>>();
         private static readonly Dictionary<Type, List<Type>> InheritableTypes = new Dictionary<Type, List<Type>>();
 
         static TypeDescriptorExtensions()
@@ -34,29 +36,53 @@ namespace SiliconStudio.Core.Extensions
         public static T GetAttribute<T>(this ITypeDescriptor descriptor, IMemberDescriptor memberDescriptor) where T : Attribute
         {
             var memberDescriptorBase = memberDescriptor as MemberDescriptorBase;
-            if (memberDescriptorBase != null)
-            {
-                return memberDescriptorBase.MemberInfo != null ? descriptor.Factory.AttributeRegistry.GetAttribute<T>(memberDescriptorBase.MemberInfo) : null;
-            }
-            return null;
+            return memberDescriptorBase?.MemberInfo != null ? descriptor.Factory.AttributeRegistry.GetAttribute<T>(memberDescriptorBase.MemberInfo) : null;
         }
 
         public static IEnumerable<Type> GetInheritedInstantiableTypes(this Type type)
         {
-            lock (InheritableTypes)
+            lock (AllAssemblies)
+            {
+                List<Type> result;
+                if (!InheritableInstantiableTypes.TryGetValue(type, out result))
+                {
+                    // If allTypes is empty, then reload it
+                    if (AllInstantiableTypes.Count == 0)
+                    {
+                        // Just keep a list of assemblies in order to check which assemblies was scanned by this method
+                        if (AllAssemblies.Count == 0)
+                        {
+                            AllAssemblies.AddRange(AssemblyRegistry.Find(AssemblyCommonCategories.Assets));
+                        }
+                        AllInstantiableTypes.AddRange(AllAssemblies.SelectMany(x => x.GetTypes().Where(IsInstantiableType)));
+                    }
+
+                    result = AllInstantiableTypes.Where(type.IsAssignableFrom).ToList();
+                    InheritableInstantiableTypes.Add(type, result);
+                }
+                return result;
+            }
+        }
+
+        public static IEnumerable<Type> GetInheritedTypes(this Type type)
+        {
+            lock (AllAssemblies)
             {
                 List<Type> result;
                 if (!InheritableTypes.TryGetValue(type, out result))
                 {
                     // If allTypes is empty, then reload it
-                    if (allTypes.Count == 0)
+                    if (AllTypes.Count == 0)
                     {
                         // Just keep a list of assemblies in order to check which assemblies was scanned by this method
-                        allAssemblies.AddRange(AssemblyRegistry.Find(AssemblyCommonCategories.Assets));
-                        allTypes.AddRange(allAssemblies.SelectMany(x => x.GetTypes().Where(IsInstantiableType)));
+                        if (AllAssemblies.Count == 0)
+                        {
+                            AllAssemblies.AddRange(AssemblyRegistry.Find(AssemblyCommonCategories.Assets));
+                        }
+                        AllTypes.AddRange(AllAssemblies.SelectMany(x => x.GetTypes().Where(y => y.IsPublic || y.IsNestedPublic)));
                     }
 
-                    result = allTypes.Where(type.IsAssignableFrom).ToList();
+                    result = AllTypes.Where(type.IsAssignableFrom).ToList();
                     InheritableTypes.Add(type, result);
                 }
                 return result;
@@ -67,13 +93,15 @@ namespace SiliconStudio.Core.Extensions
         {
             return (x.IsPublic || x.IsNestedPublic) && !x.IsAbstract && x.GetConstructor(Type.EmptyTypes) != null;
         }
+
         private static void ClearCache(object sender, AssemblyRegisteredEventArgs e)
         {
-            lock (InheritableTypes)
+            lock (AllAssemblies)
             {
-                allAssemblies.Clear();
-                allTypes.Clear();
+                AllAssemblies.Clear();
+                AllTypes.Clear();
                 InheritableTypes.Clear();
+                InheritableInstantiableTypes.Clear();
             }
         }
 
