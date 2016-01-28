@@ -156,7 +156,20 @@ namespace SiliconStudio.Xenko.Graphics
             resourceBindings = new EffectParameterResourceBinding[reflection.ResourceBindings.Count];
             for (int i = 0; i < resourceBindings.Length; i++)
             {
-                resourceBindings[i].Description = reflection.ResourceBindings[i];
+                var resourceBinding = reflection.ResourceBindings[i];
+                UpdateResourceBindingKey(ref resourceBinding);
+                reflection.ResourceBindings[i] = resourceBinding;
+                resourceBindings[i].Description = resourceBinding;
+            }
+            foreach (var constantBuffer in reflection.ConstantBuffers)
+            {
+                var constantBufferMembers = constantBuffer.Members;
+
+                for (int i = 0; i < constantBufferMembers.Length; ++i)
+                {
+                    // Update binding key
+                    UpdateValueBindingKey(ref constantBufferMembers[i]);
+                }
             }
             defaultParameters = new ParameterCollection();
             inputSignature = program.InputSignature;
@@ -172,7 +185,18 @@ namespace SiliconStudio.Xenko.Graphics
             for (int i = 0; i < resourceBindings.Length; i++)
             {
                 // Update binding key
-                var key = UpdateResourceBindingKey(ref resourceBindings[i].Description);
+                var key = resourceBindings[i].Description.Param.Key;
+
+                if (resourceBindings[i].Description.Param.Class == EffectParameterClass.Sampler)
+                {
+                    var samplerBinding = reflection.SamplerStates.FirstOrDefault(x => x.KeyName == resourceBindings[i].Description.Param.KeyName);
+                    if (samplerBinding != null)
+                    {
+                        samplerBinding.Key = key;
+                        var samplerDescription = samplerBinding.Description;
+                        defaultParameters.Set((ParameterKey<SamplerState>)key, SamplerState.New(graphicsDeviceDefault, samplerDescription));
+                    }
+                }
 
                 // ConstantBuffers are handled by next loop
                 if (resourceBindings[i].Description.Param.Class != EffectParameterClass.ConstantBuffer)
@@ -189,7 +213,7 @@ namespace SiliconStudio.Xenko.Graphics
                 for (int i = 0; i < constantBufferMembers.Length; ++i)
                 {
                     // Update binding key
-                    var key = UpdateValueBindingKey(ref constantBufferMembers[i]);
+                    var key = constantBufferMembers[i].Param.Key;
 
                     // Register ParameterKey with this effect and store its index for direct access during rendering
                     shaderParameters.RegisterParameter(key, false);
@@ -225,15 +249,7 @@ namespace SiliconStudio.Xenko.Graphics
             switch (binding.Param.Class)
             {
                 case EffectParameterClass.Sampler:
-                    var newSamplerKey = (ParameterKey<SamplerState>)FindOrCreateResourceKey<SamplerState>(keyName);
-                    binding.Param.Key = newSamplerKey;
-                    var samplerBinding = reflection.SamplerStates.FirstOrDefault(x => x.KeyName == keyName);
-                    if (samplerBinding != null)
-                    {
-                        samplerBinding.Key = newSamplerKey;
-                        var samplerDescription = samplerBinding.Description;
-                        defaultParameters.Set(newSamplerKey, SamplerState.New(graphicsDeviceDefault, samplerDescription));
-                    }
+                    binding.Param.Key = FindOrCreateResourceKey<SamplerState>(keyName);
                     break;
                 case EffectParameterClass.ConstantBuffer:
                 case EffectParameterClass.TextureBuffer:

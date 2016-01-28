@@ -13,6 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class EffectInstanceParameters : IDisposable
     {
+        private FastListStruct<ParameterKeyInfo> layoutParameterKeyInfos;
         private FastListStruct<ParameterKeyInfo> parameterKeyInfos = new FastListStruct<ParameterKeyInfo>(4);
 
         // Constants and resources
@@ -36,16 +37,29 @@ namespace SiliconStudio.Xenko.Rendering
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
             {
-                if (parameterKeyInfos[i].Name == parameterKey.Name)
+                if (parameterKeyInfos[i].Key == parameterKey)
                 {
                     return new ResourceParameter<T>(i);
+                }
+            }
+
+            // Check layout if it exists
+            if (layoutParameterKeyInfos.Count > 0)
+            {
+                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
+                {
+                    if (layoutParameterKeyInfo.Key == parameterKey)
+                    {
+                        parameterKeyInfos.Add(layoutParameterKeyInfo);
+                        return new ResourceParameter<T>(parameterKeyInfos.Count - 1);
+                    }
                 }
             }
 
             // Create info entry
             var resourceValuesSize = ResourceValues?.Length ?? 0;
             Array.Resize(ref ResourceValues, resourceValuesSize + 1);
-            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey.Name, resourceValuesSize));
+            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, resourceValuesSize));
             return new ResourceParameter<T>(parameterKeyInfos.Count - 1);
         }
 
@@ -54,9 +68,22 @@ namespace SiliconStudio.Xenko.Rendering
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
             {
-                if (parameterKeyInfos[i].Name == parameterKey.Name)
+                if (parameterKeyInfos[i].Key == parameterKey)
                 {
                     return new ValueParameter<T>(i);
+                }
+            }
+
+            // Check layout if it exists
+            if (layoutParameterKeyInfos.Count > 0)
+            {
+                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
+                {
+                    if (layoutParameterKeyInfo.Key == parameterKey)
+                    {
+                        parameterKeyInfos.Add(layoutParameterKeyInfo);
+                        return new ValueParameter<T>(parameterKeyInfos.Count - 1);
+                    }
                 }
             }
 
@@ -69,7 +96,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Create offset entry
             var result = new ValueParameter<T>(parameterKeyInfos.Count);
             var memberOffset = DataValuesSize;
-            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey.Name, memberOffset, totalSize));
+            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, memberOffset, totalSize));
 
             // We append at the end; resize array to accomodate new data
             DataValuesSize += totalSize;
@@ -90,11 +117,24 @@ namespace SiliconStudio.Xenko.Rendering
         public ValueParameter<T> GetValueParameterArray<T>(ParameterKey<T[]> parameterKey, int elementCount = 1) where T : struct
         {
             // Find existing first
-            foreach (var parameterKeyOffset in parameterKeyInfos)
+            for (int i = 0; i < parameterKeyInfos.Count; ++i)
             {
-                if (parameterKeyOffset.Name == parameterKey.Name)
+                if (parameterKeyInfos[i].Key == parameterKey)
                 {
-                    return new ValueParameter<T>(parameterKeyOffset.Offset);
+                    return new ValueParameter<T>(i);
+                }
+            }
+
+            // Check layout if it exists
+            if (layoutParameterKeyInfos.Count > 0)
+            {
+                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
+                {
+                    if (layoutParameterKeyInfo.Key == parameterKey)
+                    {
+                        parameterKeyInfos.Add(layoutParameterKeyInfo);
+                        return new ValueParameter<T>(parameterKeyInfos.Count - 1);
+                    }
                 }
             }
 
@@ -107,7 +147,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Create offset entry
             var result = new ValueParameter<T>(parameterKeyInfos.Count);
             var memberOffset = DataValuesSize;
-            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey.Name, memberOffset, totalSize));
+            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, memberOffset, totalSize));
 
             // We append at the end; resize array to accomodate new data
             DataValuesSize += totalSize;
@@ -162,67 +202,27 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="constantBuffers"></param>
         /// <param name="descriptorSetLayouts"></param>
-        public void UpdateLayout(List<ShaderConstantBufferDescription> constantBuffers, List<DescriptorSetLayoutBuilder> descriptorSetLayouts)
+        public void UpdateLayout(FastListStruct<ParameterKeyInfo> layoutParameterKeyInfos, int bufferSize, int resourceCount)
         {
             // Do a first pass to measure constant buffer size
-            var bufferSize = 0;
             var newParameterKeyInfos = new FastListStruct<ParameterKeyInfo>(Math.Max(1, parameterKeyInfos.Count));
             newParameterKeyInfos.AddRange(parameterKeyInfos);
             var processedParameters = new bool[parameterKeyInfos.Count];
 
-            // Process constant buffers
-            foreach (var constantBuffer in constantBuffers)
+            this.layoutParameterKeyInfos = layoutParameterKeyInfos;
+
+            foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
             {
-                foreach (var member in constantBuffer.Members)
+                // Find the same parameter in old collection
+                // Is this parameter already added?
+                bool memberFound = false;
+                for (int i = 0; i < parameterKeyInfos.Count; ++i)
                 {
-                    // Is this parameter already added?
-                    bool memberFound = false;
-                    for (int i = 0; i < parameterKeyInfos.Count; ++i)
+                    if (parameterKeyInfos[i].Key == layoutParameterKeyInfo.Key)
                     {
-                        if (parameterKeyInfos[i].Name == member.Param.Key.Name)
-                        {
-                            memberFound = true;
-                            processedParameters[i] = true;
-                            newParameterKeyInfos.Items[i].Offset = bufferSize + member.Offset;
-                            newParameterKeyInfos.Items[i].Size = member.Size;
-                            break;
-                        }
-                    }
-
-                    if (!memberFound)
-                    {
-                        // New item, let's add it
-                        newParameterKeyInfos.Add(new ParameterKeyInfo(member.Param.Key.Name, bufferSize + member.Offset, member.Size));
-                    }
-                }
-
-                bufferSize += constantBuffer.Size;
-            }
-
-            // Update or add resource bindings
-            var currentBindingSlot = 0;
-            for (int layoutIndex = 0; layoutIndex < descriptorSetLayouts.Count; layoutIndex++)
-            {
-                var layout = descriptorSetLayouts[layoutIndex];
-                for (int entryIndex = 0; entryIndex < layout.Entries.Count; ++entryIndex, ++currentBindingSlot)
-                {
-                    // Is this parameter already added?
-                    bool memberFound = false;
-                    for (int i = 0; i < parameterKeyInfos.Count; ++i)
-                    {
-                        if (parameterKeyInfos[i].Name == layout.Entries[entryIndex].Name)
-                        {
-                            memberFound = true;
-                            processedParameters[i] = true;
-                            newParameterKeyInfos.Items[i].BindingSlot = currentBindingSlot;
-                            break;
-                        }
-                    }
-
-                    if (!memberFound)
-                    {
-                        // New item, let's add it
-                        newParameterKeyInfos.Add(new ParameterKeyInfo(layout.Entries[entryIndex].Name, currentBindingSlot));
+                        processedParameters[i] = true;
+                        newParameterKeyInfos.Items[i] = layoutParameterKeyInfo;
+                        break;
                     }
                 }
             }
@@ -246,26 +246,27 @@ namespace SiliconStudio.Xenko.Rendering
                 else if (parameterKeyInfo.BindingSlot != -1)
                 {
                     // It's a resource
-                    newParameterKeyInfos.Items[i].BindingSlot = currentBindingSlot++;
+                    newParameterKeyInfos.Items[i].BindingSlot = resourceCount++;
                 }
             }
             
             var newDataValues = Marshal.AllocHGlobal(bufferSize);
-            var newResourceValues = new object[currentBindingSlot];
+            var newResourceValues = new object[resourceCount];
 
             // Update default values
             var bufferOffset = 0;
-            foreach (var constantBuffer in constantBuffers)
+            foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
             {
-                foreach (var member in constantBuffer.Members)
+                if (layoutParameterKeyInfo.Offset != -1)
                 {
-                    var defaultValueMetadata = member.Param.Key?.DefaultValueMetadata;
+                    // It's data
+                    // TODO: Set default value
+                    var defaultValueMetadata = layoutParameterKeyInfo.Key?.DefaultValueMetadata;
                     if (defaultValueMetadata != null)
                     {
-                        defaultValueMetadata.WriteBuffer(newDataValues + bufferOffset + member.Offset, 16);
+                        defaultValueMetadata.WriteBuffer(newDataValues + bufferOffset + layoutParameterKeyInfo.Offset, 16);
                     }
                 }
-                bufferOffset += constantBuffer.Size;
             }
 
             // Second pass to copy existing data at new offsets/slots
@@ -294,10 +295,10 @@ namespace SiliconStudio.Xenko.Rendering
             ResourceValues = newResourceValues;
         }
 
-        struct ParameterKeyInfo
+        public struct ParameterKeyInfo
         {
             // Common
-            public string Name;
+            public ParameterKey Key;
 
             // Values
             public int Offset;
@@ -309,12 +310,12 @@ namespace SiliconStudio.Xenko.Rendering
             /// <summary>
             /// Describes a value parameter.
             /// </summary>
-            /// <param name="name"></param>
+            /// <param name="key"></param>
             /// <param name="offset"></param>
             /// <param name="size"></param>
-            public ParameterKeyInfo(string name, int offset, int size)
+            public ParameterKeyInfo(ParameterKey key, int offset, int size)
             {
-                Name = name;
+                Key = key;
                 Offset = offset;
                 Size = size;
                 BindingSlot = -1;
@@ -323,11 +324,11 @@ namespace SiliconStudio.Xenko.Rendering
             /// <summary>
             /// Describes a resource parameter.
             /// </summary>
-            /// <param name="name"></param>
+            /// <param name="key"></param>
             /// <param name="bindingSlot"></param>
-            public ParameterKeyInfo(string name, int bindingSlot)
+            public ParameterKeyInfo(ParameterKey key, int bindingSlot)
             {
-                Name = name;
+                Key = key;
                 BindingSlot = bindingSlot;
                 Offset = -1;
                 Size = 1;
