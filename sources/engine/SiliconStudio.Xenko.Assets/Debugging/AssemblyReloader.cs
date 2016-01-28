@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Xenko.Assets.Serializers;
@@ -8,8 +9,17 @@ using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Debugging
 {
+    /// <summary>
+    /// This class contains information about each component that must be reloaded when the game assemblies are being reloaded.
+    /// </summary>
     public class ComponentToReload
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComponentToReload"/> class.
+        /// </summary>
+        /// <param name="entity">The entity containing the component to reload.</param>
+        /// <param name="component">The component to reload.</param>
+        /// <param name="index">The index of the component to reload in the collection of components of the entity.</param>
         public ComponentToReload(Entity entity, EntityComponent component, int index)
         {
             Entity = entity;
@@ -35,11 +45,11 @@ namespace SiliconStudio.Xenko.Assets.Debugging
     public static class AssemblyReloader
     {
         /// <summary>
-        /// Collects all the component to reload from a collection of entities, 
+        /// Collects all the components to reload from a collection of entities.
         /// </summary>
-        /// <param name="entities"></param>
-        /// <param name="loadedAssembliesSet"></param>
-        /// <returns></returns>
+        /// <param name="entities">The entities to process.</param>
+        /// <param name="loadedAssembliesSet">The collection of assemblies containing component types thatshould be reloaded.</param>
+        /// <returns>A collection of <see cref="ComponentToReload"/>.</returns>
         public static List<ComponentToReload> CollectComponentsToReload(List<Entity> entities, HashSet<Assembly> loadedAssembliesSet)
         {
             var result = new List<ComponentToReload>();
