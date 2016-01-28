@@ -6,6 +6,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core.Collections;
@@ -141,32 +142,60 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        readonly Queue<Collision> collisionsQueue = new Queue<Collision>();
-        readonly Queue<ContactPoint> contactsQueue = new Queue<ContactPoint>();
-
-        readonly List<ContactPoint> processedContactPoints = new List<ContactPoint>();
-        readonly List<ContactPoint> lastFrameContactPoints = new List<ContactPoint>();
-
         readonly List<Collision> newCollisionsCache = new List<Collision>();
         readonly List<Collision> removedCollisionsCache = new List<Collision>();
         readonly List<ContactPoint> newContactsFastCache = new List<ContactPoint>();
         readonly List<ContactPoint> updatedContactsCache = new List<ContactPoint>();
         readonly List<ContactPoint> removedContactsCache = new List<ContactPoint>();
 
-        struct ContactInfo
+        class ContactInfo
         {
             public PhysicsComponent ColA;
             public PhysicsComponent ColB;
             public bool NewContact;
             public ContactPoint ContactPoint;
+            public IntPtr ManifoldPtr;
         }
 
-        readonly List<ContactInfo> lastFrameContacts = new List<ContactInfo>();
-        readonly Dictionary<BulletSharp.ManifoldPoint, ContactPoint> contactsCache = new Dictionary<BulletSharp.ManifoldPoint, ContactPoint>();
+        private readonly List<ContactInfo> frameContacts = new List<ContactInfo>();
+        private readonly HashSet<ContactInfo> activeContacts = new HashSet<ContactInfo>();
+
+        private ProfilingState contactsProfilingState;
+
+        internal void RemoveContact(ContactPoint point)
+        {
+            point.Valid = false;
+
+            var collision = point.Collision;
+
+            if (collision == null) return;
+
+            collision.Contacts.Remove(point);
+
+            removedContactsCache.Add(point);
+
+            //make sure we also remove eventually added in this frame
+            newContactsFastCache.Remove(point);
+            updatedContactsCache.Remove(point);
+
+            if (collision.Contacts.Count > 0) return;
+
+            collision.ColliderA.Collisions.Remove(collision);
+            collision.ColliderB.Collisions.Remove(collision);
+
+            removedCollisionsCache.Add(collision);
+
+            //make sure we also remove eventually added in this frame
+            newCollisionsCache.Remove(collision);
+        }
 
         internal void CacheContacts()
         {
-            lastFrameContacts.Clear();
+            contactsProfilingState = Profiler.Begin(PhysicsProfilingKeys.ContactsProfilingKey);
+
+            var lastFrameContacts = frameContacts.Select(x => x.ContactPoint).ToList();
+
+            frameContacts.Clear();
             var numManifolds = collisionWorld.Dispatcher.NumManifolds;
             for (var i = 0; i < numManifolds; i++)
             {
@@ -197,51 +226,65 @@ namespace SiliconStudio.Xenko.Physics
                         continue;
                     }
 
-                    var info = new ContactInfo
+                    ContactInfo info = null;
+                    foreach (var activeContact in activeContacts)
                     {
-                        ColA = colA,
-                        ColB = colB
-                    };
+                        if (activeContact.ManifoldPtr != cp.NativePtr) continue;
+                        info = activeContact;
+                        break;
+                    }
+
+                    if (info == null)
+                    {
+                        info = new ContactInfo
+                        {
+                            ContactPoint = new ContactPoint { Collision = null },
+                            ManifoldPtr = cp.NativePtr,
+                            NewContact = true
+                        };
+                    }
+
+                    info.ColA = colA;
+                    info.ColB = colB;
 
                     if (cp.LifeTime == 1) //New contact
                     {
-                        info.ContactPoint = contactsQueue.Count > 0 ? contactsQueue.Dequeue() : new ContactPoint();
+                        RemoveContact(info.ContactPoint);
+
+                        info.ContactPoint = new ContactPoint { Collision = null };
+                        info.NewContact = true;
+                    }
+                    else if (info.ContactPoint.LifeTime > cp.LifeTime)
+                    {
+                        RemoveContact(info.ContactPoint);
+                        
+                        //this is a new contact as well
                         info.ContactPoint.Collision = null;
                         info.NewContact = true;
-                        contactsCache[cp] = info.ContactPoint;
-                    }
-                    else
-                    {
-                        if (!contactsCache.TryGetValue(cp, out info.ContactPoint))
-                        {
-                            info.ContactPoint = contactsQueue.Count > 0 ? contactsQueue.Dequeue() : new ContactPoint();
-                            info.ContactPoint.Collision = null;
-                            info.NewContact = true;
-                            contactsCache[cp] = info.ContactPoint;
-                        }
                     }
 
+                    info.ContactPoint.Valid = true;
+                    info.ContactPoint.LifeTime = cp.LifeTime;
                     info.ContactPoint.Distance = cp.Distance;
                     info.ContactPoint.Normal = cp.NormalWorldOnB;
                     info.ContactPoint.PositionOnA = cp.PositionWorldOnA;
                     info.ContactPoint.PositionOnB = cp.PositionWorldOnB;
 
-                    lastFrameContacts.Add(info);
+                    frameContacts.Add(info);
+                    activeContacts.Add(info);
+                    lastFrameContacts.Remove(info.ContactPoint);
                 }
+            }
+
+            foreach (var lastFrameContact in lastFrameContacts)
+            {
+                RemoveContact(lastFrameContact);
             }
         }
 
         internal void ProcessContacts()
         {
-            var contactsProfiler = Profiler.Begin(PhysicsProfilingKeys.ContactsProfilingKey);
-
-            newCollisionsCache.Clear();
-            removedCollisionsCache.Clear();
-            newContactsFastCache.Clear();
-            updatedContactsCache.Clear();
-            removedContactsCache.Clear();
-
-            foreach (var contactInfo in lastFrameContacts)
+            foreach (var contactInfo in frameContacts)
             {
                 var collision = contactInfo.ContactPoint.Collision;
 
@@ -260,20 +303,13 @@ namespace SiliconStudio.Xenko.Physics
                 if (collision == null)
                 {
                     //new collision
-                    if (collisionsQueue.Count > 0)
+                    collision = new Collision
                     {
-                        collision = collisionsQueue.Dequeue();
-                    }
-                    else
-                    {
-                        collision = new Collision
-                        {
-                            Contacts = new List<ContactPoint>()
-                        };
-                    }
+                        Contacts = new TrackingCollection<ContactPoint>(),
+                        ColliderA = contactInfo.ColA,
+                        ColliderB = contactInfo.ColB
+                    };
 
-                    collision.ColliderA = contactInfo.ColA;
-                    collision.ColliderB = contactInfo.ColB;
                     collision.Contacts.Clear();
 
                     contactInfo.ColA.Collisions.Add(collision);
@@ -286,6 +322,8 @@ namespace SiliconStudio.Xenko.Physics
 
                 if (contactInfo.NewContact)
                 {
+                    contactInfo.NewContact = false;
+
                     collision.Contacts.Add(contactInfo.ContactPoint);
 
                     newContactsFastCache.Add(contactInfo.ContactPoint);
@@ -295,203 +333,20 @@ namespace SiliconStudio.Xenko.Physics
                     updatedContactsCache.Add(contactInfo.ContactPoint);
                 }
 
-                //prevent removal of processed contacts
-                lastFrameContactPoints.Remove(contactInfo.ContactPoint);
+                //activeContacts.Remove(contactInfo);
             }
 
-            //these contacts did not persist
-            foreach (var lastFrameContactPoint in lastFrameContactPoints)
-            {
-                var collision = lastFrameContactPoint.Collision;
-
-                collision.Contacts.Remove(lastFrameContactPoint);
-                contactsQueue.Enqueue(lastFrameContactPoint);
-
-                removedContactsCache.Add(lastFrameContactPoint);
-
-                //make sure we also remove eventually added in this frame
-                newContactsFastCache.Remove(lastFrameContactPoint);
-                updatedContactsCache.Remove(lastFrameContactPoint);
-
-                if (collision.Contacts.Count > 0) continue;
-
-                collision.ColliderA.Collisions.Remove(collision);
-                collision.ColliderB.Collisions.Remove(collision);
-
-                removedCollisionsCache.Add(collision);
-
-                //make sure we also remove eventually added in this frame
-                newCollisionsCache.Remove(collision);
-                collisionsQueue.Enqueue(collision);
-            }
-
-            //clean and add current frame contacts to last frame contacts hash
-            lastFrameContactPoints.Clear();
-
-            foreach (var processedContactPoint in lastFrameContacts)
-            {
-                lastFrameContactPoints.Add(processedContactPoint.ContactPoint);
-            }
-
-            contactsProfiler.End("Contacts: {0}", processedContactPoints.Count);
-        }
-
-        internal void ProcessContacts2()
-        {
-            var contactsProfiler = Profiler.Begin(PhysicsProfilingKeys.ContactsProfilingKey);
-
-            newCollisionsCache.Clear();
-            removedCollisionsCache.Clear();
-            newContactsFastCache.Clear();
-            updatedContactsCache.Clear();
-            removedContactsCache.Clear();
-
-            processedContactPoints.Clear();
-
-            var numManifolds = collisionWorld.Dispatcher.NumManifolds;
-            for (var i = 0; i < numManifolds; i++)
-            {
-                var manifold = collisionWorld.Dispatcher.GetManifoldByIndexInternal(i);
-                var numContacts = manifold.NumContacts;
-                var bodyA = manifold.Body0;
-                var bodyB = manifold.Body1;
-
-                var colA = (PhysicsComponent)bodyA?.UserObject;
-                var colB = (PhysicsComponent)bodyB?.UserObject;
-
-                if (colA == null || colB == null)
-                {
-                    continue;
-                }
-
-                if (!colA.ProcessCollisions && !colB.ProcessCollisions)
-                {
-                    continue;
-                }
-
-                //find if a collision already existed
-                Collision collision = null;
-                foreach (var col in colA.Collisions)
-                {
-                    if ((col.ColliderA != colA || col.ColliderB != colB) && (col.ColliderA != colB || col.ColliderB != colA)) continue;
-                    collision = col;
-                    break;
-                }
-
-                for (var y = 0; y < numContacts; y++)
-                {
-                    var cp = manifold.GetContactPoint(y);
-
-                    if (cp.Distance < 0.0f)
-                    {
-                        ContactPoint contact = null;
-
-                        if (collision != null)
-                        {
-                            foreach (var contact1 in collision.Contacts)
-                            {
-                                if (contact1.Handle.IsAllocated && cp.UserPersistentPtr != IntPtr.Zero && contact1.Handle.Target != GCHandle.FromIntPtr(cp.UserPersistentPtr).Target) continue;
-                                contact = contact1;
-                                break;
-                            }
-                        }
-                        else
-                        {
-                            //new collision
-                            if (collisionsQueue.Count > 0)
-                            {
-                                collision = collisionsQueue.Dequeue();
-                            }
-                            else
-                            {
-                                collision = new Collision
-                                {
-                                    Contacts = new List<ContactPoint>()
-                                };
-                            }
-
-                            collision.ColliderA = colA;
-                            collision.ColliderB = colB;
-                            collision.Contacts.Clear();
-
-                            colA.Collisions.Add(collision);
-                            colB.Collisions.Add(collision);
-
-                            newCollisionsCache.Add(collision);
-                        }
-
-                        //new contact
-                        if (contact == null)
-                        {
-                            contact = contactsQueue.Count > 0 ? contactsQueue.Dequeue() : new ContactPoint();
-                            contact.Collision = collision;
-                            contact.Handle = GCHandle.Alloc(contact);
-                            cp.UserPersistentPtr = GCHandle.ToIntPtr(contact.Handle);
-                            collision.Contacts.Add(contact);
-
-                            newContactsFastCache.Add(contact);
-                        }
-                        else
-                        {
-                            updatedContactsCache.Add(contact);
-                        }
-
-                        contact.Distance = cp.Distance;
-                        contact.PositionOnA = new Vector3(cp.PositionWorldOnA.X, cp.PositionWorldOnA.Y, cp.PositionWorldOnA.Z);
-                        contact.PositionOnB = new Vector3(cp.PositionWorldOnB.X, cp.PositionWorldOnB.Y, cp.PositionWorldOnB.Z);
-                        contact.Normal = new Vector3(cp.NormalWorldOnB.X, cp.NormalWorldOnB.Y, cp.NormalWorldOnB.Z);
-
-                        processedContactPoints.Add(contact);
-                    }
-                }
-            }
-
-            foreach (var processedContactPoint in processedContactPoints)
-            {
-                //the contact persisted
-                if (lastFrameContactPoints.Contains(processedContactPoint))
-                {
-                    //remove since the contact persisted
-                    lastFrameContactPoints.Remove(processedContactPoint);
-                }
-            }
-
-            //these contacts did not persist
-            foreach (var lastFrameContactPoint in lastFrameContactPoints)
-            {
-                lastFrameContactPoint.Collision.Contacts.Remove(lastFrameContactPoint);
-                lastFrameContactPoint.Handle.Free();
-                contactsQueue.Enqueue(lastFrameContactPoint);
-
-                removedContactsCache.Add(lastFrameContactPoint);
-
-                //make sure we also remove eventually added in this frame
-                newContactsFastCache.Remove(lastFrameContactPoint);
-                updatedContactsCache.Remove(lastFrameContactPoint);
-
-                if (lastFrameContactPoint.Collision.Contacts.Count > 0) continue;
-
-                var collision = lastFrameContactPoint.Collision;
-                collision.ColliderA.Collisions.Remove(collision);
-                collision.ColliderB.Collisions.Remove(collision);
-
-                removedCollisionsCache.Add(collision);
-
-                //make sure we also remove eventually added in this frame
-                newCollisionsCache.Remove(collision);
-            }
-
-            //clean and add current frame contacts to last frame contacts hash
-            lastFrameContactPoints.Clear();
-
-            foreach (var processedContactPoint in processedContactPoints)
-            {
-                lastFrameContactPoints.Add(processedContactPoint);
-            }
-
-            SendEvents();
-
-            contactsProfiler.End("Contacts: {0}", processedContactPoints.Count);
+            //find ended contacts
+//            foreach (var activeContact in activeContacts)
+//            {
+//                removedContacts.Add(activeContact);
+//            }
+//
+//            foreach (var removedContact in removedContacts)
+//            {
+//                activeContacts.Remove(removedContact);
+//                RemoveContact(removedContact.ContactPoint);
+//            }
         }
 
         private uint eventFrame;
@@ -553,6 +408,14 @@ namespace SiliconStudio.Xenko.Physics
                 }
             }
             Debug.WriteLineIf(removedContactsCache.Count > 0, $"Removed contacts at frame {eventFrame}: {removedContactsCache.Count}");
+
+            newCollisionsCache.Clear();
+            removedCollisionsCache.Clear();
+            newContactsFastCache.Clear();
+            updatedContactsCache.Clear();
+            removedContactsCache.Clear();
+
+            contactsProfilingState.End("Contacts: {0}", frameContacts.Count);
         }
 
         /// <summary>

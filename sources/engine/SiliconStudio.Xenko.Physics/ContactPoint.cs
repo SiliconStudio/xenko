@@ -1,7 +1,6 @@
-﻿// Copyright (c) 2014-2015 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System.Runtime.InteropServices;
 using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Xenko.Physics
@@ -22,6 +21,8 @@ namespace SiliconStudio.Xenko.Physics
 
         public Collision Collision;
 
-        internal GCHandle Handle;
+        internal int LifeTime;
+        internal int PrevLifeTime;
+        internal bool Valid;
     }
 }

@@ -39,14 +39,6 @@ namespace SiliconStudio.Xenko.Engine
             NewPairChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
             PairEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
             AllPairsEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
-
-            Collisions.CollectionChanged += (sender, args) =>
-            {
-                if (args.Action == NotifyCollectionChangedAction.Remove)
-                {
-                     //Debugger.Break();
-                }
-            };
         }
 
         [DataMemberIgnore]
