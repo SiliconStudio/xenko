@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Rendering
         // TODO: Where should we put this key?
         public static readonly PropertyKey<EntityComponentRendererTypeCollection> RendererTypesKey = new PropertyKey<EntityComponentRendererTypeCollection>("CameraRendererMode.RendererTypesKey", typeof(CameraRendererMode));
 
-        private readonly Dictionary<Type, IEntityComponentRenderer> componentTypeToRenderer = new Dictionary<Type, IEntityComponentRenderer>();
+        private readonly Dictionary<TypeInfo, IEntityComponentRenderer> componentTypeToRenderer = new Dictionary<TypeInfo, IEntityComponentRenderer>();
         private readonly List<EntityComponentRendererType> sortedRendererTypes;
         private readonly EntityComponentRendererBatch batchRenderer;
 
