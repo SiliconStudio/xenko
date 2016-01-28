@@ -12,7 +12,7 @@ namespace SiliconStudio.AssemblyProcessor
     /// <summary>
     /// Makes the assembly use AsyncBridge instead of mscorlib for async.
     /// </summary>
-    public class AsyncBridgeProcessor : IAssemblyDefinitionProcessor
+    internal class AsyncBridgeProcessor : IAssemblyDefinitionProcessor
     {
         private AssemblyDefinition assembly;
 

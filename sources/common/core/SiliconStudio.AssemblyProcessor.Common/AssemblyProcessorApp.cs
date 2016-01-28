@@ -13,7 +13,6 @@ using Mono.Cecil;
 using Mono.Cecil.Cil;
 using Mono.Cecil.Rocks;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
 using MethodAttributes = Mono.Cecil.MethodAttributes;
 using TypeAttributes = Mono.Cecil.TypeAttributes;
 
@@ -21,10 +20,12 @@ namespace SiliconStudio.AssemblyProcessor
 {
     public class AssemblyProcessorApp
     {
-        private ILogger log;
+        private TextWriter log;
 
-        public AssemblyProcessorApp()
+        public AssemblyProcessorApp(TextWriter info)
         {
+            this.log = info ?? Console.Out;
+
             SearchDirectories = new List<string>();
             References = new List<string>();
             ReferencesToAdd = new List<string>();
@@ -44,7 +45,7 @@ namespace SiliconStudio.AssemblyProcessor
 
         public string NewAssemblyName { get; set; }
 
-        public PlatformType Platform { get; set; }
+        internal PlatformType Platform { get; set; }
 
         public string TargetFramework { get; set; }
 
@@ -91,7 +92,7 @@ namespace SiliconStudio.AssemblyProcessor
 
                 bool modified;
 
-                var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified, new ConsoleLogger());
+                var result = Run(ref assemblyDefinition, ref readWriteSymbols, out modified);
                 if (modified || inputFile != outputFile)
                 {
                     // Make sure output directory is created
@@ -110,7 +111,7 @@ namespace SiliconStudio.AssemblyProcessor
             {
                 if (DeleteOutputOnError)
                     File.Delete(outputFile);
-                OnErrorAction(e.Message, e);
+                OnErrorAction(null, e);
                 return false;
             }
         }
@@ -124,10 +125,8 @@ namespace SiliconStudio.AssemblyProcessor
             return assemblyResolver;
         }
 
-        public bool Run(ref AssemblyDefinition assemblyDefinition, ref bool readWriteSymbols, out bool modified, ILogger logger)
+        public bool Run(ref AssemblyDefinition assemblyDefinition, ref bool readWriteSymbols, out bool modified)
         {
-            log = new Logger(assemblyDefinition.Name.Name, TreatWarningsAsErrors, logger);
-
             modified = false;
 
             try
@@ -312,7 +311,7 @@ namespace SiliconStudio.AssemblyProcessor
             }
             catch (Exception e)
             {
-                OnErrorAction(e.Message, e);
+                OnErrorAction(null, e);
                 return false;
             }
 
@@ -331,18 +330,14 @@ namespace SiliconStudio.AssemblyProcessor
         {
             if (OnErrorEvent == null)
             {
-                var builder = new StringBuilder();
-                builder.AppendLine(errorMessage);
+                if (errorMessage != null)
+                {
+                    log.WriteLine(errorMessage);
+                }
                 if (exception != null)
                 {
-                    builder.AppendLine(exception.ToString());
-                    var nextE = exception;
-                    for (int index = 0; nextE != null; nextE = nextE.InnerException, index++)
-                        builder.AppendFormat("{0}{1}", string.Concat(Enumerable.Repeat(" ", index)), nextE.Message).AppendLine();
-                    builder.AppendLine();
+                    log.WriteLine(exception.ToString());
                 }
-
-                Console.WriteLine(builder);
             }
             else
             {
@@ -354,44 +349,11 @@ namespace SiliconStudio.AssemblyProcessor
         {
             if (OnInfoEvent == null)
             {
-                Console.WriteLine(infoMessage);
+                log.WriteLine(infoMessage);
             }
             else
             {
                 OnInfoEvent(infoMessage);
-            }
-        }
-
-        private class Logger : ILogger
-        {
-            private readonly ILogger loggerToForward;
-            private readonly bool treatWarningsAsErrors;
-
-            public string Module { get; private set; }
-
-            public Logger(string module, bool treatWarningsAsErrors, ILogger loggerToForward)
-            {
-                Module = module;
-                this.treatWarningsAsErrors = treatWarningsAsErrors;
-                this.loggerToForward = loggerToForward;
-            }
-
-            public void Log(ILogMessage logMessage)
-            {
-                if (treatWarningsAsErrors && logMessage.Type == LogMessageType.Warning)
-                    logMessage.Type = LogMessageType.Error;
-
-                loggerToForward.Log(logMessage);
-            }
-        }
-
-        private class ConsoleLogger : ILogger
-        {
-            public string Module { get { return "AssemblyProcessor"; } }
-
-            public void Log(ILogMessage logMessage)
-            {
-                Console.WriteLine(logMessage);
             }
         }
     }

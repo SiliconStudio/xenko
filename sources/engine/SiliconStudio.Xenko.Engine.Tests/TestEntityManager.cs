@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -67,9 +68,9 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             // Check internal mapping of component types => EntityProcessor
             Assert.AreEqual(1, entityManager.MapComponentTypeToProcessors.Count);
-            Assert.True(entityManager.MapComponentTypeToProcessors.ContainsKey(typeof(TransformComponent)));
+            Assert.True(entityManager.MapComponentTypeToProcessors.ContainsKey(typeof(TransformComponent).GetTypeInfo()));
 
-            var processorListForTransformComponentType = entityManager.MapComponentTypeToProcessors[typeof(TransformComponent)];
+            var processorListForTransformComponentType = entityManager.MapComponentTypeToProcessors[typeof(TransformComponent).GetTypeInfo()];
             Assert.AreEqual(1, processorListForTransformComponentType.Count);
             Assert.True(processorListForTransformComponentType[0] is TransformProcessor);
 
@@ -263,14 +264,14 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             // Check internal processors
             Assert.AreEqual(2, entityManager.MapComponentTypeToProcessors.Count);
-            Assert.True(entityManager.MapComponentTypeToProcessors.ContainsKey(typeof(TransformComponent)));
-            Assert.True(entityManager.MapComponentTypeToProcessors.ContainsKey(typeof(CustomEntityComponentWithDependency)));
+            Assert.True(entityManager.MapComponentTypeToProcessors.ContainsKey(typeof(TransformComponent).GetTypeInfo()));
+            Assert.True(entityManager.MapComponentTypeToProcessors.ContainsKey(typeof(CustomEntityComponentWithDependency).GetTypeInfo()));
 
             var customProcessor = entityManager.GetProcessor<CustomEntityComponentProcessorWithDependency>();
 
             // Because the custom processor has a dependency on TransformComponent, we are checking that the dependencies is correctly registered back in the 
             // list of processors for TransformComponent that should have a link to the custom processor
-            var processorsForTransform = entityManager.MapComponentTypeToProcessors[typeof(TransformComponent)];
+            var processorsForTransform = entityManager.MapComponentTypeToProcessors[typeof(TransformComponent).GetTypeInfo()];
 
             // there is the HierarchicalProcessor and TransformProcessor
             Assert.AreEqual(1, processorsForTransform.Count);
@@ -279,7 +280,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             Assert.AreEqual(customProcessor, processorsForTransform.Dependencies[0]);
             
             // Check that the custom processor is empty
-            var processorsForCustom = entityManager.MapComponentTypeToProcessors[typeof(CustomEntityComponentWithDependency)];
+            var processorsForCustom = entityManager.MapComponentTypeToProcessors[typeof(CustomEntityComponentWithDependency).GetTypeInfo()];
             Assert.AreEqual(1, processorsForCustom.Count);
             Assert.Null(processorsForCustom.Dependencies);
 

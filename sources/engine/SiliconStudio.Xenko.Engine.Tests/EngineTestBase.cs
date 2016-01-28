@@ -25,7 +25,26 @@ namespace SiliconStudio.Xenko.Engine.Tests
             get {  return Camera.Get<CameraComponent>(); }
             set
             {
-                Camera.Add(value);
+                bool alreadyAdded = false;
+                for (int i = 0; i < Camera.Components.Count; i++)
+                {
+                    var component = Camera.Components[i];
+                    if (component == value)
+                    {
+                        alreadyAdded = true;
+                        break;
+                    }
+                    if (component is CameraComponent)
+                    {
+                        alreadyAdded = true;
+                        Camera.Components[i] = value;
+                        break;
+                    }
+                }
+                if (!alreadyAdded)
+                {
+                    Camera.Add(value);
+                }
                 graphicsCompositor.Cameras[0] = value;
             }
         }

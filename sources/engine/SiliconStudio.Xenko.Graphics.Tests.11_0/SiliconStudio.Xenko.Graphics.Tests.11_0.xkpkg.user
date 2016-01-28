@@ -7,7 +7,7 @@ Settings:
             CamFarClipPlane: 1000.0
             CamNearClipPlane: 0.1
             CamOrthographicSize: 10.0
-            CamPitchYaw: {X: -0.5235988, Y: 0.7853982}
+            CamPitchYaw: {X: -0.314645082, Y: 0.7975566}
             CamPosition: {X: 4.0, Y: 4.0, Z: 4.0}
             CamProjection: Perspective
             CamVerticalFieldOfView: 45.0
@@ -16,7 +16,6 @@ Settings:
             FixedSizeGizmos: false
             GridVisible: true
             HiddenGizmos:
-                - Physics
                 - Transform
             RenderMode: SingleStream
             RotationSnapActive: false

@@ -10,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace SiliconStudio.Core
 {
-    public static class Utilities
+    internal static class Utilities
     {
         [DllImport("msvcrt.dll", EntryPoint = "memcpy", CallingConvention = CallingConvention.Cdecl, SetLastError = false)]
         [SuppressUnmanagedCodeSecurity]

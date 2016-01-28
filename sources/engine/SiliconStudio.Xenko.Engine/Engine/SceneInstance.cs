@@ -256,12 +256,12 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             // Make sure that we always have a camera component registered
-            RendererTypes.Add(new EntityComponentRendererType(typeof(CameraComponent), typeof(CameraComponentRenderer), int.MinValue));
+            RendererTypes.Add(new EntityComponentRendererType(typeof(CameraComponent).GetTypeInfo(), typeof(CameraComponentRenderer), int.MinValue));
         }
 
-        private void EntitySystemOnComponentTypeAdded(object sender, Type type)
+        private void EntitySystemOnComponentTypeAdded(object sender, TypeInfo type)
         {
-            var rendererTypeAttribute = type.GetTypeInfo().GetCustomAttribute<DefaultEntityComponentRendererAttribute>();
+            var rendererTypeAttribute = type.GetCustomAttribute<DefaultEntityComponentRendererAttribute>();
             if (rendererTypeAttribute == null)
             {
                 return;

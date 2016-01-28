@@ -25,8 +25,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             var compiledUpdate = UpdateEngine.Compile(typeof(Entity), new List<UpdateMemberInfo>
             {
-                new UpdateMemberInfo("[ModelComponent.Key]", 0),
-                new UpdateMemberInfo("child1[LightComponent.Key].Intensity", 0),
+                new UpdateMemberInfo("[ModelComponent]", 0),
+                new UpdateMemberInfo("child1[LightComponent.Key].Intensity", 0), // Keep key just for backward comp, we will remove it
             });
 
             var testData = new TestData[] { 32.0f };

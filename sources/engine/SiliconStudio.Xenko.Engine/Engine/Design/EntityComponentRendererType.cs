@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// <param name="componentType">Type of the component.</param>
         /// <param name="rendererType">The type.</param>
         /// <param name="displayOrder">The display order.</param>
-        public EntityComponentRendererType(Type componentType, Type rendererType, int displayOrder)
+        public EntityComponentRendererType(TypeInfo componentType, Type rendererType, int displayOrder)
         {
             if (componentType == null) throw new ArgumentNullException("componentType");
             if (rendererType == null) throw new ArgumentNullException("rendererType");
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// <summary>
         /// The type of component. Must be derived from <see cref="EntityComponent"/>/
         /// </summary>
-        public readonly Type ComponentType;
+        public readonly TypeInfo ComponentType;
 
 
         /// <summary>
