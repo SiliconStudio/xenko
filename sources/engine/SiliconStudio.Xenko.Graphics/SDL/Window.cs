@@ -485,6 +485,13 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// </summary>
         public IntPtr SdlHandle { get; private set; }
 
+        /// <summary>
+        /// Is the Window still alive?
+        /// </summary>
+        public bool Exists
+        {
+            get { return SdlHandle != IntPtr.Zero; }
+        }
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         /// <summary>
         /// The SDL window handle required when we implement IWindowInfo.
