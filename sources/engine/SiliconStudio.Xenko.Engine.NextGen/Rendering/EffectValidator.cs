@@ -30,14 +30,14 @@ namespace SiliconStudio.Xenko.Rendering
             effectChanged = false;
         }
 
-        public void ValidateParameter(ParameterKey key, object value)
+        public void ValidateParameter<T>(ParameterKey<T> key, T value)
         {
             // Check if value was existing and/or same
             var index = effectValuesValidated++;
             if (index < EffectValues.Count)
             {
                 var currentEffectValue = EffectValues[index];
-                if (currentEffectValue.Key == key && currentEffectValue.Value == value)
+                if (currentEffectValue.Key == key && EqualityComparer<T>.Default.Equals((T)currentEffectValue.Value, value))
                 {
                     // Everything same, let's keep going
                     return;

@@ -61,12 +61,15 @@ namespace SiliconStudio.Xenko.Rendering
                     if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
-                    renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningPosition, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningPosition));
-                    renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
-                    renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningTangent));
-                    renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningBones, renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningBones));
-                    renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
-                    //renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningMaxBones));
+                    if (renderMesh.Mesh.Skinning != null)
+                    {
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningPosition, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningPosition));
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningTangent));
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningBones, renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningBones));
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
+                        //renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningMaxBones));
+                    }
                 }
             }
         }
