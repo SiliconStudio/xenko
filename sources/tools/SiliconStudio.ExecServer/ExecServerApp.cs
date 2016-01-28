@@ -27,8 +27,6 @@ namespace SiliconStudio.ExecServer
     /// </summary>
     public class ExecServerApp
     {
-        private string execServerPath;
-
         private const int ExitCodeServerAlreadyInUse = 0x10;
 
         private const string DisableExecServerAppDomainCaching = "DisableExecServerAppDomainCaching";
@@ -92,7 +90,6 @@ namespace SiliconStudio.ExecServer
             {
                 var executablePath = ExtractPath(args, "executable");
                 var workingDirectory = ExtractPath(args, "working directory");
-                execServerPath = Path.Combine(Path.GetDirectoryName(executablePath), Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer.exe");
 
                 // Collect environment variables
                 var environmentVariables = new Dictionary<string, string>();
@@ -232,14 +229,14 @@ namespace SiliconStudio.ExecServer
                                 // The server is not running, we need to run it
                                 if (!RunServerProcess(executablePath, serverInstanceIndex, out processHandle, out processId))
                                 {
-                                    Console.WriteLine("Unexpected error, while launching process [{0}]", execServerPath);
+                                    Console.WriteLine($"Unexpected error, while launching exec server for [{executablePath}]");
                                     return -300;
                                 }
                             }
 
                             if (numberTriesAfterRunProcess > MaxRetryStartedProcess)
                             {
-                                Console.WriteLine("ERROR cannot connect to newly started proxy server: {0} {1}", execServerPath, string.Join(" ", args));
+                                Console.WriteLine("ERROR cannot connect to newly started proxy server for: {0} {1}", executablePath, string.Join(" ", args));
                                 continue;
                             }
 
@@ -282,7 +279,7 @@ namespace SiliconStudio.ExecServer
                     Thread.Sleep(RetryWait);
                 }
 
-                Console.WriteLine("ERROR cannot connect to proxy server: {0} {1}", execServerPath, string.Join(" ", args));
+                Console.WriteLine("ERROR cannot connect to proxy server for: {0} {1}", executablePath, string.Join(" ", args));
                 return 1;
             }
             finally
@@ -358,11 +355,15 @@ namespace SiliconStudio.ExecServer
             var originalExecServerAppPath = typeof(ExecServerApp).Assembly.Location;
             var originalTime = File.GetLastWriteTimeUtc(originalExecServerAppPath);
 
+
+            var finalExecServerPath = Path.Combine(Path.GetDirectoryName(executablePath),
+                Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer" + (serverInstanceIndex > 0 ? "" + serverInstanceIndex : string.Empty) + ".exe");
+
             // Avoid locking ExecServer.exe original file, so we are using the name of the executable path and append _ExecServer.exe
             var copyExecFile = false;
-            if (File.Exists(execServerPath))
+            if (File.Exists(finalExecServerPath))
             {
-                var copyExecServerTime = File.GetLastWriteTimeUtc(execServerPath);
+                var copyExecServerTime = File.GetLastWriteTimeUtc(finalExecServerPath);
                 // If exec server has changed, we need to copy the new version to it
                 copyExecFile = originalTime != copyExecServerTime;
             }
@@ -375,13 +376,13 @@ namespace SiliconStudio.ExecServer
             {
                 try
                 {
-                    File.Copy(originalExecServerAppPath, execServerPath, true);
+                    File.Copy(originalExecServerAppPath, finalExecServerPath, true);
 
                     // Copy the .config file as well
                     var executableConfigFile = executablePath + ".config";
                     if (File.Exists(executableConfigFile))
                     {
-                        File.Copy(executableConfigFile, execServerPath + ".config", true);
+                        File.Copy(executableConfigFile, finalExecServerPath + ".config", true);
                     }
                 }
                 catch (IOException)
@@ -392,8 +393,8 @@ namespace SiliconStudio.ExecServer
             // NOTE: We are not using Process.Start as it is for some unknown reasons blocking the process calling this process on Process.ExitProcess
             // Handling directly the creation of the process with Win32 function solves this. Not sure why.
             // TODO: We might want the process to not inherit environment
-            var arguments = string.Format("/server \"{0}\" {1}", executablePath, serverInstanceIndex);
-            return ProcessHelper.LaunchProcess(execServerPath, arguments, out processHandle, out processId);
+            var result = ProcessHelper.LaunchProcess(finalExecServerPath, $"/server \"{executablePath}\" {serverInstanceIndex}", out processHandle, out processId);
+            return result;
         }
 
         private static string GetEndpointAddress(string executablePath, int serverInstanceIndex)
