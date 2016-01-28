@@ -35,10 +35,8 @@ namespace SiliconStudio.Xenko.Engine
                 ColliderShapeChanged = true;
             };
 
-            FirstCollisionChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
             NewPairChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
             PairEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
-            AllPairsEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
         }
 
         [DataMemberIgnore]
@@ -308,14 +306,6 @@ namespace SiliconStudio.Xenko.Engine
         public TrackingCollection<Collision> Collisions { get; } = new TrackingCollection<Collision>();
 
         [DataMemberIgnore]
-        internal Channel<Collision> FirstCollisionChannel;
-
-        public ChannelMicroThreadAwaiter<Collision> FirstCollision()
-        {
-            return FirstCollisionChannel.Receive();
-        }
-
-        [DataMemberIgnore]
         internal Channel<Collision> NewPairChannel;
 
         public ChannelMicroThreadAwaiter<Collision> NewCollision()
@@ -329,14 +319,6 @@ namespace SiliconStudio.Xenko.Engine
         public ChannelMicroThreadAwaiter<Collision> CollisionEnded()
         {
             return PairEndedChannel.Receive();
-        }
-
-        [DataMemberIgnore]
-        internal Channel<Collision> AllPairsEndedChannel;
-
-        public ChannelMicroThreadAwaiter<Collision> AllCollisionsEnded()
-        {
-            return AllPairsEndedChannel.Receive();
         }
 
         [DataMemberIgnore]
