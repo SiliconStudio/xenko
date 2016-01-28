@@ -663,7 +663,6 @@ namespace SiliconStudio.Xenko.Engine
         protected virtual void OnAttach()
         {
             //set pre-set post deserialization properties
-            ProcessCollisions = processCollisions;
             Enabled = base.Enabled;
             CanSleep = canSleep;
             Restitution = restitution;
