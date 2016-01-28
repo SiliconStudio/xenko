@@ -25,14 +25,4 @@
       </ItemGroup>
 	  </When>
   </Choose>
-
-  <Choose>
-    <When Condition="'$(SiliconStudioUnitTest)' != 'true'">
-      <ItemGroup>
-        <Reference Include="OpenTK">
-          <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(SiliconStudioPackageXenkoPlatformBin)\OpenTK.dll</HintPath>
-        </Reference>
-      </ItemGroup>
-    </When>
-  </Choose>
 </Project>
