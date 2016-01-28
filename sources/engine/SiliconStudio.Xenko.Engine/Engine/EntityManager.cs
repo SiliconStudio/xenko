@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <summary>
         /// Occurs when a new component type is added.
         /// </summary>
-        public event EventHandler<Type> ComponentTypeAdded;
+        public event EventHandler<TypeInfo> ComponentTypeAdded;
 
         /// <summary>
         /// Occurs when a component changed for an entity (Added or removed)
@@ -556,7 +556,7 @@ namespace SiliconStudio.Xenko.Engine
             return GetEnumerator();
         }
 
-        protected virtual void OnComponentTypeAdded(Type obj)
+        protected virtual void OnComponentTypeAdded(TypeInfo obj)
         {
             var handler = ComponentTypeAdded;
             if (handler != null) handler(this, obj);
