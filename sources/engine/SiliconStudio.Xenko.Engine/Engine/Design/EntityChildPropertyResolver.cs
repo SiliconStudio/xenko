@@ -32,12 +32,10 @@ namespace SiliconStudio.Xenko.Engine.Design
         {
             // Note: we currently only support component with data contract aliases
             var dotIndex = indexerName.LastIndexOf('.');
-            if (dotIndex == -1)
-                return null;
 
             // TODO: Temporary hack to get static field of the requested type/property name
             // Need to have access to DataContract name<=>type mapping in the runtime (only accessible in SiliconStudio.Core.Design now)
-            var typeName = indexerName.Substring(0, dotIndex);
+            var typeName = (dotIndex == -1) ? indexerName : indexerName.Substring(0, dotIndex);
             var type = DataSerializerFactory.GetTypeFromAlias(typeName);
             if (type == null)
                 throw new InvalidOperationException($"Can't find a type with alias {typeName}; did you properly set a DataContractAttribute with this alias?");
@@ -109,10 +107,12 @@ namespace SiliconStudio.Xenko.Engine.Design
         private class EntityComponentPropertyAccessor : UpdatableCustomAccessor
         {
             private readonly Type componentType;
+            private readonly TypeInfo componentTypeInfo;
 
             public EntityComponentPropertyAccessor(Type componentType)
             {
                 this.componentType = componentType;
+                componentTypeInfo = componentType.GetTypeInfo();
             }
 
             /// <inheritdoc/>
@@ -150,7 +150,7 @@ namespace SiliconStudio.Xenko.Engine.Design
                 for (int i = 0; i < components.Count; i++)
                 {
                     var component = components[i];
-                    if (componentType.IsAssignableFrom(component.GetType()))
+                    if (componentTypeInfo.IsAssignableFrom(component.GetType()))
                     {
                         return component;
                     }
@@ -163,13 +163,19 @@ namespace SiliconStudio.Xenko.Engine.Design
             {
                 var entity = UpdateEngineHelper.PtrToObject<Entity>(obj);
                 var components = entity.Components;
+                bool notSet = true;
                 for (int i = 0; i < components.Count; i++)
                 {
                     var component = components[i];
-                    if (componentType.IsAssignableFrom(component.GetType()))
+                    if (componentTypeInfo.IsAssignableFrom(component.GetType()))
                     {
                         components[i] = (EntityComponent)data;
+                        notSet = false;
                     }
+                }
+                if (notSet)
+                {
+                    components.Add((EntityComponent)data);
                 }
             }
         }
