@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Engine
     [DefaultEntityComponentProcessor(typeof(PhysicsProcessor))]
     [AllowMultipleComponents]
     [ComponentOrder(3000)]
-    public abstract class PhysicsComponent : EntityComponent
+    public abstract class PhysicsComponent : ActivableEntityComponent
     {
         static PhysicsComponent()
         {
@@ -90,8 +90,6 @@ namespace SiliconStudio.Xenko.Engine
         [DataMember(45)]
         public virtual bool ProcessCollisions { get; set; }
 
-        private bool enabled = true;
-
         /// <summary>
         /// Gets or sets if this element is enabled in the physics engine
         /// </summary>
@@ -101,20 +99,21 @@ namespace SiliconStudio.Xenko.Engine
         /// <userdoc>
         /// If this element is enabled in the physics engine
         /// </userdoc>
-        [DataMember(50)]
-        public bool Enabled
+        [DataMember(-10)]
+        [DefaultValue(true)]
+        public override bool Enabled
         {
             get
             {
-                return enabled;
+                return base.Enabled;
             }
             set
             {
-                enabled = value;
+                base.Enabled = value;
 
                 if (NativeCollisionObject == null) return;
 
-                if (enabled)
+                if (value)
                 {
                     NativeCollisionObject.ForceActivationState(canSleep ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation);
                 }
@@ -149,7 +148,7 @@ namespace SiliconStudio.Xenko.Engine
 
                 if (NativeCollisionObject == null) return;
 
-                if (enabled)
+                if (Enabled)
                 {
                     NativeCollisionObject.ActivationState = value ? BulletSharp.ActivationState.ActiveTag : BulletSharp.ActivationState.DisableDeactivation;
                 }
@@ -619,7 +618,6 @@ namespace SiliconStudio.Xenko.Engine
 
         #endregion Utility
 
-
         internal void Attach(PhysicsProcessor.AssociatedData data)
         {
             Data = data;
@@ -667,7 +665,7 @@ namespace SiliconStudio.Xenko.Engine
         {
             //set pre-set post deserialization properties
             ProcessCollisions = processCollisions;
-            Enabled = enabled;
+            Enabled = base.Enabled;
             CanSleep = canSleep;
             Restitution = restitution;
             Friction = friction;

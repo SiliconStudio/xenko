@@ -496,6 +496,14 @@ namespace SiliconStudio.Xenko.Physics
         }
 
         /// <summary>
+        /// Clears all forces being applied to this rigidbody
+        /// </summary>
+        public void ClearForces()
+        {
+            InternalRigidBody.ClearForces();
+        }
+
+        /// <summary>
         /// Gets or sets the angular velocity.
         /// </summary>
         /// <value>
