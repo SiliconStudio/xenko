@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Engine
     /// Base class for <see cref="Entity"/> components.
     /// </summary>
     [DataSerializer(typeof(Serializer))]
-    [DataContract]
+    [DataContract(Inherited = true)]
     public abstract class EntityComponent
     {
         /// <summary>
@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Engine
         /// The owner entity.
         /// </value>
         [DataMemberIgnore]
-        public Entity Entity { get; set; }
+        public Entity Entity { get; internal set; }
 
         /// <summary>
         /// Gets the entity and throws an exception if the entity is null.
