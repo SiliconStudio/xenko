@@ -19,7 +19,7 @@ namespace SiliconStudio.Core.Reflection
                 return false;
             }
 
-            if (typeof(ICollection).GetTypeInfo().IsAssignableFrom(type))
+            if (typeof(ICollection).GetTypeInfo().IsAssignableFrom(typeInfo))
             {
                 return true;
             }
@@ -39,15 +39,16 @@ namespace SiliconStudio.Core.Reflection
         public static bool IsDictionary(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (typeof(IDictionary).GetTypeInfo().IsAssignableFrom(type))
+            var typeInfo = type.GetTypeInfo();
+            if (typeof(IDictionary).GetTypeInfo().IsAssignableFrom(typeInfo))
             {
                 return true;
             }
 
-            foreach (var iType in type.GetTypeInfo().ImplementedInterfaces)
+            foreach (var iType in typeInfo.ImplementedInterfaces)
             {
-                var typeInfo = iType.GetTypeInfo();
-                if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                var iTypeInfo = iType.GetTypeInfo();
+                if (iTypeInfo.IsGenericType && iTypeInfo.GetGenericTypeDefinition() == typeof(IDictionary<,>))
                 {
                     return true;
                 }
