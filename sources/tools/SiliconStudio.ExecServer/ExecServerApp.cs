@@ -33,8 +33,8 @@ namespace SiliconStudio.ExecServer
         private const int MaxRetryStartedProcess = 20;
         private const int RetryStartedProcessWait = 100; // in ms
 
-        private const int MaxRetryCount = 1800 * 100; // * 1s
-        private const int RetryWait = 50; // in ms
+        private const int MaxRetryCount = 60; // * 1s
+        private const int RetryWait = 1000; // in ms
 
         /// <summary>
         /// Runs the specified arguments copy.
@@ -223,14 +223,15 @@ namespace SiliconStudio.ExecServer
                             // Close and uncache client connection (server is not started yet)
                             clients[serverInstanceIndex] = null;
                             CloseClient(ref client);
+                            string finalExecServerPath;
 
                             if (numberTriesAfterRunProcess++ == 0)
                             {
                                 // The server is not running, we need to run it
-                                if (!RunServerProcess(executablePath, serverInstanceIndex, out processHandle, out processId))
+                                if (!RunServerProcess(executablePath, serverInstanceIndex, out processHandle, out processId, out finalExecServerPath))
                                 {
-                                    Console.WriteLine($"Unexpected error, while launching exec server for [{executablePath}]");
-                                    return -300;
+                                    Console.WriteLine($"Cannot launch exec server for [{finalExecServerPath}]. Trying next one");
+                                    continue;
                                 }
                             }
 
@@ -274,6 +275,9 @@ namespace SiliconStudio.ExecServer
                             return -300;
                         }
                     }
+
+                    // Wait for the process to startup before trying again
+                    Console.WriteLine("Waiting {0}ms to create a new proxy server", RetryWait);
 
                     // Wait little bit before trying everything again
                     Thread.Sleep(RetryWait);
@@ -350,13 +354,13 @@ namespace SiliconStudio.ExecServer
         /// </summary>
         /// <param name="executablePath">The executable path.</param>
         /// <param name="serverInstanceIndex">The server instance index.</param>
-        private bool RunServerProcess(string executablePath, int serverInstanceIndex, out IntPtr processHandle, out int processId)
+        private bool RunServerProcess(string executablePath, int serverInstanceIndex, out IntPtr processHandle, out int processId, out string finalExecServerPath)
         {
             var originalExecServerAppPath = typeof(ExecServerApp).Assembly.Location;
             var originalTime = File.GetLastWriteTimeUtc(originalExecServerAppPath);
 
 
-            var finalExecServerPath = Path.Combine(Path.GetDirectoryName(executablePath),
+            finalExecServerPath = Path.Combine(Path.GetDirectoryName(executablePath),
                 Path.GetFileNameWithoutExtension(executablePath) + "_ExecServer" + (serverInstanceIndex > 0 ? "" + serverInstanceIndex : string.Empty) + ".exe");
 
             // Avoid locking ExecServer.exe original file, so we are using the name of the executable path and append _ExecServer.exe
