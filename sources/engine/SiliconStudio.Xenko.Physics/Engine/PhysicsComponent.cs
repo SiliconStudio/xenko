@@ -75,8 +75,6 @@ namespace SiliconStudio.Xenko.Engine
 
         protected bool IsDefaultGroup => CanCollideWith == 0 || CollisionGroup == 0;
 
-        private bool processCollisions = true;
-
         /// <summary>
         /// Gets or sets if this element will store collisions
         /// </summary>
@@ -88,7 +86,8 @@ namespace SiliconStudio.Xenko.Engine
         /// </userdoc>
         [Display("Collision events")]
         [DataMember(45)]
-        public virtual bool ProcessCollisions { get; set; }
+        [DefaultValue(true)]
+        public virtual bool ProcessCollisions { get; set; } = true;
 
         /// <summary>
         /// Gets or sets if this element is enabled in the physics engine
