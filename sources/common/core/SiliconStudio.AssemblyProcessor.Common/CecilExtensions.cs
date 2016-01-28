@@ -168,7 +168,7 @@ namespace SiliconStudio.AssemblyProcessor
         }
 
         /// <summary>
-        /// Get Program Files x86
+        /// Get AssemblyProcessorProgram Files x86
         /// </summary>
         /// <returns></returns>
         public static string ProgramFilesx86()
