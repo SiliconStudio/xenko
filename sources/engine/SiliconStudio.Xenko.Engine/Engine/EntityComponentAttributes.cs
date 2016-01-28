@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Engine
         public static EntityComponentAttributes Get(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (!typeof(EntityComponent).IsAssignableFrom(type)) throw new ArgumentException("The type must be of EntityComponent", "type");
+            if (!typeof(EntityComponent).IsAssignableFrom(type.GetTypeInfo())) throw new ArgumentException("The type must be of EntityComponent", "type");
             return GetInternal(type);
         }
 
