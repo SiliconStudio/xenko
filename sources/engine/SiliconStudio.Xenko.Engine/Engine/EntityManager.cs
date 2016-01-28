@@ -100,7 +100,7 @@ namespace SiliconStudio.Xenko.Engine
         /// Gets the list of component types from the entities..
         /// </summary>
         /// <value>The registered component types.</value>
-        public IEnumerable<Type> ComponentTypes => componentTypes;
+        public IEnumerable<TypeInfo> ComponentTypes => componentTypes;
 
         public virtual void Update(GameTime gameTime)
         {
