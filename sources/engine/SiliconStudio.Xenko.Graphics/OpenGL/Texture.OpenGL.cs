@@ -348,7 +348,7 @@ namespace SiliconStudio.Xenko.Graphics
             base.DestroyImpl();
         }
 
-        protected static void ConvertDepthFormat(GraphicsDevice graphicsDevice, PixelFormat requestedFormat, out RenderbufferStorage depthFormat, out RenderbufferStorage stencilFormat)
+        private static void ConvertDepthFormat(GraphicsDevice graphicsDevice, PixelFormat requestedFormat, out RenderbufferStorage depthFormat, out RenderbufferStorage stencilFormat)
         {
             // Default: non-separate depth/stencil
             stencilFormat = 0;
@@ -484,7 +484,7 @@ namespace SiliconStudio.Xenko.Graphics
             return GraphicsDevice.windowProvidedRenderTexture == this || GraphicsDevice.windowProvidedDepthTexture == this;
         }
 
-        protected void InitializePixelBufferObject()
+        private void InitializePixelBufferObject()
         {
             if (Description.Usage == GraphicsResourceUsage.Staging)
             {

@@ -9,7 +9,7 @@ using System.Xml.Linq;
 
 namespace SiliconStudio.AssemblyProcessor
 {
-    public class GenerateUserDocumentationProcessor : IAssemblyDefinitionProcessor
+    internal class GenerateUserDocumentationProcessor : IAssemblyDefinitionProcessor
     {
         private readonly string inputFile;
 
@@ -52,12 +52,12 @@ namespace SiliconStudio.AssemblyProcessor
 
                     if (result.ContainsKey(key))
                     {
-                        LogLine("Warning: the member {0} has multiple userdoc, only the first one will be used.", key);
+                        context.Log.WriteLine($"Warning: the member {key} has multiple userdoc, only the first one will be used.");
                         continue;
                     }
                     if (userdocElement.Descendants().Any())
                     {
-                        LogLine("Warning: the userdoc of member {0} has descendant nodes, which is not supported.", key);
+                        context.Log.WriteLine($"Warning: the userdoc of member {key} has descendant nodes, which is not supported.");
                         continue;
                     }
 
@@ -80,11 +80,6 @@ namespace SiliconStudio.AssemblyProcessor
             }
 
             return true;
-        }
-
-        private static void LogLine(string format, params object[] args)
-        {
-            Console.WriteLine(format, args);
         }
     }
 }

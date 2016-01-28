@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.MicroThreading;
+using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -12,8 +13,8 @@ namespace SiliconStudio.Xenko.Physics
             ContactEndedChannel = new Channel<ContactPoint> { Preference = ChannelPreference.PreferSender };
         }
 
-        public Collider ColliderA;
-        public Collider ColliderB;
+        public PhysicsComponent ColliderA;
+        public PhysicsComponent ColliderB;
 
         public List<ContactPoint> Contacts;
 

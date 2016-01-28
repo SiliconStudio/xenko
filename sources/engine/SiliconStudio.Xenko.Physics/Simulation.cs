@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Physics
 {
     public class Simulation : IDisposable
     {
-        private PhysicsProcessor processor;
+        private readonly PhysicsProcessor processor;
 
         private readonly BulletSharp.DiscreteDynamicsWorld discreteDynamicsWorld;
         private readonly BulletSharp.CollisionWorld collisionWorld;
@@ -29,13 +29,13 @@ namespace SiliconStudio.Xenko.Physics
 
         private readonly BulletSharp.DispatcherInfo dispatchInfo;
 
-        private readonly bool canCcd;
+        internal readonly bool CanCcd;
 
         public bool ContinuousCollisionDetection
         {
             get
             {
-                if (!canCcd)
+                if (!CanCcd)
                 {
                     throw new Exception("ContinuousCollisionDetection must be enabled at physics engine initialization using the proper flag.");
                 }
@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Physics
             }
             set
             {
-                if (!canCcd)
+                if (!CanCcd)
                 {
                     throw new Exception("ContinuousCollisionDetection must be enabled at physics engine initialization using the proper flag.");
                 }
@@ -133,7 +133,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 if (flags.HasFlag(PhysicsEngineFlags.ContinuosCollisionDetection))
                 {
-                    canCcd = true;
+                    CanCcd = true;
                     solverInfo.SolverMode |= BulletSharp.SolverModes.Use2FrictionDirections | BulletSharp.SolverModes.RandomizeOrder;
                     dispatchInfo.UseContinuous = true;
                 }
@@ -164,15 +164,15 @@ namespace SiliconStudio.Xenko.Physics
                 var bodyA = manifold.Body0;
                 var bodyB = manifold.Body1;
 
-                var colA = (Collider)bodyA?.UserObject;
-                var colB = (Collider)bodyB?.UserObject;
+                var colA = (PhysicsComponent)bodyA?.UserObject;
+                var colB = (PhysicsComponent)bodyB?.UserObject;
 
                 if (colA == null || colB == null)
                 {
                     continue;
                 }
 
-                if (!colA.ContactsAlwaysValid && !colB.ContactsAlwaysValid)
+                if (!colA.ProcessCollisions && !colB.ProcessCollisions)
                 {
                     continue;
                 }
@@ -433,164 +433,35 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        /// <summary>
-        /// Creates the collider.
-        /// </summary>
-        /// <param name="shape">The shape.</param>
-        /// <returns></returns>
-        public Collider CreateCollider(ColliderShape shape)
+        internal void AddCollider(PhysicsComponent component, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
-            var collider = new Collider(shape)
-            {
-                InternalCollider = new BulletSharp.CollisionObject
-                {
-                    CollisionShape = shape.InternalShape,
-                    ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f
-                }
-            };
-
-            collider.InternalCollider.UserObject = collider;
-
-            collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.NoContactResponse;
-
-            if (shape.NeedsCustomCollisionCallback)
-            {
-                collider.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
-            }
-
-            return collider;
+            collisionWorld.AddCollisionObject(component.NativeCollisionObject, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
         }
 
-        /// <summary>
-        /// Creates the rigid body.
-        /// </summary>
-        /// <param name="collider">The collider.</param>
-        /// <returns></returns>
-        public RigidBody CreateRigidBody(ColliderShape collider)
+        internal void RemoveCollider(PhysicsComponent component)
         {
-            var rb = new RigidBody(collider);
-
-            rb.InternalRigidBody = new BulletSharp.RigidBody(0.0f, rb.MotionState, collider.InternalShape, Vector3.Zero)
-            {
-                UserObject = rb
-            };
-
-            rb.InternalCollider = rb.InternalRigidBody;
-
-            rb.InternalCollider.ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f;
-
-            if (collider.NeedsCustomCollisionCallback)
-            {
-                rb.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
-            }
-
-            if (collider.Is2D) //set different defaults for 2D shapes
-            {
-                rb.InternalRigidBody.LinearFactor = new Vector3(1.0f, 1.0f, 0.0f);
-                rb.InternalRigidBody.AngularFactor = new Vector3(0.0f, 0.0f, 1.0f);
-            }
-
-            return rb;
+            collisionWorld.RemoveCollisionObject(component.NativeCollisionObject);
         }
 
-        /// <summary>
-        /// Creates the character.
-        /// </summary>
-        /// <param name="collider">The collider.</param>
-        /// <param name="stepHeight">Height of the step.</param>
-        /// <returns></returns>
-        public Character CreateCharacter(ColliderShape collider, float stepHeight)
-        {
-            var ch = new Character(collider)
-            {
-                InternalCollider = new BulletSharp.PairCachingGhostObject
-                {
-                    CollisionShape = collider.InternalShape
-                }
-            };
-
-            ch.InternalCollider.UserObject = ch;
-
-            ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CharacterObject;
-
-            if (collider.NeedsCustomCollisionCallback)
-            {
-                ch.InternalCollider.CollisionFlags |= BulletSharp.CollisionFlags.CustomMaterialCallback;
-            }
-
-            ch.InternalCollider.ContactProcessingThreshold = !canCcd ? 1e18f : 1e30f;
-
-            ch.KinematicCharacter = new BulletSharp.KinematicCharacterController((BulletSharp.PairCachingGhostObject)ch.InternalCollider, (BulletSharp.ConvexShape)collider.InternalShape, stepHeight);
-
-            return ch;
-        }
-
-        /// <summary>
-        /// Adds the collider to the engine processing pipeline.
-        /// </summary>
-        /// <param name="collider">The collider.</param>
-        /// <param name="group">The group.</param>
-        /// <param name="mask">The mask.</param>
-        public void AddCollider(Collider collider, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
-        {
-            collisionWorld.AddCollisionObject(collider.InternalCollider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
-
-            collider.Simulation = this;
-        }
-
-        /// <summary>
-        /// Removes the collider from the engine processing pipeline.
-        /// </summary>
-        /// <param name="collider">The collider.</param>
-        public void RemoveCollider(Collider collider)
-        {
-            collisionWorld.RemoveCollisionObject(collider.InternalCollider);
-
-            collider.Simulation = null;
-        }
-
-        /// <summary>
-        /// Adds the rigid body to the engine processing pipeline.
-        /// </summary>
-        /// <param name="rigidBody">The rigid body.</param>
-        /// <param name="group">The group.</param>
-        /// <param name="mask">The mask.</param>
-        /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void AddRigidBody(RigidBody rigidBody, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
+        internal void AddRigidBody(RigidbodyComponent rigidBody, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.AddRigidBody(rigidBody.InternalRigidBody, (short)group, (short)mask);
-
-            rigidBody.Simulation = this;
         }
 
-        /// <summary>
-        /// Removes the rigid body from the engine processing pipeline.
-        /// </summary>
-        /// <param name="rigidBody">The rigid body.</param>
-        /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void RemoveRigidBody(RigidBody rigidBody)
+        internal void RemoveRigidBody(RigidbodyComponent rigidBody)
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
             discreteDynamicsWorld.RemoveRigidBody(rigidBody.InternalRigidBody);
-
-            rigidBody.Simulation = null;
         }
 
-        /// <summary>
-        /// Adds the character to the engine processing pipeline.
-        /// </summary>
-        /// <param name="character">The character.</param>
-        /// <param name="group">The group.</param>
-        /// <param name="mask">The mask.</param>
-        /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void AddCharacter(Character character, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
+        internal void AddCharacter(CharacterComponent character, CollisionFilterGroupFlags group, CollisionFilterGroupFlags mask)
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
-            var collider = character.InternalCollider;
+            var collider = character.NativeCollisionObject;
             var action = character.KinematicCharacter;
             discreteDynamicsWorld.AddCollisionObject(collider, (BulletSharp.CollisionFilterGroups)group, (BulletSharp.CollisionFilterGroups)mask);
             discreteDynamicsWorld.AddCharacter(action);
@@ -598,16 +469,11 @@ namespace SiliconStudio.Xenko.Physics
             character.Simulation = this;
         }
 
-        /// <summary>
-        /// Removes the character from the engine processing pipeline.
-        /// </summary>
-        /// <param name="character">The character.</param>
-        /// <exception cref="System.Exception">Cannot perform this action when the physics engine is set to CollisionsOnly</exception>
-        public void RemoveCharacter(Character character)
+        internal void RemoveCharacter(CharacterComponent character)
         {
             if (discreteDynamicsWorld == null) throw new Exception("Cannot perform this action when the physics engine is set to CollisionsOnly");
 
-            var collider = character.InternalCollider;
+            var collider = character.NativeCollisionObject;
             var action = character.KinematicCharacter;
             discreteDynamicsWorld.RemoveCollisionObject(collider);
             discreteDynamicsWorld.RemoveCharacter(action);
@@ -630,7 +496,7 @@ namespace SiliconStudio.Xenko.Physics
         /// or
         /// A Gear constraint always needs two rigidbodies to be created.
         /// </exception>
-        public static Constraint CreateConstraint(ConstraintTypes type, RigidBody rigidBodyA, Matrix frameA, bool useReferenceFrameA = false)
+        public static Constraint CreateConstraint(ConstraintTypes type, RigidbodyComponent rigidBodyA, Matrix frameA, bool useReferenceFrameA = false)
         {
             if (rigidBodyA == null) throw new Exception("Both RigidBodies must be valid");
 
@@ -752,7 +618,7 @@ namespace SiliconStudio.Xenko.Physics
         /// or
         /// Both RigidBodies must be valid
         /// </exception>
-        public static Constraint CreateConstraint(ConstraintTypes type, RigidBody rigidBodyA, RigidBody rigidBodyB, Matrix frameA, Matrix frameB, bool useReferenceFrameA = false)
+        public static Constraint CreateConstraint(ConstraintTypes type, RigidbodyComponent rigidBodyA, RigidbodyComponent rigidBodyB, Matrix frameA, Matrix frameB, bool useReferenceFrameA = false)
         {
             if (rigidBodyA == null || rigidBodyB == null) throw new Exception("Both RigidBodies must be valid");
             //todo check if the 2 rbs are on the same engine instance!
@@ -942,7 +808,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 if (rcb.CollisionObject == null) return result;
                 result.Succeeded = true;
-                result.Collider = (Collider)rcb.CollisionObject.UserObject;
+                result.Collider = (PhysicsComponent)rcb.CollisionObject.UserObject;
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
             }
@@ -971,7 +837,7 @@ namespace SiliconStudio.Xenko.Physics
                     var singleResult = new HitResult
                     {
                         Succeeded = true,
-                        Collider = (Collider)rcb.CollisionObjects[i].UserObject,
+                        Collider = (PhysicsComponent)rcb.CollisionObjects[i].UserObject,
                         Normal = rcb.HitNormalWorld[i],
                         Point = rcb.HitPointWorld[i]
                     };
@@ -1004,7 +870,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 if (rcb.HitCollisionObject == null) return result;
                 result.Succeeded = true;
-                result.Collider = (Collider)rcb.HitCollisionObject.UserObject;
+                result.Collider = (PhysicsComponent)rcb.HitCollisionObject.UserObject;
                 result.Normal = rcb.HitNormalWorld;
                 result.Point = rcb.HitPointWorld;
             }
@@ -1037,7 +903,7 @@ namespace SiliconStudio.Xenko.Physics
                     var singleResult = new HitResult
                     {
                         Succeeded = true,
-                        Collider = (Collider)rcb.CollisionObjects[i].UserObject,
+                        Collider = (PhysicsComponent)rcb.CollisionObjects[i].UserObject,
                         Normal = rcb.HitNormalWorld[i],
                         Point = rcb.HitPointWorld[i]
                     };

@@ -261,7 +261,7 @@ namespace SiliconStudio.Core.Reflection
         /// <returns><c>true</c> if the specified type is dictionary; otherwise, <c>false</c>.</returns>
         public static bool IsDictionary(Type type)
         {
-            return typeof(IDictionary).IsAssignableFrom(type) || type.HasInterface(typeof(IDictionary<,>));
+            return TypeHelper.IsDictionary(type);
         }
 
         public static IEnumerable<KeyValuePair<object, object>> GetGenericEnumerable<TKey, TValue>(IDictionary<TKey, TValue> dictionary)

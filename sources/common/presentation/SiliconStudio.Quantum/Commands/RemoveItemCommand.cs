@@ -9,73 +9,12 @@ using SiliconStudio.Quantum.Contents;
 
 namespace SiliconStudio.Quantum.Commands
 {
-    public class RemoveItemCommand : ActionItemNodeCommand
+    public class RemoveItemCommand : SyncNodeCommand
     {
-        private class RemoveItemActionItem : SimpleNodeCommandActionItem
-        {
-            private object indexToRemove;
-            private object removedObject;
-
-            public RemoveItemActionItem(string name, IContent content, object index, object indexToRemove, IEnumerable<IDirtiable> dirtiables)
-                : base(name, content, index, dirtiables)
-            {
-                this.indexToRemove = indexToRemove;
-            }
-
-            public override bool Do()
-            {
-                var value = Content.Retrieve(Index);
-                var descriptor = TypeDescriptorFactory.Default.Find(value.GetType());
-                var collectionDescriptor = descriptor as CollectionDescriptor;
-                var dictionaryDescriptor = descriptor as DictionaryDescriptor;
-                if (collectionDescriptor != null)
-                {
-                    removedObject = collectionDescriptor.GetValue(value, indexToRemove);
-                    collectionDescriptor.RemoveAt(value, (int)indexToRemove);
-                }
-                else if (dictionaryDescriptor != null)
-                {
-                    removedObject = dictionaryDescriptor.GetValue(value, indexToRemove);
-                    dictionaryDescriptor.Remove(value, indexToRemove);
-                }
-                else
-                    throw new InvalidOperationException("This command cannot be executed on the given object.");
-                Content.Update(value, Index);
-                return true;
-            }
-
-            protected override void FreezeMembers()
-            {
-                base.FreezeMembers();
-                indexToRemove = null;
-                removedObject = null;
-            }
-
-            protected override void UndoAction()
-            {
-                var value = Content.Retrieve(Index);
-                var descriptor = TypeDescriptorFactory.Default.Find(value.GetType());
-                var collectionDescriptor = descriptor as CollectionDescriptor;
-                var dictionaryDescriptor = descriptor as DictionaryDescriptor;
-                if (collectionDescriptor != null)
-                {
-                    if (collectionDescriptor.HasInsert)
-                        collectionDescriptor.Insert(value, (int)indexToRemove, removedObject);
-                    else
-                        collectionDescriptor.Add(value, removedObject);
-                }
-                else if (dictionaryDescriptor != null)
-                {
-                    if (dictionaryDescriptor.ContainsKey(value, indexToRemove))
-                        throw new InvalidOperationException("Unable to undo remove: the dictionary contains the key to re-add.");
-                    dictionaryDescriptor.SetValue(value, indexToRemove, removedObject);
-                }
-                Content.Update(value, Index);
-            }
-        }
+        public const string StaticName = "RemoveItem";
 
         /// <inheritdoc/>
-        public override string Name => "RemoveItem";
+        public override string Name => StaticName;
 
         /// <inheritdoc/>
         public override CombineMode CombineMode => CombineMode.AlwaysCombine;
@@ -102,9 +41,10 @@ namespace SiliconStudio.Quantum.Commands
             return dictionaryDescriptor != null;
         }
 
-        protected override NodeCommandActionItem CreateActionItem(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
+        protected override IActionItem ExecuteSync(IContent content, object index, object parameter, IEnumerable<IDirtiable> dirtiables)
         {
-            return new RemoveItemActionItem(Name, content, index, parameter, dirtiables);
+            content.Remove(index);
+            return null;
         }
     }
 }

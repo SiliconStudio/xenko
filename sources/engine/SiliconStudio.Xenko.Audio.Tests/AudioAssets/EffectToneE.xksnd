@@ -1,10 +1,12 @@
 !SoundEffect
-Id: 77791B33-0037-4B28-B2FB-9A97EAEB04E8
+Id: 77791b33-0037-4b28-b2fb-9a97eaeb04e8
 Tags: []
 Source: ../../../data/tests/audio/e.wav
 ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
 ~Base:
+    ~Id: 2fd6a9d9-17af-4348-b9d0-9ab6b47054c8
     Location: --import--
     Asset: !SoundEffect
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        Source: 

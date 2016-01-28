@@ -140,10 +140,10 @@ namespace SiliconStudio.Presentation.Quantum
         public sealed override bool IsPrimitive => isPrimitive;
 
         /// <inheritdoc/>
-        public sealed override bool HasList => Value != null && CollectionDescriptor.IsCollection(Value.GetType());
+        public sealed override bool HasList => CollectionDescriptor.IsCollection(Type);
 
         /// <inheritdoc/>
-        public sealed override bool HasDictionary => Value != null && DictionaryDescriptor.IsDictionary(Value.GetType());
+        public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
 
         // The previous way to compute HasList and HasDictionary was quite complex, but let's keep it here for history. 
         // To distinguish between lists and items of a list (which have the same TargetNode if the items are primitive types), we check whether the TargetNode is
@@ -426,41 +426,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets the value of this node through a correctly typed property, which is more adapted to binding.
         /// </summary>
-        public virtual T TypedValue
-        {
-            get
-            {
-                return (T)GetModelContentValue();
-            }
-            set
-            {
-                AssertInit();
-                var previousValue = (T)GetModelContentValue();
-                bool hasChanged = !Equals(previousValue, value);
-                var parent = Parent;
-                if (hasChanged)
-                {
-                    if (parent != null)
-                        ((ObservableNode)Parent).NotifyPropertyChanging(Name);
-                }
-                
-                // We set the value even if it has not changed in case it's a reference value and a refresh might be required (new node in a list, etc.)
-                SetModelContentValue(SourceNode, value);
-
-                if (!IsPrimitive)
-                {
-                    Refresh();
-                }
-
-                if (hasChanged)
-                {
-                    if (parent != null)
-                        ((ObservableNode)Parent).NotifyPropertyChanged(Name);
-
-                    Owner.NotifyNodeChanged(Path);
-                }
-            }
-        }
+        public virtual T TypedValue { get { return (T)GetModelContentValue(); } set { AssertInit(); SetModelContentValue(SourceNode, value); } }
 
         /// <inheritdoc/>
         public override Type Type => typeof(T);
@@ -477,8 +443,9 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void ContentChanging(object sender, ContentChangeEventArgs e)
         {
-            if (Equals(e.Index, Index))
+            if (IsValidChange(e))
             {
+                ((ObservableNode)Parent)?.NotifyPropertyChanging(Name);
                 OnPropertyChanging(nameof(TypedValue));
                 OnPropertyChanging(nameof(Override));
             }
@@ -486,9 +453,10 @@ namespace SiliconStudio.Presentation.Quantum
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
-            if (Equals(e.Index, Index))
+            if (IsValidChange(e))
             {
                 EnsureNotDisposed();
+                ((ObservableNode)Parent)?.NotifyPropertyChanged(Name);
 
                 if (!IsPrimitive)
                 {
@@ -498,8 +466,22 @@ namespace SiliconStudio.Presentation.Quantum
                 OnPropertyChanged(nameof(Override));
                 OnPropertyChanged(nameof(TypedValue));
                 OnValueChanged();
+                Owner.NotifyNodeChanged(Path);
             }
         }
 
+        private bool IsValidChange(ContentChangeEventArgs e)
+        {
+            switch (e.ChangeType)
+            {
+                case ContentChangeType.ValueChange:
+                    return Equals(e.Index, Index);
+                case ContentChangeType.CollectionAdd:
+                case ContentChangeType.CollectionRemove:
+                    return HasList || HasDictionary; // TODO: probably not sufficent
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }
