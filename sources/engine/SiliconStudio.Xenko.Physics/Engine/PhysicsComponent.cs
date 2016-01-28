@@ -1,3 +1,6 @@
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using System;
 using System.ComponentModel;
 using SiliconStudio.Core;
@@ -5,7 +8,6 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Physics;
-using System.Collections.Generic;
 using SiliconStudio.Core.MicroThreading;
 
 namespace SiliconStudio.Xenko.Engine
@@ -33,10 +35,8 @@ namespace SiliconStudio.Xenko.Engine
                 ColliderShapeChanged = true;
             };
 
-            FirstCollisionChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
             NewPairChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
             PairEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
-            AllPairsEndedChannel = new Channel<Collision> { Preference = ChannelPreference.PreferSender };
         }
 
         [DataMemberIgnore]
@@ -303,15 +303,7 @@ namespace SiliconStudio.Xenko.Engine
         #region Ignore or Private/Internal
 
         [DataMemberIgnore]
-        public List<Collision> Collisions { get; } = new List<Collision>();
-
-        [DataMemberIgnore]
-        internal Channel<Collision> FirstCollisionChannel;
-
-        public ChannelMicroThreadAwaiter<Collision> FirstCollision()
-        {
-            return FirstCollisionChannel.Receive();
-        }
+        public TrackingCollection<Collision> Collisions { get; } = new TrackingCollection<Collision>();
 
         [DataMemberIgnore]
         internal Channel<Collision> NewPairChannel;
@@ -327,14 +319,6 @@ namespace SiliconStudio.Xenko.Engine
         public ChannelMicroThreadAwaiter<Collision> CollisionEnded()
         {
             return PairEndedChannel.Receive();
-        }
-
-        [DataMemberIgnore]
-        internal Channel<Collision> AllPairsEndedChannel;
-
-        public ChannelMicroThreadAwaiter<Collision> AllCollisionsEnded()
-        {
-            return AllPairsEndedChannel.Receive();
         }
 
         [DataMemberIgnore]
