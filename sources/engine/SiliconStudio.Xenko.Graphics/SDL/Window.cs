@@ -10,9 +10,6 @@ namespace SiliconStudio.Xenko.Graphics.SDL
     using SDL2;
 
     public class Window: IDisposable
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-        , OpenTK.Platform.IWindowInfo
-#endif
     {
 #region Initialization
         /// <summary>
@@ -513,23 +510,14 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         }
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         /// <summary>
-        /// The SDL window handle required when we implement IWindowInfo.
-        /// </summary>
-        IntPtr OpenTK.Platform.IWindowInfo.Handle {
-            get
-            {
-                return SdlHandle;
-            }
-        }
-
-        /// <summary>
         /// Current instance as seen as a IWindowInfo.
         /// </summary>
         public OpenTK.Platform.IWindowInfo WindowInfo
         {
             get
             {
-                return this;
+                    // Create the proper Sdl2WindowInfo context.
+                return OpenTK.Platform.Utilities.CreateSdl2WindowInfo(SdlHandle);
             }
         }
 
