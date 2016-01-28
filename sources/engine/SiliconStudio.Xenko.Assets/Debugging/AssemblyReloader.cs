@@ -3,7 +3,6 @@
 
 using System.Collections.Generic;
 using System.Reflection;
-using SharpYaml.Events;
 using SiliconStudio.Xenko.Assets.Serializers;
 using SiliconStudio.Xenko.Engine;
 
@@ -16,7 +15,6 @@ namespace SiliconStudio.Xenko.Assets.Debugging
             Entity = entity;
             Component = component;
             Index = index;
-            ParsingEvents = null;
         }
 
         public Entity Entity { get; }
@@ -24,8 +22,6 @@ namespace SiliconStudio.Xenko.Assets.Debugging
         public EntityComponent Component { get; }
 
         public int Index { get; }
-
-        public List<ParsingEvent> ParsingEvents { get; set; }
 
         public override string ToString()
         {

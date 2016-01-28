@@ -38,8 +38,8 @@ namespace SiliconStudio.Xenko.Debugger
                 // TODO: Serialize Scene script too (async?) -- doesn't seem necessary even for complex cases
                 // (i.e. referencing assets, entities and/or scripts) but still a ref counting check might be good
                 reloadedComponents.Add(new ReloadedComponentEntryLive(componentToReload.Entity, componentToReload.Index, parsingEvents, componentToReload.Component));
-
             }
+
             foreach (var assembly in assembliesToUnregister)
             {
                 // Unregisters assemblies that have been registered in Package.Load => Package.LoadAssemblyReferencesForPackage
