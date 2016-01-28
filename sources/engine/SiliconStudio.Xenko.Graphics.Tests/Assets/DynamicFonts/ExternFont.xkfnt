@@ -1,5 +1,6 @@
 !SpriteFont
 Id: 05718a05-c688-4340-853a-e22ee854d9cf
+SerializedVersion: {Xenko: 1.5.0-alpha09}
 Tags: []
 Source: ../../../../data/tests/Risaltyp_024.ttf
 FontName: Arial
@@ -12,7 +13,6 @@ CharacterRegions:
     -   Start: ' '
         End: "\x7F"
 AntiAlias: Grayscale
-IsNotPremultiply: false
 Spacing: 0.0
 LineSpacing: 0.0
 UseKerning: false
