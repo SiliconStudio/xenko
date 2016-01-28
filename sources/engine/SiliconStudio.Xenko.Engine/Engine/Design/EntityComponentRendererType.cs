@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Engine.Design
             if (componentType == null) throw new ArgumentNullException("componentType");
             if (rendererType == null) throw new ArgumentNullException("rendererType");
 
-            if (!typeof(EntityComponent).GetTypeInfo().IsAssignableFrom(componentType.GetTypeInfo()))
+            if (!typeof(EntityComponent).GetTypeInfo().IsAssignableFrom(componentType))
             {
                 throw new ArgumentException("Must inherit from EntityComponent", "componentType");
             }
