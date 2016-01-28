@@ -202,6 +202,15 @@ namespace SiliconStudio.Xenko.Engine
             }
         }
 
+        protected internal override void Reset()
+        {
+            if (previousScene != null)
+            {
+                previousScene.Entities.CollectionChanged -= Entities_CollectionChanged;
+            }
+            base.Reset();
+        }
+
         private void Load()
         {
             previousScene = Scene;
@@ -215,15 +224,12 @@ namespace SiliconStudio.Xenko.Engine
                 return;
             }
 
-            // Initialize processors
-            AddProcessor(new HierarchicalProcessor()); // Order: -1000  - Important to pre-register this processor
-            AddProcessor(new TransformProcessor());    // Order: -100
-            AddProcessor(new CameraProcessor());       // Order: -10    - By default, as a scene without a camera is not really possible
+            // Add Loaded entities
             foreach (var entity in Scene.Entities)
                 Add(entity);
 
             // Listen to future changes in Scene.Entities
-            scene.Entities.CollectionChanged += Entities_CollectionChanged;
+            Scene.Entities.CollectionChanged += Entities_CollectionChanged;
 
             // TODO: RendererTypes could be done outside this instance.
             HandleRendererTypes();

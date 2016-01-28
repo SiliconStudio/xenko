@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.UI.Events;
@@ -762,9 +763,9 @@ namespace SiliconStudio.Xenko.UI
         /// <summary>
         /// The list of the children of the element that can be hit by the user.
         /// </summary>
-        protected internal virtual List<UIElement> HitableChildren
+        protected internal virtual FastCollection<UIElement> HitableChildren
         {
-            get { return VisualChildrenCollection.UnderlyingList; }
+            get { return VisualChildrenCollection; }
         }
 
         /// <summary>

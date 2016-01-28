@@ -3,7 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Windows.Input;
+using SiliconStudio.Presentation.Commands;
 
 namespace SiliconStudio.Presentation.Quantum
 {
@@ -136,7 +136,7 @@ namespace SiliconStudio.Presentation.Quantum
         /// </summary>
         /// <param name="name">The name of the command to look for.</param>
         /// <returns>The corresponding command, or <c>null</c> if no command with the given name exists.</returns>
-        ICommand GetCommand(string name);
+        ICommandBase GetCommand(string name);
 
         /// <summary>
         /// Indicates whether this node can be moved.

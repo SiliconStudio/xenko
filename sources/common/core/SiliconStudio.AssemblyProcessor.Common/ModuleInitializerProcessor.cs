@@ -10,7 +10,7 @@ using SiliconStudio.AssemblyProcessor;
 
 namespace SiliconStudio.AssemblyProcessor
 {
-    public class ModuleInitializerProcessor : IAssemblyDefinitionProcessor
+    internal class ModuleInitializerProcessor : IAssemblyDefinitionProcessor
     {
         public bool Process(AssemblyProcessorContext context)
         {

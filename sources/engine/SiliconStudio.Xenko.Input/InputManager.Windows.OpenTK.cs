@@ -45,11 +45,11 @@ namespace SiliconStudio.Xenko.Input
         {
             gameWindow = gameContext.Control;
 
-            gameWindow.Keyboard.KeyDown += Keyboard_KeyDown;
-            gameWindow.Keyboard.KeyUp += Keyboard_KeyUp;
-            gameWindow.Mouse.ButtonDown += Mouse_ButtonDown;
-            gameWindow.Mouse.ButtonUp += Mouse_ButtonUp;
-            gameWindow.Mouse.Move += Mouse_Move;
+            gameWindow.KeyDown += Keyboard_KeyDown;
+            gameWindow.KeyUp += Keyboard_KeyUp;
+            gameWindow.MouseDown += Mouse_ButtonDown;
+            gameWindow.MouseUp += Mouse_ButtonUp;
+            gameWindow.MouseMove += Mouse_Move;
             gameWindow.Resize += GameWindowOnResize;
 
             GameWindowOnResize(null, EventArgs.Empty);

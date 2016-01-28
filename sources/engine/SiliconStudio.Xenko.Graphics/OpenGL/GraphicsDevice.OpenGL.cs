@@ -30,11 +30,13 @@ using DrawBuffersEnum = OpenTK.Graphics.ES30.DrawBufferMode;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
 #if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
 using BeginMode = OpenTK.Graphics.ES30.PrimitiveType;
-using ProgramParameter = OpenTK.Graphics.ES30.GetProgramParameterName;
 #else
+// Use GetProgramParameterName which is what needs to be used with the new version of OpenTK (but not yet ported on Xamarin)
+using GetProgramParameterName = OpenTK.Graphics.ES30.ProgramParameter;
 using FramebufferAttachment = OpenTK.Graphics.ES30.FramebufferSlot;
 #endif
 #else
+using BeginMode = OpenTK.Graphics.OpenGL.PrimitiveType;
 using OpenTK.Graphics.OpenGL;
 #endif
 
@@ -114,8 +116,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private Texture defaultRenderTarget;
         private GraphicsDevice immediateContext;
-        private GraphicsAdapter _adapter;
-        private SwapChainBackend _defaultSwapChainBackend;
         private Rectangle[] _currentScissorRectangles = new Rectangle[MaxBoundRenderTargets];
         private int contextBeginCounter = 0;
 
@@ -128,12 +128,7 @@ namespace SiliconStudio.Xenko.Graphics
         // TODO: Use some LRU scheme to clean up FBOs if not used frequently anymore.
         internal Dictionary<FBOKey, int> existingFBOs = new Dictionary<FBOKey,int>(); 
 
-        /// <summary>
-        /// PrimitiveTopology state
-        /// </summary>
-        private PrimitiveType _currentPrimitiveType = PrimitiveType.Undefined;
-
-        private static GraphicsDevice _currentGraphicsDevice;
+        private static GraphicsDevice _currentGraphicsDevice = null;
 
         [ThreadStatic] private static List<GraphicsDevice> _graphicsDevicesInUse;
 
@@ -740,7 +735,7 @@ namespace SiliconStudio.Xenko.Graphics
             GL.LinkProgram(program);
 
             int linkStatus;
-            GL.GetProgram(program, ProgramParameter.LinkStatus, out linkStatus);
+            GL.GetProgram(program, GetProgramParameterName.LinkStatus, out linkStatus);
 
             if (linkStatus != 1)
                 throw new InvalidOperationException("Error while linking GLSL shaders.");
@@ -830,9 +825,8 @@ namespace SiliconStudio.Xenko.Graphics
             PreDraw();
 
             //GL.DrawArraysIndirect(primitiveType.ToOpenGL(), (IntPtr)0);
+            //FrameDrawCalls++;
             throw new NotImplementedException();
-
-            FrameDrawCalls++;
         }
 
         /// <summary>
@@ -894,16 +888,17 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="alignedByteOffsetForArgs">Offset in <em>pBufferForArgs</em> to the start of the GPU generated primitives.</param>
         public void DrawIndexedInstanced(PrimitiveType primitiveType, Buffer argumentsBuffer, int alignedByteOffsetForArgs = 0)
         {
-            throw new NotImplementedException();
 
             if (argumentsBuffer == null) throw new ArgumentNullException("argumentsBuffer");
 
 #if DEBUG
-            EnsureContextActive();
+            //EnsureContextActive();
 #endif
-            PreDraw();
+            //PreDraw();
 
-            FrameDrawCalls++;
+            //FrameDrawCalls++;
+
+            throw new NotImplementedException();
         }
 
         /// <summary>
@@ -2406,6 +2401,15 @@ namespace SiliconStudio.Xenko.Graphics
 
         private class SwapChainBackend
         {
+            /// <summary>
+            /// Default constructor to initialize fields that are not explicitly set to avoid warnings at compile time.
+            /// </summary>
+            internal SwapChainBackend()
+            {
+                PresentationParameters = null;
+                PresentCount = 0;
+            }
+
             public PresentationParameters PresentationParameters;
             public int PresentCount;
         }
@@ -2428,8 +2432,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             get
             {
-                if (_defaultSwapChainBackend == null) throw new InvalidOperationException(FrameworkResources.NoDefaultRenterTarget);
-                return _defaultSwapChainBackend.PresentationParameters;
+                throw new InvalidOperationException(FrameworkResources.NoDefaultRenterTarget);
             }
         }
 

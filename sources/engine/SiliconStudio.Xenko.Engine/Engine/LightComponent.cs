@@ -16,14 +16,13 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a light to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("LightComponent")]
-    [Display(12000, "Light", Expand = ExpandRule.Once)]
+    [Display("Light", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
     [DefaultEntityComponentProcessor(typeof(LightProcessor))]
+    [ComponentOrder(12000)]
     public sealed class LightComponent : ActivableEntityComponent
     {
         private static int LightComponentIds;
-
-        public static PropertyKey<LightComponent> Key = new PropertyKey<LightComponent>("Key", typeof(LightComponent));
 
         /// <summary>
         /// The default direction of a light vector is (x,y,z) = (0,0,-1)
@@ -151,11 +150,6 @@ namespace SiliconStudio.Xenko.Engine
             }
 
             return true;
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

@@ -264,9 +264,12 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     diff.CustomVisitorsAsset2.Add(new SingleLevelVisitor(typeof(Entity), false));
                     diff.CustomVisitorsAsset2.Add(new SingleLevelVisitor(typeof(EntityComponent), false));
 
+                    // Allow entity to move from base/asset1 to newEntity without any errors
+                    newEntity.Components.AllowReplaceForeignEntity = true;
                     // Merge assets
                     var localResult = AssetMerge.Merge(diff, AssetMergePolicies.MergePolicyAsset2AsNewBaseOfAsset1);
                     localResult.CopyTo(result);
+                    newEntity.Components.AllowReplaceForeignEntity = false;
 
                     // Merge folder
                     // If folder was not changed compare to the base, always take the version coming from the new base, otherwise leave the modified version
@@ -380,7 +383,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
             var entityVisitor = new SingleLevelVisitor(typeof(Entity), true);
             var entityComponentVisitor = new SingleLevelVisitor(typeof(EntityComponent), true);
-
+            
             DataVisitNodeBuilder.Run(TypeDescriptorFactory.Default, newEntity, new List<IDataCustomVisitor>()
                 {
                     entityVisitor,
@@ -408,8 +411,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                             var entityComponent = node.Instance as EntityComponent;
                             if (entityComponent != null)
                             {
+                                var entityComponentId = IdentifiableHelper.GetId(entityComponent);
                                 // TODO: In case of a DataVisitMember node, we need to set an OverrideType to New if we are actually removing a base value
-                                var newEntityComponent = (EntityComponent)linkedEntity.Components.Get(entityComponent.GetDefaultKey());
+                                var newEntityComponent = (EntityComponent)linkedEntity.Components.FirstOrDefault(t => IdentifiableHelper.GetId(t) == entityComponentId);
                                 node.SetValue(newEntityComponent);
                             }
                             else

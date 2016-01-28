@@ -1,14 +1,15 @@
 !Texture
 Id: a9177559-c511-4f71-9e1e-dc54c5a79b0f
-SerializedVersion: 1
+SerializedVersion: {Xenko: 1.4.0-beta}
 Tags: []
 Source: ../../../data/tests/small_uv.png
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
+    ~Id: 31dba379-ac8b-4979-acd8-f6bb29cf551f
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
-        SerializedVersion: 1
+        SerializedVersion: {Xenko: 1.4.0-beta}
         Tags: []
         Source: 
         ImporterId: a60986f3-a594-4278-bd9d-68ea172f0558

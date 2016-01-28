@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         static IEnumerable<Entity> EnumerateChildren(this Entity entity, bool isRecursive)
         {
-            var transformationComponent = entity.Get(TransformComponent.Key);
+            var transformationComponent = entity.Transform;
             if (transformationComponent == null)
                 yield break;
             
