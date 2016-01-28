@@ -50,11 +50,11 @@ namespace SiliconStudio.Xenko.Particles.Materials
         {
             base.InitializeCore(context);
 
-            UpdateShaders();
+            UpdateShaders(context);
         }
 
         private int shadersUpdateCounter;
-        private void UpdateShaders()
+        private void UpdateShaders(RenderContext context)
         {
             // TODO Don't do this every frame!!! <- Propagate changes
             if (--shadersUpdateCounter > 0)
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             if (shaderGeneratorContext == null)
             {
-                shaderGeneratorContext = new ShaderGeneratorContext();
+                shaderGeneratorContext = new ShaderGeneratorContext(context.GraphicsDevice);
                 ParameterCollections.Add(shaderGeneratorContext.Parameters);
             }
 
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         {
             base.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
             
-            UpdateShaders();
+            UpdateShaders(context);
         }
 
 

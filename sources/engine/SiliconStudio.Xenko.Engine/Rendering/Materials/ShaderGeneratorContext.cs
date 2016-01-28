@@ -44,6 +44,8 @@ namespace SiliconStudio.Xenko.Assets
 
         public LoggerResult Log { get; set; }
 
+        private GraphicsDevice graphicsDevice;
+
         /// <summary>
         /// Gets or sets the asset manager.
         /// </summary>
@@ -52,8 +54,10 @@ namespace SiliconStudio.Xenko.Assets
         /// </value>
         public AssetManager Assets { get; set; }
 
-        public ShaderGeneratorContext()
+        
+        public ShaderGeneratorContext(GraphicsDevice graphicsDevice = null)
         {
+            this.graphicsDevice = graphicsDevice;
             Parameters = new ParameterCollection();
             parameterKeyIndices = new Dictionary<ParameterKey, int>();
             declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
@@ -138,7 +142,7 @@ namespace SiliconStudio.Xenko.Assets
             return textureKey;
         }
 
-        public ParameterKey<SamplerState> GetSamplerKey(SamplerStateDescription samplerStateDesc)
+        public ParameterKey<SamplerState> GetSamplerKey(SamplerStateDescription samplerStateDesc, GraphicsDevice graphicsDevice)
         {
             ParameterKey<SamplerState> key;
 
@@ -148,7 +152,7 @@ namespace SiliconStudio.Xenko.Assets
                 declaredSamplerStates.Add(samplerStateDesc, key);
             }
 
-            var samplerState = SamplerState.NewFake(samplerStateDesc);
+            var samplerState = graphicsDevice != null ? SamplerState.New(graphicsDevice, samplerStateDesc) : SamplerState.NewFake(samplerStateDesc);
             Parameters.Set(key, samplerState);
             return key;
         }
@@ -168,7 +172,7 @@ namespace SiliconStudio.Xenko.Assets
                 AddressV = sampler.AddressModeV,
                 AddressW = TextureAddressMode.Wrap
             };
-            return GetSamplerKey(samplerStateDesc);
+            return GetSamplerKey(samplerStateDesc, graphicsDevice);
         }
 
         public void PushOverrides(MaterialOverrides overrides)
