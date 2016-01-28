@@ -109,6 +109,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 // Process constant buffers
                 constantBufferTotalSize = 0;
+                var parameterKeyInfos = new FastListStruct<EffectInstanceParameters.ParameterKeyInfo>(4);
                 for (int layoutIndex = 0; layoutIndex < binder.DescriptorReflection.Layouts.Count; layoutIndex++)
                 {
                     var layout = binder.DescriptorReflection.Layouts[layoutIndex];
@@ -117,8 +118,14 @@ namespace SiliconStudio.Xenko.Rendering
                         var layoutEntry = layout.Layout.Entries[entryIndex];
                         if (layoutEntry.Class == EffectParameterClass.ConstantBuffer)
                         {
-                            var constantBuffer = effect.Bytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Name);
+                            var constantBuffer = effect.Bytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
                             constantBuffers.Add(new ConstantBufferInfo { DescriptorSet = layoutIndex, BindingSlot = entryIndex, DataOffset = constantBufferTotalSize, Description = constantBuffer });
+
+                            foreach (var member in constantBuffer.Members)
+                            {
+                                parameterKeyInfos.Add(new EffectInstanceParameters.ParameterKeyInfo(member.Param.Key, constantBufferTotalSize + member.Offset, member.Size));
+                            }
+
                             constantBufferTotalSize += constantBuffer.Size;
                         }
                     }
@@ -126,14 +133,21 @@ namespace SiliconStudio.Xenko.Rendering
 
                 descriptorSets = new DescriptorSet[binder.DescriptorReflection.Layouts.Count];
                 descriptorSetLayouts = new DescriptorSetLayout[binder.DescriptorReflection.Layouts.Count];
+                int currentBindingSlot = 0;
                 for (int i = 0; i < binder.DescriptorReflection.Layouts.Count; ++i)
                 {
                     var layout = binder.DescriptorReflection.Layouts[i];
                     descriptorSetLayouts[i] = DescriptorSetLayout.New(graphicsDevice, layout.Layout);
+
+                    foreach (var layoutEntry in layout.Layout.Entries)
+                    {
+                        parameterKeyInfos.Add(new EffectInstanceParameters.ParameterKeyInfo(layoutEntry.Key, currentBindingSlot++));
+                    }
                 }
 
                 // Update parameters layout to match what this effect expect
-                Parameters.UpdateLayout(constantBuffers.Select(x => x.Description).ToList(), binder.DescriptorReflection.Layouts.Select(x => x.Layout).ToList());
+
+                Parameters.UpdateLayout(parameterKeyInfos, constantBufferTotalSize, currentBindingSlot);
             }
         }
 

@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering
                     Buffer preallocatedCBuffer = null;
                     foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings)
                     {
-                        if (resourceBinding.Param.KeyName == layoutEntry.Name)
+                        if (resourceBinding.Param.Key == layoutEntry.Key)
                         {
                             if (!bindingFound)
                             {
@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Rendering
                                 // If it's a cbuffer and API without cbuffer offset, we need to preallocate a real cbuffer for emulation
                                 if (resourceBinding.Param.Class == EffectParameterClass.ConstantBuffer)
                                 {
-                                    var constantBuffer = effectBytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Name);
+                                    var constantBuffer = effectBytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
                                     preallocatedCBuffer = Buffer.Cosntant.New(graphicsDevice, constantBuffer.Size);
                                 }
                             }
@@ -125,11 +125,11 @@ namespace SiliconStudio.Xenko.Rendering
             var descriptorSetLayoutBuilder = new DescriptorSetLayoutBuilder();
             foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings
                 .Where(x => x.Param.ResourceGroup == descriptorSetName)
-                .GroupBy(x => new { Name = x.Param.KeyName, Class = x.Param.Class, SlotCount = x.SlotCount })
+                .GroupBy(x => new { Key = x.Param.Key, Class = x.Param.Class, SlotCount = x.SlotCount })
                 .OrderBy(x => x.Key.Class == EffectParameterClass.ConstantBuffer ? 0 : 1))
             {
                 // Note: Putting cbuffer first for now
-                descriptorSetLayoutBuilder.AddBinding(resourceBinding.Key.Name, resourceBinding.Key.Class, resourceBinding.Key.SlotCount);
+                descriptorSetLayoutBuilder.AddBinding(resourceBinding.Key.Key, resourceBinding.Key.Class, resourceBinding.Key.SlotCount);
             }
 
             return descriptorSetLayoutBuilder;

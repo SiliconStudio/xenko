@@ -131,7 +131,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         for (int index = 0; index < descriptorLayout.Entries.Count; index++)
                         {
                             var layoutEntry = descriptorLayout.Entries[index];
-                            if (layoutEntry.Name == materialParameter.Key.Name)
+                            if (layoutEntry.Key == materialParameter.Key)
                             {
                                 resourceBindingSlots.Add(new KeyValuePair<int, ParameterKey>(index, materialParameter.Key));
                                 break;
