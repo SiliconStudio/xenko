@@ -51,8 +51,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             {
                 SDL.SDL_SysWMinfo info = default(SDL.SDL_SysWMinfo);
                 SDL.SDL_VERSION(out info.version);
-                SDL.SDL_bool res = SDL.SDL_GetWindowWMInfo(SdlHandle, ref info);
-                if (res == SDL.SDL_bool.SDL_FALSE)
+                if (SDL.SDL_GetWindowWMInfo(SdlHandle, ref info) == SDL.SDL_bool.SDL_FALSE)
                 {
                     throw new Exception("Cannot get Window information: " + SDL.SDL_GetError());
                 }
