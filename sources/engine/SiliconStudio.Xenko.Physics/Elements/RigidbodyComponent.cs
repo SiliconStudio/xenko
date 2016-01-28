@@ -93,6 +93,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <value>
         /// The collider shape.
         /// </value>
+        [DataMemberIgnore]
         public override ColliderShape ColliderShape
         {
             get
@@ -493,6 +494,14 @@ namespace SiliconStudio.Xenko.Physics
         public void ApplyTorqueImpulse(Vector3 torque)
         {
             InternalRigidBody.ApplyTorqueImpulse(torque);
+        }
+
+        /// <summary>
+        /// Clears all forces being applied to this rigidbody
+        /// </summary>
+        public void ClearForces()
+        {
+            InternalRigidBody.ClearForces();
         }
 
         /// <summary>
