@@ -10,8 +10,6 @@ using System.Text.RegularExpressions;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Mono.Cecil;
-using SiliconStudio.Core;
-using SiliconStudio.Core.Diagnostics;
 
 namespace SiliconStudio.AssemblyProcessor
 {
@@ -20,7 +18,7 @@ namespace SiliconStudio.AssemblyProcessor
     /// </summary>
     public static class RoslynCodeMerger
     {
-        public static AssemblyDefinition GenerateRoslynAssembly(BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> references, List<AssemblyDefinition> memoryReferences, ILogger log, IEnumerable<string> sourceCodes)
+        public static AssemblyDefinition GenerateRoslynAssembly(BaseAssemblyResolver assemblyResolver, AssemblyDefinition assembly, string serializationAssemblyLocation, string signKeyFile, List<string> references, List<AssemblyDefinition> memoryReferences, TextWriter log, IEnumerable<string> sourceCodes)
         {
             var syntaxTrees = sourceCodes.Select(x => CSharpSyntaxTree.ParseText(x));
 
@@ -129,7 +127,7 @@ namespace SiliconStudio.AssemblyProcessor
             }
             catch (Exception)
             {
-                log.Log(new LogMessage("ILRepack", LogMessageType.Error, string.Format("Error while ILRepacking {0}", assembly.Name.Name)));
+                log.WriteLine($"Error while ILRepacking {assembly.Name.Name}");
                 throw;
             }
 

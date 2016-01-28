@@ -4,7 +4,7 @@ using Mono.Cecil;
 
 namespace SiliconStudio.AssemblyProcessor
 {
-    public class OpenSourceSignProcessor : IAssemblyDefinitionProcessor
+    internal class OpenSourceSignProcessor : IAssemblyDefinitionProcessor
     {
         public bool Process(AssemblyProcessorContext context)
         {
