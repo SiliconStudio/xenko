@@ -1,6 +1,6 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 14.0.23107.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "90-Tools", "90-Tools", "{1AE1AC60-5D2F-4CA7-AE20-888F44551185}"
 EndProject
@@ -42,6 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Targets", "00-Targets", 
 		..\sources\targets\Xenko.PostSettings.User.targets = ..\sources\targets\Xenko.PostSettings.User.targets
 		..\sources\targets\Xenko.PreSettings.targets = ..\sources\targets\Xenko.PreSettings.targets
 		..\sources\targets\Xenko.PreSettings.User.targets = ..\sources\targets\Xenko.PreSettings.User.targets
+		..\sources\targets\Xenko.UnitTests.DisableBuild.targets = ..\sources\targets\Xenko.UnitTests.DisableBuild.targets
+		..\sources\targets\Xenko.UnitTests.targets = ..\sources\targets\Xenko.UnitTests.targets
 		..\Xenko.xkpkg = ..\Xenko.xkpkg
 	EndProjectSection
 EndProject
@@ -85,7 +87,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-UserTargets", "00-UserTa
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine", "..\sources\engine\SiliconStudio.Xenko.Engine\SiliconStudio.Xenko.Engine.csproj", "{C121A566-555E-42B9-9B0A-1696529A9088}"
 	ProjectSection(ProjectDependencies) = postProject
-		{7F348346-8AFE-4555-A14D-2290028D7B11} = {7F348346-8AFE-4555-A14D-2290028D7B11}
 		{F2D52EDB-BC17-4243-B06D-33CD20F87A7F} = {F2D52EDB-BC17-4243-B06D-33CD20F87A7F}
 	EndProjectSection
 EndProject
@@ -93,7 +94,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Engine.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Engine.Tests\SiliconStudio.Xenko.Engine.Tests.Windows.csproj", "{A8F8D125-7A22-489F-99BC-9A02F545A17F}"
 	ProjectSection(ProjectDependencies) = postProject
-		{7F348346-8AFE-4555-A14D-2290028D7B11} = {7F348346-8AFE-4555-A14D-2290028D7B11}
 		{39AE9C77-E94B-404F-8768-B6261B3C1E0E} = {39AE9C77-E94B-404F-8768-B6261B3C1E0E}
 		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
 	EndProjectSection
@@ -116,7 +116,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SiliconStudio.Xenko.Importe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Shaders", "..\sources\common\shaders\SiliconStudio.Shaders\SiliconStudio.Shaders.csproj", "{F2D52EDB-BC17-4243-B06D-33CD20F87A7F}"
 	ProjectSection(ProjectDependencies) = postProject
-		{7F348346-8AFE-4555-A14D-2290028D7B11} = {7F348346-8AFE-4555-A14D-2290028D7B11}
 		{5210FB81-B807-49BB-AF0D-31FB6A83A572} = {5210FB81-B807-49BB-AF0D-31FB6A83A572}
 	EndProjectSection
 EndProject
@@ -128,13 +127,6 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Presentation.Tests", "..\sources\common\presentation\SiliconStudio.Presentation.Tests\SiliconStudio.Presentation.Tests.csproj", "{C223FCD7-CDCC-4943-9E11-9C2CC8FA9FC4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Presentation.SampleApp", "..\sources\common\presentation\SiliconStudio.Presentation.SampleApp\SiliconStudio.Presentation.SampleApp.csproj", "{23EC8CE5-C100-4DEB-8276-E5AD79C30C06}"
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProcessor", "..\sources\common\core\SiliconStudio.AssemblyProcessor\SiliconStudio.AssemblyProcessor.csproj", "{7F348346-8AFE-4555-A14D-2290028D7B11}"
-	ProjectSection(ProjectDependencies) = postProject
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E} = {5D778003-7C87-47AC-A6C2-358CCCD8416E}
-	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProcessor.Common", "..\sources\common\core\SiliconStudio.AssemblyProcessor.Common\SiliconStudio.AssemblyProcessor.Common.csproj", "{5D778003-7C87-47AC-A6C2-358CCCD8416E}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SiliconStudio.Xenko.Importer.Assimp", "..\sources\tools\SiliconStudio.Xenko.Importer.Assimp\SiliconStudio.Xenko.Importer.Assimp.vcxproj", "{C2306552-6C42-464C-8981-32FEF4F9458D}"
 EndProject
@@ -178,7 +170,6 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SiliconStudio.Xenko.Assimp.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core", "..\sources\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj", "{0E916AB7-5A6C-4820-8AB1-AA492FE66D68}"
 	ProjectSection(ProjectDependencies) = postProject
-		{7F348346-8AFE-4555-A14D-2290028D7B11} = {7F348346-8AFE-4555-A14D-2290028D7B11}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Mathematics", "..\sources\common\core\SiliconStudio.Core.Mathematics\SiliconStudio.Core.Mathematics.csproj", "{1677B922-CCF0-44DE-B57E-1CDD3D2B8E8A}"
@@ -188,7 +179,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Mathemat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Serialization", "..\sources\common\core\SiliconStudio.Core.Serialization\SiliconStudio.Core.Serialization.csproj", "{5210FB81-B807-49BB-AF0D-31FB6A83A572}"
 	ProjectSection(ProjectDependencies) = postProject
-		{7F348346-8AFE-4555-A14D-2290028D7B11} = {7F348346-8AFE-4555-A14D-2290028D7B11}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Quantum", "..\sources\common\presentation\SiliconStudio.Quantum\SiliconStudio.Quantum.csproj", "{1D4210BD-FA51-4709-951B-50647617F97E}"
@@ -210,6 +200,9 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Shaders.Compiler", "..\sources\engine\SiliconStudio.Xenko.Shaders.Compiler\SiliconStudio.Xenko.Shaders.Compiler.csproj", "{E8B3553F-A79F-4E50-B75B-ACEE771C320C}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Shaders.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Shaders.Tests\SiliconStudio.Xenko.Shaders.Tests.Windows.csproj", "{1BE90177-FE4D-4519-839E-7EB7D78AC973}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Input", "..\sources\engine\SiliconStudio.Xenko.Input\SiliconStudio.Xenko.Input.csproj", "{84DEB606-77ED-49CD-9AED-D2B13C1F5A1E}"
 EndProject
@@ -217,7 +210,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.ActionStack",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Assets", "..\sources\assets\SiliconStudio.Assets\SiliconStudio.Assets.csproj", "{1E54A9A2-4439-4444-AE57-6D2ED3C0DC47}"
 	ProjectSection(ProjectDependencies) = postProject
-		{7F348346-8AFE-4555-A14D-2290028D7B11} = {7F348346-8AFE-4555-A14D-2290028D7B11}
 	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Assets.Tests", "..\sources\assets\SiliconStudio.Assets.Tests\SiliconStudio.Assets.Tests.csproj", "{3E7B5D96-CF71-41EE-8CF0-70D090873390}"
@@ -267,8 +259,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.GameStu
 	ProjectSection(ProjectDependencies) = postProject
 		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
 	EndProjectSection
-EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.AssemblyProcessor.Tests", "..\sources\common\core\SiliconStudio.AssemblyProcessor.Tests\SiliconStudio.AssemblyProcessor.Tests.csproj", "{F69132EA-484B-48D5-9FEC-B4B3C7361C68}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Core.Design", "..\sources\common\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj", "{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2}"
 EndProject
@@ -334,10 +324,19 @@ EndProject
 Project("{D954291E-2A0B-460D-934E-DC6B0785DB48}") = "SiliconStudio.MostRecentlyUsedFiles", "..\sources\editor\SiliconStudio.MostRecentlyUsedFiles\SiliconStudio.MostRecentlyUsedFiles.shproj", "{9AC6D791-811E-4D6A-B08E-93F0093EF268}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.Windows", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests\SiliconStudio.Xenko.Graphics.Tests.Windows.csproj", "{9DE0AA56-0DE7-4ADC-BAAC-CD38B7139EBC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.10_0.Windows", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.10_0\SiliconStudio.Xenko.Graphics.Tests.10_0.Windows.csproj", "{570B0FF9-246F-4C6C-8384-F6BE1887A4A9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Graphics.Tests.11_0.Windows", "..\sources\engine\SiliconStudio.Xenko.Graphics.Tests.11_0\SiliconStudio.Xenko.Graphics.Tests.11_0.Windows.csproj", "{7CA99C7B-E3A2-4DE6-9D6C-314AE39BBBB7}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.ActionStack.Tests", "..\sources\common\presentation\SiliconStudio.ActionStack.Tests\SiliconStudio.ActionStack.Tests.csproj", "{7837D988-B49C-40A2-B68E-D1E3D5DC88EF}"
 EndProject
@@ -350,6 +349,15 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Native", "..\sources\engine\SiliconStudio.Xenko.Native\SiliconStudio.Xenko.Native.csproj", "{1DBBC150-F085-43EF-B41D-27C72D133770}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SiliconStudio.Xenko.Assets.Tests2", "..\sources\engine\SiliconStudio.Xenko.Assets.Tests2\SiliconStudio.Xenko.Assets.Tests2.csproj", "{370ADF53-DFFA-461E-B72A-1302C0A0DE00}"
+	ProjectSection(ProjectDependencies) = postProject
+		{50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698} = {50D1A3BB-4B41-4EF5-8D2F-3618A3B6C698}
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "00-Config", "00-Config", "{7662CECF-2A3D-4DBA-AB3D-77FD8536E7A3}"
+	ProjectSection(SolutionItems) = preProject
+		..\sources\shared\SharedAssemblyInfo.cs = ..\sources\shared\SharedAssemblyInfo.cs
+		..\Xenko.xkpkg = ..\Xenko.xkpkg
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SharedMSBuildProjectFiles) = preSolution
@@ -577,46 +585,6 @@ Global
 		{23EC8CE5-C100-4DEB-8276-E5AD79C30C06}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{23EC8CE5-C100-4DEB-8276-E5AD79C30C06}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{23EC8CE5-C100-4DEB-8276-E5AD79C30C06}.Testing|Win32.ActiveCfg = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.AppStore|Win32.ActiveCfg = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Release|Any CPU.Build.0 = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Release|Win32.ActiveCfg = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Testing|Any CPU.ActiveCfg = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Testing|Any CPU.Build.0 = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
-		{7F348346-8AFE-4555-A14D-2290028D7B11}.Testing|Win32.ActiveCfg = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.AppStore|Win32.ActiveCfg = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Release|Any CPU.Build.0 = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Release|Win32.ActiveCfg = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Testing|Any CPU.ActiveCfg = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Testing|Any CPU.Build.0 = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{C2306552-6C42-464C-8981-32FEF4F9458D}.AppStore|Any CPU.ActiveCfg = Release|Win32
 		{C2306552-6C42-464C-8981-32FEF4F9458D}.AppStore|Mixed Platforms.ActiveCfg = Release|Win32
 		{C2306552-6C42-464C-8981-32FEF4F9458D}.AppStore|Mixed Platforms.Build.0 = Release|Win32
@@ -1529,26 +1497,6 @@ Global
 		{0EA748AF-E1DC-4788-BA50-8BABD56F220C}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{0EA748AF-E1DC-4788-BA50-8BABD56F220C}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
 		{0EA748AF-E1DC-4788-BA50-8BABD56F220C}.Testing|Win32.ActiveCfg = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.AppStore|Any CPU.Build.0 = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.AppStore|Mixed Platforms.Build.0 = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.AppStore|Win32.ActiveCfg = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Debug|Win32.ActiveCfg = Debug|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Release|Any CPU.Build.0 = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Release|Mixed Platforms.Build.0 = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Release|Win32.ActiveCfg = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Testing|Any CPU.ActiveCfg = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Testing|Any CPU.Build.0 = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Testing|Mixed Platforms.ActiveCfg = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Testing|Mixed Platforms.Build.0 = Release|Any CPU
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68}.Testing|Win32.ActiveCfg = Release|Any CPU
 		{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2}.AppStore|Any CPU.ActiveCfg = Release|Any CPU
 		{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2}.AppStore|Any CPU.Build.0 = Release|Any CPU
 		{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2}.AppStore|Mixed Platforms.ActiveCfg = Release|Any CPU
@@ -2305,8 +2253,6 @@ Global
 		{47AFCC2E-E9F0-47D6-9D75-9E646546A92B} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
 		{C223FCD7-CDCC-4943-9E11-9C2CC8FA9FC4} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
 		{23EC8CE5-C100-4DEB-8276-E5AD79C30C06} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
-		{7F348346-8AFE-4555-A14D-2290028D7B11} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
-		{5D778003-7C87-47AC-A6C2-358CCCD8416E} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{C2306552-6C42-464C-8981-32FEF4F9458D} = {6F473FA6-4F8B-4FBA-AE33-EE5AF997D50C}
 		{D81F5C91-D7DB-46E5-BC99-49488FB6814C} = {10D145AF-C8AE-428F-A80F-CA1B591D0DB2}
 		{42780CBD-3FE7-48E3-BD5B-59945EA20137} = {4C142567-C42B-40F5-B092-798882190209}
@@ -2354,7 +2300,6 @@ Global
 		{83A11F1D-C852-4DB5-9DB1-62943D21D5CA} = {75A820AB-0F21-40F2-9448-5D7F495B97A0}
 		{16E02D45-5530-4617-97DC-BC3BDF77DE2C} = {5D2D3BE8-9910-45CA-8E45-95660DA4C563}
 		{0EA748AF-E1DC-4788-BA50-8BABD56F220C} = {5D2D3BE8-9910-45CA-8E45-95660DA4C563}
-		{F69132EA-484B-48D5-9FEC-B4B3C7361C68} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{66581DAD-70AD-4475-AE47-C6C0DF1EC5E2} = {2E93E2B5-4500-4E47-9B65-E705218AB578}
 		{D002FEB1-00A6-4AB1-A83F-1F253465E64D} = {4C142567-C42B-40F5-B092-798882190209}
 		{43A6E62E-1B1C-4630-ABB8-C3F716004645} = {6F473FA6-4F8B-4FBA-AE33-EE5AF997D50C}

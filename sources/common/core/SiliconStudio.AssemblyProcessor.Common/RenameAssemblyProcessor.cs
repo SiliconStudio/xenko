@@ -4,7 +4,7 @@ using Mono.Cecil;
 
 namespace SiliconStudio.AssemblyProcessor
 {
-    public class RenameAssemblyProcessor : IAssemblyDefinitionProcessor
+    internal class RenameAssemblyProcessor : IAssemblyDefinitionProcessor
     {
         private string assemblyName;
 

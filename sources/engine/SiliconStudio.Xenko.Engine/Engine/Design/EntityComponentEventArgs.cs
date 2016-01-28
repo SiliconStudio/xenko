@@ -17,10 +17,10 @@ namespace SiliconStudio.Xenko.Engine.Design
         /// <param name="componentKey">The component key.</param>
         /// <param name="previousComponent">The previous component.</param>
         /// <param name="newComponent">The new component.</param>
-        public EntityComponentEventArgs(Entity entity, PropertyKey componentKey, EntityComponent previousComponent, EntityComponent newComponent)
+        public EntityComponentEventArgs(Entity entity, int index, EntityComponent previousComponent, EntityComponent newComponent)
         {
             Entity = entity;
-            ComponentKey = componentKey;
+            Index = index;
             PreviousComponent = previousComponent;
             NewComponent = newComponent;
         }
@@ -31,9 +31,9 @@ namespace SiliconStudio.Xenko.Engine.Design
         public readonly Entity Entity;
 
         /// <summary>
-        /// The component key
+        /// The index of the component in the entity
         /// </summary>
-        public readonly PropertyKey ComponentKey;
+        public readonly int Index;
 
         /// <summary>
         /// The previous component

@@ -5,7 +5,7 @@ using Mono.Cecil;
 
 namespace SiliconStudio.AssemblyProcessor
 {
-    public interface IAssemblyDefinitionProcessor
+    internal interface IAssemblyDefinitionProcessor
     {
         bool Process(AssemblyProcessorContext context);
     }

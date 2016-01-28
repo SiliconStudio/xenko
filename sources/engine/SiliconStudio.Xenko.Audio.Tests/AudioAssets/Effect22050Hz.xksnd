@@ -4,7 +4,9 @@ Tags: []
 Source: ../../../data/tests/audio/parley22050Hz.wav
 ImporterId: 634842fa-d1db-45c2-b13d-bc11486dae4d
 ~Base:
+    ~Id: 6336aafb-a369-4e3d-bb30-48e05b0b83c6
     Location: --import--
     Asset: !SoundEffect
         Id: 00000000-0000-0000-0000-000000000000
         Tags: []
+        Source: 

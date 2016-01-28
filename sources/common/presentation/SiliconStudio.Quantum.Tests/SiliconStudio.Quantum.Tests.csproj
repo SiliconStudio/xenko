@@ -29,6 +29,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Helper.cs" />
+    <Compile Include="Module.cs" />
     <Compile Include="TestConstruction.cs" />
     <Compile Include="TestDictionaries.cs" />
     <Compile Include="TestLists.cs" />

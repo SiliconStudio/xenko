@@ -92,5 +92,27 @@ namespace SiliconStudio.Quantum.Contents
         /// <param name="newValue">The new value to set.</param>
         /// <param name="index">The index where to update the value, if applicable. index should be <c>null</c> otherwise.</param>
         void Update(object newValue, object index = null);
+
+        /// <summary>
+        /// Adds a new item at the given index to this content, assuming the content is a collection.
+        /// </summary>
+        /// <param name="itemIndex">The index at which the new item must be added.</param>
+        /// <param name="newItem">The new item to add to the collection.</param>
+        void Add(object itemIndex, object newItem);
+
+        /// <summary>
+        /// Adds a new item to this content, assuming the content is a collection.
+        /// </summary>
+        /// <param name="newItem">The new item to add to the collection.</param>
+        void Add(object newItem);
+
+        /// <summary>
+        /// Removes an item from this content, assuming the content is a collection.
+        /// </summary>
+        /// <param name="itemIndex">The index from which the item must be removed.</param>
+        void Remove(object itemIndex);
+
+        // TODO: implement clear if needed
+        //void Clear();
     }
 }

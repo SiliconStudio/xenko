@@ -6,6 +6,7 @@ Source: ../../../data/tests/SmallJpeg.jpg
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Alpha: None
 ~Base:
+    ~Id: f0dc2675-539e-425c-bf92-8a2cfb52f0f7
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

@@ -19,10 +19,10 @@ namespace SiliconStudio.Quantum.Contents
 
         internal object[] BoxedStructureOwnerIndices { get; set; }
 
-        public override void Update(object newValue, object index)
+        public override void Update(object newValue, object index = null)
         {
             var oldValue = Retrieve(index);
-            NotifyContentChanging(index, oldValue, Value);
+            NotifyContentChanging(index, ContentChangeType.ValueChange, oldValue, Value);
             if (index != null)
             {
                 var collectionDescriptor = Descriptor as CollectionDescriptor;
@@ -56,7 +56,7 @@ namespace SiliconStudio.Quantum.Contents
                         BoxedStructureOwner.Update(newValue);
                 }
             }
-            NotifyContentChanged(index, oldValue, Value);
+            NotifyContentChanged(index, ContentChangeType.ValueChange, oldValue, Value);
         }
 
         private static object FetchItem(object enumerable, object index)
