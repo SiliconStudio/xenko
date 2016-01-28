@@ -119,9 +119,16 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             var variableType = variable.Attributes.OfType<AttributeDeclaration>().Where(x => x.Name == "Type").Select(x => (string)x.Parameters[0].Value).FirstOrDefault();
             var variableMap = variable.Attributes.OfType<AttributeDeclaration>().Where(x => x.Name == "Map").Select(x => (string)x.Parameters[0].Value).FirstOrDefault();
 
+            // ParameterKey shouldn't contain only the underlying type in case of arrays (we use slots)
+            var variableTypeWithoutArray = variable.Type;
+            while (variableTypeWithoutArray is ArrayType)
+            {
+                variableTypeWithoutArray = ((ArrayType)variableTypeWithoutArray).Type;
+            }
+
             Write("public static readonly ParameterKey<");
             if (variableType == null)
-                VisitDynamic(variable.Type);
+                VisitDynamic(variableTypeWithoutArray);
             else
                 Write(variableType);
             Write("> ");
@@ -131,7 +138,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             {
                 Write("ParameterKeys.New<");
                 if (variableType == null)
-                    VisitDynamic(variable.Type);
+                    VisitDynamic(variableTypeWithoutArray);
                 else
                     Write(variableType);
                 Write(">(");

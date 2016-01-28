@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
         public override ShaderSource GenerateShaderSource(MaterialGeneratorContext context, MaterialComputeColorKeys baseKeys)
         {
             var key = (ParameterKey<float>)context.GetParameterKey(Key ?? baseKeys.ValueBaseKey ?? MaterialKeys.GenericValueFloat);
-            context.Parameters.Set(key, Value);
+            context.Parameters.SetValueSlow(key, Value);
             UsedKey = key;
 
             return new ShaderClassSource("ComputeColorConstantFloatLink", key);

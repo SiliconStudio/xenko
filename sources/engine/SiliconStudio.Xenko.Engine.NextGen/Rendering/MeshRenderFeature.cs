@@ -26,7 +26,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             foreach (var renderFeature in RenderFeatures)
             {
-                renderFeature.RenderSystem = RenderSystem;
                 renderFeature.AttachRootRenderFeature(this);
                 renderFeature.Initialize();
             }

@@ -15,9 +15,10 @@ class ComputeColorTextureScaledOffsetSampler<LinkType TTextureName,
                                              LinkType TSampler, 
                                              MemberName TRgba, 
                                              float2 TScale, 
-                                             float2 TOffset> : ComputeColor, 
-                                                               DynamicTexture<TTextureName>, 
-                                                               DynamicSampler<TSampler>, 
+                                             float2 TOffset,
+                                             MemberName LocalBuffer> : ComputeColor, 
+                                                               DynamicTexture<TTextureName, LocalBuffer>, 
+                                                               DynamicSampler<TSampler, LocalBuffer>, 
                                                                DynamicTextureStream<TStream>
 {
     override float4 Compute() {

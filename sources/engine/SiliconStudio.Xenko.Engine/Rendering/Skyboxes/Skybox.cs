@@ -20,19 +20,19 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         /// </summary>
         public Skybox()
         {
-            Parameters = new ParameterCollection();
-            DiffuseLightingParameters = new ParameterCollection();
-            SpecularLightingParameters = new ParameterCollection();
+            Parameters = new NextGenParameterCollection();
+            DiffuseLightingParameters = new NextGenParameterCollection();
+            SpecularLightingParameters = new NextGenParameterCollection();
         }
 
         /// <summary>
         /// Gets or sets the parameters compiled for the runtime for the skybox.
         /// </summary>
         /// <value>The parameters.</value>
-        public ParameterCollection Parameters { get; set; }
+        public NextGenParameterCollection Parameters { get; set; }
 
-        public ParameterCollection DiffuseLightingParameters { get; set; }
+        public NextGenParameterCollection DiffuseLightingParameters { get; set; }
 
-        public ParameterCollection SpecularLightingParameters { get; set; }
+        public NextGenParameterCollection SpecularLightingParameters { get; set; }
     }
 }

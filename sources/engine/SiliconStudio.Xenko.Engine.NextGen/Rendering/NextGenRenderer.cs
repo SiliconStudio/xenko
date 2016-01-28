@@ -5,6 +5,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -90,9 +91,16 @@ namespace SiliconStudio.Xenko.Rendering
                     renderSprite.ActiveRenderStages[mainRenderStage.Index] = new ActiveRenderStage("Test");
             };
 
+            var skyboxRenderFeature = new SkyboxRenderFeature();
+            skyboxRenderFeature.ComputeRenderStages += renderObject =>
+            {
+                renderObject.ActiveRenderStages[mainRenderStage.Index] = new ActiveRenderStage("SkyboxEffect");
+            };
+
             // Register top level renderers
             RenderSystem.RenderFeatures.Add(meshRenderFeature);
             RenderSystem.RenderFeatures.Add(spriteRenderFeature);
+            RenderSystem.RenderFeatures.Add(skyboxRenderFeature);
 
             RenderSystem.Views.Add(mainRenderView);
 
@@ -102,6 +110,7 @@ namespace SiliconStudio.Xenko.Rendering
             var sceneInstance = SceneInstance.GetCurrent(Context);
             sceneInstance.Processors.Add(new NextGenModelProcessor(RenderSystem));
             sceneInstance.Processors.Add(new NextGenSpriteProcessor(RenderSystem));
+            sceneInstance.Processors.Add(new SkyboxProcessor(RenderSystem));
 
             lightComponentForwardRenderer = new LightComponentForwardRenderer();
             lightComponentForwardRenderer.Initialize(Context);
@@ -216,6 +225,13 @@ namespace SiliconStudio.Xenko.Rendering
                     {
                         if (rand.Next() % 2 == 0)
                             continue;
+                    }
+
+                    // Cull invisible skyboxes
+                    var renderSkybox = renderObject as RenderSkybox;
+                    if (renderSkybox != null && !renderSkybox.Visible)
+                    {
+                        continue;
                     }
 
                     var viewFeature = view.Features[renderObject.RenderFeature.Index];

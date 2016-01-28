@@ -6,9 +6,9 @@
 /// <remarks>
 /// TEXTURE_KEY: generic LinkType - the name of the ParameterKey that will link to this texture.
 /// </remarks>
-class DynamicSampler<LinkType TSampler>
+class DynamicSampler<LinkType TSampler, MemberName LocalResourceGroup>
 {
-    rgroup PerMaterial
+    rgroup LocalResourceGroup
     {
         [Link("TSampler")]
         stage SamplerState Sampler;

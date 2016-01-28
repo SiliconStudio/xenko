@@ -27,14 +27,14 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         public Material()
         {
-            Parameters = new ParameterCollection();
+            Parameters = new NextGenParameterCollection();
         }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="Material"/> class.
         /// </summary>
         /// <param name="parameters">The parameters.</param>
-        public Material(ParameterCollection parameters)
+        public Material(NextGenParameterCollection parameters)
         {
             Parameters = parameters;
         }
@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets or sets the parameters.
         /// </summary>
         /// <value>The parameters.</value>
-        public ParameterCollection Parameters { get; set; }
+        public NextGenParameterCollection Parameters { get; set; }
 
         /// <summary>
         /// Overrides the cullmode for this material.
@@ -68,6 +68,8 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore]
         public MaterialDescriptor Descriptor { get; set; }
 
+        public object RenderData;
+
         /// <summary>
         /// Creates a new material from the specified descriptor.
         /// </summary>
@@ -88,11 +90,11 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             var material = result.Material;
-            var blendState = material.Parameters.Get(Graphics.Effect.BlendStateKey);
+            var blendState = material.Parameters.GetResourceSlow(Graphics.Effect.BlendStateKey);
             if (blendState != null && blendState.GraphicsDevice == null)
             {
                 var newState = BlendState.New(device, blendState.Description);
-                material.Parameters.Set(Effect.BlendStateKey, newState);
+                material.Parameters.SetResourceSlow(Effect.BlendStateKey, newState);
             }
             // TODO: Add other states?
 

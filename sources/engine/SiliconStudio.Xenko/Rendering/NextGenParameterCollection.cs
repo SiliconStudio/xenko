@@ -1,20 +1,23 @@
 using System;
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Shaders;
+using SiliconStudio.Core.Extensions;
+using SiliconStudio.Core.Serialization;
 
 namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Manage several effect parameters (resources and data). A specific data and resource layout can be forced (usually by the consuming effect).
     /// </summary>
-    public class EffectInstanceParameters : IDisposable
+    [DataSerializer(typeof(NextGenParameterCollection.Serializer))]
+    [DataSerializerGlobal(null, typeof(FastList<ParameterKeyInfo>))]
+    public class NextGenParameterCollection : IDisposable
     {
         private FastListStruct<ParameterKeyInfo> layoutParameterKeyInfos;
-        private FastListStruct<ParameterKeyInfo> parameterKeyInfos = new FastListStruct<ParameterKeyInfo>(4);
+
+        // TODO: Switch to FastListStruct (for serialization)
+        private FastList<ParameterKeyInfo> parameterKeyInfos = new FastList<ParameterKeyInfo>(4);
 
         // Constants and resources
         // TODO: Currently stored in unmanaged array so we can get a pointer that can be updated from outside
@@ -22,6 +25,8 @@ namespace SiliconStudio.Xenko.Rendering
         internal IntPtr DataValues;
         internal int DataValuesSize;
         internal object[] ResourceValues;
+
+        public bool HasLayout => layoutParameterKeyInfos.Items != null;
 
         public void Dispose()
         {
@@ -169,22 +174,70 @@ namespace SiliconStudio.Xenko.Rendering
             return DataValues + parameterKeyInfos[parameter.Index].Offset;
         }
 
-        public void SetValue<T>(ValueParameter<T> parameter, T value) where T : struct
+        public void SetResourceSlow<T>(ParameterKey<T> parameter, T value) where T : class
+        {
+            Set(GetResourceParameter(parameter), value);
+        }
+
+        public T GetResourceSlow<T>(ParameterKey<T> parameter) where T : class
+        {
+            return Get(GetResourceParameter(parameter));
+        }
+
+        public void SetValueSlow<T>(ParameterKey<T> parameter, T value) where T : struct
+        {
+            Set(GetValueParameter(parameter), value);
+        }
+
+        public void SetValueSlow<T>(ParameterKey<T> parameter, T[] values) where T : struct
+        {
+            Set(GetValueParameter(parameter, values.Length), values);
+        }
+
+        public T GetValueSlow<T>(ParameterKey<T> parameter) where T : struct
+        {
+            return Get(GetValueParameter(parameter));
+        }
+
+        public T[] GetValuesSlow<T>(ParameterKey<T> key) where T : struct
+        {
+            var parameter = GetValueParameter(key);
+            var data = GetValuePointer(parameter);
+
+            // Align to float4
+            var stride = (Utilities.SizeOf<T>() + 15) / 16 * 16;
+            var elementCount = (parameterKeyInfos[parameter.Index].Size + stride) / stride;
+            var values = new T[elementCount];
+            for (int i = 0; i < values.Length; ++i)
+            {
+                Utilities.Read(data, ref values[i]);
+                data += stride;
+            }
+
+            return values;
+        }
+
+        public void Set<T>(ValueParameter<T> parameter, T value) where T : struct
         {
             Utilities.Write(DataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
         }
 
-        public void SetValue<T>(ValueParameter<T> parameter, ref T value) where T : struct
+        public void Set<T>(ValueParameter<T> parameter, ref T value) where T : struct
         {
             Utilities.Write(DataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
         }
 
-        public void SetValues<T>(ValueParameter<T> parameter, T[] values) where T : struct
+        public void Set<T>(ValueParameter<T> parameter, T[] values) where T : struct
         {
             var data = GetValuePointer(parameter);
 
             // Align to float4
             var stride = (Utilities.SizeOf<T>() + 15) / 16 * 16;
+            var elementCount = (parameterKeyInfos[parameter.Index].Size + stride) / stride;
+            if (values.Length > elementCount)
+            {
+                throw new IndexOutOfRangeException();
+            }
             for (int i = 0; i < values.Length; ++i)
             {
                 Utilities.Write(data, ref values[i]);
@@ -192,20 +245,58 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        public void SetValue<T>(ResourceParameter<T> parameter, T value) where T : class
+        public void Set<T>(ResourceParameter<T> parameter, T value) where T : class
         {
             ResourceValues[parameterKeyInfos[parameter.Index].BindingSlot] = value;
+        }
+
+        public T Get<T>(ValueParameter<T> parameter) where T : struct
+        {
+            return Utilities.Read<T>(DataValues + parameterKeyInfos[parameter.Index].Offset);
+        }
+
+        public T Get<T>(ResourceParameter<T> parameter) where T : class
+        {
+            return (T)ResourceValues[parameterKeyInfos[parameter.Index].BindingSlot];
+        }
+
+        public void Remove<T>(ParameterKey<T> key)
+        {
+            for (int i = 0; i < parameterKeyInfos.Count; ++i)
+            {
+                if (parameterKeyInfos[i].Key == key)
+                {
+                    parameterKeyInfos.SwapRemoveAt(i);
+                    return;
+                }
+            }
+        }
+
+        public bool ContainsKey(ParameterKey key)
+        {
+            for (int i = 0; i < parameterKeyInfos.Count; ++i)
+            {
+                if (parameterKeyInfos[i].Key == key)
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
         /// Reorganizes internal data and resources to match the given objects, and append extra values at the end.
         /// </summary>
+        /// <param name="layoutParameterKeyInfos"></param>
+        /// <param name="resourceCount"></param>
+        /// <param name="bufferSize"></param>
         /// <param name="constantBuffers"></param>
         /// <param name="descriptorSetLayouts"></param>
-        public void UpdateLayout(FastListStruct<ParameterKeyInfo> layoutParameterKeyInfos, int bufferSize, int resourceCount)
+        public void UpdateLayout(FastList<ParameterKeyInfo> layoutParameterKeyInfos, int resourceCount, int bufferSize)
         {
             // Do a first pass to measure constant buffer size
-            var newParameterKeyInfos = new FastListStruct<ParameterKeyInfo>(Math.Max(1, parameterKeyInfos.Count));
+            var newParameterKeyInfos = new FastList<ParameterKeyInfo>(Math.Max(1, parameterKeyInfos.Count));
             newParameterKeyInfos.AddRange(parameterKeyInfos);
             var processedParameters = new bool[parameterKeyInfos.Count];
 
@@ -292,47 +383,69 @@ namespace SiliconStudio.Xenko.Rendering
 
             Marshal.FreeHGlobal(DataValues);
             DataValues = newDataValues;
+            DataValuesSize = bufferSize;
             ResourceValues = newResourceValues;
         }
 
-        public struct ParameterKeyInfo
+        public class Serializer : ClassDataSerializer<NextGenParameterCollection>
         {
-            // Common
-            public ParameterKey Key;
-
-            // Values
-            public int Offset;
-            public int Size;
-
-            // Resources
-            public int BindingSlot;
-
-            /// <summary>
-            /// Describes a value parameter.
-            /// </summary>
-            /// <param name="key"></param>
-            /// <param name="offset"></param>
-            /// <param name="size"></param>
-            public ParameterKeyInfo(ParameterKey key, int offset, int size)
+            public override void Serialize(ref NextGenParameterCollection parameterCollection, ArchiveMode mode, SerializationStream stream)
             {
-                Key = key;
-                Offset = offset;
-                Size = size;
-                BindingSlot = -1;
-            }
+                stream.Serialize(ref parameterCollection.parameterKeyInfos, mode);
+                stream.Serialize(ref parameterCollection.ResourceValues, mode);
+                stream.Serialize(ref parameterCollection.DataValuesSize, mode);
 
-            /// <summary>
-            /// Describes a resource parameter.
-            /// </summary>
-            /// <param name="key"></param>
-            /// <param name="bindingSlot"></param>
-            public ParameterKeyInfo(ParameterKey key, int bindingSlot)
-            {
-                Key = key;
-                BindingSlot = bindingSlot;
-                Offset = -1;
-                Size = 1;
+                if (parameterCollection.DataValuesSize > 0)
+                {
+                    // If deserializing, allocate if necessary
+                    if (mode == ArchiveMode.Deserialize)
+                        parameterCollection.DataValues = Marshal.AllocHGlobal(parameterCollection.DataValuesSize);
+
+                    stream.Serialize(parameterCollection.DataValues, parameterCollection.DataValuesSize);
+                }
             }
+        }
+
+    }
+
+    [DataContract]
+    public struct ParameterKeyInfo
+    {
+        // Common
+        public ParameterKey Key;
+
+        // Values
+        public int Offset;
+        public int Size;
+
+        // Resources
+        public int BindingSlot;
+
+        /// <summary>
+        /// Describes a value parameter.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="offset"></param>
+        /// <param name="size"></param>
+        public ParameterKeyInfo(ParameterKey key, int offset, int size)
+        {
+            Key = key;
+            Offset = offset;
+            Size = size;
+            BindingSlot = -1;
+        }
+
+        /// <summary>
+        /// Describes a resource parameter.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <param name="bindingSlot"></param>
+        public ParameterKeyInfo(ParameterKey key, int bindingSlot)
+        {
+            Key = key;
+            BindingSlot = bindingSlot;
+            Offset = -1;
+            Size = 1;
         }
     }
 }
