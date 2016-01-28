@@ -4,6 +4,7 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Presentation.Extensions
 {
     using WindowsPoint = System.Windows.Point;
+    using WindowsVector = System.Windows.Vector;
 
     public static class MathExtensions
     {
@@ -27,6 +28,17 @@ namespace SiliconStudio.Presentation.Extensions
         public static WindowsPoint ToWindowsPoint(this Vector2 vector)
         {
             return new WindowsPoint(vector.X, vector.Y);
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Vector2"/> to a <see cref="WindowsVector"/>.
+        /// </summary>
+        /// <param name="vector"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static WindowsVector ToWindowsVector(this Vector2 vector)
+        {
+            return new WindowsVector(vector.X, vector.Y);
         }
     }
 }
