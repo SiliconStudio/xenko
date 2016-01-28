@@ -171,7 +171,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Graphics\BufferPool.cs" />
-    <Compile Include="Rendering\EffectInstanceParameters.cs" />
     <Compile Include="Rendering\Properties.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -218,7 +217,9 @@
     <Compile Include="Rendering\EffectValidator.cs" />
     <Compile Include="Engine.NextGen\Module.cs" />
     <Compile Include="Engine.NextGen\RenderArchitectureApp.cs" />
-    <Compile Include="Rendering\ValueParameter.cs" />
+    <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxProcessor.cs" />
+    <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
     <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\Nodes\ViewNodeReference.cs" />
     <Compile Include="Rendering\INextGenEntityComponentRenderer.cs" />
@@ -247,7 +248,6 @@
     <Compile Include="Rendering\RootRenderFeature.cs" />
     <Compile Include="Rendering\Lights\ForwardLightingRenderFeature.cs" />
     <Compile Include="Rendering\Sprites\SpriteRenderFeature.cs" />
-    <Compile Include="Rendering\ResourceParameter.cs" />
     <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Rendering\Nodes\ObjectNode.cs" />
     <Compile Include="Rendering\Nodes\ViewObjectNode.cs" />

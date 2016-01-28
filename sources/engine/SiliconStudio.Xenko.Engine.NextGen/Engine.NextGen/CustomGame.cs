@@ -13,6 +13,7 @@ using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Colors;
 using SiliconStudio.Xenko.Rendering.Composers;
 using SiliconStudio.Xenko.Rendering.Lights;
+using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
 namespace SiliconStudio.Xenko.Engine.NextGen
@@ -52,7 +53,11 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             SetupScene();
 
             int cubeWidth = 16;
-            
+
+            var skybox = Asset.Load<Skybox>("Skybox");
+            var skyboxEntity = new Entity { new SkyboxComponent { Skybox = skybox } };
+            Scene.Entities.Add(skyboxEntity);
+
             for (int i = 0; i < cubeWidth; ++i)
             {
                 for (int j = 0; j < cubeWidth; ++j)

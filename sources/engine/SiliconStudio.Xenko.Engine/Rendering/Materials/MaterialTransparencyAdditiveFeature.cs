@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             // Use pre-multiplied alpha to support both additive and alpha blending
             var blendDesc = new BlendStateDescription(Blend.One, Blend.InverseSourceAlpha);
             context.Material.HasTransparency = true;
-            context.Parameters.Set(Effect.BlendStateKey, BlendState.NewFake(blendDesc));
+            context.Parameters.SetResourceSlow(Effect.BlendStateKey, BlendState.NewFake(blendDesc));
 
             var alphaColor = alpha.GenerateShaderSource(context, new MaterialComputeColorKeys(MaterialKeys.DiffuseSpecularAlphaBlendMap, MaterialKeys.DiffuseSpecularAlphaBlendValue, Color.White));
 

@@ -49,12 +49,12 @@ namespace SiliconStudio.Xenko.Assets
 
         protected ShaderGeneratorContextBase()
         {
-            Parameters = new ParameterCollection();
+            Parameters = new NextGenParameterCollection();
             parameterKeyIndices = new Dictionary<ParameterKey, int>();
             declaredSamplerStates = new Dictionary<SamplerStateDescription, ParameterKey<SamplerState>>();
         }
 
-        public ParameterCollection Parameters { get; set; }
+        public NextGenParameterCollection Parameters { get; set; }
 
         public ParameterKey GetParameterKey(ParameterKey key)
         {
@@ -103,12 +103,12 @@ namespace SiliconStudio.Xenko.Assets
             var textureKey = (ParameterKey<Texture>)GetParameterKey(key);
             if (texture != null)
             {
-                Parameters.Set(textureKey, texture);
+                Parameters.SetResourceSlow(textureKey, texture);
             }
             else if (defaultTextureValue != null && Assets != null)
             {
                 texture = GenerateTextureFromColor(defaultTextureValue.Value);
-                Parameters.Set(textureKey, texture);
+                Parameters.SetResourceSlow(textureKey, texture);
             }
             return textureKey;
         }
@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Assets
             }
 
             var samplerState = SamplerState.NewFake(samplerStateDesc);
-            Parameters.Set(key, samplerState);
+            Parameters.SetResourceSlow(key, samplerState);
             return key;
         }
     }

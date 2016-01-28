@@ -9,7 +9,7 @@ Meta:
     Owners: []
     Dependencies:
         -   Name: Xenko
-            Version: 1.5.0-beta
+            Version: 1.6.0-beta
             RootAssets: []
 LocalDependencies: []
 Profiles:
@@ -22,7 +22,7 @@ Profiles:
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:
-            -   Id: 5A98E734-DB12-4960-9CD5-B13108941CA6
+            -   Id: 5a98e734-db12-4960-9cd5-b13108941ca6
                 Location: SiliconStudio.Xenko.Engine.NextGen.csproj
                 Type: Library
     -   Name: Windows
@@ -33,7 +33,7 @@ Profiles:
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:
-            -   Id: 5A98E734-DB12-4960-9CD5-B13108941CA6
+            -   Id: 5a98e734-db12-4960-9cd5-b13108941ca6
                 Location: SiliconStudio.Xenko.Engine.NextGen.csproj
                 Type: Executable
 ExplicitFolders: []
@@ -43,5 +43,6 @@ RootAssets:
     - 30f8ca08-885b-417c-9d49-c0d315b2b3ec:Material1
     - 879181e4-ed39-495f-8f1d-e586e650cc82:Model
     - a2e30260-ce47-4837-b469-68fd68eb3274:MainScene
+    - bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox
     - d4f60fa6-e081-4266-a774-10a7771cdf13:Material2
     - f0bb4e18-b761-4e65-b1d5-f59b52cfef0f:SpriteSheet

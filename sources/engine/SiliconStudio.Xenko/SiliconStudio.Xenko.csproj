@@ -121,6 +121,9 @@
     <Compile Include="Effects\ParameterKeys.cs" />
     <Compile Include="Effects\ParameterKeySerializer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Rendering\NextGenParameterCollection.cs" />
+    <Compile Include="Rendering\ResourceParameter.cs" />
+    <Compile Include="Rendering\ValueParameter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\common\core\SiliconStudio.Core\SiliconStudio.Core.csproj">

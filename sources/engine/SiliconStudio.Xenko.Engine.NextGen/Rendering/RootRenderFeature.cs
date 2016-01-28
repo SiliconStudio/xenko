@@ -93,6 +93,16 @@ namespace SiliconStudio.Xenko.Rendering
             return renderObject.ObjectNode;
         }
 
+        protected virtual void OnAddRenderObject(RenderObject renderObject)
+        {
+            
+        }
+
+        protected virtual void OnRemoveRenderObject(RenderObject renderObject)
+        {
+
+        }
+
         internal void AddRenderObject(NextGenRenderSystem renderSystem, RenderObject renderObject)
         {
             renderObject.RenderFeature = this;
@@ -106,10 +116,14 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Add to render object
             RenderObjects.Add(renderObject);
+
+            OnAddRenderObject(renderObject);
         }
 
         internal void RemoveRenderObject(RenderObject renderObject)
         {
+            OnRemoveRenderObject(renderObject);
+
             // Get and clear ordered node index
             var orderedRenderNodeIndex = renderObject.StaticObjectNode.Index;
             renderObject.StaticObjectNode = StaticObjectNodeReference.Invalid;

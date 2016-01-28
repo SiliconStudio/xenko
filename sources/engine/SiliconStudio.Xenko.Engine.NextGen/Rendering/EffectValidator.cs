@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SiliconStudio.Core.Collections;
+using SiliconStudio.Core.IL;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -15,13 +16,13 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public struct EffectValidator
     {
-        internal FastListStruct<KeyValuePair<ParameterKey, object>> EffectValues;
+        internal FastListStruct<EffectParameterEntry> EffectValues;
         private int effectValuesValidated; // This is used when validating
         private bool effectChanged;
 
         public void Initialize()
         {
-            EffectValues = new FastListStruct<KeyValuePair<ParameterKey, object>>(4);
+            EffectValues = new FastListStruct<EffectParameterEntry>(4);
         }
 
         public void BeginEffectValidation()
@@ -30,6 +31,7 @@ namespace SiliconStudio.Xenko.Rendering
             effectChanged = false;
         }
 
+        [RemoveInitLocals]
         public void ValidateParameter<T>(ParameterKey<T> key, T value)
         {
             // Check if value was existing and/or same
@@ -44,13 +46,13 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 // Something was different, let's replace item and clear end of list
-                EffectValues[index] = new KeyValuePair<ParameterKey, object>(key, value);
+                EffectValues[index] = new EffectParameterEntry(key, value);
                 EffectValues.Count = effectValuesValidated;
                 effectChanged = true;
             }
             else
             {
-                EffectValues.Add(new KeyValuePair<ParameterKey, object>(key, value));
+                EffectValues.Add(new EffectParameterEntry(key, value));
                 effectChanged = true;
             }
         }
@@ -65,6 +67,18 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             return !effectChanged && effectValuesValidated == EffectValues.Count;
+        }
+
+        internal struct EffectParameterEntry
+        {
+            public readonly ParameterKey Key;
+            public readonly object Value;
+
+            public EffectParameterEntry(ParameterKey key, object value)
+            {
+                Key = key;
+                Value = value;
+            }
         }
     }
 }
