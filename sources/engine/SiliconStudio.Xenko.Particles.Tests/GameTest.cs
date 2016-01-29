@@ -22,7 +22,8 @@ namespace SiliconStudio.Xenko.Particles.Tests
         // Breaking changes
         //  Please update the version number every time there is a breaking change to the particle engine and write down what has been changed
 //        const int ParticleTestVersion = 1;  // Initial tests
-        const int ParticleTestVersion = 2;  // Changed the tests on purpose to check if the tests fail
+//        const int ParticleTestVersion = 2;  // Changed the tests on purpose to check if the tests fail
+        const int ParticleTestVersion = 3;  // Added actual visual tests, bumping up the version since they are quite different
 
         // Local screenshots
         private readonly string xenkoDir;
@@ -126,11 +127,16 @@ namespace SiliconStudio.Xenko.Particles.Tests
         /// </summary>
         public static void Main()
         {
-            using (var game = new GameTest("GameTest")) { game.Run(); }
+            //using (var game = new GameTest("GameTest")) { game.Run(); }
 
             using (var game = new VisualTestInitializers()) { game.Run(); }
 
             using (var game = new VisualTestSpawners()) { game.Run(); }
+
+            using (var game = new VisualTestGeneral()) { game.Run(); }
+
+            using (var game = new VisualTestUpdaters()) { game.Run(); }
+
         }
     }
 }

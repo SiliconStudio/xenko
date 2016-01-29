@@ -59,9 +59,12 @@ Bundles: []
 TemplateFolders: []
 RootAssets:
     - 1fd5f460-a348-8fdb-11a0-05833fd7b79a:EffectCompileLog
+    - 2281b29e-cfae-4a65-ba18-ffa926b92b68:VisualTestGeneral
     - 9a462c4a-207b-4a29-8ea3-748cb3dad8da:Scene01
     - 9d573a79-80ff-46c3-bb45-dbfec2ac9766:Teapot
+    - 9f7b9af0-3929-4c98-8fdc-c56ecb2add8c:VisualTestMaterials
     - a9ba28ad-d83b-4957-8ed6-42863c1d903c:VisualTestSpawners
     - ae4ecc1b-0b47-4c9d-ac8e-7f9720913084:MainScene
+    - c82d528c-c099-4ddb-ab27-b13b691b262f:VisualTestUpdaters
     - db59d494-42a0-4470-aadf-5c629cd67e3f:Material
     - e28ed348-02ed-45c4-8437-538a39fdbb6c:VisualTestInitializers
