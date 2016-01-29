@@ -21,7 +21,6 @@ namespace SiliconStudio.Core.Collections
     {
         // Fields
         private const int _defaultCapacity = 4;
-        private static readonly T[] _emptyArray;
 
         /// <summary>
         /// Gets the items.
@@ -30,15 +29,9 @@ namespace SiliconStudio.Core.Collections
 
         private int _size;
 
-        // Methods
-        static FastList()
-        {
-            _emptyArray = new T[0];
-        }
-
         public FastList()
         {
-            Items = _emptyArray;
+            Items = ArrayHelper<T>.Empty;
         }
 
         public FastList(IEnumerable<T> collection)
@@ -88,7 +81,7 @@ namespace SiliconStudio.Core.Collections
                     }
                     else
                     {
-                        Items = _emptyArray;
+                        Items = ArrayHelper<T>.Empty;
                     }
                 }
             }
@@ -177,6 +170,7 @@ namespace SiliconStudio.Core.Collections
 
         public void RemoveAt(int index)
         {
+            if (index < 0 || index >= _size) throw new ArgumentOutOfRangeException(nameof(index));
             _size--;
             if (index < _size)
             {
@@ -202,9 +196,14 @@ namespace SiliconStudio.Core.Collections
 
         public T this[int index]
         {
-            get { return Items[index]; }
+            get
+            {
+                if (index < 0 || index >= _size) throw new ArgumentOutOfRangeException(nameof(index));
+                return Items[index];
+            }
             set
             {
+                if (index < 0 || index >= _size) throw new ArgumentOutOfRangeException(nameof(index));
                 Items[index] = value;
             }
         }

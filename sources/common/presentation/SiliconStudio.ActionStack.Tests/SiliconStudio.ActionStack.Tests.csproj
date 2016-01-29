@@ -53,6 +53,7 @@
     <ProjectReference Include="..\SiliconStudio.ActionStack\SiliconStudio.ActionStack.csproj">
       <Project>{E9C3ADC8-3F13-4673-AAA8-A0E97419DB5B}</Project>
       <Name>SiliconStudio.ActionStack</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />

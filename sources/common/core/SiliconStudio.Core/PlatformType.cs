@@ -5,9 +5,20 @@ namespace SiliconStudio.Core
     /// <summary>
     /// Describes the platform operating system.
     /// </summary>
+#if ASSEMBLY_PROCESSOR
+    internal enum PlatformType
+#else
     [DataContract("PlatformType")]
     public enum PlatformType
+#endif
+
     {
+        // ***************************************************************
+        // NOTE: This file is shared with the AssemblyProcessor.
+        // If this file is modified, the AssemblyProcessor has to be
+        // recompiled separately. See build\Xenko-AssemblyProcessor.sln
+        // ***************************************************************
+
         /// <summary>
         /// This is shared across platforms
         /// </summary>

@@ -1,63 +1,75 @@
 !SceneAsset
 Id: ae4ecc1b-0b47-4c9d-ac8e-7f9720913084
-SerializedVersion: 18
+SerializedVersion: {Xenko: 1.6.0-beta}
 Tags: []
 Hierarchy:
+    ~Id: 7afd618a-836d-42e4-bc49-9732f055d4f5
     RootEntities:
         - 6d2b02df-329f-4e05-b299-69f96d39c763
         - ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
     Entities:
         -   Entity:
+                Id: 6d2b02df-329f-4e05-b299-69f96d39c763
                 Name: Camera
                 Components:
-                    CameraComponent.Key:
-                        Projection: Perspective
-                    TransformComponent.Key:
+                    - !TransformComponent
+                        ~Id: 1052ccb0-0fb3-4ff3-8fd7-68ac8f92a050
                         Position: {X: 0.0, Y: 3.0, Z: 0.0}
                         Rotation: {W: 0.707106769, X: -0.707106769, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
-                Id: 6d2b02df-329f-4e05-b299-69f96d39c763
-            Design:
-                Folder: null
+                    - !CameraComponent
+                        ~Id: 995c77b7-9e89-4025-8af5-2ed3914b0e21
+                        Projection: Perspective
+            Design: {}
         -   Entity:
+                Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
                 Name: Ambient light
                 Components:
-                    LightComponent.Key:
-                        Type: !LightAmbient
-                            Color: !ColorRgbProvider
-                                Value: {R: 1.0, G: 1.0, B: 1.0}
-                    TransformComponent.Key:
+                    - !TransformComponent
+                        ~Id: ec825abd-2fd5-4de8-be9d-06574d97516b
                         Position: {X: 0.0, Y: 0.0, Z: 0.0}
                         Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
-                Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
-            Design:
-                Folder: null
-    SceneSettings:
-        GraphicsCompositor: !SceneGraphicsCompositorLayers
-            Cameras:
-                -   Name: null
+                    - !LightComponent
+                        ~Id: bb6e3f81-e808-4c2b-86b3-c807f89fb511
+                        Type: !LightAmbient
+                            ~Id: 4d83786e-6958-470d-867c-46d89913dd2b
+                            Color: !ColorRgbProvider
+                                ~Id: cc6d3f05-0f92-43a4-b8b4-3a8e7b6fff7a
+                                Value: {R: 1.0, G: 1.0, B: 1.0}
+            Design: {}
+SceneSettings:
+    ~Id: 145e1439-d556-4843-bf73-c35d0d602822
+    GraphicsCompositor: !SceneGraphicsCompositorLayers
+        ~Id: 6ada4f85-802a-4cc9-93ce-fc5e9cbb1933
+        Cameras:
+            -   ~Id: 26354480-3331-40fb-bbb8-e15628878ace
+                Name: null
+                Camera: null
+        Layers: []
+        Master:
+            ~Id: 74e281c9-c015-45b3-9086-f4b29b5fe86d
+            Name: SceneGraphicsLayer
+            Output: !MasterRenderFrameProvider {}
+            Renderers:
+                - !ClearRenderFrameRenderer
+                    ~Id: c9f298a1-81fa-45c3-96a1-7cd4b2ef1cef
+                    Color: {R: 0.0, G: 0.0, B: 0.0, A: 1.0}
+                    Output: !CurrentRenderFrameProvider {}
+                - !SceneCameraRenderer
+                    ~Id: eff45b4e-6427-4e96-8dcd-712d997225e1
+                    Mode: !CameraRendererModeForward
+                        ~Id: 2a2da6a7-f4d3-4daf-9f1e-1407abc286b0
                     Camera:
-                        Entity: {Id: 6d2b02df-329f-4e05-b299-69f96d39c763}
-                        Component: CameraComponent.Key
-            Layers: []
-            Master:
-                Name: SceneGraphicsLayer
-                Output: !MasterRenderFrameProvider {}
-                Renderers:
-                    - !ClearRenderFrameRenderer
-                        Color: {R: 0.0, G: 0.0, B: 0.0, A: 1.0}
-                        Output: !CurrentRenderFrameProvider {}
-                    - !SceneCameraRenderer
-                        Mode: !CameraRendererModeForward {}
-                        Camera:
-                            Index: 0
-                        Output: !CurrentRenderFrameProvider {}
-                        Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
-        EditorSettings:
-            GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
-            SceneUnit: 1.0
-            Mode: !SceneEditorGraphicsModeLDRSettings
-                BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}
+                        Index: 0
+                    Output: !CurrentRenderFrameProvider {}
+                    Viewport: {X: 0.0, Y: 0.0, Width: 100.0, Height: 100.0}
+    EditorSettings:
+        ~Id: d11535a0-428c-4640-8780-661c96090630
+        GridColor: {R: 0.7058824, G: 0.7058824, B: 0.7058824}
+        SceneUnit: 1.0
+        Mode: !SceneEditorGraphicsModeLDRSettings
+            ~Id: 74797e16-bf68-4a4d-9ee4-98f58d7b0dda
+            BackgroundColor: {R: 0.196078435, G: 0.196078435, B: 0.196078435}

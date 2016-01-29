@@ -15,13 +15,12 @@ namespace SiliconStudio.Xenko.Engine
     /// Add an <see cref="UIElement"/> to an <see cref="Entity"/>.
     /// </summary>
     [DataContract("UIComponent")]
-    [Display(9800, "UI", Expand = ExpandRule.Once)]
+    [Display("UI", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(UIComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(UIComponentProcessor))]
-    public class UIComponent : ActivableEntityComponent
+    [ComponentOrder(9800)]
+    public sealed class UIComponent : ActivableEntityComponent
     {
-        public static PropertyKey<UIComponent> Key = new PropertyKey<UIComponent>("Key", typeof(UIComponent));
-
         public UIComponent()
         {
             SnapText = true;
@@ -84,10 +83,5 @@ namespace SiliconStudio.Xenko.Engine
         [Display("Snap Text")]
         [DefaultValue(true)]
         public bool SnapText { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

@@ -2,6 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Runtime.InteropServices;
 
@@ -17,7 +18,8 @@ namespace SiliconStudio.ExecServer
         /// </summary>
         /// <param name="executablePath">Path of the executable to launch</param>
         /// <param name="arguments">Arguments of the executable</param>
-        public static bool LaunchProcess(string executablePath, string arguments)
+        /// <param name="processId">The process id returned if launch was successfull</param>
+        public static bool LaunchProcess(string executablePath, string arguments, out IntPtr processHandle, out int processId)
         {
             //var startInfo = new ProcessStartInfo
             //{
@@ -39,7 +41,16 @@ namespace SiliconStudio.ExecServer
             var tSec = new SECURITY_ATTRIBUTES();
             pSec.nLength = Marshal.SizeOf(pSec);
             tSec.nLength = Marshal.SizeOf(tSec);
-            return CreateProcessW(executablePath, "\"" + executablePath + "\" " + arguments, ref pSec, ref tSec, false, CREATE_DEFAULT_ERROR_MODE | CREATE_NO_WINDOW | DETACHED_PROCESS, IntPtr.Zero, Path.GetDirectoryName(executablePath), ref lpStartupInfo, out pInfo);
+            var result =  CreateProcessW(executablePath, "\"" + executablePath + "\" " + arguments, ref pSec, ref tSec, false, CREATE_DEFAULT_ERROR_MODE | CREATE_NO_WINDOW | DETACHED_PROCESS, IntPtr.Zero, Path.GetDirectoryName(executablePath), ref lpStartupInfo, out pInfo);
+
+            processHandle = IntPtr.Zero;
+            processId = 0;
+            if (result)
+            {
+                processHandle = pInfo.hProcess;
+                processId = pInfo.dwProcessId;
+            }
+            return result;
         }
 
         [DllImport("kernel32.dll", EntryPoint = "CreateProcessW", CharSet = CharSet.Unicode)]

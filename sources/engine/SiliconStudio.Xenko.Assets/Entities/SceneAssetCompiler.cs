@@ -22,9 +22,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             foreach (var entityData in asset.Hierarchy.Entities)
             {
                 // TODO: How to make this code pluggable?
-                var modelComponent = entityData.Entity.Components.Get(ModelComponent.Key);
-                var spriteComponent = entityData.Entity.Components.Get(SpriteComponent.Key);
-                var scriptComponent = entityData.Entity.Components.Get(ScriptComponent.Key);
+                var modelComponent = entityData.Entity.Components.Get<ModelComponent>();
+                var spriteComponent = entityData.Entity.Components.Get<SpriteComponent>();
+                var scriptComponent = entityData.Entity.Components.Get<ScriptComponent>();
 
                 // determine the underlying source asset exists
                 if (modelComponent != null)
@@ -50,15 +50,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 {
                     result.Warning(string.Format("The entity [{0}:{1}] has a sprite component that does not reference any sprite group.", urlInStorage, entityData.Entity.Name));
                 }
-                if (scriptComponent != null)
+                if (scriptComponent is UnloadableComponent)
                 {
-                    foreach (var script in scriptComponent.Scripts)
-                    {
-                        if (script is UnloadableScript)
-                        {
-                            result.Error(string.Format("The entity [{0}:{1}] reference an invalid script '{2}'.", urlInStorage, entityData.Entity.Name, script.GetType().Name));
-                        }
-                    }
+                    result.Error(string.Format("The entity [{0}:{1}] reference an invalid script '{2}'.", urlInStorage, entityData.Entity.Name, scriptComponent.GetType().Name));
                 }
             }
 

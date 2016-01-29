@@ -2,7 +2,6 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
-using SiliconStudio.Core;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Rendering.Sprites;
 
@@ -19,21 +18,21 @@ namespace SiliconStudio.Xenko.Engine.Processors
         /// Initializes a new instance of the <see cref="SpriteProcessor"/> class.
         /// </summary>
         public BackgroundComponentProcessor()
-            : base(BackgroundComponent.Key)
         {
             Backgrounds = new List<BackgroundComponent>();
         }
 
-        protected override BackgroundComponent GenerateAssociatedData(Entity entity)
+        protected override BackgroundComponent GenerateComponentData(Entity entity, BackgroundComponent component)
         {
-            return entity.Get<BackgroundComponent>();
+            return component;
         }
 
         public override void Draw(RenderContext gameTime)
         {
             Backgrounds.Clear();
-            foreach (var background in enabledEntities.Values)
+            foreach (var backgroundKeyPair in ComponentDatas)
             {
+                var background = backgroundKeyPair.Key;
                 if (background.Enabled)
                 {
                     Backgrounds.Add(background);
