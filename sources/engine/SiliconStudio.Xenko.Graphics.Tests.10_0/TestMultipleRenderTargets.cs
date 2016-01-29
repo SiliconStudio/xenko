@@ -63,11 +63,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                     UseCustomViewMatrix = true,
                     ViewMatrix = Matrix.LookAtRH(new Vector3(2,1,2), new Vector3(), Vector3.UnitY),
                 },
-                new TransformComponent
-                {
-                    Position = new Vector3(2,1,2)
-                }
             };
+            mainCamera.Transform.Position = new Vector3(2, 1, 2);
 
             CreatePipeline();
 
@@ -88,7 +85,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                         }
                     }
                 },
-                new TransformComponent()
             };
 
             var ambientLight = new Entity("Ambient Light") { new LightComponent { Type = new LightAmbient(), Intensity = 1f } };

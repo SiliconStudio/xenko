@@ -30,6 +30,12 @@ namespace SiliconStudio.Core.Storage
     public unsafe struct ObjectIdBuilder
 #endif
     {
+        // ***************************************************************
+        // NOTE: This file is shared with the AssemblyProcessor.
+        // If this file is modified, the AssemblyProcessor has to be
+        // recompiled separately. See build\Xenko-AssemblyProcessor.sln
+        // ***************************************************************
+
         private readonly uint seed;
         const uint C1 = 0x239b961b;
         const uint C2 = 0xab0e9789;

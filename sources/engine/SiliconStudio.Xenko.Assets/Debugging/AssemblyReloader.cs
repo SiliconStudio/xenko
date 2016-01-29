@@ -1,22 +1,30 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.Reflection;
-using SharpYaml.Events;
 using SiliconStudio.Xenko.Assets.Serializers;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Assets.Debugging
 {
+    /// <summary>
+    /// This class contains information about each component that must be reloaded when the game assemblies are being reloaded.
+    /// </summary>
     public class ComponentToReload
     {
+        /// <summary>
+        /// Initializes a new instance of the <see cref="ComponentToReload"/> class.
+        /// </summary>
+        /// <param name="entity">The entity containing the component to reload.</param>
+        /// <param name="component">The component to reload.</param>
+        /// <param name="index">The index of the component to reload in the collection of components of the entity.</param>
         public ComponentToReload(Entity entity, EntityComponent component, int index)
         {
             Entity = entity;
             Component = component;
             Index = index;
-            ParsingEvents = null;
         }
 
         public Entity Entity { get; }
@@ -25,20 +33,9 @@ namespace SiliconStudio.Xenko.Assets.Debugging
 
         public int Index { get; }
 
-        public List<ParsingEvent> ParsingEvents { get; set; }
-    }
-
-    public class ReloadedComponentEntry
-    {
-        public readonly Entity Entity;
-        public readonly int ComponentIndex;
-        public readonly List<ParsingEvent> YamlEvents;
-
-        public ReloadedComponentEntry(Entity entity, int componentIndex, List<ParsingEvent> yamlEvents)
+        public override string ToString()
         {
-            Entity = entity;
-            ComponentIndex = componentIndex;
-            YamlEvents = yamlEvents;
+            return $"{Entity} [{Index}] {Component}";
         }
     }
 
@@ -48,11 +45,11 @@ namespace SiliconStudio.Xenko.Assets.Debugging
     public static class AssemblyReloader
     {
         /// <summary>
-        /// Collects all the component to reload from a collection of entities, 
+        /// Collects all the components to reload from a collection of entities.
         /// </summary>
-        /// <param name="entities"></param>
-        /// <param name="loadedAssembliesSet"></param>
-        /// <returns></returns>
+        /// <param name="entities">The entities to process.</param>
+        /// <param name="loadedAssembliesSet">The collection of assemblies containing component types thatshould be reloaded.</param>
+        /// <returns>A collection of <see cref="ComponentToReload"/>.</returns>
         public static List<ComponentToReload> CollectComponentsToReload(List<Entity> entities, HashSet<Assembly> loadedAssembliesSet)
         {
             var result = new List<ComponentToReload>();

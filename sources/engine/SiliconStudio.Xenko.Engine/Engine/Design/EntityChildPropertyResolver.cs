@@ -150,7 +150,7 @@ namespace SiliconStudio.Xenko.Engine.Design
                 for (int i = 0; i < components.Count; i++)
                 {
                     var component = components[i];
-                    if (componentTypeInfo.IsAssignableFrom(component.GetType()))
+                    if (componentTypeInfo.IsAssignableFrom(component.GetType().GetTypeInfo()))
                     {
                         return component;
                     }
@@ -167,7 +167,7 @@ namespace SiliconStudio.Xenko.Engine.Design
                 for (int i = 0; i < components.Count; i++)
                 {
                     var component = components[i];
-                    if (componentTypeInfo.IsAssignableFrom(component.GetType()))
+                    if (componentTypeInfo.IsAssignableFrom(component.GetType().GetTypeInfo()))
                     {
                         components[i] = (EntityComponent)data;
                         notSet = false;
