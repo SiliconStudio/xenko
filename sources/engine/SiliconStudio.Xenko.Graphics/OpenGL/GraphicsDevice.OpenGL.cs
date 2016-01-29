@@ -2378,18 +2378,25 @@ namespace SiliconStudio.Xenko.Graphics
                 presentationParameters.BackBufferFormat.IsSRgb() ? presentationParameters.BackBufferFormat.ToNonSRgb() : presentationParameters.BackBufferFormat, TextureFlags.RenderTarget | Texture.TextureFlagsCustomResourceId);
             windowProvidedRenderTexture.Reload = graphicsResource => { };
 
-            // Extract FBO render target
-            int renderTargetTextureId;
-            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
-            windowProvidedRenderTexture.resourceId = renderTargetTextureId;
+            if (windowProvidedFrameBuffer != 0)
+            {
+                // Extract FBO render target
+                int renderTargetTextureId;
+                GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.ColorAttachment0, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
+                windowProvidedRenderTexture.resourceId = renderTargetTextureId;
+            }
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLCORE
             windowProvidedDepthTexture = Texture.New2D(this, width, height, 1, presentationParameters.DepthStencilFormat, TextureFlags.DepthStencil | Texture.TextureFlagsCustomResourceId);
             windowProvidedDepthTexture.Reload = graphicsResource => { };
 
-            // Extract FBO depth target
-            GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
-            windowProvidedDepthTexture.resourceId = renderTargetTextureId;
+            if (windowProvidedFrameBuffer != 0)
+            {
+                // Extract FBO depth target
+                int renderTargetTextureId;
+                GL.GetFramebufferAttachmentParameter(FramebufferTarget.Framebuffer, FramebufferAttachment.DepthAttachment, FramebufferParameterName.FramebufferAttachmentObjectName, out renderTargetTextureId);
+                windowProvidedDepthTexture.resourceId = renderTargetTextureId;
+            }
 #endif
 
             RootDevice.existingFBOs[new FBOKey(windowProvidedDepthTexture, new[] { windowProvidedRenderTexture })] = windowProvidedFrameBuffer;
