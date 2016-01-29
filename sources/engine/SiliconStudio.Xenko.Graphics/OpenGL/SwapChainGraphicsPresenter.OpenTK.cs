@@ -18,7 +18,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         public SwapChainGraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters) : base(device, presentationParameters)
         {
+            device.Begin();
             device.InitDefaultRenderTarget(presentationParameters);
+            device.End();
             backBuffer = device.DefaultRenderTarget;
             DepthStencilBuffer = device.windowProvidedDepthTexture;
         }
