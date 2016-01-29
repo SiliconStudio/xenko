@@ -227,13 +227,6 @@ namespace SiliconStudio.Xenko.Rendering
                             continue;
                     }
 
-                    // Cull invisible skyboxes
-                    var renderSkybox = renderObject as RenderSkybox;
-                    if (renderSkybox != null && !renderSkybox.Visible)
-                    {
-                        continue;
-                    }
-
                     var viewFeature = view.Features[renderObject.RenderFeature.Index];
 
                     var renderFeature = renderObject.RenderFeature;

@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// <summary>
     /// A default entity processor for <see cref="SkyboxComponent"/>.
     /// </summary>
-    public class SkyboxProcessor : EntityProcessor<SkyboxComponent>
+    public class SkyboxProcessor : EntityProcessor<SkyboxComponent, RenderSkybox>
     {
         private readonly NextGenRenderSystem renderSystem;
 
@@ -27,40 +27,40 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         /// Gets the active skybox background.
         /// </summary>
         /// <value>The active skybox background.</value>
-        public RenderSkybox ActiveSkybox { get; } = new RenderSkybox();
+        public RenderSkybox ActiveSkybox { get; private set; }
 
-        protected override SkyboxComponent GenerateComponentData(Entity entity, SkyboxComponent component)
+        protected override RenderSkybox GenerateComponentData(Entity entity, SkyboxComponent component)
         {
-            return component;
-        }
-
-        protected internal override void OnSystemAdd()
-        {
-            renderSystem.RenderObjects.Add(ActiveSkybox);
-        }
-
-        protected internal override void OnSystemRemove()
-        {
-            renderSystem.RenderObjects.Remove(ActiveSkybox);
+            return new RenderSkybox();
         }
 
         public override void Draw(RenderContext context)
         {
-            // Start by making it not visible
-            ActiveSkybox.Visible = false;
+            var previousSkybox = ActiveSkybox;
 
+            // Start by making it not visible
             foreach (var entityKeyPair in ComponentDatas)
             {
-                var skybox = entityKeyPair.Value;
-                if (skybox.Enabled && skybox.Skybox != null)
+                var skyboxComponent = entityKeyPair.Key;
+                var renderSkybox = entityKeyPair.Value;
+                if (skyboxComponent.Enabled && skyboxComponent.Skybox != null)
                 {
                     // Select the first active skybox
-                    ActiveSkybox.Visible = true;
-                    ActiveSkybox.Skybox = skybox.Skybox;
-                    ActiveSkybox.Background = skybox.Background;
-                    ActiveSkybox.Intensity = skybox.Intensity;
+                    renderSkybox.Skybox = skyboxComponent.Skybox;
+                    renderSkybox.Background = skyboxComponent.Background;
+                    renderSkybox.Intensity = skyboxComponent.Intensity;
+
+                    ActiveSkybox = renderSkybox;
                     break;
                 }
+            }
+
+            if (ActiveSkybox != previousSkybox)
+            {
+                if (previousSkybox != null)
+                    renderSystem.RenderObjects.Remove(previousSkybox);
+                if (ActiveSkybox != null)
+                    renderSystem.RenderObjects.Add(ActiveSkybox);
             }
         }
     }
