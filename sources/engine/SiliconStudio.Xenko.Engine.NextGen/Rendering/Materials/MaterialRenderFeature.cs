@@ -131,8 +131,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     var renderEffect = materialInfo.RenderEffect;
                     var descriptorLayout = renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerMaterial");
 
-                    var parameterKeyInfos = new FastList<ParameterKeyInfo>();
-                    DynamicEffectInstance.ProcessResources(parameterKeyInfos, descriptorLayout, ref materialInfo.ResourceCount);
+                    var parameterCollectionLayout = new NextGenParameterCollectionLayout();
+                    parameterCollectionLayout.ProcessResources(descriptorLayout);
+                    materialInfo.ResourceCount = parameterCollectionLayout.ResourceCount;
 
                     // Find material cbuffer
                     var materialConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerMaterial");
@@ -141,11 +142,12 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     if (materialConstantBuffer != null)
                     {
                         materialInfo.ConstantBufferReflection = materialConstantBuffer;
-                        DynamicEffectInstance.ProcessConstantBuffer(parameterKeyInfos, materialConstantBuffer, ref materialInfo.Resources.ConstantBufferSize);
+                        parameterCollectionLayout.ProcessConstantBuffer(materialConstantBuffer);
+                        materialInfo.Resources.ConstantBufferSize = parameterCollectionLayout.BufferSize;
                     }
 
                     // Update material parameters layout to what is expected by effect
-                    material.Parameters.UpdateLayout(parameterKeyInfos, materialInfo.ResourceCount, materialInfo.Resources.ConstantBufferSize);
+                    material.Parameters.UpdateLayout(parameterCollectionLayout);
 
                     materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerMaterial"), renderEffect.Effect.Bytecode, "PerMaterial");
                 }
