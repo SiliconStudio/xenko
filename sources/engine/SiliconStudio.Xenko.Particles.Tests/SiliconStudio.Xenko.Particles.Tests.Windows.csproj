@@ -160,6 +160,7 @@
     <Compile Include="SimpleTest.cs" />
     <Compile Include="VisualTestGeneral.cs" />
     <Compile Include="VisualTestInitializers.cs" />
+    <Compile Include="VisualTestMaterials.cs" />
     <Compile Include="VisualTestSpawners.cs" />
     <Compile Include="VisualTestUpdaters.cs" />
   </ItemGroup>

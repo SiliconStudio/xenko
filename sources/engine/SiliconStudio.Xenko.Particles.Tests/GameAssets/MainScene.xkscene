@@ -10,6 +10,7 @@ Hierarchy:
         - d5a8b0cd-e46b-49fc-afad-f82a3de522a7
         - 5a2e386a-dd36-44fc-9fce-50aba2fd9c59
         - eb2d65ff-23f0-44d4-b70d-172afd53f1fa
+        - 750a3632-124b-4b84-9ba5-d7724c051dcc
     Entities:
         -   Entity:
                 Id: 5a2e386a-dd36-44fc-9fce-50aba2fd9c59
@@ -109,6 +110,24 @@ Hierarchy:
                         ~Id: 1ddedd9b-be04-4d67-a3ea-3cc74bde2ea3
                         Position: {X: 0.0, Y: 3.0, Z: 4.36206532}
                         Rotation: {W: 0.985297143, X: -0.1708495, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+            Design: {}
+        -   Entity:
+                Id: 750a3632-124b-4b84-9ba5-d7724c051dcc
+                Name: uvGradient
+                Components:
+                    SpriteComponent.Key:
+                        ~Id: 8bf7f7a4-0984-4cfe-8b74-5225cad085b7
+                        SpriteProvider: !SpriteFromTexture
+                            ~Id: 44c4e79f-6aa1-4b46-8dba-778123182084
+                            Texture: 0147158f-d3bb-45bc-bad3-90c3b5ed2080:uvGradient
+                            Center: {X: 0.0, Y: 0.0}
+                        Color: {R: 1.0, G: 1.0, B: 1.0, A: 1.0}
+                    TransformComponent.Key:
+                        ~Id: 7417ceaf-4835-460f-bc6b-93007e0d720d
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 0.707106769, X: 0.707106769, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
             Design: {}
