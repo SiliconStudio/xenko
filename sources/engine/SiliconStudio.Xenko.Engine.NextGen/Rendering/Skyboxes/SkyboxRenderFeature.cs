@@ -96,16 +96,16 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                 if (!parameters.HasLayout)
                 {
-                    var parameterKeyInfos = new FastList<ParameterKeyInfo>();
-                    DynamicEffectInstance.ProcessResources(parameterKeyInfos, descriptorLayoutBuilder, ref resourceCount);
+                    var parameterCollectionLayout = new NextGenParameterCollectionLayout();
+                    parameterCollectionLayout.ProcessResources(descriptorLayoutBuilder);
 
                     // Process cbuffer (if any)
                     if (lightingConstantBuffer != null)
                     {
-                        DynamicEffectInstance.ProcessConstantBuffer(parameterKeyInfos, lightingConstantBuffer, ref totalBufferSize);
+                        parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
                     }
 
-                    parameters.UpdateLayout(parameterKeyInfos, resourceCount, totalBufferSize);
+                    parameters.UpdateLayout(parameterCollectionLayout);
 
                     renderSkybox.RotationParameter = parameters.GetValueParameter(SkyboxKeys.Rotation);
                     renderSkybox.SkyMatrixParameter = parameters.GetValueParameter(SkyboxKeys.SkyMatrix);

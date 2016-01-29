@@ -108,14 +108,12 @@ namespace SiliconStudio.Xenko.Rendering
                 binder.Compile(graphicsDevice, effect.Bytecode, layouts);
 
                 // Process constant buffers
-                constantBufferTotalSize = 0;
-                int currentBindingSlot = 0;
-                var parameterKeyInfos = new FastList<ParameterKeyInfo>(4);
+                var parameterCollectionLayout = new NextGenParameterCollectionLayout();
                 for (int layoutIndex = 0; layoutIndex < binder.DescriptorReflection.Layouts.Count; layoutIndex++)
                 {
                     var layout = binder.DescriptorReflection.Layouts[layoutIndex].Layout;
 
-                    ProcessResources(parameterKeyInfos, layout, ref currentBindingSlot);
+                    parameterCollectionLayout.ProcessResources(layout);
 
                     for (int entryIndex = 0; entryIndex < layout.Entries.Count; ++entryIndex)
                     {
@@ -123,9 +121,9 @@ namespace SiliconStudio.Xenko.Rendering
                         if (layoutEntry.Class == EffectParameterClass.ConstantBuffer)
                         {
                             var constantBuffer = effect.Bytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
-                            constantBuffers.Add(new ConstantBufferInfo { DescriptorSet = layoutIndex, BindingSlot = entryIndex, DataOffset = constantBufferTotalSize, Description = constantBuffer });
+                            constantBuffers.Add(new ConstantBufferInfo { DescriptorSet = layoutIndex, BindingSlot = entryIndex, DataOffset = parameterCollectionLayout.BufferSize, Description = constantBuffer });
 
-                            ProcessConstantBuffer(parameterKeyInfos, constantBuffer, ref constantBufferTotalSize);
+                            parameterCollectionLayout.ProcessConstantBuffer(constantBuffer);
                         }
                     }
                 }
@@ -139,25 +137,9 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 // Update parameters layout to match what this effect expect
-                Parameters.UpdateLayout(parameterKeyInfos, currentBindingSlot, constantBufferTotalSize);
+                Parameters.UpdateLayout(parameterCollectionLayout);
+                constantBufferTotalSize = parameterCollectionLayout.BufferSize;
             }
-        }
-
-        public static void ProcessResources(FastList<ParameterKeyInfo> parameterKeyInfos, DescriptorSetLayoutBuilder layout, ref int currentBindingSlot)
-        {
-            foreach (var layoutEntry in layout.Entries)
-            {
-                parameterKeyInfos.Add(new ParameterKeyInfo(layoutEntry.Key, currentBindingSlot++));
-            }
-        }
-
-        public static void ProcessConstantBuffer(FastList<ParameterKeyInfo> parameterKeyInfos, ShaderConstantBufferDescription constantBuffer, ref int startOffset)
-        {
-            foreach (var member in constantBuffer.Members)
-            {
-                parameterKeyInfos.Add(new ParameterKeyInfo(member.Param.Key, startOffset + member.Offset, member.Size));
-            }
-            startOffset += constantBuffer.Size;
         }
 
         public void Apply(GraphicsDevice graphicsDevice)

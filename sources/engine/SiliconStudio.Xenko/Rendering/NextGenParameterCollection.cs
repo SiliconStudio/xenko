@@ -22,9 +22,9 @@ namespace SiliconStudio.Xenko.Rendering
         // Constants and resources
         // TODO: Currently stored in unmanaged array so we can get a pointer that can be updated from outside
         //   However, maybe ref locals would make this not needed anymore?
-        internal IntPtr DataValues;
-        internal int DataValuesSize;
-        internal object[] ResourceValues;
+        public IntPtr DataValues;
+        public int DataValuesSize;
+        public object[] ResourceValues;
 
         public bool HasLayout => layoutParameterKeyInfos.Items != null;
 
@@ -293,14 +293,18 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="bufferSize"></param>
         /// <param name="constantBuffers"></param>
         /// <param name="descriptorSetLayouts"></param>
-        public void UpdateLayout(FastList<ParameterKeyInfo> layoutParameterKeyInfos, int resourceCount, int bufferSize)
+        public void UpdateLayout(NextGenParameterCollectionLayout layout)
         {
             // Do a first pass to measure constant buffer size
             var newParameterKeyInfos = new FastList<ParameterKeyInfo>(Math.Max(1, parameterKeyInfos.Count));
             newParameterKeyInfos.AddRange(parameterKeyInfos);
             var processedParameters = new bool[parameterKeyInfos.Count];
 
-            this.layoutParameterKeyInfos = layoutParameterKeyInfos;
+            var bufferSize = layout.BufferSize;
+            var resourceCount = layout.ResourceCount;
+
+            // TODO: Should we perform a (read-only) copy?
+            this.layoutParameterKeyInfos = layout.LayoutParameterKeyInfos;
 
             foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
             {
@@ -406,46 +410,5 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-    }
-
-    [DataContract]
-    public struct ParameterKeyInfo
-    {
-        // Common
-        public ParameterKey Key;
-
-        // Values
-        public int Offset;
-        public int Size;
-
-        // Resources
-        public int BindingSlot;
-
-        /// <summary>
-        /// Describes a value parameter.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="offset"></param>
-        /// <param name="size"></param>
-        public ParameterKeyInfo(ParameterKey key, int offset, int size)
-        {
-            Key = key;
-            Offset = offset;
-            Size = size;
-            BindingSlot = -1;
-        }
-
-        /// <summary>
-        /// Describes a resource parameter.
-        /// </summary>
-        /// <param name="key"></param>
-        /// <param name="bindingSlot"></param>
-        public ParameterKeyInfo(ParameterKey key, int bindingSlot)
-        {
-            Key = key;
-            BindingSlot = bindingSlot;
-            Offset = -1;
-            Size = 1;
-        }
     }
 }
