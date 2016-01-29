@@ -13,14 +13,12 @@ namespace SiliconStudio.Xenko.Particles.Components
     /// Add a <see cref="ParticleSystem"/> to an <see cref="Entity"/>
     /// </summary>
     [DataContract("ParticleSystemComponent")]
-    [Display(10200, "Particle System", Expand = ExpandRule.Once)]
+    [Display("Particle System", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(ParticleSystemComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(ParticleSystemProcessor))]
-
+    [ComponentOrder(10200)]
     public sealed class ParticleSystemComponent : ActivableEntityComponent
-    {
-        public static PropertyKey<ParticleSystemComponent> Key = new PropertyKey<ParticleSystemComponent>("Key", typeof(ParticleSystemComponent));
-        
+    {        
         private ParticleSystem particleSystem;
 
         /// <summary>
@@ -75,11 +73,6 @@ namespace SiliconStudio.Xenko.Particles.Components
         public ParticleSystemComponent()
         {
             particleSystem = new ParticleSystem();
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }
