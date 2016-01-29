@@ -2,10 +2,12 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
+using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles.Components
@@ -21,8 +23,31 @@ namespace SiliconStudio.Xenko.Particles.Components
             ParticleSystems = new List<ParticleSystemComponentState>();
         }
 
+        /// <inheritdoc/>
         protected override void OnSystemAdd()
         {
+            // TODO Create or reference systems
+            //var game = Services.GetSafeServiceAs<IGame>();
+            //game.GameSystems.Add(particleEngine);
+            //var graphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice;
+            //var sceneSystem = Services.GetSafeServiceAs<SceneSystem>();
+        }
+
+        protected override void OnSystemRemove()
+        {
+            // TODO Clean-up particleEngine
+        }
+
+        protected override void OnEntityComponentAdding(Entity entity, ParticleSystemComponent component, ParticleSystemComponentState data)
+        {
+            // Do some particle system initialization
+
+        }
+
+        protected override void OnEntityComponentRemoved(Entity entity, ParticleSystemComponent component, ParticleSystemComponentState data)
+        {
+            // Do some particle system clean-up
+
         }
 
         public List<ParticleSystemComponentState> ParticleSystems { get; private set; }
@@ -48,6 +73,8 @@ namespace SiliconStudio.Xenko.Particles.Components
             }
             else
             {
+                // TODO: Check transformComponent.WorldMatrix.Decompose(out scale, out rot, out pos);
+
                 // The transform has a parent - do not use local transform values, instead check the world matrix
 
                 // Position
@@ -124,6 +151,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         {
             base.Draw(context);
         }
+
 
         protected override ParticleSystemComponentState GenerateComponentData(Entity entity, ParticleSystemComponent component)
         {
