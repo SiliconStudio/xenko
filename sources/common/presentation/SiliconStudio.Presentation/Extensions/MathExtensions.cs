@@ -20,14 +20,25 @@ namespace SiliconStudio.Presentation.Extensions
         }
 
         /// <summary>
-        /// Converts a <see cref="Vector2"/> to a <see cref="WindowsPoint"/>.
+        /// Converts a <see cref="WindowsVector"/> to a <see cref="Vector2"/>.
         /// </summary>
         /// <param name="vector"></param>
         /// <returns></returns>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static WindowsPoint ToWindowsPoint(this Vector2 vector)
+        public static Vector2 ToVector2(this WindowsVector vector)
         {
-            return new WindowsPoint(vector.X, vector.Y);
+            return new Vector2((float)vector.X, (float)vector.Y);
+        }
+
+        /// <summary>
+        /// Converts a <see cref="Vector2"/> to a <see cref="WindowsPoint"/>.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <returns></returns>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static WindowsPoint ToWindowsPoint(this Vector2 point)
+        {
+            return new WindowsPoint(point.X, point.Y);
         }
 
         /// <summary>
