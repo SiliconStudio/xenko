@@ -210,7 +210,6 @@
     <Compile Include="Entities\EntityGroupAssetOperations.cs" />
     <Compile Include="Entities\EntityComponentReference.cs" />
     <Compile Include="Entities\EntityReference.cs" />
-    <Compile Include="Entities\EntityScriptReference.cs" />
     <Compile Include="Entities\EntityGroupAssetSerializer.cs" />
     <Compile Include="Analysis\GamePackageSessionAnalysis.cs" />
     <Compile Include="Entities\IEntityComponentReference.cs" />
@@ -227,7 +226,6 @@
     <Compile Include="Materials\MaterialNodeClassLoader.cs" />
     <Compile Include="Materials\MaterialStreamFactory.cs" />
     <Compile Include="Materials\ShaderGeneratorContextExtensions.cs" />
-    <Compile Include="IModelAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAsset.cs" />
     <Compile Include="SpriteFont\PrecompiledSpriteFontAssetCompiler.cs" />
     <Compile Include="SpriteFont\SpriteFontAssetExtensions.cs" />
@@ -235,8 +233,6 @@
     <Compile Include="Tasks\PackageArchiveTask.cs" />
     <Compile Include="Tasks\PackageGetVersionTask.cs" />
     <Compile Include="XenkoPackageUpgrader.cs" />
-    <Compile Include="ProceduralModels\ProceduralModelAsset.cs" />
-    <Compile Include="ProceduralModels\ProceduralModelAssetCompiler.cs" />
     <Compile Include="RenderingMode.cs" />
     <Compile Include="Scripts\ScriptSourceFileAsset.cs" />
     <Compile Include="Sprite\SpriteSheetAsset.cs" />
@@ -253,8 +249,8 @@
     <Compile Include="RenderFrames\RenderFrameAsset.cs" />
     <Compile Include="RenderFrames\RenderFrameAssetCompiler.cs" />
     <Compile Include="Serializers\ParameterKeyDictionarySerializer.cs" />
-    <Compile Include="Serializers\ScriptCollectionSerializer.cs" />
-    <Compile Include="Serializers\UnloadableScript.cs" />
+    <Compile Include="Serializers\EntityComponentCollectionSerializer.cs" />
+    <Compile Include="Serializers\UnloadableComponent.cs" />
     <Compile Include="Skyboxes\ISkyboxModel.cs" />
     <Compile Include="Skyboxes\SkyboxAssetCompiler.cs" />
     <Compile Include="Skyboxes\SkyboxAsset.cs" />

@@ -9,8 +9,6 @@ namespace SiliconStudio.Xenko.Engine
     [DataContract]
     public abstract class ActivableEntityComponent : EntityComponent
     {
-        private bool enabled = true;
-
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="EntityComponent"/> is enabled.
         /// </summary>
@@ -19,16 +17,6 @@ namespace SiliconStudio.Xenko.Engine
         /// </value>
         [DataMember(-10)]
         [DefaultValue(true)]
-        public bool Enabled
-        {
-            get
-            {
-                return enabled;
-            }
-            set
-            {
-                enabled = value;
-            }
-        }
+        public virtual bool Enabled { get; set; } = true;
     }
 }

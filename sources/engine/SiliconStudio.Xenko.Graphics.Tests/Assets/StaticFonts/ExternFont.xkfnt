@@ -1,5 +1,6 @@
 !SpriteFont
 Id: 2382194a-83fb-45fb-96e6-27fae1056e99
+SerializedVersion: {Xenko: 1.5.0-alpha09}
 Tags: []
 Source: ../../../../data/tests/Risaltyp_024.ttf
 FontName: Microsoft Sans Serif
@@ -12,7 +13,6 @@ CharacterRegions:
     -   Start: ' '
         End: "\x7F"
 AntiAlias: Grayscale
-IsNotPremultiply: false
 Spacing: 0.0
 LineSpacing: 0.0
 UseKerning: false

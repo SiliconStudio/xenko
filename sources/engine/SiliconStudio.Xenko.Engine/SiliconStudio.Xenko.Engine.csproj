@@ -63,6 +63,7 @@
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedVector4Group.cs" />
     <Compile Include="Animations\AnimationUpdater.cs" />
     <Compile Include="Engine\ActivableEntityComponent.cs" />
+    <Compile Include="Engine\AllowMultipleComponentsAttribute.cs" />
     <Compile Include="Engine\AsyncScript.cs" />
     <Compile Include="Animations\AnimationBlendOperation.cs" />
     <Compile Include="Animations\AnimationBlender.cs" />
@@ -86,9 +87,15 @@
     <Compile Include="Animations\CompressedTimeSpan.cs" />
     <Compile Include="Animations\AnimationCurveEvaluatorOptimizedQuaternionGroup.cs" />
     <Compile Include="Animations\Interpolator.cs" />
+    <Compile Include="Engine\ComponentOrderAttribute.cs" />
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
     <Compile Include="Engine\Design\EntityChildPropertyResolver.cs" />
     <Compile Include="Engine\Design\ExecutionMode.cs" />
+    <Compile Include="Engine\EntityComponentAttributeBase.cs" />
+    <Compile Include="Engine\EntityComponentAttributes.cs" />
+    <Compile Include="Engine\EntityComponentCollection.cs" />
+    <Compile Include="Engine\EntityProcessorCollection.cs" />
+    <Compile Include="Engine\IEntityComponentNotify.cs" />
     <Compile Include="Engine\LightComponentExtensions.cs" />
     <Compile Include="Engine\ModelNodeTransformLink.cs" />
     <Compile Include="Engine\ModelViewHierarchyTransformOperation.cs" />
@@ -199,7 +206,6 @@
     <Compile Include="Engine\BackgroundComponent.cs" />
     <Compile Include="Engine\CameraComponent.cs" />
     <Compile Include="Engine\ChildSceneComponent.cs" />
-    <Compile Include="Engine\HierarchicalProcessor.cs" />
     <Compile Include="Engine\ModelComponent.cs" />
     <Compile Include="Engine\ModelNodeLinkComponent.cs" />
     <Compile Include="Engine\SceneSettings.cs" />
@@ -345,7 +351,6 @@
       <DependentUpon>ThresholdAlphaCoCFront.xksl</DependentUpon>
     </Compile>
     <Compile Include="Engine\Processors\RenderModelCollection.cs" />
-    <Compile Include="Engine\Design\ScriptCollection.cs" />
     <Compile Include="Engine\Processors\CameraProcessor.cs" />
     <Compile Include="Engine\Processors\CameraProjectionMode.cs" />
     <Compile Include="Rendering\Composers\SceneCameraSlot.cs" />
@@ -2275,7 +2280,6 @@
     <Compile Include="Shaders.Compiler\RemoteEffectCompilerEffectRequested.cs" />
     <Compile Include="Starter\AndroidXenkoActivity.cs" />
     <Compile Include="Engine\Processors\ScriptSystem.cs" />
-    <Compile Include="Engine\Script.cs" />
     <Compile Include="Rendering\Shaders\Camera.cs">
       <DependentUpon>Camera.xksl</DependentUpon>
       <AutoGen>True</AutoGen>

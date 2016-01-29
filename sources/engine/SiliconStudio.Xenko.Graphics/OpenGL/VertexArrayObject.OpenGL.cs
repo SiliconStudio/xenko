@@ -19,7 +19,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal int indexElementSize;
         internal int indexBufferId;
         internal DrawElementsType drawElementsType;
-        private bool attribLocationStored = false;
 
         private readonly EffectInputSignature preferredInputSignature;
         private VertexArrayObjectInstance preferredInstance;

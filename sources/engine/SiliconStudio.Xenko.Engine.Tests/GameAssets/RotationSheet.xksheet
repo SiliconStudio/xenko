@@ -5,9 +5,11 @@ Tags: []
 Type: Sprite2D
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Packing:
+    ~Id: 176fb776-ad5d-4b53-accd-a73881bb9081
     BorderSize: 0
 Sprites:
-    -   Source: ../../../data/tests/TexturePacking/imageBorder.png
+    -   ~Id: 15f18d71-2385-4956-9c3a-52542b6036e8
+        Source: ../../../data/tests/TexturePacking/imageBorder.png
         Name: NRNR
         TextureRegion: {X: 10, Y: 10, Width: 256, Height: 64}
         PixelsPerUnit: 1.0
@@ -15,7 +17,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/TexturePacking/imageBorder.png
+    -   ~Id: bbd55553-e126-4b75-852a-91757b96936d
+        Source: ../../../data/tests/TexturePacking/imageBorder.png
         Name: RNR
         TextureRegion: {X: 375, Y: 0, Width: 64, Height: 256}
         PixelsPerUnit: 1.0
@@ -24,7 +27,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/TexturePacking/imageBorder.png
+    -   ~Id: 146a8f72-8f6f-4216-be9e-239508ae5694
+        Source: ../../../data/tests/TexturePacking/imageBorder.png
         Name: NRR
         TextureRegion: {X: 375, Y: 0, Width: 64, Height: 256}
         PixelsPerUnit: 1.0
@@ -32,7 +36,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/TexturePacking/imageBorder.png
+    -   ~Id: bfe8ec79-84e6-4045-acdd-ff6901b801fc
+        Source: ../../../data/tests/TexturePacking/imageBorder.png
         Name: RR
         TextureRegion: {X: 10, Y: 10, Width: 256, Height: 64}
         PixelsPerUnit: 1.0
@@ -41,7 +46,8 @@ Sprites:
         CenterFromMiddle: false
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/TexturePacking/round.png
+    -   ~Id: 4ff353be-8a76-4d01-910c-dc65a91a8d4b
+        Source: ../../../data/tests/TexturePacking/round.png
         Name: Round
         TextureRegion: {X: 0, Y: 0, Width: 64, Height: 64}
         PixelsPerUnit: 8.0

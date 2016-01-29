@@ -195,7 +195,7 @@ namespace SiliconStudio.Xenko.Assets.Model
 
         public override string ToString()
         {
-            return (SourcePath ?? "[File]") + (Mode != null ? " (" + Mode + ")" : "") + " > " + (Location ?? "[Location]");
+            return (SourcePath ?? "[File]") + " (" + Mode + ") > " + (Location ?? "[Location]");
         }
 
         public enum ExportMode

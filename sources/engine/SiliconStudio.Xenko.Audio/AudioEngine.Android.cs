@@ -66,8 +66,11 @@ namespace SiliconStudio.Xenko.Audio
 
         internal override void ResetMusicPlayer()
         {
-            base.ResetMusicPlayer();
             mediaPlayer.Reset();
+
+            isMusicPlayerReady = false;
+
+            CurrentMusic = null;
         }
 
         private Stopwatch loadTime = new Stopwatch();
