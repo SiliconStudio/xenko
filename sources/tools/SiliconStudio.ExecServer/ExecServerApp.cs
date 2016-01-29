@@ -356,6 +356,8 @@ namespace SiliconStudio.ExecServer
         /// <param name="serverInstanceIndex">The server instance index.</param>
         private bool RunServerProcess(string executablePath, int serverInstanceIndex, out IntPtr processHandle, out int processId, out string finalExecServerPath)
         {
+            processHandle = IntPtr.Zero;
+            processId = 0;
             var originalExecServerAppPath = typeof(ExecServerApp).Assembly.Location;
             var originalTime = File.GetLastWriteTimeUtc(originalExecServerAppPath);
 
@@ -391,6 +393,7 @@ namespace SiliconStudio.ExecServer
                 }
                 catch (IOException)
                 {
+                    return false;
                 }
             }
 
