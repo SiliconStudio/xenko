@@ -32,6 +32,7 @@ SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -60,6 +61,24 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
+        /// Draws a circle in the canvas.
+        /// </summary>
+        /// <param name="point"></param>
+        /// <param name="radius">The radius of the circle.</param>
+        /// <param name="fillColor">The color of the shape's interior.</param>
+        /// <param name="strokeColor">The color of the shape's outline.</param>
+        /// <param name="thickness">The wifdth of the shape's outline.</param>
+        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
+        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public void DrawCircle(Point point, double radius, Color fillColor, Color strokeColor,
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+        {
+            DrawEllipse(point, new Size(radius, radius), fillColor, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+        }
+
+        /// <summary>
         /// Draws an ellipse in the canvas.
         /// </summary>
         /// <param name="point"></param>
@@ -78,7 +97,7 @@ namespace SiliconStudio.Presentation
             ellipse.Fill = GetBrush(fillColor);
             SetStroke(ellipse, strokeColor, thickness, lineJoin, dashArray, dashOffset);
 
-            point.Offset(-size.Width/2, -size.Height/2);
+            point.Offset(-size.Width / 2, -size.Height / 2);
             var rect = new Rect(point, size);
             ellipse.Height = rect.Height;
             ellipse.Width = rect.Width;
