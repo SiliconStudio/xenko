@@ -1,6 +1,6 @@
 !SceneAsset
 Id: 9f7b9af0-3929-4c98-8fdc-c56ecb2add8c
-SerializedVersion: {Xenko: 1.5.0-alpha02}
+SerializedVersion: {Xenko: 1.6.0-beta}
 Tags: []
 Hierarchy:
     ~Id: 202c3abe-924a-4d6f-a118-505f52fd3c3b
@@ -21,7 +21,13 @@ Hierarchy:
                 Id: 0713e813-7ebb-4815-bde8-db21525a63e7
                 Name: Letters
                 Components:
-                    ParticleSystemComponent.Key:
+                    - !TransformComponent
+                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Position: {X: -3.702508, Y: 0.25, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 0.300628841, Y: 0.300628841, Z: 0.300628841}
+                        Children: []
+                    - !ParticleSystemComponent
                         ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
                         Control:
                             ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
@@ -94,18 +100,18 @@ Hierarchy:
                                             VelocityMin: {X: 0.0, Y: 1.0, Z: -20.0}
                                             VelocityMax: {X: 0.0, Y: 1.0, Z: -20.0}
                                     Updaters: []
-                    TransformComponent.Key:
-                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
-                        Position: {X: -3.702508, Y: 0.25, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.300628841, Y: 0.300628841, Z: 0.300628841}
-                        Children: []
             Design: {}
         -   Entity:
                 Id: 38d4dbf0-efcb-4c5d-9c9e-11e8b567a157
                 Name: Purple (2)
                 Components:
-                    ParticleSystemComponent.Key:
+                    - !TransformComponent
+                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Position: {X: -0.9004129, Y: 0.5, Z: 0.4726212}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ParticleSystemComponent
                         ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
                         Control:
                             ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
@@ -176,18 +182,18 @@ Hierarchy:
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: []
-                    TransformComponent.Key:
-                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
-                        Position: {X: -0.9004129, Y: 0.5, Z: 0.4726212}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
             Design: {}
         -   Entity:
                 Id: 40ac7d58-ec8f-47c6-b8c9-c747113ab658
                 Name: Purple (5)
                 Components:
-                    ParticleSystemComponent.Key:
+                    - !TransformComponent
+                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Position: {X: 3.5, Y: 0.5, Z: 0.5}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ParticleSystemComponent
                         ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
                         Control:
                             ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
@@ -260,18 +266,18 @@ Hierarchy:
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: []
-                    TransformComponent.Key:
-                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
-                        Position: {X: 3.5, Y: 0.5, Z: 0.5}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
             Design: {}
         -   Entity:
                 Id: 5a2e386a-dd36-44fc-9fce-50aba2fd9c59
                 Name: Purple
                 Components:
-                    ParticleSystemComponent.Key:
+                    - !TransformComponent
+                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Position: {X: -2.383112, Y: 0.5, Z: 0.4726212}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ParticleSystemComponent
                         ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
                         Control:
                             ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
@@ -344,47 +350,47 @@ Hierarchy:
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: []
-                    TransformComponent.Key:
-                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
-                        Position: {X: -2.383112, Y: 0.5, Z: 0.4726212}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
             Design: {}
         -   Entity:
                 Id: 6d2b02df-329f-4e05-b299-69f96d39c763
                 Name: Camera
                 Components:
-                    CameraComponent.Key:
-                        ~Id: 4f95637b-669c-48eb-84a0-2069cf38ca06
-                        Projection: Perspective
-                    TransformComponent.Key:
+                    - !TransformComponent
                         ~Id: 1ddedd9b-be04-4d67-a3ea-3cc74bde2ea3
                         Position: {X: 0.0, Y: 5.0, Z: 5.0}
                         Rotation: {W: 0.976296, X: -0.21643962, Y: 0.0, Z: 0.0}
                         Scale: {X: 1.0, Y: 1.0, Z: 1.0}
                         Children: []
+                    - !CameraComponent
+                        ~Id: 4f95637b-669c-48eb-84a0-2069cf38ca06
+                        Projection: Perspective
             Design: {}
         -   Entity:
                 Id: 841cb444-0d1f-4a8b-be76-9dd89d4e7e11
                 Name: GroundModel
                 Components:
-                    ModelComponent.Key:
-                        ~Id: fcdd2da4-ea61-45e9-b00f-a0f90009719c
-                        Model: a72697c2-f6a3-4f24-982c-570b3662500b:ProceduralModelGround
-                        Materials: []
-                    TransformComponent.Key:
+                    - !TransformComponent
                         ~Id: c5d9095d-9276-4985-9be4-60077eeff5f8
                         Position: {X: 0.0, Y: 0.0, Z: -4.0}
                         Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
                         Scale: {X: 10.0, Y: 10.0, Z: 10.0}
                         Children: []
+                    - !ModelComponent
+                        ~Id: fcdd2da4-ea61-45e9-b00f-a0f90009719c
+                        Model: a72697c2-f6a3-4f24-982c-570b3662500b:ProceduralModelGround
+                        Materials: []
             Design: {}
         -   Entity:
                 Id: 94dab91e-accb-4df3-9551-1008d2379e36
                 Name: Purple (6)
                 Components:
-                    ParticleSystemComponent.Key:
+                    - !TransformComponent
+                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Position: {X: 4.5, Y: 0.5, Z: 0.5}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ParticleSystemComponent
                         ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
                         Control:
                             ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
@@ -456,18 +462,18 @@ Hierarchy:
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: []
-                    TransformComponent.Key:
-                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
-                        Position: {X: 4.5, Y: 0.5, Z: 0.5}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
             Design: {}
         -   Entity:
                 Id: d5a8b0cd-e46b-49fc-afad-f82a3de522a7
                 Name: Numbers
                 Components:
-                    ParticleSystemComponent.Key:
+                    - !TransformComponent
+                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 0.300628841, Y: 0.300628841, Z: 0.300628841}
+                        Children: []
+                    - !ParticleSystemComponent
                         ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
                         Control:
                             ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
@@ -540,18 +546,18 @@ Hierarchy:
                                             VelocityMin: {X: 0.0, Y: 10.0, Z: 0.0}
                                             VelocityMax: {X: 0.0, Y: 10.0, Z: 0.0}
                                     Updaters: []
-                    TransformComponent.Key:
-                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
-                        Position: {X: 0.0, Y: 0.0, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 0.300628841, Y: 0.300628841, Z: 0.300628841}
-                        Children: []
             Design: {}
         -   Entity:
                 Id: ddd048f7-6eeb-42ba-ac75-80400a2494c3
                 Name: Purple (4)
                 Components:
-                    ParticleSystemComponent.Key:
+                    - !TransformComponent
+                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Position: {X: 2.5, Y: 0.5, Z: 0.5}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ParticleSystemComponent
                         ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
                         Control:
                             ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
@@ -623,36 +629,36 @@ Hierarchy:
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: []
-                    TransformComponent.Key:
-                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
-                        Position: {X: 2.5, Y: 0.5, Z: 0.5}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
             Design: {}
         -   Entity:
                 Id: ef9460fd-2e7a-41dc-9743-f9ec1174bb7f
                 Name: Ambient light
                 Components:
-                    LightComponent.Key:
+                    - !TransformComponent
+                        ~Id: 0c102230-2808-4463-aef3-c0fdcd8a214e
+                        Position: {X: 0.0, Y: 3.10216951, Z: 0.0}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !LightComponent
                         ~Id: f38002e2-0e52-47dd-a781-cf788f34c7db
                         Type: !LightAmbient
                             ~Id: 8512f3b7-5949-40f1-86ba-98f07120e8ac
                             Color: !ColorRgbProvider
                                 ~Id: 9694e4bb-491c-422f-9579-b5fedbc2daff
                                 Value: {R: 1.0, G: 1.0, B: 1.0}
-                    TransformComponent.Key:
-                        ~Id: 0c102230-2808-4463-aef3-c0fdcd8a214e
-                        Position: {X: 0.0, Y: 3.10216951, Z: 0.0}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
             Design: {}
         -   Entity:
                 Id: f31e5d7e-9fb6-48f8-ae90-25acc1fda511
                 Name: Purple (3)
                 Components:
-                    ParticleSystemComponent.Key:
+                    - !TransformComponent
+                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
+                        Position: {X: 1.14284277, Y: 0.5, Z: 0.4726212}
+                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
+                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
+                        Children: []
+                    - !ParticleSystemComponent
                         ~Id: 8e357587-3a26-4b8d-b8f3-aeca64a57dc3
                         Control:
                             ~Id: 4fb12c6a-dfcb-40ed-986d-95e8e8772132
@@ -725,12 +731,6 @@ Hierarchy:
                                             VelocityMin: {X: 0.0, Y: 0.0, Z: -10.0}
                                             VelocityMax: {X: 0.0, Y: 0.0, Z: -10.0}
                                     Updaters: []
-                    TransformComponent.Key:
-                        ~Id: 90a82961-61a7-41df-83d9-9ebccfe57455
-                        Position: {X: 1.14284277, Y: 0.5, Z: 0.4726212}
-                        Rotation: {W: 1.0, X: 0.0, Y: 0.0, Z: 0.0}
-                        Scale: {X: 1.0, Y: 1.0, Z: 1.0}
-                        Children: []
             Design: {}
 SceneSettings:
     ~Id: 67c7e12a-6cf3-4d39-9e42-e663686a9a97
@@ -741,7 +741,7 @@ SceneSettings:
                 Name: null
                 Camera:
                     Entity: {Id: 6d2b02df-329f-4e05-b299-69f96d39c763}
-                    Component: CameraComponent.Key
+                    Id: 4f95637b-669c-48eb-84a0-2069cf38ca06
         Layers: []
         Master:
             ~Id: 64bf7052-c17e-438a-9984-77ac4ca25966
