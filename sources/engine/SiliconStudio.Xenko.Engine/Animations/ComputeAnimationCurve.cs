@@ -31,10 +31,10 @@ namespace SiliconStudio.Xenko.Animations
         [Display("Key")]
         public float Key { get { return key; } set { key = value; HasChanged = true; } }
 
-        private AnimationKeyTangentType tangetType = AnimationKeyTangentType.Linear;
+        private AnimationKeyTangentType tangentType = AnimationKeyTangentType.Linear;
         [DataMember(30)]
         [Display("Tangent")]
-        public AnimationKeyTangentType TangetType { get { return tangetType; } set { tangetType = value; HasChanged = true; } }
+        public AnimationKeyTangentType TangentType { get { return tangentType; } set { tangentType = value; HasChanged = true; } }
 
         [DataMemberIgnore]
         public bool HasChanged = true;
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Animations
             var leftValue = sortedKeys[leftIndex].Value;
             var rightValue = sortedKeys[rightIndex].Value;
 
-            switch (sortedKeys[leftIndex].TangetType)
+            switch (sortedKeys[leftIndex].TangentType)
             {
                 case AnimationKeyTangentType.Linear:
                     Linear(ref leftValue, ref rightValue, lerpValue, out result);
