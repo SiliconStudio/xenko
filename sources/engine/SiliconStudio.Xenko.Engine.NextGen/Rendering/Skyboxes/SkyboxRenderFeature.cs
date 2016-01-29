@@ -89,24 +89,26 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                 var descriptorLayoutBuilder = renderEffect.Reflection.Binder.DescriptorReflection.Layouts[perLightingDescriptorSetSlot.Index].Layout;
 
-                // Find material cbuffer
-                var lightingConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerLighting");
-
                 if (!parameters.HasLayout)
                 {
                     var parameterCollectionLayout = new NextGenParameterCollectionLayout();
                     parameterCollectionLayout.ProcessResources(descriptorLayoutBuilder);
 
-                    // Process cbuffer (if any)
+                    // Find material cbuffer
+                    var lightingConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerLighting");
                     if (lightingConstantBuffer != null)
                     {
                         parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
+                        renderSkybox.ConstantBufferSize = lightingConstantBuffer.Size;
                     }
 
                     parameters.UpdateLayout(parameterCollectionLayout);
 
                     renderSkybox.RotationParameter = parameters.GetValueParameter(SkyboxKeys.Rotation);
                     renderSkybox.SkyMatrixParameter = parameters.GetValueParameter(SkyboxKeys.SkyMatrix);
+
+                    // TODO: Cache that
+                    renderSkybox.DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, descriptorLayoutBuilder);
                 }
 
                 // Update SkyMatrix
@@ -127,11 +129,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     }
                 }
 
-                // TODO: Cache that
-                var descriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, descriptorLayoutBuilder);
-
                 var descriptorSetPoolOffset = ComputeDescriptorSetOffset(renderNodeReference);
-                var descriptorSet = DescriptorSet.New(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, descriptorSetLayout);
+                var descriptorSet = DescriptorSet.New(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, renderSkybox.DescriptorSetLayout);
                 DescriptorSetPool[descriptorSetPoolOffset + perLightingDescriptorSetSlot.Index] = descriptorSet;
 
                 // Set resource bindings in PerLighting resource set
@@ -141,15 +140,15 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
 
                 // Process PerLighting cbuffer
-                if (lightingConstantBuffer != null)
+                if (renderSkybox.ConstantBufferSize > 0)
                 {
-                    var lightingConstantBufferOffset = RenderSystem.BufferPool.Allocate(lightingConstantBuffer.Size);
+                    var lightingConstantBufferOffset = RenderSystem.BufferPool.Allocate(renderSkybox.ConstantBufferSize);
 
                     // Set constant buffer
-                    descriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, lightingConstantBufferOffset, lightingConstantBuffer.Size);
+                    descriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, lightingConstantBufferOffset, renderSkybox.ConstantBufferSize);
 
                     var mappedCB = RenderSystem.BufferPool.Buffer.Data + lightingConstantBufferOffset;
-                    Utilities.CopyMemory(mappedCB, parameters.DataValues, lightingConstantBuffer.Size);
+                    Utilities.CopyMemory(mappedCB, parameters.DataValues, renderSkybox.ConstantBufferSize);
                 }
             }
 
