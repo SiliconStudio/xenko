@@ -65,6 +65,7 @@
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">
       <Link>Properties\SharedAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Data\Configurations.cs" />
     <Compile Include="Data\ParameterCollectionHashSerializer.cs" />
     <Compile Include="Data\ParameterCollectionSerializer.cs" />
     <Compile Include="Effects\AssemblyEffectKeysAttribute.cs" />

@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -62,6 +63,14 @@ namespace SiliconStudio.Xenko.Assets
                     EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
                     RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects)
                 };
+
+                result.Configurations = new PlatformConfigurations();
+                foreach (var configuration in AssetParameters.Configurations)
+                {
+                    result.Configurations.Configurations.Add(configuration.GetType(), configuration);
+                }
+
+                //Debugger.Launch();
 
                 // TODO: Platform-specific settings have priority
                 //if (platform != PlatformType.Shared)
