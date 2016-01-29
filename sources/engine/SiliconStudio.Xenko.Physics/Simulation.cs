@@ -5,9 +5,13 @@ using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
+using SiliconStudio.Xenko.Engine.Design;
+using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Physics
 {
@@ -63,6 +67,23 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public static OnSimulationCreationDelegate OnSimulationCreation;
 
+        [DataContract]
+        [Display("Physics Settings")]
+        public class PhysicsConfiguration : IConfiguration
+        {
+            [DataMember(0)]
+            public ConfigPlatforms Platform { get; set; }
+
+            [DataMember(10)]
+            public PhysicsEngineFlags Flags;
+
+            [DataMember(20)]
+            public int MaxSubSteps = 1;
+
+            [DataMember(30)]
+            public float FixedTimeStep = 1.0f / 60.0f;
+        }
+
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
         /// </summary>
@@ -72,17 +93,16 @@ namespace SiliconStudio.Xenko.Physics
         internal Simulation(PhysicsProcessor processor, PhysicsEngineFlags flags = PhysicsEngineFlags.None)
         {
             this.processor = processor;
+            var game = (Game)processor.EntityManager.Services.GetServiceAs<IGame>();
+            var settings = game.Settings != null ? game.Settings.Configurations.Get<PhysicsConfiguration>() : new PhysicsConfiguration();
 
             if (flags == PhysicsEngineFlags.None)
             {
-                if (OnSimulationCreation != null)
-                {
-                    flags = OnSimulationCreation();
-                }
+                flags = OnSimulationCreation?.Invoke() ?? settings.Flags;              
             }
 
-            MaxSubSteps = 1;
-            FixedTimeStep = 1.0f / 60.0f;
+            MaxSubSteps = settings.MaxSubSteps;
+            FixedTimeStep = settings.FixedTimeStep;
 
             collisionConfiguration = new BulletSharp.DefaultCollisionConfiguration();
             dispatcher = new BulletSharp.CollisionDispatcher(collisionConfiguration);

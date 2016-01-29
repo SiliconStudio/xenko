@@ -7,18 +7,20 @@ using System.IO;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Annotations;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Settings;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Textures;
+using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Assets
-{
+{ 
     /// <summary>
     /// Settings for a game with the default scene, resolution, graphics profile...
     /// </summary>
@@ -130,6 +132,10 @@ namespace SiliconStudio.Xenko.Assets
         [Display(Browsable = false)]
         [DefaultValue(null)]
         public Dictionary<string, IGameSettingsProfile> Profiles { get; set; }
+
+        [DataMember(100)]
+        [NotNullItems]
+        public List<IConfiguration> Configurations { get; } = new List<IConfiguration>();
 
         internal class UpgraderVersion130
         {
