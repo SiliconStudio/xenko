@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Extensions
             // NOTE: This method is recursive. That might not be the best solution in case of deep entities.
             for (int i = 0; i < entity.Components.Count; i++)
             {
-                var component = entity.Components[i] as ActivableEntityComponent;
+                var component = entity.Components[i] as T;
                 if (component != null)
                 {
                     component.Enabled = enabled;
