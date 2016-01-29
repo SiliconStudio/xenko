@@ -158,8 +158,10 @@
     <Compile Include="ParticleForcesTest.cs" />
     <Compile Include="ParticlePoolTest.cs" />
     <Compile Include="SimpleTest.cs" />
+    <Compile Include="VisualTestGeneral.cs" />
     <Compile Include="VisualTestInitializers.cs" />
     <Compile Include="VisualTestSpawners.cs" />
+    <Compile Include="VisualTestUpdaters.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Label="Xenko.DoNotSync" Include="Properties\AssemblyInfo.cs" />
