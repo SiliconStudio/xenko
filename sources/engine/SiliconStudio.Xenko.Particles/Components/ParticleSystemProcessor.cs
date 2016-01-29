@@ -10,13 +10,13 @@ using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles.Components
 {
-    class ParticleSystemProcessor : EntityProcessor<ParticleSystemProcessor.ParticleSystemComponentState>
+    class ParticleSystemProcessor : EntityProcessor<ParticleSystemComponent, ParticleSystemProcessor.ParticleSystemComponentState>
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="ParticleSystemProcessor"/> class.
         /// </summary>
         public ParticleSystemProcessor()
-            : base(ParticleSystemComponent.Key, TransformComponent.Key)
+            : base(typeof(TransformComponent))  //  Only list the additional required components
         {
             ParticleSystems = new List<ParticleSystemComponentState>();
         }
@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Particles.Components
             float deltaTime = (float) time.Elapsed.TotalSeconds;
 
             ParticleSystems.Clear();
-            foreach (var particleSystemStateKeyPair in enabledEntities)
+            foreach (var particleSystemStateKeyPair in ComponentDatas)
             {
                 if (particleSystemStateKeyPair.Value.ParticleSystemComponent.Enabled)
                 {
@@ -125,20 +125,20 @@ namespace SiliconStudio.Xenko.Particles.Components
             base.Draw(context);
         }
 
-        protected override ParticleSystemComponentState GenerateAssociatedData(Entity entity)
+        protected override ParticleSystemComponentState GenerateComponentData(Entity entity, ParticleSystemComponent component)
         {
             return new ParticleSystemComponentState
             {
-                ParticleSystemComponent = entity.Get(ParticleSystemComponent.Key),
-                TransformComponent = entity.Get(TransformComponent.Key),
+                ParticleSystemComponent = component,
+                TransformComponent = entity.Transform,
             };
         }
 
-        protected override bool IsAssociatedDataValid(Entity entity, ParticleSystemComponentState associatedData)
+        protected override bool IsAssociatedDataValid(Entity entity, ParticleSystemComponent component, ParticleSystemComponentState associatedData)
         {
             return
-                entity.Get(ParticleSystemComponent.Key) == associatedData.ParticleSystemComponent &&
-                entity.Get(TransformComponent.Key) == associatedData.TransformComponent;
+                component == associatedData.ParticleSystemComponent &&
+                entity.Transform == associatedData.TransformComponent;
         }
 
         public class ParticleSystemComponentState
