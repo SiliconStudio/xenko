@@ -68,25 +68,18 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 Application.ProcessEvents();
 
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
-                // Set our OpenGL attributes.
-                int res;
-
-                // Turn on double buffering with a 24bit Z buffer.
-                res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_DOUBLEBUFFER, 1);
-
                 var context = SDL.SDL_GL_CreateContext(SdlHandle);
                 if (context == IntPtr.Zero)
                 {
                     throw new Exception("Cannot create OpenGL context: " + SDL.SDL_GetError());
                 }
 
-                // This makes our buffer swap syncronized with the monitor's vertical refresh
-                SDL.SDL_GL_SetSwapInterval (1);
-
                 // The external context must be made current to initialize OpenGL
                 SDL.SDL_GL_MakeCurrent(SdlHandle, context);
 
-                OpenGLContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(context), SDL.SDL_GL_GetProcAddress, () => new OpenTK.ContextHandle(SDL.SDL_GL_GetCurrentContext()));
+                // Create a dummy OpenTK context, that will be used to call some OpenGL features
+                // we need to later create the various context in GraphicsDevice.OpenGL.
+                DummyGLContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(context), SDL.SDL_GL_GetProcAddress, () => new OpenTK.ContextHandle(SDL.SDL_GL_GetCurrentContext()));
 #endif
             }
         }
@@ -524,7 +517,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <summary>
         /// The OpenGL Context if any
         /// </summary>
-        public OpenTK.Graphics.IGraphicsContext OpenGLContext;
+        public OpenTK.Graphics.IGraphicsContext DummyGLContext;
 #endif
 
         #region Disposal
