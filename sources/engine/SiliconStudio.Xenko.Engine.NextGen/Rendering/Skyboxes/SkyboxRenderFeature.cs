@@ -88,8 +88,6 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
 
                 var descriptorLayoutBuilder = renderEffect.Reflection.Binder.DescriptorReflection.Layouts[perLightingDescriptorSetSlot.Index].Layout;
-                int resourceCount = 0;
-                int totalBufferSize = 0;
 
                 // Find material cbuffer
                 var lightingConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerLighting");
