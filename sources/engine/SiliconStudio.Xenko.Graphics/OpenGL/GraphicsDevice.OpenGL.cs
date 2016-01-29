@@ -2179,30 +2179,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
-#if SILICONSTUDIO_PLATFORM_LINUX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
-#if SILICONSTUDIO_XENKO_UI_SDL
-            gameWindow = (SiliconStudio.Xenko.Graphics.SDL.Window) windowHandle.NativeHandle;
-            graphicsContext = gameWindow.OpenGLContext;
-#else
-            gameWindow = (OpenTK.GameWindow)windowHandle.NativeHandle;
-            graphicsContext = gameWindow.Context;
-#endif
-#elif SILICONSTUDIO_PLATFORM_ANDROID
-            // Force a reference to AndroidGameView from OpenTK 0.9, otherwise linking will fail in release mode for MonoDroid.
-            typeof (opentkold::OpenTK.Platform.Android.AndroidGameView).ToString();
-            gameWindow = (AndroidGameView)windowHandle.NativeHandle;
-            graphicsContext = gameWindow.GraphicsContext;
-            gameWindow.Load += OnApplicationResumed;
-            gameWindow.Unload += OnApplicationPaused;
-#elif SILICONSTUDIO_PLATFORM_IOS
-            gameWindow = (iPhoneOSGameView)windowHandle.NativeHandle;
-            graphicsContext = gameWindow.GraphicsContext;
-            gameWindow.Load += OnApplicationResumed;
-            gameWindow.Unload += OnApplicationPaused;
-#endif
-
-            windowInfo = gameWindow.WindowInfo;
-
             // Enable OpenGL context sharing
             GraphicsContext.ShareContexts = true;
 
@@ -2240,8 +2216,28 @@ namespace SiliconStudio.Xenko.Graphics
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
 
+#if SILICONSTUDIO_PLATFORM_LINUX || SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
+    #if SILICONSTUDIO_XENKO_UI_SDL
+            gameWindow = (SiliconStudio.Xenko.Graphics.SDL.Window)windowHandle.NativeHandle;
+    #else
+            gameWindow = (OpenTK.GameWindow)windowHandle.NativeHandle;
+    #endif
+#elif SILICONSTUDIO_PLATFORM_ANDROID
+            gameWindow = (AndroidGameView)windowHandle.NativeHandle;
+#elif SILICONSTUDIO_PLATFORM_IOS
+            gameWindow = (iPhoneOSGameView)windowHandle.NativeHandle;
+#endif
+
+            windowInfo = gameWindow.WindowInfo;
+
             // Doesn't seems to be working on Android
 #if SILICONSTUDIO_PLATFORM_ANDROID
+            // Force a reference to AndroidGameView from OpenTK 0.9, otherwise linking will fail in release mode for MonoDroid.
+            typeof (opentkold::OpenTK.Platform.Android.AndroidGameView).ToString();
+            graphicsContext = gameWindow.GraphicsContext;
+            gameWindow.Load += OnApplicationResumed;
+            gameWindow.Unload += OnApplicationPaused;
+            
             var renderer = GL.GetString(StringName.Renderer);
             Workaround_VAO_PowerVR_SGX_540 = renderer == "PowerVR SGX 540";
             Workaround_Context_Tegra2_Tegra3 = renderer == "NVIDIA Tegra 3" || renderer == "NVIDIA Tegra 2";
@@ -2274,12 +2270,24 @@ namespace SiliconStudio.Xenko.Graphics
 
             graphicsContextEglPtr = EglGetCurrentContext();
 #elif SILICONSTUDIO_PLATFORM_IOS
+            graphicsContext = gameWindow.GraphicsContext;
+            gameWindow.Load += OnApplicationResumed;
+            gameWindow.Unload += OnApplicationPaused;
+
             var asyncContext = new OpenGLES.EAGLContext(IsOpenGLES2 ? OpenGLES.EAGLRenderingAPI.OpenGLES2 : OpenGLES.EAGLRenderingAPI.OpenGLES3, gameWindow.EAGLContext.ShareGroup);
             OpenGLES.EAGLContext.SetCurrentContext(asyncContext);
             deviceCreationContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(asyncContext.Handle), null, graphicsContext, versionMajor, versionMinor, creationFlags);
             deviceCreationWindowInfo = windowInfo;
             gameWindow.MakeCurrent();
 #else
+#if SILICONSTUDIO_XENKO_UI_SDL
+            // Because OpenTK really wants a Sdl2GraphicsContext and not a dummy one, we will create
+            // a new one using the dummy one and invalidate the dummy one.
+            graphicsContext = new OpenTK.Graphics.GraphicsContext(gameWindow.DummyGLContext.GraphicsMode, windowInfo, versionMajor, versionMinor, creationFlags);
+            gameWindow.DummyGLContext.Dispose();
+    #else
+            graphicsContext = gameWindow.Context;
+    #endif
             deviceCreationWindowInfo = windowInfo;
             deviceCreationContext = new GraphicsContext(graphicsContext.GraphicsMode, deviceCreationWindowInfo, versionMajor, versionMinor, creationFlags);
             GraphicsContext.CurrentContext.MakeCurrent(null);
