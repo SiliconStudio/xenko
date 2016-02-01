@@ -104,26 +104,8 @@ namespace SiliconStudio.Xenko.Rendering
             renderObject.RenderFeature?.RemoveRenderObject(renderObject);
         }
 
-        public void Reset()
+        public void ResetViews()
         {
-            FrameCounter++;
-
-            // Clear pools
-            BufferPool.Reset();
-            DescriptorPool.Reset();
-
-            // Clear object data
-            foreach (var renderObject in RenderObjects)
-            {
-                renderObject.ObjectNode = ObjectNodeReference.Invalid;
-            }
-
-            // Clear render features node lists
-            foreach (var renderFeature in RenderFeatures)
-            {
-                renderFeature.Reset();
-            }
-
             // Prepare views
             for (int index = 0; index < Views.Count; index++)
             {
@@ -151,6 +133,27 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     renderViewStage.RenderNodes.Clear();
                 }
+            }
+        }
+
+        public void Reset()
+        {
+            FrameCounter++;
+
+            // Clear pools
+            BufferPool.Reset();
+            DescriptorPool.Reset();
+
+            // Clear object data
+            foreach (var renderObject in RenderObjects)
+            {
+                renderObject.ObjectNode = ObjectNodeReference.Invalid;
+            }
+
+            // Clear render features node lists
+            foreach (var renderFeature in RenderFeatures)
+            {
+                renderFeature.Reset();
             }
         }
 

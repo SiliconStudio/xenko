@@ -204,6 +204,30 @@ namespace SiliconStudio.Xenko.Rendering
             // Reset render context data
             RenderSystem.Reset();
 
+            // Create object nodes
+            foreach (var renderObject in RenderSystem.RenderObjects)
+            {
+                var renderFeature = renderObject.RenderFeature;
+                renderFeature.GetOrCreateObjectNode(renderObject);
+            }
+
+            // Ensure size of data arrays per objects
+            foreach (var renderFeature in RenderSystem.RenderFeatures)
+            {
+                renderFeature.PrepareDataArrays(RenderSystem);
+            }
+
+            // Generate and execute extract jobs
+            foreach (var renderFeature in RenderSystem.RenderFeatures)
+                // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
+            {
+                // Divide into task chunks for parallelism
+                renderFeature.Extract();
+            }
+
+            // Reset view specific render context data
+            RenderSystem.ResetViews();
+
             // Collect objects to render (later we will also cull/filter them)
             var rand = new Random();
             foreach (var view in RenderSystem.Views)
@@ -221,7 +245,6 @@ namespace SiliconStudio.Xenko.Rendering
                     var viewFeature = view.Features[renderObject.RenderFeature.Index];
 
                     var renderFeature = renderObject.RenderFeature;
-                    renderFeature.GetOrCreateObjectNode(renderObject);
 
                     var renderViewNode = renderFeature.CreateViewObjectNode(view, renderObject);
                     viewFeature.ViewObjectNodes.Add(renderViewNode);
@@ -250,17 +273,10 @@ namespace SiliconStudio.Xenko.Rendering
                 // TODO: Sort RenderStage.RenderNodes
             }
 
+            // Ensure size of all other data arrays
             foreach (var renderFeature in RenderSystem.RenderFeatures)
             {
                 renderFeature.PrepareDataArrays(RenderSystem);
-            }
-
-            // Generate and execute extract jobs
-            foreach (var renderFeature in RenderSystem.RenderFeatures)
-                // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
-            {
-                // Divide into task chunks for parallelism
-                renderFeature.Extract();
             }
         }
 
