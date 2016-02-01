@@ -245,10 +245,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             }
 
             // Prepare and render shadow maps
-            foreach (var shadowMapTexture in shadowMapTextures)
-            {
-                shadowMapTexture.Renderer.Render(context, this, shadowMapTexture);
-            }
+            //foreach (var shadowMapTexture in shadowMapTextures)
+            //{
+            //    shadowMapTexture.Renderer.Render(context, this, shadowMapTexture);
+            //}
         }
 
         private void AssignRectangles()
