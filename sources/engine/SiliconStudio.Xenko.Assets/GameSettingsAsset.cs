@@ -135,7 +135,10 @@ namespace SiliconStudio.Xenko.Assets
 
         [DataMember(100)]
         [NotNullItems]
-        public List<IConfiguration> Configurations { get; } = new List<IConfiguration>();
+        public List<Configuration> Defaults { get; } = new List<Configuration>();
+
+        [DataMember(101)]
+        public List<ConfigurationOverride> Overrides { get; } = new List<ConfigurationOverride>();
 
         internal class UpgraderVersion130
         {

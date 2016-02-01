@@ -1,5 +1,6 @@
 using System;
 using System.Diagnostics;
+using System.Linq;
 using System.Threading.Tasks;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
@@ -8,6 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.IO;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
+using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
 
@@ -64,13 +66,23 @@ namespace SiliconStudio.Xenko.Assets
                     RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects)
                 };
 
+                //start from the default platform and go down overriding
                 result.Configurations = new PlatformConfigurations();
-                foreach (var configuration in AssetParameters.Configurations)
+
+                foreach (var configuration in AssetParameters.Defaults)
                 {
-                    result.Configurations.Configurations.Add(configuration.GetType(), configuration);
+                    result.Configurations.Configurations.Add(new ConfigurationOverride
+                    {
+                        Platform = ConfigPlatforms.None,
+                        SpecificFilter = ConfigFilters.None,
+                        Configurations = { configuration }
+                    });
                 }
 
-                //Debugger.Launch();
+                foreach (var configurationOverride in AssetParameters.Overrides)
+                {
+                    result.Configurations.Configurations.Add(configurationOverride);
+                }
 
                 // TODO: Platform-specific settings have priority
                 //if (platform != PlatformType.Shared)

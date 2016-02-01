@@ -69,11 +69,8 @@ namespace SiliconStudio.Xenko.Physics
 
         [DataContract]
         [Display("Physics Settings")]
-        public class PhysicsConfiguration : IConfiguration
+        public class PhysicsConfiguration : Configuration
         {
-            [DataMember(0)]
-            public ConfigPlatforms Platform { get; set; }
-
             [DataMember(10)]
             public PhysicsEngineFlags Flags;
 
