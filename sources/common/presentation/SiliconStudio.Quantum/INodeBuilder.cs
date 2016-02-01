@@ -10,15 +10,6 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
-    /// A delegate representing a factory used to create a graph node from a content and its related information.
-    /// </summary>
-    /// <param name="name">The name of the node to create.</param>
-    /// <param name="content">The content for which to create a node.</param>
-    /// <param name="guid">The unique identifier of the node to create.</param>
-    /// <returns>A new instance of <see cref="IGraphNode"/> containing the given content.</returns>
-    public delegate IGraphNode NodeFactoryDelegate(string name, IContent content, Guid guid);
-
-    /// <summary>
     /// This interface provides objects and methods to build a nodal view model from a given object.
     /// </summary>
     public interface INodeBuilder
