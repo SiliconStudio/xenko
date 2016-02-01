@@ -65,6 +65,7 @@ TemplateFolders:
         - samples\Graphics\SpriteStudioDemo\SpriteStudioDemo.xktpl
         - samples\Input\TouchInputs\TouchInputs.xktpl
         - samples\Input\GravitySensor\GravitySensor.xktpl
+        - samples\Particles\SimpleParticles\SimpleParticles.xktpl
         - samples\Physics\CharacterControllerSample\CharacterControllerSample.xktpl
         - samples\Physics\Constraints\Constraints.xktpl
         - samples\Physics\Raycasting\Raycasting.xktpl
