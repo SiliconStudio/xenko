@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
 
             BlendState previousBlendState = null;
             DepthStencilState previousDepthStencilState = null;
-            Effect previousEffect = null;
+            EffectInstance previousEffect = null;
 
             var isPicking = false; //context.IsPicking();
 
@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             sprite3DBatch.End();
         }
 
-        private Effect GetOrCreatePickingSpriteEffect()
+        private EffectInstance GetOrCreatePickingSpriteEffect()
         {
             throw new System.NotImplementedException();
         }

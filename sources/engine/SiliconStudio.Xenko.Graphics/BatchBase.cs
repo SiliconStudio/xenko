@@ -82,7 +82,8 @@ namespace SiliconStudio.Xenko.Graphics
         protected DepthStencilState DepthStencilState;
         protected int StencilReferenceValue;
         protected SpriteSortMode SortMode;
-        private EffectParameterResourceBinding? textureUpdater;
+        private ResourceParameter<Texture>? textureUpdater;
+        private ResourceParameter<SamplerState>? samplerUpdater;
 
         private int[] sortIndices;
         private ElementInfo[] sortedDraws;
@@ -104,8 +105,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// The effect used for the current Begin/End session.
         /// </summary>
-        protected Effect Effect { get; private set; }
-        protected EffectParameterCollectionGroup ParameterCollectionGroup { get; private set; }
+        protected EffectInstance Effect { get; private set; }
         protected readonly Effect DefaultEffect;
         protected readonly Effect DefaultEffectSRgb;
 
@@ -148,13 +148,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the parameters applied on the SpriteBatch effect.
         /// </summary>
         /// <value>The parameters.</value>
-        public ParameterCollection Parameters
-        {
-            get
-            {
-                return parameters;
-            }
-        }
+        public NextGenParameterCollection Parameters => Effect.Parameters;
 
         /// <summary>
         /// Begins a sprite batch rendering using the specified sorting mode and blend state, sampler, depth stencil, rasterizer state objects and a custom effect.
@@ -170,7 +164,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="sessionRasterizerState">Rasterization state used for the Begin/End session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the Begin/End session</param>
         /// <exception cref="System.InvalidOperationException">Only one SpriteBatch at a time can use SpriteSortMode.Immediate</exception>
-        protected void Begin(Effect effect, EffectParameterCollectionGroup parameterCollectionGroup, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
+        protected void Begin(EffectInstance effect, EffectParameterCollectionGroup parameterCollectionGroup, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
         {
             CheckEndHasBeenCalled("begin");
 
@@ -181,22 +175,22 @@ namespace SiliconStudio.Xenko.Graphics
             RasterizerState = sessionRasterizerState;
             StencilReferenceValue = stencilValue;
 
-            Effect = effect ?? (GraphicsDevice.ColorSpace == ColorSpace.Linear ? DefaultEffectSRgb : DefaultEffect);
-            ParameterCollectionGroup = parameterCollectionGroup ?? defaultParameterCollectionGroup;
-            if (ParameterCollectionGroup == defaultParameterCollectionGroup && ParameterCollectionGroup.Effect != Effect)
-            {
-                // If ParameterCollectionGroup is not specified (using default one), let's make sure it is updated to matches effect
-                // It is quite inefficient if user is often switching effect without providing a matching ParameterCollectionGroup
-                ParameterCollectionGroup = defaultParameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, Effect, new[] { parameters });
-            }
+            Effect = effect ?? new EffectInstance(GraphicsDevice.ColorSpace == ColorSpace.Linear ? DefaultEffectSRgb : DefaultEffect);
+
+            // Force the effect to update
+            Effect.UpdateEffect(GraphicsDevice);
 
             textureUpdater = null;
-            if (Effect.HasParameter(TexturingKeys.Texture0))
-                textureUpdater = Effect.GetParameterFastUpdater(TexturingKeys.Texture0);
-            if (Effect.HasParameter(TexturingKeys.TextureCube0))
-                textureUpdater = Effect.GetParameterFastUpdater(TexturingKeys.TextureCube0);
-            if (Effect.HasParameter(TexturingKeys.Texture3D0))
-                textureUpdater = Effect.GetParameterFastUpdater(TexturingKeys.Texture3D0);
+            if (Effect.Effect.HasParameter(TexturingKeys.Texture0))
+                textureUpdater = Effect.Parameters.GetResourceParameter(TexturingKeys.Texture0);
+            if (Effect.Effect.HasParameter(TexturingKeys.TextureCube0))
+                textureUpdater = Effect.Parameters.GetResourceParameter(TexturingKeys.TextureCube0);
+            if (Effect.Effect.HasParameter(TexturingKeys.Texture3D0))
+                textureUpdater = Effect.Parameters.GetResourceParameter(TexturingKeys.Texture3D0);
+
+            samplerUpdater = null;
+            if (Effect.Effect.HasParameter(TexturingKeys.Sampler))
+                samplerUpdater = Effect.Parameters.GetResourceParameter(TexturingKeys.Sampler);
 
             // Immediate mode, then prepare for rendering here instead of End()
             if (sessionSortMode == SpriteSortMode.Immediate)
@@ -221,8 +215,8 @@ namespace SiliconStudio.Xenko.Graphics
             var localSamplerState = SamplerState ?? GraphicsDevice.SamplerStates.LinearClamp;
 
             // Sets the sampler state of the effect
-            Parameters.Set(TexturingKeys.Sampler, localSamplerState);
-            Effect.Apply(GraphicsDevice, ParameterCollectionGroup, false);
+            if (samplerUpdater.HasValue)
+                Parameters.Set(samplerUpdater.Value, localSamplerState);
 
             // Setup states (Blend, DepthStencil, Rasterizer)
             GraphicsDevice.SetBlendState(BlendState ?? GraphicsDevice.BlendStates.AlphaBlend);
@@ -393,7 +387,9 @@ namespace SiliconStudio.Xenko.Graphics
             // Use an optimized version in order to avoid to reapply the sprite effect here just to change texture
             // We are calling directly the PixelShaderStage. We assume that the texture is on slot 0 as it is
             // setup in the original BasicEffect.fx shader.
-            textureUpdater?.ApplyParameter(GraphicsDevice, texture);
+            if (textureUpdater.HasValue)
+                Effect.Parameters.Set(textureUpdater.Value, texture);
+            Effect.Apply(GraphicsDevice);
 
             // Draw the batch of sprites
             DrawBatchPerTextureAndPass(sprites, offset, count);

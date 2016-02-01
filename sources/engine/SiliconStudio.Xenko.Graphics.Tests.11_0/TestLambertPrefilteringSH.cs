@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private Int2 screenSize = new Int2(768, 1024);
 
-        private Effect cubemapSpriteEffect;
+        private EffectInstance cubemapSpriteEffect;
 
         public TestLambertPrefilteringSH()
         {
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            cubemapSpriteEffect = EffectSystem.LoadEffect("CubemapSprite").WaitForResult();
+            cubemapSpriteEffect = new EffectInstance(EffectSystem.LoadEffect("CubemapSprite").WaitForResult());
 
             drawEffectContext = RenderContext.GetShared(Services);
             lamberFilter = new LambertianPrefilteringSH(drawEffectContext);

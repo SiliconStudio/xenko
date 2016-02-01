@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private bool skipHighestLevel;
 
-        private Effect spriteEffect;
+        private EffectInstance spriteEffect;
 
         private bool filterAtEachFrame = true;
         private bool hasBeenFiltered;
@@ -122,7 +122,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (displayedViews == null || spriteBatch == null)
                 return;
 
-            spriteEffect = EffectSystem.LoadEffect("SpriteEffect").WaitForResult();
+            spriteEffect = new EffectInstance(EffectSystem.LoadEffect("SpriteEffect").WaitForResult());
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
 

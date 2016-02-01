@@ -170,21 +170,15 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graphics\BufferPool.cs" />
-    <Compile Include="Rendering\NextGenParameterCollectionLayoutExtensions.cs" />
+    <Compile Include="Graphics\PipelineState.cs" />
+    <Compile Include="Rendering\DynamicEffectInstance.cs" />
+    <Compile Include="Rendering\ImageEffectShader.cs" />
     <Compile Include="Rendering\Properties.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Properties.tt</DependentUpon>
     </Compile>
     <Compile Include="Engine.NextGen\CustomGame.cs" />
-    <Compile Include="Graphics\DescriptorPool.cs" />
-    <Compile Include="Graphics\DescriptorSetEntry.cs" />
-    <Compile Include="Graphics\DescriptorSetLayout.cs" />
-    <Compile Include="Graphics\DescriptorSetLayoutEntry.cs" />
-    <Compile Include="Graphics\DescriptorSetLayoutBuilder.cs" />
-    <Compile Include="Graphics\DescriptorTypeCount.cs" />
-    <Compile Include="Rendering\EffectBinder.cs" />
     <Compile Include="Effects\GBuffer.cs">
       <DependentUpon>GBuffer.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -218,10 +212,10 @@
     <Compile Include="Rendering\EffectValidator.cs" />
     <Compile Include="Engine.NextGen\Module.cs" />
     <Compile Include="Engine.NextGen\RenderArchitectureApp.cs" />
+    <Compile Include="Rendering\RenderSystemResourceGroupLayout.cs" />
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
-    <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\Nodes\ViewNodeReference.cs" />
     <Compile Include="Rendering\INextGenEntityComponentRenderer.cs" />
     <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
@@ -257,11 +251,8 @@
     <Compile Include="Rendering\Nodes\RenderNode.cs" />
     <Compile Include="Rendering\SubRenderFeature.cs" />
     <Compile Include="Rendering\TransformRenderFeature.cs" />
-    <Compile Include="Graphics\DescriptorSet.cs" />
     <Compile Include="Rendering\RenderViewFeature.cs" />
     <Compile Include="Rendering\RenderViewFeatureStage.cs" />
-    <Compile Include="Rendering\ResourceGroup.cs" />
-    <Compile Include="Rendering\ResourceGroupLayout.cs" />
     <Compile Include="Engine.NextGen\TestCamera.cs" />
     <None Include="SiliconStudio.Xenko.Engine.NextGen.xkpkg" />
   </ItemGroup>

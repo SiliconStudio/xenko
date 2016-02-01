@@ -13,8 +13,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
         // TODO this is temporary code. this should disappear from here later when materials on sprite will be available
         public static PropertyKey<bool> IsEntitySelected = new PropertyKey<bool>("IsEntitySelected", typeof(SpriteStudioRenderer));
 
-        private Effect selectedSpriteEffect;
-        private Effect pickingSpriteEffect;
+        private EffectInstance selectedSpriteEffect;
+        private EffectInstance pickingSpriteEffect;
 
         private Sprite3DBatch sprite3DBatch;
 
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
             BlendState previousBlendState = null;
             DepthStencilState previousDepthStencilState = null;
-            Effect previousEffect = null;
+            EffectInstance previousEffect = null;
 
             var isPicking = context.IsPicking();
 
@@ -237,18 +237,18 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             sprite3DBatch.End();
         }
 
-        private Effect GetOrCreateSelectedSpriteEffect()
+        private EffectInstance GetOrCreateSelectedSpriteEffect()
         {
             if (selectedSpriteEffect == null)
-                selectedSpriteEffect = EffectSystem.LoadEffect("SelectedSprite").WaitForResult();
+                selectedSpriteEffect = new EffectInstance(EffectSystem.LoadEffect("SelectedSprite").WaitForResult());
 
             return selectedSpriteEffect;
         }
 
-        private Effect GetOrCreatePickingSpriteEffect()
+        private EffectInstance GetOrCreatePickingSpriteEffect()
         {
             if (pickingSpriteEffect == null)
-                pickingSpriteEffect = EffectSystem.LoadEffect("SpritePicking").WaitForResult();
+                pickingSpriteEffect = new EffectInstance(EffectSystem.LoadEffect("SpritePicking").WaitForResult());
 
             return pickingSpriteEffect;
         }
