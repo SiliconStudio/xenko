@@ -41,7 +41,33 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             get { return Camera.Get<CameraComponent>(); }
             set
             {
-                Camera.Add(value);
+                bool previousFound = false;
+                for (int i = 0; i < Camera.Components.Count; i++)
+                {
+                    var cameraComponent = Camera.Components[i] as CameraComponent;
+                    if (cameraComponent != null)
+                    {
+                        previousFound = true;
+                        if (cameraComponent != value)
+                        {
+                            if (value == null)
+                            {
+                                Camera.Components.RemoveAt(i);
+                            }
+                            else
+                            {
+                                Camera.Components[i] = value;
+                            }
+                        }
+                        break;
+                    }
+                }
+
+                if (!previousFound && value != null)
+                {
+                    Camera.Add(value);
+                }
+
                 graphicsCompositor.Cameras[0] = value;
             }
         }
