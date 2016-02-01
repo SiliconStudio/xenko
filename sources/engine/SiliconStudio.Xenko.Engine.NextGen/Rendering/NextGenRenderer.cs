@@ -14,11 +14,8 @@ namespace SiliconStudio.Xenko.Rendering
         //public RendererBase RootRenderer;
         public NextGenRenderSystem RenderSystem = new NextGenRenderSystem();
 
-        private LightComponentForwardRenderer lightComponentForwardRenderer;
-
         // Render views
         private RenderView mainRenderView;
-        private List<RenderView> shadowRenderViews = new List<RenderView>();
 
         // Render stages
         private RenderStage mainRenderStage = new RenderStage("Main");
@@ -27,6 +24,8 @@ namespace SiliconStudio.Xenko.Rendering
         private RenderStage shadowmapRenderStage = new RenderStage("ShadowMapCaster");
 
         private double time;
+
+        private RasterizerState shadowMapState;
 
         public override string ModelEffect { get; set; }
 
@@ -51,9 +50,9 @@ namespace SiliconStudio.Xenko.Rendering
                 RenderFeatures =
                     {
                         new TransformRenderFeature(),
-                        new SkinningRenderFeature(),
+                        //new SkinningRenderFeature(),
                         new MaterialRenderFeature(),
-                        new ForwardLightingRenderFeature(),
+                        new ForwardLightingRenderFeature() { ShadowmapRenderStage = shadowmapRenderStage } ,
                     },
             };
 
@@ -102,9 +101,6 @@ namespace SiliconStudio.Xenko.Rendering
             var sceneInstance = SceneInstance.GetCurrent(Context);
             sceneInstance.Processors.Add(new NextGenModelProcessor(RenderSystem));
             sceneInstance.Processors.Add(new NextGenSpriteProcessor(RenderSystem));
-
-            lightComponentForwardRenderer = new LightComponentForwardRenderer();
-            lightComponentForwardRenderer.Initialize(Context);
         }
 
         protected override void DrawCore(RenderContext context)
@@ -118,9 +114,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Extract data from the scene
             Extract(context);
-
-            // Update lights
-            //lightComponentForwardRenderer.Draw(context);
 
             // Perform most of computations
             Prepare();
@@ -141,18 +134,28 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Shadow maps
             // TODO: Move that to a class that will handle all the details of shadow mapping
-            //if (Shadows && shadowRenderViews.Count > 0)
-            //{
-            //    var shadowmap = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.D32_Float, TextureFlags.DepthStencil | TextureFlags.ShaderResource));
-            //    GraphicsDevice.Clear(shadowmap, DepthStencilClearOptions.DepthBuffer);
-            //    GraphicsDevice.PushState();
-            //    GraphicsDevice.SetDepthTarget(shadowmap);
-            //    foreach (var shadowmapRenderView in shadowRenderViews)
-            //    {
-            //        Draw(RenderSystem, shadowmapRenderView, shadowmapRenderStage);
-            //    }
-            //    GraphicsDevice.PopState();
-            //}
+            if (Shadows)
+            {
+                if (shadowMapState == null)
+                    shadowMapState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false });
+
+                GraphicsDevice.PushState();
+                foreach (var renderView in RenderSystem.Views)
+                {
+                    var shadowmapRenderView = renderView as ShadowMapRenderView;
+                    if (shadowmapRenderView != null)
+                    {
+                        var shadowMapRectangle = shadowmapRenderView.Rectangle;
+                        shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
+                        GraphicsDevice.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
+                        GraphicsDevice.SetRasterizerState(shadowMapState);
+
+                        Draw(RenderSystem, shadowmapRenderView, shadowmapRenderStage);
+                    }
+                }
+                GraphicsDevice.PopState();
+            }
+
 
             Draw(RenderSystem, mainRenderView, mainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
@@ -181,26 +184,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var sceneInstance = SceneInstance.GetCurrent(context);
             
-            // Cleanup previous shadow render views
-            foreach (var renderView in shadowRenderViews)
-                RenderSystem.Views.Remove(renderView);
-            shadowRenderViews.Clear();
-
-            // Collect new shadows
-            // TODO: Move that to a class that will handle all the details of shadow mapping
-            var lightProcessor = sceneInstance.GetProcessor<LightProcessor>();
-            foreach (var light in lightProcessor.Lights)
-            {
-                var shadowRenderView = new RenderView { RenderStages = { shadowmapRenderStage } };
-
-                // Temporary
-                shadowRenderView.View = Matrix.LookAtRH(new Vector3((float)Math.Cos(time) * 30.0f, 14.0f, (float)Math.Sin(time) * 30.0f), Vector3.Zero, Vector3.UnitY);
-                shadowRenderView.Projection = Matrix.PerspectiveFovRH(1.0f, 1.6f, 0.1f, 1000.0f);
-
-                shadowRenderViews.Add(shadowRenderView);
-                RenderSystem.Views.Add(shadowRenderView);
-            }
-
             // Reset render context data
             RenderSystem.Reset();
 
@@ -235,13 +218,6 @@ namespace SiliconStudio.Xenko.Rendering
                 // TODO: Culling & filtering
                 foreach (var renderObject in RenderSystem.RenderObjects)
                 {
-                    // Fake culling for shadow mapping
-                    if (view != mainRenderView)
-                    {
-                        if (rand.Next() % 2 == 0)
-                            continue;
-                    }
-
                     var viewFeature = view.Features[renderObject.RenderFeature.Index];
 
                     var renderFeature = renderObject.RenderFeature;
@@ -253,20 +229,20 @@ namespace SiliconStudio.Xenko.Rendering
                     // TODO: Check which stage it belongs to (and skip everything if it doesn't belong to any stage)
                     // TODO: For now, we build list and then copy. Another way would be to count and then fill (might be worse, need to check)
                     var activeRenderStages = renderObject.ActiveRenderStages;
-                    foreach (var renderStage in view.RenderStages)
+                    foreach (var renderViewStage in view.RenderStages)
                     {
                         // Check if this RenderObject wants to be rendered for this render stage
-                        var renderStageIndex = renderStage.RenderStage.Index;
+                        var renderStageIndex = renderViewStage.RenderStage.Index;
                         if (!activeRenderStages[renderStageIndex].Active)
                             continue;
 
-                        var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderStage.RenderStage);
+                        var renderNode = renderFeature.CreateRenderNode(renderObject, view, renderViewNode, renderViewStage.RenderStage);
 
                         // Note: Used mostly during updating
                         viewFeature.RenderNodes.Add(renderNode);
 
                         // Note: Used mostly during rendering
-                        renderStage.RenderNodes.Add(new RenderNodeFeatureReference(renderFeature, renderNode));
+                        renderViewStage.RenderNodes.Add(new RenderNodeFeatureReference(renderFeature, renderNode));
                     }
                 }
 
