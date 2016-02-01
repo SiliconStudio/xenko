@@ -143,13 +143,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     {
                         materialInfo.ConstantBufferReflection = materialConstantBuffer;
                         parameterCollectionLayout.ProcessConstantBuffer(materialConstantBuffer);
-                        materialInfo.Resources.ConstantBufferSize = parameterCollectionLayout.BufferSize;
                     }
 
                     // Update material parameters layout to what is expected by effect
                     material.Parameters.UpdateLayout(parameterCollectionLayout);
 
                     materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerMaterial"), renderEffect.Effect.Bytecode, "PerMaterial");
+
+                    materialInfo.Resources = new ResourceGroup();
+                    RootEffectRenderFeature.PrepareResourceGroup(RenderSystem, materialInfo.PerMaterialLayout, BufferPoolAllocationType.UsedMultipleTime, materialInfo.Resources);
                 }
 
                 var materialDescriptorSet = DescriptorSet.New(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, materialInfo.PerMaterialLayout.DescriptorSetLayout);
@@ -164,19 +166,19 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Process PerMaterial cbuffer
                 if (materialInfo.ConstantBufferReflection != null)
                 {
-                    var materialConstantBufferOffset = RenderSystem.BufferPool.Allocate(materialInfo.Resources.ConstantBufferSize);
+                    //var materialConstantBufferOffset = RenderSystem.BufferPool.Allocate(materialInfo.Resources.ConstantBuffer.Size);
+                    //
+                    //// Set constant buffer
+                    //materialDescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, materialConstantBufferOffset, materialInfo.Resources.ConstantBufferSize);
+                    //materialInfo.Resources.ConstantBufferOffset = materialConstantBufferOffset;
 
-                    // Set constant buffer
-                    materialDescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, materialConstantBufferOffset, materialInfo.Resources.ConstantBufferSize);
-                    materialInfo.Resources.ConstantBufferOffset = materialConstantBufferOffset;
-
-                    var mappedCB = RenderSystem.BufferPool.Buffer.Data + materialInfo.Resources.ConstantBufferOffset;
-                    Utilities.CopyMemory(mappedCB, material.Parameters.DataValues, materialInfo.Resources.ConstantBufferSize);
+                    var mappedCB = materialInfo.Resources.ConstantBuffer.Data;
+                    Utilities.CopyMemory(mappedCB, material.Parameters.DataValues, materialInfo.Resources.ConstantBuffer.Size);
                 }
             }
 
             // Assign descriptor sets to each render node
-            var descriptorSetPool = ((RootEffectRenderFeature)RootRenderFeature).DescriptorSetPool;
+            var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
             for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.renderNodes.Count; renderNodeIndex++)
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
@@ -189,8 +191,8 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 var material = renderMesh.Material.Material;
                 var materialInfo = (MaterialInfo)material.RenderData;
 
-                var descriptorSetPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeDescriptorSetOffset(renderNodeReference);
-                descriptorSetPool[descriptorSetPoolOffset + perMaterialDescriptorSetSlot.Index] = materialInfo.Resources.DescriptorSet;
+                var descriptorSetPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
+                resourceGroupPool[descriptorSetPoolOffset + perMaterialDescriptorSetSlot.Index] = materialInfo.Resources;
             }
         }
     }

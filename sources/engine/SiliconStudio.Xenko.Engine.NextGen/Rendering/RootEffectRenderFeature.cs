@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         internal List<EffectObjectNode> EffectObjectNodes { get; } = new List<EffectObjectNode>();
 
-        public DescriptorSet[] DescriptorSetPool = new DescriptorSet[256];
+        public ResourceGroup[] ResourceGroupPool = new ResourceGroup[256];
 
         public List<FrameResourceGroupLayout> FrameLayouts { get; } = new List<FrameResourceGroupLayout>();
         public Action<NextGenRenderSystem, Effect, RenderEffectReflection> EffectCompiled;
@@ -82,9 +82,9 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
-        /// Compute the index of first descriptor set stored in <see cref="RootEffectRenderFeature.DescriptorSetPool"/>.
+        /// Compute the index of first descriptor set stored in <see cref="ResourceGroupPool"/>.
         /// </summary>
-        internal int ComputeDescriptorSetOffset(RenderNodeReference renderNode)
+        internal int ComputeResourceGroupOffset(RenderNodeReference renderNode)
         {
             return renderNode.Index * effectDescriptorSetSlots.Count;
         }
@@ -295,8 +295,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Make sure descriptor set pool is large enough
             var expectedDescriptorSetPoolSize = renderNodes.Count * effectDescriptorSetSlots.Count;
-            if (DescriptorSetPool.Length < expectedDescriptorSetPoolSize)
-                Array.Resize(ref DescriptorSetPool, expectedDescriptorSetPoolSize);
+            if (ResourceGroupPool.Length < expectedDescriptorSetPoolSize)
+                Array.Resize(ref ResourceGroupPool, expectedDescriptorSetPoolSize);
 
             // Allocate PerFrame, PerView and PerDraw resource groups and constant buffers
             var renderEffects = GetData(RenderEffectKey);
@@ -319,22 +319,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var viewLayout = renderEffectReflection.PerViewLayout;
                     if (viewLayout.Entries[view.Index].MarkAsUsed(RenderSystem))
                     {
-                        var viewResources = new ResourceGroup
-                        {
-                            DescriptorSet = DescriptorSet.New(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, viewLayout.DescriptorSetLayout),
-                            ConstantBufferOffset = RenderSystem.BufferPool.Allocate(viewLayout.ConstantBufferSize),
-                            ConstantBufferSize = viewLayout.ConstantBufferSize,
-                        };
-
-                        if (viewResources.ConstantBufferSize > 0)
-                        {
-                            // Set constant buffer
-                            viewResources.DescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer,
-                                viewResources.ConstantBufferOffset,
-                                viewResources.ConstantBufferSize);
-                        }
-
-                        viewLayout.Entries[view.Index].ResourceGroup = viewResources;
+                        PrepareResourceGroup(RenderSystem, viewLayout, BufferPoolAllocationType.UsedMultipleTime, viewLayout.Entries[view.Index].Resources);
 
                         // Register it in list of view layouts to update for this frame
                         viewFeature.Layouts.Add(viewLayout);
@@ -344,22 +329,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var frameLayout = renderEffect.Reflection.PerFrameLayout;
                     if (frameLayout != null && frameLayout.Entry.MarkAsUsed(RenderSystem))
                     {
-                        var frameResources = new ResourceGroup
-                        {
-                            DescriptorSet = DescriptorSet.New(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, frameLayout.DescriptorSetLayout),
-                            ConstantBufferOffset = RenderSystem.BufferPool.Allocate(frameLayout.ConstantBufferSize),
-                            ConstantBufferSize = frameLayout.ConstantBufferSize,
-                        };
-
-                        if (frameResources.ConstantBufferSize > 0)
-                        {
-                            // Set constant buffer
-                            frameResources.DescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer,
-                                frameResources.ConstantBufferOffset,
-                                frameResources.ConstantBufferSize);
-                        }
-
-                        frameLayout.Entry.ResourceGroup = frameResources;
+                        PrepareResourceGroup(RenderSystem, viewLayout, BufferPoolAllocationType.UsedMultipleTime, frameLayout.Entry.Resources);
 
                         // Register it in list of view layouts to update for this frame
                         FrameLayouts.Add(frameLayout);
@@ -370,34 +340,46 @@ namespace SiliconStudio.Xenko.Rendering
                     var viewObjectNode = GetViewObjectNode(renderNode.ViewObjectNode);
 
                     // Allocate descriptor set
-                    var drawDescriptorSet = DescriptorSet.New(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, renderEffectReflection.PerDrawLayout.DescriptorSetLayout);
-
-                    // Allocate cbuffer space
-                    var perDrawConstantBufferSize = renderEffectReflection.PerDrawLayout.ConstantBufferSize;
-                    var perDrawConstantBufferOffset = RenderSystem.BufferPool.Allocate(perDrawConstantBufferSize);
-
-                    // Set constant buffer
-                    drawDescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, perDrawConstantBufferOffset, perDrawConstantBufferSize);
+                    renderNode.Resources = AllocateTemporaryResourceGroup();
+                    PrepareResourceGroup(RenderSystem, renderEffectReflection.PerDrawLayout, BufferPoolAllocationType.UsedOnce, renderNode.Resources);
 
                     // Link to EffectObjectNode (created right after)
                     // TODO: rewrite this
                     renderNode.EffectObjectNode = new EffectObjectNodeReference(EffectObjectNodes.Count);
-                    renderNode.DrawDescriptorSet = drawDescriptorSet;
-                    renderNode.DrawConstantBufferOffset = perDrawConstantBufferOffset;
 
                     renderNode.RenderEffect = renderEffect;
 
                     // Bind well-known descriptor sets
-                    var descriptorSetPoolOffset = ComputeDescriptorSetOffset(renderNodeReference);
-                    DescriptorSetPool[descriptorSetPoolOffset + perFrameDescriptorSetSlot.Index] = renderEffect.Reflection.PerFrameResources.DescriptorSet;
-                    DescriptorSetPool[descriptorSetPoolOffset + perViewDescriptorSetSlot.Index] = renderEffect.Reflection.PerViewLayout.Entries[view.Index].ResourceGroup.DescriptorSet;
-                    DescriptorSetPool[descriptorSetPoolOffset + perDrawDescriptorSetSlot.Index] = drawDescriptorSet;
+                    var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
+                    ResourceGroupPool[descriptorSetPoolOffset + perFrameDescriptorSetSlot.Index] = renderEffect.Reflection.PerFrameResources;
+                    ResourceGroupPool[descriptorSetPoolOffset + perViewDescriptorSetSlot.Index] = renderEffect.Reflection.PerViewLayout.Entries[view.Index].Resources;
+                    ResourceGroupPool[descriptorSetPoolOffset + perDrawDescriptorSetSlot.Index] = renderNode.Resources;
 
                     renderNodes[renderNodeReference.Index] = renderNode;
 
                     // Create EffectObjectNode
                     EffectObjectNodes.Add(new EffectObjectNode(renderEffect, viewObjectNode.ObjectNode));
                 }
+            }
+        }
+
+        private ResourceGroup AllocateTemporaryResourceGroup()
+        {
+            // TODO: Provide a better implementation that avoids allocation (i.e. using a pool)
+            return new ResourceGroup();
+        }
+
+        public static void PrepareResourceGroup(NextGenRenderSystem renderSystem, ResourceGroupLayout resourceGroupLayout, BufferPoolAllocationType constantBufferAllocationType, ResourceGroup resourceGroup)
+        {
+            // TODO: Make sure ResourceGroup is properly created
+            if (resourceGroup == null)
+                throw new InvalidOperationException();
+
+            resourceGroup.DescriptorSet = DescriptorSet.New(renderSystem.GraphicsDevice, renderSystem.DescriptorPool, resourceGroupLayout.DescriptorSetLayout);
+
+            if (resourceGroupLayout.ConstantBufferSize > 0)
+            {
+                renderSystem.BufferPool.Allocate(renderSystem.GraphicsDevice, resourceGroupLayout.ConstantBufferSize, constantBufferAllocationType, ref resourceGroup.ConstantBuffer);
             }
         }
 
@@ -478,6 +460,8 @@ namespace SiliconStudio.Xenko.Rendering
                     ConstantBufferReflection = constantBufferReflection,
                 };
 
+                result.Entry.Resources = new ResourceGroup();
+
                 if (constantBufferReflection != null)
                 {
                     result.ConstantBufferSize = constantBufferReflection.Size;
@@ -522,6 +506,11 @@ namespace SiliconStudio.Xenko.Rendering
                     ConstantBufferReflection = constantBufferReflection,
                     Entries = new ResourceGroupEntry[RenderSystem.Views.Count],
                 };
+
+                for (int index = 0; index < result.Entries.Length; index++)
+                {
+                    result.Entries[index].Resources = new ResourceGroup();
+                }
 
                 if (constantBufferReflection != null)
                 {

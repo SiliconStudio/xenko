@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 var renderModelObjectInfo = renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
 
-                var mappedCB = RenderSystem.BufferPool.Buffer.Data + renderNode.DrawConstantBufferOffset;
+                var mappedCB = renderNode.Resources.ConstantBuffer.Data;
                 var world = (Matrix*)((byte*)mappedCB);
                 *world++ = renderModelObjectInfo.World; // World
                 *world = renderModelObjectInfo.World; // WorldInverseTranspose
@@ -110,8 +110,8 @@ namespace SiliconStudio.Xenko.Rendering
                     if (viewProjectionOffset == -1)
                         continue;
 
-                    var resourceGroup = viewLayout.Entries[view.Index].ResourceGroup;
-                    var mappedCB = RenderSystem.BufferPool.Buffer.Data + resourceGroup.ConstantBufferOffset;
+                    var resourceGroup = viewLayout.Entries[view.Index].Resources;
+                    var mappedCB = resourceGroup.ConstantBuffer.Data;
 
                     var viewMatrices = (Matrix*)((byte*)mappedCB + viewProjectionOffset);
 

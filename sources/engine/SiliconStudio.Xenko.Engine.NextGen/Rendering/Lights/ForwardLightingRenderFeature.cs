@@ -265,7 +265,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             // Copy data to cbuffer
             // TODO: Rewrite it with new render system in mind (should be much faster/efficient)
-            var descriptorSetPool = ((RootEffectRenderFeature)RootRenderFeature).DescriptorSetPool;
+            var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
             for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.renderNodes.Count; renderNodeIndex++)
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
@@ -289,18 +289,16 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     if (lightingConstantBuffer != null)
                     {
                         modelLightInfos.ConstantBufferReflection = lightingConstantBuffer;
-                        modelLightInfos.Resources.ConstantBufferSize = lightingConstantBuffer.Size;
                     }
 
-                    modelLightInfos.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerLighting"),
-                        renderEffect.Effect.Bytecode, "PerLighting");
-                    modelLightInfos.Resources.DescriptorSet = DescriptorSet.New(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, modelLightInfos.PerLightingLayout.DescriptorSetLayout);
+                    modelLightInfos.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerLighting"), renderEffect.Effect.Bytecode, "PerLighting");
+                    RootEffectRenderFeature.PrepareResourceGroup(RenderSystem, modelLightInfos.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, modelLightInfos.Resources);
 
                     if (modelLightInfos.ConstantBufferReflection != null)
                     {
-                        var lightingConstantBufferOffset = RenderSystem.BufferPool.Allocate(modelLightInfos.Resources.ConstantBufferSize);
-                        modelLightInfos.Resources.DescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, lightingConstantBufferOffset, modelLightInfos.Resources.ConstantBufferSize);
-                        var mappedCB = RenderSystem.BufferPool.Buffer.Data + lightingConstantBufferOffset;
+                        //var lightingConstantBufferOffset = RenderSystem.BufferPool.Allocate(modelLightInfos.Resources.ConstantBufferSize);
+                        //modelLightInfos.Resources.DescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, lightingConstantBufferOffset, modelLightInfos.Resources.ConstantBufferSize);
+                        var mappedCB = modelLightInfos.Resources.ConstantBuffer.Data;
 
                         // Iterate over cbuffer members to update and pull them from material Parameters
                         // TODO: we should cache reflection offsets, but currently waiting for Material to have a more efficient internal structure
@@ -314,12 +312,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                             }
                         }
                     }
-
-                    modelLightInfos.Initialized = true;
                 }
 
-                var descriptorSetPoolOffset = ((RootEffectRenderFeature) RootRenderFeature).ComputeDescriptorSetOffset(renderNodeReference);
-                descriptorSetPool[descriptorSetPoolOffset + perLightingDescriptorSetSlot.Index] = modelLights.Info.Resources.DescriptorSet;
+                var resourceGroupPoolOffset = ((RootEffectRenderFeature) RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
+                resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = modelLights.Info.Resources;
             }
         }
 
@@ -974,15 +970,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         class RenderModelLightInfo
         {
-            public RenderModelLightInfo()
-            {
-            }
-
-            public bool Initialized;
-
             public ResourceGroupLayout PerLightingLayout;
-            public ResourceGroup Resources;
-            public Buffer ConstantBuffer;
+            public ResourceGroup Resources = new ResourceGroup();
             public ShaderConstantBufferDescription ConstantBufferReflection;
         }
     }

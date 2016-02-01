@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Rendering
             var index = effectValuesValidated++;
             if (index < EffectValues.Count)
             {
-                var currentEffectValue = EffectValues[index];
+                var currentEffectValue = EffectValues.Items[index];
                 if (currentEffectValue.Key == key && EqualityComparer<T>.Default.Equals((T)currentEffectValue.Value, value))
                 {
                     // Everything same, let's keep going

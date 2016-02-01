@@ -28,8 +28,8 @@ namespace SiliconStudio.Xenko.Rendering
         private int constantBufferTotalSize;
 
         // Descriptor sets
-        private DescriptorSetLayout[] descriptorSetLayouts;
-        private DescriptorSet[] descriptorSets;
+        private ResourceGroupLayout[] resourceGroupLayouts;
+        private ResourceGroup[] resourceGroups;
 
         // Store current effect
         private Effect effect;
@@ -128,12 +128,14 @@ namespace SiliconStudio.Xenko.Rendering
                     }
                 }
 
-                descriptorSets = new DescriptorSet[binder.DescriptorReflection.Layouts.Count];
-                descriptorSetLayouts = new DescriptorSetLayout[binder.DescriptorReflection.Layouts.Count];
+                resourceGroups = new ResourceGroup[binder.DescriptorReflection.Layouts.Count];
+                resourceGroupLayouts = new ResourceGroupLayout[binder.DescriptorReflection.Layouts.Count];
                 for (int i = 0; i < binder.DescriptorReflection.Layouts.Count; ++i)
                 {
+                    var name = binder.DescriptorReflection.Layouts[i].Name;
                     var layout = binder.DescriptorReflection.Layouts[i].Layout;
-                    descriptorSetLayouts[i] = DescriptorSetLayout.New(graphicsDevice, layout);
+                    resourceGroupLayouts[i] = ResourceGroupLayout.New(graphicsDevice, layout, effect.Bytecode, name);
+                    resourceGroups[i] = new ResourceGroup();
                 }
 
                 // Update parameters layout to match what this effect expect
@@ -154,9 +156,9 @@ namespace SiliconStudio.Xenko.Rendering
             });
 
             // Instantiate descriptor sets
-            for (int i = 0; i < descriptorSets.Length; ++i)
+            for (int i = 0; i < resourceGroups.Length; ++i)
             {
-                descriptorSets[i] = DescriptorSet.New(graphicsDevice, descriptorPool, descriptorSetLayouts[i]);
+                RootEffectRenderFeature.PrepareResourceGroup(null, resourceGroupLayouts[i], BufferPoolAllocationType.UsedOnce, resourceGroups[i]);
             }
 
             // Set resources
@@ -165,7 +167,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var descriptorStartSlot = 0;
                 for (int layoutIndex = 0; layoutIndex < binder.DescriptorReflection.Layouts.Count; layoutIndex++)
                 {
-                    var descriptorSet = descriptorSets[layoutIndex];
+                    var descriptorSet = resourceGroups[layoutIndex].DescriptorSet;
                     var layout = binder.DescriptorReflection.Layouts[layoutIndex].Layout;
 
                     for (int resourceSlot = 0; resourceSlot < layout.ElementCount; ++resourceSlot)
@@ -184,13 +186,13 @@ namespace SiliconStudio.Xenko.Rendering
                 Utilities.CopyMemory(bufferPool.Buffer.Data, Parameters.DataValues, constantBufferTotalSize);
                 foreach (var constantBuffer in constantBuffers)
                 {
-                    var descriptorSet = descriptorSets[constantBuffer.DescriptorSet];
-                    descriptorSet.SetConstantBuffer(constantBuffer.BindingSlot, bufferPool.Buffer, constantBuffer.DataOffset, constantBuffer.Description.Size);
+                    var descriptorSet = resourceGroups[constantBuffer.DescriptorSet].ConstantBuffer.Data;
+                    //descriptorSet.SetConstantBuffer(constantBuffer.BindingSlot, bufferPool.Buffer, constantBuffer.DataOffset, constantBuffer.Description.Size);
                 }
             }
 
             // Apply
-            binder.Apply(graphicsDevice, descriptorSets, 0);
+            //binder.Apply(graphicsDevice, descriptorSets, 0);
         }
 
 

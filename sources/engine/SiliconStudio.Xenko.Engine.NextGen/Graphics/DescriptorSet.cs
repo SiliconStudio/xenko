@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="buffer">The constant buffer.</param>
         /// <param name="offset">The constant buffer view start offset.</param>
         /// <param name="size">The constant buffer view size.</param>
-        public void SetConstantBuffer(int slot, ConstantBuffer2 buffer, int offset, int size)
+        public void SetConstantBuffer(int slot, Buffer buffer, int offset, int size)
         {
             HeapObjects[DescriptorStartOffset + slot] = new DescriptorSetEntry(buffer, offset, size);
         }
