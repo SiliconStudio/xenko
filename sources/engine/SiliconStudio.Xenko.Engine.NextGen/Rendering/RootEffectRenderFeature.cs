@@ -371,7 +371,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         public static void PrepareResourceGroup(NextGenRenderSystem renderSystem, ResourceGroupLayout resourceGroupLayout, BufferPoolAllocationType constantBufferAllocationType, ResourceGroup resourceGroup)
         {
-            // TODO: Make sure ResourceGroup is properly created
             if (resourceGroup == null)
                 throw new InvalidOperationException();
 

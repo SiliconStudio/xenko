@@ -183,16 +183,18 @@ namespace SiliconStudio.Xenko.Rendering
             if (Parameters.DataValues != IntPtr.Zero && constantBuffers.Count > 0)
             {
                 var bufferPool = BufferPool.New(graphicsDevice, constantBufferTotalSize);
-                Utilities.CopyMemory(bufferPool.Buffer.Data, Parameters.DataValues, constantBufferTotalSize);
+                Utilities.CopyMemory(bufferPool.Data, Parameters.DataValues, constantBufferTotalSize);
                 foreach (var constantBuffer in constantBuffers)
                 {
                     var descriptorSet = resourceGroups[constantBuffer.DescriptorSet].ConstantBuffer.Data;
+                    throw new NotImplementedException();
                     //descriptorSet.SetConstantBuffer(constantBuffer.BindingSlot, bufferPool.Buffer, constantBuffer.DataOffset, constantBuffer.Description.Size);
                 }
             }
 
             // Apply
             //binder.Apply(graphicsDevice, descriptorSets, 0);
+            throw new NotImplementedException();
         }
 
 

@@ -1,16 +1,19 @@
 using System;
+using System.Runtime.InteropServices;
 
 namespace SiliconStudio.Xenko.Graphics
 {
     public class BufferPool
     {
-        public ConstantBuffer2 Buffer { get; }
+        public int Size;
+        public IntPtr Data;
 
         private int bufferAllocationOffset;
 
         internal BufferPool(int size)
         {
-            Buffer = new ConstantBuffer2(size);
+            Size = size;
+            Data = Marshal.AllocHGlobal(size);
         }
 
         public static BufferPool New(GraphicsDevice graphicsDevice, int size)
@@ -28,12 +31,12 @@ namespace SiliconStudio.Xenko.Graphics
             var result = bufferAllocationOffset;
             bufferAllocationOffset += size;
 
-            if (bufferAllocationOffset > Buffer.Size)
+            if (bufferAllocationOffset > Size)
                 throw new InvalidOperationException();
 
             // TODO: We only implemented the D3D11/ES 2.0 compatibility mode
             // Need to write code to take advantage of cbuffer offsets later
-            bufferPoolAllocationResult.Data = Buffer.Data + result;
+            bufferPoolAllocationResult.Data = Data + result;
             bufferPoolAllocationResult.Size = size;
             bufferPoolAllocationResult.Uploaded = false;
             if (type == BufferPoolAllocationType.UsedMultipleTime)
@@ -44,7 +47,7 @@ namespace SiliconStudio.Xenko.Graphics
                     if (bufferPoolAllocationResult.Buffer != null)
                         bufferPoolAllocationResult.Buffer.Dispose();
 
-                    bufferPoolAllocationResult.Buffer = Graphics.Buffer.Cosntant.New(graphicsDevice, size);
+                    bufferPoolAllocationResult.Buffer = Buffer.Cosntant.New(graphicsDevice, size);
                 }
             }
         }
