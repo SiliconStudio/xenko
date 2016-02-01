@@ -19,13 +19,13 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private SpriteBatch spriteBatch;
 
-        private Effect backgroundEffect;
+        private EffectInstance backgroundEffect;
 
         protected override void InitializeCore()
         {
             base.InitializeCore();
 
-            backgroundEffect = new Effect(Context.GraphicsDevice, BackgroundEffect.Bytecode) { Name = "BackgroundEffect" };
+            backgroundEffect = new EffectInstance(new Effect(Context.GraphicsDevice, BackgroundEffect.Bytecode) { Name = "BackgroundEffect" });
             spriteBatch = new SpriteBatch(Context.GraphicsDevice) { VirtualResolution = new Vector3(1)};
         }
 
@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Rendering
             var sourceSize = new Vector2(target.Width * imageBufferMinRatio, target.Height * imageBufferMinRatio);
             var source = new RectangleF((texture.ViewWidth - sourceSize.X) / 2, (texture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
 
-            spriteBatch.Parameters.Add(BackgroundEffectKeys.Intensity, background.Intensity);
+            spriteBatch.Parameters.SetValueSlow(BackgroundEffectKeys.Intensity, background.Intensity);
             spriteBatch.Begin(SpriteSortMode.FrontToBack, graphicsDevice.BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, graphicsDevice.DepthStencilStates.None, null, backgroundEffect);
             spriteBatch.Draw(texture, destination, source, Color.White, 0, Vector2.Zero);
             spriteBatch.End();

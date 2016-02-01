@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
 
                 var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
-                PrepareResourceGroup(RenderSystem, renderSkybox.ResourceGroupLayout, BufferPoolAllocationType.UsedMultipleTime, renderSkybox.Resources);
+                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, renderSkybox.ResourceGroupLayout, BufferPoolAllocationType.UsedMultipleTime, renderSkybox.Resources);
                 ResourceGroupPool[descriptorSetPoolOffset + perLightingDescriptorSetSlot.Index] = renderSkybox.Resources;
 
                 var descriptorSet = renderSkybox.Resources.DescriptorSet;

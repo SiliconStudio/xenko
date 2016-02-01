@@ -86,14 +86,14 @@
     </When>
   </Choose>
   <Choose>
-  <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-    <ItemGroup>
-  	<Content Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
-  	  <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-  	  <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-  	</Content>
-    </ItemGroup>
-  </When>
+    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
+      <ItemGroup>
+        <Content Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+      </ItemGroup>
+    </When>
   </Choose>
   <ItemGroup>
     <None Include="..\..\..\deps\freetype-2.5.3\$(SiliconStudioPlatform)\$(Configuration)\**\*.*">
@@ -124,7 +124,18 @@
     <Compile Include="AppContextType.cs" />
     <Compile Include="BatchBase.cs" />
     <Compile Include="BlendStateSerializer.cs" />
+    <Compile Include="BufferPool.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
+    <Compile Include="DescriptorPool.cs" />
+    <Compile Include="DescriptorSet.cs" />
+    <Compile Include="DescriptorSetEntry.cs" />
+    <Compile Include="DescriptorSetLayout.cs" />
+    <Compile Include="DescriptorSetLayoutBuilder.cs" />
+    <Compile Include="DescriptorSetLayoutEntry.cs" />
+    <Compile Include="DescriptorTypeCount.cs" />
+    <Compile Include="EffectInstance.cs" />
+    <Compile Include="EffectBinder.cs" />
+    <Compile Include="EffectDescriptorSetReflection.cs" />
     <Compile Include="Effects\EffectParameterUpdaterDefinition.cs" />
     <Compile Include="Effects\ParameterDependency.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
@@ -133,6 +144,7 @@
     <Compile Include="Font\StaticSpriteFontSerializer.cs" />
     <Compile Include="Font\DynamicSpriteFontSerializer.cs" />
     <Compile Include="GraphicsDeviceServiceLocal.cs" />
+    <Compile Include="NextGenParameterCollectionLayoutExtensions.cs" />
     <Compile Include="RasterizerStateSerializer.cs" />
     <Compile Include="Data\BufferData.cs" />
     <Compile Include="Data\GraphicsSerializerExtensions.cs" />
@@ -144,6 +156,8 @@
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="DepthStencilStateSerializer.cs" />
+    <Compile Include="ResourceGroup.cs" />
+    <Compile Include="ResourceGroupLayout.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />

@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="sortMode">The sprite drawing order to use for the batch session</param>
         /// <param name="effect">The effect to use for the batch session</param>
-        public void Begin(SpriteSortMode sortMode, Effect effect)
+        public void Begin(SpriteSortMode sortMode, EffectInstance effect)
         {
             UpdateDefaultProjectionMatrix();
             Begin(defaultViewMatrix, defaultProjectionMatrix, sortMode, null, null, null, null, effect);
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="effect">The effect to use for the batch session</param>
         /// <param name="parameterCollectionGroup">The parameter collection group.</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
-        public void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
+        public void Begin(SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, EffectInstance effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
         {
             UpdateDefaultProjectionMatrix();
             Begin(defaultViewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, parameterCollectionGroup, stencilValue);
@@ -127,7 +127,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="effect">The effect to use for the batch session</param>
         /// <param name="parameterCollectionGroup">The parameter collection group.</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
-        public void Begin(Matrix viewMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
+        public void Begin(Matrix viewMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, EffectInstance effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
         {
             UpdateDefaultProjectionMatrix();
             Begin(viewMatrix, defaultProjectionMatrix, sortMode, blendState, samplerState, depthStencilState, rasterizerState, effect, parameterCollectionGroup, stencilValue);
@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="effect">The effect to use for the batch session</param>
         /// <param name="parameterCollectionGroup">The parameter collection group.</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
-        public void Begin(Matrix viewMatrix, Matrix projectionMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, Effect effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
+        public void Begin(Matrix viewMatrix, Matrix projectionMatrix, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, EffectInstance effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
         {
             CheckEndHasBeenCalled("begin");
 
@@ -595,7 +595,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Setup effect states and parameters: SamplerState and MatrixTransform
             // Sets the sampler state
-            Parameters.Set(SpriteBaseKeys.MatrixTransform, viewProjection);
+            Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, viewProjection);
 
             base.PrepareForRendering();
         }

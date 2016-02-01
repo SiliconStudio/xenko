@@ -292,7 +292,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     }
 
                     modelLightInfos.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerLighting"), renderEffect.Effect.Bytecode, "PerLighting");
-                    RootEffectRenderFeature.PrepareResourceGroup(RenderSystem, modelLightInfos.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, modelLightInfos.Resources);
+                    NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, modelLightInfos.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, modelLightInfos.Resources);
 
                     if (modelLightInfos.ConstantBufferReflection != null)
                     {

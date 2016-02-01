@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     /// <summary>
     /// Describes how DescriptorSet maps to real resource binding.
-    /// This might become a core part of <see cref="Effect"/> at some point.
+    /// This might become a core part of <see cref="Graphics.Effect"/> at some point.
     /// </summary>
     public struct EffectBinder
     {
@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
             var descriptorSetLayouts = new EffectDescriptorSetReflection();
             foreach (var effectDescriptorSetSlot in effectDescriptorSetSlots)
             {
-                descriptorSetLayouts.AddLayout(effectDescriptorSetSlot, InitializeDescriptorSet(effectBytecode, effectDescriptorSetSlot));
+                descriptorSetLayouts.AddLayout(effectDescriptorSetSlot ?? "Globals", InitializeDescriptorSet(effectBytecode, effectDescriptorSetSlot));
             }
 
             DescriptorReflection = descriptorSetLayouts;

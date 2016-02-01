@@ -18,9 +18,9 @@ namespace SiliconStudio.Xenko.Rendering
     {
         // TODO this is temporary code. this should disappear from here later when materials on sprite will be available
         public static PropertyKey<bool> IsEntitySelected = new PropertyKey<bool>("IsEntitySelected", typeof(SpriteComponentRenderer));
-        private Effect selectedSpriteEffect;
-        private Effect selectedSpriteEffectSRgb;
-        private Effect pickingSpriteEffect;
+        private EffectInstance selectedSpriteEffect;
+        private EffectInstance selectedSpriteEffectSRgb;
+        private EffectInstance pickingSpriteEffect;
 
         private Sprite3DBatch sprite3DBatch;
 
@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             BlendState previousBlendState = null;
             DepthStencilState previousDepthStencilState= null;
-            Effect previousEffect = null;
+            EffectInstance previousEffect = null;
 
             var isPicking = context.IsPicking();
 
@@ -167,7 +167,7 @@ namespace SiliconStudio.Xenko.Rendering
             sprite3DBatch.End();
         }
 
-        private Effect GetOrCreateSelectedSpriteEffect()
+        private EffectInstance GetOrCreateSelectedSpriteEffect()
         {
             if (GraphicsDevice.ColorSpace == ColorSpace.Gamma)
             {
@@ -179,21 +179,21 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private Effect GetOrCreateSelectedSpriteEffect(ref Effect effect, bool isSRgb)
+        private EffectInstance GetOrCreateSelectedSpriteEffect(ref EffectInstance effect, bool isSRgb)
         {
             if (effect == null)
             {
                 var compilerParameters = new CompilerParameters { [SpriteBaseKeys.ColorIsSRgb] = isSRgb};
-                effect = EffectSystem.LoadEffect("SelectedSprite", compilerParameters).WaitForResult();
+                effect = new EffectInstance(EffectSystem.LoadEffect("SelectedSprite", compilerParameters).WaitForResult());
             }
 
             return effect;
         }
 
-        private Effect GetOrCreatePickingSpriteEffect()
+        private EffectInstance GetOrCreatePickingSpriteEffect()
         {
             if (pickingSpriteEffect == null)
-                pickingSpriteEffect = EffectSystem.LoadEffect("SpritePicking").WaitForResult();
+                pickingSpriteEffect = new EffectInstance(EffectSystem.LoadEffect("SpritePicking").WaitForResult());
 
             return pickingSpriteEffect;
         }

@@ -143,7 +143,7 @@ namespace SiliconStudio.Xenko.Rendering
             return slotReference;
         }
 
-        private void ResolveCBufferOffset(ResourceGroupLayout resourceGroupLayout, int index, string variable)
+        private void ResolveCBufferOffset(RenderSystemResourceGroupLayout resourceGroupLayout, int index, string variable)
         {
             // Update slot
             if (resourceGroupLayout.ConstantBufferReflection != null)
@@ -319,7 +319,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var viewLayout = renderEffectReflection.PerViewLayout;
                     if (viewLayout.Entries[view.Index].MarkAsUsed(RenderSystem))
                     {
-                        PrepareResourceGroup(RenderSystem, viewLayout, BufferPoolAllocationType.UsedMultipleTime, viewLayout.Entries[view.Index].Resources);
+                        NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, viewLayout, BufferPoolAllocationType.UsedMultipleTime, viewLayout.Entries[view.Index].Resources);
 
                         // Register it in list of view layouts to update for this frame
                         viewFeature.Layouts.Add(viewLayout);
@@ -329,7 +329,7 @@ namespace SiliconStudio.Xenko.Rendering
                     var frameLayout = renderEffect.Reflection.PerFrameLayout;
                     if (frameLayout != null && frameLayout.Entry.MarkAsUsed(RenderSystem))
                     {
-                        PrepareResourceGroup(RenderSystem, viewLayout, BufferPoolAllocationType.UsedMultipleTime, frameLayout.Entry.Resources);
+                        NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, viewLayout, BufferPoolAllocationType.UsedMultipleTime, frameLayout.Entry.Resources);
 
                         // Register it in list of view layouts to update for this frame
                         FrameLayouts.Add(frameLayout);
@@ -341,7 +341,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Allocate descriptor set
                     renderNode.Resources = AllocateTemporaryResourceGroup();
-                    PrepareResourceGroup(RenderSystem, renderEffectReflection.PerDrawLayout, BufferPoolAllocationType.UsedOnce, renderNode.Resources);
+                    NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, renderEffectReflection.PerDrawLayout, BufferPoolAllocationType.UsedOnce, renderNode.Resources);
 
                     // Link to EffectObjectNode (created right after)
                     // TODO: rewrite this
@@ -369,19 +369,6 @@ namespace SiliconStudio.Xenko.Rendering
             return new ResourceGroup();
         }
 
-        public static void PrepareResourceGroup(NextGenRenderSystem renderSystem, ResourceGroupLayout resourceGroupLayout, BufferPoolAllocationType constantBufferAllocationType, ResourceGroup resourceGroup)
-        {
-            if (resourceGroup == null)
-                throw new InvalidOperationException();
-
-            resourceGroup.DescriptorSet = DescriptorSet.New(renderSystem.GraphicsDevice, renderSystem.DescriptorPool, resourceGroupLayout.DescriptorSetLayout);
-
-            if (resourceGroupLayout.ConstantBufferSize > 0)
-            {
-                renderSystem.BufferPool.Allocate(renderSystem.GraphicsDevice, resourceGroupLayout.ConstantBufferSize, constantBufferAllocationType, ref resourceGroup.ConstantBuffer);
-            }
-        }
-
         public override void Reset()
         {
             base.Reset();
@@ -401,20 +388,16 @@ namespace SiliconStudio.Xenko.Rendering
             return descriptorSetLayout;
         }
 
-        private ResourceGroupLayout CreateDrawResourceGroupLayout(NextGenRenderSystem RenderSystem, DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
+        private RenderSystemResourceGroupLayout CreateDrawResourceGroupLayout(NextGenRenderSystem RenderSystem, DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
         {
             if (bindingBuilder == null)
                 return null;
 
-            // TODO: This code might need some improvements (waiting to have better visibility on how we define resource groups and descriptor layouts)
-            // TODO: For now, assume cbuffer is always in slot 0 (if it exists)
-            var constantBufferSlot = 0;
             var constantBufferReflection = effectBytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerDraw");
 
-            var result = new FrameResourceGroupLayout
+            var result = new RenderSystemResourceGroupLayout
             {
                 DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, bindingBuilder),
-                ConstantBufferSlot = constantBufferSlot,
                 ConstantBufferReflection = constantBufferReflection,
             };
 
@@ -439,9 +422,6 @@ namespace SiliconStudio.Xenko.Rendering
             if (bindingBuilder == null)
                 return null;
 
-            // TODO: This code might need some improvements (waiting to have better visibility on how we define resource groups and descriptor layouts)
-            // TODO: For now, assume cbuffer is always in slot 0 (if it exists)
-            var constantBufferSlot = 0;
             var constantBufferReflection = effectBytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerFrame");
 
             // We combine both hash for DescriptorSet and cbuffer itself (if it exists)
@@ -455,7 +435,6 @@ namespace SiliconStudio.Xenko.Rendering
                 result = new FrameResourceGroupLayout
                 {
                     DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, bindingBuilder),
-                    ConstantBufferSlot = constantBufferSlot,
                     ConstantBufferReflection = constantBufferReflection,
                 };
 
@@ -485,9 +464,6 @@ namespace SiliconStudio.Xenko.Rendering
             if (bindingBuilder == null)
                 return null;
 
-            // TODO: This code might need some improvements (waiting to have better visibility on how we define resource groups and descriptor layouts)
-            // TODO: For now, assume cbuffer is always in slot 0 (if it exists)
-            var constantBufferSlot = 0;
             var constantBufferReflection = effectBytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerView");
 
             // We combine both hash for DescriptorSet and cbuffer itself (if it exists)
@@ -501,7 +477,6 @@ namespace SiliconStudio.Xenko.Rendering
                 result = new ViewResourceGroupLayout
                 {
                     DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, bindingBuilder),
-                    ConstantBufferSlot = constantBufferSlot,
                     ConstantBufferReflection = constantBufferReflection,
                     Entries = new ResourceGroupEntry[RenderSystem.Views.Count],
                 };
