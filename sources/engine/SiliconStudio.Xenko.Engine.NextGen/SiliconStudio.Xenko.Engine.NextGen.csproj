@@ -236,7 +236,6 @@
     <Compile Include="Rendering\RenderEffect.cs" />
     <Compile Include="Rendering\EffectDescriptorSetReference.cs" />
     <Compile Include="Rendering\ConstantBufferOffsetReference.cs" />
-    <Compile Include="Graphics\ConstantBuffer2.cs" />
     <Compile Include="Rendering\DataArrayInfo.cs" />
     <Compile Include="Rendering\EffectPermutationSlot.cs" />
     <Compile Include="Rendering\Materials\MaterialRenderFeature.cs" />
