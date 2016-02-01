@@ -3,6 +3,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Data;
@@ -14,17 +15,50 @@ namespace SiliconStudio.Xenko.Engine.Design
     public class PlatformConfigurations
     {
         [DataMember]
-        internal Dictionary<Type, IConfiguration> Configurations = new Dictionary<Type, IConfiguration>();
+        internal List<ConfigurationOverride> Configurations = new List<ConfigurationOverride>();
 
-        public T Get<T>() where T : IConfiguration, new()
+        public T Get<T>() where T : Configuration, new()
         {
-            IConfiguration configuration;
-            if (Configurations.TryGetValue(typeof(T), out configuration))
+            //find default
+            var config = Configurations.Where(x => x.Platform == ConfigPlatforms.None).SelectMany(x => x.Configurations).FirstOrDefault(x => x.GetType() == typeof(T));
+            
+            //perform logic by platform and if required even gpu/cpu/specs
+
+            var platform = ConfigPlatforms.None;
+            switch (Platform.Type)
             {
-                return (T)configuration;
+                case PlatformType.Shared:
+                    break;
+                case PlatformType.Windows:
+                    platform = ConfigPlatforms.Windows;
+                    break;
+                case PlatformType.WindowsPhone:
+                    platform = ConfigPlatforms.WindowsPhone;
+                    break;
+                case PlatformType.WindowsStore:
+                    platform = ConfigPlatforms.WindowsStore;
+                    break;
+                case PlatformType.Android:
+                    platform = ConfigPlatforms.Android;
+                    break;
+                case PlatformType.iOS:
+                    platform = ConfigPlatforms.iOS;
+                    break;
+                case PlatformType.Windows10:
+                    platform = ConfigPlatforms.Windows10;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
             }
 
-            return new T();
+            //find per platform if available
+            var platformConfig = Configurations.Where(x => x.Platform.HasFlag(platform) && x.SpecificFilter == ConfigFilters.None).SelectMany(x => x.Configurations).FirstOrDefault(x => x.GetType() == typeof(T));
+            if (platformConfig != null)
+            {
+                config = platformConfig;
+            }
+
+            return (T)config;
         }
     }
 
