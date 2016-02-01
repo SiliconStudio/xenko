@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Rendering.Shadows;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -62,5 +63,12 @@ namespace SiliconStudio.Xenko.Rendering
         {
             return $"RenderView ({Features.Sum(x => x.ViewObjectNodes.Count)} objects, {Features.Sum(x => x.RenderNodes.Count)} render nodes, {RenderStages.Count} stages)";
         }
+    }
+
+    public class ShadowMapRenderView : RenderView
+    {
+        public LightShadowMapTexture ShadowMapTexture;
+
+        public Rectangle Rectangle;
     }
 }
