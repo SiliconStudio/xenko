@@ -72,8 +72,12 @@ namespace SiliconStudio.Quantum
                     {
                         foreach (var reference in enumReference.Where(x => x.TargetNode != null))
                         {
-                            var baseReference = baseEnumReference.First(x => Equals(reference.Index, x.Index));
-                            nodes.Enqueue(new ContentNodeLink(reference.TargetNode, baseReference?.TargetNode));
+                            var baseReference = baseEnumReference.FirstOrDefault(x => Equals(reference.Index, x.Index));
+                            // TODO: use "IdentifiableHelper"
+                            if (baseReference != null)
+                            {
+                                nodes.Enqueue(new ContentNodeLink(reference.TargetNode, baseReference?.TargetNode));
+                            }
                         }
                     }
                 }
