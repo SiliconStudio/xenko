@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Engine.Design
         public T Get<T>() where T : Configuration, new()
         {
             //find default
-            var config = Configurations.Where(x => x.Platform == ConfigPlatforms.None).SelectMany(x => x.Configurations).FirstOrDefault(x => x.GetType() == typeof(T));
+            var config = Configurations.Where(x => x.Platforms == ConfigPlatforms.None).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
             
             //perform logic by platform and if required even gpu/cpu/specs
 
@@ -52,13 +52,18 @@ namespace SiliconStudio.Xenko.Engine.Design
             }
 
             //find per platform if available
-            var platformConfig = Configurations.Where(x => x.Platform.HasFlag(platform) && x.SpecificFilter == ConfigFilters.None).SelectMany(x => x.Configurations).FirstOrDefault(x => x.GetType() == typeof(T));
+            var platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter == ConfigFilters.None).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
             if (platformConfig != null)
             {
                 config = platformConfig;
             }
+            
+            if(config == null)
+            {
+                return new T();
+            }
 
-            return (T)config;
+            return (T)config.Configuration;
         }
     }
 
