@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         // Used internally by renderer
         internal ValueParameter<float> RotationParameter;
         internal ValueParameter<Matrix> SkyMatrixParameter;
-        internal DescriptorSetLayout DescriptorSetLayout;
-        internal int ConstantBufferSize;
+        internal ResourceGroupLayout ResourceGroupLayout;
+        internal ResourceGroup Resources;
     }
 }

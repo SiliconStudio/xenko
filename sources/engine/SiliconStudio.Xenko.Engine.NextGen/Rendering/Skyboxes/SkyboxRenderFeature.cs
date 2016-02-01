@@ -99,7 +99,6 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     if (lightingConstantBuffer != null)
                     {
                         parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
-                        renderSkybox.ConstantBufferSize = lightingConstantBuffer.Size;
                     }
 
                     parameters.UpdateLayout(parameterCollectionLayout);
@@ -108,7 +107,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     renderSkybox.SkyMatrixParameter = parameters.GetValueParameter(SkyboxKeys.SkyMatrix);
 
                     // TODO: Cache that
-                    renderSkybox.DescriptorSetLayout = DescriptorSetLayout.New(RenderSystem.GraphicsDevice, descriptorLayoutBuilder);
+                    renderSkybox.ResourceGroupLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayoutBuilder, renderEffect.Effect.Bytecode, "PerLighting");
+                    renderSkybox.Resources = new ResourceGroup();
                 }
 
                 // Update SkyMatrix
@@ -122,16 +122,18 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 var matrixTransformOffset = renderNode.RenderEffect.Reflection.PerDrawLayout.GetConstantBufferOffset(this.matrixTransform);
                 if (matrixTransformOffset != -1)
                 {
-                    var mappedCB = RenderSystem.BufferPool.Buffer.Data + renderNode.DrawConstantBufferOffset;
+                    var mappedCB = renderNode.Resources.ConstantBuffer.Data;
                     unsafe
                     {
                         *(Matrix*)(byte*)mappedCB = Matrix.Identity;
                     }
                 }
 
-                var descriptorSetPoolOffset = ComputeDescriptorSetOffset(renderNodeReference);
-                var descriptorSet = DescriptorSet.New(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, renderSkybox.DescriptorSetLayout);
-                DescriptorSetPool[descriptorSetPoolOffset + perLightingDescriptorSetSlot.Index] = descriptorSet;
+                var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
+                PrepareResourceGroup(RenderSystem, renderSkybox.ResourceGroupLayout, BufferPoolAllocationType.UsedMultipleTime, renderSkybox.Resources);
+                ResourceGroupPool[descriptorSetPoolOffset + perLightingDescriptorSetSlot.Index] = renderSkybox.Resources;
+
+                var descriptorSet = renderSkybox.Resources.DescriptorSet;
 
                 // Set resource bindings in PerLighting resource set
                 for (int resourceSlot = 0; resourceSlot < descriptorLayoutBuilder.ElementCount; ++resourceSlot)
@@ -140,15 +142,10 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
 
                 // Process PerLighting cbuffer
-                if (renderSkybox.ConstantBufferSize > 0)
+                if (renderSkybox.Resources.ConstantBuffer.Size > 0)
                 {
-                    var lightingConstantBufferOffset = RenderSystem.BufferPool.Allocate(renderSkybox.ConstantBufferSize);
-
-                    // Set constant buffer
-                    descriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, lightingConstantBufferOffset, renderSkybox.ConstantBufferSize);
-
-                    var mappedCB = RenderSystem.BufferPool.Buffer.Data + lightingConstantBufferOffset;
-                    Utilities.CopyMemory(mappedCB, parameters.DataValues, renderSkybox.ConstantBufferSize);
+                    var mappedCB = renderSkybox.Resources.ConstantBuffer.Data;
+                    Utilities.CopyMemory(mappedCB, parameters.DataValues, renderSkybox.Resources.ConstantBuffer.Size);
                 }
             }
 
@@ -175,7 +172,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     renderEffect.Effect.ApplyProgram(graphicsDevice);
                 }
 
-                renderEffect.Reflection.Binder.Apply(graphicsDevice, DescriptorSetPool, ComputeDescriptorSetOffset(renderNodeReference));
+                renderEffect.Reflection.Binder.Apply(graphicsDevice, ResourceGroupPool, ComputeResourceGroupOffset(renderNodeReference));
 
                 graphicsDevice.PushState();
                 graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.None);

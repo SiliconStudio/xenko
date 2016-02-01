@@ -92,7 +92,7 @@ namespace SiliconStudio.Xenko.Rendering
                     renderEffect.Effect.ApplyProgram(graphicsDevice);
                 }
 
-                renderEffect.Reflection.Binder.Apply(graphicsDevice, DescriptorSetPool, ComputeDescriptorSetOffset(renderNodeReference));
+                renderEffect.Reflection.Binder.Apply(graphicsDevice, ResourceGroupPool, ComputeResourceGroupOffset(renderNodeReference));
 
                 // Bind VAO
                 var vertexArrayObject = renderEffect.VertexArrayObject ??

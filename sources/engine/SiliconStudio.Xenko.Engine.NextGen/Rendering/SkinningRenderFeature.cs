@@ -136,7 +136,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 var renderModelObjectInfo = renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
 
-                var mappedCB = RenderSystem.BufferPool.Buffer.Data + renderNode.DrawConstantBufferOffset + blendMatricesOffset;
+                var mappedCB = renderNode.Resources.ConstantBuffer.Data + blendMatricesOffset;
                 var blendMatrix = (Matrix*)mappedCB;
 
                 for (int i = 0; i < renderModelObjectInfo.NodeInfoCount; i++)
