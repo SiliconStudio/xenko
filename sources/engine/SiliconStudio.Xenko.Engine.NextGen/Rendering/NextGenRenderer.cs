@@ -212,7 +212,6 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem.ResetViews();
 
             // Collect objects to render (later we will also cull/filter them)
-            var rand = new Random();
             foreach (var view in RenderSystem.Views)
             {
                 // TODO: Culling & filtering

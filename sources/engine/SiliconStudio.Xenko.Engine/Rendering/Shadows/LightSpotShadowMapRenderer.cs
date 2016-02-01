@@ -124,6 +124,16 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             graphicsDevice.PopState();
         }
 
+        public override void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public override void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection)
+        {
+            throw new System.NotImplementedException();
+        }
+
         private class LightSpotShadowMapShaderData : ILightShadowMapShaderData
         {
             public Texture Texture;
