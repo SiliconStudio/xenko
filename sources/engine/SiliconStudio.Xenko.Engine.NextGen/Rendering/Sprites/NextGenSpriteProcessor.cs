@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Rendering;
 
@@ -14,14 +15,18 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
         /// <summary>
         /// Initializes a new instance of the <see cref="NextGenSpriteProcessor"/> class.
         /// </summary>
-        public NextGenSpriteProcessor(NextGenRenderSystem renderSystem)
+        public NextGenSpriteProcessor()
             : base(typeof(TransformComponent))
         {
-            this.renderSystem = renderSystem;
             Sprites = new List<RenderSprite>();
         }
 
         public List<RenderSprite> Sprites { get; private set; }
+
+        protected internal override void OnSystemAdd()
+        {
+            renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
+        }
 
         public override void Draw(RenderContext gameTime)
         {

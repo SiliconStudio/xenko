@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     public class NextGenRenderer : CameraRendererMode
     {
         //public RendererBase RootRenderer;
-        public NextGenRenderSystem RenderSystem = new NextGenRenderSystem();
+        public NextGenRenderSystem RenderSystem;
 
         private LightComponentForwardRenderer lightComponentForwardRenderer;
 
@@ -37,6 +37,8 @@ namespace SiliconStudio.Xenko.Rendering
         protected override void InitializeCore()
         {
             base.InitializeCore();
+
+            RenderSystem = new NextGenRenderSystem(Services);
 
             RenderSystem.Initialize(EffectSystem, GraphicsDevice);
 
@@ -108,9 +110,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             // Attach model processor (which will register meshes to render system)
             var sceneInstance = SceneInstance.GetCurrent(Context);
-            sceneInstance.Processors.Add(new NextGenModelProcessor(RenderSystem));
-            sceneInstance.Processors.Add(new NextGenSpriteProcessor(RenderSystem));
-            sceneInstance.Processors.Add(new SkyboxProcessor(RenderSystem));
+            sceneInstance.Processors.Add(new NextGenModelProcessor());
+            sceneInstance.Processors.Add(new NextGenSpriteProcessor());
+            sceneInstance.Processors.Add(new SkyboxProcessor());
 
             lightComponentForwardRenderer = new LightComponentForwardRenderer();
             lightComponentForwardRenderer.Initialize(Context);
