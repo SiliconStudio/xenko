@@ -340,15 +340,10 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        public virtual void ForceSetValue(object newValue)
-        {
-            Value = newValue;
-        }
-
         /// <summary>
         /// Refreshes the node commands and children. The source and target model nodes must have been updated first.
         /// </summary>
-        public virtual void Refresh()
+        protected void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
@@ -455,10 +450,11 @@ namespace SiliconStudio.Presentation.Quantum
         {
             if (IsValidChange(e))
             {
-                EnsureNotDisposed();
                 ((ObservableNode)Parent)?.NotifyPropertyChanged(Name);
 
-                if (!IsPrimitive)
+                // This node can have been disposed by its parent already (if its parent is being refreshed and share the same source node)
+                // In this case, let's trigger the notifications gracefully before being discarded, but skip refresh
+                if (!IsPrimitive && !IsDisposed)
                 {
                     Refresh();
                 }
