@@ -10,17 +10,29 @@ using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    //[YamlSerializerFactory]
-    public class EntityGroupAssetSerializer : ObjectSerializer //, IDataCustomVisitor
+    /// <summary>
+    /// Default serializer for <see cref="EntityGroupAsset"/> and <see cref="SceneAsset"/>
+    /// </summary>
+    /// <remarks>
+    /// This serializer handle the case where Entity/Components used inside an <see cref="EntityComponent"/> 
+    /// or a <see cref="SceneSettings"/>, should be serialized as references instead of by value.
+    /// </remarks>
+    public class EntityGroupAssetSerializer : ObjectSerializer
     {
-        // TODO: Add some comments to explain how this is working and why we need a specialized serializer
+        // Entity (level -> 1)
+        //   Component (level -> 2)
+        //       *Entity/Component as references (level -> 3+) 
+        // SceneSettings (level -> 3)
+        private const int SerializeComponentAsReferenceLevel = 3;
 
-        [ThreadStatic]
-        private static bool isSerializingAsReference;
+        /// <summary>
+        /// <c>true/c> if the object visited must be serialized as a reference.
+        /// </summary>
+        private bool IsSerializingAsReference => componentLevel >= SerializeComponentAsReferenceLevel;
 
-        [ThreadStatic]
-        private static int sceneSettingsLevel;
-
+        /// <summary>
+        /// See <see cref="EnterNode"/> for usage.
+        /// </summary>
         [ThreadStatic]
         private static int componentLevel;
 
@@ -34,7 +46,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         protected override void CreateOrTransformObject(ref ObjectContext objectContext)
         {
-            if (isSerializingAsReference)
+            if (IsSerializingAsReference)
             {
                 // Create appropriate reference type for both serialization and deserialization
                 if (objectContext.SerializerContext.IsSerializing)
@@ -75,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
         {
-            if (isSerializingAsReference)
+            if (IsSerializingAsReference)
             {
                 // Transform the deserialized reference into a fake Entity, EntityComponent, etc...
                 // Fake objects will later be fixed later with EntityAnalysis.FixupEntityReferences()
@@ -143,34 +155,38 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private static void EnterNode(Type type)
         {
-            // SceneSettings: Pretend we are already inside an entity so add one level
             if (type == typeof(SceneSettings))
             {
-                sceneSettingsLevel++;
+                // Any Entity, Entitycomponent in a SceneSettings are a references
+                componentLevel += SerializeComponentAsReferenceLevel;
             }
             else if (typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type))
             {
+                // Everytime we enter into an Entity/EntityComponent, we increase the componentLevel by 1
+
+                // Usually, comes like this:
+                // Entity (level -> 1)
+                //   Component (level -> 2)
+                //       references (level -> 3+)
                 componentLevel++;
             }
-
-            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 2;
         }
 
         private static void LeaveNode(Type type)
         {
+            // Restore the level
             if (type == typeof(SceneSettings))
             {
-                sceneSettingsLevel--;
+                componentLevel -= SerializeComponentAsReferenceLevel;
             }
             else if (typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type))
             {
+                // Everytime we exit from an Entity/EntityComponent, we decrease the componentLevel by 1
                 componentLevel--;
             }
-
-            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 2;
         }
 
-        public bool CanVisit(Type type)
+        private static bool CanVisit(Type type)
         {
             return typeof(EntityGroupAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
