@@ -135,7 +135,7 @@ namespace SiliconStudio.Core.Reflection
             if (fromInstance == null) throw new ArgumentNullException(nameof(fromInstance));
             if (toInstance == null) throw new ArgumentNullException(nameof(toInstance));
 
-            var type = fromInstance.GetType().GetTypeInfo();
+            var type = fromInstance.GetType();
             bool forceShadowCreation = IdentifiableHelper.IsIdentifiable(type);
 
             ShadowObject shadow;

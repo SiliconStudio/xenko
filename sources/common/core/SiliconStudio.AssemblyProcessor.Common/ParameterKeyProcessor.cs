@@ -13,7 +13,7 @@ using MethodAttributes = Mono.Cecil.MethodAttributes;
 
 namespace SiliconStudio.AssemblyProcessor
 {
-    public class ParameterKeyProcessor : IAssemblyDefinitionProcessor
+    internal class ParameterKeyProcessor : IAssemblyDefinitionProcessor
     {
         public bool Process(AssemblyProcessorContext context)
         {
@@ -95,7 +95,7 @@ namespace SiliconStudio.AssemblyProcessor
                     }
                     catch (Exception)
                     {
-                        Console.WriteLine("Error, cannot find [SiliconStudio.Xenko] assembly for processing ParameterKeyProcessor");
+                        context.Log.WriteLine("Error, cannot find [SiliconStudio.Xenko] assembly for processing ParameterKeyProcessor");
                         // We can't generate an exception, so we are just returning. It means that SiliconStudio.Xenko has not been generated so far.
                         return true;
                     }

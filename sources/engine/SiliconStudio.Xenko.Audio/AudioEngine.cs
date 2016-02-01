@@ -60,6 +60,7 @@ namespace SiliconStudio.Xenko.Audio
         }
 
         #region Audio Engine Platform specific
+
         /// <summary>
         /// Initialize audio engine for <paramref name="device"/>.
         /// </summary>
@@ -139,7 +140,8 @@ namespace SiliconStudio.Xenko.Audio
         internal abstract void ProcessPlayerClosed();
         internal abstract void ProcessMusicMetaData();
         internal abstract void ProcessMusicError(SoundMusicEventNotification eventNotification);
-#endregion
+
+        #endregion
             
         /// <summary>
         /// Get the list of the audio hardware available on the device.

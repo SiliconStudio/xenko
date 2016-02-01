@@ -1,9 +1,9 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System.IO;
 using System.Runtime.Versioning;
 using SiliconStudio.AssemblyProcessor.Serializers;
-using SiliconStudio.Core.Diagnostics;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
@@ -38,7 +38,7 @@ namespace SiliconStudio.AssemblyProcessor
             get { return serializerFactories; }
         }
 
-        public ComplexSerializerCodeGenerator(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly, ILogger log)
+        public ComplexSerializerCodeGenerator(IAssemblyResolver assemblyResolver, AssemblyDefinition assembly, TextWriter log)
         {
             this.assembly = assembly;
             this.assemblySerializerFactoryClassName = assembly.Name.Name.Replace(" ", string.Empty).Replace(".", string.Empty) + "SerializerFactory";
@@ -120,4 +120,3 @@ namespace SiliconStudio.AssemblyProcessor
         }
     }
 }
-#endif

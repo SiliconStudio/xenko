@@ -8,10 +8,6 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class GraphicsOutput
     {
-        internal GraphicsOutput()
-        {
-        }
-
         public DisplayMode FindClosestMatchingDisplayMode(GraphicsProfile[] targetProfiles, DisplayMode mode)
         {
             return mode;

@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Engine
         internal ProfilingKey UpdateProfilingKey;
         internal ProfilingKey DrawProfilingKey;
         private readonly TypeInfo mainTypeInfo;
-        private readonly Dictionary<Type, bool> componentTypesSupportedAsRequired;
+        private readonly Dictionary<TypeInfo, bool> componentTypesSupportedAsRequired;
 
         /// <summary>
         /// Tags associated to this entity processor
@@ -61,7 +61,7 @@ namespace SiliconStudio.Xenko.Engine
             for (int i = 0; i < additionalTypes.Length; i++)
             {
                 var requiredType = additionalTypes[i];
-                if (!typeof(EntityComponent).IsAssignableFrom(requiredType))
+                if (!typeof(EntityComponent).IsAssignableFrom(requiredType.GetTypeInfo()))
                 {
                     throw new ArgumentException($"Invalid required type [{requiredType}]. Expecting only an EntityComponent type");
                 }
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Engine
 
             if (RequiredTypes.Length > 0)
             {
-                componentTypesSupportedAsRequired = new Dictionary<Type, bool>();
+                componentTypesSupportedAsRequired = new Dictionary<TypeInfo, bool>();
             }
 
             UpdateProfilingKey = new ProfilingKey(GameProfilingKeys.GameUpdate, this.GetType().Name);
@@ -173,12 +173,12 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <param name="type">Type of the EntityComponent</param>
         /// <returns><c>true</c> if this processor is accepting the component type</returns>
-        internal bool Accept(Type type)
+        internal bool Accept(TypeInfo type)
         {
             return mainTypeInfo.IsAssignableFrom(type);
         }
 
-        internal bool IsDependentOnComponentType(Type type)
+        internal bool IsDependentOnComponentType(TypeInfo type)
         {
             // Cache component types
             var result = false;
@@ -188,8 +188,8 @@ namespace SiliconStudio.Xenko.Engine
                 {
                     for (int i = 0; i < RequiredTypes.Length; i++)
                     {
-                        var typeInfo = RequiredTypes[i];
-                        if (typeInfo.IsAssignableFrom(type))
+                        var requiredTypeInfo = RequiredTypes[i];
+                        if (requiredTypeInfo.IsAssignableFrom(type))
                         {
                             result = true;
                             break;
@@ -214,7 +214,7 @@ namespace SiliconStudio.Xenko.Engine
     {
         protected readonly Dictionary<TComponent, TData> ComponentDatas = new Dictionary<TComponent, TData>();
         private readonly HashSet<Entity> reentrancyCheck = new HashSet<Entity>();
-        private readonly FastList<Type> checkRequiredTypes = new FastList<Type>();
+        private readonly FastList<TypeInfo> checkRequiredTypes = new FastList<TypeInfo>();
 
         protected EntityProcessor(params Type[] requiredAdditionalTypes) : base(typeof(TComponent), requiredAdditionalTypes)
         {
@@ -334,7 +334,7 @@ namespace SiliconStudio.Xenko.Engine
             var components = entity.Components;
             for (int i = 0; i < components.Count; i++)
             {
-                var componentType = components[i].GetType();
+                var componentType = components[i].GetType().GetTypeInfo();
                 for (int j = checkRequiredTypes.Count - 1; j >= 0; j--)
                 {
                     if (checkRequiredTypes.Items[j].IsAssignableFrom(componentType))

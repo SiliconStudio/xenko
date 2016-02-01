@@ -9,8 +9,12 @@ namespace SiliconStudio.Core.Storage
     /// A hash to uniquely identify data.
     /// </summary>
     [StructLayout(LayoutKind.Sequential, Pack = 4)]
+#if ASSEMBLY_PROCESSOR
+    internal unsafe partial struct ObjectId : IEquatable<ObjectId>, IComparable<ObjectId>
+#else
     [DataContract("ObjectId")]
     public unsafe partial struct ObjectId : IEquatable<ObjectId>, IComparable<ObjectId>
+#endif
     {
         public static readonly ObjectId Empty = new ObjectId();
 

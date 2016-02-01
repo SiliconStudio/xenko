@@ -20,6 +20,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </remarks>
     [DataContract("AnimationComponent")]
     [DefaultEntityComponentProcessor(typeof(AnimationProcessor), ExecutionMode = ExecutionMode.Runtime | ExecutionMode.Thumbnail)]
+    [Display("Animations", Expand = ExpandRule.Once)]
     [ComponentOrder(2000)]
     public sealed class AnimationComponent : EntityComponent
     {

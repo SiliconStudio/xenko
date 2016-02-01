@@ -17,8 +17,8 @@ class ComputeColorTextureScaledOffsetDynamicSampler<LinkType TTextureName,
                                              LinkType TScale, 
                                              LinkType TOffset,
                                              MemberName LocalBuffer> : ComputeColor, 
-                                                               DynamicTexture<TTextureName>, 
-                                                               DynamicSampler<TSampler>, 
+                                                               DynamicTexture<TTextureName, LocalBuffer>, 
+                                                               DynamicSampler<TSampler, LocalBuffer>, 
                                                                DynamicTextureStream<TStream>
 {
     cbuffer LocalBuffer

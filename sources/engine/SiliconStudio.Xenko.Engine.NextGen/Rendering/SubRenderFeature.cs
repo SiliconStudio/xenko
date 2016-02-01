@@ -16,6 +16,7 @@ namespace SiliconStudio.Xenko.Rendering
         internal void AttachRootRenderFeature(RootRenderFeature rootRenderFeature)
         {
             RootRenderFeature = rootRenderFeature;
+            RenderSystem = rootRenderFeature.RenderSystem;
         }
     }
 }

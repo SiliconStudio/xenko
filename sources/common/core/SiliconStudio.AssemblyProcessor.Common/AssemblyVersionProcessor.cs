@@ -9,7 +9,7 @@ using Mono.Cecil;
 
 namespace SiliconStudio.AssemblyProcessor
 {
-    public class AssemblyVersionProcessor : IAssemblyDefinitionProcessor
+    internal class AssemblyVersionProcessor : IAssemblyDefinitionProcessor
     {
         public bool Process(AssemblyProcessorContext context)
         {

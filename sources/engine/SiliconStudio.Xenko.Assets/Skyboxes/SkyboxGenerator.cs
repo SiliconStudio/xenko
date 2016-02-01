@@ -5,6 +5,7 @@ using System;
 
 using SiliconStudio.Core;
 using SiliconStudio.Core.Diagnostics;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Assets;
 using SiliconStudio.Xenko.Rendering;
@@ -86,7 +87,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 }
 
                 var shaderSource = asset.Model.Generate(context);
-                parameters.Set(SkyboxKeys.Shader, shaderSource);
+                parameters.SetResourceSlow(SkyboxKeys.Shader, shaderSource);
 
                 // -------------------------------------------------------------------
                 // Calculate Diffuse prefiltering
@@ -145,8 +146,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     coefficients[i] = coefficients[i] * bases[i];
                 }
 
-                skybox.DiffuseLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
-                skybox.DiffuseLightingParameters.Set(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
+                skybox.DiffuseLightingParameters.SetResourceSlow(SkyboxKeys.Shader, new ShaderClassSource("SphericalHarmonicsEnvironmentColor", lamberFiltering.HarmonicOrder));
+                skybox.DiffuseLightingParameters.SetValueSlow(SphericalHarmonicsEnvironmentColorKeys.SphericalColors, coefficients);
 
                 // -------------------------------------------------------------------
                 // Calculate Specular prefiltering
@@ -172,8 +173,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
                     cubeTexture.SetSerializationData(cubeTexture.GetDataAsImage());
 
-                    skybox.SpecularLightingParameters.Set(SkyboxKeys.Shader, new ShaderClassSource("RoughnessCubeMapEnvironmentColor"));
-                    skybox.SpecularLightingParameters.Set(SkyboxKeys.CubeMap, cubeTexture);
+                    skybox.SpecularLightingParameters.SetResourceSlow(SkyboxKeys.Shader, new ShaderClassSource("RoughnessCubeMapEnvironmentColor"));
+                    skybox.SpecularLightingParameters.SetResourceSlow(SkyboxKeys.CubeMap, cubeTexture);
                 }
 
                 // TODO: cubeTexture is not deallocated

@@ -37,7 +37,7 @@ using MethodAttributes = Mono.Cecil.MethodAttributes;
 
 namespace SiliconStudio.AssemblyProcessor
 {
-    public class InteropProcessor : IAssemblyDefinitionProcessor
+    internal class InteropProcessor : IAssemblyDefinitionProcessor
     {
         private readonly List<TypeDefinition> classToRemoveList = new List<TypeDefinition>();
         private AssemblyDefinition assembly;
@@ -65,7 +65,7 @@ namespace SiliconStudio.AssemblyProcessor
                 }
             }
 
-            Log("Patch for assembly [{0}]", assembly.FullName);
+            context.Log.WriteLine($"Patch for assembly [{assembly.FullName}]");
             foreach (var type in assembly.MainModule.Types)
                 PatchType(type);
 
@@ -885,21 +885,6 @@ namespace SiliconStudio.AssemblyProcessor
             // Patch nested types
             foreach (var typeDefinition in type.NestedTypes)
                 PatchType(typeDefinition);
-        }
-
-        public void Log(string message, params object[] parameters)
-        {
-            Console.WriteLine(message, parameters);
-        }
-
-        public void LogError(string message, params object[] parameters)
-        {
-            Console.WriteLine(message, parameters);
-        }
-
-        public void LogError(Exception ex)
-        {
-            Console.WriteLine(ex.ToString());
         }
     }
 }

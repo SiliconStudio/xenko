@@ -258,7 +258,8 @@ namespace SiliconStudio.Xenko.Rendering
             var material = Material;
             if (material != null && material.Parameters != null)
             {
-                parameterCollections.Add(material.Parameters);
+                throw new NotImplementedException();
+                //parameterCollections.Add(material.Parameters);
             }
 
             if (RenderModel.ModelComponent.Parameters != null)

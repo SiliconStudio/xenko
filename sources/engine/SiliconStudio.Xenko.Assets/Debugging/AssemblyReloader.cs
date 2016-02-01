@@ -26,19 +26,10 @@ namespace SiliconStudio.Xenko.Assets.Debugging
         public int Index { get; }
 
         public List<ParsingEvent> ParsingEvents { get; set; }
-    }
 
-    public class ReloadedComponentEntry
-    {
-        public readonly Entity Entity;
-        public readonly int ComponentIndex;
-        public readonly List<ParsingEvent> YamlEvents;
-
-        public ReloadedComponentEntry(Entity entity, int componentIndex, List<ParsingEvent> yamlEvents)
+        public override string ToString()
         {
-            Entity = entity;
-            ComponentIndex = componentIndex;
-            YamlEvents = yamlEvents;
+            return $"{Entity} [{Index}] {Component}";
         }
     }
 

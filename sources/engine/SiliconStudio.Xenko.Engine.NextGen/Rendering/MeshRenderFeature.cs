@@ -26,7 +26,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             foreach (var renderFeature in RenderFeatures)
             {
-                renderFeature.RenderSystem = RenderSystem;
                 renderFeature.AttachRootRenderFeature(this);
                 renderFeature.Initialize();
             }
@@ -93,7 +92,7 @@ namespace SiliconStudio.Xenko.Rendering
                     renderEffect.Effect.ApplyProgram(graphicsDevice);
                 }
 
-                renderEffect.Reflection.Binder.Apply(graphicsDevice, DescriptorSetPool, ComputeDescriptorSetOffset(renderNodeReference));
+                renderEffect.Reflection.Binder.Apply(graphicsDevice, ResourceGroupPool, ComputeResourceGroupOffset(renderNodeReference));
 
                 // Bind VAO
                 var vertexArrayObject = renderEffect.VertexArrayObject ??
