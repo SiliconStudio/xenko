@@ -154,7 +154,7 @@ namespace SiliconStudio.Presentation.Quantum
         //public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
 
         // TODO: would be better to put the override info in an associated data or in a specialized derived class.
-        public OverrideType Override => (SourceNode.Content as OverridableMemberContent)?.Override ?? OverrideType.Base;
+        public OverrideType Override => (SourceNode.Content as OverridableMemberContent)?.GetContentOverride(Index) ?? OverrideType.Base;
 
         internal Guid ModelGuid => SourceNode.Guid;
    
