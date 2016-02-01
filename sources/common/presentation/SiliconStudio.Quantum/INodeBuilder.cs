@@ -10,6 +10,15 @@ using SiliconStudio.Quantum.References;
 namespace SiliconStudio.Quantum
 {
     /// <summary>
+    /// A delegate representing a factory used to create a graph node from a content and its related information.
+    /// </summary>
+    /// <param name="name">The name of the node to create.</param>
+    /// <param name="content">The content for which to create a node.</param>
+    /// <param name="guid">The unique identifier of the node to create.</param>
+    /// <returns>A new instance of <see cref="IGraphNode"/> containing the given content.</returns>
+    public delegate IGraphNode NodeFactoryDelegate(string name, IContent content, Guid guid);
+
+    /// <summary>
     /// This interface provides objects and methods to build a nodal view model from a given object.
     /// </summary>
     public interface INodeBuilder
@@ -37,11 +46,6 @@ namespace SiliconStudio.Quantum
         IContentFactory ContentFactory { get; set; }
 
         /// <summary>
-        /// Gets or sets the factory that will create nodes.
-        /// </summary>
-        Func<string, IContent, Guid, IGraphNode> NodeFactory { get; set; }
-
-        /// <summary>
         /// Gets the collection of available commands to attach to nodes.
         /// </summary>
         ICollection<INodeCommand> AvailableCommands { get; }
@@ -61,8 +65,9 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="obj">The object. Can be <c>null</c>.</param>
         /// <param name="rootGuid">The <see cref="Guid"/> To assign to the root node.</param>
+        /// <param name="nodeFactory">The factory that creates node for each content.</param>
         /// <returns>The root node of the node hierarchy corresponding to the given object.</returns>
-        IGraphNode Build(object obj, Guid rootGuid);
+        IGraphNode Build(object obj, Guid rootGuid, NodeFactoryDelegate nodeFactory);
 
         /// <summary>
         /// Creates a reference for the specified type/value node.
