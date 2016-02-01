@@ -19,7 +19,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         private readonly uint enabledVertexAttribArrays;
 
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private bool hasDynamicStagingVB;
+#endif
 
         private int vaoId;
 
@@ -207,7 +209,7 @@ namespace SiliconStudio.Xenko.Graphics
 
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
                 if (vertexAttrib.IsInteger && !vertexAttrib.Normalized)
-                    GL.VertexAttribIPointer(vertexAttrib.Index, vertexAttrib.Size, (VertexAttribIPointerType)vertexAttrib.Type, vertexAttrib.Stride, vertexAttrib.Offset);
+                    GL.VertexAttribIPointer(vertexAttrib.Index, vertexAttrib.Size, (VertexAttribIntegerType)vertexAttrib.Type, vertexAttrib.Stride, vertexAttrib.Offset);
                 else
 #endif
                     GL.VertexAttribPointer(vertexAttrib.Index, vertexAttrib.Size, vertexAttrib.Type, vertexAttrib.Normalized, vertexAttrib.Stride, vertexAttrib.Offset);

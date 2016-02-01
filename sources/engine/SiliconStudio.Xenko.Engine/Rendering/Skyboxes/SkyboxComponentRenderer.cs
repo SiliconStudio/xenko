@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
@@ -51,40 +52,41 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             context.Parameters.CopySharedTo(skyboxEffect.Parameters);
 
             // Show irradiance in the background
-            if (skybox.Background == SkyboxBackground.Irradiance)
-            {
-                foreach (var parameterKeyValue in skybox.Skybox.DiffuseLightingParameters)
-                {
-                    if (parameterKeyValue.Key == SkyboxKeys.Shader)
-                    {
-                        skyboxEffect.Parameters.Set(SkyboxKeys.Shader, (ShaderSource)parameterKeyValue.Value);
-                    }
-                    else
-                    {
-                        skyboxEffect.Parameters.SetObject(parameterKeyValue.Key.ComposeWith("skyboxColor"), parameterKeyValue.Value);
-                    }
-                }
-            }
-            else
-            {
-                // TODO: Should we better use composition on "skyboxColor" for parameters?
-
-                // Copy Skybox parameters
-                if (skybox.Skybox != null)
-                {
-                    foreach (var parameterKeyValue in skybox.Skybox.Parameters)
-                    {
-                        if (parameterKeyValue.Key == SkyboxKeys.Shader)
-                        {
-                            skyboxEffect.Parameters.Set(SkyboxKeys.Shader, (ShaderSource)parameterKeyValue.Value);
-                        }
-                        else
-                        {
-                            skyboxEffect.Parameters.SetObject(parameterKeyValue.Key, parameterKeyValue.Value);
-                        }
-                    }
-                }
-            }
+            throw new NotImplementedException();
+            //if (skybox.Background == SkyboxBackground.Irradiance)
+            //{
+            //    foreach (var parameterKeyValue in skybox.Skybox.DiffuseLightingParameters)
+            //    {
+            //        if (parameterKeyValue.Key == SkyboxKeys.Shader)
+            //        {
+            //            skyboxEffect.Parameters.Set(SkyboxKeys.Shader, (ShaderSource)parameterKeyValue.Value);
+            //        }
+            //        else
+            //        {
+            //            skyboxEffect.Parameters.SetObject(parameterKeyValue.Key.ComposeWith("skyboxColor"), parameterKeyValue.Value);
+            //        }
+            //    }
+            //}
+            //else
+            //{
+            //    // TODO: Should we better use composition on "skyboxColor" for parameters?
+            //
+            //    // Copy Skybox parameters
+            //    if (skybox.Skybox != null)
+            //    {
+            //        foreach (var parameterKeyValue in skybox.Skybox.Parameters)
+            //        {
+            //            if (parameterKeyValue.Key == SkyboxKeys.Shader)
+            //            {
+            //                skyboxEffect.Parameters.Set(SkyboxKeys.Shader, (ShaderSource)parameterKeyValue.Value);
+            //            }
+            //            else
+            //            {
+            //                skyboxEffect.Parameters.SetObject(parameterKeyValue.Key, parameterKeyValue.Value);
+            //            }
+            //        }
+            //    }
+            //}
 
             // Fake as the skybox was in front of all others (as opaque are rendered back to front)
             opaqueList.Add(new RenderItem(this, skybox, float.NegativeInfinity));

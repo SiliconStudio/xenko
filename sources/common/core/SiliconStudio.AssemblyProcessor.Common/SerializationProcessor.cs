@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace SiliconStudio.AssemblyProcessor
 {
-    public class SerializationProcessor : IAssemblyDefinitionProcessor
+    internal class SerializationProcessor : IAssemblyDefinitionProcessor
     {
         private Action<string> sourceCodeRegisterAction;
 

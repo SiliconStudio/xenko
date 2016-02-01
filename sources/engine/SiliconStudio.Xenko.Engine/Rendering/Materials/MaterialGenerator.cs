@@ -37,15 +37,15 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             context.PopMaterial();
 
             if (!material.Parameters.ContainsKey(MaterialKeys.TessellationShader))
-                material.Parameters.Set(MaterialKeys.TessellationShader, null);
+                material.Parameters.SetResourceSlow(MaterialKeys.TessellationShader, null);
 
-            material.Parameters.Set(MaterialKeys.VertexStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Vertex));
-            material.Parameters.Set(MaterialKeys.DomainStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Domain));
-            material.Parameters.Set(MaterialKeys.PixelStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Pixel));
+            material.Parameters.SetResourceSlow(MaterialKeys.VertexStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Vertex));
+            material.Parameters.SetResourceSlow(MaterialKeys.DomainStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Domain));
+            material.Parameters.SetResourceSlow(MaterialKeys.PixelStageSurfaceShaders, context.GenerateSurfaceShader(MaterialShaderStage.Pixel));
 
-            material.Parameters.Set(MaterialKeys.VertexStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Vertex));
-            material.Parameters.Set(MaterialKeys.DomainStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Domain));
-            material.Parameters.Set(MaterialKeys.PixelStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Pixel));
+            material.Parameters.SetResourceSlow(MaterialKeys.VertexStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Vertex));
+            material.Parameters.SetResourceSlow(MaterialKeys.DomainStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Domain));
+            material.Parameters.SetResourceSlow(MaterialKeys.PixelStageStreamInitializer, context.GenerateStreamInitializer(MaterialShaderStage.Pixel));
 
             return result;
         }

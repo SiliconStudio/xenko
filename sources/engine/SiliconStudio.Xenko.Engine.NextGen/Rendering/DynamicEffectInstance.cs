@@ -4,7 +4,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Graphics;
@@ -25,21 +24,12 @@ namespace SiliconStudio.Xenko.Rendering
         private KeyValuePair<ParameterKey, object>[] effectParameterKeys;
 
         // Parameter keys for shader values
-        private FastListStruct<ValueParameterKeyInfo> valueParameterKeyInfos = new FastListStruct<ValueParameterKeyInfo>(4);
-        private FastListStruct<ResourceParameterKeyInfo> resourceParameterKeyInfos = new FastListStruct<ResourceParameterKeyInfo>(4);
         private FastListStruct<ConstantBufferInfo> constantBuffers = new FastListStruct<ConstantBufferInfo>(2);
         private int constantBufferTotalSize;
 
-        // Constants and resources
-        // TODO: Currently stored in unmanaged array so we can get a pointer that can be updated from outside
-        //   However, maybe ref locals would make this not needed anymore?
-        private IntPtr dataValues;
-        private int dataValuesSize;
-        private object[] resourceValues;
-
         // Descriptor sets
-        private DescriptorSetLayout[] descriptorSetLayouts;
-        private DescriptorSet[] descriptorSets;
+        private ResourceGroupLayout[] resourceGroupLayouts;
+        private ResourceGroup[] resourceGroups;
 
         // Store current effect
         private Effect effect;
@@ -53,12 +43,13 @@ namespace SiliconStudio.Xenko.Rendering
             this.effectName = effectName;
         }
 
+        public NextGenParameterCollection Parameters { get; } = new NextGenParameterCollection();
+
         protected override void Destroy()
         {
             base.Destroy();
 
-            Marshal.FreeHGlobal(dataValues);
-            dataValues = IntPtr.Zero;
+            Parameters.Dispose();
         }
 
         /// <summary>
@@ -92,195 +83,13 @@ namespace SiliconStudio.Xenko.Rendering
             effectDirty = true;
         }
 
-        public ResourceParameter<T> GetResourceParameter<T>(ParameterKey<T> parameterKey) where T : class
-        {
-            // Find existing first
-            foreach (var parameterKeyOffset in resourceParameterKeyInfos)
-            {
-                if (parameterKeyOffset.ParameterKey == parameterKey)
-                {
-                    return new ResourceParameter<T>(parameterKeyOffset.BindingSlot);
-                }
-            }
-
-            // Find things existing in reflection
-            var @class = EffectParameterClass.Object;
-            var descriptorSet = -1;
-            var bindingSlot = -1;
-            if (effect != null)
-            {
-                for (int layoutIndex = 0; layoutIndex < binder.DescriptorReflection.Layouts.Count; layoutIndex++)
-                {
-                    var layout = binder.DescriptorReflection.Layouts[layoutIndex];
-                    for (int entryIndex = 0; entryIndex < layout.Layout.Entries.Count; ++entryIndex)
-                    {
-                        if (layout.Layout.Entries[entryIndex].Name == parameterKey.Name)
-                        {
-                            @class = layout.Layout.Entries[entryIndex].Class;
-                            descriptorSet = layoutIndex;
-                            bindingSlot = entryIndex;
-                        }
-                    }
-                }
-            }
-
-            // Create info entry
-            Array.Resize(ref resourceValues, resourceParameterKeyInfos.Count + 1);
-            resourceParameterKeyInfos.Add(new ResourceParameterKeyInfo(parameterKey, @class, descriptorSet, bindingSlot));
-            return new ResourceParameter<T>(resourceParameterKeyInfos.Count - 1);
-        }
-
-        // TODO: Temporary, until we remove arrays from ParameterKey
-        [Obsolete]
-        public ValueParameter<T> GetValueParameterArray<T>(ParameterKey<T[]> parameterKey, int elementCount = 1) where T : struct
-        {
-            // Find existing first
-            foreach (var parameterKeyOffset in valueParameterKeyInfos)
-            {
-                if (parameterKeyOffset.ParameterKey == parameterKey)
-                {
-                    return new ValueParameter<T>(parameterKeyOffset.Offset);
-                }
-            }
-
-            // Find things existing in reflection
-            var offset = -1;
-            if (effect != null)
-            {
-                foreach (var constantBuffer in effect.Bytecode.Reflection.ConstantBuffers)
-                {
-                    foreach (var member in constantBuffer.Members)
-                    {
-                        if (member.Param.Key == parameterKey)
-                        {
-                            offset = member.Offset;
-                        }
-                    }
-                }
-            }
-
-            // Compute size
-            var elementSize = parameterKey.Size;
-            var totalSize = elementSize;
-            if (elementCount > 1)
-                totalSize += (elementSize + 15) / 16 * 16 * (elementCount - 1);
-
-            // Create offset entry
-            var result = new ValueParameter<T>(valueParameterKeyInfos.Count);
-            valueParameterKeyInfos.Add(new ValueParameterKeyInfo(parameterKey, offset != -1 ? offset : dataValuesSize, totalSize));
-
-            // Otherwise, we append at the end; resize array to accomodate new data
-            if (offset == -1)
-            {
-                dataValuesSize += totalSize;
-                dataValues = dataValues != IntPtr.Zero
-                    ? Marshal.ReAllocHGlobal(dataValues, (IntPtr)dataValuesSize)
-                    : Marshal.AllocHGlobal((IntPtr)dataValuesSize);
-
-                // Initialize default value
-                if (parameterKey.DefaultValueMetadataT?.DefaultValue != null)
-                {
-                    SetValues(result, parameterKey.DefaultValueMetadataT.DefaultValue);
-                }
-            }
-
-            return result;
-        }
-
-        public ValueParameter<T> GetValueParameter<T>(ParameterKey<T> parameterKey, int elementCount = 1) where T : struct
-        {
-            // Find existing first
-            foreach (var parameterKeyOffset in valueParameterKeyInfos)
-            {
-                if (parameterKeyOffset.ParameterKey == parameterKey)
-                {
-                    return new ValueParameter<T>(parameterKeyOffset.Offset);
-                }
-            }
-
-            // Find things existing in reflection
-            var offset = -1;
-            if (effect != null)
-            {
-                foreach (var constantBuffer in effect.Bytecode.Reflection.ConstantBuffers)
-                {
-                    foreach (var member in constantBuffer.Members)
-                    {
-                        if (member.Param.Key == parameterKey)
-                        {
-                            offset = member.Offset;
-                        }
-                    }
-                }
-            }
-
-            // Compute size
-            var elementSize = parameterKey.Size;
-            var totalSize = elementSize;
-            if (elementCount > 1)
-                totalSize += (elementSize + 15) / 16 * 16 * (elementCount - 1);
-
-            // Create offset entry
-            var result = new ValueParameter<T>(valueParameterKeyInfos.Count);
-            valueParameterKeyInfos.Add(new ValueParameterKeyInfo(parameterKey, offset != -1 ? offset : dataValuesSize, totalSize));
-
-            // Otherwise, we append at the end; resize array to accomodate new data
-            if (offset == -1)
-            {
-                dataValuesSize += totalSize;
-                dataValues = dataValues != IntPtr.Zero
-                    ? Marshal.ReAllocHGlobal(dataValues, (IntPtr)dataValuesSize)
-                    : Marshal.AllocHGlobal((IntPtr)dataValuesSize);
-
-
-                // Initialize default value
-                if (parameterKey.DefaultValueMetadataT != null)
-                {
-                    SetValue(result, parameterKey.DefaultValueMetadataT.DefaultValue);
-                }
-            }
-
-            return result;
-        }
-
-        public void SetValues<T>(ValueParameter<T> parameter, T[] values) where T : struct
-        {
-            var data = GetValuePointer(parameter);
-
-            // Align to float4
-            var stride = (Utilities.SizeOf<T>() + 15) / 16 * 16;
-            for (int i = 0; i < values.Length; ++i)
-            {
-                Utilities.Write(data, ref values[i]);
-                data += stride;
-            }
-        }
-
-        public IntPtr GetValuePointer<T>(ValueParameter<T> parameter) where T : struct
-        {
-            return dataValues + valueParameterKeyInfos[parameter.Index].Offset;
-        }
-
-        public void SetValue<T>(ValueParameter<T> parameter, T value) where T : struct
-        {
-            Utilities.Write(dataValues + valueParameterKeyInfos[parameter.Index].Offset, ref value);
-        }
-
-        public void SetValue<T>(ValueParameter<T> parameter, ref T value) where T : struct
-        {
-            Utilities.Write(dataValues + valueParameterKeyInfos[parameter.Index].Offset, ref value);
-        }
-
-        public void SetValue<T>(ResourceParameter<T> parameter, T value) where T : class
-        {
-            resourceValues[parameter.Index] = value;
-        }
-
         public void UpdateEffect(GraphicsDevice graphicsDevice, EffectSystem effectSystem)
         {
             if (effectDirty)
             {
                 effectDirty = false;
+
+                // TODO: Free previous descriptor sets and layouts?
 
                 // Looks like the effect changed, it needs a recompilation
                 var compilerParameters = new CompilerParameters();
@@ -298,116 +107,40 @@ namespace SiliconStudio.Xenko.Rendering
                 var layouts = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup).Distinct().ToList();
                 binder.Compile(graphicsDevice, effect.Bytecode, layouts);
 
-                // TODO: Free previous descriptor sets and layouts?
-
-                descriptorSets = new DescriptorSet[binder.DescriptorReflection.Layouts.Count];
-                descriptorSetLayouts = new DescriptorSetLayout[binder.DescriptorReflection.Layouts.Count];
-                for (int i = 0; i < binder.DescriptorReflection.Layouts.Count; ++i)
-                {
-                    var layout = binder.DescriptorReflection.Layouts[i];
-                    descriptorSetLayouts[i] = DescriptorSetLayout.New(graphicsDevice, layout.Layout);
-                }
-
-                // Do a first pass to measure constant buffer size
-                constantBuffers.Clear();
-                var bufferSize = 0;
-                var newValueParameterKeyInfos = new FastListStruct<ValueParameterKeyInfo>(Math.Max(1, valueParameterKeyInfos.Count));
-                var newResourceParameterKeyInfos = new FastListStruct<ResourceParameterKeyInfo>(Math.Max(1, resourceParameterKeyInfos.Count));
-
                 // Process constant buffers
+                var parameterCollectionLayout = new NextGenParameterCollectionLayout();
                 for (int layoutIndex = 0; layoutIndex < binder.DescriptorReflection.Layouts.Count; layoutIndex++)
                 {
-                    var layout = binder.DescriptorReflection.Layouts[layoutIndex];
-                    for (int entryIndex = 0; entryIndex < layout.Layout.Entries.Count; ++entryIndex)
+                    var layout = binder.DescriptorReflection.Layouts[layoutIndex].Layout;
+
+                    parameterCollectionLayout.ProcessResources(layout);
+
+                    for (int entryIndex = 0; entryIndex < layout.Entries.Count; ++entryIndex)
                     {
-                        var layoutEntry = layout.Layout.Entries[entryIndex];
+                        var layoutEntry = layout.Entries[entryIndex];
                         if (layoutEntry.Class == EffectParameterClass.ConstantBuffer)
                         {
-                            var constantBuffer = effect.Bytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Name);
-                            constantBuffers.Add(new ConstantBufferInfo { DescriptorSet = layoutIndex, BindingSlot = entryIndex, DataOffset = bufferSize, Description = constantBuffer });
-                            bufferSize += constantBuffer.Size;
+                            var constantBuffer = effect.Bytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
+                            constantBuffers.Add(new ConstantBufferInfo { DescriptorSet = layoutIndex, BindingSlot = entryIndex, DataOffset = parameterCollectionLayout.BufferSize, Description = constantBuffer });
+
+                            parameterCollectionLayout.ProcessConstantBuffer(constantBuffer);
                         }
                     }
                 }
 
-                constantBufferTotalSize = bufferSize;
-
-                // Update resource bindings
-                foreach (var resourceParameterKeyInfo in resourceParameterKeyInfos)
+                resourceGroups = new ResourceGroup[binder.DescriptorReflection.Layouts.Count];
+                resourceGroupLayouts = new ResourceGroupLayout[binder.DescriptorReflection.Layouts.Count];
+                for (int i = 0; i < binder.DescriptorReflection.Layouts.Count; ++i)
                 {
-                    for (int layoutIndex = 0; layoutIndex < binder.DescriptorReflection.Layouts.Count; layoutIndex++)
-                    {
-                        var layout = binder.DescriptorReflection.Layouts[layoutIndex];
-                        for (int entryIndex = 0; entryIndex < layout.Layout.Entries.Count; ++entryIndex)
-                        {
-                            if (layout.Layout.Entries[entryIndex].Name == resourceParameterKeyInfo.ParameterKey.Name)
-                            {
-                                newResourceParameterKeyInfos.Add(new ResourceParameterKeyInfo(resourceParameterKeyInfo.ParameterKey, layout.Layout.Entries[entryIndex].Class, layoutIndex, entryIndex));
-                                goto memberFound;
-                            }
-                        }
-                    }
-
-                    // Not found, let's add it without binding info
-                    newResourceParameterKeyInfos.Add(new ResourceParameterKeyInfo(resourceParameterKeyInfo.ParameterKey, EffectParameterClass.Object, -1, -1));
-
-                memberFound:
-                    ;
+                    var name = binder.DescriptorReflection.Layouts[i].Name;
+                    var layout = binder.DescriptorReflection.Layouts[i].Layout;
+                    resourceGroupLayouts[i] = ResourceGroupLayout.New(graphicsDevice, layout, effect.Bytecode, name);
+                    resourceGroups[i] = new ResourceGroup();
                 }
 
-                // Find new offsets for data
-                foreach (var dataParameterKeyInfo in valueParameterKeyInfos)
-                {
-                    // Look for it in reflection
-                    foreach (var constantBuffer in effect.Bytecode.Reflection.ConstantBuffers)
-                    {
-                        foreach (var member in constantBuffer.Members)
-                        {
-                            if (member.Param.Key == dataParameterKeyInfo.ParameterKey)
-                            {
-                                newValueParameterKeyInfos.Add(new ValueParameterKeyInfo(dataParameterKeyInfo.ParameterKey, member.Offset, member.Size));
-                                goto memberFound;
-                            }
-                        }
-                    }
-
-                    // Not found, let's add it (packed at the end)
-                    newValueParameterKeyInfos.Add(new ValueParameterKeyInfo(dataParameterKeyInfo.ParameterKey, bufferSize, dataParameterKeyInfo.Size));
-                    bufferSize += dataParameterKeyInfo.ParameterKey.Size;
-
-                memberFound:
-                    ;
-                }
-
-                var newData = Marshal.AllocHGlobal(bufferSize);
-
-                // Update default values
-                foreach (var constantBuffer in constantBuffers)
-                {
-                    foreach (var member in constantBuffer.Description.Members)
-                    {
-                        var defaultValueMetadata = member.Param.Key?.DefaultValueMetadata;
-                        if (defaultValueMetadata != null)
-                        {
-                            defaultValueMetadata.WriteBuffer(newData + constantBuffer.DataOffset + member.Offset, 16);
-                        }
-                    }
-                }
-
-                // Second pass to copy existing data at new offsets/slots
-                for (int i = 0; i < valueParameterKeyInfos.Count; ++i)
-                {
-                    var oldOffset = valueParameterKeyInfos[i].Offset;
-                    var newOffset = newValueParameterKeyInfos[i].Offset;
-
-                    Utilities.CopyMemory(newData + newOffset, dataValues + oldOffset, valueParameterKeyInfos[i].Size);
-                }
-
-                valueParameterKeyInfos = newValueParameterKeyInfos;
-                resourceParameterKeyInfos = newResourceParameterKeyInfos;
-
-                Marshal.FreeHGlobal(dataValues);
-                dataValues = newData;
+                // Update parameters layout to match what this effect expect
+                Parameters.UpdateLayout(parameterCollectionLayout);
+                constantBufferTotalSize = parameterCollectionLayout.BufferSize;
             }
         }
 
@@ -423,78 +156,45 @@ namespace SiliconStudio.Xenko.Rendering
             });
 
             // Instantiate descriptor sets
-            for (int i = 0; i < descriptorSets.Length; ++i)
+            for (int i = 0; i < resourceGroups.Length; ++i)
             {
-                descriptorSets[i] = DescriptorSet.New(graphicsDevice, descriptorPool, descriptorSetLayouts[i]);
+                RootEffectRenderFeature.PrepareResourceGroup(null, resourceGroupLayouts[i], BufferPoolAllocationType.UsedOnce, resourceGroups[i]);
             }
 
-            // Copy cbuffer data
-            if (dataValues != IntPtr.Zero && constantBuffers.Count > 0)
+            // Set resources
+            if (Parameters.ResourceValues != null)
             {
-                var bufferPool = BufferPool.New(graphicsDevice, constantBufferTotalSize);
-                Utilities.CopyMemory(bufferPool.Buffer.Data, dataValues, constantBufferTotalSize);
-                foreach (var constantBuffer in constantBuffers)
+                var descriptorStartSlot = 0;
+                for (int layoutIndex = 0; layoutIndex < binder.DescriptorReflection.Layouts.Count; layoutIndex++)
                 {
-                    var descriptorSet = descriptorSets[constantBuffer.DescriptorSet];
-                    descriptorSet.SetConstantBuffer(constantBuffer.BindingSlot, bufferPool.Buffer, constantBuffer.DataOffset, constantBuffer.Description.Size);
+                    var descriptorSet = resourceGroups[layoutIndex].DescriptorSet;
+                    var layout = binder.DescriptorReflection.Layouts[layoutIndex].Layout;
+
+                    for (int resourceSlot = 0; resourceSlot < layout.ElementCount; ++resourceSlot)
+                    {
+                        descriptorSet.SetValue(resourceSlot, Parameters.ResourceValues[descriptorStartSlot + resourceSlot]);
+                    }
+
+                    descriptorStartSlot += layout.ElementCount;
                 }
             }
 
-            // Set other resources
-            for (int index = 0; index < resourceParameterKeyInfos.Count; ++index)
+            // Copy cbuffer data
+            if (Parameters.DataValues != IntPtr.Zero && constantBuffers.Count > 0)
             {
-                var resourceParameterKeyInfo = resourceParameterKeyInfos[index];
-                if (resourceParameterKeyInfo.DescriptorSet == -1)
-                    continue;
-
-                var descriptorSet = descriptorSets[resourceParameterKeyInfo.DescriptorSet];
-                switch (resourceParameterKeyInfo.Class)
+                var bufferPool = BufferPool.New(graphicsDevice, constantBufferTotalSize);
+                Utilities.CopyMemory(bufferPool.Buffer.Data, Parameters.DataValues, constantBufferTotalSize);
+                foreach (var constantBuffer in constantBuffers)
                 {
-                    case EffectParameterClass.Sampler:
-                        descriptorSet.SetSamplerState(resourceParameterKeyInfo.BindingSlot, (SamplerState)resourceValues[index]);
-                        break;
-                    case EffectParameterClass.ShaderResourceView:
-                        descriptorSet.SetShaderResourceView(resourceParameterKeyInfo.BindingSlot, (GraphicsResource)resourceValues[index]);
-                        break;
-                    case EffectParameterClass.UnorderedAccessView:
-                        descriptorSet.SetUnorderedAccessView(resourceParameterKeyInfo.BindingSlot, (GraphicsResource)resourceValues[index]);
-                        break;
+                    var descriptorSet = resourceGroups[constantBuffer.DescriptorSet].ConstantBuffer.Data;
+                    //descriptorSet.SetConstantBuffer(constantBuffer.BindingSlot, bufferPool.Buffer, constantBuffer.DataOffset, constantBuffer.Description.Size);
                 }
             }
 
             // Apply
-            binder.Apply(graphicsDevice, descriptorSets, 0);
+            //binder.Apply(graphicsDevice, descriptorSets, 0);
         }
 
-        struct ValueParameterKeyInfo
-        {
-            public ParameterKey ParameterKey;
-            public int Offset;
-            public int Size;
-
-            public ValueParameterKeyInfo(ParameterKey parameterKey, int offset, int size)
-            {
-                ParameterKey = parameterKey;
-                Offset = offset;
-                Size = size;
-            }
-        }
-
-        struct ResourceParameterKeyInfo
-        {
-            public ParameterKey ParameterKey;
-            public EffectParameterClass Class;
-            public int DescriptorSet;
-            public int BindingSlot;
-
-            public ResourceParameterKeyInfo(ParameterKey parameterKey, EffectParameterClass @class, int descriptorSet, int bindingSlot)
-            {
-                ParameterKey = parameterKey;
-                Class = @class;
-                DescriptorSet = descriptorSet;
-                BindingSlot = bindingSlot;
-            }
-        }
 
         struct ConstantBufferInfo
         {

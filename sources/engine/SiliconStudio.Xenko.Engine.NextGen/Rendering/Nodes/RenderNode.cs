@@ -28,14 +28,9 @@ namespace SiliconStudio.Xenko.Rendering
         public EffectObjectNodeReference EffectObjectNode;
 
         /// <summary>
-        /// The "PerDraw" constant buffer offset in our global cbuffer.
+        /// The "PerDraw" resources.
         /// </summary>
-        public int DrawConstantBufferOffset;
-
-        /// <summary>
-        /// The "PerDraw" descriptor set.
-        /// </summary>
-        public DescriptorSet DrawDescriptorSet;
+        public ResourceGroup Resources;
 
         /// <summary>
         /// The render stage.
@@ -54,9 +49,8 @@ namespace SiliconStudio.Xenko.Rendering
             ViewObjectNode = viewObjectNode;
             EffectObjectNode = EffectObjectNodeReference.Invalid;
             RenderStage = renderStage;
-            DrawConstantBufferOffset = 0;
             RenderEffect = null;
-            DrawDescriptorSet = new DescriptorSet();
+            Resources = null;
         }
     }
 }

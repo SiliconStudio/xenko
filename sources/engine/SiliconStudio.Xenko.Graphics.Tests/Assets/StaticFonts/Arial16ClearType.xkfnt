@@ -1,5 +1,6 @@
 !SpriteFont
 Id: b742b0b2-c2a9-4291-89a0-56fb0cb214c1
+SerializedVersion: {Xenko: 1.5.0-alpha09}
 Tags: []
 Source: 
 FontName: Arial
@@ -12,7 +13,6 @@ CharacterRegions:
     -   Start: ' '
         End: "\x7F"
 AntiAlias: ClearType
-IsNotPremultiply: false
 Spacing: 0.0
 LineSpacing: 0.0
 UseKerning: false

@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering
     public struct ResourceGroupEntry
     {
         public int LastFrameUsed;
-        public ResourceGroup ResourceGroup;
+        public ResourceGroup Resources;
 
         /// <summary>
         /// Mark resource group as used during this frame.

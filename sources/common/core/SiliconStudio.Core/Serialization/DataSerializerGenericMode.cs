@@ -5,7 +5,11 @@ namespace SiliconStudio.Core.Serialization
     /// <summary>
     /// Defines what generic parameters to pass to the serializer.
     /// </summary>
+#if ASSEMBLY_PROCESSOR
+    internal enum DataSerializerGenericMode
+#else
     public enum DataSerializerGenericMode
+#endif
     {
         None = 0,
         /// <summary>

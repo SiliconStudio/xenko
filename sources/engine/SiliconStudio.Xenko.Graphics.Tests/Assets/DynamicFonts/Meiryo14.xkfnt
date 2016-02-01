@@ -1,5 +1,6 @@
 !SpriteFont
 Id: 693f0d3d-b0ef-4cb8-bc84-0aa69efb3462
+SerializedVersion: {Xenko: 1.5.0-alpha09}
 Tags: []
 Source: 
 FontName: Meiryo
@@ -12,7 +13,6 @@ CharacterRegions:
     -   Start: ' '
         End: "\x7F"
 AntiAlias: Grayscale
-IsNotPremultiply: false
 Spacing: 0.0
 LineSpacing: 0.0
 UseKerning: false

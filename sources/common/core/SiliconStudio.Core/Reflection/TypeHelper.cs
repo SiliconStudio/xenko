@@ -13,21 +13,21 @@ namespace SiliconStudio.Core.Reflection
         public static bool IsCollection(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (type.IsArray)
+            var typeInfo = type.GetTypeInfo();
+            if (typeInfo.IsArray)
             {
                 return false;
             }
 
-            if (typeof(ICollection).IsAssignableFrom(type))
+            if (typeof(ICollection).GetTypeInfo().IsAssignableFrom(typeInfo))
             {
                 return true;
             }
 
-            var interfaces = type.GetTypeInfo().GetInterfaces();
-            for (int i = 0; i < interfaces.Length; i++)
+            foreach(var iType in typeInfo.ImplementedInterfaces)
             {
-                var typeInfo = interfaces[i].GetTypeInfo();
-                if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(ICollection<>))
+                var iTypeInfo = iType.GetTypeInfo();
+                if (iTypeInfo.IsGenericType && iTypeInfo.GetGenericTypeDefinition() == typeof(ICollection<>))
                 {
                     return true;
                 }
@@ -39,16 +39,16 @@ namespace SiliconStudio.Core.Reflection
         public static bool IsDictionary(Type type)
         {
             if (type == null) throw new ArgumentNullException(nameof(type));
-            if (typeof(IDictionary).IsAssignableFrom(type))
+            var typeInfo = type.GetTypeInfo();
+            if (typeof(IDictionary).GetTypeInfo().IsAssignableFrom(typeInfo))
             {
                 return true;
             }
 
-            var interfaces = type.GetTypeInfo().GetInterfaces();
-            for (int i = 0; i < interfaces.Length; i++)
+            foreach (var iType in typeInfo.ImplementedInterfaces)
             {
-                var typeInfo = interfaces[i].GetTypeInfo();
-                if (typeInfo.IsGenericType && typeInfo.GetGenericTypeDefinition() == typeof(IDictionary<,>))
+                var iTypeInfo = iType.GetTypeInfo();
+                if (iTypeInfo.IsGenericType && iTypeInfo.GetGenericTypeDefinition() == typeof(IDictionary<,>))
                 {
                     return true;
                 }

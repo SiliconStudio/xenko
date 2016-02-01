@@ -44,21 +44,21 @@ namespace SiliconStudio.Xenko.Rendering.Materials.ComputeColors
             // Convert from Vector4 to (Color4|Vector4|Color3|Vector3)
             if (key is ParameterKey<Color4>)
             {
-                context.Parameters.Set((ParameterKey<Color4>)key, (Color4)color);
+                context.Parameters.SetValueSlow((ParameterKey<Color4>)key, (Color4)color);
             }
             else if (key is ParameterKey<Vector4>)
             {
-                context.Parameters.Set((ParameterKey<Vector4>)key, color);
+                context.Parameters.SetValueSlow((ParameterKey<Vector4>)key, color);
             }
             else if (key is ParameterKey<Color3>)
             {
 
-                context.Parameters.Set((ParameterKey<Color3>)key, (Color3)(Vector3)color);
+                context.Parameters.SetValueSlow((ParameterKey<Color3>)key, (Color3)(Vector3)color);
             }
             else if (key is ParameterKey<Vector3>)
             {
 
-                context.Parameters.Set((ParameterKey<Vector3>)key, (Vector3)color);
+                context.Parameters.SetValueSlow((ParameterKey<Vector3>)key, (Vector3)color);
             }
             else
             {

@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
         private ObjectPropertyKey<RenderModelFrameInfo> renderModelObjectInfoKey;
         private ViewObjectPropertyKey<RenderModelViewInfo> renderModelViewInfoKey;
 
-        private ConstantBufferOffsetReference viewProjection;
+        private ConstantBufferOffsetReference view;
         private ConstantBufferOffsetReference world;
 
         struct RenderModelFrameInfo
@@ -34,8 +34,8 @@ namespace SiliconStudio.Xenko.Rendering
             renderModelObjectInfoKey = RootRenderFeature.CreateObjectKey<RenderModelFrameInfo>();
             renderModelViewInfoKey = RootRenderFeature.CreateViewObjectKey<RenderModelViewInfo>();
 
-            viewProjection = ((RootEffectRenderFeature)RootRenderFeature).CreateViewCBufferOffsetSlot("Transformation.ViewProjection");
-            world = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot("Transformation.World");
+            view = ((RootEffectRenderFeature)RootRenderFeature).CreateViewCBufferOffsetSlot(TransformationKeys.View.Name);
+            world = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(TransformationKeys.World.Name);
         }
 
         /// <inheritdoc/>
@@ -46,9 +46,9 @@ namespace SiliconStudio.Xenko.Rendering
             foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
             {
                 var objectNode = RootRenderFeature.GetObjectNode(objectNodeReference);
-                var renderMesh = (RenderMesh)objectNode.RenderObject;
+                var renderMesh = objectNode.RenderObject as RenderMesh;
                 // TODO: Extract world
-                var world = renderMesh.World;
+                var world = (renderMesh != null) ? renderMesh.World : Matrix.Identity;
 
                 renderModelObjectInfo[objectNodeReference] = new RenderModelFrameInfo { World = world };
             }
@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 var renderModelObjectInfo = renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
 
-                var mappedCB = RenderSystem.BufferPool.Buffer.Data + renderNode.DrawConstantBufferOffset;
+                var mappedCB = renderNode.Resources.ConstantBuffer.Data;
                 var world = (Matrix*)((byte*)mappedCB);
                 *world++ = renderModelObjectInfo.World; // World
                 *world = renderModelObjectInfo.World; // WorldInverseTranspose
@@ -106,15 +106,33 @@ namespace SiliconStudio.Xenko.Rendering
                 // Copy ViewProjection to PerFrame cbuffer
                 foreach (var viewLayout in viewFeature.Layouts)
                 {
-                    var viewProjectionOffset = viewLayout.GetConstantBufferOffset(this.viewProjection);
+                    var viewProjectionOffset = viewLayout.GetConstantBufferOffset(this.view);
                     if (viewProjectionOffset == -1)
                         continue;
 
-                    var resourceGroup = viewLayout.Entries[view.Index].ResourceGroup;
-                    var mappedCB = RenderSystem.BufferPool.Buffer.Data + resourceGroup.ConstantBufferOffset;
+                    var resourceGroup = viewLayout.Entries[view.Index].Resources;
+                    var mappedCB = resourceGroup.ConstantBuffer.Data;
 
-                    var viewProjection = (Matrix*)((byte*)mappedCB + viewProjectionOffset);
-                    *viewProjection = view.ViewProjection;
+                    var viewMatrices = (Matrix*)((byte*)mappedCB + viewProjectionOffset);
+
+                    // View
+                    *viewMatrices++ = view.View;
+
+                    // ViewInverse
+                    *viewMatrices = view.View;
+                    viewMatrices->Invert();
+                    viewMatrices++;
+
+                    // Projection
+                    *viewMatrices++ = view.Projection;
+
+                    // ProjectionInverse
+                    *viewMatrices = view.Projection;
+                    viewMatrices->Invert();
+                    viewMatrices++;
+
+                    // ViewProjection
+                    *viewMatrices = view.ViewProjection;
                 }
             }
         }

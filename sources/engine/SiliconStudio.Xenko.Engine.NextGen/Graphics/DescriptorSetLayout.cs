@@ -1,3 +1,4 @@
+using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
@@ -24,7 +25,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal struct Entry
         {
-            public string Name;
+            public ParameterKey Key;
             public EffectParameterClass Class;
             public int ArraySize;
         }

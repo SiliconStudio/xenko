@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public EffectDescriptorSetReflection DescriptorReflection;
 
-        private BindingOperation[][] bindingOperationSets;
+        private ResourceGroupBinding[] resourceGroupBindings;
 
         public void Compile(GraphicsDevice graphicsDevice, EffectBytecode effectBytecode, List<string> effectDescriptorSetSlots)
         {
@@ -31,11 +31,12 @@ namespace SiliconStudio.Xenko.Rendering
 
             DescriptorReflection = descriptorSetLayouts;
 
-            bindingOperationSets = new BindingOperation[DescriptorReflection.Layouts.Count][];
+            resourceGroupBindings = new ResourceGroupBinding[DescriptorReflection.Layouts.Count];
             for (int setIndex = 0; setIndex < DescriptorReflection.Layouts.Count; setIndex++)
             {
                 var layout = DescriptorReflection.Layouts[setIndex].Layout;
 
+                var resourceGroupBinding = new ResourceGroupBinding();
                 var bindingOperations = new List<BindingOperation>();
 
                 for (int resourceIndex = 0; resourceIndex < layout.Entries.Count; resourceIndex++)
@@ -47,7 +48,7 @@ namespace SiliconStudio.Xenko.Rendering
                     Buffer preallocatedCBuffer = null;
                     foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings)
                     {
-                        if (resourceBinding.Param.KeyName == layoutEntry.Name)
+                        if (resourceBinding.Param.Key == layoutEntry.Key)
                         {
                             if (!bindingFound)
                             {
@@ -56,8 +57,10 @@ namespace SiliconStudio.Xenko.Rendering
                                 // If it's a cbuffer and API without cbuffer offset, we need to preallocate a real cbuffer for emulation
                                 if (resourceBinding.Param.Class == EffectParameterClass.ConstantBuffer)
                                 {
-                                    var constantBuffer = effectBytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Name);
-                                    preallocatedCBuffer = Buffer.Cosntant.New(graphicsDevice, constantBuffer.Size);
+                                    var constantBuffer = effectBytecode.Reflection.ConstantBuffers.First(x => x.Name == layoutEntry.Key.Name);
+                                    resourceGroupBinding.ConstantBufferSlot = resourceIndex;
+                                    resourceGroupBinding.ConstantBufferPreallocated = Buffer.Cosntant.New(graphicsDevice, constantBuffer.Size);
+
                                 }
                             }
 
@@ -67,40 +70,61 @@ namespace SiliconStudio.Xenko.Rendering
                                 Class = resourceBinding.Param.Class,
                                 Stage = resourceBinding.Stage,
                                 SlotStart = resourceBinding.SlotStart,
-                                PreallocatedCBuffer = preallocatedCBuffer,
                             });
                         }
                     }
                 }
 
-                bindingOperationSets[setIndex] = bindingOperations.ToArray();
+                resourceGroupBinding.ResourceBindingOperations = bindingOperations.Count > 0 ? bindingOperations.ToArray() : null;
+                resourceGroupBindings[setIndex] = resourceGroupBinding;
             }
         }
 
-        internal void Apply(GraphicsDevice graphicsDevice, DescriptorSet[] descriptorSets, int descriptorSetOffset)
+        internal void Apply(GraphicsDevice graphicsDevice, ResourceGroup[] resourceGroups, int resourceGroupsOffset)
         {
-            for (int i = 0; i < bindingOperationSets.Length; i++)
+            if (resourceGroupBindings.Length == 0)
+                return;
+
+            var resourceGroupBinding = Interop.Pin(ref resourceGroupBindings[0]);
+            for (int i = 0; i < resourceGroupBindings.Length; i++, resourceGroupBinding = Interop.IncrementPinned(resourceGroupBinding))
             {
-                var bindingOperations = this.bindingOperationSets[i];
-                var descriptorSet = descriptorSets[descriptorSetOffset + i];
+                var resourceGroup = resourceGroups[resourceGroupsOffset + i];
+                var bindingOperations = resourceGroupBinding.ResourceBindingOperations;
+                if (bindingOperations == null)
+                    continue;
 
-                for (int index = 0; index < bindingOperations.Length; index++)
+                // Upload cbuffer (if not done yet)
+                if (resourceGroup.ConstantBuffer.Data != IntPtr.Zero)
                 {
-                    var bindingOperation = bindingOperations[index];
+                    var preallocatedBuffer = resourceGroup.ConstantBuffer.Buffer;
+                    bool needUpdate = true;
+                    if (preallocatedBuffer == null)
+                        preallocatedBuffer = resourceGroupBinding.ConstantBufferPreallocated; // If it's preallocated buffer, we always upload
+                    else if (resourceGroup.ConstantBuffer.Uploaded)
+                        needUpdate = false; // If it's not preallocated and already uploaded, we can avoid uploading it again
+                    else
+                        resourceGroup.ConstantBuffer.Uploaded = true; // First time it is uploaded
 
+                    if (needUpdate)
+                    {
+                        var mappedConstantBuffer = graphicsDevice.MapSubresource(preallocatedBuffer, 0, MapMode.WriteDiscard);
+                        Utilities.CopyMemory(mappedConstantBuffer.DataBox.DataPointer, resourceGroup.ConstantBuffer.Data, resourceGroup.ConstantBuffer.Size);
+                        graphicsDevice.UnmapSubresource(mappedConstantBuffer);
+                    }
+
+                    resourceGroup.DescriptorSet.SetConstantBuffer(resourceGroupBinding.ConstantBufferSlot, preallocatedBuffer, 0, resourceGroup.ConstantBuffer.Size);
+                }
+
+                var descriptorSet = resourceGroup.DescriptorSet;
+                var bindingOperation = Interop.Pin(ref bindingOperations[0]);
+                for (int index = 0; index < bindingOperations.Length; index++, bindingOperation = Interop.IncrementPinned(bindingOperation))
+                {
                     var value = descriptorSet.HeapObjects[descriptorSet.DescriptorStartOffset + bindingOperation.EntryIndex];
                     switch (bindingOperation.Class)
                     {
                         case EffectParameterClass.ConstantBuffer:
                         {
-                            // Update cbuffer
-                            var constantBuffer2 = (ConstantBuffer2)value.Value;
-                            var mappedConstantBuffer = graphicsDevice.MapSubresource(bindingOperation.PreallocatedCBuffer, 0, MapMode.WriteDiscard);
-                            var sourceData = constantBuffer2.Data + value.Offset;
-                            Utilities.CopyMemory(mappedConstantBuffer.DataBox.DataPointer, sourceData, value.Size);
-                            graphicsDevice.UnmapSubresource(mappedConstantBuffer);
-
-                            graphicsDevice.SetConstantBuffer(bindingOperation.Stage, bindingOperation.SlotStart, bindingOperation.PreallocatedCBuffer);
+                            graphicsDevice.SetConstantBuffer(bindingOperation.Stage, bindingOperation.SlotStart, (Buffer)value.Value);
                             break;
                         }
                         case EffectParameterClass.Sampler:
@@ -125,14 +149,23 @@ namespace SiliconStudio.Xenko.Rendering
             var descriptorSetLayoutBuilder = new DescriptorSetLayoutBuilder();
             foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings
                 .Where(x => x.Param.ResourceGroup == descriptorSetName)
-                .GroupBy(x => new { Name = x.Param.KeyName, Class = x.Param.Class, SlotCount = x.SlotCount })
+                .GroupBy(x => new { Key = x.Param.Key, Class = x.Param.Class, SlotCount = x.SlotCount })
                 .OrderBy(x => x.Key.Class == EffectParameterClass.ConstantBuffer ? 0 : 1))
             {
                 // Note: Putting cbuffer first for now
-                descriptorSetLayoutBuilder.AddBinding(resourceBinding.Key.Name, resourceBinding.Key.Class, resourceBinding.Key.SlotCount);
+                descriptorSetLayoutBuilder.AddBinding(resourceBinding.Key.Key, resourceBinding.Key.Class, resourceBinding.Key.SlotCount);
             }
 
             return descriptorSetLayoutBuilder;
+        }
+
+        internal struct ResourceGroupBinding
+        {
+            public BindingOperation[] ResourceBindingOperations;
+
+            // Constant buffer
+            public int ConstantBufferSlot;
+            public Buffer ConstantBufferPreallocated;
         }
 
         internal struct BindingOperation
@@ -141,7 +174,6 @@ namespace SiliconStudio.Xenko.Rendering
             public EffectParameterClass Class;
             public ShaderStage Stage;
             public int SlotStart;
-            public Buffer PreallocatedCBuffer;
         }
     }
 }

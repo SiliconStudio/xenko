@@ -28,11 +28,11 @@ namespace SiliconStudio.Xenko.Physics
 
             rasterizer = RasterizerState.New(graphicsDevice, new RasterizerStateDescription(CullMode.None) { FillMode = FillMode.Wireframe });
 
-            triggerMaterial.Parameters.Set(Effect.RasterizerStateKey, rasterizer);
-            staticMaterial.Parameters.Set(Effect.RasterizerStateKey, rasterizer);
-            dynamicMaterial.Parameters.Set(Effect.RasterizerStateKey, rasterizer);
-            kinematicMaterial.Parameters.Set(Effect.RasterizerStateKey, rasterizer);
-            characterMaterial.Parameters.Set(Effect.RasterizerStateKey, rasterizer);
+            triggerMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
+            staticMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
+            dynamicMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
+            kinematicMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
+            characterMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
         }
 
         public Entity CreateDebugEntity(PhysicsComponent component)

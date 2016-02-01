@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             {
                 // Inform the context that we are using matNormal (from the MaterialSurfaceNormalMap shader)
                 context.UseStreamWithCustomBlend(MaterialShaderStage.Pixel, NormalStream.Stream, new ShaderClassSource("MaterialStreamNormalBlend"));
-                context.Parameters.Set(MaterialKeys.HasNormalMap, true);
+                context.Parameters.SetValueSlow(MaterialKeys.HasNormalMap, true);
 
                 var normalMap = NormalMap;
                 // Workaround to make sure that normal map are setup 
