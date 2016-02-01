@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering;
@@ -8,7 +9,7 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public partial class NextGenRenderSystem
+    public class NextGenRenderSystem
     {
         // Public registered object management
         public TrackingHashSet<RenderObject> RenderObjects = new TrackingHashSet<RenderObject>();
@@ -36,8 +37,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         public RenderContext RenderContextOld { get; private set; }
 
-        public NextGenRenderSystem()
+        public NextGenRenderSystem(IServiceRegistry registry)
         {
+            registry.AddService(typeof(NextGenRenderSystem), this);
             RenderStages.CollectionChanged += RenderStages_CollectionChanged;
         }
 

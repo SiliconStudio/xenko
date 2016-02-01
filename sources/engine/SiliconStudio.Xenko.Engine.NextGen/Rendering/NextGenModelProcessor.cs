@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -9,9 +10,13 @@ namespace SiliconStudio.Xenko.Rendering
 
         public Dictionary<ModelComponent, RenderModel> RenderModels => ComponentDatas;
 
-        public NextGenModelProcessor(NextGenRenderSystem renderSystem) : base(typeof(TransformComponent))
+        public NextGenModelProcessor() : base(typeof(TransformComponent))
         {
-            this.renderSystem = renderSystem;
+        }
+
+        protected internal override void OnSystemAdd()
+        {
+            renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
         }
 
         protected override RenderModel GenerateComponentData(Entity entity, ModelComponent component)

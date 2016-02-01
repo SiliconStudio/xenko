@@ -13,21 +13,18 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// </summary>
     public class SkyboxProcessor : EntityProcessor<SkyboxComponent, RenderSkybox>
     {
-        private readonly NextGenRenderSystem renderSystem;
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="SkyboxProcessor" /> class.
-        /// </summary>
-        public SkyboxProcessor(NextGenRenderSystem renderSystem)
-        {
-            this.renderSystem = renderSystem;
-        }
+        private NextGenRenderSystem renderSystem;
 
         /// <summary>
         /// Gets the active skybox background.
         /// </summary>
         /// <value>The active skybox background.</value>
         public RenderSkybox ActiveSkybox { get; private set; }
+
+        protected internal override void OnSystemAdd()
+        {
+            renderSystem = Services.GetSafeServiceAs<NextGenRenderSystem>();
+        }
 
         protected override RenderSkybox GenerateComponentData(Entity entity, SkyboxComponent component)
         {
