@@ -33,13 +33,12 @@ namespace SiliconStudio.Xenko.Data
     public class ConfigurationOverride
     {
         [DataMember(10)]
-        public ConfigPlatforms Platform;
+        public ConfigPlatforms Platforms;
 
         [DataMember(20)]
         public ConfigFilters SpecificFilter;
 
         [DataMember(30)]
-        [NotNullItems]
-        public List<Configuration> Configurations { get; } = new List<Configuration>();
+        public Configuration Configuration;
     }
 }

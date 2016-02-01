@@ -73,9 +73,9 @@ namespace SiliconStudio.Xenko.Assets
                 {
                     result.Configurations.Configurations.Add(new ConfigurationOverride
                     {
-                        Platform = ConfigPlatforms.None,
+                        Platforms = ConfigPlatforms.None,
                         SpecificFilter = ConfigFilters.None,
-                        Configurations = { configuration }
+                        Configuration = configuration
                     });
                 }
 
