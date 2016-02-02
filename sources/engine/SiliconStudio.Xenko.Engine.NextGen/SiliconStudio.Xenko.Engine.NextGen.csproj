@@ -215,6 +215,10 @@
     <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\LightShadowMapRendererBase.cs" />
     <Compile Include="Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapCascadeInfo.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapCascadeLevel.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverInfo.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapReceiverVsmInfo.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderer.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
@@ -224,7 +228,6 @@
     <Compile Include="Rendering\INextGenEntityComponentRenderer.cs" />
     <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
     <Compile Include="Rendering\Lights\LightComponentCollectionGroup.cs" />
-    <Compile Include="Rendering\Lights\LightComponentForwardRenderer.cs" />
     <Compile Include="Rendering\NextGenEntityComponentRendererBase.cs" />
     <Compile Include="Rendering\NextGenEntityComponentRendererBatch.cs" />
     <Compile Include="Rendering\NextGenModelProcessor.cs" />

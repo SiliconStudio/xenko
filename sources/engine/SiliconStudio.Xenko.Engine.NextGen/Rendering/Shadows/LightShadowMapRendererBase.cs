@@ -54,11 +54,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 
         public abstract ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
 
-        public virtual void Render(RenderContext context, Shadows.ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
-        {
-            throw new NotImplementedException();
-        }
-
         public abstract void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
 
         public abstract void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection);

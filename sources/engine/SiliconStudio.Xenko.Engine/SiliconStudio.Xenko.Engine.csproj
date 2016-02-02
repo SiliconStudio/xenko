@@ -196,6 +196,7 @@
     </Compile>
     <Compile Include="Rendering\Materials\MaterialFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
+    <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
@@ -230,8 +231,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Lights\LightComponentCollectionGroup.cs" />
-    <Compile Include="Rendering\Lights\LightComponentRenderer.cs" />
-    <Compile Include="Rendering\Lights\LightComponentForwardRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPointGroup.cs">
       <DependentUpon>LightPointGroup.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -292,10 +291,6 @@
     <Compile Include="Rendering\XenkoEffectBaseKeys.cs" />
     <Compile Include="Rendering\CameraComponentRendererExtensions.cs" />
     <Compile Include="Rendering\DynamicEffectParameterUpdaterDefinition.cs" />
-    <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
-    <Compile Include="Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
-    <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
-    <Compile Include="Rendering\Shadows\LightShadowMapRendererBase.cs" />
     <Compile Include="Rendering\Shadows\LightShadowMapTexture.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapAtlasTexture.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapReceiverBase.cs">
@@ -310,7 +305,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Shadows\ShadowMapRenderer.cs" />
     <Compile Include="Rendering\VirtualResolutionMode.cs" />
     <Compile Include="Rendering\Lights\DirectLightGroupFixed.cs">
       <DependentUpon>DirectLightGroupFixed.xksl</DependentUpon>
@@ -1892,8 +1886,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Shadows\ShadowMapCascadeInfo.cs" />
-    <Compile Include="Rendering\Shadows\ShadowMapCascadeLevel.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapCaster.cs">
       <DependentUpon>ShadowMapCaster.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1949,8 +1941,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Shadows\ShadowMapKeys.cs" />
-    <Compile Include="Rendering\Shadows\ShadowMapReceiverInfo.cs" />
-    <Compile Include="Rendering\Shadows\ShadowMapReceiverVsmInfo.cs" />
     <Compile Include="Rendering\Shadows\ShadowStream.cs">
       <DependentUpon>ShadowStream.xksl</DependentUpon>
       <AutoGen>True</AutoGen>

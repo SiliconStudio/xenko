@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("LightComponent")]
     [Display("Light", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
+    //[DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
     [DefaultEntityComponentProcessor(typeof(LightProcessor))]
     [ComponentOrder(12000)]
     public sealed class LightComponent : ActivableEntityComponent
