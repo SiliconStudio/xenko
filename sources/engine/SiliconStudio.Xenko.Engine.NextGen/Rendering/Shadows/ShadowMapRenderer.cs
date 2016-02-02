@@ -25,6 +25,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 
         public NextGenRenderSystem RenderSystem { get; set; }
 
+        private RenderStage shadowmapRenderStage;
+
+        private readonly List<RenderView> shadowRenderViews = new List<RenderView>();
+
         private FastListStruct<ShadowMapAtlasTexture> atlases;
 
         private PoolListStruct<LightShadowMapTexture> shadowMapTextures;
@@ -54,9 +58,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 
         private List<LightComponent> visibleLights;
 
-        public ShadowMapRenderer(NextGenRenderSystem renderSystem)
+        public ShadowMapRenderer(NextGenRenderSystem renderSystem, RenderStage shadowmapRenderStage)
         {
             RenderSystem = renderSystem;
+            this.shadowmapRenderStage = shadowmapRenderStage;
+
             atlases = new FastListStruct<ShadowMapAtlasTexture>(16);
             shadowMapTextures = new PoolListStruct<LightShadowMapTexture>(16, CreateLightShadowMapTexture);
             LightComponentsWithShadows = new Dictionary<LightComponent, LightShadowMapTexture>(16);
@@ -128,6 +134,31 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             {
                 var renderer = rendererKeyPairs.Value;
                 renderer.Reset();
+            }
+
+            // Cleanup previous shadow render views
+            foreach (var renderView in shadowRenderViews)
+                RenderSystem.Views.Remove(renderView);
+            shadowRenderViews.Clear();
+
+            // Collect shadow render views
+            foreach (var shadowMapTexture in LightComponentsWithShadows)
+            {
+                ((ILightShadowMapRenderer)shadowMapTexture.Value.Renderer).Extract(RenderSystem.RenderContextOld, this, shadowMapTexture.Value);
+                for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.Value.CascadeCount; cascadeIndex++)
+                {
+                    var shadowRenderView = new ShadowMapRenderView
+                    {
+                        RenderStages = { shadowmapRenderStage },
+                        ShadowMapTexture = shadowMapTexture.Value,
+                        Rectangle = shadowMapTexture.Value.GetRectangle(cascadeIndex)
+                    };
+
+                    ((ILightShadowMapRenderer)shadowMapTexture.Value.Renderer).GetCascadeViewParameters(shadowMapTexture.Value, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
+
+                    shadowRenderViews.Add(shadowRenderView);
+                    RenderSystem.Views.Add(shadowRenderView);
+                }
             }
         }
 
