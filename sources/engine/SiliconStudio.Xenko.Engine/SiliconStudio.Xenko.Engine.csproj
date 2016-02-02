@@ -113,6 +113,7 @@
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ICommsInterface.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketClient.cs" />
     <Compile Include="Engine\Network\Sockets.Plugin.Abstractions\ITcpSocketListener.cs" />
+    <Compile Include="Engine\Processors\ModelProcessor.cs" />
     <Compile Include="Engine\StartupScript.cs" />
     <Compile Include="Engine\TransformLink.cs" />
     <Compile Include="Engine\TransformOperation.cs" />
@@ -290,7 +291,6 @@
     </Compile>
     <Compile Include="Rendering\XenkoEffectBaseKeys.cs" />
     <Compile Include="Rendering\CameraComponentRendererExtensions.cs" />
-    <Compile Include="Rendering\DynamicEffectParameterUpdaterDefinition.cs" />
     <Compile Include="Rendering\Shadows\LightShadowMapTexture.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapAtlasTexture.cs" />
     <Compile Include="Rendering\Shadows\ShadowMapReceiverBase.cs">
@@ -342,7 +342,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ThresholdAlphaCoCFront.xksl</DependentUpon>
     </Compile>
-    <Compile Include="Engine\Processors\RenderModelCollection.cs" />
     <Compile Include="Engine\Processors\CameraProcessor.cs" />
     <Compile Include="Engine\Processors\CameraProjectionMode.cs" />
     <Compile Include="Rendering\Composers\SceneCameraSlot.cs" />
@@ -1605,7 +1604,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\ModelComponentAndPickingRenderer.cs" />
     <Compile Include="Rendering\RendererBase.cs" />
     <Compile Include="Rendering\RenderFrame.cs" />
     <Compile Include="Rendering\Materials\Shaders\IMaterialSpecularMicrofacetFresnelFunction.cs">
@@ -2178,8 +2176,6 @@
     </Compile>
     <Compile Include="Engine\Design\ISceneEditorGraphicsModeSettings.cs" />
     <Compile Include="Rendering\Sprites\ISpriteProvider.cs" />
-    <Compile Include="Engine\Processors\ModelProcessor.cs" />
-    <Compile Include="Rendering\RenderModel.cs" />
     <Compile Include="Engine\Processors\ChildSceneComponentChangedEventArgs.cs" />
     <Compile Include="Engine\Processors\ChildSceneProcessor.cs" />
     <Compile Include="Engine\Design\SceneEditorGraphicsModeHDRSettings.cs" />
@@ -2206,16 +2202,11 @@
     <Compile Include="Animations\KeyFrameData.cs" />
     <Compile Include="Rendering\BackgroundComponentRenderer.cs" />
     <Compile Include="Rendering\CameraComponentRenderer.cs" />
-    <Compile Include="Rendering\DefaultEffectInstance.cs" />
-    <Compile Include="Rendering\DynamicEffectCompiler.cs" />
-    <Compile Include="Rendering\DynamicEffectInstanceOld.cs" />
-    <Compile Include="Rendering\DynamicEffectParameterCollectionGroup.cs" />
     <Compile Include="Rendering\Material.cs" />
     <Compile Include="Rendering\MaterialAssetKeys.cs" />
     <Compile Include="Rendering\MeshBoneDefinition.cs" />
     <Compile Include="Rendering\MeshDraw.cs" />
     <Compile Include="Rendering\MeshKeys.cs" />
-    <Compile Include="Rendering\MeshSkinningUpdater.cs" />
     <Compile Include="Rendering\MeshSkinningDefinition.cs" />
     <Compile Include="Rendering\ModelNodeFlags.cs" />
     <Compile Include="Rendering\SkeletonUpdater.cs" />
@@ -2223,7 +2214,6 @@
     <Compile Include="Rendering\ModelNodeDefinition.cs" />
     <Compile Include="Rendering\ModelNodeTransformation.cs" />
     <Compile Include="Rendering\EffectSystemExtensions.cs" />
-    <Compile Include="Rendering\RenderModelEffectSlotManager.cs" />
     <Compile Include="Rendering\ProfilingKeys.cs" />
     <Compile Include="Rendering\RendererExtensions.cs" />
     <Compile Include="Engine\EntityGroup.cs" />
@@ -2231,7 +2221,6 @@
     <Compile Include="Rendering\Mesh.cs" />
     <Compile Include="Rendering\Model.cs" />
     <Compile Include="Rendering\EffectSystem.cs" />
-    <Compile Include="Rendering\ModelComponentRenderer.cs" />
     <Compile Include="Rendering\SpriteComponentRenderer.cs" />
     <Compile Include="Rendering\TransformTRS.cs" />
     <Compile Include="Rendering\UIComponentRenderer.cs" />
@@ -2288,7 +2277,6 @@
     <Compile Include="Engine\Design\ParameterContainerExtensions.cs" />
     <Compile Include="Rendering\GraphicsResizeContext.cs" />
     <Compile Include="Rendering\GraphicsResizeExtensions.cs" />
-    <Compile Include="Rendering\RenderMesh.cs" />
     <Compile Include="Rendering\RenderContext.cs" />
     <Compile Include="Animations\AnimationProcessor.cs" />
     <Compile Include="Engine\Processors\TransformProcessor.cs" />

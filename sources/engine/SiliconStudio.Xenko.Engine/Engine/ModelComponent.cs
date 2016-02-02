@@ -17,7 +17,8 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("ModelComponent")]
     [Display("Model", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
+    // TODO GRAPHICS REFACTOR
+    //[DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
     [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
     [ComponentOrder(11000)]
     public sealed class ModelComponent : ActivableEntityComponent, IModelInstance

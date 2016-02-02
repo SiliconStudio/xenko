@@ -17,6 +17,7 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("LightComponent")]
     [Display("Light", Expand = ExpandRule.Once)]
+    // TODO GRAPHICS REFACTOR
     //[DefaultEntityComponentRenderer(typeof(LightComponentRenderer), -10)]
     [DefaultEntityComponentProcessor(typeof(LightProcessor))]
     [ComponentOrder(12000)]
