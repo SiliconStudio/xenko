@@ -148,30 +148,22 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                     // Update material parameters layout to what is expected by effect
                     material.Parameters.UpdateLayout(parameterCollectionLayout);
 
-                    materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerMaterial"), renderEffect.Effect.Bytecode, "PerMaterial");
+                    materialInfo.PerMaterialLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerMaterial");
 
                     materialInfo.Resources = new ResourceGroup();
-                    NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, materialInfo.PerMaterialLayout, BufferPoolAllocationType.UsedMultipleTime, materialInfo.Resources);
                 }
 
-                var materialDescriptorSet = DescriptorSet.New(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, materialInfo.PerMaterialLayout.DescriptorSetLayout);
-                materialInfo.Resources.DescriptorSet = materialDescriptorSet;
+                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, materialInfo.PerMaterialLayout, BufferPoolAllocationType.UsedMultipleTime, materialInfo.Resources);
 
                 // Set resource bindings in PerMaterial resource set
                 for (int resourceSlot = 0; resourceSlot < materialInfo.ResourceCount; ++resourceSlot)
                 {
-                    materialDescriptorSet.SetValue(resourceSlot, material.Parameters.ResourceValues[resourceSlot]);
+                    materialInfo.Resources.DescriptorSet.SetValue(resourceSlot, material.Parameters.ResourceValues[resourceSlot]);
                 }
 
                 // Process PerMaterial cbuffer
                 if (materialInfo.ConstantBufferReflection != null)
                 {
-                    //var materialConstantBufferOffset = RenderSystem.BufferPool.Allocate(materialInfo.Resources.ConstantBuffer.Size);
-                    //
-                    //// Set constant buffer
-                    //materialDescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, materialConstantBufferOffset, materialInfo.Resources.ConstantBufferSize);
-                    //materialInfo.Resources.ConstantBufferOffset = materialConstantBufferOffset;
-
                     var mappedCB = materialInfo.Resources.ConstantBuffer.Data;
                     Utilities.CopyMemory(mappedCB, material.Parameters.DataValues, materialInfo.Resources.ConstantBuffer.Size);
                 }
