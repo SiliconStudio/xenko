@@ -21,15 +21,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         private Texture depthBuffer;
         private Matrix worldViewProjection;
         private GeometricPrimitive geometry;
-        private Effect simpleEffect;
+        private EffectInstance simpleEffect;
         private bool firstSave;
 
         private int width;
         private int height;
-
-        private EffectParameterCollectionGroup parameterCollectionGroup;
-
-        private ParameterCollection parameterCollection;
 
         public TestRenderToTexture()
         {
@@ -52,10 +48,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             worldViewProjection = Matrix.Multiply(view, projection);
 
             geometry = GeometricPrimitive.Cube.New(GraphicsDevice);
-            simpleEffect = new Effect(GraphicsDevice, SpriteEffect.Bytecode);
-            parameterCollection = new ParameterCollection();
-            parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new[] { parameterCollection });
-            parameterCollection.Set(TexturingKeys.Texture0, UVTexture);
+            simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
+            simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Texture0, UVTexture);
             
             // TODO DisposeBy is not working with device reset
             offlineTarget0 = Texture.New2D(GraphicsDevice, 512, 512, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
@@ -128,8 +122,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawGeometry()
         {
-            parameterCollection.Set(SpriteBaseKeys.MatrixTransform, worldViewProjection);
-            simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, true);
+            simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, worldViewProjection);
+            simpleEffect.Apply(GraphicsDevice);
             geometry.Draw();
         }
 
