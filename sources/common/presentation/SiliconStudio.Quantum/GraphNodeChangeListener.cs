@@ -83,7 +83,8 @@ namespace SiliconStudio.Quantum
             Changed?.Invoke(sender, e);
         }
 
-        private static IEnumerable<IGraphNode> GetAllChildNodes(IGraphNode graphNode)
+        // TODO: this is an utility method. It should be moved somewhere else.
+        public static IEnumerable<IGraphNode> GetAllChildNodes(IGraphNode graphNode)
         {
             var processedNodes = new HashSet<IGraphNode>();
             var nodeStack = new Stack<IGraphNode>();
