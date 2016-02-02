@@ -19,8 +19,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
     internal static partial class FlareArtifactShaderKeys
     {
         public static readonly ParameterKey<float> Amount = ParameterKeys.New<float>();
-        public static readonly ParameterKey<Vector2[]> ZoomOffsetsDistortions = ParameterKeys.New<Vector2[]>();
-        public static readonly ParameterKey<Vector3[]> ColorAberrations = ParameterKeys.New<Vector3[]>();
+        public static readonly ParameterKey<Vector2> ZoomOffsetsDistortions = ParameterKeys.New<Vector2>();
+        public static readonly ParameterKey<Vector3> ColorAberrations = ParameterKeys.New<Vector3>();
         public static readonly ParameterKey<float> AberrationStrength = ParameterKeys.New<float>(0);
     }
 }

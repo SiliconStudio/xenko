@@ -32,8 +32,8 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             {
                 harmonicalOrder = Math.Max(1, Math.Min(5, value));
 
-                firstPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
-                secondPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+                firstPassEffect.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+                secondPassEffect.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
             }
         }
 
@@ -80,10 +80,10 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             // Project the radiance on the SH basis and sum up the results along the 4x4 blocks
             firstPassEffect.ThreadNumbers = new Int3(FirstPassBlockSize, FirstPassBlockSize, 1);
             firstPassEffect.ThreadGroupCounts = new Int3(inputSize.X/FirstPassBlockSize, inputSize.Y/FirstPassBlockSize, faceCount);
-            firstPassEffect.Parameters.Set(LambertianPrefilteringSHParameters.BlockSize, FirstPassBlockSize);
-            firstPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
-            firstPassEffect.Parameters.Set(LambertianPrefilteringSHPass1Keys.RadianceMap, inputTexture);
-            firstPassEffect.Parameters.Set(LambertianPrefilteringSHPass1Keys.OutputBuffer, partialSumBuffer);
+            firstPassEffect.Parameters.SetValueSlow(LambertianPrefilteringSHParameters.BlockSize, FirstPassBlockSize);
+            firstPassEffect.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+            firstPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass1Keys.RadianceMap, inputTexture);
+            firstPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass1Keys.OutputBuffer, partialSumBuffer);
             firstPassEffect.Draw(context);
 
             // Recursively applies the pass2 (sums the coefficients together) as long as needed. Swap input/output buffer at each iteration.
@@ -116,10 +116,10 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
                 // draw pass 2
                 secondPassEffect.ThreadNumbers = new Int3(sumsCount, 1, 1);
                 secondPassEffect.ThreadGroupCounts = new Int3(groupCountX, groupCountY, coefficientsCount);
-                secondPassEffect.Parameters.Set(LambertianPrefilteringSHParameters.BlockSize, sumsCount);
-                secondPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
-                secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.InputBuffer, secondPassInputBuffer);
-                secondPassEffect.Parameters.Set(LambertianPrefilteringSHPass2Keys.OutputBuffer, secondPassOutputBuffer);
+                secondPassEffect.Parameters.SetValueSlow(LambertianPrefilteringSHParameters.BlockSize, sumsCount);
+                secondPassEffect.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+                secondPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass2Keys.InputBuffer, secondPassInputBuffer);
+                secondPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass2Keys.OutputBuffer, secondPassOutputBuffer);
                 secondPassEffect.Draw(context);
 
                 // swap second pass input/output buffers.

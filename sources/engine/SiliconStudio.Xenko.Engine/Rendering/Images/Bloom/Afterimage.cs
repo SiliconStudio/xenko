@@ -103,8 +103,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var accumulationPersistence = NewScopedRenderTarget2D(persistenceTexture.Description);
 
             // For persistence, we combine the current brightness with the one of the previous frames.
-            bloomAfterimageShader.Parameters.Set(BloomAfterimageShaderKeys.FadeOutSpeed, FadeOutSpeed);
-            bloomAfterimageShader.Parameters.Set(BloomAfterimageShaderKeys.Sensitivity, Sensitivity / 100f);
+            bloomAfterimageShader.Parameters.SetValueSlow(BloomAfterimageShaderKeys.FadeOutSpeed, FadeOutSpeed);
+            bloomAfterimageShader.Parameters.SetValueSlow(BloomAfterimageShaderKeys.Sensitivity, Sensitivity / 100f);
             bloomAfterimageShader.SetInput(0, input);
             bloomAfterimageShader.SetInput(1, persistenceTexture);
             bloomAfterimageShader.SetOutput(accumulationPersistence);

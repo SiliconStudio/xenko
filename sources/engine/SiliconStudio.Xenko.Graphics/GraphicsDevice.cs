@@ -32,7 +32,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal HashSet<GraphicsResourceBase> Resources = new HashSet<GraphicsResourceBase>();
 
         internal readonly bool NeedWorkAroundForUpdateSubResource;
-        internal readonly ShaderStageSetup StageStatus = new ShaderStageSetup();
         internal Effect CurrentEffect;
         private readonly bool isDeferred;
         private readonly ParameterCollection parameters = new ParameterCollection();

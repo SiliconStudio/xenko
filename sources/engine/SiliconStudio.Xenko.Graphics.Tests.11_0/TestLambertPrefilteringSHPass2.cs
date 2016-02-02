@@ -69,10 +69,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             pass2.ThreadNumbers = new Int3(NbOfSums, 1, 1);
             pass2.ThreadGroupCounts = new Int3(nbOfGroups.X, nbOfGroups.Y, NbOfCoeffs);
-            pass2.Parameters.Set(LambertianPrefilteringSHParameters.BlockSize, NbOfSums);
-            pass2.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, Order);
-            pass2.Parameters.Set(LambertianPrefilteringSHPass2Keys.InputBuffer, inputBuffer);
-            pass2.Parameters.Set(LambertianPrefilteringSHPass2Keys.OutputBuffer, outputBuffer);
+            pass2.Parameters.SetValueSlow(LambertianPrefilteringSHParameters.BlockSize, NbOfSums);
+            pass2.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, Order);
+            pass2.Parameters.SetResourceSlow(LambertianPrefilteringSHPass2Keys.InputBuffer, inputBuffer);
+            pass2.Parameters.SetResourceSlow(LambertianPrefilteringSHPass2Keys.OutputBuffer, outputBuffer);
             pass2.Draw();
 
             // Get the data out of the final buffer

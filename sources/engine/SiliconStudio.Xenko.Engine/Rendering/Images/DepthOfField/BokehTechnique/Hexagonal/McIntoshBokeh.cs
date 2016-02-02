@@ -95,14 +95,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var outputTexture = GetSafeOutput(0);
 
             var tapNumber = 2 * tapCount - 1;
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
 
             // Blur in one direction
             var blurAngle = Phase;
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var firstBlurTexture = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, originalTexture);
@@ -111,7 +111,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Diagonal blur A
             blurAngle = MathUtil.Pi / 3f + Phase;
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var diagonalBlurA = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, firstBlurTexture);
@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Diagonal blur B
             blurAngle = -MathUtil.Pi / 3f + Phase;
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var diagonalBlurB = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, firstBlurTexture);
@@ -142,14 +142,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var outputTexture = GetSafeOutput(0);
 
             var tapNumber = 2 * tapCount - 1;
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Radius, Radius);
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.TapWeights, tapWeights);
 
             // Blur in one direction
             var blurAngle = Phase;
-            directionalBlurEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
+            directionalBlurEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Direction, new Vector2((float)Math.Cos(blurAngle), (float)Math.Sin(blurAngle)));
 
             var firstBlurTexture = NewScopedRenderTarget2D(originalTexture.Description);
             directionalBlurEffect.SetInput(0, originalTexture);
@@ -161,14 +161,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var diagonalBlurAngleB = -MathUtil.Pi / 3f + Phase;
             optimizedEffect.SetInput(0, firstBlurTexture);
             optimizedEffect.SetOutput(outputTexture);
-            optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.Count, tapCount);
-            optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
-            optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius.ComposeWith("directionalBlurA"), Radius);
-            optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction.ComposeWith("directionalBlurA"), new Vector2((float)Math.Cos(diagonalBlurAngleA), (float)Math.Sin(diagonalBlurAngleA)));
-            optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights.ComposeWith("directionalBlurA"), tapWeights);
-            optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Radius.ComposeWith("directionalBlurB"), Radius);
-            optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.Direction.ComposeWith("directionalBlurB"), new Vector2((float)Math.Cos(diagonalBlurAngleB), (float)Math.Sin(diagonalBlurAngleB)));
-            optimizedEffect.Parameters.Set(DepthAwareDirectionalBlurUtilKeys.TapWeights.ComposeWith("directionalBlurB"), tapWeights);
+            optimizedEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurKeys.Count, tapCount);
+            optimizedEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurKeys.TotalTap, tapNumber);
+            optimizedEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Radius.ComposeWith("directionalBlurA"), Radius);
+            optimizedEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Direction.ComposeWith("directionalBlurA"), new Vector2((float)Math.Cos(diagonalBlurAngleA), (float)Math.Sin(diagonalBlurAngleA)));
+            optimizedEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.TapWeights.ComposeWith("directionalBlurA"), tapWeights);
+            optimizedEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Radius.ComposeWith("directionalBlurB"), Radius);
+            optimizedEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.Direction.ComposeWith("directionalBlurB"), new Vector2((float)Math.Cos(diagonalBlurAngleB), (float)Math.Sin(diagonalBlurAngleB)));
+            optimizedEffect.Parameters.SetValueSlow(DepthAwareDirectionalBlurUtilKeys.TapWeights.ComposeWith("directionalBlurB"), tapWeights);
             optimizedEffect.Draw(context, "McIntoshBokehPass2_BlurABCombine_tap{0}_radius{1}", tapNumber, (int)Radius);
         }
 

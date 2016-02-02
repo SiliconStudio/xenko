@@ -49,7 +49,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 return;
 
             // Copy camera/pass parameters
-            context.Parameters.CopySharedTo(skyboxEffect.Parameters);
+            throw new NotImplementedException();
+            //context.Parameters.CopySharedTo(skyboxEffect.Parameters);
 
             // Show irradiance in the background
             throw new NotImplementedException();
@@ -101,10 +102,10 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 var skybox = (SkyboxComponent)renderItems[i].DrawContext;
 
                 // Setup the intensity
-                skyboxEffect.Parameters.Set(SkyboxKeys.Intensity, skybox.Intensity);
+                skyboxEffect.Parameters.SetValueSlow(SkyboxKeys.Intensity, skybox.Intensity);
 
                 // Setup the rotation
-                skyboxEffect.Parameters.Set(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transform.Rotation));
+                skyboxEffect.Parameters.SetValueSlow(SkyboxKeys.SkyMatrix, Matrix.RotationQuaternion(skybox.Entity.Transform.Rotation));
 
                 skyboxEffect.SetOutput(CurrentRenderFrame.RenderTargets);
                 skyboxEffect.SetViewport(viewport);

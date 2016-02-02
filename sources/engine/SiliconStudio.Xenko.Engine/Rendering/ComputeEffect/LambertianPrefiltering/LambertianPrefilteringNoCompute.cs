@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             {
                 harmonicalOrder = Math.Max(1, Math.Min(5, value));
 
-                firstPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+                firstPassEffect.EffectInstance.SetPermutationValue(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
             }
         }
 
@@ -66,8 +66,8 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             var faceCount = inputTexture.Dimension == TextureDimension.TextureCube ? 6 : 1;
             var coefficientsCount = harmonicalOrder * harmonicalOrder;
 
-            firstPassEffect.Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
-            firstPassEffect.Parameters.Set(LambertianPrefilteringSHNoComputePass1Keys.RadianceMap, inputTexture);
+            firstPassEffect.EffectInstance.SetPermutationValue(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+            firstPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHNoComputePass1Keys.RadianceMap, inputTexture);
 
             // Create a tree of power-of-two textures for summing up coefficients
             var intermediateSize = new Int2(MathUtil.NextPowerOfTwo(inputTexture.Width), MathUtil.NextPowerOfTwo(inputTexture.Height));
@@ -94,8 +94,8 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             for (var c = 0; c < coefficientsCount; c++)
             {
                 // Project the radiance on the SH basis and sum up the results for all faces
-                firstPassEffect.Parameters.Set(LambertianPrefilteringSHNoComputePass1Keys.CoefficientIndex, c);
-                firstPassEffect.Parameters.Set(LambertianPrefilteringSHNoComputePass1Keys.RadianceMap, RadianceMap);
+                firstPassEffect.Parameters.SetValueSlow(LambertianPrefilteringSHNoComputePass1Keys.CoefficientIndex, c);
+                firstPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHNoComputePass1Keys.RadianceMap, RadianceMap);
                 firstPassEffect.SetOutput(intermediateTextures[0]);
                 firstPassEffect.Draw(context);
 

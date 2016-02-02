@@ -374,14 +374,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             coclinearDepthMapEffect.SetInput(0, originalDepthBuffer);
             coclinearDepthMapEffect.SetOutput(cocLinearDepthTexture);
-            coclinearDepthMapEffect.Parameters.Set(CircleOfConfusionKeys.depthAreas, depthAreas);
+            coclinearDepthMapEffect.Parameters.SetValueSlow(CircleOfConfusionKeys.depthAreas, depthAreas);
             coclinearDepthMapEffect.Draw(context, "CoC_LinearDepth");
 
             if (AutoFocus)
             {
                 // Reads the center depth of the previous frame and use it as a new target
                 // TODO single pixel is really small, average some disk area instead?
-                pointDepthShader.Parameters.Set(PointDepthKeys.Coordinate, new Vector2(0.5f, 0.5f));
+                pointDepthShader.Parameters.SetValueSlow(PointDepthKeys.Coordinate, new Vector2(0.5f, 0.5f));
                 pointDepthShader.SetInput(cocLinearDepthTexture);
                 pointDepthShader.SetOutput(depthCenter1x1);
                 pointDepthShader.Draw("Center Depth");
@@ -424,12 +424,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Creates all the levels with different CoC strengths.
             // (Skips level with CoC 0 which is always the original buffer.)
-            combineLevelsEffect.Parameters.Set(CombineLevelsFromCoCKeys.LevelCount, cocLevels.Count);
+            combineLevelsEffect.Parameters.SetValueSlow(CombineLevelsFromCoCKeys.LevelCount, cocLevels.Count);
             combineLevelsEffect.SetInput(0, cocLinearDepthTexture);
             combineLevelsEffect.SetInput(1, blurredCoCTexture);
             combineLevelsEffect.SetInput(2, originalColorBuffer);
 
-            combineLevelsFrontEffect.Parameters.Set(CombineLevelsFromCoCKeys.LevelCount, cocLevels.Count);
+            combineLevelsFrontEffect.Parameters.SetValueSlow(CombineLevelsFromCoCKeys.LevelCount, cocLevels.Count);
             combineLevelsFrontEffect.SetInput(0, cocLinearDepthTexture);
             combineLevelsFrontEffect.SetInput(1, blurredCoCTexture);
             combineLevelsFrontEffect.SetInput(2, originalColorBuffer);
@@ -455,8 +455,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 // Pre-process the layer for the current CoC
                 // This removes areas which might wrongly bleed into our image when blurring. 
                 var alphaTextureToBlur = NewScopedRenderTarget2D(textureToBlur.Description);
-                thresholdAlphaCoC.Parameters.Set(ThresholdAlphaCoCKeys.CoCReference, previousCoC);
-                thresholdAlphaCoC.Parameters.Set(ThresholdAlphaCoCKeys.CoCCurrent, levelConfig.CoCValue);
+                thresholdAlphaCoC.Parameters.SetValueSlow(ThresholdAlphaCoCKeys.CoCReference, previousCoC);
+                thresholdAlphaCoC.Parameters.SetValueSlow(ThresholdAlphaCoCKeys.CoCCurrent, levelConfig.CoCValue);
                 thresholdAlphaCoC.SetInput(0, textureToBlur);
                 thresholdAlphaCoC.SetInput(1, cocLinearDepthTexture);
                 thresholdAlphaCoC.SetOutput(alphaTextureToBlur);
@@ -479,8 +479,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 //---------------------------------
 
                 // Negates CoC values and makes background objects transparent
-                thresholdAlphaCoCFront.Parameters.Set(ThresholdAlphaCoCFrontKeys.CoCReference, previousCoC);
-                thresholdAlphaCoCFront.Parameters.Set(ThresholdAlphaCoCFrontKeys.CoCCurrent, levelConfig.CoCValue);
+                thresholdAlphaCoCFront.Parameters.SetValueSlow(ThresholdAlphaCoCFrontKeys.CoCReference, previousCoC);
+                thresholdAlphaCoCFront.Parameters.SetValueSlow(ThresholdAlphaCoCFrontKeys.CoCCurrent, levelConfig.CoCValue);
                 thresholdAlphaCoCFront.SetInput(0, downscaledSources[levelConfig.downscaleFactor]);
                 thresholdAlphaCoCFront.SetInput(1, cocLinearDepthTexture);
                 thresholdAlphaCoCFront.SetOutput(alphaTextureToBlur);
@@ -498,7 +498,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // Far out-of-focus: each pixel, depending on its CoC, interpolates its color from 
             // the original color buffer and blurred buffer(s). 
-            combineLevelsEffect.Parameters.Set(CombineLevelsFromCoCShaderKeys.CoCLevelValues, combineShaderCocLevelValues);
+            combineLevelsEffect.Parameters.SetValueSlow(CombineLevelsFromCoCShaderKeys.CoCLevelValues, combineShaderCocLevelValues);
             combineLevelsEffect.SetOutput(outputTexture);
             combineLevelsEffect.Draw(context, "CoCLevelCombineInterpolation");
 

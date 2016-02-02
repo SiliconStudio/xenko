@@ -20,7 +20,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         public static readonly ParameterKey<Vector2> Direction = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<float> Radius = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float[]> TapWeights = ParameterKeys.New<float[]>();
+        public static readonly ParameterKey<float> TapWeights = ParameterKeys.New<float>();
         public static readonly ParameterKey<float> CoCReference = ParameterKeys.New<float>();
     }
 }

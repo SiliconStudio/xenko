@@ -138,18 +138,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var flareRenderTargetInitial = NewScopedRenderTarget2D(halfSizeRenderTarget.Description);
             var flareRenderTarget = NewScopedRenderTarget2D(halfSizeRenderTarget.Description);
 
-            flareArtifactEffect.Parameters.Set(FlareArtifactKeys.Count, ZoomOffsetsDistortions.Length);
-            flareArtifactEffect.Parameters.Set(FlareArtifactShaderKeys.ZoomOffsetsDistortions, ZoomOffsetsDistortions);
-            flareArtifactEffect.Parameters.Set(FlareArtifactShaderKeys.AberrationStrength, ColorAberrationStrength);
-            flareArtifactEffect.Parameters.Set(FlareArtifactShaderKeys.ColorAberrations, ColorAberrations);
-            flareArtifactEffect.Parameters.Set(FlareArtifactShaderKeys.Amount, Amount * 0.0005f);
+            flareArtifactEffect.Parameters.SetValueSlow(FlareArtifactKeys.Count, ZoomOffsetsDistortions.Length);
+            flareArtifactEffect.Parameters.SetValueSlow(FlareArtifactShaderKeys.ZoomOffsetsDistortions, ZoomOffsetsDistortions);
+            flareArtifactEffect.Parameters.SetValueSlow(FlareArtifactShaderKeys.AberrationStrength, ColorAberrationStrength);
+            flareArtifactEffect.Parameters.SetValueSlow(FlareArtifactShaderKeys.ColorAberrations, ColorAberrations);
+            flareArtifactEffect.Parameters.SetValueSlow(FlareArtifactShaderKeys.Amount, Amount * 0.0005f);
             flareArtifactEffect.SetInput(0, blurredBright);
             flareArtifactEffect.SetOutput(flareRenderTargetInitial);
             flareArtifactEffect.Draw(contextParameters);
             
             // Replicates the artifacts around
-            flareReplicateEffect.Parameters.Set(FlareReplicateKeys.Amount, Amount * 0.0005f);
-            flareReplicateEffect.Parameters.Set(FlareReplicateKeys.HaloFactor, Amount * 0.0005f * HaloFactor);
+            flareReplicateEffect.Parameters.SetValueSlow(FlareReplicateKeys.Amount, Amount * 0.0005f);
+            flareReplicateEffect.Parameters.SetValueSlow(FlareReplicateKeys.HaloFactor, Amount * 0.0005f * HaloFactor);
             flareReplicateEffect.SetInput(0,flareRenderTargetInitial);
             flareReplicateEffect.SetInput(1, blurredBright);
             flareReplicateEffect.SetOutput(flareRenderTarget);
