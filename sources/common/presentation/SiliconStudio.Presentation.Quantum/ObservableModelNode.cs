@@ -153,9 +153,6 @@ namespace SiliconStudio.Presentation.Quantum
         // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
         //public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
 
-        // TODO: would be better to put the override info in an associated data or in a specialized derived class.
-        public OverrideType Override => (SourceNode.Content as OverridableMemberContent)?.GetContentOverride(Index) ?? OverrideType.Base;
-
         internal Guid ModelGuid => SourceNode.Guid;
    
         /// <summary>
@@ -442,7 +439,6 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 ((ObservableNode)Parent)?.NotifyPropertyChanging(Name);
                 OnPropertyChanging(nameof(TypedValue));
-                OnPropertyChanging(nameof(Override));
             }
         }
 
@@ -459,7 +455,6 @@ namespace SiliconStudio.Presentation.Quantum
                     Refresh();
                 }
 
-                OnPropertyChanged(nameof(Override));
                 OnPropertyChanged(nameof(TypedValue));
                 OnValueChanged();
                 Owner.NotifyNodeChanged(Path);
