@@ -128,6 +128,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
                 ((ILightShadowMapRenderer)shadowMapTexture.Value.Renderer).Extract(RenderSystem.RenderContextOld, this, shadowMapTexture.Value);
                 for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.Value.CascadeCount; cascadeIndex++)
                 {
+                    // TODO GRAPHICS REFACTOR reuse views
                     var shadowRenderView = new ShadowMapRenderView
                     {
                         RenderStages = { shadowmapRenderStage },
