@@ -187,7 +187,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (RenderSystem.RenderContextOld.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
                     && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
                 {
-                    shadowMapRenderer = new ShadowMapRenderer("TestEffect");
+                    shadowMapRenderer = new ShadowMapRenderer(RenderSystem);
                     shadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
                     shadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
                 }
@@ -199,8 +199,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             CollectVisibleLights();
 
             // Draw shadow maps
-            if (shadowMapRenderer != null)
-                shadowMapRenderer.Draw(RenderSystem.RenderContextOld, visibleLightsWithShadows);
+            shadowMapRenderer?.Extract(RenderSystem.RenderContextOld, visibleLightsWithShadows);
 
             // Cleanup previous shadow render views
             foreach (var renderView in shadowRenderViews)
