@@ -21,7 +21,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         void SetShadowMapShaderData(int index, ILightShadowMapShaderData shaderData);
 
-        void ApplyParameters(ParameterCollection parameters);
+        void ApplyParameters(NextGenParameterCollection parameters);
     }
 
     [Flags]

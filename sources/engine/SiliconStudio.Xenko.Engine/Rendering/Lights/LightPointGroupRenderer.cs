@@ -106,12 +106,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 invSquareRadius[Count] = pointLight.InvSquareRadius;
             }
 
-            protected override void ApplyParametersInternal(ParameterCollection parameters)
+            protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
             {
-                parameters.Set(countKey, Count);
-                parameters.Set(colorsKey, lightColors);
-                parameters.Set(positionsKey, lightPositions);
-                parameters.Set(invSquareRadiusKey, invSquareRadius);
+                //parameters.Set(countKey, Count);
+                //parameters.Set(colorsKey, lightColors);
+                //parameters.Set(positionsKey, lightPositions);
+                //parameters.Set(invSquareRadiusKey, invSquareRadius);
             }
         }
     }

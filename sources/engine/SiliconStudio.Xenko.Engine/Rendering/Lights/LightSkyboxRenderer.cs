@@ -133,26 +133,26 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 previousSkybox = skybox;
             }
 
-            protected override void ApplyParametersInternal(ParameterCollection parameters)
+            protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
             {
-                // global parameters
-                parameters.Set(intensityKey, intensity);
-                parameters.Set(skyMatrixKey, rotationMatrix);
+                //// global parameters
+                //parameters.Set(intensityKey, intensity);
+                //parameters.Set(skyMatrixKey, rotationMatrix);
 
-                if (!ReferenceEquals(parameters.Get(lightDiffuseColorKey), lightDiffuseColorShader))
-                {
-                    parameters.Set(lightDiffuseColorKey, lightDiffuseColorShader);
-                }
-                if (!ReferenceEquals(parameters.Get(lightSpecularColorKey), lightSpecularColorShader))
-                {
-                    parameters.Set(lightSpecularColorKey, lightSpecularColorShader);
-                }
+                //if (!ReferenceEquals(parameters.Get(lightDiffuseColorKey), lightDiffuseColorShader))
+                //{
+                //    parameters.Set(lightDiffuseColorKey, lightDiffuseColorShader);
+                //}
+                //if (!ReferenceEquals(parameters.Get(lightSpecularColorKey), lightSpecularColorShader))
+                //{
+                //    parameters.Set(lightSpecularColorKey, lightSpecularColorShader);
+                //}
 
-                throw new NotImplementedException();
-                // This need to be working with new system
-                //parameters.Set(sphericalColorsKey, sphericalColors);
-                parameters.Set(specularCubeMapkey, specularCubemap);
-                parameters.Set(specularMipCountKey, specularCubemapLevels);
+                //throw new NotImplementedException();
+                //// This need to be working with new system
+                ////parameters.Set(sphericalColorsKey, sphericalColors);
+                //parameters.Set(specularCubeMapkey, specularCubemap);
+                //parameters.Set(specularMipCountKey, specularCubemapLevels);
             }
         }
     }
