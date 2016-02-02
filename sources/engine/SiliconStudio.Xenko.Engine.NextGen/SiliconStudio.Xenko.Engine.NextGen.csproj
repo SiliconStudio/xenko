@@ -218,6 +218,12 @@
     <Compile Include="Rendering\EffectValidator.cs" />
     <Compile Include="Engine.NextGen\Module.cs" />
     <Compile Include="Engine.NextGen\RenderArchitectureApp.cs" />
+    <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\LightShadowMapRendererBase.cs" />
+    <Compile Include="Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Shadows\ShadowMapRenderView.cs" />
     <Compile Include="Rendering\Skyboxes\RenderSkybox.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxProcessor.cs" />
     <Compile Include="Rendering\Skyboxes\SkyboxRenderFeature.cs" />
