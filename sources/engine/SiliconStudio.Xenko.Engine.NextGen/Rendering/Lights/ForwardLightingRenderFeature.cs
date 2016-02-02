@@ -206,7 +206,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(NextGenRenderSystem RenderSystem)
+        public override void PrepareEffectPermutations()
         {
             // TODO: Old code is working with RenderModel, but we should probably directly work with RenderMesh
             foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)

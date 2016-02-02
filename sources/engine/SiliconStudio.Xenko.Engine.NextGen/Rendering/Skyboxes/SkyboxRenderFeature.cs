@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
             }
 
-            transformRenderFeature.PrepareEffectPermutations(RenderSystem);
+            transformRenderFeature.PrepareEffectPermutations();
         }
 
         public override void Prepare()

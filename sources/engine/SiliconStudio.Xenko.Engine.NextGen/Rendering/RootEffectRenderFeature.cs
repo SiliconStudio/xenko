@@ -195,9 +195,9 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(NextGenRenderSystem RenderSystem)
+        public override void PrepareEffectPermutations()
         {
-            base.PrepareEffectPermutations(RenderSystem);
+            base.PrepareEffectPermutations();
 
             // TODO: Temporary until we have a better system for handling permutations
             var renderEffects = GetData(RenderEffectKey);

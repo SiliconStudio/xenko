@@ -27,8 +27,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Perform effect permutations, before <see cref="Prepare"/>.
         /// </summary>
-        /// <param name="renderSystem"></param>
-        public virtual void PrepareEffectPermutations(NextGenRenderSystem renderSystem)
+        public virtual void PrepareEffectPermutations()
         {
         }
 
