@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             foreach (var renderFeature in RenderFeatures)
             {
-                renderFeature.PrepareEffectPermutations(RenderSystem);
+                renderFeature.PrepareEffectPermutations();
             }
         }
 
