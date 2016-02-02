@@ -320,12 +320,6 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.Param.KeyName, binding.Param.Class, binding.Param.Type));
             }
 
-            if (binding.Count > 1)
-            {
-                // Unspecified array length: guess from shader and set default parameter with array matching shader size
-                binding.Param.Key = binding.Param.Key.CloneLength(binding.Count);
-            }
-
             return binding.Param.Key;
         }
 

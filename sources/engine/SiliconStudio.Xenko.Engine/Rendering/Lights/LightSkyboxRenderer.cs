@@ -135,10 +135,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
             {
-                //// global parameters
-                //parameters.Set(intensityKey, intensity);
-                //parameters.Set(skyMatrixKey, rotationMatrix);
+                // global parameters
+                parameters.SetValueSlow(intensityKey, intensity);
+                parameters.SetValueSlow(skyMatrixKey, rotationMatrix);
 
+                // TODO GRAPHICS REFACTOR belongs in permutation generation
                 //if (!ReferenceEquals(parameters.Get(lightDiffuseColorKey), lightDiffuseColorShader))
                 //{
                 //    parameters.Set(lightDiffuseColorKey, lightDiffuseColorShader);
@@ -148,11 +149,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 //    parameters.Set(lightSpecularColorKey, lightSpecularColorShader);
                 //}
 
-                //throw new NotImplementedException();
-                //// This need to be working with new system
-                ////parameters.Set(sphericalColorsKey, sphericalColors);
-                //parameters.Set(specularCubeMapkey, specularCubemap);
-                //parameters.Set(specularMipCountKey, specularCubemapLevels);
+                throw new NotImplementedException();
+                // This need to be working with new system
+                //parameters.Set(sphericalColorsKey, sphericalColors);
+                parameters.SetResourceSlow(specularCubeMapkey, specularCubemap);
+                parameters.SetValueSlow(specularMipCountKey, specularCubemapLevels);
             }
         }
     }
