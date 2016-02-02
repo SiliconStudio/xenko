@@ -6,6 +6,7 @@ Source: ../../../data/tests/AtriumNight.dds
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Format: AsIs
 ~Base:
+    ~Id: 50b7d055-6828-471f-bc42-edd60ceba843
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

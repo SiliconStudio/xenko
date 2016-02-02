@@ -29,27 +29,27 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 propertyName = binder.Name.Substring(ObservableViewModel.HasChildPrefix.Length);
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(ObservableNode).GetMethod("GetChild", BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(ObservableNode).GetMethod(nameof(ObservableNode.GetChild), BindingFlags.Public | BindingFlags.Instance), args);
                 expression = Expression.Convert(Expression.NotEqual(expression, Expression.Constant(null)), binder.ReturnType);
             }
             else if (binder.Name.StartsWith(ObservableViewModel.HasCommandPrefix))
             {
                 propertyName = binder.Name.Substring(ObservableViewModel.HasCommandPrefix.Length);
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(ObservableNode).GetMethod("GetCommand", BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(ObservableNode).GetMethod(nameof(ObservableNode.GetCommand), BindingFlags.Public | BindingFlags.Instance), args);
                 expression = Expression.Convert(Expression.NotEqual(expression, Expression.Constant(null)), binder.ReturnType);
             }
             else if (binder.Name.StartsWith(ObservableViewModel.HasAssociatedDataPrefix))
             {
                 propertyName = binder.Name.Substring(ObservableViewModel.HasAssociatedDataPrefix.Length);
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(ObservableNode).GetMethod("GetAssociatedData", BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(ObservableNode).GetMethod(nameof(ObservableNode.GetAssociatedData), BindingFlags.Public | BindingFlags.Instance), args);
                 expression = Expression.Convert(Expression.NotEqual(expression, Expression.Constant(null)), binder.ReturnType);
             }
             else
             {
                 args[0] = Expression.Constant(propertyName);
-                expression = Expression.Call(self, typeof(ObservableNode).GetMethod("GetDynamicObject", BindingFlags.Public | BindingFlags.Instance), args);
+                expression = Expression.Call(self, typeof(ObservableNode).GetMethod(nameof(ObservableNode.GetDynamicObject), BindingFlags.Public | BindingFlags.Instance), args);
             }
 
             var getMember = new DynamicMetaObject(expression, BindingRestrictions.GetTypeRestriction(Expression, LimitType));

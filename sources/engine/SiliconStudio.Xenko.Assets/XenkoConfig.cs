@@ -203,7 +203,6 @@ namespace SiliconStudio.Xenko.Assets
                 Type = PlatformType.Android,
                 IsAvailable = IsFileInProgramFilesx86Exist(XamarinAndroidBuild)
             };
-            androidPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_MONO");
             androidPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_MONO_MOBILE");
             androidPlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_ANDROID");
             androidPlatform.Configurations.Add(new SolutionConfiguration("Testing"));
@@ -231,7 +230,6 @@ namespace SiliconStudio.Xenko.Assets
                 IsAvailable = IsFileInProgramFilesx86Exist(XamariniOSBuild)
             };
             iphonePlatform.PlatformsPart.Add(new SolutionPlatformPart("iPhoneSimulator"));
-            iphonePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_MONO");
             iphonePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_MONO_MOBILE");
             iphonePlatform.DefineConstants.Add("SILICONSTUDIO_PLATFORM_IOS");
             iphonePlatform.Configurations.Add(new SolutionConfiguration("Testing"));

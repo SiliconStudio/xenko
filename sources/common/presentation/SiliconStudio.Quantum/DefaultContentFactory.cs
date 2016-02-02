@@ -1,6 +1,5 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-using System.Collections.Generic;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -30,7 +29,8 @@ namespace SiliconStudio.Quantum
         public virtual IContent CreateMemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, object value, bool shouldProcessReference)
         {
             var reference = nodeBuilder.CreateReferenceForNode(member.Type, value);
-            return new MemberContent(nodeBuilder, container, member, isPrimitive, reference)
+            // TODO: OverridableMemberContent should not be in the DefaultContentFactory but in an asset-specific factory.
+            return new OverridableMemberContent(nodeBuilder, container, member, isPrimitive, reference)
             {
                 ShouldProcessReference = shouldProcessReference
             };

@@ -1,7 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using SharpYaml.Events;
@@ -26,8 +25,8 @@ namespace SiliconStudio.Core.Settings
         /// <param name="name">The name associated to this <see cref="SettingsEntry"/>.</param>
         protected SettingsEntry(SettingsProfile profile, UFile name)
         {
-            if (profile == null) throw new ArgumentNullException("profile");
-            if (name == null) throw new ArgumentNullException("name");
+            if (profile == null) throw new ArgumentNullException(nameof(profile));
+            if (name == null) throw new ArgumentNullException(nameof(name));
             Profile = profile;
             Name = name;
         }
@@ -35,7 +34,7 @@ namespace SiliconStudio.Core.Settings
         /// <summary>
         /// Gets the name of this <see cref="SettingsEntry"/>.
         /// </summary>
-        internal UFile Name { get; private set; }
+        internal UFile Name { get; }
 
         /// <summary>
         /// Gets or sets the value of this <see cref="SettingsEntry"/>.
@@ -51,8 +50,8 @@ namespace SiliconStudio.Core.Settings
         /// <returns>A new instance of a <see cref="SettingsEntry"/> class.</returns>
         internal static SettingsEntry CreateFromValue(SettingsProfile profile, UFile name, object value)
         {
-            if (profile == null) throw new ArgumentNullException("profile");
-            if (name == null) throw new ArgumentNullException("name");
+            if (profile == null) throw new ArgumentNullException(nameof(profile));
+            if (name == null) throw new ArgumentNullException(nameof(name));
             return new SettingsEntryValue(profile, name, value);
         }
 
@@ -68,7 +67,7 @@ namespace SiliconStudio.Core.Settings
             bool changed = !Equals(oldValue, newValue);
             if (changed && ShouldNotify && !Profile.IsDiscarding)
             {
-                var actionItem = new PropertyChangedActionItem("Value", this, oldValue, true);
+                var actionItem = new PropertyChangedActionItem("Changed value", "Value", this, oldValue, Enumerable.Empty<IDirtiable>(), true);
                 Profile.ActionStack.Add(actionItem);
                 Profile.NotifyEntryChanged(Name);
             }

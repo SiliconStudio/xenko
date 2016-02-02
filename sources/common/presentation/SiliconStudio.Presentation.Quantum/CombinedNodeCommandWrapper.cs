@@ -3,8 +3,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
+using System.Threading.Tasks;
 using SiliconStudio.ActionStack;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Presentation.ViewModel;
 using SiliconStudio.Quantum;
 
@@ -13,82 +14,28 @@ namespace SiliconStudio.Presentation.Quantum
     public class CombinedNodeCommandWrapper : NodeCommandWrapperBase
     {
         private readonly IReadOnlyCollection<ModelNodeCommandWrapper> commands;
-        private readonly IViewModelServiceProvider serviceProvider;
-        private readonly string name;
-        private readonly ObservableViewModelService service;
-        private readonly ObservableViewModelIdentifier identifier;
 
-        public CombinedNodeCommandWrapper(IViewModelServiceProvider serviceProvider, string name, string observableNodePath, ObservableViewModelIdentifier identifier, IReadOnlyCollection<ModelNodeCommandWrapper> commands)
-            : base(serviceProvider, null)
+        public CombinedNodeCommandWrapper(IViewModelServiceProvider serviceProvider, string name, IReadOnlyCollection<ModelNodeCommandWrapper> commands)
+            : base(serviceProvider, new HashSet<IDirtiable>(commands.SafeArgument(nameof(commands)).SelectMany(x => x.Dirtiables)))
         {
-            if (commands == null) throw new ArgumentNullException("commands");
-            if (commands.Count == 0) throw new ArgumentException(@"The collection of commands to combine is empty", "commands");
-            if (commands.Any(x => !ReferenceEquals(x.NodeCommand, commands.First().NodeCommand))) throw new ArgumentException(@"The collection of commands to combine cannot contain different node commands", "commands");
-            service = serviceProvider.Get<ObservableViewModelService>();
+            if (commands == null) throw new ArgumentNullException(nameof(commands));
+            if (commands.Count == 0) throw new ArgumentException(@"The collection of commands to combine is empty", nameof(commands));
+            if (commands.Any(x => !ReferenceEquals(x.NodeCommand, commands.First().NodeCommand))) throw new ArgumentException(@"The collection of commands to combine cannot contain different node commands", nameof(commands));
             this.commands = commands;
-            this.name = name;
-            this.identifier = identifier;
-            this.serviceProvider = serviceProvider;
-            ObservableNodePath = observableNodePath;
+            Name = name;
         }
 
-        public override string Name { get { return name; } }
+        public override string Name { get; }
 
-        public override CombineMode CombineMode { get { return CombineMode.DoNotCombine; } }
+        public override CombineMode CombineMode => CombineMode.DoNotCombine;
 
-        private ITransactionalActionStack ActionStack { get { return serviceProvider.Get<ITransactionalActionStack>(); } }
-        
-        public override void Execute(object parameter)
+        public override async Task Invoke(object parameter)
         {
-            ActionStack.BeginTransaction();
-            Redo(parameter, true);
-            var displayName = "Executing " + Name;
-
-            var node = (CombinedObservableNode)service.ResolveObservableNode(identifier, ObservableNodePath);
-            // TODO: this need to be verified but I suppose node is never null
-            ActionStack.EndTransaction(displayName, x => new CombinedValueChangedActionItem(displayName, service, node.Path, identifier, x));
-        }
-
-        protected override UndoToken Redo(object parameter, bool creatingActionItem)
-        {
-            var undoTokens = new Dictionary<ModelNodeCommandWrapper, UndoToken>();
-            bool canUndo = false;
-
+            ActionStack?.BeginTransaction();
             commands.First().NodeCommand.StartCombinedInvoke();
-
-            foreach (var command in commands)
-            {
-                var undoToken = command.ExecuteCommand(parameter, creatingActionItem);
-                undoTokens.Add(command, undoToken);
-                canUndo = canUndo || undoToken.CanUndo;
-            }
-
+            await Task.WhenAll(commands.Select(x => x.Invoke(parameter)));
             commands.First().NodeCommand.EndCombinedInvoke();
-
-            Refresh();
-            return new UndoToken(canUndo, undoTokens);
-        }
-
-        protected override void Undo(object parameter, UndoToken token)
-        {
-            var undoTokens = (Dictionary<ModelNodeCommandWrapper, UndoToken>)token.TokenValue;
-            foreach (var command in commands)
-            {
-                command.UndoCommand(parameter, undoTokens[command]);
-            }
-            Refresh();
-        }
-
-        private void Refresh()
-        {
-            var observableNode = service.ResolveObservableNode(identifier, ObservableNodePath) as CombinedObservableNode;
-
-            // Recreate observable nodes to apply changes
-            if (observableNode != null)
-            {
-                observableNode.Refresh();
-                observableNode.Owner.NotifyNodeChanged(observableNode.Path);
-            }
+            ActionStack?.EndTransaction($"Executed {Name}");
         }
     }
 }

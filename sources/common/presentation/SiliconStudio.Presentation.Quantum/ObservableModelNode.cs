@@ -2,11 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
 using System.Linq;
-
 using SiliconStudio.Core;
 using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Reflection;
-using SiliconStudio.Presentation.ViewModel.ActionStack;
 using SiliconStudio.Quantum;
 using SiliconStudio.Quantum.Contents;
 using SiliconStudio.Quantum.References;
@@ -15,10 +13,9 @@ namespace SiliconStudio.Presentation.Quantum
 {
     public abstract class ObservableModelNode : SingleObservableNode
     {
+        public readonly IGraphNode SourceNode;
+        protected readonly GraphNodePath SourceNodePath;
         private readonly bool isPrimitive;
-        protected readonly IModelNode SourceNode;
-        protected readonly ModelNodePath SourceNodePath;
-        private IModelNode targetNode;
         private bool isInitialized;
         private int? customOrder;
 
@@ -34,9 +31,9 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
         /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
-        /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
+        /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
-        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, object index = null)
+        protected ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, object index = null)
             : base(ownerViewModel, baseName, index)
         {
             if (modelNode == null) throw new ArgumentNullException(nameof(modelNode));
@@ -47,8 +44,7 @@ namespace SiliconStudio.Presentation.Quantum
             SourceNode = modelNode;
             // By default we will always combine items of list of primitive items.
             CombineMode = index != null && isPrimitive ? CombineMode.AlwaysCombine : CombineMode.CombineOnlyForAll;
-            targetNode = GetTargetNode(modelNode, index);
-            SourceNodePath = modelNodePath;
+            SourceNodePath = graphNodePath;
 
             // Override display name if available
             var memberDescriptor = GetMemberDescriptor() as MemberDescriptorBase;
@@ -73,52 +69,62 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
         /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
-        /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given node.</param>
+        /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given node.</param>
         /// <param name="contentType">The type of content contained by the new <see cref="ObservableModelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
         /// <returns>A new instance of <see cref="ObservableModelNode{T}"/> instanced with the given content type as generic argument.</returns>
-        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, Type contentType, object index)
+        internal static ObservableModelNode Create(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, Type contentType, object index)
         {
-            var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, modelNode, modelNodePath, index);
+            var node = (ObservableModelNode)Activator.CreateInstance(typeof(ObservableModelNode<>).MakeGenericType(contentType), ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index);
             return node;
         }
 
         internal protected virtual void Initialize()
         {
+            var targetNode = GetTargetNode(SourceNode, Index);
             var targetNodePath = SourceNodePath.GetChildPath(SourceNode, targetNode);
             if (targetNodePath == null || !targetNodePath.IsValid)
                 throw new InvalidOperationException("Unable to retrieve the path of the given model node.");
 
-            if (!targetNode.Content.ShouldProcessReference && Index != null)
+            var commandPath = targetNodePath;
+            if ((!SourceNode.Content.ShouldProcessReference || targetNode == SourceNode || targetNode == null) && Index != null)
             {
-                // When the references are not processed, there is no actual target node.
+                // When the references are not processed or when the value is null, there is no actual target node.
                 // However, the commands need the index to be able to properly set the modified value
-                targetNodePath = targetNodePath.PushElement(Index, ModelNodePath.ElementType.Index);
+                commandPath = targetNodePath.PushElement(Index, GraphNodePath.ElementType.Index);
             }
 
-            foreach (var command in targetNode.Commands)
+            if (targetNode != SourceNode && targetNode != null)
             {
-                var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, Path, Owner, targetNodePath, Owner.Dirtiables);
-                AddCommand(commandWrapper);
+                foreach (var command in targetNode.Commands)
+                {
+                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, commandPath, Owner.Dirtiables);
+                    AddCommand(commandWrapper);
+                }
             }
 
-            if (!isPrimitive)
+            var targetCommandNames = Commands.Select(x => x.Name).ToList();
+            foreach (var command in SourceNode.Commands)
+            {
+                // Add source commands that are not already provided by the target node
+                if (!targetCommandNames.Contains(command.Name))
+                {
+                    var commandWrapper = new ModelNodeCommandWrapper(ServiceProvider, command, commandPath, Owner.Dirtiables);
+                    AddCommand(commandWrapper);
+                }
+            }
+
+            if (!isPrimitive && targetNode != null)
+            {
                 GenerateChildren(targetNode, targetNodePath);
+            }
 
             isInitialized = true;
 
-            if (Owner.ObservableViewModelService != null)
-            {
-                foreach (var key in AssociatedData.Keys.ToList())
-                {
-                    RemoveAssociatedData(key);
-                }
-
-                Owner.ObservableViewModelService.NotifyNodeInitialized(this);
-            }
+            Owner.ObservableViewModelService?.NotifyNodeInitialized(this);
 
             FinalizeChildrenInitialization();
-            
+
             CheckDynamicMemberConsistency();
         }
 
@@ -128,31 +134,36 @@ namespace SiliconStudio.Presentation.Quantum
         /// <summary>
         /// Gets or sets a custom value for the <see cref="Order"/> of this node.
         /// </summary>
-        public int? CustomOrder { get { return customOrder; } set { SetValue(ref customOrder, value, "CustomOrder", "Order"); } }
+        public int? CustomOrder { get { return customOrder; } set { SetValue(ref customOrder, value, nameof(CustomOrder), nameof(Order)); } }
 
         /// <inheritdoc/>
         public sealed override bool IsPrimitive => isPrimitive;
 
+        /// <inheritdoc/>
+        public sealed override bool HasList => CollectionDescriptor.IsCollection(Type);
+
+        /// <inheritdoc/>
+        public sealed override bool HasDictionary => DictionaryDescriptor.IsDictionary(Type);
+
+        // The previous way to compute HasList and HasDictionary was quite complex, but let's keep it here for history. 
         // To distinguish between lists and items of a list (which have the same TargetNode if the items are primitive types), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a list of primitive objects. 
-        /// <inheritdoc/>
-        public sealed override bool HasList => (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable);
-
+        //public sealed override bool HasList => (targetNode.Content.Descriptor is CollectionDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable);
         // To distinguish between dictionaries and items of a dictionary (which have the same TargetNode if the value type is a primitive type), we check whether the TargetNode is
         // the same of the one of its parent. If so, we're likely in an item of a dictionary of primitive objects. 
-        /// <inheritdoc/>
-        public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
+        //public sealed override bool HasDictionary => (targetNode.Content.Descriptor is DictionaryDescriptor && (Parent == null || (ModelNodeParent != null && ModelNodeParent.targetNode.Content.Value != targetNode.Content.Value))) || (targetNode.Content.ShouldProcessReference && targetNode.Content.Reference is ReferenceEnumerable && ((ReferenceEnumerable)targetNode.Content.Reference).IsDictionary);
 
-        internal Guid ModelGuid => targetNode.Guid;
+        // TODO: would be better to put the override info in an associated data or in a specialized derived class.
+        public OverrideType Override => (SourceNode.Content as OverridableMemberContent)?.Override ?? OverrideType.Base;
 
-        private ObservableModelNode ModelNodeParent { get { for (var p = Parent; p != null; p = p.Parent) { var mp = p as ObservableModelNode; if (mp != null) return mp; } return null; } }
+        internal Guid ModelGuid => SourceNode.Guid;
    
         /// <summary>
-        /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IModelNode"/>.
+        /// Indicates whether this <see cref="ObservableModelNode"/> instance corresponds to the given <see cref="IGraphNode"/>.
         /// </summary>
         /// <param name="node">The node to match.</param>
         /// <returns><c>true</c> if the node matches, <c>false</c> otherwise.</returns>
-        public bool MatchNode(IModelNode node)
+        public bool MatchNode(IGraphNode node)
         {
             return SourceNode == node;
         }
@@ -167,6 +178,7 @@ namespace SiliconStudio.Presentation.Quantum
         internal void CheckConsistency()
         {
 #if DEBUG
+            var targetNode = GetTargetNode(SourceNode, Index);
             if (SourceNode != targetNode)
             {
                 var objectReference = SourceNode.Content.Reference as ObjectReference;
@@ -251,40 +263,18 @@ namespace SiliconStudio.Presentation.Quantum
         /// Sets the value of the model content associated to this <see cref="ObservableModelNode"/>. The value is actually modified only if the new value is different from the previous value.
         /// </summary>
         /// <returns><c>True</c> if the value has been modified, <c>false</c> otherwise.</returns>
-        protected bool SetModelContentValue(IModelNode node, object newValue)
+        protected bool SetModelContentValue(IGraphNode node, object newValue)
         {
-            var dictionary = node.Content.Descriptor as DictionaryDescriptor;
-            var list = node.Content.Descriptor as CollectionDescriptor;
-            bool result = false;
-            if (Index != null && dictionary != null)
+            var oldValue = node.Content.Retrieve(Index);
+            if (!Equals(oldValue, newValue))
             {
-                if (!Equals(dictionary.GetValue(node.Content.Value, Index), newValue))
-                {
-                    result = true;
-                    dictionary.SetValue(node.Content.Value, Index, newValue);
-                }
+                node.Content.Update(newValue, Index);
+                return true;
             }
-            else if (Index != null && list != null)
-            {
-                if (!Equals(list.GetValue(node.Content.Value, Index), newValue))
-                {
-                    result = true;
-                    list.SetValue(node.Content.Value, Index, newValue);
-                }
-            }
-            else
-            {
-                if (!Equals(node.Content.Value, newValue))
-                {
-                    result = true;
-                    node.Content.Value = newValue;
-                }
-            }
-
-            return result;
+            return false;
         }
 
-        private void GenerateChildren(IModelNode modelNode, ModelNodePath modelNodePath)
+        private void GenerateChildren(IGraphNode modelNode, GraphNodePath graphNodePath)
         {
             if (modelNode.Content.IsReference && modelNode.Content.ShouldProcessReference)
             {
@@ -305,7 +295,7 @@ namespace SiliconStudio.Presentation.Quantum
                             // In this case, we must set the actual type to have type converter working, since they usually can't convert
                             // a boxed float to double for example. Otherwise, we don't want to have a node type that is value-dependent.
                             var type = reference.TargetNode != null && reference.TargetNode.Content.IsPrimitive ? reference.TargetNode.Content.Type : reference.Type;
-                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, modelNode, modelNodePath, type, reference.Index);
+                            var observableNode = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, false, modelNode, graphNodePath, type, reference.Index);
                             AddChild(observableNode);
                             observableNode.Initialize();
                         }
@@ -321,7 +311,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // Dictionary of primitive objects
                     foreach (var key in dictionary.GetKeys(modelNode.Content.Value))
                     {
-                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, modelNodePath, dictionary.ValueType, key);
+                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, dictionary.ValueType, key);
                         AddChild(observableChild);
                         observableChild.Initialize();
                     }
@@ -331,7 +321,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // List of primitive objects
                     for (int i = 0; i < list.GetCollectionCount(modelNode.Content.Value); ++i)
                     {
-                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, modelNodePath, list.ElementType, i);
+                        var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, null, true, modelNode, graphNodePath, list.ElementType, i);
                         AddChild(observableChild);
                         observableChild.Initialize();
                     }
@@ -341,7 +331,7 @@ namespace SiliconStudio.Presentation.Quantum
                     // Single non-reference primitive object
                     foreach (var child in modelNode.Children)
                     {
-                        var childPath = modelNodePath.GetChildPath(modelNode, child);
+                        var childPath = graphNodePath.GetChildPath(modelNode, child);
                         var observableChild = Owner.ObservableViewModelService.ObservableNodeFactory(Owner, child.Name, child.Content.IsPrimitive, child, childPath, child.Content.Type, null);
                         AddChild(observableChild);
                         observableChild.Initialize();
@@ -350,36 +340,29 @@ namespace SiliconStudio.Presentation.Quantum
             }
         }
 
-        public virtual void ForceSetValue(object newValue)
-        {
-            bool hasChanged = !Equals(Value, newValue);
-            if (!hasChanged)
-                OnPropertyChanging("TypedValue");
-
-            Value = newValue;
-
-            if (!hasChanged)
-            {
-                OnPropertyChanged("TypedValue");
-                OnValueChanged();
-            }
-        }
-
         /// <summary>
         /// Refreshes the node commands and children. The source and target model nodes must have been updated first.
         /// </summary>
-        public virtual void Refresh()
+        protected void Refresh()
         {
             if (Parent == null) throw new InvalidOperationException("The node to refresh can't be a root node.");
             
-            OnPropertyChanging("IsPrimitive", "HasList", "HasDictionary");
-
-            targetNode = GetTargetNode(SourceNode, Index);
+            OnPropertyChanging(nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
 
             // Clean the current node so it can be re-initialized (associatedData are overwritten in Initialize)
             ClearCommands();
+
+            // Dispose all children and remove them
+            Children.SelectDeep(x => x.Children).ForEach(x => x.Dispose());
             foreach (var child in Children.Cast<ObservableNode>().ToList())
+            {
                 RemoveChild(child);
+            }
+
+            foreach (var key in AssociatedData.Keys.ToList())
+            {
+                RemoveAssociatedData(key);
+            }
 
             Initialize();
 
@@ -387,17 +370,20 @@ namespace SiliconStudio.Presentation.Quantum
             {
                 DisplayName = DisplayNameProvider();
             }
-            OnPropertyChanged("IsPrimitive", "HasList", "HasDictionary");
+            OnPropertyChanged(nameof(IsPrimitive), nameof(HasList), nameof(HasDictionary));
         }
 
-        protected virtual ViewModelActionItem CreateValueChangedActionItem(object previousValue, object newValue)
+        /// <summary>
+        /// Retrieves the target node if the given source node content holds a reference or a sequence of references, or the given source node otherwise.
+        /// </summary>
+        /// <param name="sourceNode">The source node for which to retrieve the target node.</param>
+        /// <param name="index">The index of the target node to retrieve, if the source node contains a sequence of references. <c>null</c> otherwise.</param>
+        /// <returns>The corresponding target node if available, or the source node itself if it does not contain any reference or if its content should not process references.</returns>
+        /// <remarks>This method can return null if the target node is null.</remarks>
+        /// <seealso cref="IContent.ShouldProcessReference"/>
+        protected static IGraphNode GetTargetNode(IGraphNode sourceNode, object index)
         {
-            string displayName = Owner.FormatSingleUpdateMessage(this, newValue);
-            return new ValueChangedActionItem(displayName, Owner.ObservableViewModelService, SourceNodePath, Path, Owner.Identifier, Index, Owner.Dirtiables, previousValue);
-        }
-
-        protected static IModelNode GetTargetNode(IModelNode sourceNode, object index)
-        {
+            if (sourceNode == null) throw new ArgumentNullException(nameof(sourceNode));
             var objectReference = sourceNode.Content.Reference as ObjectReference;
             var referenceEnumerable = sourceNode.Content.Reference as ReferenceEnumerable;
             if (objectReference != null && sourceNode.Content.ShouldProcessReference)
@@ -421,60 +407,77 @@ namespace SiliconStudio.Presentation.Quantum
         /// <param name="baseName">The base name of this node. Can be null if <see cref="index"/> is not. If so a name will be automatically generated from the index.</param>
         /// <param name="isPrimitive">Indicate whether this node should be considered as a primitive node.</param>
         /// <param name="modelNode">The model node bound to the new <see cref="ObservableModelNode"/>.</param>
-        /// <param name="modelNodePath">The <see cref="ModelNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
+        /// <param name="graphNodePath">The <see cref="GraphNodePath"/> corresponding to the given <see cref="modelNode"/>.</param>
         /// <param name="index">The index of this content in the model node, when this node represent an item of a collection. <c>null</c> must be passed otherwise</param>
-        public ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IModelNode modelNode, ModelNodePath modelNodePath, object index)
-            : base(ownerViewModel, baseName, isPrimitive, modelNode, modelNodePath, index)
+        public ObservableModelNode(ObservableViewModel ownerViewModel, string baseName, bool isPrimitive, IGraphNode modelNode, GraphNodePath graphNodePath, object index)
+            : base(ownerViewModel, baseName, isPrimitive, modelNode, graphNodePath, index)
         {
-            DependentProperties.Add("TypedValue", new[] { "Value" });
+            // ReSharper disable once DoNotCallOverridableMethodsInConstructor
+            DependentProperties.Add(nameof(TypedValue), new[] { nameof(Value) });
+            SourceNode.Content.Changing += ContentChanging;
+            SourceNode.Content.Changed += ContentChanged;
         }
 
         /// <summary>
         /// Gets or sets the value of this node through a correctly typed property, which is more adapted to binding.
         /// </summary>
-        public virtual T TypedValue
-        {
-            get
-            {
-                return (T)GetModelContentValue();
-            }
-            set
-            {
-                AssertInit();
-                var previousValue = (T)GetModelContentValue();
-                bool hasChanged = !Equals(previousValue, value);
-                var parent = Parent;
-                if (hasChanged)
-                {
-                    if (parent != null)
-                        ((ObservableNode)Parent).NotifyPropertyChanging(Name);
-                    OnPropertyChanging("TypedValue");
-                }
-                
-                // We set the value even if it has not changed in case it's a reference value and a refresh might be required (new node in a list, etc.)
-                SetModelContentValue(SourceNode, value);
-
-                if (!IsPrimitive)
-                {
-                    Refresh();
-                }
-
-                if (hasChanged)
-                {
-                    OnPropertyChanged("TypedValue");
-                    OnValueChanged();
-                    if (parent != null)
-                        ((ObservableNode)Parent).NotifyPropertyChanged(Name);
-
-                    RegisterValueChangedAction(Path, CreateValueChangedActionItem(previousValue, value));
-                }
-            }
-        }
+        public virtual T TypedValue { get { return (T)GetModelContentValue(); } set { AssertInit(); SetModelContentValue(SourceNode, value); } }
 
         /// <inheritdoc/>
         public override Type Type => typeof(T);
 
         /// <inheritdoc/>
         public override sealed object Value { get { return TypedValue; } set { TypedValue = (T)value; } }
+
+        public override void Dispose()
+        {
+            SourceNode.Content.Changing -= ContentChanging;
+            SourceNode.Content.Changed -= ContentChanged;
+            base.Dispose();
+        }
+
+        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        {
+            if (IsValidChange(e))
+            {
+                ((ObservableNode)Parent)?.NotifyPropertyChanging(Name);
+                OnPropertyChanging(nameof(TypedValue));
+                OnPropertyChanging(nameof(Override));
+            }
+        }
+
+        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        {
+            if (IsValidChange(e))
+            {
+                ((ObservableNode)Parent)?.NotifyPropertyChanged(Name);
+
+                // This node can have been disposed by its parent already (if its parent is being refreshed and share the same source node)
+                // In this case, let's trigger the notifications gracefully before being discarded, but skip refresh
+                if (!IsPrimitive && !IsDisposed)
+                {
+                    Refresh();
+                }
+
+                OnPropertyChanged(nameof(Override));
+                OnPropertyChanged(nameof(TypedValue));
+                OnValueChanged();
+                Owner.NotifyNodeChanged(Path);
+            }
+        }
+
+        private bool IsValidChange(ContentChangeEventArgs e)
+        {
+            switch (e.ChangeType)
+            {
+                case ContentChangeType.ValueChange:
+                    return Equals(e.Index, Index);
+                case ContentChangeType.CollectionAdd:
+                case ContentChangeType.CollectionRemove:
+                    return HasList || HasDictionary; // TODO: probably not sufficent
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
     }
 }

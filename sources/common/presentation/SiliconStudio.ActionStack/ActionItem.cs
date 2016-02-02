@@ -12,9 +12,7 @@ namespace SiliconStudio.ActionStack
     /// </remarks>
     public abstract class ActionItem : IActionItem
     {
-        private readonly Guid identifier = Guid.NewGuid();
         private bool undoRedoInProgress;
-        private bool isDone = true;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ActionItem"/> class with the given name.
@@ -33,7 +31,7 @@ namespace SiliconStudio.ActionStack
         }
 
         /// <inheritdoc/>
-        public Guid Identifier => identifier;
+        public Guid Identifier { get; } = Guid.NewGuid();
 
         /// <inheritdoc/>
         public string Name { get; set; }
@@ -42,7 +40,7 @@ namespace SiliconStudio.ActionStack
         public virtual bool IsSaved { get; set; }
 
         /// <inheritdoc/>
-        public virtual bool IsDone { get { return isDone; } protected set { isDone = value; } }
+        public virtual bool IsDone { get; protected set; } = true;
 
         /// <inheritdoc/>
         public bool IsFrozen { get; private set; }

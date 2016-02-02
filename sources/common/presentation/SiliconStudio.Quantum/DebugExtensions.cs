@@ -7,14 +7,14 @@ namespace SiliconStudio.Quantum
 {
     public static class DebugExtensions
     {
-        public static string PrintHierarchy(this IModelNode node)
+        public static string PrintHierarchy(this IGraphNode node)
         {
             var builder = new StringBuilder();
             PrintHierarchyInternal(node, 0, builder);
             return builder.ToString();
         }
 
-        private static void PrintHierarchyInternal(IModelNode node, int indentation, StringBuilder builder)
+        private static void PrintHierarchyInternal(IGraphNode node, int indentation, StringBuilder builder)
         {
             PrintIndentation(indentation, builder);
             builder.Append(node.Guid + " ");

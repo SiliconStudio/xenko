@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../data/tests/uv.dds
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
+    ~Id: e46bb3f0-bd58-4515-bdec-430111ddea96
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

@@ -44,14 +44,12 @@ namespace SiliconStudio.Xenko.Assets.Model
 
             model.BoundingBox = BoundingBox.Empty;
 
-            bool hasErrors = false;
             foreach (var mesh in model.Meshes)
             {
                 if (TessellationAEN)
                 {
                     // TODO: Generate AEN model view
                     commandContext.Logger.Error("TessellationAEN is not supported in {0}", ContextAsString);
-                    hasErrors = true;
                 }
             }
 

@@ -6,11 +6,14 @@ Tags: []
 Source: ../../../data/tests/megalodon/megalodon.FBX
 SourceHash: c46fb7e8913041451a102b3eca8f90df
 Materials:
-    -   Name: 01-Default
+    -   ~Id: c4d29a26-ce4e-47d7-9d4d-fe759fbfdb63
+        Name: 01-Default
         MaterialInstance:
+            ~Id: 84ac1b0f-5df4-49cf-bba0-9865b985a98e
             Material: 39f244ad-8360-48db-8074-d0d3cade8289:01-Default
 Skeleton: null
 ~Base:
+    ~Id: 0a774919-58c6-46fb-ad92-bcb1d81af672
     Location: --import--
     Asset: !Model
         Id: 00000000-0000-0000-0000-000000000000
@@ -20,7 +23,9 @@ Skeleton: null
         Source: 
         ImporterId: a15ae42d-42c5-4a3b-9f7e-f8cd91eda595
         Materials:
-            -   Name: 01-Default
+            -   ~Id: 834569a1-dcf3-421a-a37f-7173e280b87c
+                Name: 01-Default
                 MaterialInstance:
+                    ~Id: 8b7fb8ad-3008-4755-8eee-753376c194df
                     Material: 39f244ad-8360-48db-8074-d0d3cade8289:01-Default
         Skeleton: null

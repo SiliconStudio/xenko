@@ -3,14 +3,11 @@
 
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
 using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
-using SiliconStudio.Assets.Diff;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
-using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Rendering;
@@ -51,15 +48,10 @@ namespace SiliconStudio.Xenko.Assets.Model
         [DefaultValue(1.0f)]
         public float ScaleImport { get; set; }
 
-        /// <summary>
-        /// The materials.
-        /// </summary>
-        /// <userdoc>
-        /// The list of materials in the model.
-        /// </userdoc>
+        /// <inheritdoc/>
         [DataMember(40)]
         [MemberCollection(ReadOnly = true)]
-        public List<ModelMaterial> Materials { get; private set; }
+        public List<ModelMaterial> Materials { get; }
 
         /// <summary>
         /// Gets or sets the Skeleton.
@@ -70,14 +62,7 @@ namespace SiliconStudio.Xenko.Assets.Model
         [DataMember(50)]
         public Skeleton Skeleton { get; set; }
 
-        protected override int InternalBuildOrder
-        {
-            get { return -100; } // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
-        }
-
-        /// <inheritdoc/>
-        [DataMemberIgnore]
-        public IEnumerable<KeyValuePair<string, MaterialInstance>> MaterialInstances { get { return Materials.Select(x => new KeyValuePair<string, MaterialInstance>(x.Name, x.MaterialInstance)); } }
+        protected override int InternalBuildOrder => -100; // We want Model to be scheduled early since they tend to take the longest (bad concurrency at end of build)
 
         /// <inheritdoc/>
         public IEnumerable<IContentReference> EnumerateCompileTimeDependencies()
