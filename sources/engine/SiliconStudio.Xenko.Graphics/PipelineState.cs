@@ -26,7 +26,8 @@ namespace SiliconStudio.Xenko.Graphics
 
     public class PipelineStateDescription : IEquatable<PipelineStateDescription>
     {
-        // TODO: Root Signature?
+        // Root Signature
+        public RootSignature RootSignature;
 
         // Effect/Shader
         public EffectBytecode EffectBytecode;
@@ -56,6 +57,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             return new PipelineStateDescription
             {
+                RootSignature = RootSignature,
                 EffectBytecode = EffectBytecode,
                 BlendState = BlendState,
                 SampleMask = SampleMask,
@@ -104,7 +106,8 @@ namespace SiliconStudio.Xenko.Graphics
         {
             unchecked
             {
-                var hashCode = EffectBytecode != null ? EffectBytecode.GetHashCode() : 0;
+                var hashCode = RootSignature != null ? RootSignature.GetHashCode() : 0;
+                hashCode = (hashCode*397) ^ (EffectBytecode != null ? EffectBytecode.GetHashCode() : 0);
                 hashCode = (hashCode*397) ^ BlendState.GetHashCode();
                 hashCode = (hashCode*397) ^ (int)SampleMask;
                 hashCode = (hashCode*397) ^ RasterizerState.GetHashCode();

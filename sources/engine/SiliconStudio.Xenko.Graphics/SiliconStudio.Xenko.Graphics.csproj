@@ -158,6 +158,7 @@
     <Compile Include="DepthStencilStateSerializer.cs" />
     <Compile Include="ResourceGroup.cs" />
     <Compile Include="ResourceGroupLayout.cs" />
+    <Compile Include="RootSignature.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />

@@ -9,6 +9,7 @@ namespace SiliconStudio.Xenko.Graphics
     public partial class PipelineState
     {
         // Effect
+        private RootSignature rootSignature;
         private EffectBytecode effectBytecode;
         private SharpDX.Direct3D11.VertexShader vertexShader;
         private SharpDX.Direct3D11.GeometryShader geometryShader;
@@ -31,8 +32,11 @@ namespace SiliconStudio.Xenko.Graphics
         internal PipelineState(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription) : base(graphicsDevice)
         {
             // Effect
+            this.rootSignature = pipelineStateDescription.RootSignature;
             this.effectBytecode = pipelineStateDescription.EffectBytecode;
             CreateShaders();
+
+            // TODO: Cache over Effect|RootSignature to create binding operations
 
             // States
             CreateBlendState(pipelineStateDescription.BlendState);
@@ -48,6 +52,11 @@ namespace SiliconStudio.Xenko.Graphics
         internal void Apply(GraphicsDevice graphicsDevice, PipelineState previousPipeline)
         {
             var nativeDeviceContext = graphicsDevice.NativeDeviceContext;
+
+            if (rootSignature != previousPipeline.rootSignature)
+            {
+                //rootSignature.Apply
+            }
 
             if (effectBytecode != previousPipeline.effectBytecode)
             {
