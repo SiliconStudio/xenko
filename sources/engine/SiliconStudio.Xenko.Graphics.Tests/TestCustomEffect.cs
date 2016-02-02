@@ -41,7 +41,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
 
             effectParameters = new ParameterCollection();
-            effectInstance = new DynamicEffectInstance(Services, "CustomEffect.CustomSubEffect");
+            effectInstance = new DynamicEffectInstance("CustomEffect.CustomSubEffect");
+            effectInstance.Initialize(Services);
         }
 
         protected override void Draw(GameTime gameTime)

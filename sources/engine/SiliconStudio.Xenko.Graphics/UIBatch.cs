@@ -163,7 +163,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             viewProjectionMatrix = viewProjection;
 
-            Begin(null, null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
+            Begin(null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
         }
 
         /// <summary>

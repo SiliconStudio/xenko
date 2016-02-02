@@ -43,13 +43,13 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="rasterizerState">The rasterizer state to use for the batch session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the batch session</param>
         /// <param name="viewProjection">The view-projection matrix to use for the batch session</param>
-        public void Begin(Matrix viewProjection, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, EffectInstance effect = null, EffectParameterCollectionGroup parameterCollectionGroup = null, int stencilValue = 0)
+        public void Begin(Matrix viewProjection, SpriteSortMode sortMode = SpriteSortMode.Deferred, BlendState blendState = null, SamplerState samplerState = null, DepthStencilState depthStencilState = null, RasterizerState rasterizerState = null, EffectInstance effect = null, int stencilValue = 0)
         {
             CheckEndHasBeenCalled("begin");
 
             transformationMatrix = viewProjection;
 
-            Begin(effect, parameterCollectionGroup, sortMode, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
+            Begin(effect, sortMode, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
         }
 
         /// <summary>

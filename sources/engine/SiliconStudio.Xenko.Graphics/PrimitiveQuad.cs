@@ -19,7 +19,6 @@ namespace SiliconStudio.Xenko.Graphics
         private const int QuadCount = 3;
 
         private readonly ParameterCollection parameters;
-        private readonly EffectParameterCollectionGroup parameterCollectionGroup;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SpriteEffect"/>.
@@ -41,7 +40,6 @@ namespace SiliconStudio.Xenko.Graphics
             simpleEffect = effect;
             parameters = new ParameterCollection();
             parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
-            parameterCollectionGroup = new EffectParameterCollectionGroup(graphicsDevice, simpleEffect, new[] { parameters });
             sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
         }
 

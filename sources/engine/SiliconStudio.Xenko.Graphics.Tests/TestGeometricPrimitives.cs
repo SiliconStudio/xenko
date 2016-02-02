@@ -159,8 +159,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 GraphicsDevice.SetRasterizerState(isWireframe? wireframeState: defaultRasterizerState);
 
                 // Draw the primitive using BasicEffect
-                parameterCollection.Set(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
-                simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, true);
+                simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
+                simpleEffect.Apply(GraphicsDevice);
                 primitive.Draw();
             }
         }

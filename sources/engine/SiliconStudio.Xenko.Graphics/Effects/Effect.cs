@@ -140,7 +140,6 @@ namespace SiliconStudio.Xenko.Graphics
         private void LoadDefaultParameters()
         {
             var shaderParameters = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-            var constantBufferKeys = new Dictionary<string, ParameterKey<ParameterConstantBuffer>>();
 
             // Create parameter bindings
             for (int i = 0; i < reflection.ResourceBindings.Count; i++)
@@ -181,9 +180,9 @@ namespace SiliconStudio.Xenko.Graphics
                 }
 
                 // Handle ConstantBuffer. Share the same key ParameterConstantBuffer with all the stages
-                var parameterConstantBuffer = new ParameterConstantBuffer(graphicsDeviceDefault, constantBuffer.Name, constantBuffer);
-                var constantBufferKey = ParameterKeys.New(parameterConstantBuffer, constantBuffer.Name);
-                shaderParameters.RegisterParameter(constantBufferKey, false);
+                //var parameterConstantBuffer = new ParameterConstantBuffer(graphicsDeviceDefault, constantBuffer.Name, constantBuffer);
+                //var constantBufferKey = ParameterKeys.New<Buffer>(constantBuffer.Name);
+                //shaderParameters.RegisterParameter(constantBufferKey, false);
 
                 //for (int i = 0; i < resourceBindings.Length; i++)
                 //{
@@ -192,9 +191,6 @@ namespace SiliconStudio.Xenko.Graphics
                 //        resourceBindings[i].Description.Param.Key = constantBufferKey;
                 //    }
                 //}
-
-                // Update constant buffer mapping (to avoid name clashes)
-                constantBufferKeys[constantBuffer.Name] = constantBufferKey;
             }
 
             UpdateKeyIndices();
@@ -378,35 +374,31 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Update Constant buffers description
-            foreach (var internalValue in defaultParameters.InternalValues)
+            foreach (var constantBuffer in reflection.ConstantBuffers)
             {
-                var cb = internalValue.Value.Object as ParameterConstantBuffer;
-                if (cb != null)
+                // We will generate a unique hash that depends on cbuffer layout (to easily detect if they differ when binding a new effect)
+                // TODO: currently done at runtime, but it should better be done at compile time
+                var hashBuilder = new ObjectIdBuilder();
+                hashBuilder.Write(constantBuffer.Name);
+                hashBuilder.Write(constantBuffer.Size);
+
+                for (int i = 0; i < constantBuffer.Members.Length; ++i)
                 {
-                    // We will generate a unique hash that depends on cbuffer layout (to easily detect if they differ when binding a new effect)
-                    // TODO: currently done at runtime, but it should better be done at compile time
-                    var hashBuilder = new ObjectIdBuilder();
-                    hashBuilder.Write(cb.ConstantBufferDesc.Name);
-                    hashBuilder.Write(cb.ConstantBufferDesc.Size);
+                    var member = constantBuffer.Members[i];
+                    constantBuffer.Members[i] = member;
 
-                    for (int i = 0; i < cb.ConstantBufferDesc.Members.Length; ++i)
-                    {
-                        var member = cb.ConstantBufferDesc.Members[i];
-                        cb.ConstantBufferDesc.Members[i] = member;
-
-                        hashBuilder.Write(member.Param.RawName);
-                        hashBuilder.Write(member.SourceOffset);
-                        hashBuilder.Write(member.SourceOffset);
-                        hashBuilder.Write(member.Offset);
-                        hashBuilder.Write(member.Count);
-                        hashBuilder.Write(member.Size);
-                        hashBuilder.Write(member.RowCount);
-                        hashBuilder.Write(member.ColumnCount);
-                    }
-
-                    // Update the hash
-                    cb.ConstantBufferDesc.Hash = hashBuilder.ComputeHash();
+                    hashBuilder.Write(member.Param.RawName);
+                    hashBuilder.Write(member.SourceOffset);
+                    hashBuilder.Write(member.SourceOffset);
+                    hashBuilder.Write(member.Offset);
+                    hashBuilder.Write(member.Count);
+                    hashBuilder.Write(member.Size);
+                    hashBuilder.Write(member.RowCount);
+                    hashBuilder.Write(member.ColumnCount);
                 }
+
+                // Update the hash
+                constantBuffer.Hash = hashBuilder.ComputeHash();
             }
         }
 
