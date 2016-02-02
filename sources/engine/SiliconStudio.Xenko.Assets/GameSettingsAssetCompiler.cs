@@ -61,20 +61,20 @@ namespace SiliconStudio.Xenko.Assets
                     DefaultBackBufferWidth = AssetParameters.BackBufferWidth,
                     DefaultBackBufferHeight = AssetParameters.BackBufferHeight,
                     DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile,
-                    ColorSpace =  AssetParameters.ColorSpace,
+                    ColorSpace = AssetParameters.ColorSpace,
                     EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
-                    RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects)
+                    RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects),
+                    Configurations = new PlatformConfigurations()
                 };
 
                 //start from the default platform and go down overriding
-                result.Configurations = new PlatformConfigurations();
 
                 foreach (var configuration in AssetParameters.Defaults)
                 {
                     result.Configurations.Configurations.Add(new ConfigurationOverride
                     {
                         Platforms = ConfigPlatforms.None,
-                        SpecificFilter = ConfigFilters.None,
+                        SpecificFilter = string.Empty,
                         Configuration = configuration
                     });
                 }

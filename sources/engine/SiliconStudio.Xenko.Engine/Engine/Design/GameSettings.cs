@@ -52,7 +52,7 @@ namespace SiliconStudio.Xenko.Engine.Design
             }
 
             //find per platform if available
-            var platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter == ConfigFilters.None).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
+            var platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter == string.Empty).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
             if (platformConfig != null)
             {
                 config = platformConfig;

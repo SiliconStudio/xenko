@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using SiliconStudio.Core;
-using SiliconStudio.Core.Annotations;
 
 namespace SiliconStudio.Xenko.Data
 {
-    public enum ConfigFilters
-    {
-        None,
-        GPU,
-        ModelName
-    }
-
     [Flags]
     public enum ConfigPlatforms
     {
@@ -36,7 +27,7 @@ namespace SiliconStudio.Xenko.Data
         public ConfigPlatforms Platforms;
 
         [DataMember(20)]
-        public ConfigFilters SpecificFilter;
+        public string SpecificFilter;
 
         [DataMember(30)]
         public Configuration Configuration;
