@@ -21,7 +21,8 @@ namespace SiliconStudio.Xenko.Rendering
     {
         private const string WireFrameEffect = "XenkoWireFrameShadingEffect";
 
-        private readonly ModelComponentAndPickingRenderer modelComponentAndPickingRenderer;
+        // TODO GRAPHICS REFACTOR
+        //private readonly ModelComponentAndPickingRenderer modelComponentAndPickingRenderer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CameraRendererModeWireFrame"/> class.
@@ -34,8 +35,9 @@ namespace SiliconStudio.Xenko.Rendering
             RenderComponentTypes.Add(typeof(CameraComponent));
             RenderComponentTypes.Add(typeof(ModelComponent));
 
-            modelComponentAndPickingRenderer = new ModelComponentAndPickingRenderer();
-            RendererOverrides.Add(typeof(ModelComponent), modelComponentAndPickingRenderer);
+            // TODO GRAPHICS REFACTOR
+            //modelComponentAndPickingRenderer = new ModelComponentAndPickingRenderer();
+            //RendererOverrides.Add(typeof(ModelComponent), modelComponentAndPickingRenderer);
 
             FrontColor = new Color3(0, 1.0f, 0.0f);
             BackColor = new Color3(0, 0.5f, 0.0f);
@@ -132,14 +134,15 @@ namespace SiliconStudio.Xenko.Rendering
         [DefaultValue(1.0f)]
         public float BlendFactor { get; set; }
 
-        [DataMemberIgnore]
-        public ModelComponentRenderer ModelRenderer
-        {
-            get
-            {
-                return modelComponentAndPickingRenderer.ModelRenderer;
-            }
-        }
+        // TODO GRAPHICS REFACTOR
+        //[DataMemberIgnore]
+        //public ModelComponentRenderer ModelRenderer
+        //{
+        //    get
+        //    {
+        //        return modelComponentAndPickingRenderer.ModelRenderer;
+        //    }
+        //}
 
         /// <summary>
         /// Gets the default <see cref="RasterizerState" /> for models drawn by this render mode.
@@ -184,7 +187,8 @@ namespace SiliconStudio.Xenko.Rendering
                 graphicsDevice.SetRasterizerState(EnableBackColor || ShowBackface ? graphicsDevice.RasterizerStates.WireFrame : graphicsDevice.RasterizerStates.WireFrameCullBack);
                 graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.Default);
 
-                modelComponentAndPickingRenderer.ModelRenderer.ForceRasterizer = true;
+                // TODO GRAPHICS REFACTOR
+                //modelComponentAndPickingRenderer.ModelRenderer.ForceRasterizer = true;
 
                 base.DrawCore(context);
             }
