@@ -5,6 +5,7 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
+using SiliconStudio.Xenko.Rendering.Shadows;
 using SiliconStudio.Xenko.Rendering.Skyboxes;
 using SiliconStudio.Xenko.Rendering.Sprites;
 

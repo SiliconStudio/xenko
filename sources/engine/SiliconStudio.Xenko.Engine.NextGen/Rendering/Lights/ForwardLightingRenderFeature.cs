@@ -7,13 +7,13 @@ using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Processors;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Shadows;
 using SiliconStudio.Xenko.Shaders;
-using Buffer = SiliconStudio.Xenko.Graphics.Buffer;
+using ILightShadowMapRenderer = SiliconStudio.Xenko.Rendering.Shadows.NextGen.ILightShadowMapRenderer;
+using LightDirectionalShadowMapRenderer = SiliconStudio.Xenko.Rendering.Shadows.NextGen.LightDirectionalShadowMapRenderer;
+using LightSpotShadowMapRenderer = SiliconStudio.Xenko.Rendering.Shadows.NextGen.LightSpotShadowMapRenderer;
+using ShadowMapRenderer = SiliconStudio.Xenko.Rendering.Shadows.NextGen.ShadowMapRenderer;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {
@@ -209,7 +209,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             foreach (var shadowMapTexture in shadowMapRenderer.LightComponentsWithShadows)
             {
-                shadowMapTexture.Value.Renderer.Extract(RenderSystem.RenderContextOld, shadowMapRenderer, shadowMapTexture.Value);
+                ((ILightShadowMapRenderer)shadowMapTexture.Value.Renderer).Extract(RenderSystem.RenderContextOld, shadowMapRenderer, shadowMapTexture.Value);
                 for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.Value.CascadeCount; cascadeIndex++)
                 {
                     var shadowRenderView = new ShadowMapRenderView
@@ -219,7 +219,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         Rectangle = shadowMapTexture.Value.GetRectangle(cascadeIndex)
                     };
 
-                    shadowMapTexture.Value.Renderer.GetCascadeViewParameters(shadowMapTexture.Value, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
+                    ((ILightShadowMapRenderer)shadowMapTexture.Value.Renderer).GetCascadeViewParameters(shadowMapTexture.Value, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
 
                     shadowRenderViews.Add(shadowRenderView);
                     RenderSystem.Views.Add(shadowRenderView);
@@ -606,7 +606,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         if (shadowMapRenderer != null && shadowMapRenderer.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
                         {
                             shadowType = shadowTexture.ShadowType;
-                            newShadowRenderer = shadowTexture.Renderer;
+                            newShadowRenderer = (ILightShadowMapRenderer)shadowTexture.Renderer;
                         }
 
                         if (i == 0)
