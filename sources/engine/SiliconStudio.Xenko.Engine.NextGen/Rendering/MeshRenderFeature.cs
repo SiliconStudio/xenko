@@ -51,28 +51,30 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare()
+        public override void Prepare(NextGenRenderContext context)
         {
-            base.Prepare();
+            base.Prepare(context);
 
             // Prepare each sub render feature
             foreach (var renderFeature in RenderFeatures)
             {
-                renderFeature.Prepare();
+                renderFeature.Prepare(context);
             }
         }
 
         /// <inheritdoc/>
-        public override void Draw(RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var graphicsDevice = RenderSystem.GraphicsDevice;
 
             foreach (var renderFeature in RenderFeatures)
             {
-                renderFeature.Draw(renderView, renderViewStage, startIndex, endIndex);
+                renderFeature.Draw(context, renderView, renderViewStage, startIndex, endIndex);
             }
 
+            var pipelineState = context.Pipeline.State;
             Effect currentEffect = null;
             for (int index = startIndex; index < endIndex; index++)
             {

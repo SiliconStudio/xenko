@@ -286,8 +286,9 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare()
+        public override void Prepare(NextGenRenderContext context)
         {
             EffectObjectNodes.Clear();
 

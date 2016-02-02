@@ -67,9 +67,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.PrepareEffectPermutations();
         }
 
-        public override void Prepare()
+        public override void Prepare(NextGenRenderContext context)
         {
-            base.Prepare();
+            base.Prepare(context);
 
             for (int renderNodeIndex = 0; renderNodeIndex < renderNodes.Count; renderNodeIndex++)
             {
@@ -149,10 +149,10 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 }
             }
 
-            transformRenderFeature.Prepare();
+            transformRenderFeature.Prepare(context);
         }
 
-        public override void Draw(RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var graphicsDevice = RenderSystem.GraphicsDevice;
 

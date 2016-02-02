@@ -8,7 +8,6 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Games;
 using SiliconStudio.Xenko.Graphics.GeometricPrimitives;
-using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Input;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
