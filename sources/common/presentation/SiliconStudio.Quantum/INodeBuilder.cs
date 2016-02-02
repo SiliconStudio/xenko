@@ -37,11 +37,6 @@ namespace SiliconStudio.Quantum
         IContentFactory ContentFactory { get; set; }
 
         /// <summary>
-        /// Gets or sets the factory that will create nodes.
-        /// </summary>
-        Func<string, IContent, Guid, IGraphNode> NodeFactory { get; set; }
-
-        /// <summary>
         /// Gets the collection of available commands to attach to nodes.
         /// </summary>
         ICollection<INodeCommand> AvailableCommands { get; }
@@ -61,8 +56,9 @@ namespace SiliconStudio.Quantum
         /// </summary>
         /// <param name="obj">The object. Can be <c>null</c>.</param>
         /// <param name="rootGuid">The <see cref="Guid"/> To assign to the root node.</param>
+        /// <param name="nodeFactory">The factory that creates node for each content.</param>
         /// <returns>The root node of the node hierarchy corresponding to the given object.</returns>
-        IGraphNode Build(object obj, Guid rootGuid);
+        IGraphNode Build(object obj, Guid rootGuid, NodeFactoryDelegate nodeFactory);
 
         /// <summary>
         /// Creates a reference for the specified type/value node.

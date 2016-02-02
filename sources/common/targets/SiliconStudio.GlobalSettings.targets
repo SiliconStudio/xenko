@@ -79,10 +79,19 @@
     <XenkoSharpDXInputSdkBinDir>$(XenkoSharpDXSdkBinDir)</XenkoSharpDXInputSdkBinDir>
     <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-win10\</NUnitLiteBinDir>
   </PropertyGroup>
-  
+
+  <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Linux' ">
+    <!-- Limited version used by tools but that doesn't require installation of .NET on most computers (4.5.1 is default of many OS, 4.5.2/4.6 isn't) -->
+    <TargetFrameworkVersionToolLow>v4.5.1</TargetFrameworkVersionToolLow>
+    <TargetFrameworkVersionTool>v4.5.2</TargetFrameworkVersionTool>
+    <TargetFrameworkVersion Condition="'$(TargetFrameworkVersion)' == ''">v4.5</TargetFrameworkVersion>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_LINUX;NET45</SiliconStudioPlatformDefines>
+    <NUnitLiteBinDir>$(SiliconStudioDependenciesDir)NUnitLite\net-4.0\</NUnitLiteBinDir>
+  </PropertyGroup>
+
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'Android' ">
     <TargetFrameworkVersion>v5.0</TargetFrameworkVersion>
-    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID;NET45</SiliconStudioPlatformDefines>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_ANDROID;NET45</SiliconStudioPlatformDefines>
     <AndroidSupportedAbis>armeabi-v7a%3barmeabi%3bx86</AndroidSupportedAbis>
     <AndroidStoreUncompressedFileExtensions />
     <MandroidI18n />
@@ -104,7 +113,7 @@
   <PropertyGroup Condition=" '$(SiliconStudioPlatform)' == 'iOS' ">
     <Platform Condition=" '$(Platform)' == '' ">iPhone</Platform>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_MONO;SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS;NET45</SiliconStudioPlatformDefines>
+    <SiliconStudioPlatformDefines>SILICONSTUDIO_PLATFORM_MONO_MOBILE;SILICONSTUDIO_PLATFORM_IOS;NET45</SiliconStudioPlatformDefines>
     <ProjectTypeGuids>{FEACFBD2-3405-455C-9665-78FE426C6842};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>
@@ -148,10 +157,6 @@
   <!-- 
     Global Defines
   -->
-  <PropertyGroup Condition=" '$(SiliconStudioPlatformForceMono)' == 'true' ">
-    <SiliconStudioPlatformDefines>$(SiliconStudioPlatformDefines);SILICONSTUDIO_PLATFORM_MONO</SiliconStudioPlatformDefines>
-  </PropertyGroup>
-
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug'">
     <DefineConstants>DEBUG;TRACE;$(SiliconStudioPlatformDefines)</DefineConstants>
     <DebugSymbols>true</DebugSymbols>

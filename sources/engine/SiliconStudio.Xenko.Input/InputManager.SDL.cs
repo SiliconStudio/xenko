@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_UI_SDL
+#if SILICONSTUDIO_XENKO_UI_SDL
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -29,13 +29,21 @@ namespace SiliconStudio.Xenko.Input
         {
             switch (context.ContextType)
             {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
                 case AppContextType.Desktop:
+                case AppContextType.DesktopOpenTK:
+                case AppContextType.DesktopSDL:
+                    InitializeFromContext(context, true);
+                    break;
+#else
+                case AppContextType.Desktop:
+                case AppContextType.DesktopSDL:
                     InitializeFromContext(context, false);
                     break;
                 case AppContextType.DesktopOpenTK:
                     InitializeFromContext(context, true);
                     break;
-
+#endif
                 default:
                     throw new ArgumentException(string.Format("WindowContext [{0}] not supported", Game.Context.ContextType));
             }

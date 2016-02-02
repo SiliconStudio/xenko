@@ -22,7 +22,7 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_UI_SDL
+#if SILICONSTUDIO_XENKO_UI_SDL
 using System;
 using System.Diagnostics;
 using SDL2;
@@ -144,6 +144,8 @@ namespace SiliconStudio.Xenko.Games
 
         protected override void Initialize(GameContext<Window> gameContext)
         {
+            window = gameContext.Control;
+
             // Setup the initial size of the window
             var width = gameContext.RequestedWidth;
             if (width == 0)
