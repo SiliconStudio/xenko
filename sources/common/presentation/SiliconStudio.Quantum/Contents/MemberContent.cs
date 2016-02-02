@@ -14,7 +14,6 @@ namespace SiliconStudio.Quantum.Contents
     /// </summary>
     public class MemberContent : ContentBase
     {
-        protected IContent Container;
         private readonly NodeContainer nodeContainer;
 
         public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
@@ -31,7 +30,15 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         public IMemberDescriptor Member { get; protected set; }
 
+        /// <summary>
+        /// Gets the name of the node holding this content.
+        /// </summary>
         public string Name => OwnerNode?.Name;
+
+        /// <summary>
+        /// Gets the container content of this member content.
+        /// </summary>
+        public IContent Container { get; }
 
         /// <inheritdoc/>
         public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
