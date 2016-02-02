@@ -219,7 +219,6 @@
     <Compile Include="Effects\Effect.cs" />
     <Compile Include="EffectInputSignature.cs" />
     <Compile Include="Effects\EffectSerializer.cs" />
-    <Compile Include="Effects\EffectStateBindings.cs" />
     <Compile Include="Font\FontHelper.cs" />
     <Compile Include="Font\FontManager.cs" />
     <Compile Include="Font\CharacterBitmap.cs" />
