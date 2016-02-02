@@ -590,15 +590,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
                 }
             }
 
-            public void ApplyParameters(ParameterCollection parameters)
+            public void ApplyParameters(NextGenParameterCollection parameters)
             {
-                parameters.Set(shadowMapTextureKey, shadowMapTexture);
-                parameters.Set(shadowMapTextureSizeKey, shadowMapTextureSize);
-                parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
-                parameters.Set(cascadeSplitsKey, cascadeSplits);
-                parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
-                parameters.Set(depthBiasesKey, depthBiases);
-                parameters.Set(offsetScalesKey, offsetScales);
+                //parameters.Set(shadowMapTextureKey, shadowMapTexture);
+                //parameters.Set(shadowMapTextureSizeKey, shadowMapTextureSize);
+                //parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
+                //parameters.Set(cascadeSplitsKey, cascadeSplits);
+                //parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
+                //parameters.Set(depthBiasesKey, depthBiases);
+                //parameters.Set(offsetScalesKey, offsetScales);
             }
         }
 
