@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private const string DirectLightGroupsCompositionName = "directLightGroups";
         private const string EnvironmentLightsCompositionName = "environmentLights";
 
-        private bool isModelComponentRendererSetup;
+        private bool isShadowMapRendererSetUp;
 
         private LightProcessor lightProcessor;
 
@@ -64,12 +64,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private FastListStruct<LightForwardShaderFullEntryKey> directLightShaderGroupEntryKeysNoShadows;
 
         private PoolListStruct<LightParametersPermutationEntry> parameterCollectionEntryPool;
-
-        private LightShaderPermutationEntry currentModelLightShadersPermutationEntry;
-
-        private LightParametersPermutationEntry currentModelShadersParameters;
-
-        private bool currentShadowReceiver;
 
         private readonly Dictionary<RenderModel, RenderModelLights> modelToLights;
 
@@ -170,18 +164,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             sceneCullingMask = sceneCameraRenderer.CullingMask;
 
             // Setup the callback on the ModelRenderer and shadow map LightGroupRenderer
-            if (!isModelComponentRendererSetup)
+            if (!isShadowMapRendererSetUp)
             {
-                // TODO: Check if we could discover declared renderers in a better way than just hacking the tags of a component
-                //var modelRenderer = ModelComponentRenderer.GetAttached(sceneCameraRenderer);
-                //if (modelRenderer == null)
-                //{
-                //    return;
-                //}
-
-                //modelRenderer.Callbacks.PreRenderModel += PrepareRenderModelForRendering;
-                //modelRenderer.Callbacks.PreRenderMesh += PreRenderMesh;
-
                 // TODO: Shadow mapping is currently disabled in new render system
                 // TODO: Make this pluggable
                 // TODO: Shadows should work on mobile platforms
@@ -193,7 +177,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     shadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
                 }
 
-                isModelComponentRendererSetup = true;
+                isShadowMapRendererSetUp = true;
             }
 
             // Collect all visible lights
@@ -205,9 +189,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             // Prepare active renderers in an ordered list (by type and shadow on/off)
             CollectActiveLightRenderers(RenderSystem.RenderContextOld);
 
-            currentModelLightShadersPermutationEntry = null;
-            currentModelShadersParameters = null;
-            currentShadowReceiver = true;
 
             // Clear the cache of parameter entries
             lightParameterEntries.Clear();
@@ -299,6 +280,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
                     if (modelLightInfos.ConstantBufferReflection != null)
                     {
+                        var isShadowReceiver = renderMesh.Material.IsShadowReceiver;
+                        var parameters = isShadowReceiver ? modelLights.Parameters.Parameters : modelLights.Parameters.ParametersNoShadows;
+
                         //var lightingConstantBufferOffset = RenderSystem.BufferPool.Allocate(modelLightInfos.Resources.ConstantBufferSize);
                         //modelLightInfos.Resources.DescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, lightingConstantBufferOffset, modelLightInfos.Resources.ConstantBufferSize);
                         var mappedCB = modelLightInfos.Resources.ConstantBuffer.Data;
@@ -308,7 +292,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         //        without ParameterCollection so that it is just a few simple copies without ParamterKey lookup
                         foreach (var constantBufferMember in modelLightInfos.ConstantBufferReflection.Members)
                         {
-                            var internalValue = modelLights.Parameters.Parameters.GetInternalValue(constantBufferMember.Param.Key);
+                            var internalValue = parameters.GetInternalValue(constantBufferMember.Param.Key);
                             if (internalValue != null)
                             {
                                 ReadFrom(internalValue, mappedCB, constantBufferMember);
@@ -318,11 +302,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         for (int resourceSlot = 0; resourceSlot < descriptorSetLayoutBuilder.Entries.Count; resourceSlot++)
                         {
                             var layoutEntry = descriptorSetLayoutBuilder.Entries[resourceSlot];
-                            foreach (var parameter in modelLights.Parameters.Parameters)
+                            foreach (var parameter in parameters)
                             {
                                 if (parameter.Key.Name == layoutEntry.Key.Name)
                                 {
-                                    var resourceValue = modelLights.Parameters.Parameters.GetObject(parameter.Key);
+                                    var resourceValue = parameters.GetObject(parameter.Key);
                                     modelLightInfos.Resources.DescriptorSet.SetValue(resourceSlot, resourceValue);
                                 }
                             }
@@ -665,37 +649,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             return true;
         }
-
-        private void PreRenderMesh(RenderContext context, RenderMesh renderMesh)
-        {
-            var contextParameters = context.Parameters;
-            RenderModelLights renderModelLights;
-            if (!modelToLights.TryGetValue(renderMesh.RenderModel, out renderModelLights))
-            {
-                contextParameters.Set(LightingKeys.DirectLightGroups, null);
-                contextParameters.Set(LightingKeys.EnvironmentLights, null);
-                return;
-            }
-
-            // TODO: copy shadow receiver info to mesh
-            var isShadowReceiver = renderMesh.Material.IsShadowReceiver;
-            if (currentModelLightShadersPermutationEntry != renderModelLights.LightShadersPermutation || currentModelShadersParameters != renderModelLights.Parameters || currentShadowReceiver != isShadowReceiver)
-            {
-                currentModelLightShadersPermutationEntry = renderModelLights.LightShadersPermutation;
-                currentModelShadersParameters = renderModelLights.Parameters;
-                currentShadowReceiver = isShadowReceiver;
-
-                if (currentShadowReceiver)
-                {
-                    currentModelShadersParameters.Parameters.CopySharedTo(contextParameters);
-                }
-                else
-                {
-                    currentModelShadersParameters.ParametersNoShadows.CopySharedTo(contextParameters);
-                }
-            }
-        }
-
+        
         private LightShaderPermutationEntry CreateShaderPermutationEntry()
         {
             var shaderEntry = new LightShaderPermutationEntry();
