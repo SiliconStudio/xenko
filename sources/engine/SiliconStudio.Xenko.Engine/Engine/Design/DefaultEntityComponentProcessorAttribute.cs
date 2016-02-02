@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Engine.Design
     /// <summary>
     /// An attribute used to associate a default <see cref="EntityProcessor"/> to an entity component.
     /// </summary>
-    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = true)]
     public class DefaultEntityComponentProcessorAttribute : DynamicTypeAttributeBase
     {
         /// <summary>

@@ -28,7 +28,7 @@
       <ItemGroup>
         <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -66,6 +66,14 @@
   <Choose>
     <When Condition=" '$(XenkoGraphicsApi)' == 'OpenGL' Or '$(XenkoGraphicsApi)' == 'OpenGLES' ">
       <Choose>
+        <When Condition=" '$(SiliconStudioPlatform)' == 'Linux'">
+          <ItemGroup>
+            <Reference Include="OpenTK">
+              <HintPath Condition="'$(SiliconStudioRuntime)' == ''">$(XenkoDependenciesDir)OpenTK\Linux\OpenTK.dll</HintPath>
+              <HintPath Condition="'$(SiliconStudioRuntime)' != ''">$(XenkoDependenciesDir)OpenTK\$(SiliconStudioRuntime)\OpenTK.dll</HintPath>
+            </Reference>
+          </ItemGroup>
+        </When>
         <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
           <ItemGroup>
             <Reference Include="OpenTK">
@@ -83,6 +91,16 @@
           </ItemGroup>
         </When>
       </Choose>
+    </When>
+  </Choose>
+  <Choose>
+    <When Condition="$(SiliconStudioUI.Contains('SDL'))">
+      <ItemGroup>
+        <Content Include="$(XenkoDependenciesDir)\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
+          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+      </ItemGroup>
     </When>
   </Choose>
   <ItemGroup>
@@ -103,7 +121,7 @@
       <HintPath>$(XenkoDependenciesDir)SharpFont\iOS\Release\SharpFont.dll</HintPath>
     </Reference>
   </ItemGroup>
-  <ItemGroup Condition=" '$(SiliconStudioPlatform)' == 'Android'">
+  <ItemGroup Condition="('$(SiliconStudioPlatform)' == 'Android') OR ('$(SiliconStudioPlatform)' == 'Linux')">
     <Reference Include="SharpFont">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>$(XenkoDependenciesDir)SharpFont\Android\Release\SharpFont.dll</HintPath>
@@ -134,6 +152,12 @@
     <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="DepthStencilStateSerializer.cs" />
+    <Compile Include="SDL\Application.cs" />
+    <Compile Include="SDL\Cursor.cs" />
+    <Compile Include="SDL\FormBorderStyle.cs" />
+    <Compile Include="SDL\FormWindowState.cs" />
+    <Compile Include="SDL\SDLMessageLoop.cs" />
+    <Compile Include="SDL\Window.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />

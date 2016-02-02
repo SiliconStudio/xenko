@@ -97,7 +97,7 @@ samplesGenerated
 .DS_Store
 
 ## Build generated
-build/
+sources/tools/Xenko iOS Relay/build/
 DerivedData
 
 ## Various settings

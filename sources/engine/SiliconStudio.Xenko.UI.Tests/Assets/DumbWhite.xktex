@@ -5,6 +5,7 @@ Tags: []
 Source: ../../../data/tests/DumbWhite.dds
 ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 ~Base:
+    ~Id: 95820cfa-26aa-4eba-9131-cf3b885d601d
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000

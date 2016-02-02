@@ -30,11 +30,11 @@
       <ItemGroup>
         <Reference Include="SDL2-CS, Version=0.0.0.0, Culture=neutral, processorArchitecture=MSIL">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>..\..\..\deps\SDL2-CS\SDL2-CS.dll</HintPath>
+          <HintPath>$(XenkoDependenciesDir)\SDL2-CS\SDL2-CS.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
-  </Choose>    
+  </Choose>
   <ItemGroup Condition=" '$(XenkoGraphicsApi)' == 'Direct3D11' ">
     <Reference Include="SharpDX">
       <SpecificVersion>False</SpecificVersion>
@@ -101,14 +101,8 @@
     <Compile Include="OpenTK\GamePlatform.Windows.OpenTK.cs" />
     <Compile Include="OpenTK\GameWindow.Windows.OpenTK.cs" />
     <Compile Include="PreparingDeviceSettingsEventArgs.cs" />
-    <Compile Include="SDL\Application.cs" />
-    <Compile Include="SDL\Cursor.cs" />
-    <Compile Include="SDL\FormBorderStyle.cs" />
-    <Compile Include="SDL\FormWindowState.cs" />
     <Compile Include="SDL\GameForm.SDL.cs" />
     <Compile Include="SDL\GameWindow.SDL.cs" />
-    <Compile Include="SDL\SDLMessageLoop.cs" />
-    <Compile Include="SDL\Window.cs" />
     <Compile Include="Time\AbsoluteStopwatch.cs" />
     <Compile Include="Time\ITimedValue.cs" />
     <Compile Include="Time\TimerTick.cs" />
@@ -161,16 +155,6 @@
   <ItemGroup>
     <Content Include="Resources\Logo.ico" Condition=" '$(SiliconStudioPlatform)' == 'Windows'" />
   </ItemGroup>
-  <Choose>
-    <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
-      <ItemGroup>
-        <Content Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">
-          <Link>%(RecursiveDir)%(Filename)%(Extension)</Link>
-          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-        </Content>
-      </ItemGroup>
-    </When>
-  </Choose>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

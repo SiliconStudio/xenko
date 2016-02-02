@@ -7,47 +7,55 @@ ColorKeyColor: {R: 255, G: 0, B: 255, A: 255}
 Alpha: Explicit
 GenerateMipmaps: true
 Packing:
+    ~Id: 890fc8cc-45e8-457e-9504-0127a7e0e098
     Enabled: false
     BorderSize: 8
 Sprites:
-    -   Source: ../../../data/tests/rotatedUV.dds
+    -   ~Id: 5921d52c-8032-40ef-b1bf-ccd01f4dc444
+        Source: ../../../data/tests/rotatedUV.dds
         Name: uvNotRotated
         TextureRegion: {X: 0, Y: 0, Width: 512, Height: 512}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/rotatedUV.dds
+    -   ~Id: e4ebb020-4671-476b-a71c-5bc1661ec361
+        Source: ../../../data/tests/rotatedUV.dds
         Name: uvRotated90
         TextureRegion: {X: 512, Y: 0, Width: 512, Height: 512}
         Orientation: Rotated90
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/GameScene.jpg
+    -   ~Id: e0811e3a-2a98-4927-a496-dffc044a1a81
+        Source: ../../../data/tests/GameScene.jpg
         Name: GameScreenLeft
         TextureRegion: {X: 0, Y: 0, Width: 512, Height: 512}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/GameScene.jpg
+    -   ~Id: 74a5ff7d-b1e4-4906-9251-242ca761f9c9
+        Source: ../../../data/tests/GameScene.jpg
         Name: GameScreenRight
         TextureRegion: {X: 512, Y: 0, Width: 512, Height: 512}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/BorderButton.dds
+    -   ~Id: 967e4490-7ff2-49da-8cdb-505f1a7ea44b
+        Source: ../../../data/tests/BorderButton.dds
         Name: BorderButton
         TextureRegion: {X: 0, Y: 0, Width: 512, Height: 256}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/GameScene.jpg
+    -   ~Id: 71231993-1f51-44ff-acaf-a4e6c1d50c53
+        Source: ../../../data/tests/GameScene.jpg
         Name: GameScreen
         TextureRegion: {X: 0, Y: 0, Width: 1024, Height: 512}
         Center: {X: 0.0, Y: 0.0}
         Borders: {X: 0.0, Y: 0.0, Z: 0.0, W: 0.0}
         BorderColor: {R: 0, G: 0, B: 0, A: 0}
-    -   Source: ../../../data/tests/Logo.png
+    -   ~Id: fb7b1746-82aa-4a3f-a2d6-1f029b1a8961
+        Source: ../../../data/tests/Logo.png
         Name: Logo
         TextureRegion: {X: 0, Y: 0, Width: 256, Height: 256}
         Center: {X: 0.0, Y: 0.0}

@@ -21,6 +21,7 @@
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows10'">Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Linux'">OpenGL</SiliconStudioXenkoGraphicsApi>
 
     <!--By default, turn on assembly processor-->
     <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioAssemblyProcessor)' == ''">true</SiliconStudioAssemblyProcessor>
@@ -141,6 +142,8 @@
   Assembly Processor
   *****************************************************************************************************************************
   -->
+  <UsingTask TaskName="AssemblyProcessorTask" AssemblyFile="$(SiliconStudioPackageXenko)\deps\AssemblyProcessor\SiliconStudio.AssemblyProcessor.exe"/>
+    
   <Target Name="SiliconStudioRunAssemblyProcessor" AfterTargets="CoreCompile" DependsOnTargets="ResolveProjectReferences" Condition=" '$(SiliconStudioAssemblyProcessor)' == 'true'">
     <WriteLinesToFile File="$(IntermediateOutputPath)XenkoReferences.cache" Lines="@(ReferencePath)" Overwrite="true" />
     <PropertyGroup>
@@ -154,15 +157,12 @@
       <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Native.dll"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions Condition="'$(SiliconStudioAutoTesting)' == 'true'">$(SiliconStudioAssemblyProcessorOptions) --add-reference="$(SiliconStudioPackageXenkoPlatformBin)\SiliconStudio.Xenko.Games.Testing.dll"</SiliconStudioAssemblyProcessorOptions>
       <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --references-file="$(IntermediateOutputPath)XenkoReferences.cache"</SiliconStudioAssemblyProcessorOptions>
-      <SiliconStudioAssemblyProcessorCommand Condition="'$(SiliconStudioAssemblyProcessorCommand)' == ''">"$(SiliconStudioPackageXenkoSdkBin)\SiliconStudio.AssemblyProcessor.exe" --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) $(SiliconStudioAssemblyProcessorOptions) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)"</SiliconStudioAssemblyProcessorCommand>
-      <SiliconStudioAssemblyProcessorCommand Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorCommand) --signkeyfile="$(AssemblyOriginatorKeyFile)" --delete-on-error</SiliconStudioAssemblyProcessorCommand>
+      <SiliconStudioAssemblyProcessorOptions>$(SiliconStudioAssemblyProcessorOptions) --platform=$(SiliconStudioPlatform) --targetFramework=$(SiliconStudioNETFrameworkVersion) "$(IntermediateOutputPath)$(TargetName)$(TargetExt)"</SiliconStudioAssemblyProcessorOptions>
+      <SiliconStudioAssemblyProcessorOptions Condition="'$(AssemblyOriginatorKeyFile)' != ''">$(SiliconStudioAssemblyProcessorOptions) --signkeyfile="$(AssemblyOriginatorKeyFile)" --delete-on-error</SiliconStudioAssemblyProcessorOptions>
     </PropertyGroup>
     
     <!-- Run assembly processor -->
-    <Message Importance="Normal" Text="SiliconStudio AssemblyProcessor: $(SiliconStudioAssemblyProcessorCommand)"/>
-    <Exec Command="$(SiliconStudioAssemblyProcessorCommand)">
-      <Output TaskParameter="ExitCode" PropertyName="SiliconStudioAssemblyProcessorErrorCode"/>
-    </Exec>
+    <AssemblyProcessorTask Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
   </Target>
 
   <!-- 

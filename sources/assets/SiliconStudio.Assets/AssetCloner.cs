@@ -109,7 +109,7 @@ namespace SiliconStudio.Assets
             if (objectReferences != null && newObject != null)
             {
                 var previousObject = objectReferences[i];
-                ShadowObject.CopyDynamicProperties(previousObject, newObject);
+                ShadowObject.Copy(previousObject, newObject);
                 if ((flags & AssetClonerFlags.RemoveOverrides) != 0)
                 {
                     Override.RemoveFrom(newObject);

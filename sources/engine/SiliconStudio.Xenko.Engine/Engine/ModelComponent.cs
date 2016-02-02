@@ -16,17 +16,15 @@ namespace SiliconStudio.Xenko.Engine
     /// Add a <see cref="Model"/> to an <see cref="Entity"/>, that will be used during rendering.
     /// </summary>
     [DataContract("ModelComponent")]
-    [Display(11000, "Model", Expand = ExpandRule.Once)]
+    [Display("Model", Expand = ExpandRule.Once)]
     [DefaultEntityComponentRenderer(typeof(ModelComponentAndPickingRenderer))]
     [DefaultEntityComponentProcessor(typeof(ModelProcessor))]
+    [ComponentOrder(11000)]
     public sealed class ModelComponent : ActivableEntityComponent, IModelInstance
     {
-        public static PropertyKey<ModelComponent> Key = new PropertyKey<ModelComponent>("Key", typeof(ModelComponent));
-
         private Model model;
         private SkeletonUpdater skeleton;
         private bool modelViewHierarchyDirty = true;
-        private readonly List<Material> materials = new List<Material>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ModelComponent"/> class.
@@ -78,10 +76,8 @@ namespace SiliconStudio.Xenko.Engine
         /// </value>
         /// <userdoc>The list of materials to use with the model. This list overrides the default materials of the model.</userdoc>
         [DataMember(20)]
-        public List<Material> Materials
-        {
-            get { return materials; }
-        }
+        [Category]
+        public List<Material> Materials { get; } = new List<Material>();
 
         [DataMemberIgnore, DataMemberUpdatable]
         [DataMember]
@@ -128,7 +124,7 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         /// <value>The parameters.</value>
         [DataMemberIgnore]
-        public ParameterCollection Parameters { get; private set; }
+        public ParameterCollection Parameters { get; }
 
         /// <summary>
         /// Gets the bounding box in world space.
@@ -221,11 +217,6 @@ namespace SiliconStudio.Xenko.Engine
             // Update the bounds
             BoundingBox = modelBoundingBox;
             BoundingSphere = modelBoundingSphere;
-        }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
         }
     }
 }

@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
+#if (SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP || SILICONSTUDIO_PLATFORM_LINUX) && SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && SILICONSTUDIO_XENKO_UI_OPENTK
 
 using System;
 using OpenTK.Input;
@@ -22,7 +22,9 @@ namespace SiliconStudio.Xenko.Input
             HasMouse = true;
             HasPointer = true;
 
+#if !SILICONSTUDIO_PLATFORM_LINUX
             GamePadFactories.Add(new XInputGamePadFactory());
+#endif
         }
 
         public override void Initialize(GameContext<OpenTK.GameWindow> context)
@@ -45,11 +47,11 @@ namespace SiliconStudio.Xenko.Input
         {
             gameWindow = gameContext.Control;
 
-            gameWindow.Keyboard.KeyDown += Keyboard_KeyDown;
-            gameWindow.Keyboard.KeyUp += Keyboard_KeyUp;
-            gameWindow.Mouse.ButtonDown += Mouse_ButtonDown;
-            gameWindow.Mouse.ButtonUp += Mouse_ButtonUp;
-            gameWindow.Mouse.Move += Mouse_Move;
+            gameWindow.KeyDown += Keyboard_KeyDown;
+            gameWindow.KeyUp += Keyboard_KeyUp;
+            gameWindow.MouseDown += Mouse_ButtonDown;
+            gameWindow.MouseUp += Mouse_ButtonUp;
+            gameWindow.MouseMove += Mouse_Move;
             gameWindow.Resize += GameWindowOnResize;
 
             GameWindowOnResize(null, EventArgs.Empty);

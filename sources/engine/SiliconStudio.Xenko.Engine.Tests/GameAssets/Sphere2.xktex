@@ -9,6 +9,7 @@ Format: Color32Bits
 Alpha: Interpolated
 GenerateMipmaps: false
 ~Base:
+    ~Id: cac3e0df-1ae7-40e2-899d-0d8d7e7274b7
     Location: --import--
     Asset: !Texture
         Id: 00000000-0000-0000-0000-000000000000
