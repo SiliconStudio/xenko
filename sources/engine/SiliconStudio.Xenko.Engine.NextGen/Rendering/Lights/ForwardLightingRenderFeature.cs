@@ -30,7 +30,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private const string EnvironmentLightsCompositionName = "environmentLights";
 
         private bool isModelComponentRendererSetup;
-        private readonly List<RenderView> shadowRenderViews = new List<RenderView>();
 
         private LightProcessor lightProcessor;
 
@@ -88,6 +87,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private static readonly string[] DirectLightGroupsCompositionNames;
         private static readonly string[] EnvironmentLightGroupsCompositionNames;
+
+        public RenderStage ShadowmapRenderStage { get; set; }
 
         static ForwardLightingRenderFeature()
         {
@@ -187,7 +188,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (RenderSystem.RenderContextOld.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
                     && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
                 {
-                    shadowMapRenderer = new ShadowMapRenderer(RenderSystem);
+                    shadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowmapRenderStage);
                     shadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
                     shadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
                 }
@@ -200,30 +201,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             // Draw shadow maps
             shadowMapRenderer?.Extract(RenderSystem.RenderContextOld, visibleLightsWithShadows);
-
-            // Cleanup previous shadow render views
-            foreach (var renderView in shadowRenderViews)
-                RenderSystem.Views.Remove(renderView);
-            shadowRenderViews.Clear();
-
-            foreach (var shadowMapTexture in shadowMapRenderer.LightComponentsWithShadows)
-            {
-                ((ILightShadowMapRenderer)shadowMapTexture.Value.Renderer).Extract(RenderSystem.RenderContextOld, shadowMapRenderer, shadowMapTexture.Value);
-                for (int cascadeIndex = 0; cascadeIndex < shadowMapTexture.Value.CascadeCount; cascadeIndex++)
-                {
-                    var shadowRenderView = new ShadowMapRenderView
-                    {
-                        RenderStages = { ShadowmapRenderStage },
-                        ShadowMapTexture = shadowMapTexture.Value,
-                        Rectangle = shadowMapTexture.Value.GetRectangle(cascadeIndex)
-                    };
-
-                    ((ILightShadowMapRenderer)shadowMapTexture.Value.Renderer).GetCascadeViewParameters(shadowMapTexture.Value, cascadeIndex, out shadowRenderView.View, out shadowRenderView.Projection);
-
-                    shadowRenderViews.Add(shadowRenderView);
-                    RenderSystem.Views.Add(shadowRenderView);
-                }
-            }
 
             // Prepare active renderers in an ordered list (by type and shadow on/off)
             CollectActiveLightRenderers(RenderSystem.RenderContextOld);
@@ -246,8 +223,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 shaderEntry.Value.ResetGroupDatas();
             }
         }
-
-        public RenderStage ShadowmapRenderStage { get; set; }
 
         /// <inheritdoc/>
         public override void PrepareEffectPermutations(NextGenRenderSystem RenderSystem)
