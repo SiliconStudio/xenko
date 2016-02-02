@@ -45,6 +45,7 @@
     <Compile Include="INodeBuilder.cs" />
     <Compile Include="NodeConstructedArgs.cs" />
     <Compile Include="NodeConstructingArgs.cs" />
+    <Compile Include="NodeFactoryId.cs" />
     <Compile Include="QuantumConsistencyException.cs" />
     <Compile Include="ModelConsistencyCheckVisitor.cs" />
     <Compile Include="GraphNodePath.cs" />
