@@ -112,10 +112,13 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             Scene = new Scene { Settings = { GraphicsCompositor = graphicsCompositor } };
             Scene.Entities.Add(Camera);
 
-            var ambientLight = new Entity { new LightComponent { Type = new LightAmbient { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 } };
-            //var ambientLight = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 } };
-            //ambientLight.Transform.RotationEulerXYZ = new Vector3(0.0f, (float) Math.PI, 0.0f);
-            Scene.Entities.Add(ambientLight);
+            //var ambientLight = new Entity { new LightComponent { Type = new LightAmbient { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 } };
+            ////var ambientLight = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White) }, Intensity = 1 } };
+            ////ambientLight.Transform.RotationEulerXYZ = new Vector3(0.0f, (float) Math.PI, 0.0f);
+            //Scene.Entities.Add(ambientLight);
+
+            var directionalLight = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White), Shadow = { Enabled = true } }, Intensity = 1 }, };
+            Scene.Entities.Add(directionalLight);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
 

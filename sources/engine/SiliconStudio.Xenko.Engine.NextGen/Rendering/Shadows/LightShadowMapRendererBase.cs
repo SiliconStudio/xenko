@@ -1,10 +1,11 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Lights;
 
-namespace SiliconStudio.Xenko.Rendering.Shadows
+namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 {
     public abstract class LightShadowMapRendererBase : ILightShadowMapRenderer
     {
@@ -53,7 +54,10 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 
         public abstract ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
 
-        public abstract void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
+        public virtual void Render(RenderContext context, Shadows.ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
+        {
+            throw new NotImplementedException();
+        }
 
         public abstract void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
 

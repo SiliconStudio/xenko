@@ -1,13 +1,14 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Xenko.Rendering.Shadows
+namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 {
     /// <summary>
     /// Renders a shadow map from a directional light.
@@ -38,92 +39,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         {
             return new LightSpotShadowMapGroupShaderData(compositionKey, shadowType, maxLightCount);
         }
-
-        public override void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
-        {
-            // TODO: Min and Max distance can be auto-computed from readback from Z buffer
-            var shadow = (LightStandardShadowMap)lightShadowMap.Shadow;
-            var shadowCamera = shadowMapRenderer.ShadowCamera;
-
-            // Computes the cascade splits
-            var lightComponent = lightShadowMap.LightComponent;
-            var spotLight = (LightSpot)lightComponent.Type;
-            var position = lightComponent.Position;
-            var direction = lightComponent.Direction;
-            var target = position + spotLight.Range * direction;
-            var orthoSize = spotLight.LightRadiusAtTarget;
-
-            // Fake value
-            // It will be setup by next loop
-            Vector3 side = Vector3.UnitX;
-            Vector3 upDirection = Vector3.UnitX;
-
-            // Select best Up vector
-            // TODO: User preference?
-            foreach (var vectorUp in VectorUps)
-            {
-                if (Vector3.Dot(direction, vectorUp) < (1.0 - 0.0001))
-                {
-                    side = Vector3.Normalize(Vector3.Cross(vectorUp, direction));
-                    upDirection = Vector3.Normalize(Vector3.Cross(direction, side));
-                    break;
-                }
-            }
-
-            // Get new shader data from pool
-            var shaderData = shaderDataPool.Add();
-            lightShadowMap.ShaderData = shaderData;
-            shaderData.Texture = lightShadowMap.Atlas.Texture;
-            shaderData.DepthBias = shadow.BiasParameters.DepthBias;
-            shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
-
-            var graphicsDevice = context.GraphicsDevice;
-
-            graphicsDevice.PushState();
-
-            // Update the shadow camera
-            shadowCamera.ViewMatrix = Matrix.LookAtLH(position, target, upDirection); // View;;
-            // TODO: Calculation of near and far is hardcoded/approximated. We should find a better way to calculate it.
-            shadowCamera.ProjectionMatrix = Matrix.PerspectiveFovLH(spotLight.AngleOuterInRadians, 1.0f, 0.01f, spotLight.Range * 2.0f); // Perspective Projection for spotlights
-            shadowCamera.Update();
-
-            var shadowMapRectangle = lightShadowMap.GetRectangle(0);
-
-            var cascadeTextureCoords = new Vector4((float)shadowMapRectangle.Left / lightShadowMap.Atlas.Width,
-                (float)shadowMapRectangle.Top / lightShadowMap.Atlas.Height,
-                (float)shadowMapRectangle.Right / lightShadowMap.Atlas.Width,
-                (float)shadowMapRectangle.Bottom / lightShadowMap.Atlas.Height);
-
-            //// Add border (avoid using edges due to bilinear filtering and blur)
-            //var borderSizeU = VsmBlurSize / lightShadowMap.Atlas.Width;
-            //var borderSizeV = VsmBlurSize / lightShadowMap.Atlas.Height;
-            //cascadeTextureCoords.X += borderSizeU;
-            //cascadeTextureCoords.Y += borderSizeV;
-            //cascadeTextureCoords.Z -= borderSizeU;
-            //cascadeTextureCoords.W -= borderSizeV;
-
-            float leftX = (float)lightShadowMap.Size / lightShadowMap.Atlas.Width * 0.5f;
-            float leftY = (float)lightShadowMap.Size / lightShadowMap.Atlas.Height * 0.5f;
-            float centerX = 0.5f * (cascadeTextureCoords.X + cascadeTextureCoords.Z);
-            float centerY = 0.5f * (cascadeTextureCoords.Y + cascadeTextureCoords.W);
-
-            // Compute receiver view proj matrix
-            Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
-            // Calculate View Proj matrix from World space to Cascade space
-            Matrix.Multiply(ref shadowCamera.ViewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV);
-
-            // Render to the atlas
-            lightShadowMap.Atlas.RenderFrame.Activate(context);
-            graphicsDevice.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
-
-            // Render the scene for this cascade
-            shadowMapRenderer.RenderCasters(context, lightShadowMap.LightComponent.CullingMask);
-                //// Copy texture coords with border
-                //cascades[cascadeLevel].CascadeLevels.CascadeTextureCoordsBorder = cascadeTextureCoords;
-         
-            graphicsDevice.PopState();
-        }
-
+        
         public override void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
         {
             throw new System.NotImplementedException();
