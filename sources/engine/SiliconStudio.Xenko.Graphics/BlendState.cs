@@ -50,8 +50,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             return blendState;
         }
-
-
+        
         /// <summary>
         /// Create a new fake blend state for serialization.
         /// </summary>

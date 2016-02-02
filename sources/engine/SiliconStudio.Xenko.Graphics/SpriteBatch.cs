@@ -6,7 +6,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Native;
 
 namespace SiliconStudio.Xenko.Graphics

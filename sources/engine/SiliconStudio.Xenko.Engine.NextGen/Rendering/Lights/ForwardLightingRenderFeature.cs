@@ -243,8 +243,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
+        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare()
+        public override void Prepare(NextGenRenderContext context)
         {
             // Copy data to cbuffer
             // TODO: Rewrite it with new render system in mind (should be much faster/efficient)
@@ -383,7 +384,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override void Draw(RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
         }
 

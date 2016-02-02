@@ -170,7 +170,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Graphics\PipelineState.cs" />
+    <Compile Include="Rendering\NextGenRenderContext.cs" />
     <Compile Include="Rendering\Properties.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
