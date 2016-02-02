@@ -40,8 +40,6 @@ namespace SiliconStudio.Xenko.Rendering
         // TODO: Maybe make this structure more simpler (second Dictionary is only here for event with ParameterKey == null mapping to all keys)
         private Dictionary<ValueChangedEventKey, Dictionary<ParameterKey, InternalValueChangedDelegate>> valueChangedEvents;
 
-        private List<ParameterDynamicValue> dynamicValues;
-
         // Match a specific ordering given by "keys" (especially useful for effects or components)
         private Dictionary<ParameterKey, int> keyMapping;
 
@@ -82,32 +80,6 @@ namespace SiliconStudio.Xenko.Rendering
             get { return sources.ToArray(); }
         }
 
-        /// <summary>
-        /// Gets the dynamic values.
-        /// </summary>
-        [DataMemberIgnore]
-        public IEnumerable<ParameterDynamicValue> DynamicValues
-        {
-            get
-            {
-                foreach (var source in Sources)
-                {
-                    foreach (var dynamicValue in ((IParameterCollectionInheritanceInternal)source).DynamicValues)
-                    {
-                        // Ignore if defined in this collection (override)
-                        if (dynamicValues == null || dynamicValues.All(x => x.Target != dynamicValue.Target))
-                            yield return dynamicValue;
-                    }
-                }
-
-                if (dynamicValues != null)
-                {
-                    foreach (var dynamicValue in dynamicValues)
-                        yield return dynamicValue;
-                }
-            }
-        }
-
         void ICollection<KeyValuePair<ParameterKey, object>>.Add(KeyValuePair<ParameterKey, object> item)
         {
             SetObject(item.Key, item.Value);
@@ -118,8 +90,6 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: Proper clean that also propagate events to sources?
             sources.Clear();
             InternalValues.Clear();
-            if (dynamicValues != null)
-                dynamicValues.Clear();
             if (valueChangedEvents != null)
                 valueChangedEvents.Clear();
             IndexedInternalValues = null;
@@ -530,18 +500,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             GetValue(InternalValues.Items[index].Value, out result);
             return true;
-        }
-
-        public void AddDynamic<T>(ParameterKey<T> key, ParameterDynamicValue<T> dynamicValue)
-        {
-            if (key == null) throw new ArgumentNullException("key");
-            if (dynamicValue == null) throw new ArgumentNullException("dynamicValue");
-
-            SetDefault(key, true);
-            dynamicValue.Target = key;
-            if (dynamicValues == null)
-                dynamicValues = new List<ParameterDynamicValue>();
-            dynamicValues.Add(dynamicValue);
         }
 
         /// <summary>
