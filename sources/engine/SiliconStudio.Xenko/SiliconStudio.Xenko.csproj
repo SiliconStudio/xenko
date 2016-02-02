@@ -110,11 +110,6 @@
     <Compile Include="Effects\IParameterCollectionInheritanceInternal.cs" />
     <Compile Include="Effects\ParameterCollection.cs" />
     <Compile Include="Effects\ParameterCollectionExtensions.cs" />
-    <Compile Include="Effects\ParameterDynamicBase.cs">
-      <DependentUpon>ParameterDynamicBase.tt</DependentUpon>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-    </Compile>
     <Compile Include="Effects\ParameterKey.cs" />
     <Compile Include="Effects\ParameterKeyValueMetadata.cs" />
     <Compile Include="Effects\ParameterKeys.cs" />
@@ -149,10 +144,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Effects\ParameterDynamicBase.tt">
-      <Generator>TextTemplatingFileGenerator</Generator>
-      <LastGenOutput>ParameterDynamicBase.cs</LastGenOutput>
-    </None>
     <Compile Include="Graphics\StandardImageHelper.iOS.cs" />
   </ItemGroup>
   <ItemGroup>

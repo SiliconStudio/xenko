@@ -346,29 +346,13 @@ namespace SiliconStudio.Xenko.Graphics
             // This code is ugly (esp. constant buffer one), it needs to be done directly within processing (as soon as new system is adopted)
             var keys = new HashSet<ParameterKey>();
 
-            var allParameterDependencies = new Dictionary<ParameterKey, ParameterDependency>();
-            var parameterDependencies = new HashSet<ParameterDependency>();
-
             // Always add graphics states
             keys.Add(RasterizerStateKey);
             keys.Add(DepthStencilStateKey);
             keys.Add(BlendStateKey);
 
-            // Handle dynamic values
-            foreach (var dynamicValue in defaultParameters.DynamicValues)
-            {
-                allParameterDependencies[dynamicValue.Target] = new ParameterDependency { Destination = dynamicValue.Target, Dynamic = dynamicValue, Sources = dynamicValue.Dependencies };
-            }
-
-            // effectPass.DefaultParameters.Keys contains shader requested keys.
-            // Compute dependencies and add them in "keys".
-            foreach (var key in defaultParameters.Keys)
-            {
-                UpdateRequiredKeys(keys, allParameterDependencies, key, parameterDependencies);
-            }
-
             // Make sure every key (in "keys") is set in DefaultParameters to have a valid fallback
-            foreach (var key in keys)
+            foreach (var key in defaultParameters.Keys)
             {
                 defaultParameters.RegisterParameter(key, false);
             }
@@ -399,31 +383,6 @@ namespace SiliconStudio.Xenko.Graphics
 
                 // Update the hash
                 constantBuffer.Hash = hashBuilder.ComputeHash();
-            }
-        }
-
-        private void UpdateRequiredKeys(HashSet<ParameterKey> requiredKeys, Dictionary<ParameterKey, ParameterDependency> allDependencies, ParameterKey key, HashSet<ParameterDependency> requiredDependencies)
-        {
-            if (requiredKeys.Add(key))
-            {
-                ParameterDependency dependency;
-                if (allDependencies.TryGetValue(key, out dependency))
-                {
-                    requiredDependencies.Add(dependency);
-                    foreach (var source in dependency.Sources)
-                    {
-                        // Add Dependencies (if not already overriden)
-                        // This is done only at this level because top-level keys dependencies are supposed to be present.
-                        var sourceMetadata = source.Metadatas.OfType<ParameterKeyValueMetadata>().FirstOrDefault();
-                        if (sourceMetadata != null
-                            && sourceMetadata.DefaultDynamicValue != null
-                            && !allDependencies.ContainsKey(source))
-                        {
-                            allDependencies[source] = new ParameterDependency { Destination = source, Dynamic = sourceMetadata.DefaultDynamicValue, Sources = sourceMetadata.DefaultDynamicValue.Dependencies };
-                        }
-                        UpdateRequiredKeys(requiredKeys, allDependencies, source, requiredDependencies);
-                    }
-                }
             }
         }
     }

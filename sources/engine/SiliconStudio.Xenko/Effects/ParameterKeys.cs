@@ -101,26 +101,6 @@ namespace SiliconStudio.Xenko.Rendering
             return New<T>(default(T), name);
         }
 
-        public static ParameterKey<T> NewDynamic<T>(ParameterDynamicValue<T> dynamicValue, string name = null)
-        {
-            if (name == null)
-                name = string.Empty;
-
-            var metadata = new ParameterKeyValueMetadata<T>(dynamicValue);
-            var result = new ParameterKey<T>(name, 1, metadata);
-            return result;
-        }
-
-        public static ParameterKey<T[]> NewDynamic<T>(int arraySize, ParameterDynamicValue<T[]> dynamicValue, string name = null) where T : struct
-        {
-            if (name == null)
-                name = string.Empty;
-
-            var metadata = new ParameterKeyValueMetadata<T[]>(dynamicValue);
-            var result = new ParameterKey<T[]>(name, arraySize, metadata);
-            return result;
-        }
-        
         /// <summary>
         /// Creates the key with specified index.
         /// </summary>
@@ -302,7 +282,7 @@ namespace SiliconStudio.Xenko.Rendering
                             baseParameterKeyType = baseParameterKeyType.GetTypeInfo().BaseType;
 
                         // Get default value and use it for the new subkey
-                        var defaultValue = key.DefaultValueMetadata.DefaultDynamicValue ?? key.DefaultValueMetadata.GetDefaultValue();
+                        var defaultValue = key.DefaultValueMetadata.GetDefaultValue();
 
                         // Create metadata
                         var metadataParameters = defaultValue != null ? new[] { defaultValue } : new object[0]; 

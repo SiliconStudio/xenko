@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
         public static readonly ParameterKey<float> Rotation = ParameterKeys.New(0.0f);
 
-        public static readonly ParameterKey<Matrix> SkyMatrix = ParameterKeys.NewDynamic(ParameterDynamicValue.New<Matrix, float>(Rotation, UpdateSkyMatrix));
+        public static readonly ParameterKey<Matrix> SkyMatrix = ParameterKeys.New(Matrix.Identity);
 
         public static readonly ParameterKey<ShaderSource> Shader = ParameterKeys.New<ShaderSource>();
 
@@ -22,10 +22,5 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         public static readonly ParameterKey<ShaderSource> SpecularLighting = ParameterKeys.New<ShaderSource>();
 
         public static readonly ParameterKey<Texture> CubeMap = ParameterKeys.New<Texture>();
-
-        private static void UpdateSkyMatrix(ref float angle, ref Matrix output)
-        {
-            Matrix.RotationY(MathUtil.DegreesToRadians(angle), out output);
-        }
     }
 }

@@ -136,7 +136,6 @@
     <Compile Include="EffectInstance.cs" />
     <Compile Include="EffectBinder.cs" />
     <Compile Include="EffectDescriptorSetReflection.cs" />
-    <Compile Include="Effects\ParameterDependency.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
     <Compile Include="Font\FontDataFactory.cs" />
     <Compile Include="Font\StaticSpriteFontContentSerializer.cs" />

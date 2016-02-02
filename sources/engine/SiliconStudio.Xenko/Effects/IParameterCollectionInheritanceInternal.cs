@@ -15,6 +15,5 @@ namespace SiliconStudio.Xenko.Rendering
         IEnumerable<KeyValuePair<ParameterKey, ParameterCollection.InternalValue>> GetInternalValues();
         ParameterCollection GetParameterCollection();
         ParameterCollection.OnUpdateValueDelegate GetUpdateValueDelegate(ParameterCollection.OnUpdateValueDelegate original);
-        IEnumerable<ParameterDynamicValue> DynamicValues { get; }
     }
 }
