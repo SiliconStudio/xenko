@@ -22,8 +22,6 @@ namespace SiliconStudio.Xenko.Graphics
     {
         private GraphicsDevice graphicsDeviceDefault;
         private EffectProgram program;
-        private EffectParameterUpdaterDefinition updaterDefinition;
-        private EffectParameterResourceBinding[] resourceBindings;
         private ParameterCollection defaultParameters;
         private EffectReflection reflection;
         private EffectInputSignature inputSignature;
@@ -93,19 +91,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        internal EffectParameterResourceBinding GetParameterFastUpdater<T>(ParameterKey<T> value)
-        {
-            for (int i = 0; i < resourceBindings.Length; i++)
-            {
-                if (resourceBindings[i].Description.Param.Key == value)
-                {
-                    return resourceBindings[i];
-                }
-            }
-
-            throw new ArgumentException("Parameter resource binding not found.", "value");
-        }
-
         public void ApplyProgram(GraphicsDevice graphicsDevice)
         {
             PrepareApply(graphicsDevice);
@@ -131,13 +116,11 @@ namespace SiliconStudio.Xenko.Graphics
             reflection = program.Reflection;
 
             // prepare resource bindings used internally
-            resourceBindings = new EffectParameterResourceBinding[reflection.ResourceBindings.Count];
-            for (int i = 0; i < resourceBindings.Length; i++)
+            for (int i = 0; i < reflection.ResourceBindings.Count; i++)
             {
                 var resourceBinding = reflection.ResourceBindings[i];
                 UpdateResourceBindingKey(ref resourceBinding);
                 reflection.ResourceBindings[i] = resourceBinding;
-                resourceBindings[i].Description = resourceBinding;
             }
             foreach (var constantBuffer in reflection.ConstantBuffers)
             {
@@ -160,14 +143,14 @@ namespace SiliconStudio.Xenko.Graphics
             var constantBufferKeys = new Dictionary<string, ParameterKey<ParameterConstantBuffer>>();
 
             // Create parameter bindings
-            for (int i = 0; i < resourceBindings.Length; i++)
+            for (int i = 0; i < reflection.ResourceBindings.Count; i++)
             {
                 // Update binding key
-                var key = resourceBindings[i].Description.Param.Key;
+                var key = reflection.ResourceBindings[i].Param.Key;
 
-                if (resourceBindings[i].Description.Param.Class == EffectParameterClass.Sampler)
+                if (reflection.ResourceBindings[i].Param.Class == EffectParameterClass.Sampler)
                 {
-                    var samplerBinding = reflection.SamplerStates.FirstOrDefault(x => x.KeyName == resourceBindings[i].Description.Param.KeyName);
+                    var samplerBinding = reflection.SamplerStates.FirstOrDefault(x => x.KeyName == reflection.ResourceBindings[i].Param.KeyName);
                     if (samplerBinding != null)
                     {
                         samplerBinding.Key = key;
@@ -177,7 +160,7 @@ namespace SiliconStudio.Xenko.Graphics
                 }
 
                 // ConstantBuffers are handled by next loop
-                if (resourceBindings[i].Description.Param.Class != EffectParameterClass.ConstantBuffer)
+                if (reflection.ResourceBindings[i].Param.Class != EffectParameterClass.ConstantBuffer)
                 {
                     shaderParameters.RegisterParameter(key, false);
                 }
@@ -202,13 +185,13 @@ namespace SiliconStudio.Xenko.Graphics
                 var constantBufferKey = ParameterKeys.New(parameterConstantBuffer, constantBuffer.Name);
                 shaderParameters.RegisterParameter(constantBufferKey, false);
 
-                for (int i = 0; i < resourceBindings.Length; i++)
-                {
-                    if (resourceBindings[i].Description.Param.Class == EffectParameterClass.ConstantBuffer && resourceBindings[i].Description.Param.Key.Name == constantBuffer.Name)
-                    {
-                        resourceBindings[i].Description.Param.Key = constantBufferKey;
-                    }
-                }
+                //for (int i = 0; i < resourceBindings.Length; i++)
+                //{
+                //    if (resourceBindings[i].Description.Param.Class == EffectParameterClass.ConstantBuffer && resourceBindings[i].Description.Param.Key.Name == constantBuffer.Name)
+                //    {
+                //        resourceBindings[i].Description.Param.Key = constantBufferKey;
+                //    }
+                //}
 
                 // Update constant buffer mapping (to avoid name clashes)
                 constantBufferKeys[constantBuffer.Name] = constantBufferKey;
@@ -394,17 +377,6 @@ namespace SiliconStudio.Xenko.Graphics
                 defaultParameters.RegisterParameter(key, false);
             }
 
-            updaterDefinition = new EffectParameterUpdaterDefinition(keys, parameterDependencies);
-
-            // Cache internal values by specified index in EffectPass parameters (since they will be used by a given EffectPass.ParameterUpdater)
-            var keyMapping = updaterDefinition.SortedKeys.Select((x, i) => new { x, i }).ToDictionary(k => k.x, k => k.i);
-            defaultParameters.SetKeyMapping(keyMapping);
-
-            for (int i = 0; i < resourceBindings.Length; ++i)
-            {
-                resourceBindings[i].Description.Param.KeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, resourceBindings[i].Description.Param.Key);
-            }
-
             // Update Constant buffers description
             foreach (var internalValue in defaultParameters.InternalValues)
             {
@@ -420,7 +392,6 @@ namespace SiliconStudio.Xenko.Graphics
                     for (int i = 0; i < cb.ConstantBufferDesc.Members.Length; ++i)
                     {
                         var member = cb.ConstantBufferDesc.Members[i];
-                        member.Param.KeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, member.Param.Key);
                         cb.ConstantBufferDesc.Members[i] = member;
 
                         hashBuilder.Write(member.Param.RawName);

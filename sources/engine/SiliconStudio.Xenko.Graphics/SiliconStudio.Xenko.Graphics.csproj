@@ -225,7 +225,6 @@
     <Compile Include="Effects\EffectParameterResourceBinding.cs" />
     <Compile Include="Effects\EffectStateBindings.cs" />
     <Compile Include="Effects\ParameterConstantBuffer.cs" />
-    <Compile Include="Effects\StageStatus.cs" />
     <Compile Include="Font\FontHelper.cs" />
     <Compile Include="Font\FontManager.cs" />
     <Compile Include="Font\CharacterBitmap.cs" />
