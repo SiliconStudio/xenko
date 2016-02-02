@@ -136,7 +136,6 @@
     <Compile Include="EffectInstance.cs" />
     <Compile Include="EffectBinder.cs" />
     <Compile Include="EffectDescriptorSetReflection.cs" />
-    <Compile Include="Effects\EffectParameterUpdaterDefinition.cs" />
     <Compile Include="Effects\ParameterDependency.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
     <Compile Include="Font\FontDataFactory.cs" />
@@ -218,13 +217,10 @@
     <Compile Include="OpenGL\VertexAttrib.cs" />
     <Compile Include="ResumeManager.cs" />
     <Compile Include="Direct3D\VertexArrayLayout.Direct3D.cs" />
-    <Compile Include="Effects\ConstantBufferData.cs" />
     <Compile Include="Effects\Effect.cs" />
     <Compile Include="EffectInputSignature.cs" />
     <Compile Include="Effects\EffectSerializer.cs" />
-    <Compile Include="Effects\EffectParameterResourceBinding.cs" />
     <Compile Include="Effects\EffectStateBindings.cs" />
-    <Compile Include="Effects\ParameterConstantBuffer.cs" />
     <Compile Include="Font\FontHelper.cs" />
     <Compile Include="Font\FontManager.cs" />
     <Compile Include="Font\CharacterBitmap.cs" />

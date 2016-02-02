@@ -95,7 +95,6 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly int indexStructSize;
 
         private readonly ParameterCollection parameters;
-        private EffectParameterCollectionGroup defaultParameterCollectionGroup;
 
         /// <summary>
         /// Boolean indicating if we are between a call of Begin and End.
@@ -138,7 +137,6 @@ namespace SiliconStudio.Xenko.Graphics
             vertexStructSize = vertexDeclaration.CalculateSize();
 
             parameters = new ParameterCollection();
-            defaultParameterCollectionGroup = new EffectParameterCollectionGroup(device, DefaultEffect, new[] { parameters });
             
             // Creates the vertex buffer (shared by within a device context).
             ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect, vertexDeclaration, resourceBufferInfo, indexStructSize));
@@ -164,7 +162,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="sessionRasterizerState">Rasterization state used for the Begin/End session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the Begin/End session</param>
         /// <exception cref="System.InvalidOperationException">Only one SpriteBatch at a time can use SpriteSortMode.Immediate</exception>
-        protected void Begin(EffectInstance effect, EffectParameterCollectionGroup parameterCollectionGroup, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
+        protected void Begin(EffectInstance effect, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
         {
             CheckEndHasBeenCalled("begin");
 
