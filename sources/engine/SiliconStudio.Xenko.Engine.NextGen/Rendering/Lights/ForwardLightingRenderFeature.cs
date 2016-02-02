@@ -265,6 +265,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     var modelLightInfos = modelLights.Info = new RenderModelLightInfo();
                     var descriptorLayout = renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerLighting");
 
+                    var parameterCollectionLayout = new NextGenParameterCollectionLayout();
+                    parameterCollectionLayout.ProcessResources(descriptorLayout);
+                    modelLightInfos.ResourceCount = parameterCollectionLayout.ResourceCount;
+
                     // First time?
                     // Find lighting cbuffer
                     var lightingConstantBuffer = renderEffect.Effect.Bytecode.Reflection.ConstantBuffers.FirstOrDefault(x => x.Name == "PerLighting");
@@ -273,45 +277,26 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     if (lightingConstantBuffer != null)
                     {
                         modelLightInfos.ConstantBufferReflection = lightingConstantBuffer;
+                        parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
                     }
 
                     modelLightInfos.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerLighting");
                     NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, modelLightInfos.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, modelLightInfos.Resources);
 
-                    //if (modelLightInfos.ConstantBufferReflection != null)
-                    //{
-                    //    var isShadowReceiver = renderMesh.Material.IsShadowReceiver;
-                    //    var parameters = isShadowReceiver ? modelLights.Parameters.Parameters : modelLights.Parameters.ParametersNoShadows;
+                    modelLights.Parameters.Parameters.UpdateLayout(parameterCollectionLayout);
 
-                    //    //var lightingConstantBufferOffset = RenderSystem.BufferPool.Allocate(modelLightInfos.Resources.ConstantBufferSize);
-                    //    //modelLightInfos.Resources.DescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, lightingConstantBufferOffset, modelLightInfos.Resources.ConstantBufferSize);
-                    //    var mappedCB = modelLightInfos.Resources.ConstantBuffer.Data;
+                    // Set resource bindings in PerMaterial resource set
+                    for (int resourceSlot = 0; resourceSlot < modelLightInfos.ResourceCount; ++resourceSlot)
+                    {
+                        modelLightInfos.Resources.DescriptorSet.SetValue(resourceSlot, modelLights.Parameters.Parameters.ResourceValues[resourceSlot]);
+                    }
 
-                    //    // Iterate over cbuffer members to update and pull them from material Parameters
-                    //    // TODO: we should cache reflection offsets, but currently waiting for Material to have a more efficient internal structure
-                    //    //        without ParameterCollection so that it is just a few simple copies without ParamterKey lookup
-                    //    foreach (var constantBufferMember in modelLightInfos.ConstantBufferReflection.Members)
-                    //    {
-                    //        var internalValue = parameters.GetInternalValue(constantBufferMember.Param.Key);
-                    //        if (internalValue != null)
-                    //        {
-                    //            ReadFrom(internalValue, mappedCB, constantBufferMember);
-                    //        }
-                    //    }
-
-                    //    for (int resourceSlot = 0; resourceSlot < descriptorSetLayoutBuilder.Entries.Count; resourceSlot++)
-                    //    {
-                    //        var layoutEntry = descriptorSetLayoutBuilder.Entries[resourceSlot];
-                    //        foreach (var parameter in parameters)
-                    //        {
-                    //            if (parameter.Key.Name == layoutEntry.Key.Name)
-                    //            {
-                    //                var resourceValue = parameters.GetObject(parameter.Key);
-                    //                modelLightInfos.Resources.DescriptorSet.SetValue(resourceSlot, resourceValue);
-                    //            }
-                    //        }
-                    //    }
-                    //}
+                    // Process PerMaterial cbuffer
+                    if (modelLightInfos.ConstantBufferReflection != null)
+                    {
+                        var mappedCB = modelLightInfos.Resources.ConstantBuffer.Data;
+                        Utilities.CopyMemory(mappedCB, modelLights.Parameters.Parameters.DataValues, modelLightInfos.Resources.ConstantBuffer.Size);
+                    }
                 }
 
                 var resourceGroupPoolOffset = ((RootEffectRenderFeature) RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
@@ -732,32 +717,32 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             //parametersNoShadows.Set(LightingKeys.DirectLightGroups, lightShaderPermutationEntry.DirectLightShadersNoShadows);
             //parametersNoShadows.Set(LightingKeys.EnvironmentLights, lightShaderPermutationEntry.EnvironmentLightShaders);
 
-            //foreach (var lightEntry in directLightsPerModel)
-            //{
-            //    directLightGroups[lightEntry.GroupIndex].AddLight(lightEntry.Light, lightEntry.Shadow);
-            //    directLightGroupsNoShadows[lightEntry.GroupIndexNoShadows].AddLight(lightEntry.Light, null);
-            //}
+            foreach (var lightEntry in directLightsPerModel)
+            {
+                directLightGroups[lightEntry.GroupIndex].AddLight(lightEntry.Light, lightEntry.Shadow);
+                directLightGroupsNoShadows[lightEntry.GroupIndexNoShadows].AddLight(lightEntry.Light, null);
+            }
 
-            //foreach (var lightEntry in environmentLightsPerModel)
-            //{
-            //    environmentLights[lightEntry.GroupIndex].AddLight(lightEntry.Light, null);
-            //}
+            foreach (var lightEntry in environmentLightsPerModel)
+            {
+                environmentLights[lightEntry.GroupIndex].AddLight(lightEntry.Light, null);
+            }
 
-            //foreach (var lightGroup in directLightGroups)
-            //{
-            //    lightGroup.ApplyParameters(parameters);
-            //}
+            foreach (var lightGroup in directLightGroups)
+            {
+                lightGroup.ApplyParameters(parameters);
+            }
 
-            //foreach (var lightGroup in directLightGroupsNoShadows)
-            //{
-            //    lightGroup.ApplyParameters(parametersNoShadows);
-            //}
+            foreach (var lightGroup in directLightGroupsNoShadows)
+            {
+                lightGroup.ApplyParameters(parametersNoShadows);
+            }
 
-            //foreach (var lightGroup in environmentLights)
-            //{
-            //    lightGroup.ApplyParameters(parameters);
-            //    lightGroup.ApplyParameters(parametersNoShadows);
-            //}
+            foreach (var lightGroup in environmentLights)
+            {
+                lightGroup.ApplyParameters(parameters);
+                lightGroup.ApplyParameters(parametersNoShadows);
+            }
 
             return parameterCollectionEntry;
         }
@@ -1005,6 +990,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             public ResourceGroupLayout PerLightingLayout;
             public ResourceGroup Resources = new ResourceGroup();
+            public int ResourceCount;
             public ShaderConstantBufferDescription ConstantBufferReflection;
         }
     }
