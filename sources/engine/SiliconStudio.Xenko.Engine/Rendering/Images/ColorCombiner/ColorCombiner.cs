@@ -62,9 +62,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         protected override void PreDrawCore(RenderContext context)
         {
             base.PreDrawCore(context);
-            Parameters.Set(FactorCount, InputCount);
-            Parameters.Set(ColorCombinerShaderKeys.Factors, factors);
-            Parameters.Set(ColorCombinerShaderKeys.ModulateRGB, ModulateRGB);
+            Parameters.SetValueSlow(FactorCount, InputCount);
+            Parameters.SetValueSlow(ColorCombinerShaderKeys.Factors, factors);
+            Parameters.SetValueSlow(ColorCombinerShaderKeys.ModulateRGB, ModulateRGB);
         }
     }
 }

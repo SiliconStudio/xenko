@@ -105,12 +105,12 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
 
                     computeShader.ThreadGroupCounts = new Int3(levelSize.X, levelSize.Y, faceCount);
                     computeShader.ThreadNumbers = new Int3(SamplingsCount, 1, 1);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.Roughness, roughness);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.MipmapCount, input.MipLevels - 1);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.RadianceMap, input);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.RadianceMapSize, input.Width);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXShaderKeys.FilteredRadiance, outputView);
-                    computeShader.Parameters.Set(RadiancePrefilteringGGXParams.NbOfSamplings, SamplingsCount);
+                    computeShader.Parameters.SetValueSlow(RadiancePrefilteringGGXShaderKeys.Roughness, roughness);
+                    computeShader.Parameters.SetValueSlow(RadiancePrefilteringGGXShaderKeys.MipmapCount, input.MipLevels - 1);
+                    computeShader.Parameters.SetResourceSlow(RadiancePrefilteringGGXShaderKeys.RadianceMap, input);
+                    computeShader.Parameters.SetValueSlow(RadiancePrefilteringGGXShaderKeys.RadianceMapSize, input.Width);
+                    computeShader.Parameters.SetResourceSlow(RadiancePrefilteringGGXShaderKeys.FilteredRadiance, outputView);
+                    computeShader.Parameters.SetValueSlow(RadiancePrefilteringGGXParams.NbOfSamplings, SamplingsCount);
                     computeShader.Draw(context);
 
                     outputView.Dispose();

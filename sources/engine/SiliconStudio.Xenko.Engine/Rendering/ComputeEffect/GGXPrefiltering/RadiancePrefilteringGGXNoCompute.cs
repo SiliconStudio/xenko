@@ -105,12 +105,12 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
                     {
                         using (var outputView = output.ToTextureView(ViewType.Single, faceIndex, mipLevel))
                         {
-                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeShaderKeys.Face, faceIndex);
-                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeShaderKeys.Roughness, roughness);
-                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeShaderKeys.MipmapCount, input.MipLevels - 1);
-                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeShaderKeys.RadianceMap, input);
-                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeShaderKeys.RadianceMapSize, input.Width);
-                            shader.Parameters.Set(RadiancePrefilteringGGXNoComputeParams.NbOfSamplings, SamplingsCount);
+                            shader.Parameters.SetValueSlow(RadiancePrefilteringGGXNoComputeShaderKeys.Face, faceIndex);
+                            shader.Parameters.SetValueSlow(RadiancePrefilteringGGXNoComputeShaderKeys.Roughness, roughness);
+                            shader.Parameters.SetValueSlow(RadiancePrefilteringGGXNoComputeShaderKeys.MipmapCount, input.MipLevels - 1);
+                            shader.Parameters.SetResourceSlow(RadiancePrefilteringGGXNoComputeShaderKeys.RadianceMap, input);
+                            shader.Parameters.SetValueSlow(RadiancePrefilteringGGXNoComputeShaderKeys.RadianceMapSize, input.Width);
+                            shader.Parameters.SetValueSlow(RadiancePrefilteringGGXNoComputeParams.NbOfSamplings, SamplingsCount);
                             shader.SetOutput(outputView);
                             shader.Draw(context);
                         }

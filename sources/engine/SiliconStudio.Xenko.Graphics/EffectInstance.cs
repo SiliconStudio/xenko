@@ -31,14 +31,15 @@ namespace SiliconStudio.Xenko.Rendering
         // Describes how to update resource bindings
         private EffectBinder binder;
 
-        public EffectInstance(Effect effect)
+        public EffectInstance(Effect effect, NextGenParameterCollection parameters = null)
         {
             this.effect = effect;
+            Parameters = parameters ?? new NextGenParameterCollection();
         }
 
         public Effect Effect => effect;
 
-        public NextGenParameterCollection Parameters { get; } = new NextGenParameterCollection();
+        public NextGenParameterCollection Parameters { get; }
 
         protected override void Destroy()
         {
@@ -56,7 +57,7 @@ namespace SiliconStudio.Xenko.Rendering
                 ChooseEffect(graphicsDevice);
 
                 // Update reflection and rearrange buffers/resources
-                var layouts = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup).Distinct().ToList();
+                var layouts = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup ?? "Globals").Distinct().ToList();
                 binder.Compile(graphicsDevice, effect.Bytecode, layouts);
 
                 // Process constant buffers

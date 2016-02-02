@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
             var descriptorSetLayouts = new EffectDescriptorSetReflection();
             foreach (var effectDescriptorSetSlot in effectDescriptorSetSlots)
             {
-                descriptorSetLayouts.AddLayout(effectDescriptorSetSlot ?? "Globals", InitializeDescriptorSet(effectBytecode, effectDescriptorSetSlot));
+                descriptorSetLayouts.AddLayout(effectDescriptorSetSlot, InitializeDescriptorSet(effectBytecode, effectDescriptorSetSlot));
             }
 
             DescriptorReflection = descriptorSetLayouts;
@@ -148,7 +148,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var descriptorSetLayoutBuilder = new DescriptorSetLayoutBuilder();
             foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings
-                .Where(x => x.Param.ResourceGroup == descriptorSetName)
+                .Where(x => x.Param.ResourceGroup == descriptorSetName || (descriptorSetName == "Globals" && x.Param.ResourceGroup == null))
                 .GroupBy(x => new { Key = x.Param.Key, Class = x.Param.Class, SlotCount = x.SlotCount })
                 .OrderBy(x => x.Key.Class == EffectParameterClass.ConstantBuffer ? 0 : 1))
             {

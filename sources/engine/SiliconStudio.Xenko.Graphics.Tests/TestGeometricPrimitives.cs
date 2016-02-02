@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     [TestFixture]
     public class TestGeometricPrimitives : GraphicTestGameBase
     {
-        private Effect simpleEffect;
+        private EffectInstance simpleEffect;
         private List<GeometricPrimitive> primitives;
         private Matrix view;
         private Matrix projection;
@@ -55,9 +55,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             wireframeState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe });
 
-            simpleEffect = new Effect(GraphicsDevice, SpriteEffect.Bytecode);
+            simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
             parameterCollection = new ParameterCollection();
-            parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new [] { parameterCollection });
+            throw new NotImplementedException();
+            //parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new [] { parameterCollection });
             parameterCollection.Set(TexturingKeys.Texture0, UVTexture);
 
             primitives = new List<GeometricPrimitive>();

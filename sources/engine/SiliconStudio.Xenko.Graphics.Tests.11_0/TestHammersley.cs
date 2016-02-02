@@ -66,8 +66,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GraphicsDevice.Clear(output, Color4.White);
             renderHammersley.ThreadGroupCounts = new Int3(samplesCount, 1, 1);
             renderHammersley.ThreadNumbers = new Int3(1);
-            renderHammersley.Parameters.Set(HammersleyTestKeys.OutputTexture, output);
-            renderHammersley.Parameters.Set(HammersleyTestKeys.SamplesCount, samplesCount);
+            renderHammersley.Parameters.SetResourceSlow(HammersleyTestKeys.OutputTexture, output);
+            renderHammersley.Parameters.SetValueSlow(HammersleyTestKeys.SamplesCount, samplesCount);
             renderHammersley.Draw();
 
             GraphicsDevice.DrawTexture(output);

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
@@ -96,7 +97,8 @@ namespace SiliconStudio.Xenko.Graphics
             parameters.Set(SpriteEffectKeys.Color, color);
             parameters.Set(TexturingKeys.Texture0, texture);
             parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, applyEffectStates);
+            //simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, applyEffectStates);
+            throw new InvalidOperationException();
             Draw();
 
             // TODO ADD QUICK UNBIND FOR SRV

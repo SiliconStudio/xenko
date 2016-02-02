@@ -18,13 +18,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     public class TestCustomEffect : GraphicTestGameBase
     {
         private ParameterCollection effectParameters;
-        private DynamicEffectCompiler dynamicEffectCompiler;
 
-        private DefaultEffectInstance effectInstance;
+        private DynamicEffectInstance effectInstance;
 
         private float switchEffectLevel;
-
-        private EffectParameterCollectionGroup parameterCollection;
 
         public TestCustomEffect()
         {
@@ -43,9 +40,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             await base.LoadContent();
 
 
-            dynamicEffectCompiler = new DynamicEffectCompiler(Services, "CustomEffect.CustomSubEffect");
             effectParameters = new ParameterCollection();
-            effectInstance = new DefaultEffectInstance(effectParameters);
+            effectInstance = new DynamicEffectInstance(Services, "CustomEffect.CustomSubEffect");
         }
 
         protected override void Draw(GameTime gameTime)
@@ -62,14 +58,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
             GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
-            effectParameters.Set(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
-            effectParameters.Set(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
-            effectParameters.Set(TexturingKeys.Texture0, UVTexture);
+            effectInstance.Parameters.SetValueSlow(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
+            effectInstance.Parameters.SetValueSlow(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
+            effectInstance.Parameters.SetResourceSlow(TexturingKeys.Texture0, UVTexture);
             switchEffectLevel++; // TODO: Add switch Effect to test and capture frames
-            dynamicEffectCompiler.Update(effectInstance, null);
-            parameterCollection = new EffectParameterCollectionGroup(GraphicsDevice, effectInstance.Effect, new[] { effectParameters });
 
-            GraphicsDevice.DrawQuad(effectInstance.Effect, parameterCollection);
+            GraphicsDevice.DrawQuad(effectInstance);
         }
 
         public static void Main()

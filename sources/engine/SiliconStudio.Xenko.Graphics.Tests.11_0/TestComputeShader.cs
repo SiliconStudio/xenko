@@ -71,9 +71,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
-            computeShaderEffect.Parameters.Set(ComputeShaderTestParams.NbOfIterations, ReductionRatio);
-            computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.input, inputTexture);
-            computeShaderEffect.Parameters.Set(ComputeShaderTestKeys.output, outputTexture);
+            computeShaderEffect.Parameters.SetValueSlow(ComputeShaderTestParams.NbOfIterations, ReductionRatio);
+            computeShaderEffect.Parameters.SetResourceSlow(ComputeShaderTestKeys.input, inputTexture);
+            computeShaderEffect.Parameters.SetResourceSlow(ComputeShaderTestKeys.output, outputTexture);
             computeShaderEffect.Draw();
 
             if (displayedTexture == null || spriteBatch == null)

@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Xenko.Graphics;
@@ -24,7 +25,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             this.group = group;
             this.renderContext = renderContext;
             inputs = new List<Texture>();
-            sharedParameters = group.Parameters;
+            throw new NotImplementedException();
+            //sharedParameters = group.Parameters;
             transformParameters = new ParameterCollection();
         }
 

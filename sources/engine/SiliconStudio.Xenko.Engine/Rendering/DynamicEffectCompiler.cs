@@ -103,7 +103,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="effectInstance">A dynmaic effect instance</param>
         /// <param name="passParameters">The pass parameters.</param>
         /// <returns><c>true</c> if the effect was recomiled on the effect instance, <c>false</c> otherwise.</returns>
-        public bool Update(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        public bool Update(DynamicEffectInstanceOld effectInstance, ParameterCollection passParameters)
         {
             bool effectChanged = false;
 
@@ -163,13 +163,13 @@ namespace SiliconStudio.Xenko.Rendering
             return effectChanged;
         }
 
-        public void SwitchFallbackEffect(FallbackEffectType fallbackEffectType, DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        public void SwitchFallbackEffect(FallbackEffectType fallbackEffectType, DynamicEffectInstanceOld effectInstance, ParameterCollection passParameters)
         {
             var compilerParameters = BuildCompilerParameters(effectInstance, passParameters);
             SwitchFallbackEffect(fallbackEffectType, effectInstance, passParameters, compilerParameters);
         }
 
-        private void SwitchFallbackEffect(FallbackEffectType fallbackEffectType, DynamicEffectInstance effectInstance, ParameterCollection passParameters, CompilerParameters compilerParameters)
+        private void SwitchFallbackEffect(FallbackEffectType fallbackEffectType, DynamicEffectInstanceOld effectInstance, ParameterCollection passParameters, CompilerParameters compilerParameters)
         {
             // Fallback for errors
             effectInstance.HasErrors = true;
@@ -177,13 +177,13 @@ namespace SiliconStudio.Xenko.Rendering
             UpdateEffect(effectInstance, fallbackEffect.Effect, fallbackEffect.UsedParameters, passParameters);
         }
 
-        private bool HasCollectionChanged(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        private bool HasCollectionChanged(DynamicEffectInstanceOld effectInstance, ParameterCollection passParameters)
         {
             PrepareUpdater(effectInstance, passParameters);
             return effectInstance.ParameterCollectionGroup.HasChanged(effectInstance.UpdaterDefinition);
         }
 
-        private void CreateEffect(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        private void CreateEffect(DynamicEffectInstanceOld effectInstance, ParameterCollection passParameters)
         {
             var compilerParameters = BuildCompilerParameters(effectInstance, passParameters);
 
@@ -225,7 +225,7 @@ namespace SiliconStudio.Xenko.Rendering
             effectInstance.CurrentlyCompilingUsedParameters = null;
         }
 
-        private CompilerParameters BuildCompilerParameters(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        private CompilerParameters BuildCompilerParameters(DynamicEffectInstanceOld effectInstance, ParameterCollection passParameters)
         {
             var compilerParameters = new CompilerParameters();
             parameterCollections.Clear();
@@ -255,7 +255,7 @@ namespace SiliconStudio.Xenko.Rendering
             return compilerParameters;
         }
 
-        private void UpdateEffect(DynamicEffectInstance effectInstance, Effect compiledEffect, ParameterCollection usedParameters, ParameterCollection passParameters)
+        private void UpdateEffect(DynamicEffectInstanceOld effectInstance, Effect compiledEffect, ParameterCollection usedParameters, ParameterCollection passParameters)
         {
             if (!ReferenceEquals(compiledEffect, effectInstance.Effect))
             {
@@ -274,7 +274,7 @@ namespace SiliconStudio.Xenko.Rendering
             effectInstance.ParameterCollectionGroup.UpdateCounters(effectInstance.UpdaterDefinition);
         }
 
-        private void UpdateLevels(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        private void UpdateLevels(DynamicEffectInstanceOld effectInstance, ParameterCollection passParameters)
         {
             PrepareUpdater(effectInstance, passParameters);
             effectInstance.ParameterCollectionGroup.ComputeLevels(effectInstance.UpdaterDefinition);
@@ -285,7 +285,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="effectInstance">The effect instance.</param>
         /// <param name="passParameters">The pass parameters.</param>
-        private void PrepareUpdater(DynamicEffectInstance effectInstance, ParameterCollection passParameters)
+        private void PrepareUpdater(DynamicEffectInstanceOld effectInstance, ParameterCollection passParameters)
         {
             parameterCollections.Clear();
             parameterCollections.Add(effectInstance.UpdaterDefinition.Parameters);

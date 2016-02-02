@@ -16,25 +16,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
     public class ImageEffectShader : ImageEffect
     {
         /// <summary>
-        /// The current effect instance.
-        /// </summary>
-        protected DefaultEffectInstance EffectInstance;
-
-        private DynamicEffectCompiler effectCompiler;
-
-        private List<ParameterCollection> parameterCollections;
-
-        private List<ParameterCollection> appliedParameterCollections;
-
-        private EffectParameterCollectionGroup effectParameterCollections;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
         /// </summary>
         public ImageEffectShader(string effectName = null)
         {
-            SharedParameterCollections = new List<ParameterCollection>();
             EffectName = effectName;
+            EffectInstance = new DynamicEffectInstance(EffectName, Parameters);
         }
 
         /// <inheritdoc/>
@@ -44,17 +31,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             if (EffectName == null) throw new ArgumentNullException("No EffectName specified");
 
-            parameterCollections = new List<ParameterCollection> { Context.Parameters };
-            parameterCollections.AddRange(SharedParameterCollections);
-            parameterCollections.Add(Parameters);
-            appliedParameterCollections = new List<ParameterCollection>();
-
             // Setup the effect compiler
-            EffectInstance = new DefaultEffectInstance(parameterCollections);
-            effectCompiler = new DynamicEffectCompiler(Context.Services, EffectName, -1); // Image effects are compiled with higher priority
+            EffectInstance.Initialize(Context.Services);
 
             SetDefaultParameters();
         }
+
+        /// <summary>
+        /// The current effect instance.
+        /// </summary>
+        public DynamicEffectInstance EffectInstance { get; private set; }
 
         /// <summary>
         /// Effect name.
@@ -66,7 +52,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Optional shared parameters. This list must be setup before calling <see cref="Initialize"/>.
         /// </summary>
         [DataMemberIgnore]
-        public List<ParameterCollection> SharedParameterCollections { get; private set; }
+        public List<ParameterCollection> SharedParameterCollections { get { throw new InvalidOperationException(); } }
 
         /// <summary>
         /// Gets the parameter collections used by this effect.
@@ -77,7 +63,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return parameterCollections;
+                throw new InvalidOperationException();
             }
         }
 
@@ -86,7 +72,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         protected override void SetDefaultParameters()
         {
-            Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
+            // TODO: Do not use slow version
+            Parameters.SetResourceSlow(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }
 
         protected override void PreDrawCore(RenderContext context)
@@ -112,7 +99,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 if (i < TexturingKeys.DefaultTextures.Count)
                 {
                     var texturingKeys = texture.Dimension == TextureDimension.TextureCube ? TexturingKeys.TextureCubes : TexturingKeys.DefaultTextures;
-                    Parameters.Set(texturingKeys[i], texture);
+                    // TODO: Do not use slow version
+                    Parameters.SetResourceSlow(texturingKeys[i], texture);
                 }
                 else
                 {
@@ -121,35 +109,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        protected void UpdateEffect()
-        {
-            // Dynamically update/compile the effect based on the current parameters.
-            effectCompiler.Update(EffectInstance, null);
-        }
-
         protected override void DrawCore(RenderContext context)
         {
-            UpdateEffect();
-
-            if (effectParameterCollections == null || EffectInstance.Effect != effectParameterCollections.Effect)
-            {
-                // Update parameters
-                appliedParameterCollections.Clear();
-                if (context != null)
-                {
-                    appliedParameterCollections.Add(context.Parameters);
-                }
-
-                foreach (var parameterCollection in parameterCollections)
-                {
-                    appliedParameterCollections.Add(parameterCollection);
-                }
-
-                effectParameterCollections = new EffectParameterCollectionGroup(GraphicsDevice, EffectInstance.Effect, appliedParameterCollections.ToArray());
-            }
-
             // Draw a full screen quad
-            GraphicsDevice.DrawQuad(EffectInstance.Effect, effectParameterCollections);
+            GraphicsDevice.DrawQuad(EffectInstance);
         }
     }
 }

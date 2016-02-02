@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// An effect instance using a set of <see cref="ParameterCollection"/> for creating <see cref="Effect"/>.
     /// </summary>
-    public class DefaultEffectInstance : DynamicEffectInstance
+    public class DefaultEffectInstance : DynamicEffectInstanceOld
     {
         private readonly IEnumerable<ParameterCollection> localParameterCollections;
 

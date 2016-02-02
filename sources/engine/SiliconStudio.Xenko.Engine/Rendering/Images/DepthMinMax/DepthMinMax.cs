@@ -48,11 +48,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 downTexture = NewScopedRenderTarget2D(nextSize, nextSize, PixelFormat.R32G32_Float, 1);
 
                 var effect = isFirstPass ? effectFirstPass : effectNotFirstPass;
-                effect.Parameters.Set(DepthMinMaxShaderKeys.TextureMap, fromTexture);
-                effect.Parameters.Set(DepthMinMaxShaderKeys.TextureReduction, fromTexture);
+                effect.Parameters.SetResourceSlow(DepthMinMaxShaderKeys.TextureMap, fromTexture);
+                effect.Parameters.SetResourceSlow(DepthMinMaxShaderKeys.TextureReduction, fromTexture);
 
                 effect.SetOutput(downTexture);
-                effect.Parameters.Set(IsFirstPassKey, isFirstPass);
+                effect.Parameters.SetValueSlow(IsFirstPassKey, isFirstPass);
                 effect.Draw(context);
 
                 fromTexture = downTexture;

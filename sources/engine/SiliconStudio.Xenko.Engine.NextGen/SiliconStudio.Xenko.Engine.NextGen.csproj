@@ -171,8 +171,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Graphics\PipelineState.cs" />
-    <Compile Include="Rendering\DynamicEffectInstance.cs" />
-    <Compile Include="Rendering\ImageEffectShader.cs" />
     <Compile Include="Rendering\Properties.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>

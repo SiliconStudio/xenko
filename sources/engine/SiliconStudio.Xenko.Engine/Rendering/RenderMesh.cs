@@ -17,7 +17,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// An mesh associated with an effect to be rendered.
     /// </summary>
-    public class RenderMesh : DynamicEffectInstance
+    public class RenderMesh : DynamicEffectInstanceOld
     {
         private VertexArrayObject vertexArrayObject;
         private VertexArrayObject vertexArrayObjectAEN;
@@ -195,7 +195,8 @@ namespace SiliconStudio.Xenko.Rendering
                     parameterCollectionGroup = new EffectParameterCollectionGroup(context.GraphicsDevice, Effect, previousParameterCollections.Count, previousParameterCollections.Items);
                 }
 
-                Effect.Apply(context.GraphicsDevice, parameterCollectionGroup, true);
+                //Effect.Apply(context.GraphicsDevice, parameterCollectionGroup, true);
+                throw new InvalidOperationException();
             }
 
             //using (Profiler.Begin(ProfilingKeys.RenderMesh))

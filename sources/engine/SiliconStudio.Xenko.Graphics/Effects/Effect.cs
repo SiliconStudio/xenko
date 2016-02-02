@@ -30,8 +30,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private EffectBytecode bytecode;
 
-        private EffectStateBindings effectStateBindings;
-
         public static readonly ParameterKey<RasterizerState> RasterizerStateKey = ParameterKeys.New<RasterizerState>();
         public static readonly ParameterKey<DepthStencilState> DepthStencilStateKey = ParameterKeys.New<DepthStencilState>();
         public static readonly ParameterKey<BlendState> BlendStateKey = ParameterKeys.New<BlendState>();
@@ -95,11 +93,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        public void UnbindResources()
-        {
-            UnbindResources(graphicsDeviceDefault);
-        }
-
         internal EffectParameterResourceBinding GetParameterFastUpdater<T>(ParameterKey<T> value)
         {
             for (int i = 0; i < resourceBindings.Length; i++)
@@ -116,21 +109,6 @@ namespace SiliconStudio.Xenko.Graphics
         public void ApplyProgram(GraphicsDevice graphicsDevice)
         {
             PrepareApply(graphicsDevice);
-        }
-
-        public void Apply(GraphicsDevice graphicsDevice, EffectParameterCollectionGroup parameterCollectionGroup, bool applyEffectStates)
-        {
-            PrepareApply(graphicsDevice);
-            var stageStatus = graphicsDevice.StageStatus;
-
-            stageStatus.UpdateParameters(graphicsDevice, parameterCollectionGroup, updaterDefinition);
-            stageStatus.Apply(graphicsDevice, resourceBindings, parameterCollectionGroup, ref effectStateBindings, applyEffectStates);
-        }
-
-        public void UnbindResources(GraphicsDevice graphicsDevice)
-        {
-            var stageStatus = graphicsDevice.StageStatus;
-            stageStatus.UnbindResources(graphicsDevice, resourceBindings);
         }
 
         public bool HasParameter(ParameterKey parameterKey)
@@ -237,9 +215,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             UpdateKeyIndices();
-
-            // Once we have finished binding, we can fully prepare them
-            graphicsDeviceDefault.StageStatus.PrepareBindings(resourceBindings);
         }
 
         private ParameterKey UpdateResourceBindingKey(ref EffectParameterResourceData binding)
@@ -462,11 +437,6 @@ namespace SiliconStudio.Xenko.Graphics
                     cb.ConstantBufferDesc.Hash = hashBuilder.ComputeHash();
                 }
             }
-
-            // Update effect state bindings
-            effectStateBindings.RasterizerStateKeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, RasterizerStateKey);
-            effectStateBindings.DepthStencilStateKeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, DepthStencilStateKey);
-            effectStateBindings.BlendStateKeyIndex = Array.IndexOf(updaterDefinition.SortedKeys, BlendStateKey);
         }
 
         private void UpdateRequiredKeys(HashSet<ParameterKey> requiredKeys, Dictionary<ParameterKey, ParameterDependency> allDependencies, ParameterKey key, HashSet<ParameterDependency> requiredDependencies)

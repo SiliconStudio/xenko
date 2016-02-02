@@ -23,13 +23,13 @@ namespace SiliconStudio.Xenko.Rendering.Images.SphericalHarmonics
 
             if (InputSH != null)
             {
-                Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, InputSH.Order);
-                Parameters.Set(SphericalHarmonicsRendererKeys.SHCoefficients, InputSH.Coefficients);
+                Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, InputSH.Order);
+                Parameters.SetValueSlow(SphericalHarmonicsRendererKeys.SHCoefficients, InputSH.Coefficients);
             }
             else
             {
-                Parameters.Set(SphericalHarmonicsParameters.HarmonicsOrder, 1);
-                Parameters.Set(SphericalHarmonicsRendererKeys.SHCoefficients, new []{ new Color3() });
+                Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, 1);
+                Parameters.SetValueSlow(SphericalHarmonicsRendererKeys.SHCoefficients, new []{ new Color3() });
             }
         }
     }

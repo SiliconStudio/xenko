@@ -19,21 +19,17 @@ namespace SiliconStudio.Xenko.Graphics
         /// Draws a fullscreen quad with the specified effect and parameters.
         /// </summary>
         /// <param name="device">The device.</param>
-        /// <param name="effect">The effect.</param>
-        /// <param name="effectParameterCollectionGroup">The shader parameter updater.</param>
+        /// <param name="effectInstance">The effect instance.</param>
         /// <exception cref="System.ArgumentNullException">effect</exception>
-        public static void DrawQuad(this GraphicsDevice device, Effect effect, EffectParameterCollectionGroup effectParameterCollectionGroup)
+        public static void DrawQuad(this GraphicsDevice device, EffectInstance effectInstance)
         {
-            if (effect == null) throw new ArgumentNullException("effect");
+            if (effectInstance == null) throw new ArgumentNullException("effectInstance");
 
             // Apply the effect
-            effect.Apply(device, effectParameterCollectionGroup, false);
+            effectInstance.Apply(device);
 
             // Draw a full screen quad
             device.DrawQuad();
-
-            // Unapply
-            effect.UnbindResources(device);
         }
 
         /// <summary>

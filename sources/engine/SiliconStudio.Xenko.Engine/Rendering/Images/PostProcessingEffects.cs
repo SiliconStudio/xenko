@@ -286,7 +286,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 luminanceEffect.Draw(context);
 
                 // Set this parameter that will be used by the tone mapping
-                colorTransformsGroup.Parameters.Set(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
+                colorTransformsGroup.Parameters.SetValueSlow(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
             }
 
             // Bright filter pass

@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering
             base(name)
         {
             Enabled = true;
-            Parameters = new ParameterCollection();
+            Parameters = new NextGenParameterCollection();
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <value>The parameters.</value>
         [DataMemberIgnore]
-        public ParameterCollection Parameters { get; private set; }
+        public NextGenParameterCollection Parameters { get; protected set; }
 
         /// <summary>
         /// Gets a shared <see cref="ImageScaler"/>.

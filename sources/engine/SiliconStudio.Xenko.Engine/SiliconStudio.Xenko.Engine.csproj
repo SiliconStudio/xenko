@@ -152,6 +152,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>LambertianPrefilteringSHNoComputePass2.xksl</DependentUpon>
     </Compile>
+    <Compile Include="Rendering\DynamicEffectInstance.cs" />
     <Compile Include="Rendering\Images\AntiAliasing\FXAAShaderEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -2217,7 +2218,7 @@
     <Compile Include="Rendering\CameraComponentRenderer.cs" />
     <Compile Include="Rendering\DefaultEffectInstance.cs" />
     <Compile Include="Rendering\DynamicEffectCompiler.cs" />
-    <Compile Include="Rendering\DynamicEffectInstance.cs" />
+    <Compile Include="Rendering\DynamicEffectInstanceOld.cs" />
     <Compile Include="Rendering\DynamicEffectParameterCollectionGroup.cs" />
     <Compile Include="Rendering\Material.cs" />
     <Compile Include="Rendering\MaterialAssetKeys.cs" />
