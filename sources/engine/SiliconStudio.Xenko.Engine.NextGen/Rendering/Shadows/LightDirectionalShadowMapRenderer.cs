@@ -2,11 +2,9 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Diagnostics;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
@@ -86,11 +84,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
         public override ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount)
         {
             return new LightDirectionalShadowMapGroupShaderData(compositionKey, shadowType, maxLightCount);
-        }
-
-        public override void Render(RenderContext context, Shadows.ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)
-        {
-            throw new NotImplementedException();
         }
 
         public override void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap)

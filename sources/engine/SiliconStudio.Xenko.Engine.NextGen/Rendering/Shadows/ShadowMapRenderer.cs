@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 
         public NextGenRenderSystem RenderSystem { get; set; }
 
-        private RenderStage shadowmapRenderStage;
+        private readonly RenderStage shadowmapRenderStage;
 
         private readonly List<RenderView> shadowRenderViews = new List<RenderView>();
 
@@ -42,21 +42,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
         internal static readonly ParameterKey<ShadowMapCascadeLevel[]> LevelReceivers = ParameterKeys.New(new ShadowMapCascadeLevel[1]);
         internal static readonly ParameterKey<int> ShadowMapLightCount = ParameterKeys.New(0);
 
-        /// <summary>
-        /// The shadow map caster extension a discard extension
-        /// </summary>
-        private static readonly ShaderMixinGeneratorSource ShadowMapCasterExtension = new ShaderMixinGeneratorSource("ShadowMapCaster") { Discard = true };
-
-        // rectangles to blur for each shadow map
-        private HashSet<LightShadowMapTexture> shadowMapTexturesToBlur = new HashSet<LightShadowMapTexture>();
-
-        private readonly ModelComponentRenderer shadowModelComponentRenderer;
-
-        private readonly ParameterCollection shadowCasterParameters;
-
         public readonly Dictionary<LightComponent, LightShadowMapTexture> LightComponentsWithShadows;
-
-        private List<LightComponent> visibleLights;
 
         public ShadowMapRenderer(NextGenRenderSystem renderSystem, RenderStage shadowmapRenderStage)
         {
@@ -70,9 +56,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             Renderers = new Dictionary<Type, ILightShadowMapRenderer>();
 
             ShadowCamera = new CameraComponent { UseCustomViewMatrix = true, UseCustomProjectionMatrix = true };
-
-            shadowCasterParameters = new ParameterCollection();
-            shadowCasterParameters.Set(XenkoEffectBaseKeys.ExtensionPostVertexStageShader, ShadowMapCasterExtension);
         }
 
         /// <summary>
@@ -97,8 +80,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 
         public void Extract(RenderContext context, List<LightComponent> visibleLights)
         {
-            this.visibleLights = visibleLights;
-
             // We must be running inside the context of 
             var sceneInstance = SceneInstance.GetCurrent(context);
             if (sceneInstance == null)
@@ -118,7 +99,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             LightComponentsWithShadows.Clear();
 
             // Collect all required shadow maps
-            CollectShadowMaps();
+            CollectShadowMaps(visibleLights);
 
             // No shadow maps to render
             if (shadowMapTextures.Count == 0)
@@ -217,7 +198,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             lightShadowMapTexture.Atlas = currentAtlas;
         }
 
-        private void CollectShadowMaps()
+        private void CollectShadowMaps(List<LightComponent> visibleLights)
         {
             foreach (var lightComponent in visibleLights)
             {
