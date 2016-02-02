@@ -23,8 +23,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private float timeSeconds;
 
-        private EffectParameterCollectionGroup parameterCollectionGroup;
-
         private ParameterCollection parameterCollection;
 
         private bool isWireframe;
