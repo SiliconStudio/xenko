@@ -111,10 +111,7 @@ namespace SiliconStudio.AssemblyProcessor
                     if (KeepOriginal)
                     {
                         var copiedFile = Path.ChangeExtension(inputFile, "old" + Path.GetExtension(inputFile));
-                        if (!File.Exists(copiedFile))
-                        {
-                            File.Copy(inputFile, copiedFile);
-                        }
+                        File.Copy(inputFile, copiedFile, true);
                     }
 
                     assemblyDefinition.Write(outputFile, new WriterParameters() { WriteSymbols = readWriteSymbols });
