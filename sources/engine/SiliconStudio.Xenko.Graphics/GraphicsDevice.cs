@@ -21,7 +21,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal readonly Dictionary<SamplerStateDescription, SamplerState> CachedSamplerStates = new Dictionary<SamplerStateDescription, SamplerState>();
         internal readonly Dictionary<BlendStateDescription, BlendState> CachedBlendStates = new Dictionary<BlendStateDescription, BlendState>();
         internal readonly Dictionary<RasterizerStateDescription, RasterizerState> CachedRasterizerStates = new Dictionary<RasterizerStateDescription, RasterizerState>();
-        internal readonly Dictionary<VertexArrayObject.Description, VertexArrayObject> CachedVertexArrayObjects = new Dictionary<VertexArrayObject.Description, VertexArrayObject>();
 
         /// <summary>
         ///     Gets the features supported by this graphics device.

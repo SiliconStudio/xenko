@@ -39,10 +39,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private SharpDX.Direct3D11.DeviceCreationFlags creationFlags;
         private EffectInputSignature currentEffectInputSignature;
-        private SharpDX.Direct3D11.InputLayout currentInputLayout;
-        private VertexArrayObject currentVertexArrayObject;
-        private VertexArrayLayout currentVertexArrayLayout;
-        private VertexArrayObject newVertexArrayObject;
 
         private PipelineState defaultPipelineState;
 
@@ -63,7 +59,6 @@ namespace SiliconStudio.Xenko.Graphics
             creationFlags = device.creationFlags;
             Features = device.Features;
             sharedDataPerDevice = device.sharedDataPerDevice;
-            InputLayoutManager = device.InputLayoutManager;
             nativeDevice = device.NativeDevice;
             nativeDeviceContext = new SharpDX.Direct3D11.DeviceContext(NativeDevice).DisposeBy(this);
             nativeDeviceProfiler = SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer);
@@ -130,12 +125,6 @@ namespace SiliconStudio.Xenko.Graphics
                 return GraphicsDeviceStatus.Normal;
             }
         }
-
-        /// <summary>
-        ///     Gets the input layout manager.
-        /// </summary>
-        /// <value>The input layout manager.</value>
-        internal InputLayoutManager InputLayoutManager { get; private set; }
 
         /// <summary>
         ///     Gets the native device.
@@ -341,9 +330,6 @@ namespace SiliconStudio.Xenko.Graphics
                 currentRenderTargetViews[i] = null;
 
             currentEffectInputSignature = null;
-            currentVertexArrayLayout = null;
-            currentInputLayout = null;
-            currentVertexArrayObject = null;
             CurrentEffect = null;
 
             currentPipelineState = defaultPipelineState;
@@ -712,15 +698,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Sets the vertex array object.
-        /// </summary>
-        /// <param name="vertexArrayObject">The vertex array object.</param>
-        public void SetVertexArrayObject(VertexArrayObject vertexArrayObject)
-        {
-            newVertexArrayObject = vertexArrayObject;
-        }
-
-        /// <summary>
         ///     Gets or sets the 1st viewport. See <see cref="Render+states"/> to learn how to use it.
         /// </summary>
         /// <value>The viewport.</value>
@@ -892,10 +869,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             InitializeStages();
-
-            // Create the input layout manager
-            if (InputLayoutManager == null)
-                InputLayoutManager = new InputLayoutManager(this).DisposeBy(this);
         }
 
         protected void DestroyPlatformDevice()
@@ -916,17 +889,12 @@ namespace SiliconStudio.Xenko.Graphics
                 deviceDebug.ReportLiveDeviceObjects(SharpDX.Direct3D11.ReportingLevel.Detail);
             }
 
-            currentInputLayout = null;
             currentEffectInputSignature = null;
-            currentVertexArrayObject = null;
-            currentVertexArrayLayout = null;
             nativeDevice.Dispose();
         }
 
         internal void OnDestroyed()
         {
-            // Clear input layouts cache
-            InputLayoutManager.OnDestroyed();
         }
 
         /// <summary>
@@ -954,62 +922,6 @@ namespace SiliconStudio.Xenko.Graphics
             // Resources
             if (newPipelineState != null)
                 newPipelineState.ResourceBinder.BindResources(this, currentDescriptorSets);
-
-            //// If the vertex array object is null, simply set the InputLayout to null
-            //if (newVertexArrayObject == null)
-            //{
-            //    if (currentVertexArrayObject != null)
-            //    {
-            //        currentVertexArrayObject = null;
-            //        currentVertexArrayLayout = null;
-            //        currentEffectInputSignature = null;
-            //        inputAssembler.InputLayout = currentInputLayout = null;
-            //    }
-            //}
-            //else
-            //{
-            //    var newVertexArrayLayout = newVertexArrayObject.Layout;
-            //    var newEffectInputSignature = CurrentEffect.InputSignature;
-            //    var oldInputLayout = currentInputLayout;
-
-            //    // Apply the VertexArrayObject
-            //    if (newVertexArrayObject != currentVertexArrayObject)
-            //    {
-            //        currentVertexArrayObject = newVertexArrayObject;
-            //        newVertexArrayObject.Apply(inputAssembler);
-            //    }
-
-            //    // If the input layout of the effect or the vertex buffer has changed, get the associated new input layout
-            //    if (!ReferenceEquals(newVertexArrayLayout, currentVertexArrayLayout) || !ReferenceEquals(newEffectInputSignature, currentEffectInputSignature))
-            //    {
-            //        currentVertexArrayLayout = newVertexArrayLayout;
-            //        currentEffectInputSignature = newEffectInputSignature;
-
-            //        if (newVertexArrayObject.InputLayout != null && ReferenceEquals(newEffectInputSignature, newVertexArrayObject.EffectInputSignature))
-            //        {
-            //            // Default configuration
-            //            currentInputLayout = newVertexArrayObject.InputLayout;
-            //        }
-            //        else if (ReferenceEquals(newEffectInputSignature, newVertexArrayObject.LastEffectInputSignature))
-            //        {
-            //            // Reuse previous configuration
-            //            currentInputLayout = newVertexArrayObject.LastInputLayout;
-            //        }
-            //        // Slow path if the current VertexArrayObject is not optimized for the particular input (or not used right before)
-            //        else
-            //        {
-            //            currentInputLayout = InputLayoutManager.GetInputLayout(newEffectInputSignature, currentVertexArrayLayout);
-
-            //            // Store it in VAO since it will likely be used with same effect later
-            //            newVertexArrayObject.LastInputLayout = currentInputLayout;
-            //            newVertexArrayObject.LastEffectInputSignature = newEffectInputSignature;
-            //        }
-
-            //        // Setup the input layout (if it changed)
-            //        if (currentInputLayout != oldInputLayout)
-            //            inputAssembler.InputLayout = currentInputLayout;
-            //    }
-            //}
 
             SetViewportImpl();
         }
