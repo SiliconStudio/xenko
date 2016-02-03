@@ -219,7 +219,7 @@ namespace SiliconStudio.Xenko.Assets
                 foreach (var modelAsset in modelAssets)
                 {
                     modelAsset.DynamicRootNode.Nodes = DynamicYamlEmpty.Default;
-                    modelAsset.DynamicRootNode["~Base"].Asset.Nodes = DynamicYamlEmpty.Default;
+                    modelAsset.DynamicRootNode[Asset.BaseProperty].Asset.Nodes = DynamicYamlEmpty.Default;
                 }
 
                 // Save back
@@ -313,17 +313,17 @@ namespace SiliconStudio.Xenko.Assets
         {
             if (dependency.Version.MinVersion < new PackageVersion("1.4.0-alpha01"))
             {
-                UpgradeCode(dependentPackage, new RenameToXenkoCodeUpgrader());
+                UpgradeCode(dependentPackage, log, new RenameToXenkoCodeUpgrader());
             }
             else if (dependency.Version.MinVersion < new PackageVersion("1.6.0-beta"))
             {
-                UpgradeCode(dependentPackage, new NewComponentsCodeUpgrader());
+                UpgradeCode(dependentPackage, log, new NewComponentsCodeUpgrader());
             }
 
             return true;
         }
 
-        private void UpgradeCode(Package dependentPackage, ICodeUpgrader codeUpgrader)
+        private void UpgradeCode(Package dependentPackage, ILogger log, ICodeUpgrader codeUpgrader)
         {
             if (dependentPackage == null) throw new ArgumentNullException(nameof(dependentPackage));
             if (codeUpgrader == null) throw new ArgumentNullException(nameof(codeUpgrader));
@@ -340,11 +340,19 @@ namespace SiliconStudio.Xenko.Assets
                     if (codeUpgrader.UpgradeProject(workspace, projectFullPath))
                     {
                         // Upgrade source code
-                        var project = await workspace.OpenProjectAsync(projectFullPath.ToWindowsPath());
-                        var compilation = await project.GetCompilationAsync();
-                        var subTasks = compilation.SyntaxTrees.Select(syntaxTree => Task.Run(() => codeUpgrader.UpgradeSourceFile(syntaxTree))).ToList();
+                        var f = new FileInfo(projectFullPath.ToWindowsPath());
+                        if (f.Exists)
+                        {
+                            var project = await workspace.OpenProjectAsync(f.FullName);
+                            var compilation = await project.GetCompilationAsync();
+                            var subTasks = compilation.SyntaxTrees.Select(syntaxTree => Task.Run(() => codeUpgrader.UpgradeSourceFile(syntaxTree))).ToList();
 
-                        await Task.WhenAll(subTasks);
+                            await Task.WhenAll(subTasks);
+                        }
+                        else
+                        {
+                            log.Error("Cannot locate {0}.", f.FullName);
+                        }
                     }
                 }))
                 .ToArray();
