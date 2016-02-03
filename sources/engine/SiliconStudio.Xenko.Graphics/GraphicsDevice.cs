@@ -101,6 +101,10 @@ namespace SiliconStudio.Xenko.Graphics
             RasterizerStates = new RasterizerStateFactory(this);
             DepthStencilStates = new DepthStencilStateFactory(this);
 
+            var defaultPipelineStateDescription = new PipelineStateDescription();
+            defaultPipelineStateDescription.SetDefaults();
+            defaultPipelineState = PipelineState.New(this, defaultPipelineStateDescription);
+
             currentState = null;
             allocatedStates.Clear();
             currentStateIndex = -1;

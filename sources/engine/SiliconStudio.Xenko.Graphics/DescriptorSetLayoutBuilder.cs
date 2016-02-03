@@ -25,14 +25,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets (or creates) an entry to the DescriptorSetLayout and gets its index.
         /// </summary>
         /// <returns>The future entry index.</returns>
-        public void AddBinding(ParameterKey key, EffectParameterClass @class, int arraySize = 1)
+        public void AddBinding(ParameterKey key, EffectParameterClass @class, int arraySize = 1, SamplerState immutableSampler = null)
         {
             hashBuilder.Write(key.Name);
             hashBuilder.Write(@class);
             hashBuilder.Write(arraySize);
 
             ElementCount += arraySize;
-            Entries.Add(new DescriptorSetLayout.Entry { Key = key, Class = @class, ArraySize = arraySize });
+            Entries.Add(new DescriptorSetLayout.Entry { Key = key, Class = @class, ArraySize = arraySize, ImmutableSampler = immutableSampler });
         }
     }
 }

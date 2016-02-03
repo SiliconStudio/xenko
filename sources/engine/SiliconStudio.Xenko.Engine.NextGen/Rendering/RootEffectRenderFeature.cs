@@ -39,6 +39,8 @@ namespace SiliconStudio.Xenko.Rendering
         public List<FrameResourceGroupLayout> FrameLayouts { get; } = new List<FrameResourceGroupLayout>();
         public Action<NextGenRenderSystem, Effect, RenderEffectReflection> EffectCompiled;
 
+        public int EffectDescriptorSetSlotCount => effectDescriptorSetSlots.Count;
+
         /// <summary>
         /// Gets number of effect permutation slot, which is the number of effect cached per object.
         /// </summary>
@@ -263,13 +265,14 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffectReflection = new RenderEffectReflection();
 
                         // Build root signature automatically from reflection
-
-                        renderEffectReflection.Binder.Compile(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots);
+                        renderEffectReflection.DescriptorReflection = EffectDescriptorSetReflection.New(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots);
+                        renderEffectReflection.RootSignature = RootSignature.New(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection);
+                        renderEffectReflection.BufferUploader.Compile(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection, effect.Bytecode);
 
                         // Prepare well-known descriptor set layouts
-                        renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(RenderSystem, renderEffectReflection.Binder.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
-                        renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(RenderSystem, renderEffectReflection.Binder.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
-                        renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(RenderSystem, renderEffectReflection.Binder.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
+                        renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
+                        renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
+                        renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
 
                         InstantiatedEffects.Add(effect, renderEffectReflection);
 

@@ -135,7 +135,10 @@
     <Compile Include="DescriptorTypeCount.cs" />
     <Compile Include="Direct3D\PipelineState.Direct3D.cs" />
     <Compile Include="EffectInstance.cs" />
-    <Compile Include="EffectBinder.cs" />
+    <Compile Include="InputClassification.cs" />
+    <Compile Include="InputElementDescription.cs" />
+    <Compile Include="MutablePipelineState.cs" />
+    <Compile Include="ResourceGroupBufferUploader.cs" />
     <Compile Include="EffectDescriptorSetReflection.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
     <Compile Include="Font\FontDataFactory.cs" />
