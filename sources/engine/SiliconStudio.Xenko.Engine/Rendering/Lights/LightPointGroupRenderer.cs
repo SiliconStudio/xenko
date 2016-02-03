@@ -53,9 +53,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class SpotLightShaderGroup : LightShaderGroupAndDataPool<SpotLightShaderGroupData>
         {
             internal readonly ParameterKey<int> CountKey;
-            internal readonly ParameterKey<Vector3[]> PositionsKey;
-            internal readonly ParameterKey<float[]> InvSquareRadiusKey;
-            internal readonly ParameterKey<Color3[]> ColorsKey;
+            internal readonly ParameterKey<Vector3> PositionsKey;
+            internal readonly ParameterKey<float> InvSquareRadiusKey;
+            internal readonly ParameterKey<Color3> ColorsKey;
 
             public SpotLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(mixin, compositionName, shadowGroupData)
@@ -75,9 +75,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class SpotLightShaderGroupData : LightShaderGroupData
         {
             private readonly ParameterKey<int> countKey;
-            private readonly ParameterKey<Color3[]> colorsKey;
-            private readonly ParameterKey<Vector3[]> positionsKey;
-            private readonly ParameterKey<float[]> invSquareRadiusKey;
+            private readonly ParameterKey<Color3> colorsKey;
+            private readonly ParameterKey<Vector3> positionsKey;
+            private readonly ParameterKey<float> invSquareRadiusKey;
             private readonly Vector3[] lightDirections;
             private readonly Vector3[] lightPositions;
             private readonly float[] invSquareRadius;
@@ -106,12 +106,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 invSquareRadius[Count] = pointLight.InvSquareRadius;
             }
 
-            protected override void ApplyParametersInternal(ParameterCollection parameters)
+            protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
             {
-                parameters.Set(countKey, Count);
-                parameters.Set(colorsKey, lightColors);
-                parameters.Set(positionsKey, lightPositions);
-                parameters.Set(invSquareRadiusKey, invSquareRadius);
+                parameters.SetValueSlow(countKey, Count);
+                parameters.SetValueSlow(colorsKey, lightColors);
+                parameters.SetValueSlow(positionsKey, lightPositions);
+                parameters.SetValueSlow(invSquareRadiusKey, invSquareRadius);
             }
         }
     }

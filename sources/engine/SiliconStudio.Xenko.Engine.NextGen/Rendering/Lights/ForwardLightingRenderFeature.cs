@@ -213,7 +213,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 var objectNode = RootRenderFeature.GetObjectNode(objectNodeReference);
                 var renderMesh = (RenderMesh)objectNode.RenderObject;
-                PrepareRenderModelForRendering(RenderSystem.RenderContextOld, renderMesh.RenderModel);
+                PrepareRenderModelForRendering(renderMesh.RenderModel);
             }
 
             var renderEffects = RootRenderFeature.GetData(renderEffectKey);
@@ -264,6 +264,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 {
                     var renderEffect = renderNode.RenderEffect;
                     var modelLightInfos = modelLights.Info = new RenderModelLightInfo();
+                    var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerLighting");
+
+                    var parameterCollectionLayout = new NextGenParameterCollectionLayout();
+                    parameterCollectionLayout.ProcessResources(descriptorLayout);
+                    modelLightInfos.ResourceCount = parameterCollectionLayout.ResourceCount;
 
                     // First time?
                     // Find lighting cbuffer
@@ -273,113 +278,33 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     if (lightingConstantBuffer != null)
                     {
                         modelLightInfos.ConstantBufferReflection = lightingConstantBuffer;
+                        parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
                     }
 
-                    var descriptorSetLayoutBuilder = renderEffect.Reflection.DescriptorReflection.GetLayout("PerLighting");
-                    modelLightInfos.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorSetLayoutBuilder, renderEffect.Effect.Bytecode, "PerLighting");
+                    modelLightInfos.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerLighting");
                     NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, modelLightInfos.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, modelLightInfos.Resources);
 
+                    // Chose parameter 
+                    var isShadowReceiver = renderMesh.Material.IsShadowCaster;
+                    var parameters = isShadowReceiver ? modelLights.Parameters.Parameters : modelLights.Parameters.ParametersNoShadows;
+                    parameters.UpdateLayout(parameterCollectionLayout);
+
+                    // Set resource bindings in PerMaterial resource set
+                    for (int resourceSlot = 0; resourceSlot < modelLightInfos.ResourceCount; ++resourceSlot)
+                    {
+                        modelLightInfos.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ResourceValues[resourceSlot]);
+                    }
+
+                    // Process PerMaterial cbuffer
                     if (modelLightInfos.ConstantBufferReflection != null)
                     {
-                        var isShadowReceiver = renderMesh.Material.IsShadowReceiver;
-                        var parameters = isShadowReceiver ? modelLights.Parameters.Parameters : modelLights.Parameters.ParametersNoShadows;
-
-                        //var lightingConstantBufferOffset = RenderSystem.BufferPool.Allocate(modelLightInfos.Resources.ConstantBufferSize);
-                        //modelLightInfos.Resources.DescriptorSet.SetConstantBuffer(0, RenderSystem.BufferPool.Buffer, lightingConstantBufferOffset, modelLightInfos.Resources.ConstantBufferSize);
                         var mappedCB = modelLightInfos.Resources.ConstantBuffer.Data;
-
-                        // Iterate over cbuffer members to update and pull them from material Parameters
-                        // TODO: we should cache reflection offsets, but currently waiting for Material to have a more efficient internal structure
-                        //        without ParameterCollection so that it is just a few simple copies without ParamterKey lookup
-                        foreach (var constantBufferMember in modelLightInfos.ConstantBufferReflection.Members)
-                        {
-                            var internalValue = parameters.GetInternalValue(constantBufferMember.Param.Key);
-                            if (internalValue != null)
-                            {
-                                ReadFrom(internalValue, mappedCB, constantBufferMember);
-                            }
-                        }
-
-                        for (int resourceSlot = 0; resourceSlot < descriptorSetLayoutBuilder.Entries.Count; resourceSlot++)
-                        {
-                            var layoutEntry = descriptorSetLayoutBuilder.Entries[resourceSlot];
-                            foreach (var parameter in parameters)
-                            {
-                                if (parameter.Key.Name == layoutEntry.Key.Name)
-                                {
-                                    var resourceValue = parameters.GetObject(parameter.Key);
-                                    modelLightInfos.Resources.DescriptorSet.SetValue(resourceSlot, resourceValue);
-                                }
-                            }
-                        }
+                        Utilities.CopyMemory(mappedCB, parameters.DataValues, modelLightInfos.Resources.ConstantBuffer.Size);
                     }
                 }
 
                 var resourceGroupPoolOffset = ((RootEffectRenderFeature) RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
                 resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = modelLights.Info.Resources;
-            }
-        }
-
-
-        private static unsafe void ReadFrom(ParameterCollection.InternalValue internalValue, IntPtr mappedCB, EffectParameterValueData constantBufferMember)
-        {
-            if (internalValue != null)
-            {
-                internalValue.ReadFrom(mappedCB + constantBufferMember.Offset, 0, constantBufferMember.Size);
-                var variableData = (float*)(mappedCB + constantBufferMember.Offset);
-                var sourceOffset = 0;
-                Matrix tempMatrix;
-
-                switch (constantBufferMember.Param.Class)
-                {
-                    case EffectParameterClass.Struct:
-                        internalValue.ReadFrom((IntPtr)variableData, sourceOffset, constantBufferMember.Size);
-                        break;
-                    case EffectParameterClass.Scalar:
-                        for (int elt = 0; elt < constantBufferMember.Count; ++elt)
-                        {
-                            internalValue.ReadFrom((IntPtr)variableData, sourceOffset, sizeof(float));
-                            //*variableData = *source++;
-                            sourceOffset += 4;
-                            variableData += 4; // 4 floats
-                        }
-                        break;
-                    case EffectParameterClass.Vector:
-                    case EffectParameterClass.Color:
-                        for (int elt = 0; elt < constantBufferMember.Count; ++elt)
-                        {
-                            //Framework.Utilities.CopyMemory((IntPtr)variableData, (IntPtr)source, (int)(shaderVariable.ColumnCount * sizeof(float)));
-                            internalValue.ReadFrom((IntPtr)variableData, sourceOffset, (int)(constantBufferMember.ColumnCount * sizeof(float)));
-                            sourceOffset += (int)constantBufferMember.ColumnCount * 4;
-                            variableData += 4;
-                        }
-                        break;
-                    case EffectParameterClass.MatrixColumns:
-                        for (int elt = 0; elt < constantBufferMember.Count; ++elt)
-                        {
-                            //fixed (Matrix* p = &tempMatrix)
-                            {
-                                internalValue.ReadFrom((IntPtr)(byte*)&tempMatrix, sourceOffset, (int)(constantBufferMember.ColumnCount * constantBufferMember.RowCount * sizeof(float)));
-                                ((Matrix*)variableData)->CopyMatrixFrom((float*)&tempMatrix, unchecked((int)constantBufferMember.ColumnCount), unchecked((int)constantBufferMember.RowCount));
-                                sourceOffset += (int)(constantBufferMember.ColumnCount * constantBufferMember.RowCount) * 4;
-                                variableData += 4 * constantBufferMember.RowCount;
-                            }
-                        }
-                        break;
-                    case EffectParameterClass.MatrixRows:
-                        for (int elt = 0; elt < constantBufferMember.Count; ++elt)
-                        {
-                            //fixed (Matrix* p = &tempMatrix)
-                            {
-                                internalValue.ReadFrom((IntPtr)(byte*)&tempMatrix, sourceOffset, (int)(constantBufferMember.ColumnCount * constantBufferMember.RowCount * sizeof(float)));
-                                ((Matrix*)variableData)->TransposeMatrixFrom((float*)&tempMatrix, unchecked((int)constantBufferMember.ColumnCount), unchecked((int)constantBufferMember.RowCount));
-                                //source += shaderVariable.ColumnCount * shaderVariable.RowCount;
-                                sourceOffset += (int)(constantBufferMember.ColumnCount * constantBufferMember.RowCount) * 4;
-                                variableData += 4 * constantBufferMember.RowCount;
-                            }
-                        }
-                        break;
-                }
             }
         }
 
@@ -487,11 +412,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private bool PrepareRenderModelForRendering(RenderContext context, RenderModel model)
+        private void PrepareRenderModelForRendering(RenderModel model)
         {
             // Already processed?
             if (modelToLights.ContainsKey(model))
-                return true;
+                return;
 
             var shaderKeyIdBuilder = new ObjectIdSimpleBuilder();
             var parametersKeyIdBuilder = new ObjectIdSimpleBuilder();
@@ -647,8 +572,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
 
             modelToLights.Add(model, renderModelLights);
-
-            return true;
         }
         
         private LightShaderPermutationEntry CreateShaderPermutationEntry()
@@ -728,10 +651,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var parameters = parameterCollectionEntry.Parameters;
             var parametersNoShadows = parameterCollectionEntry.ParametersNoShadows;
 
-            parameters.Set(LightingKeys.DirectLightGroups, lightShaderPermutationEntry.DirectLightShaders);
-            parameters.Set(LightingKeys.EnvironmentLights, lightShaderPermutationEntry.EnvironmentLightShaders);
-            parametersNoShadows.Set(LightingKeys.DirectLightGroups, lightShaderPermutationEntry.DirectLightShadersNoShadows);
-            parametersNoShadows.Set(LightingKeys.EnvironmentLights, lightShaderPermutationEntry.EnvironmentLightShaders);
+            //parameters.Set(LightingKeys.DirectLightGroups, lightShaderPermutationEntry.DirectLightShaders);
+            //parameters.Set(LightingKeys.EnvironmentLights, lightShaderPermutationEntry.EnvironmentLightShaders);
+            //parametersNoShadows.Set(LightingKeys.DirectLightGroups, lightShaderPermutationEntry.DirectLightShadersNoShadows);
+            //parametersNoShadows.Set(LightingKeys.EnvironmentLights, lightShaderPermutationEntry.EnvironmentLightShaders);
 
             foreach (var lightEntry in directLightsPerModel)
             {
@@ -919,8 +842,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             public LightParametersPermutationEntry()
             {
-                Parameters = new ParameterCollection();
-                ParametersNoShadows = new ParameterCollection();
+                Parameters = new NextGenParameterCollection();
+                ParametersNoShadows = new NextGenParameterCollection();
                 DirectLightGroupDatas = new List<LightShaderGroupData>();
                 DirectLightGroupsNoShadowDatas = new List<LightShaderGroupData>();
                 EnvironmentLightDatas = new List<LightShaderGroupData>();
@@ -939,9 +862,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public readonly List<LightShaderGroupData> EnvironmentLightDatas;
 
-            public readonly ParameterCollection Parameters;
+            public readonly NextGenParameterCollection Parameters;
 
-            public readonly ParameterCollection ParametersNoShadows;
+            public readonly NextGenParameterCollection ParametersNoShadows;
         }
 
         struct RenderModelLightsKey : IEquatable<RenderModelLightsKey>
@@ -1006,6 +929,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             public ResourceGroupLayout PerLightingLayout;
             public ResourceGroup Resources = new ResourceGroup();
+            public int ResourceCount;
             public ShaderConstantBufferDescription ConstantBufferReflection;
         }
     }

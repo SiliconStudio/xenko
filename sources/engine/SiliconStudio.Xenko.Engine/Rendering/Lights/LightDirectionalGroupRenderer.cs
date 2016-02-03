@@ -56,8 +56,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class DirectionalLightShaderGroup : LightShaderGroupAndDataPool<DirectionalLightShaderGroupData>
         {
             internal readonly ParameterKey<int> CountKey;
-            internal readonly ParameterKey<Vector3[]> DirectionsKey;
-            internal readonly ParameterKey<Color3[]> ColorsKey;
+            internal readonly ParameterKey<Vector3> DirectionsKey;
+            internal readonly ParameterKey<Color3> ColorsKey;
 
             public DirectionalLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(mixin, compositionName, shadowGroupData)
@@ -76,8 +76,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class DirectionalLightShaderGroupData : LightShaderGroupData
         {
             private readonly ParameterKey<int> countKey;
-            private readonly ParameterKey<Vector3[]> directionsKey;
-            private readonly ParameterKey<Color3[]> colorsKey;
+            private readonly ParameterKey<Vector3> directionsKey;
+            private readonly ParameterKey<Color3> colorsKey;
             private readonly Vector3[] lightDirections;
             private readonly Color3[] lightColors;
 
@@ -98,11 +98,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightColors[Count] = light.Color;
             }
 
-            protected override void ApplyParametersInternal(ParameterCollection parameters)
+            protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
             {
-                parameters.Set(countKey, Count);
-                parameters.Set(directionsKey, lightDirections);
-                parameters.Set(colorsKey, lightColors);
+                parameters.SetValueSlow(countKey, Count);
+                parameters.SetValueSlow(directionsKey, lightDirections);
+                parameters.SetValueSlow(colorsKey, lightColors);
             }
         }
     }
