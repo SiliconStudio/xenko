@@ -20,6 +20,8 @@ class ParticleComputeColorShader : ParticleBase
         // Base particle color
         // -----------------------------------------------        
         float4 finalColor = base.Shading() * baseColor.Compute();
+//        finalColor.x = 1;
+//        finalColor.a = 0.1;
 
         //// -----------------------------------------------
         //// Color intensity------------------------------
