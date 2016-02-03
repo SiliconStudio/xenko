@@ -10,14 +10,13 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
     /// <summary>
     /// Interface to render a shadow map.
     /// </summary>
+    // TODO GRAPHICS REFACTOR remove temporary duplicate interface
     public interface ILightShadowMapRenderer : Shadows.ILightShadowMapRenderer
     {
         //LightShadowType GetShadowType(LightShadowMap lightShadowMap);
 
         //ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
-
-        //void Render(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
-
+        
         void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
 
         void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection);
