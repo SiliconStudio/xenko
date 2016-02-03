@@ -64,6 +64,11 @@ namespace SiliconStudio.AssemblyProcessor
         public bool TreatWarningsAsErrors { get; set; }
         public bool DeleteOutputOnError { get; set; }
 
+        /// <summary>
+        /// Should we keep a copy of the original assembly? Useful for debugging.
+        /// </summary>
+        public bool KeepOriginal { get; internal set; }
+
         public Action<string, Exception> OnErrorEvent;
 
         public Action<string> OnInfoEvent;
@@ -100,6 +105,16 @@ namespace SiliconStudio.AssemblyProcessor
                     if (!string.IsNullOrEmpty(outputDirectory) && !Directory.Exists(outputDirectory))
                     {
                         Directory.CreateDirectory(outputDirectory);
+                    }
+
+                    // Keep the original assembly by adding a .old prefix to the current extension
+                    if (KeepOriginal)
+                    {
+                        var copiedFile = Path.ChangeExtension(inputFile, "old" + Path.GetExtension(inputFile));
+                        if (!File.Exists(copiedFile))
+                        {
+                            File.Copy(inputFile, copiedFile);
+                        }
                     }
 
                     assemblyDefinition.Write(outputFile, new WriterParameters() { WriteSymbols = readWriteSymbols });
