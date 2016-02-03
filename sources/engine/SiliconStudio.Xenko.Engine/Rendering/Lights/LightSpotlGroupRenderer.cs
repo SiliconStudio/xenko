@@ -52,10 +52,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class SpotLightShaderGroup : LightShaderGroupAndDataPool<SpotLightShaderGroupData>
         {
             internal readonly ParameterKey<int> CountKey;
-            internal readonly ParameterKey<Vector3[]> DirectionsKey;
-            internal readonly ParameterKey<Vector3[]> PositionsKey;
-            internal readonly ParameterKey<Vector3[]> AngleOffsetAndInvSquareRadiusKey;
-            internal readonly ParameterKey<Color3[]> ColorsKey;
+            internal readonly ParameterKey<Vector3> DirectionsKey;
+            internal readonly ParameterKey<Vector3> PositionsKey;
+            internal readonly ParameterKey<Vector3> AngleOffsetAndInvSquareRadiusKey;
+            internal readonly ParameterKey<Color3> ColorsKey;
 
             public SpotLightShaderGroup(ShaderMixinSource mixin, string compositionName, ILightShadowMapShaderGroupData shadowGroupData)
                 : base(mixin, compositionName, shadowGroupData)
@@ -76,10 +76,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         class SpotLightShaderGroupData : LightShaderGroupData
         {
             private readonly ParameterKey<int> countKey;
-            private readonly ParameterKey<Vector3[]> directionsKey;
-            private readonly ParameterKey<Color3[]> colorsKey;
-            internal readonly ParameterKey<Vector3[]> positionsKey;
-            internal readonly ParameterKey<Vector3[]> angleOffsetAndInvSquareRadiusKey;
+            private readonly ParameterKey<Vector3> directionsKey;
+            private readonly ParameterKey<Color3> colorsKey;
+            internal readonly ParameterKey<Vector3> positionsKey;
+            internal readonly ParameterKey<Vector3> angleOffsetAndInvSquareRadiusKey;
             private readonly Vector3[] lightDirections;
             private readonly Vector3[] lightPositions;
             private readonly Vector3[] lightAngleOffsetAndInvSquareRadius;
@@ -109,13 +109,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightAngleOffsetAndInvSquareRadius[Count] = new Vector3(spotLight.LightAngleScale, spotLight.LightAngleOffset, spotLight.InvSquareRange);
             }
 
-            protected override void ApplyParametersInternal(ParameterCollection parameters)
+            protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
             {
-                parameters.Set(countKey, Count);
-                parameters.Set(directionsKey, lightDirections);
-                parameters.Set(colorsKey, lightColors);
-                parameters.Set(positionsKey, lightPositions);
-                parameters.Set(angleOffsetAndInvSquareRadiusKey, lightAngleOffsetAndInvSquareRadius);
+                parameters.SetValueSlow(countKey, Count);
+                parameters.SetValueSlow(directionsKey, lightDirections);
+                parameters.SetValueSlow(colorsKey, lightColors);
+                parameters.SetValueSlow(positionsKey, lightPositions);
+                parameters.SetValueSlow(angleOffsetAndInvSquareRadiusKey, lightAngleOffsetAndInvSquareRadius);
             }
         }
     }

@@ -83,11 +83,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 
             private readonly ParameterKey<Texture> shadowMapTextureKey;
 
-            private readonly ParameterKey<Matrix[]> worldToShadowCascadeUVsKey;
+            private readonly ParameterKey<Matrix> worldToShadowCascadeUVsKey;
 
-            private readonly ParameterKey<float[]> depthBiasesKey;
+            private readonly ParameterKey<float> depthBiasesKey;
 
-            private readonly ParameterKey<float[]> offsetScalesKey;
+            private readonly ParameterKey<float> offsetScalesKey;
 
             private readonly ParameterKey<Vector2> shadowMapTextureSizeKey;
 
@@ -160,14 +160,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
                 }
             }
 
-            public void ApplyParameters(ParameterCollection parameters)
+            public void ApplyParameters(NextGenParameterCollection parameters)
             {
-                parameters.Set(shadowMapTextureKey, shadowMapTexture);
-                parameters.Set(shadowMapTextureSizeKey, shadowMapTextureSize);
-                parameters.Set(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
-                parameters.Set(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
-                parameters.Set(depthBiasesKey, depthBiases);
-                parameters.Set(offsetScalesKey, offsetScales);
+                parameters.SetResourceSlow(shadowMapTextureKey, shadowMapTexture);
+                parameters.SetValueSlow(shadowMapTextureSizeKey, shadowMapTextureSize);
+                parameters.SetValueSlow(shadowMapTextureTexelSizeKey, shadowMapTextureTexelSize);
+                parameters.SetValueSlow(worldToShadowCascadeUVsKey, worldToShadowCascadeUV);
+                parameters.SetValueSlow(depthBiasesKey, depthBiases);
+                parameters.SetValueSlow(offsetScalesKey, offsetScales);
             }
         }
 

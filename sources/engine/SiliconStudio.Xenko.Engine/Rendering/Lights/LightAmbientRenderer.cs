@@ -59,9 +59,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 color = light.Color;
             }
 
-            protected override void ApplyParametersInternal(ParameterCollection parameters)
+            protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
             {
-                parameters.Set(ambientLightKey, color);
+                parameters.SetValueSlow(ambientLightKey, color);
             }
         }
     }
