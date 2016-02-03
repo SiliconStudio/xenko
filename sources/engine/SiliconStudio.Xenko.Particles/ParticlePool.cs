@@ -211,13 +211,13 @@ namespace SiliconStudio.Xenko.Particles
 
 #if PARTICLES_SOA
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        static private Particle FromIndex(int idx)
+        static public Particle FromIndex(int idx)
         {
             return new Particle(idx);
         }
 #else
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        internal Particle FromIndex(int idx)
+        public Particle FromIndex(int idx)
         {
             return new Particle(ParticleData + idx * ParticleSize);
         }
