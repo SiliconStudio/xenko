@@ -109,6 +109,9 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         [DataMemberIgnore]
         private UInt32 randomOffset = 0;
 
+        /// <summary>
+        /// Marking the spawner as dirty will notify the parent emitter that the maximum number of particles need to be recalculated
+        /// </summary>
         protected void MarkAsDirty()
         {
             if (emitter != null)
@@ -195,8 +198,17 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             return state;
         }
 
+        /// <summary>
+        /// This method will be called form the emitter when it needs to poll how many particles to spawn (usually once per frame)
+        /// </summary>
+        /// <param name="dt">Time it has past since the last update (in seconds)</param>
+        /// <param name="emitter">Parent emitter in which new particles should be emitter</param>
         public abstract void SpawnNew(float dt, ParticleEmitter emitter);
 
+        /// <summary>
+        /// Get the maximum number of particles this spawner can emit in one second
+        /// </summary>
+        /// <returns>Peak particles per second</returns>
         public abstract int GetMaxParticlesPerSecond();
     }
 }

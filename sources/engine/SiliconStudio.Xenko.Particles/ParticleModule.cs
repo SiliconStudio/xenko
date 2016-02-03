@@ -61,7 +61,8 @@ namespace SiliconStudio.Xenko.Particles
         /// A list of fields required by the module to operate properly.
         /// Please fill it during construction time.
         /// </summary>
-        internal List<ParticleFieldDescription> RequiredFields = new List<ParticleFieldDescription>(ParticlePool.DefaultMaxFielsPerPool);
+        [DataMemberIgnore]
+        public List<ParticleFieldDescription> RequiredFields = new List<ParticleFieldDescription>(ParticlePool.DefaultMaxFielsPerPool);
 
         /// <summary>
         /// Note on inheritance. The current values only change once per frame, when the SetParentTRS is called. 

@@ -66,6 +66,7 @@ TemplateFolders:
         - samples\Input\TouchInputs\TouchInputs.xktpl
         - samples\Input\GravitySensor\GravitySensor.xktpl
         - samples\Particles\SimpleParticles\SimpleParticles.xktpl
+        - samples\Particles\CustomParticles\CustomParticles.xktpl
         - samples\Physics\CharacterControllerSample\CharacterControllerSample.xktpl
         - samples\Physics\Constraints\Constraints.xktpl
         - samples\Physics\Raycasting\Raycasting.xktpl

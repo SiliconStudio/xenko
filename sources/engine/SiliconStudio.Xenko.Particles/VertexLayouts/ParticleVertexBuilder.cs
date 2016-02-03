@@ -133,7 +133,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         private IntPtr vertexBuffer = IntPtr.Zero;
         private IntPtr vertexBufferOrigin = IntPtr.Zero;
 
-        internal IntPtr StartBuffer(GraphicsDevice device, Effect effect)
+        public IntPtr StartBuffer(GraphicsDevice device, Effect effect)
         {
             if (bufferIsDirty && requiredQuads > 0)
             {
@@ -155,12 +155,12 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             return mappedVertices.DataBox.DataPointer;
         }
 
-        internal void RestartBuffer()
+        public void RestartBuffer()
         {
             vertexBuffer = vertexBufferOrigin;
         }
 
-        internal void FlushBuffer(GraphicsDevice device)
+        public void FlushBuffer(GraphicsDevice device)
         {
             if (bufferIsDirty)
                 return;
@@ -175,17 +175,17 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             device.DrawIndexed(PrimitiveType.TriangleList, livingQuads * indicesPerQuad, ResourceContext.IndexBufferPosition);
         }
 
-        internal void NextVertex()
+        public void NextVertex()
         {
             vertexBuffer += VertexDeclaration.VertexStride;
         }
 
-        internal void NextParticle()
+        public void NextParticle()
         {
             vertexBuffer += VertexDeclaration.VertexStride * verticesPerParticle;
         }
 
-        internal AttributeAccessor GetAccessor(AttributeDescription desc) 
+        public AttributeAccessor GetAccessor(AttributeDescription desc) 
         {            
             AttributeAccessor accessor;
             if (!availableAttributes.TryGetValue(desc, out accessor))
@@ -196,12 +196,12 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             return accessor;
         }
 
-        internal void SetAttribute(AttributeAccessor accessor, IntPtr ptrRef) 
+        public void SetAttribute(AttributeAccessor accessor, IntPtr ptrRef) 
         {
             Utilities.CopyMemory(vertexBuffer + accessor.Offset, ptrRef, accessor.Size);
         }
 
-        internal void SetAttributePerParticle(AttributeAccessor accessor, IntPtr ptrRef)
+        public void SetAttributePerParticle(AttributeAccessor accessor, IntPtr ptrRef)
         {
             for (var i = 0; i < verticesPerParticle; i++)
             {
@@ -209,7 +209,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             }
         }
 
-        internal void TransformAttributePerParticle<T>(AttributeAccessor accessor, TransformAttributeDelegate<T> transformMethod) where T : struct
+        public void TransformAttributePerParticle<T>(AttributeAccessor accessor, TransformAttributeDelegate<T> transformMethod) where T : struct
         {
             for (var i = 0; i < verticesPerParticle; i++)
             {
