@@ -17,6 +17,8 @@ namespace SiliconStudio.Quantum
         /// <param name="targetNode">The target node of the link.</param>
         public delegate void LinkActionDelegate(IGraphNode sourceNode, IGraphNode targetNode);
 
+        public delegate bool ReferenceMatchDelegate(ObjectReference sourceReference, ObjectReference targetReferenceMatch);
+
         private struct ContentNodeLink
         {
             public readonly IGraphNode Source;
@@ -35,11 +37,14 @@ namespace SiliconStudio.Quantum
         /// <param name="sourceRootNode"></param>
         /// <param name="targetRootNode"></param>
         /// <param name="linkAction"></param>
-        public static void LinkNodes(IGraphNode sourceRootNode, IGraphNode targetRootNode, LinkActionDelegate linkAction)
+        public static void LinkNodes(IGraphNode sourceRootNode, IGraphNode targetRootNode, LinkActionDelegate linkAction, ReferenceMatchDelegate referenceMatch = null)
         {
             if (sourceRootNode == null) throw new ArgumentNullException(nameof(sourceRootNode));
             if (targetRootNode == null) throw new ArgumentNullException(nameof(targetRootNode));
             if (linkAction == null) throw new ArgumentNullException(nameof(linkAction));
+
+            if (referenceMatch == null)
+                referenceMatch = (x, y) => Equals(x.Index, y.Index);
 
             var nodes = new Queue<ContentNodeLink>();
             nodes.Enqueue(new ContentNodeLink(sourceRootNode, targetRootNode));
@@ -50,33 +55,32 @@ namespace SiliconStudio.Quantum
                 if (node.Target != null)
                 {
                     // Enqueue children
-                    foreach (var child in node.Source.Children)
+                    foreach (var sourceChild in node.Source.Children)
                     {
-                        var baseChild = node.Target.Children.FirstOrDefault(x => x.Name == child.Name);
-                        if (baseChild != null)
+                        var targetChild = node.Target.Children.FirstOrDefault(x => x.Name == sourceChild.Name);
+                        if (targetChild != null)
                         {
-                            nodes.Enqueue(new ContentNodeLink(child, baseChild));
+                            nodes.Enqueue(new ContentNodeLink(sourceChild, targetChild));
                         }
                     }
                     // Enqueue object reference
-                    var objectReference = node.Source.Content.Reference as ObjectReference;
-                    if (objectReference?.TargetNode != null)
+                    var sourceObjectReference = node.Source.Content.Reference as ObjectReference;
+                    if (sourceObjectReference?.TargetNode != null)
                     {
-                        var baseObjectReference = node.Target.Content.Reference.AsObject;
-                        nodes.Enqueue(new ContentNodeLink(objectReference.TargetNode, baseObjectReference?.TargetNode));
+                        var targetObjectReference = node.Target.Content.Reference.AsObject;
+                        nodes.Enqueue(new ContentNodeLink(sourceObjectReference.TargetNode, targetObjectReference?.TargetNode));
                     }
                     // Enqueue enumerable references
-                    var enumReference = node.Source.Content.Reference as ReferenceEnumerable;
-                    var baseEnumReference = node.Target.Content.Reference as ReferenceEnumerable;
-                    if (enumReference != null && baseEnumReference != null)
+                    var sourceEnumReference = node.Source.Content.Reference as ReferenceEnumerable;
+                    var targetEnumReference = node.Target.Content.Reference as ReferenceEnumerable;
+                    if (sourceEnumReference != null && targetEnumReference != null)
                     {
-                        foreach (var reference in enumReference.Where(x => x.TargetNode != null))
+                        foreach (var sourceReference in sourceEnumReference.Where(x => x.TargetNode != null))
                         {
-                            var baseReference = baseEnumReference.FirstOrDefault(x => Equals(reference.Index, x.Index));
-                            // TODO: use "IdentifiableHelper"
-                            if (baseReference != null)
+                            var targetReference = targetEnumReference.FirstOrDefault(x => referenceMatch(x, sourceReference));
+                            if (targetReference != null)
                             {
-                                nodes.Enqueue(new ContentNodeLink(reference.TargetNode, baseReference?.TargetNode));
+                                nodes.Enqueue(new ContentNodeLink(sourceReference.TargetNode, targetReference.TargetNode));
                             }
                         }
                     }
