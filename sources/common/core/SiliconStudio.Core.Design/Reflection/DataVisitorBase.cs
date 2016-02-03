@@ -28,7 +28,7 @@ namespace SiliconStudio.Core.Reflection
         /// Initializes a new instance of the <see cref="DataVisitorBase"/> class.
         /// </summary>
         protected DataVisitorBase()
-            : this(new TypeDescriptorFactory(new AttributeRegistry()))
+            : this(Reflection.TypeDescriptorFactory.Default)
         {
         }
 
