@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
         /// <summary>
         /// The input layout used by this geometric primitive (shared for all geometric primitive).
         /// </summary>
-        private readonly VertexArrayObject vertexArrayObject;
+        private readonly VertexBufferBinding VertexBufferBinding;
 
         /// <summary>
         /// True if the index buffer is a 32 bit index buffer.
@@ -96,8 +96,7 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
             // For now it will keep buffers for recreation.
             // TODO: A better alternative would be to store recreation parameters so that we can reuse procedural code.
             VertexBuffer = Buffer.Vertex.New(graphicsDevice, vertices).RecreateWith(vertices).DisposeBy(this);
-
-            vertexArrayObject = VertexArrayObject.New(graphicsDevice, new IndexBufferBinding(IndexBuffer, IsIndex32Bits, indices.Length), new VertexBufferBinding(VertexBuffer, new T().GetLayout(), vertices.Length)).DisposeBy(this);
+            VertexBufferBinding = new VertexBufferBinding(VertexBuffer, new T().GetLayout(), vertices.Length);
         }
 
         /// <summary>
@@ -115,7 +114,8 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
         public void Draw(GraphicsDevice graphicsDevice)
         {
             // Setup the Vertex Buffer
-            graphicsDevice.SetVertexArrayObject(vertexArrayObject);
+            graphicsDevice.SetIndexBuffer(IndexBuffer, 0, IsIndex32Bits);
+            graphicsDevice.SetVertexBuffer(0, VertexBuffer, 0, VertexBufferBinding.Stride);
 
             // Finally Draw this mesh
             graphicsDevice.DrawIndexed(PrimitiveType.TriangleList, IndexBuffer.ElementCount);

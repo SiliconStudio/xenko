@@ -156,7 +156,6 @@
     <Compile Include="Direct3D\DisplayMode.Direct3D.cs" />
     <Compile Include="Direct3D\EffectInputSignature.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsOutput.Direct3D.cs" />
-    <Compile Include="Direct3D\InputLayoutManager.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="DepthStencilStateSerializer.cs" />
     <Compile Include="ResourceGroup.cs" />
@@ -221,7 +220,6 @@
     <Compile Include="OpenGL\VertexArrayObjectInstance.cs" />
     <Compile Include="OpenGL\VertexAttrib.cs" />
     <Compile Include="ResumeManager.cs" />
-    <Compile Include="Direct3D\VertexArrayLayout.Direct3D.cs" />
     <Compile Include="Effects\Effect.cs" />
     <Compile Include="EffectInputSignature.cs" />
     <Compile Include="Effects\EffectSerializer.cs" />
@@ -358,7 +356,6 @@
     <Compile Include="Direct3D\RasterizerState.Direct3D.cs" />
     <Compile Include="Direct3D\SamplerState.Direct3D.cs" />
     <Compile Include="Direct3D\Texture.Direct3D.cs" />
-    <Compile Include="Direct3D\VertexArrayObject.Direct3D.cs" />
     <Compile Include="TextureDescription.ExtensionsCube.cs" />
     <Compile Include="TextureDescription.Extensions3D.cs" />
     <Compile Include="TextureDescription.Extensions2D.cs" />
@@ -444,7 +441,6 @@
     <Compile Include="SamplerStateFactory.cs" />
     <Compile Include="SamplerState.cs" />
     <Compile Include="TextureDescription.cs" />
-    <Compile Include="VertexArrayObject.cs" />
     <Compile Include="GraphicsDeviceFactory.cs" />
     <Compile Include="DepthStencilStateFactory.cs" />
     <Compile Include="GraphicsAdapter.cs" />
