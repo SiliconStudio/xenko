@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         //public RendererBase RootRenderer;
         public NextGenRenderSystem RenderSystem;
+        public NextGenRenderContext RenderContext;
 
         // Render views
         private RenderView mainRenderView;
@@ -39,6 +40,7 @@ namespace SiliconStudio.Xenko.Rendering
             base.InitializeCore();
 
             RenderSystem = new NextGenRenderSystem(Services);
+            RenderContext = new NextGenRenderContext(GraphicsDevice);
 
             RenderSystem.Initialize(EffectSystem, GraphicsDevice);
 
@@ -140,7 +142,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var gbuffer = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.R11G11B10_Float));
                 GraphicsDevice.Clear(gbuffer, Color4.Black);
                 GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, gbuffer);
-                Draw(RenderSystem, mainRenderView, gbufferRenderStage);
+                Draw(RenderSystem, RenderContext, mainRenderView, gbufferRenderStage);
                 GraphicsDevice.PopState();
             }
 
@@ -162,14 +164,14 @@ namespace SiliconStudio.Xenko.Rendering
                         GraphicsDevice.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
                         GraphicsDevice.SetRasterizerState(shadowMapState);
 
-                        Draw(RenderSystem, shadowmapRenderView, shadowmapRenderStage);
+                        Draw(RenderSystem, RenderContext, shadowmapRenderView, shadowmapRenderStage);
                     }
                 }
                 GraphicsDevice.PopState();
             }
 
 
-            Draw(RenderSystem, mainRenderView, mainRenderStage);
+            Draw(RenderSystem, RenderContext, mainRenderView, mainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
         }
 
@@ -276,7 +278,7 @@ namespace SiliconStudio.Xenko.Rendering
                 // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
             {
                 // Divide into task chunks for parallelism
-                renderFeature.PrepareEffectPermutations(RenderSystem);
+                renderFeature.PrepareEffectPermutations();
             }
 
             // Generate and execute prepare jobs
@@ -284,11 +286,11 @@ namespace SiliconStudio.Xenko.Rendering
                 // We might be able to parallelize too as long as we resepect render feature dependency graph (probably very few dependencies in practice)
             {
                 // Divide into task chunks for parallelism
-                renderFeature.Prepare();
+                renderFeature.Prepare(RenderContext);
             }
         }
 
-        public static void Draw(NextGenRenderSystem renderSystem, RenderView renderView, RenderStage renderStage)
+        public static void Draw(NextGenRenderSystem renderSystem, NextGenRenderContext renderContext, RenderView renderView, RenderStage renderStage)
         {
             // Sync point: draw (from now, we should execute with a graphics device context to perform rendering)
 
@@ -322,7 +324,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 // Divide into task chunks for parallelism
-                currentRenderFeature.Draw(renderView, renderViewStage, currentStart, currentEnd);
+                currentRenderFeature.Draw(renderContext, renderView, renderViewStage, currentStart, currentEnd);
             }
         }
     }

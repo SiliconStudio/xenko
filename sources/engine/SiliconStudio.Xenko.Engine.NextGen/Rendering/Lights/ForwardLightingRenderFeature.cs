@@ -206,7 +206,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(NextGenRenderSystem RenderSystem)
+        public override void PrepareEffectPermutations()
         {
             // TODO: Old code is working with RenderModel, but we should probably directly work with RenderMesh
             foreach (var objectNodeReference in RootRenderFeature.ObjectNodeReferences)
@@ -243,8 +243,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
+        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare()
+        public override void Prepare(NextGenRenderContext context)
         {
             // Copy data to cbuffer
             // TODO: Rewrite it with new render system in mind (should be much faster/efficient)
@@ -308,7 +309,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override void Draw(RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
         }
 

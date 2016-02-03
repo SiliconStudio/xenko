@@ -26,7 +26,6 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics

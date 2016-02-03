@@ -24,9 +24,9 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             sprite3DBatch = new Sprite3DBatch(RenderSystem.GraphicsDevice);
         }
 
-        public override void Draw(RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
-            base.Draw(renderView, renderViewStage, startIndex, endIndex);
+            base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
             Matrix viewInverse;
             Matrix.Invert(ref renderView.View, out viewInverse);
