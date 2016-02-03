@@ -2167,6 +2167,13 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        private string renderer;
+
+        private string GetRendererName()
+        {
+            return renderer;
+        }
+
         protected void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
@@ -2225,9 +2232,10 @@ namespace SiliconStudio.Xenko.Graphics
             creationFlags |= GraphicsContextFlags.Embedded;
 #endif
 
+            renderer = GL.GetString(StringName.Renderer);
+
             // Doesn't seems to be working on Android
-#if SILICONSTUDIO_PLATFORM_ANDROID
-            var renderer = GL.GetString(StringName.Renderer);
+#if SILICONSTUDIO_PLATFORM_ANDROID           
             Workaround_VAO_PowerVR_SGX_540 = renderer == "PowerVR SGX 540";
             Workaround_Context_Tegra2_Tegra3 = renderer == "NVIDIA Tegra 3" || renderer == "NVIDIA Tegra 2";
 

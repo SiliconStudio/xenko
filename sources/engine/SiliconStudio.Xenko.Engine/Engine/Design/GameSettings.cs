@@ -14,6 +14,9 @@ namespace SiliconStudio.Xenko.Engine.Design
     [DataContract]
     public class PlatformConfigurations
     {
+        [DataMemberIgnore]
+        internal GraphicsDevice GraphicsDevice;
+
         [DataMember]
         internal List<ConfigurationOverride> Configurations = new List<ConfigurationOverride>();
 
@@ -57,8 +60,15 @@ namespace SiliconStudio.Xenko.Engine.Design
             {
                 config = platformConfig;
             }
-            
-            if(config == null)
+
+            //find per specific renderer settings
+            platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter == string.Empty).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
+            if (platformConfig != null)
+            {
+                config = platformConfig;
+            }
+
+            if (config == null)
             {
                 return new T();
             }

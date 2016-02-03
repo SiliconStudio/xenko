@@ -8,7 +8,6 @@ using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
-using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Games;
@@ -67,39 +66,24 @@ namespace SiliconStudio.Xenko.Physics
         /// </summary>
         public static OnSimulationCreationDelegate OnSimulationCreation;
 
-        [DataContract]
-        [Display("Physics Settings")]
-        public class PhysicsConfiguration : Configuration
-        {
-            [DataMember(10)]
-            public PhysicsEngineFlags Flags;
-
-            [DataMember(20)]
-            public int MaxSubSteps = 1;
-
-            [DataMember(30)]
-            public float FixedTimeStep = 1.0f / 60.0f;
-        }
 
         /// <summary>
         /// Initializes the Physics engine using the specified flags.
         /// </summary>
         /// <param name="processor"></param>
-        /// <param name="flags">The flags.</param>
+        /// <param name="configuration"></param>
         /// <exception cref="System.NotImplementedException">SoftBody processing is not yet available</exception>
-        internal Simulation(PhysicsProcessor processor, PhysicsEngineFlags flags = PhysicsEngineFlags.None)
+        internal Simulation(PhysicsProcessor processor, PhysicsConfiguration configuration)
         {
             this.processor = processor;
-            var game = (Game)processor.EntityManager.Services.GetServiceAs<IGame>();
-            var settings = game.Settings != null ? game.Settings.Configurations.Get<PhysicsConfiguration>() : new PhysicsConfiguration();
 
-            if (flags == PhysicsEngineFlags.None)
+            if (configuration.Flags == PhysicsEngineFlags.None)
             {
-                flags = OnSimulationCreation?.Invoke() ?? settings.Flags;              
+                configuration.Flags = OnSimulationCreation?.Invoke() ?? configuration.Flags;              
             }
 
-            MaxSubSteps = settings.MaxSubSteps;
-            FixedTimeStep = settings.FixedTimeStep;
+            MaxSubSteps = configuration.MaxSubSteps;
+            FixedTimeStep = configuration.FixedTimeStep;
 
             collisionConfiguration = new BulletSharp.DefaultCollisionConfiguration();
             dispatcher = new BulletSharp.CollisionDispatcher(collisionConfiguration);
@@ -122,11 +106,11 @@ namespace SiliconStudio.Xenko.Physics
             //default solver
             var solver = new BulletSharp.SequentialImpulseConstraintSolver();
 
-            if (flags.HasFlag(PhysicsEngineFlags.CollisionsOnly))
+            if (configuration.Flags.HasFlag(PhysicsEngineFlags.CollisionsOnly))
             {
                 collisionWorld = new BulletSharp.CollisionWorld(dispatcher, broadphase, collisionConfiguration);
             }
-            else if (flags.HasFlag(PhysicsEngineFlags.SoftBodySupport))
+            else if (configuration.Flags.HasFlag(PhysicsEngineFlags.SoftBodySupport))
             {
                 //mSoftRigidDynamicsWorld = new BulletSharp.SoftBody.SoftRigidDynamicsWorld(mDispatcher, mBroadphase, solver, mCollisionConf);
                 //mDiscreteDynamicsWorld = mSoftRigidDynamicsWorld;
@@ -146,7 +130,7 @@ namespace SiliconStudio.Xenko.Physics
 
                 solverInfo.SolverMode |= BulletSharp.SolverModes.CacheFriendly; //todo test if helps with performance or not
 
-                if (flags.HasFlag(PhysicsEngineFlags.ContinuosCollisionDetection))
+                if (configuration.Flags.HasFlag(PhysicsEngineFlags.ContinuosCollisionDetection))
                 {
                     CanCcd = true;
                     solverInfo.SolverMode |= BulletSharp.SolverModes.Use2FrictionDirections | BulletSharp.SolverModes.RandomizeOrder;
@@ -323,12 +307,8 @@ namespace SiliconStudio.Xenko.Physics
             }
         }
 
-        private uint eventFrame;
-
         internal void SendEvents()
         {
-            ++eventFrame;
-
             foreach (var collision in newCollisionsCache)
             {
                 while (collision.ColliderA.NewPairChannel.Balance < 0)
