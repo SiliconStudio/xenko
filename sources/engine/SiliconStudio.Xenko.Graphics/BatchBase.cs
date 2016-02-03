@@ -74,6 +74,7 @@ namespace SiliconStudio.Xenko.Graphics
         // TODO: dispose vertex array when Effect is disposed
         protected readonly DeviceResourceContext ResourceContext;
 
+        protected MutablePipelineState pipelineState = new MutablePipelineState();
         protected GraphicsDevice GraphicsDevice;
         protected BlendState BlendState;
         protected RasterizerState RasterizerState;
@@ -216,12 +217,23 @@ namespace SiliconStudio.Xenko.Graphics
                 Parameters.Set(samplerUpdater.Value, localSamplerState);
 
             // Setup states (Blend, DepthStencil, Rasterizer)
-            GraphicsDevice.SetBlendState(BlendState ?? GraphicsDevice.BlendStates.AlphaBlend);
-            GraphicsDevice.SetDepthStencilState(DepthStencilState ?? GraphicsDevice.DepthStencilStates.Default, StencilReferenceValue);
-            GraphicsDevice.SetRasterizerState(RasterizerState ?? GraphicsDevice.RasterizerStates.CullBack);
+            pipelineState.State.SetDefaults();
+            pipelineState.State.RootSignature = Effect.RootSignature;
+            pipelineState.State.EffectBytecode = Effect.Effect.Bytecode;
+            pipelineState.State.BlendState = (BlendState ?? GraphicsDevice.BlendStates.AlphaBlend).Description;
+            pipelineState.State.DepthStencilState = (DepthStencilState ?? GraphicsDevice.DepthStencilStates.Default).Description;
+            pipelineState.State.RasterizerState = (RasterizerState ?? GraphicsDevice.RasterizerStates.CullBack).Description;
+            pipelineState.State.InputElements = ResourceContext.InputElements;
+            pipelineState.State.PrimitiveType = PrimitiveType.TriangleList;
+            pipelineState.Update(GraphicsDevice);
 
-            // Set VertexInputLayout
-            GraphicsDevice.SetVertexArrayObject(ResourceContext.VertexArrayObject);
+            // Bind pipeline
+            GraphicsDevice.SetPipelineState(pipelineState.CurrentState);
+
+            // Bind VB/IB
+            GraphicsDevice.SetVertexBuffer(0, ResourceContext.VertexBufferBinding.Buffer, ResourceContext.VertexBufferBinding.Offset, ResourceContext.VertexBufferBinding.Stride);
+            if (ResourceContext.IndexBuffer != null)
+                GraphicsDevice.SetIndexBuffer(ResourceContext.IndexBufferBinding.Buffer, ResourceContext.IndexBufferBinding.Offset, ResourceContext.IndexBufferBinding.Is32Bit);
 
             // If this is a deferred D3D context, reset position so the first Map call will use D3D11_MAP_WRITE_DISCARD.
             if (GraphicsDevice.IsDeferred)
@@ -731,9 +743,13 @@ namespace SiliconStudio.Xenko.Graphics
             public readonly bool IsIndexBufferDynamic;
 
             /// <summary>
-            /// The VertexArrayObject of the batch.
+            /// The VertexBufferBinding of the batch.
             /// </summary>
-            public readonly VertexArrayObject VertexArrayObject;
+            public readonly VertexBufferBinding VertexBufferBinding;
+
+            public readonly IndexBufferBinding IndexBufferBinding;
+
+            public readonly InputElementDescription[] InputElements;
 
             /// <summary>
             /// The current position in vertex into the vertex array buffer.
@@ -770,11 +786,9 @@ namespace SiliconStudio.Xenko.Graphics
                     IndexBuffer.Reload = graphicsResource => ((Buffer)graphicsResource).Recreate(resourceBufferInfo.StaticIndices);
                 }
 
-                var indexBufferBinding = new IndexBufferBinding(IndexBuffer, indexStructSize == sizeof(int), IndexBuffer.Description.SizeInBytes / indexStructSize);
-                var vertexBufferBinding = new VertexBufferBinding(VertexBuffer, declaration, VertexCount, vertexSize);
-
-                // Creates a VAO
-                VertexArrayObject = VertexArrayObject.New(device, effect.InputSignature, indexBufferBinding, vertexBufferBinding).DisposeBy(this);
+                IndexBufferBinding = new IndexBufferBinding(IndexBuffer, indexStructSize == sizeof(int), IndexBuffer.Description.SizeInBytes / indexStructSize);
+                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, declaration, VertexCount, vertexSize);
+                InputElements = VertexBufferBinding.Declaration.CreateInputElements();
             }
         }
 

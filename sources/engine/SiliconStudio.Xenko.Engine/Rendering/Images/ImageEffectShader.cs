@@ -14,6 +14,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("ImageEffectShader")]
     public class ImageEffectShader : ImageEffect
     {
+        private MutablePipelineState pipelineState = new MutablePipelineState();
+        private bool pipelineStateDirty = true;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
         /// </summary>
@@ -110,6 +113,21 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
         protected override void DrawCore(RenderContext context)
         {
+            if (pipelineStateDirty)
+            {
+                EffectInstance.UpdateEffect(GraphicsDevice);
+
+                pipelineState.State.SetDefaults();
+                pipelineState.State.RootSignature = EffectInstance.RootSignature;
+                pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
+                pipelineState.State.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
+                pipelineState.State.PrimitiveType = PrimitiveQuad.PrimitiveType;
+                pipelineState.Update(GraphicsDevice);
+                pipelineStateDirty = false;
+            }
+
+            GraphicsDevice.SetPipelineState(pipelineState.CurrentState);
+
             // Draw a full screen quad
             GraphicsDevice.DrawQuad(EffectInstance);
         }

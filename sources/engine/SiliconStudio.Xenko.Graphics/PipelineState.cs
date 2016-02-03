@@ -2,28 +2,11 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public enum InputClassification
-    {
-        Vertex,
-        Instance,
-    }
-
-    public struct InputElementDescription
-    {
-        public string SemanticName;
-        public int SemanticIndex;
-        public PixelFormat Format;
-        public int InputSlot;
-        public int AlignedByteOffset;
-        public InputClassification InputSlotClass;
-        public int InstanceDataStepRate;
-    }
-
     public class PipelineStateDescription : IEquatable<PipelineStateDescription>
     {
         // Root Signature
@@ -34,7 +17,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         // Rendering States
         public BlendStateDescription BlendState;
-        public uint SampleMask;
+        public uint SampleMask = 0xFFFFFFFF;
         public RasterizerStateDescription RasterizerState;
         public DepthStencilStateDescription DepthStencilState;
 
@@ -47,13 +30,29 @@ namespace SiliconStudio.Xenko.Graphics
 
         public PipelineStateDescription Clone()
         {
-            var inputElements = new InputElementDescription[InputElements.Length];
-            for (int i = 0; i < inputElements.Length; ++i)
-                inputElements[i] = InputElements[i];
+            InputElementDescription[] inputElements;
+            if (InputElements != null)
+            {
+                inputElements = new InputElementDescription[InputElements.Length];
+                for (int i = 0; i < inputElements.Length; ++i)
+                    inputElements[i] = InputElements[i];
+            }
+            else
+            {
+                inputElements = null;
+            }
 
-            var renderTargetFormats = new PixelFormat[InputElements.Length];
-            for (int i = 0; i < renderTargetFormats.Length; ++i)
-                renderTargetFormats[i] = RenderTargetFormats[i];
+            PixelFormat[] renderTargetFormats;
+            if (RenderTargetFormats != null)
+            {
+                renderTargetFormats = new PixelFormat[RenderTargetFormats.Length];
+                for (int i = 0; i < renderTargetFormats.Length; ++i)
+                    renderTargetFormats[i] = RenderTargetFormats[i];
+            }
+            else
+            {
+                renderTargetFormats = null;
+            }
 
             return new PipelineStateDescription
             {
@@ -83,15 +82,39 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
-            return Equals(EffectBytecode, other.EffectBytecode)
+            if (!(RootSignature == other.RootSignature
+                && EffectBytecode == other.EffectBytecode
                 && BlendState.Equals(other.BlendState)
                 && SampleMask == other.SampleMask
                 && RasterizerState.Equals(other.RasterizerState)
                 && DepthStencilState.Equals(other.DepthStencilState)
-                && Equals(InputElements, other.InputElements)
                 && PrimitiveType == other.PrimitiveType
-                && Equals(RenderTargetFormats, other.RenderTargetFormats)
-                && DepthStencilFormat == other.DepthStencilFormat;
+                && DepthStencilFormat == other.DepthStencilFormat))
+                return false;
+
+            if ((InputElements != null) != (other.InputElements != null))
+                return false;
+            if (InputElements != null)
+            {
+                for (int i = 0; i < InputElements.Length; ++i)
+                {
+                    if (!InputElements[i].Equals(other.InputElements[i]))
+                        return false;
+                }
+            }
+
+            if ((RenderTargetFormats != null) != (other.RenderTargetFormats != null))
+                return false;
+            if (RenderTargetFormats != null)
+            {
+                for (int i = 0; i < RenderTargetFormats.Length; ++i)
+                {
+                    if (!RenderTargetFormats[i].Equals(other.RenderTargetFormats[i]))
+                        return false;
+                }
+            }
+
+            return true;
         }
 
         public override bool Equals(object obj)
@@ -140,74 +163,6 @@ namespace SiliconStudio.Xenko.Graphics
         public static PipelineState New(GraphicsDevice graphicsDevice, PipelineStateDescription pipelineStateDescription)
         {
             return new PipelineState(graphicsDevice, pipelineStateDescription);
-        }
-    }
-
-    public class MutablePipeline
-    {
-        private Dictionary<PipelineStateDescriptionWithHash, PipelineState> cache = new Dictionary<PipelineStateDescriptionWithHash, PipelineState>();
-        public PipelineStateDescription State;
-
-        public MutablePipeline()
-        {
-            State = new PipelineStateDescription();
-            State.SetDefaults();
-        }
-
-        public void Apply(GraphicsDevice graphicsDevice)
-        {
-            // Hash current state
-            var hashedState = new PipelineStateDescriptionWithHash(State);
-
-            // Find existing PipelineState object
-            PipelineState pipelineState;
-            if (!cache.TryGetValue(hashedState, out pipelineState))
-            {
-                // Otherwise, instantiate it
-                // First, make an copy
-                hashedState = new PipelineStateDescriptionWithHash(State.Clone());
-                cache.Add(hashedState, pipelineState = PipelineState.New(graphicsDevice, State));
-            }
-
-            graphicsDevice.SetPipelineState(pipelineState);
-        }
-
-        struct PipelineStateDescriptionWithHash : IEquatable<PipelineStateDescriptionWithHash>
-        {
-            public readonly int Hash;
-            public readonly PipelineStateDescription State;
-
-            public PipelineStateDescriptionWithHash(PipelineStateDescription state)
-            {
-                Hash = state.GetHashCode();
-                State = state;
-            }
-
-            public bool Equals(PipelineStateDescriptionWithHash other)
-            {
-                return Hash == other.Hash && State.Equals(other.State);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                return obj is PipelineStateDescriptionWithHash && Equals((PipelineStateDescriptionWithHash)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                return Hash;
-            }
-
-            public static bool operator ==(PipelineStateDescriptionWithHash left, PipelineStateDescriptionWithHash right)
-            {
-                return left.Equals(right);
-            }
-
-            public static bool operator !=(PipelineStateDescriptionWithHash left, PipelineStateDescriptionWithHash right)
-            {
-                return !left.Equals(right);
-            }
         }
     }
 }

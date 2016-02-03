@@ -45,7 +45,11 @@ namespace SiliconStudio.Xenko.Graphics
         private VertexArrayObject newVertexArrayObject;
 
         private PipelineState defaultPipelineState;
+
+        private PipelineState newPipelineState;
         private PipelineState currentPipelineState;
+
+        private DescriptorSet[] currentDescriptorSets = new DescriptorSet[32];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsDevice" /> class using the default GraphicsAdapter
@@ -72,10 +76,6 @@ namespace SiliconStudio.Xenko.Graphics
             NeedWorkAroundForUpdateSubResource = !Features.HasDriverCommandLists;
 
             primitiveQuad = new PrimitiveQuad(this).DisposeBy(this);
-
-            var defaultPipelineStateDescription = new PipelineStateDescription();
-            defaultPipelineStateDescription.SetDefaults();
-            defaultPipelineState = PipelineState.New(this, defaultPipelineStateDescription);
 
             InitializeStages();
         }
@@ -345,6 +345,9 @@ namespace SiliconStudio.Xenko.Graphics
             currentInputLayout = null;
             currentVertexArrayObject = null;
             CurrentEffect = null;
+
+            currentPipelineState = defaultPipelineState;
+            newPipelineState = defaultPipelineState;
         }
 
         public void Copy(GraphicsResource source, GraphicsResource destination)
@@ -941,70 +944,97 @@ namespace SiliconStudio.Xenko.Graphics
             // Setup the primitive type
             PrimitiveType = primitiveType;
 
-            // If the vertex array object is null, simply set the InputLayout to null
-            if (newVertexArrayObject == null)
+            // Pipeline state
+            if (newPipelineState != currentPipelineState)
             {
-                if (currentVertexArrayObject != null)
-                {
-                    currentVertexArrayObject = null;
-                    currentVertexArrayLayout = null;
-                    currentEffectInputSignature = null;
-                    inputAssembler.InputLayout = currentInputLayout = null;
-                }
+                newPipelineState.Apply(this, currentPipelineState);
+                currentPipelineState = newPipelineState;
             }
-            else
-            {
-                var newVertexArrayLayout = newVertexArrayObject.Layout;
-                var newEffectInputSignature = CurrentEffect.InputSignature;
-                var oldInputLayout = currentInputLayout;
 
-                // Apply the VertexArrayObject
-                if (newVertexArrayObject != currentVertexArrayObject)
-                {
-                    currentVertexArrayObject = newVertexArrayObject;
-                    newVertexArrayObject.Apply(inputAssembler);
-                }
+            // Resources
+            if (newPipelineState != null)
+                newPipelineState.ResourceBinder.BindResources(this, currentDescriptorSets);
 
-                // If the input layout of the effect or the vertex buffer has changed, get the associated new input layout
-                if (!ReferenceEquals(newVertexArrayLayout, currentVertexArrayLayout) || !ReferenceEquals(newEffectInputSignature, currentEffectInputSignature))
-                {
-                    currentVertexArrayLayout = newVertexArrayLayout;
-                    currentEffectInputSignature = newEffectInputSignature;
+            //// If the vertex array object is null, simply set the InputLayout to null
+            //if (newVertexArrayObject == null)
+            //{
+            //    if (currentVertexArrayObject != null)
+            //    {
+            //        currentVertexArrayObject = null;
+            //        currentVertexArrayLayout = null;
+            //        currentEffectInputSignature = null;
+            //        inputAssembler.InputLayout = currentInputLayout = null;
+            //    }
+            //}
+            //else
+            //{
+            //    var newVertexArrayLayout = newVertexArrayObject.Layout;
+            //    var newEffectInputSignature = CurrentEffect.InputSignature;
+            //    var oldInputLayout = currentInputLayout;
 
-                    if (newVertexArrayObject.InputLayout != null && ReferenceEquals(newEffectInputSignature, newVertexArrayObject.EffectInputSignature))
-                    {
-                        // Default configuration
-                        currentInputLayout = newVertexArrayObject.InputLayout;
-                    }
-                    else if (ReferenceEquals(newEffectInputSignature, newVertexArrayObject.LastEffectInputSignature))
-                    {
-                        // Reuse previous configuration
-                        currentInputLayout = newVertexArrayObject.LastInputLayout;
-                    }
-                    // Slow path if the current VertexArrayObject is not optimized for the particular input (or not used right before)
-                    else
-                    {
-                        currentInputLayout = InputLayoutManager.GetInputLayout(newEffectInputSignature, currentVertexArrayLayout);
+            //    // Apply the VertexArrayObject
+            //    if (newVertexArrayObject != currentVertexArrayObject)
+            //    {
+            //        currentVertexArrayObject = newVertexArrayObject;
+            //        newVertexArrayObject.Apply(inputAssembler);
+            //    }
 
-                        // Store it in VAO since it will likely be used with same effect later
-                        newVertexArrayObject.LastInputLayout = currentInputLayout;
-                        newVertexArrayObject.LastEffectInputSignature = newEffectInputSignature;
-                    }
+            //    // If the input layout of the effect or the vertex buffer has changed, get the associated new input layout
+            //    if (!ReferenceEquals(newVertexArrayLayout, currentVertexArrayLayout) || !ReferenceEquals(newEffectInputSignature, currentEffectInputSignature))
+            //    {
+            //        currentVertexArrayLayout = newVertexArrayLayout;
+            //        currentEffectInputSignature = newEffectInputSignature;
 
-                    // Setup the input layout (if it changed)
-                    if (currentInputLayout != oldInputLayout)
-                        inputAssembler.InputLayout = currentInputLayout;
-                }
-            }
+            //        if (newVertexArrayObject.InputLayout != null && ReferenceEquals(newEffectInputSignature, newVertexArrayObject.EffectInputSignature))
+            //        {
+            //            // Default configuration
+            //            currentInputLayout = newVertexArrayObject.InputLayout;
+            //        }
+            //        else if (ReferenceEquals(newEffectInputSignature, newVertexArrayObject.LastEffectInputSignature))
+            //        {
+            //            // Reuse previous configuration
+            //            currentInputLayout = newVertexArrayObject.LastInputLayout;
+            //        }
+            //        // Slow path if the current VertexArrayObject is not optimized for the particular input (or not used right before)
+            //        else
+            //        {
+            //            currentInputLayout = InputLayoutManager.GetInputLayout(newEffectInputSignature, currentVertexArrayLayout);
+
+            //            // Store it in VAO since it will likely be used with same effect later
+            //            newVertexArrayObject.LastInputLayout = currentInputLayout;
+            //            newVertexArrayObject.LastEffectInputSignature = newEffectInputSignature;
+            //        }
+
+            //        // Setup the input layout (if it changed)
+            //        if (currentInputLayout != oldInputLayout)
+            //            inputAssembler.InputLayout = currentInputLayout;
+            //    }
+            //}
 
             SetViewportImpl();
         }
 
         public void SetPipelineState(PipelineState pipelineState)
         {
-            var newPipelineState = pipelineState ?? defaultPipelineState;
-            newPipelineState.Apply(this, currentPipelineState ?? defaultPipelineState);
-            currentPipelineState = newPipelineState;
+            newPipelineState = pipelineState ?? defaultPipelineState;
+        }
+
+        public void SetVertexBuffer(int index, Buffer buffer, int offset, int stride)
+        {
+            inputAssembler.SetVertexBuffers(index, new SharpDX.Direct3D11.VertexBufferBinding(buffer.NativeBuffer, stride, offset));
+        }
+
+        public void SetIndexBuffer(Buffer buffer, int offset, bool is32bits)
+        {
+            inputAssembler.SetIndexBuffer(buffer != null ? buffer.NativeBuffer : null, is32bits ? Format.R32_UInt : Format.R16_UInt, offset);
+        }
+
+        public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
+        {
+            for (int i = 0; i < descriptorSets.Length; ++i)
+            {
+                currentDescriptorSets[index++] = descriptorSets[i];
+            }
         }
     }
 }

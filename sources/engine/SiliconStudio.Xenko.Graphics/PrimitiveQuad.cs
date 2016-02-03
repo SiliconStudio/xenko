@@ -19,6 +19,9 @@ namespace SiliconStudio.Xenko.Graphics
 
         private readonly ParameterCollection parameters;
 
+        public static readonly VertexDeclaration VertexDeclaration = VertexPositionNormalTexture.Layout;
+        public static readonly PrimitiveType PrimitiveType = PrimitiveType.TriangleList;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SpriteEffect"/>.
         /// </summary>
@@ -65,9 +68,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void Draw()
         {
-            GraphicsDevice.SetVertexArrayObject(sharedData.VertexBuffer);
-            GraphicsDevice.Draw(PrimitiveType.TriangleList, QuadCount);
-            GraphicsDevice.SetVertexArrayObject(null);
+            //GraphicsDevice.SetVertexArrayObject(sharedData.VertexBuffer);
+            GraphicsDevice.SetVertexBuffer(0, sharedData.VertexBuffer.Buffer, sharedData.VertexBuffer.Offset, sharedData.VertexBuffer.Stride);
+            GraphicsDevice.Draw(PrimitiveType, QuadCount);
+            //GraphicsDevice.SetVertexArrayObject(null);
         }
 
         /// <summary>
@@ -110,7 +114,7 @@ namespace SiliconStudio.Xenko.Graphics
             /// <summary>
             /// The vertex buffer
             /// </summary>
-            public readonly VertexArrayObject VertexBuffer;
+            public readonly VertexBufferBinding VertexBuffer;
             
             private static readonly VertexPositionNormalTexture[] QuadsVertices =
             {
@@ -126,7 +130,7 @@ namespace SiliconStudio.Xenko.Graphics
                 // Register reload
                 vertexBuffer.Reload = (graphicsResource) => ((Buffer)graphicsResource).Recreate(QuadsVertices);
 
-                VertexBuffer = VertexArrayObject.New(device, defaultSignature, new VertexBufferBinding(vertexBuffer, VertexPositionNormalTexture.Layout, QuadsVertices.Length, VertexPositionNormalTexture.Size)).DisposeBy(this);
+                VertexBuffer = new VertexBufferBinding(vertexBuffer, VertexDeclaration, QuadsVertices.Length, VertexPositionNormalTexture.Size);
             }
         }
     }

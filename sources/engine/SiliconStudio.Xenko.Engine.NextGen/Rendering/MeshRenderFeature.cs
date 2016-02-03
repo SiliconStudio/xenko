@@ -76,6 +76,8 @@ namespace SiliconStudio.Xenko.Rendering
 
             var pipelineState = context.Pipeline.State;
             Effect currentEffect = null;
+            var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
+
             for (int index = startIndex; index < endIndex; index++)
             {
                 var renderNodeReference = renderViewStage.RenderNodes[index].RenderNode;
@@ -92,14 +94,47 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     currentEffect = renderEffect.Effect;
                     renderEffect.Effect.ApplyProgram(graphicsDevice);
+                    pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
+                    pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
                 }
 
-                renderEffect.Reflection.Binder.Apply(graphicsDevice, ResourceGroupPool, ComputeResourceGroupOffset(renderNodeReference));
+                // Bind VB
+                for (int i = 0; i < drawData.VertexBuffers.Length; i++)
+                {
+                    var vertexBuffer = drawData.VertexBuffers[i];
+                    graphicsDevice.SetVertexBuffer(i, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
+                }
 
-                // Bind VAO
-                var vertexArrayObject = renderEffect.VertexArrayObject ??
-                                        (renderEffect.VertexArrayObject = VertexArrayObject.New(RenderSystem.GraphicsDevice, renderEffect.Effect.InputSignature, drawData.IndexBuffer, drawData.VertexBuffers));
-                graphicsDevice.SetVertexArrayObject(vertexArrayObject);
+                var resourceGroupOffset = ComputeResourceGroupOffset(renderNodeReference);
+                // Update cbuffer
+                renderEffect.Reflection.BufferUploader.Apply(graphicsDevice, ResourceGroupPool, resourceGroupOffset);
+
+                // Bind descriptor sets
+                for (int i = 0; i < descriptorSets.Length; ++i)
+                {
+                    var resourceGroup = ResourceGroupPool[resourceGroupOffset++];
+                    if (resourceGroup != null)
+                        descriptorSets[i] = resourceGroup.DescriptorSet;
+                }
+
+                graphicsDevice.SetDescriptorSets(0, descriptorSets);
+
+                // First time, let's compile pipeline state
+                // TODO GRAPHICS REFACTOR invalidate if effect is destroyed, or some other cases
+                if (renderEffect.PipelineState == null)
+                {
+                    // Bind VAO
+                    pipelineState.InputElements = drawData.VertexBuffers.CreateInputElements();
+                    pipelineState.PrimitiveType = drawData.PrimitiveType;
+
+                    // TODO GRAPHICS REFACTOR
+                    // pipelineState.RenderTargetFormats = 
+
+                    context.Pipeline.Update(graphicsDevice);
+                    renderEffect.PipelineState = context.Pipeline.CurrentState;
+                }
+
+                graphicsDevice.SetPipelineState(renderEffect.PipelineState);
 
                 // Draw
                 if (drawData.IndexBuffer == null)
@@ -108,6 +143,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
                 else
                 {
+                    graphicsDevice.SetIndexBuffer(drawData.IndexBuffer.Buffer, drawData.IndexBuffer.Offset, drawData.IndexBuffer.Is32Bit);
                     graphicsDevice.DrawIndexed(drawData.PrimitiveType, drawData.DrawCount, drawData.StartLocation);
                 }
             }

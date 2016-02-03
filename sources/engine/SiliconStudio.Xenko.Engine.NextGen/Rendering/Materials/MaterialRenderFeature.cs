@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 if (materialInfo.PerMaterialLayout == null)
                 {
                     var renderEffect = materialInfo.RenderEffect;
-                    var descriptorLayout = renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerMaterial");
+                    var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerMaterial");
 
                     var parameterCollectionLayout = new NextGenParameterCollectionLayout();
                     parameterCollectionLayout.ProcessResources(descriptorLayout);

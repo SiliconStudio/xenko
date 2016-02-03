@@ -1,3 +1,8 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using SiliconStudio.Xenko.Shaders;
+
 namespace SiliconStudio.Xenko.Graphics
 {
     /// <summary>
@@ -5,17 +10,17 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public class RootSignature : GraphicsResourceBase
     {
-        DescriptorSetLayout[] layouts;
+        internal readonly EffectDescriptorSetReflection EffectDescriptorSetReflection;
 
-        public static RootSignature New(GraphicsDevice graphicsDevice, DescriptorSetLayout[] layouts)
+        public static RootSignature New(GraphicsDevice graphicsDevice, EffectDescriptorSetReflection effectDescriptorSetReflection)
         {
-            return new RootSignature(graphicsDevice, layouts);
+            return new RootSignature(graphicsDevice, effectDescriptorSetReflection);
         }
 
-        private RootSignature(GraphicsDevice graphicsDevice, DescriptorSetLayout[] layouts)
+        private RootSignature(GraphicsDevice graphicsDevice, EffectDescriptorSetReflection effectDescriptorSetReflection)
             : base(graphicsDevice)
         {
-            this.layouts = layouts;
+            this.EffectDescriptorSetReflection = effectDescriptorSetReflection;
         }
     }
 }

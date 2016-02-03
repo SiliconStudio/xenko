@@ -87,9 +87,20 @@ namespace SiliconStudio.Xenko.Graphics
         /// <inheritdoc/>
         public bool Equals(BlendStateDescription other)
         {
-            return AlphaToCoverageEnable.Equals(other.AlphaToCoverageEnable)
-                && IndependentBlendEnable.Equals(other.IndependentBlendEnable)
-                && ArrayExtensions.ArraysEqual(RenderTargets, other.RenderTargets);
+            if (AlphaToCoverageEnable != other.AlphaToCoverageEnable
+                || IndependentBlendEnable != other.IndependentBlendEnable)
+                return false;
+
+            if (RenderTargets.Length != other.RenderTargets.Length)
+                return false;
+
+            for (int i = 0; i < RenderTargets.Length; ++i)
+            {
+                if (!RenderTargets[i].Equals(other.RenderTargets[i]))
+                    return false;
+            }
+
+            return true;
         }
 
         /// <inheritdoc/>
@@ -99,6 +110,16 @@ namespace SiliconStudio.Xenko.Graphics
             return obj is BlendStateDescription && Equals((BlendStateDescription)obj);
         }
 
+        public static bool operator ==(BlendStateDescription left, BlendStateDescription right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(BlendStateDescription left, BlendStateDescription right)
+        {
+            return !left.Equals(right);
+        }
+
         /// <inheritdoc/>
         public override int GetHashCode()
         {
@@ -106,7 +127,9 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 int hashCode = AlphaToCoverageEnable.GetHashCode();
                 hashCode = (hashCode*397) ^ IndependentBlendEnable.GetHashCode();
-                hashCode = (hashCode*397) ^ RenderTargets.ComputeHash();
+                if (RenderTargets != null)
+                    foreach (var renderTarget in RenderTargets)
+                        hashCode = (hashCode * 397) ^ renderTarget.GetHashCode();
                 return hashCode;
             }
         }

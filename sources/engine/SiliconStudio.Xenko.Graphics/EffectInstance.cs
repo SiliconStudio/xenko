@@ -29,7 +29,10 @@ namespace SiliconStudio.Xenko.Rendering
         protected bool effectDirty = true;
 
         // Describes how to update resource bindings
-        private EffectBinder binder;
+        private ResourceGroupBufferUploader bufferUploader;
+        public ResourceBinder resourceBinder;
+
+        private EffectDescriptorSetReflection descriptorReflection;
 
         public EffectInstance(Effect effect, NextGenParameterCollection parameters = null)
         {
@@ -38,6 +41,9 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         public Effect Effect => effect;
+
+        public EffectDescriptorSetReflection DescriptorReflection => descriptorReflection;
+        public RootSignature RootSignature { get; private set; }
 
         public NextGenParameterCollection Parameters { get; }
 
@@ -58,13 +64,16 @@ namespace SiliconStudio.Xenko.Rendering
 
                 // Update reflection and rearrange buffers/resources
                 var layouts = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup ?? "Globals").Distinct().ToList();
-                binder.Compile(graphicsDevice, effect.Bytecode, layouts);
+                descriptorReflection = EffectDescriptorSetReflection.New(graphicsDevice, effect.Bytecode, layouts);
+                RootSignature = RootSignature.New(graphicsDevice, descriptorReflection);
+                bufferUploader.Compile(graphicsDevice, descriptorReflection, effect.Bytecode);
+                resourceBinder.Compile(graphicsDevice, descriptorReflection, effect.Bytecode);
 
                 // Process constant buffers
                 var parameterCollectionLayout = new NextGenParameterCollectionLayout();
-                for (int layoutIndex = 0; layoutIndex < binder.DescriptorReflection.Layouts.Count; layoutIndex++)
+                for (int layoutIndex = 0; layoutIndex < descriptorReflection.Layouts.Count; layoutIndex++)
                 {
-                    var layout = binder.DescriptorReflection.Layouts[layoutIndex].Layout;
+                    var layout = descriptorReflection.Layouts[layoutIndex].Layout;
 
                     parameterCollectionLayout.ProcessResources(layout);
 
@@ -79,12 +88,12 @@ namespace SiliconStudio.Xenko.Rendering
                     }
                 }
 
-                resourceGroups = new ResourceGroup[binder.DescriptorReflection.Layouts.Count];
-                resourceGroupLayouts = new ResourceGroupLayout[binder.DescriptorReflection.Layouts.Count];
-                for (int i = 0; i < binder.DescriptorReflection.Layouts.Count; ++i)
+                resourceGroups = new ResourceGroup[descriptorReflection.Layouts.Count];
+                resourceGroupLayouts = new ResourceGroupLayout[descriptorReflection.Layouts.Count];
+                for (int i = 0; i < descriptorReflection.Layouts.Count; ++i)
                 {
-                    var name = binder.DescriptorReflection.Layouts[i].Name;
-                    var layout = binder.DescriptorReflection.Layouts[i].Layout;
+                    var name = descriptorReflection.Layouts[i].Name;
+                    var layout = descriptorReflection.Layouts[i].Layout;
                     resourceGroupLayouts[i] = ResourceGroupLayout.New(graphicsDevice, layout, effect.Bytecode, name);
                     resourceGroups[i] = new ResourceGroup();
                 }
@@ -124,11 +133,11 @@ namespace SiliconStudio.Xenko.Rendering
             if (Parameters.ResourceValues != null)
             {
                 var descriptorStartSlot = 0;
-                for (int layoutIndex = 0; layoutIndex < binder.DescriptorReflection.Layouts.Count; layoutIndex++)
+                for (int layoutIndex = 0; layoutIndex < descriptorReflection.Layouts.Count; layoutIndex++)
                 {
                     var resourceGroup = resourceGroups[layoutIndex];
                     var descriptorSet = resourceGroup.DescriptorSet;
-                    var layout = binder.DescriptorReflection.Layouts[layoutIndex].Layout;
+                    var layout = descriptorReflection.Layouts[layoutIndex].Layout;
 
                     for (int resourceSlot = 0; resourceSlot < layout.ElementCount; ++resourceSlot)
                     {
@@ -144,21 +153,16 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
 
-            // Apply
-            binder.Apply(graphicsDevice, resourceGroups, 0);
-        }
+            // Update cbuffer
+            bufferUploader.Apply(graphicsDevice, resourceGroups, 0);
 
+            // Bind descriptor sets
+            var descriptorSets = new DescriptorSet[resourceGroups.Length];
+            for (int i = 0; i < descriptorSets.Length; ++i)
+                descriptorSets[i] = resourceGroups[i].DescriptorSet;
 
-        struct ConstantBufferInfo
-        {
-            public int DescriptorSet;
-            public int BindingSlot;
-
-            /// <summary>
-            /// Offset in <see cref="EffectInstance.dataValues"/>.
-            /// </summary>
-            public int DataOffset;
-            public ShaderConstantBufferDescription Description;
+            //resourceBinder.BindResources(graphicsDevice, descriptorSets);
+            graphicsDevice.SetDescriptorSets(0, descriptorSets);
         }
     }
 }
