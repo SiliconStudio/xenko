@@ -106,6 +106,7 @@
     <Compile Include="FixupValueTypeVisitor.cs" />
     <Compile Include="GenerateUserDocumentationProcessor.cs" />
     <Compile Include="OpenSourceSignProcessor.cs" />
+    <Compile Include="PclFixupTypeVisitor.cs" />
     <Compile Include="ProfileSerializerProcessor.cs" />
     <Compile Include="SerializationProcessor.cs" />
     <Compile Include="Serializers\CecilComplexClassSerializerProcessor.cs" />
