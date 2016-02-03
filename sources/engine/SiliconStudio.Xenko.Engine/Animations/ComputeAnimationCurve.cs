@@ -46,7 +46,6 @@ namespace SiliconStudio.Xenko.Animations
     /// <typeparam name="T">Sampled data's type</typeparam>
     [DataContract(Inherited = true)]
     [Display("Animation")]
-    [InlineProperty]
     public abstract class ComputeAnimationCurve<T> : Comparer<AnimationKeyFrame<T>>, IComputeCurve<T>  where T : struct
     {
         // TODO This class will hold an AnimationCurve<T> later
