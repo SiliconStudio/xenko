@@ -41,7 +41,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             UpdateVertexLayout();
         }
 
-        internal void ResetVertexElementList()
+        public void ResetVertexElementList()
         {
             vertexElementList.Clear();
 
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 //            AddVertexElement(ParticleVertexElements.TexCoord0);
         }
 
-        internal void AddVertexElement(VertexElement element)
+        public void AddVertexElement(VertexElement element)
         {
             if (vertexElementList.Contains(element))
                 return;
@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         public AttributeDescription DefaultTexCoords { get; private set; } = new AttributeDescription(null);
 
-        internal void UpdateVertexLayout()
+        public void UpdateVertexLayout()
         {
             VertexDeclaration = new VertexDeclaration(vertexElementList.ToArray());
 
