@@ -44,6 +44,9 @@ namespace SiliconStudio.Xenko.Graphics
         private VertexArrayLayout currentVertexArrayLayout;
         private VertexArrayObject newVertexArrayObject;
 
+        private PipelineState defaultPipelineState;
+        private PipelineState currentPipelineState;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsDevice" /> class using the default GraphicsAdapter
         /// and the Level10 <see cref="GraphicsProfile" />.
@@ -69,6 +72,10 @@ namespace SiliconStudio.Xenko.Graphics
             NeedWorkAroundForUpdateSubResource = !Features.HasDriverCommandLists;
 
             primitiveQuad = new PrimitiveQuad(this).DisposeBy(this);
+
+            var defaultPipelineStateDescription = new PipelineStateDescription();
+            defaultPipelineStateDescription.SetDefaults();
+            defaultPipelineState = PipelineState.New(this, defaultPipelineStateDescription);
 
             InitializeStages();
         }
@@ -991,6 +998,13 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             SetViewportImpl();
+        }
+
+        public void SetPipelineState(PipelineState pipelineState)
+        {
+            var newPipelineState = pipelineState ?? defaultPipelineState;
+            newPipelineState.Apply(this, currentPipelineState ?? defaultPipelineState);
+            currentPipelineState = newPipelineState;
         }
     }
 }

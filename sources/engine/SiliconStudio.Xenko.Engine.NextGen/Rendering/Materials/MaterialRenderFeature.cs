@@ -66,7 +66,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
         }
 
         /// <inheritdoc/>
-        public override void PrepareEffectPermutations(NextGenRenderSystem RenderSystem)
+        public override void PrepareEffectPermutations()
         {
             var renderEffects = RootRenderFeature.GetData(renderEffectKey);
             int effectSlotCount = ((RootEffectRenderFeature)RootRenderFeature).EffectPermutationSlotCount;
@@ -118,8 +118,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             }
         }
 
+        /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare()
+        public override void Prepare(NextGenRenderContext context)
         {
             foreach (var materialInfo in activeMaterialInfos)
             {

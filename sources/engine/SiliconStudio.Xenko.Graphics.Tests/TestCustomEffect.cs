@@ -5,7 +5,6 @@ using NUnit.Framework;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Graphics.Internals;
 
 namespace SiliconStudio.Xenko.Graphics.Tests
 {

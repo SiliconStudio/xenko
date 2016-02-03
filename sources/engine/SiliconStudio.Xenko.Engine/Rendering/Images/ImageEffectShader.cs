@@ -5,7 +5,6 @@ using System.Collections.Generic;
 
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Graphics.Internals;
 
 namespace SiliconStudio.Xenko.Rendering.Images
 {

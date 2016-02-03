@@ -212,7 +212,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 if (!cachedEffects.TryGetValue(bytecode, out effect))
                 {
-                    effect = new Effect(graphicsDeviceService.GraphicsDevice, bytecode, usedParameters) { Name = effectName };
+                    effect = new Effect(graphicsDeviceService.GraphicsDevice, bytecode) { Name = effectName };
                     cachedEffects.Add(bytecode, effect);
 
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP

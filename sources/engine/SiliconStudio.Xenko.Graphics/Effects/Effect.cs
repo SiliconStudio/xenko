@@ -9,7 +9,6 @@ using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Rendering;
-using SiliconStudio.Xenko.Graphics.Internals;
 using SiliconStudio.Xenko.Shaders;
 using SiliconStudio.Xenko.Shaders.Compiler;
 
@@ -22,7 +21,6 @@ namespace SiliconStudio.Xenko.Graphics
     {
         private GraphicsDevice graphicsDeviceDefault;
         private EffectProgram program;
-        private ParameterCollection defaultParameters;
         private EffectReflection reflection;
         private EffectInputSignature inputSignature;
 
@@ -47,19 +45,19 @@ namespace SiliconStudio.Xenko.Graphics
         /// or
         /// bytecode
         /// </exception>
-        public Effect(GraphicsDevice device, EffectBytecode bytecode, ParameterCollection usedParameters = null)
+        public Effect(GraphicsDevice device, EffectBytecode bytecode)
         {
-            InitializeFrom(device, bytecode, usedParameters);
+            InitializeFrom(device, bytecode);
         }
 
-        internal void InitializeFrom(GraphicsDevice device, EffectBytecode bytecode, ParameterCollection usedParameters = null)
+        internal void InitializeFrom(GraphicsDevice device, EffectBytecode bytecode)
         {
             if (device == null) throw new ArgumentNullException("device");
             if (bytecode == null) throw new ArgumentNullException("bytecode");
 
             this.graphicsDeviceDefault = device;
             this.bytecode = bytecode;
-            Initialize(usedParameters);
+            Initialize();
         }
 
         /// <summary>
@@ -72,11 +70,6 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 return inputSignature;
             }
-        }
-
-        public ParameterCollection DefaultParameters
-        {
-            get { return defaultParameters; }
         }
 
         /// <summary>
@@ -98,7 +91,28 @@ namespace SiliconStudio.Xenko.Graphics
 
         public bool HasParameter(ParameterKey parameterKey)
         {
-            return defaultParameters.ContainsKey(parameterKey);
+            // Check resources
+            for (int i = 0; i < reflection.ResourceBindings.Count; i++)
+            {
+                var key = reflection.ResourceBindings[i].Param.Key;
+                if (key == parameterKey)
+                    return true;
+            }
+
+            // Check cbuffer
+            foreach (var constantBuffer in reflection.ConstantBuffers)
+            {
+                var constantBufferMembers = constantBuffer.Members;
+
+                for (int i = 0; i < constantBufferMembers.Length; ++i)
+                {
+                    var key = constantBufferMembers[i].Param.Key;
+                    if (key == parameterKey)
+                        return true;
+                }
+            }
+
+            return false;
         }
 
         private void PrepareApply(GraphicsDevice graphicsDevice)
@@ -110,11 +124,18 @@ namespace SiliconStudio.Xenko.Graphics
             graphicsDevice.ApplyPlatformSpecificParams(this);
         }
 
-        private void Initialize(ParameterCollection usedParameters)
+        private void Initialize()
         {
             program = EffectProgram.New(graphicsDeviceDefault, bytecode);
             reflection = program.Reflection;
 
+            PrepareReflection(reflection);
+            inputSignature = program.InputSignature;
+            LoadDefaultParameters();
+        }
+
+        private static void PrepareReflection(EffectReflection reflection)
+        {
             // prepare resource bindings used internally
             for (int i = 0; i < reflection.ResourceBindings.Count; i++)
             {
@@ -132,15 +153,12 @@ namespace SiliconStudio.Xenko.Graphics
                     UpdateValueBindingKey(ref constantBufferMembers[i]);
                 }
             }
-            defaultParameters = new ParameterCollection();
-            inputSignature = program.InputSignature;
-            LoadDefaultParameters();
+
+            UpdateConstantBufferHashes(reflection);
         }
 
         private void LoadDefaultParameters()
         {
-            var shaderParameters = defaultParameters; // Default Parameters contains all registered Parameters used effectively by the effect
-
             // Create parameter bindings
             for (int i = 0; i < reflection.ResourceBindings.Count; i++)
             {
@@ -154,31 +172,16 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         samplerBinding.Key = key;
                         var samplerDescription = samplerBinding.Description;
-                        defaultParameters.Set((ParameterKey<SamplerState>)key, SamplerState.New(graphicsDeviceDefault, samplerDescription));
+                        // TODO GRAPHICS REFACTOR
+                        //defaultParameters.Set((ParameterKey<SamplerState>)key, SamplerState.New(graphicsDeviceDefault, samplerDescription));
                     }
-                }
-
-                // ConstantBuffers are handled by next loop
-                if (reflection.ResourceBindings[i].Param.Class != EffectParameterClass.ConstantBuffer)
-                {
-                    shaderParameters.RegisterParameter(key, false);
                 }
             }
 
             // Create constant buffers from descriptions (previously generated from shader reflection)
             foreach (var constantBuffer in reflection.ConstantBuffers)
             {
-                var constantBufferMembers = constantBuffer.Members;
-
-                for (int i = 0; i < constantBufferMembers.Length; ++i)
-                {
-                    // Update binding key
-                    var key = constantBufferMembers[i].Param.Key;
-
-                    // Register ParameterKey with this effect and store its index for direct access during rendering
-                    shaderParameters.RegisterParameter(key, false);
-                }
-
+                // TODO GRAPHICS REFACTOR (check if necessary)
                 // Handle ConstantBuffer. Share the same key ParameterConstantBuffer with all the stages
                 //var parameterConstantBuffer = new ParameterConstantBuffer(graphicsDeviceDefault, constantBuffer.Name, constantBuffer);
                 //var constantBufferKey = ParameterKeys.New<Buffer>(constantBuffer.Name);
@@ -192,11 +195,9 @@ namespace SiliconStudio.Xenko.Graphics
                 //    }
                 //}
             }
-
-            UpdateKeyIndices();
         }
 
-        private ParameterKey UpdateResourceBindingKey(ref EffectParameterResourceData binding)
+        private static void UpdateResourceBindingKey(ref EffectParameterResourceData binding)
         {
             var keyName = binding.Param.KeyName;
 
@@ -248,11 +249,9 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.Param.KeyName, binding.Param.Class, binding.Param.Type));
             }
-
-            return binding.Param.Key;
         }
 
-        private ParameterKey UpdateValueBindingKey(ref EffectParameterValueData binding)
+        private static void UpdateValueBindingKey(ref EffectParameterValueData binding)
         {
             switch (binding.Param.Class)
             {
@@ -320,37 +319,21 @@ namespace SiliconStudio.Xenko.Graphics
                 throw new InvalidOperationException(string.Format("Unable to find/generate key [{0}] with unsupported type [{1}/{2}]", binding.Param.KeyName, binding.Param.Class, binding.Param.Type));
             }
 
-            return binding.Param.Key;
         }
 
-        private ParameterKey FindOrCreateResourceKey<T>(string name)
+        private static ParameterKey FindOrCreateResourceKey<T>(string name)
         {
             return ParameterKeys.FindByName(name) ?? ParameterKeys.New<T>(name);
         }
 
-        private ParameterKey FindOrCreateValueKey<T>(EffectParameterValueData binding) where T : struct
+        private static ParameterKey FindOrCreateValueKey<T>(EffectParameterValueData binding) where T : struct
         {
             var name = binding.Param.KeyName;
             return ParameterKeys.FindByName(name) ?? (binding.Count > 1 ? (ParameterKey)ParameterKeys.New<T[]>(name) : ParameterKeys.New<T>(name));
         }
 
-        private unsafe void UpdateKeyIndices()
+        private static void UpdateConstantBufferHashes(EffectReflection reflection)
         {
-            // TODO: For now, rebuild indices after processing
-            // This code is ugly (esp. constant buffer one), it needs to be done directly within processing (as soon as new system is adopted)
-            var keys = new HashSet<ParameterKey>();
-
-            // Always add graphics states
-            keys.Add(RasterizerStateKey);
-            keys.Add(DepthStencilStateKey);
-            keys.Add(BlendStateKey);
-
-            // Make sure every key (in "keys") is set in DefaultParameters to have a valid fallback
-            foreach (var key in defaultParameters.Keys)
-            {
-                defaultParameters.RegisterParameter(key, false);
-            }
-
             // Update Constant buffers description
             foreach (var constantBuffer in reflection.ConstantBuffers)
             {
