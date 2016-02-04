@@ -132,7 +132,8 @@ namespace SiliconStudio.ExecServer
             }
             catch (AddressAlreadyInUseException)
             {
-                File.WriteAllText(Path.Combine(Environment.CurrentDirectory, $"test_ExecServer{Process.GetCurrentProcess().Id}.log"), $"Exit code: {ExitCodeServerAlreadyInUse}\r\n");
+                // Uncomment the following line to see which process got a ExitCodeServerAlreadyInUse
+                // File.WriteAllText(Path.Combine(Environment.CurrentDirectory, $"test_ExecServer{Process.GetCurrentProcess().Id}.log"), $"Exit code: {ExitCodeServerAlreadyInUse}\r\n");
 
                 // Silently exit if the server is already running
                 return ExitCodeServerAlreadyInUse;

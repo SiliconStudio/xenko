@@ -122,6 +122,7 @@ namespace SiliconStudio.AssemblyProcessor
                 { "add-reference=", "References to explicitely add", v => app.ReferencesToAdd.Add(v) },
                 { "Werror", "Promote warnings to errors", v => app.TreatWarningsAsErrors = true },
                 { "delete-output-on-error", "Delete output file if an error happened", v => app.DeleteOutputOnError = true },
+                { "keep-original", "Keep copy of the original assembly", v => app.KeepOriginal = true },
             };
 
             inputFiles = p.Parse(args);
