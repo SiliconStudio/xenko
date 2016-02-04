@@ -55,10 +55,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private readonly Dictionary<ObjectId, LightShaderPermutationEntry> shaderEntries;
         private readonly Dictionary<ObjectId, LightParametersPermutationEntry> lightParameterEntries;
 
-        private readonly List<LightEntry> directLightsPerModel;
+        private readonly List<LightEntry> directLightsPerMesh;
         private FastListStruct<LightForwardShaderFullEntryKey> directLightShaderGroupEntryKeys;
 
-        private readonly List<LightEntry> environmentLightsPerModel;
+        private readonly List<LightEntry> environmentLightsPerMesh;
         private FastListStruct<LightForwardShaderFullEntryKey> environmentLightShaderGroupEntryKeys;
 
         private ObjectPropertyKey<LightParametersPermutationEntry> renderModelObjectInfoKey;
@@ -109,8 +109,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             shaderEntries = new Dictionary<ObjectId, LightShaderPermutationEntry>(1024);
 
-            directLightsPerModel = new List<LightEntry>(16);
-            environmentLightsPerModel = new List<LightEntry>();
+            directLightsPerMesh = new List<LightEntry>(16);
+            environmentLightsPerMesh = new List<LightEntry>();
             activeLightGroups = new Dictionary<Type, LightComponentCollectionGroup>(16);
             activeLightGroupsWithShadows = new Dictionary<Type, LightComponentCollectionGroup>(16);
             activeRenderers = new List<ActiveLightGroupRenderer>(16);
@@ -215,8 +215,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     if (renderEffect == null || !renderEffect.IsUsedDuringThisFrame(RenderSystem))
                         continue;
 
-                    LightParametersPermutationEntry renderObjectInfo;
-                    PrepareRenderModelForRendering(renderMesh, out renderObjectInfo, renderEffect, effectSlotCount);
+                    var renderObjectInfo = PrepareRenderMeshForRendering(renderMesh, renderEffect, effectSlotCount);
                     renderObjectInfoData[objectNodeReference] = renderObjectInfo;
 
                     if (renderObjectInfo == null)
@@ -234,26 +233,20 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             var renderObjectInfoData = RootRenderFeature.GetData(renderModelObjectInfoKey);
 
-            // Copy data to cbuffer
-            // TODO: Rewrite it with new render system in mind (should be much faster/efficient)
-
-            var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
-            foreach (var parameterEntry in lightParameterEntries)
+            foreach (var lightParameterEntry in lightParameterEntries)
             {
-                var lightParameterEntry = parameterEntry.Value;
-                var lightShadersPermutation = lightParameterEntry.ShaderPermutationEntry;
-                var parameters = lightParameterEntry.Parameters;
+                var lightShadersPermutation = lightParameterEntry.Value.ShaderPermutationEntry;
+                var parameters = lightParameterEntry.Value.Parameters;
 
-                var modelLightInfos = lightShadersPermutation.Info;
-                if (modelLightInfos == null)
+                // Create layout for new light shader permutations
+                if (lightShadersPermutation.PerLightingLayout == null)
                 {
                     var renderEffect = lightShadersPermutation.RenderEffect;
-                    modelLightInfos = lightShadersPermutation.Info = new RenderModelLightInfo();
                     var descriptorLayout = renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerLighting");
 
-                    var parameterCollectionLayout = modelLightInfos.ParameterCollectionLayout = new NextGenParameterCollectionLayout();
+                    var parameterCollectionLayout = lightShadersPermutation.ParameterCollectionLayout = new NextGenParameterCollectionLayout();
                     parameterCollectionLayout.ProcessResources(descriptorLayout);
-                    modelLightInfos.ResourceCount = parameterCollectionLayout.ResourceCount;
+                    lightShadersPermutation.ResourceCount = parameterCollectionLayout.ResourceCount;
 
                     // First time?
                     // Find lighting cbuffer
@@ -262,36 +255,37 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     // Process cbuffer (if any)
                     if (lightingConstantBuffer != null)
                     {
-                        modelLightInfos.ConstantBufferReflection = lightingConstantBuffer;
+                        lightShadersPermutation.ConstantBufferReflection = lightingConstantBuffer;
                         parameterCollectionLayout.ProcessConstantBuffer(lightingConstantBuffer);
                     }
 
-                    modelLightInfos.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerLighting");
+                    lightShadersPermutation.PerLightingLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayout, renderEffect.Effect.Bytecode, "PerLighting");
                 }
 
+                // Assign layout to new parameter permutations
                 if (!parameters.HasLayout)
                 {
                     // TODO GRAPHICS REFACTOR should we recompute or store the parameter layout?
-                    parameters.UpdateLayout(modelLightInfos.ParameterCollectionLayout);
+                    parameters.UpdateLayout(lightShadersPermutation.ParameterCollectionLayout);
                 }
 
-                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, modelLightInfos.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, modelLightInfos.Resources);
+                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(RenderSystem.GraphicsDevice, RenderSystem.DescriptorPool, RenderSystem.BufferPool, lightShadersPermutation.PerLightingLayout, BufferPoolAllocationType.UsedMultipleTime, lightShadersPermutation.Resources);
 
-                // Set resource bindings in PerMaterial resource set
-                for (int resourceSlot = 0; resourceSlot < modelLightInfos.ResourceCount; ++resourceSlot)
+                // Set resource bindings in PerLighting resource set
+                for (int resourceSlot = 0; resourceSlot < lightShadersPermutation.ResourceCount; ++resourceSlot)
                 {
-                    modelLightInfos.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ResourceValues[resourceSlot]);
+                    lightShadersPermutation.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ResourceValues[resourceSlot]);
                 }
 
                 // Process PerMaterial cbuffer
-                if (modelLightInfos.ConstantBufferReflection != null)
+                if (lightShadersPermutation.ConstantBufferReflection != null)
                 {
-                    var mappedCB = modelLightInfos.Resources.ConstantBuffer.Data;
-                    Utilities.CopyMemory(mappedCB, parameters.DataValues, modelLightInfos.Resources.ConstantBuffer.Size);
+                    var mappedCB = lightShadersPermutation.Resources.ConstantBuffer.Data;
+                    Utilities.CopyMemory(mappedCB, parameters.DataValues, lightShadersPermutation.Resources.ConstantBuffer.Size);
                 }
             }
 
-            
+            var resourceGroupPool = ((RootEffectRenderFeature)RootRenderFeature).ResourceGroupPool;
             for (int renderNodeIndex = 0; renderNodeIndex < RootRenderFeature.renderNodes.Count; renderNodeIndex++)
             {
                 var renderNodeReference = new RenderNodeReference(renderNodeIndex);
@@ -302,7 +296,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                     continue;
                 
                 var resourceGroupPoolOffset = ((RootEffectRenderFeature)RootRenderFeature).ComputeResourceGroupOffset(renderNodeReference);
-                resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = renderObjectInfo.ShaderPermutationEntry.Info.Resources;
+                resourceGroupPool[resourceGroupPoolOffset + perLightingDescriptorSetSlot.Index] = renderObjectInfo.ShaderPermutationEntry.Resources;
             }
         }
 
@@ -410,7 +404,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private void PrepareRenderModelForRendering(RenderMesh renderMesh, out LightParametersPermutationEntry newShaderEntryParameters, RenderEffect renderEffect, int effectSlot)
+        private LightParametersPermutationEntry PrepareRenderMeshForRendering(RenderMesh renderMesh, RenderEffect renderEffect, int effectSlot)
         {
             var shaderKeyIdBuilder = new ObjectIdSimpleBuilder();
             var parametersKeyIdBuilder = new ObjectIdSimpleBuilder();
@@ -418,16 +412,16 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             var renderModel = renderMesh.RenderModel;
             var modelComponent = renderModel.ModelComponent;
             var group = modelComponent.Entity.Group;
-            var modelBoundingBox = modelComponent.BoundingBox;
+            var boundingBox = modelComponent.BoundingBox;
 
-            directLightsPerModel.Clear();
+            directLightsPerMesh.Clear();
             directLightShaderGroupEntryKeys.Clear();
 
-            environmentLightsPerModel.Clear();
+            environmentLightsPerMesh.Clear();
             environmentLightShaderGroupEntryKeys.Clear();
 
             // This loop is looking for visible lights per render model and calculate a ShaderId and ParametersId
-            // TODO: Part of this loop could be processed outisde of the PrepareRenderModelForRendering
+            // TODO: Part of this loop could be processed outisde of the PrepareRenderMeshForRendering
             // For example: Environment lights or directional lights are always active, so we could pregenerate part of the 
             // id and groups outside this loop. Also considering that each light renderer has a maximum of lights
             // we could pre
@@ -457,7 +451,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         }
                         parametersKeyIdBuilder.Write(light.Id);
 
-                        environmentLightsPerModel.Add(new LightEntry(environmentLightShaderGroupEntryKeys.Count, light, null));
+                        environmentLightsPerMesh.Add(new LightEntry(environmentLightShaderGroupEntryKeys.Count, light, null));
                         environmentLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, null));
                     }
                 }
@@ -470,7 +464,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         var light = lightCollection[i];
                         var directLight = (IDirectLight)light.Type;
                         // If the light does not intersects the model, we can skip it
-                        if (directLight.HasBoundingBox && !light.BoundingBox.Intersects(ref modelBoundingBox))
+                        if (directLight.HasBoundingBox && !light.BoundingBox.Intersects(ref boundingBox))
                         {
                             continue;
                         }
@@ -513,10 +507,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         }
 
                         parametersKeyIdBuilder.Write(light.Id);
-                        directLightsPerModel.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, light, shadowTexture));
+                        directLightsPerMesh.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, light, shadowTexture));
                     }
 
-                    if (directLightsPerModel.Count > 0)
+                    if (directLightsPerMesh.Count > 0)
                     {
                         unsafe
                         {
@@ -550,11 +544,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
 
             // Calculate the shader parameters just once per light combination and for this rendering pass
+            LightParametersPermutationEntry newShaderEntryParameters;
             if (!lightParameterEntries.TryGetValue(parametersKeyId, out newShaderEntryParameters))
             {
                 newShaderEntryParameters = CreateParametersPermutationEntry(newLightShaderPermutationEntry);
                 lightParameterEntries.Add(parametersKeyId, newShaderEntryParameters);
             }
+
+            return newShaderEntryParameters;
         }
 
         private LightShaderPermutationEntry CreateShaderPermutationEntry(RenderEffect renderEffect)
@@ -615,12 +612,12 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             var parameters = parameterCollectionEntry.Parameters;
 
-            foreach (var lightEntry in directLightsPerModel)
+            foreach (var lightEntry in directLightsPerMesh)
             {
                 directLightGroups[lightEntry.GroupIndex].AddLight(lightEntry.Light, lightEntry.Shadow);
             }
 
-            foreach (var lightEntry in environmentLightsPerModel)
+            foreach (var lightEntry in environmentLightsPerMesh)
             {
                 environmentLights[lightEntry.GroupIndex].AddLight(lightEntry.Light, null);
             }
@@ -765,7 +762,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public readonly RenderEffect RenderEffect;
 
-            public RenderModelLightInfo Info;
+            public NextGenParameterCollectionLayout ParameterCollectionLayout;
+
+            public ResourceGroupLayout PerLightingLayout;
+
+            public readonly ResourceGroup Resources = new ResourceGroup();
+
+            public int ResourceCount;
+
+            public ShaderConstantBufferDescription ConstantBufferReflection;
 
             private LightParametersPermutationEntry CreateParameterCollectionEntry()
             {
@@ -809,15 +814,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public readonly List<LightShaderGroupData> EnvironmentLightDatas;
 
             public readonly NextGenParameterCollection Parameters;
-        }
-
-        class RenderModelLightInfo
-        {
-            public NextGenParameterCollectionLayout ParameterCollectionLayout;
-            public ResourceGroupLayout PerLightingLayout;
-            public ResourceGroup Resources = new ResourceGroup();
-            public int ResourceCount;
-            public ShaderConstantBufferDescription ConstantBufferReflection;
         }
     }
 }
