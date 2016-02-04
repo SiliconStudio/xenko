@@ -38,7 +38,6 @@ namespace SiliconStudio.Xenko.Graphics
         private SharpDX.Direct3D11.OutputMergerStage outputMerger;
 
         private SharpDX.Direct3D11.DeviceCreationFlags creationFlags;
-        private EffectInputSignature currentEffectInputSignature;
 
         private PipelineState defaultPipelineState;
 
@@ -160,10 +159,6 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 inputAssembler.PrimitiveTopology = (SharpDX.Direct3D.PrimitiveTopology)value;
             }
-        }
-
-        public void ApplyPlatformSpecificParams(Effect effect)
-        {
         }
 
         /// <summary>
@@ -329,9 +324,7 @@ namespace SiliconStudio.Xenko.Graphics
             for (int i = 0; i < currentRenderTargetViews.Length; i++)
                 currentRenderTargetViews[i] = null;
 
-            currentEffectInputSignature = null;
-            CurrentEffect = null;
-
+            // Since nothing can be drawn in default state, no need to set anything (another SetPipelineState should happen before)
             currentPipelineState = defaultPipelineState;
             newPipelineState = defaultPipelineState;
         }
@@ -852,7 +845,6 @@ namespace SiliconStudio.Xenko.Graphics
                 deviceDebug.ReportLiveDeviceObjects(SharpDX.Direct3D11.ReportingLevel.Detail);
             }
 
-            currentEffectInputSignature = null;
             nativeDevice.Dispose();
         }
 
@@ -867,11 +859,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException">Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method</exception>
         private void PrepareDraw(PrimitiveType primitiveType)
         {
-            if (CurrentEffect == null)
-            {
-                throw new InvalidOperationException("Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method");
-            }
-
             // Setup the primitive type
             PrimitiveType = primitiveType;
 

@@ -173,7 +173,6 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 if (currentEffect != renderEffect.Effect)
                 {
                     currentEffect = renderEffect.Effect;
-                    renderEffect.Effect.ApplyProgram(graphicsDevice);
                     pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
                     pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
                 }

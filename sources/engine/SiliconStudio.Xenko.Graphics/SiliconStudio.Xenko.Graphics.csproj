@@ -152,7 +152,6 @@
     <Compile Include="Data\BufferSerializer.cs" />
     <Compile Include="Data\TextureSerializer.cs" />
     <Compile Include="Direct3D\DisplayMode.Direct3D.cs" />
-    <Compile Include="Direct3D\EffectInputSignature.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsOutput.Direct3D.cs" />
     <Compile Include="Direct3D\Rational.Direct3D.cs" />
     <Compile Include="ResourceGroup.cs" />
@@ -218,7 +217,6 @@
     <Compile Include="OpenGL\VertexAttrib.cs" />
     <Compile Include="ResumeManager.cs" />
     <Compile Include="Effects\Effect.cs" />
-    <Compile Include="EffectInputSignature.cs" />
     <Compile Include="Effects\EffectSerializer.cs" />
     <Compile Include="Font\FontHelper.cs" />
     <Compile Include="Font\FontManager.cs" />
@@ -319,9 +317,7 @@
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.OpenTK.cs" />
     <Compile Include="OpenGL\UseOpenGLCreationContext.cs" />
     <Compile Include="RenderTargetGraphicsPresenter.cs" />
-    <Compile Include="Direct3D\EffectProgram.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsResource.Direct3D.cs" />
-    <Compile Include="EffectProgram.cs" />
     <Compile Include="Direct3D\Shader.Direct3D.cs" />
     <Compile Include="Null\EffectProgram.Null.cs" />
     <Compile Include="Null\Shader.Null.cs" />

@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             UpdateEffect(graphicsDevice);
 
-            effect.ApplyProgram(graphicsDevice);
+            //effect.ApplyProgram(graphicsDevice);
 
             // Bind resources
             // TODO: What descriptor pool should we use?
