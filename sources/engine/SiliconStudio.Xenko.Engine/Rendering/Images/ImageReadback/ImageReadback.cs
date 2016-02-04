@@ -126,7 +126,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             EnsureStaging(input);
 
             // Copy to staging resource
-            GraphicsDevice.Copy(input, stagingTargets[currentStagingIndex]);
+            context.CommandList.Copy(input, stagingTargets[currentStagingIndex]);
             stagingUsed[currentStagingIndex] = true;
 
             // Read-back to CPU using a ring of staging buffers

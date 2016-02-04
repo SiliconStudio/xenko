@@ -131,22 +131,23 @@ namespace SiliconStudio.Xenko.Engine
                 return;
             }
 
-            var graphicsDevice = context.GraphicsDevice;
+            var commandList = context.CommandList;
 
             bool hasGraphicsBegin = false;
 
             // Update global time
             var gameTime = context.RenderContext.Time;
+            // TODO GRAPHICS REFACTOR
             context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
             context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
 
             try
             {
-                graphicsDevice.Begin();
+                commandList.Begin();
                 hasGraphicsBegin = true;
 
                 // Always clear the state of the GraphicsDevice to make sure a scene doesn't start with a wrong setup 
-                graphicsDevice.ClearState();
+                commandList.ClearState();
 
                 // Draw the main scene using the current compositor (or the provided override)
                 var graphicsCompositor = compositorOverride ?? Scene.Settings.GraphicsCompositor;
@@ -170,7 +171,7 @@ namespace SiliconStudio.Xenko.Engine
             {
                 if (hasGraphicsBegin)
                 {
-                    graphicsDevice.End();
+                    commandList.End();
                 }
             }
         }

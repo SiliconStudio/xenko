@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
         protected override void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            var viewport = context.GraphicsDevice.Viewport;
+            var viewport = context.CommandList.Viewport;
 
             for (int i = fromIndex; i <= toIndex; i++)
             {
@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             CurrentRenderFrame.Activate(context);
 
             // Restore the viewport: TODO: We should add a method to Push/Pop Target/Depth/Stencil/Viewport on the GraphicsDevice
-            context.GraphicsDevice.SetViewport(viewport);
+            context.CommandList.SetViewport(viewport);
         }
 
         protected override void Unload()

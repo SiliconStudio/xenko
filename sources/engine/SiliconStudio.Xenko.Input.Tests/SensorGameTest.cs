@@ -262,11 +262,11 @@ namespace SiliconStudio.Xenko.Input.Tests
                 currentYawPitchRoww = new Vector3(Input.Orientation.Yaw, Input.Orientation.Pitch, Input.Orientation.Roll);
             }
 
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
 
-            var targetSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
+            var targetSize = new Vector2(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height);
 
-            batch.Begin();
+            batch.Begin(GraphicsCommandList);
 
             var position = new Vector2(0.005f, 0.01f);
             var text = "Acceleration[{0}]=({1:0.00})".ToFormat(Input.Accelerometer.IsEnabled ? "E" : "D", currentAcceleration);

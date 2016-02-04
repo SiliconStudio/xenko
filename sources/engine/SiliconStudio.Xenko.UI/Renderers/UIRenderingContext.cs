@@ -15,6 +15,11 @@ namespace SiliconStudio.Xenko.UI.Renderers
     public class UIRenderingContext
     {
         /// <summary>
+        /// The active graphics command list.
+        /// </summary>
+        public CommandList GraphicsCommandList { get; set; }
+
+        /// <summary>
         /// The current time.
         /// </summary>
         public GameTime Time { get; internal set; }

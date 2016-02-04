@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics
                 descriptorSetBindings[setIndex] = bindingOperations.Count > 0 ? bindingOperations.ToArray() : null;
             }
         }
-        public void BindResources(GraphicsDevice graphicsDevice, DescriptorSet[] descriptorSets)
+        public void BindResources(CommandList commandList, DescriptorSet[] descriptorSets)
         {
             for (int setIndex = 0; setIndex < descriptorSetBindings.Length; setIndex++)
             {
@@ -66,17 +66,17 @@ namespace SiliconStudio.Xenko.Graphics
                     {
                         case EffectParameterClass.ConstantBuffer:
                             {
-                                graphicsDevice.SetConstantBuffer(bindingOperation.Stage, bindingOperation.SlotStart, (Buffer)value.Value);
+                                commandList.SetConstantBuffer(bindingOperation.Stage, bindingOperation.SlotStart, (Buffer)value.Value);
                                 break;
                             }
                         case EffectParameterClass.Sampler:
                             {
-                                graphicsDevice.SetSamplerState(bindingOperation.Stage, bindingOperation.SlotStart, bindingOperation.ImmutableSampler ?? (SamplerState)value.Value);
+                                commandList.SetSamplerState(bindingOperation.Stage, bindingOperation.SlotStart, bindingOperation.ImmutableSampler ?? (SamplerState)value.Value);
                                 break;
                             }
                         case EffectParameterClass.ShaderResourceView:
                             {
-                                graphicsDevice.SetShaderResourceView(bindingOperation.Stage, bindingOperation.SlotStart, (GraphicsResource)value.Value);
+                                commandList.SetShaderResourceView(bindingOperation.Stage, bindingOperation.SlotStart, (GraphicsResource)value.Value);
                                 break;
                             }
                         default:
@@ -143,9 +143,9 @@ namespace SiliconStudio.Xenko.Graphics
             primitiveTopology = (SharpDX.Direct3D.PrimitiveTopology)pipelineStateDescription.PrimitiveType;
         }
 
-        internal void Apply(GraphicsDevice graphicsDevice, PipelineState previousPipeline)
+        internal void Apply(CommandList commandList, PipelineState previousPipeline)
         {
-            var nativeDeviceContext = graphicsDevice.NativeDeviceContext;
+            var nativeDeviceContext = commandList.NativeDeviceContext;
 
             if (rootSignature != previousPipeline.rootSignature)
             {

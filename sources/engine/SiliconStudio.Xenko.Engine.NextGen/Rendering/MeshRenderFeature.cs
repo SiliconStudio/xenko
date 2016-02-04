@@ -65,9 +65,9 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
-            var graphicsDevice = RenderSystem.GraphicsDevice;
+            var commandList = context.CommandList;
 
             foreach (var renderFeature in RenderFeatures)
             {
@@ -98,12 +98,12 @@ namespace SiliconStudio.Xenko.Rendering
                 for (int i = 0; i < drawData.VertexBuffers.Length; i++)
                 {
                     var vertexBuffer = drawData.VertexBuffers[i];
-                    graphicsDevice.SetVertexBuffer(i, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
+                    commandList.SetVertexBuffer(i, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
                 }
 
                 var resourceGroupOffset = ComputeResourceGroupOffset(renderNodeReference);
                 // Update cbuffer
-                renderEffect.Reflection.BufferUploader.Apply(graphicsDevice, ResourceGroupPool, resourceGroupOffset);
+                renderEffect.Reflection.BufferUploader.Apply(context.GraphicsDevice, ResourceGroupPool, resourceGroupOffset);
 
                 // Bind descriptor sets
                 for (int i = 0; i < descriptorSets.Length; ++i)
@@ -113,7 +113,7 @@ namespace SiliconStudio.Xenko.Rendering
                         descriptorSets[i] = resourceGroup.DescriptorSet;
                 }
 
-                graphicsDevice.SetDescriptorSets(0, descriptorSets);
+                commandList.SetDescriptorSets(0, descriptorSets);
 
                 // First time, let's compile pipeline state
                 // TODO GRAPHICS REFACTOR invalidate if effect is destroyed, or some other cases
@@ -134,21 +134,21 @@ namespace SiliconStudio.Xenko.Rendering
 
                     ProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderMesh, pipelineState);
 
-                    MutablePipeline.Update(graphicsDevice);
+                    MutablePipeline.Update(context.GraphicsDevice);
                     renderEffect.PipelineState = MutablePipeline.CurrentState;
                 }
 
-                graphicsDevice.SetPipelineState(renderEffect.PipelineState);
+                commandList.SetPipelineState(renderEffect.PipelineState);
 
                 // Draw
                 if (drawData.IndexBuffer == null)
                 {
-                    graphicsDevice.Draw(drawData.PrimitiveType, drawData.DrawCount, drawData.StartLocation);
+                    commandList.Draw(drawData.DrawCount, drawData.StartLocation);
                 }
                 else
                 {
-                    graphicsDevice.SetIndexBuffer(drawData.IndexBuffer.Buffer, drawData.IndexBuffer.Offset, drawData.IndexBuffer.Is32Bit);
-                    graphicsDevice.DrawIndexed(drawData.PrimitiveType, drawData.DrawCount, drawData.StartLocation);
+                    commandList.SetIndexBuffer(drawData.IndexBuffer.Buffer, drawData.IndexBuffer.Offset, drawData.IndexBuffer.Is32Bit);
+                    commandList.DrawIndexed(drawData.DrawCount, drawData.StartLocation);
                 }
             }
         }

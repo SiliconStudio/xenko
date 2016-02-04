@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (!ScreenShotAutomationEnabled)
                 AdjustEffectParameters();
 
-            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services));
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsCommandList);
             DrawCustomEffect(renderDrawContext);
 
             base.Draw(gameTime);
@@ -89,10 +89,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         }
         private void DrawCustomEffect(RenderDrawContext context)
         {
-            GraphicsDevice.CopyRegion(hdrTexture, 0, null, hdrRenderTexture, 0);
+            GraphicsCommandList.CopyRegion(hdrTexture, 0, null, hdrRenderTexture, 0);
 
             postProcessingEffects.SetInput(hdrRenderTexture);
-            postProcessingEffects.SetOutput(GraphicsDevice.BackBuffer);
+            postProcessingEffects.SetOutput(GraphicsCommandList.RenderTarget);
             postProcessingEffects.Draw(context);
         }
 

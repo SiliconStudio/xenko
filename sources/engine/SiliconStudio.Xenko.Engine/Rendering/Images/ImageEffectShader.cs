@@ -134,10 +134,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 pipelineStateDirty = false;
             }
 
-            GraphicsDevice.SetPipelineState(pipelineState.CurrentState);
+            context.CommandList.SetPipelineState(pipelineState.CurrentState);
 
             // Draw a full screen quad
-            GraphicsDevice.DrawQuad(EffectInstance);
+            context.CommandList.DrawQuad(EffectInstance);
         }
     }
 }

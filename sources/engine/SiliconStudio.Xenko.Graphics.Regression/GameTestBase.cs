@@ -114,7 +114,8 @@ namespace SiliconStudio.Xenko.Graphics.Regression
         public void SaveBackBuffer(string testName = null)
         {
             TestGameLogger.Info(@"Saving the backbuffer");
-            SaveImage(GraphicsDevice.BackBuffer, testName);
+            // TODO GRAPHICS REFACTOR switched to presenter backbuffer, need to check if it's good
+            SaveImage(GraphicsDevice.Presenter.BackBuffer, testName);
         }
 
         /// <summary>

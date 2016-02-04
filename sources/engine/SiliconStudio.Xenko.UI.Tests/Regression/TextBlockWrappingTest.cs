@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             await base.LoadContent();
 
-            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height, 500);
+            UIComponent.VirtualResolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height, 500);
             
             textBlock = new TextBlock
             {

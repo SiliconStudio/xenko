@@ -119,7 +119,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             if (!debug)
                 return;
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsCommandList);
             spriteBatch.DrawString(font, "Desired triangle size: {0}".ToFormat(currentMaterial.Parameters.GetValueSlow(TessellationKeys.DesiredTriangleSize)), new Vector2(0), Color.Black);
             spriteBatch.DrawString(font, "FPS: {0}".ToFormat(DrawTime.FramePerSecond), new Vector2(0, 20), Color.Black);
             spriteBatch.End();

@@ -56,11 +56,12 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.
         /// </summary>
-        public void Draw()
+        /// <param name="texture"></param>
+        public void Draw(CommandList commandList)
         {
             //GraphicsDevice.SetVertexArrayObject(sharedData.VertexBuffer);
-            GraphicsDevice.SetVertexBuffer(0, sharedData.VertexBuffer.Buffer, sharedData.VertexBuffer.Offset, sharedData.VertexBuffer.Stride);
-            GraphicsDevice.Draw(PrimitiveType, QuadCount);
+            commandList.SetVertexBuffer(0, sharedData.VertexBuffer.Buffer, sharedData.VertexBuffer.Offset, sharedData.VertexBuffer.Stride);
+            commandList.Draw(QuadCount);
             //GraphicsDevice.SetVertexArrayObject(null);
         }
 
@@ -69,9 +70,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="texture">The texture.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void Draw(Texture texture, bool applyEffectStates = false)
+        public void Draw(CommandList commandList, Texture texture, bool applyEffectStates = false)
         {
-            Draw(texture, null, Color.White, applyEffectStates);
+            Draw(commandList, texture, null, Color.White, applyEffectStates);
         }
 
         /// <summary>
@@ -82,7 +83,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="color">The color.</param>
         /// <param name="applyEffectStates">The flag to apply effect states.</param>
         /// <exception cref="System.ArgumentException">Expecting a Texture;texture</exception>
-        public void Draw(Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
+        public void Draw(CommandList commandList, Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
         {
             // Make sure that we are using our vertex shader
             parameters.Set(SpriteEffectKeys.Color, color);
@@ -90,7 +91,7 @@ namespace SiliconStudio.Xenko.Graphics
             parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
             //simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, applyEffectStates);
             throw new InvalidOperationException();
-            Draw();
+            Draw(commandList);
 
             // TODO ADD QUICK UNBIND FOR SRV
             //GraphicsDevice.Context.PixelShader.SetShaderResource(0, null);

@@ -102,7 +102,7 @@ namespace SiliconStudio.Xenko.Input.Tests
 
             // initialize parameters
             textHeight = spriteFont11.MeasureString(KeyboardSessionString).Y;
-            screenSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
+            screenSize = new Vector2(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height);
             roundTextureSize = new Vector2(roundTexture.Width, roundTexture.Height);
 
             // activate the gesture recognitions
@@ -123,11 +123,11 @@ namespace SiliconStudio.Xenko.Input.Tests
             base.Draw(gameTime);
 
             // clear the screen
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.White);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.White);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsCommandList);
 
             // render the keyboard key states
             spriteBatch.DrawString(spriteFont11, KeyboardSessionString, textLeftTopCorner, fontColor);
