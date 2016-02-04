@@ -202,7 +202,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Switch to additive
-            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Additive);
+            Scaler.BlendState = GraphicsDevice.BlendStates.Additive;
 
             Scaler.Color = new Color4(Amount);
             Scaler.SetInput(inputTextureDown4);
@@ -210,7 +210,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Scaler.Draw(context);
             Scaler.Reset();
 
-            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);
+            Scaler.BlendState = GraphicsDevice.BlendStates.Default;
         }
     }
 }

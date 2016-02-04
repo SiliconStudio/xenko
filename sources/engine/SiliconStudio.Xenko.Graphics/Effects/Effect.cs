@@ -26,10 +26,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private EffectBytecode bytecode;
 
-        public static readonly ParameterKey<RasterizerState> RasterizerStateKey = ParameterKeys.New<RasterizerState>();
-        public static readonly ParameterKey<DepthStencilState> DepthStencilStateKey = ParameterKeys.New<DepthStencilState>();
-        public static readonly ParameterKey<BlendState> BlendStateKey = ParameterKeys.New<BlendState>();
-
         internal Effect()
         {
         }

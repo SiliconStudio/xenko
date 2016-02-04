@@ -39,6 +39,9 @@ namespace SiliconStudio.Xenko.Rendering
         public List<FrameResourceGroupLayout> FrameLayouts { get; } = new List<FrameResourceGroupLayout>();
         public Action<NextGenRenderSystem, Effect, RenderEffectReflection> EffectCompiled;
 
+        internal delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
+        internal ProcessPipelineStateDelegate ProcessPipelineState;
+
         public int EffectDescriptorSetSlotCount => effectDescriptorSetSlots.Count;
 
         /// <summary>

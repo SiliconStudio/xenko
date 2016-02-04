@@ -83,8 +83,8 @@ namespace SiliconStudio.Xenko.Rendering
             var viewInverse = Matrix.Invert(viewParameters.Get(TransformationKeys.View));
             var viewProjection = viewParameters.Get(TransformationKeys.ViewProjection);
 
-            BlendState previousBlendState = null;
-            DepthStencilState previousDepthStencilState= null;
+            BlendStateDescription? previousBlendState = null;
+            DepthStencilStateDescription? previousDepthStencilState = null;
             EffectInstance previousEffect = null;
 
             var isPicking = context.IsPicking();

@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Physics
         private readonly Material dynamicMaterial;
         private readonly Material kinematicMaterial;
         private readonly Material characterMaterial;
-        private readonly RasterizerState rasterizer;
+        private readonly RasterizerStateDescription rasterizer;
         private readonly GraphicsDevice graphicsDevice;
 
         public PhysicsDebugShapeRendering(GraphicsDevice device)
@@ -26,13 +26,14 @@ namespace SiliconStudio.Xenko.Physics
             kinematicMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Blue, 0.77f), 1);
             characterMaterial = PhysicsDebugShapeMaterial.Create(graphicsDevice, Color.AdjustSaturation(Color.Yellow, 0.77f), 1);
 
-            rasterizer = RasterizerState.New(graphicsDevice, new RasterizerStateDescription(CullMode.None) { FillMode = FillMode.Wireframe });
+            rasterizer = new RasterizerStateDescription(CullMode.None) { FillMode = FillMode.Wireframe };
 
-            triggerMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
-            staticMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
-            dynamicMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
-            kinematicMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
-            characterMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
+            // TODO GRAPHICS REFACTOR
+            //triggerMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
+            //staticMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
+            //dynamicMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
+            //kinematicMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
+            //characterMaterial.Parameters.SetResourceSlow(Effect.RasterizerStateKey, rasterizer);
         }
 
         public Entity CreateDebugEntity(PhysicsComponent component)
@@ -160,7 +161,6 @@ namespace SiliconStudio.Xenko.Physics
 
         public void Dispose()
         {
-            rasterizer.Dispose();
         }
     }
 }

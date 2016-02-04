@@ -249,6 +249,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             coclinearDepthMapEffect = ToLoadAndUnload(new ImageEffectShader("CoCLinearDepthShader"));
             combineLevelsEffect = ToLoadAndUnload(new ImageEffectShader("CombineLevelsFromCoCEffect"));
             combineLevelsFrontEffect = ToLoadAndUnload(new ImageEffectShader("CombineFrontCoCEffect"));
+            combineLevelsFrontEffect.BlendState = GraphicsDevice.BlendStates.AlphaBlend;
             textureScaler = ToLoadAndUnload(new ImageScaler());
             cocMapBlur = ToLoadAndUnload(new CoCMapBlur());
             thresholdAlphaCoC = ToLoadAndUnload(new ImageEffectShader("ThresholdAlphaCoC"));
@@ -506,10 +507,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             // TODO Quality up: instead of merging all the layers for each pixel, merge only
             // the relevant layer(s) closest to the pixel CoC. 
-            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.AlphaBlend);
             combineLevelsFrontEffect.SetOutput(outputTexture);
             combineLevelsFrontEffect.Draw(context, "CoCLevelCombineInterpolationFront");
-            GraphicsDevice.SetBlendState(GraphicsDevice.BlendStates.Default);
 
             // Release any reference
             downscaledSources.Clear();

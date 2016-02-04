@@ -19,8 +19,6 @@ namespace SiliconStudio.Xenko.Graphics
         private const int MaxRenderTargetCount = 8;
 
         internal readonly Dictionary<SamplerStateDescription, SamplerState> CachedSamplerStates = new Dictionary<SamplerStateDescription, SamplerState>();
-        internal readonly Dictionary<BlendStateDescription, BlendState> CachedBlendStates = new Dictionary<BlendStateDescription, BlendState>();
-        internal readonly Dictionary<RasterizerStateDescription, RasterizerState> CachedRasterizerStates = new Dictionary<RasterizerStateDescription, RasterizerState>();
 
         /// <summary>
         ///     Gets the features supported by this graphics device.
@@ -376,11 +374,6 @@ namespace SiliconStudio.Xenko.Graphics
             for (int i = 0; i < currentState.Viewports.Length; i++)
                 currentState.Viewports[i] = new Viewport();
 
-            // Setup default states
-            SetBlendState(BlendStates.Default);
-            SetRasterizerState(RasterizerStates.CullBack);
-            SetDepthStencilState(DepthStencilStates.Default);
-
             // Setup the default render target
             Texture depthStencilBuffer = null;
             Texture backBuffer = null;
@@ -457,63 +450,6 @@ namespace SiliconStudio.Xenko.Graphics
                 Presenter.Present();
             }
         }
-
-        /// <summary>
-        /// Set the blend state of the output-merger stage with a white default blend color and sample mask set to 0xffffffff. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="blendState">a blend-state</param>
-        public void SetBlendState(BlendState blendState)
-        {
-            SetBlendState(blendState, blendState == null ? Color.White : blendState.BlendFactor, blendState == null ? -1 : blendState.MultiSampleMask);
-        }
-
-        /// <summary>
-        /// Set the blend state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="blendState">a blend-state</param>
-        /// <param name="blendFactor">Blend factors, one for each RGBA component. This requires a blend state object that specifies the <see cref="Blend.BlendFactor" /></param>
-        /// <param name="multiSampleMask">32-bit sample coverage. The default value is 0xffffffff.</param>
-        public void SetBlendState(BlendState blendState, Color4 blendFactor, int multiSampleMask = -1)
-        {
-            currentState.BlendState = blendState;
-            currentState.BlendFactor = blendFactor;
-            currentState.BlendMultiSampleMask = multiSampleMask;
-            SetBlendStateImpl(blendState, blendFactor, multiSampleMask);
-        }
-
-        /// <summary>
-        /// Sets the depth-stencil state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="depthStencilState">a depth-stencil state</param>
-        /// <param name="stencilReference">Reference value to perform against when doing a depth-stencil test.</param>
-        public void SetDepthStencilState(DepthStencilState depthStencilState, int stencilReference = 0)
-        {
-            currentState.DepthStencilState = depthStencilState;
-            currentState.StencilReference = stencilReference;
-            SetDepthStencilStateImpl(depthStencilState, stencilReference);
-        }
-
-        /// <summary>
-        /// Set the <strong>rasterizer state</strong> for the rasterizer stage of the pipeline. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="rasterizerState">The rasterizser state to set on this device.</param>
-        public void SetRasterizerState(RasterizerState rasterizerState)
-        {
-            currentState.RasterizerState = rasterizerState;
-            SetRasterizerStateImpl(rasterizerState);
-        }
-
-        /// <summary>
-        /// Set the blend state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="blendState">a blend-state</param>
-        /// <param name="blendFactor">Blend factors, one for each RGBA component. This requires a blend state object that specifies the <see cref="Blend.BlendFactor" /></param>
-        /// <param name="multiSampleMask">32-bit sample coverage. The default value is 0xffffffff.</param>
-        public void SetBlendState(BlendState blendState, Color4 blendFactor, uint multiSampleMask = 0xFFFFFFFF)
-        {
-            SetBlendState(blendState, blendFactor, unchecked((int)multiSampleMask));
-        }
-
 
         /// <summary>
         ///     Sets a new depthStencilBuffer to this GraphicsDevice. If there is any RenderTarget already bound, it will be unbinded. See <see cref="Textures+and+render+targets"/> to learn how to use it.
@@ -713,15 +649,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         private class StateAndTargets
         {
-            public BlendState BlendState;
-            public Color4 BlendFactor;
-            public int BlendMultiSampleMask;
-
-            public DepthStencilState DepthStencilState;
-            public int StencilReference;
-
-            public RasterizerState RasterizerState;
-
             public Viewport[] Viewports;
 
             public Texture DepthStencilBuffer;
@@ -748,13 +675,6 @@ namespace SiliconStudio.Xenko.Graphics
 
                 if (parentState != null)
                 {
-                    this.BlendState = parentState.BlendState;
-                    this.BlendFactor = parentState.BlendFactor;
-                    BlendMultiSampleMask = parentState.BlendMultiSampleMask;
-
-                    this.DepthStencilState = parentState.DepthStencilState;
-                    this.StencilReference = parentState.StencilReference;
-
                     DepthStencilBuffer = parentState.DepthStencilBuffer;
 
                     for (int i = 0; i < renderTargetCount; i++)
@@ -770,10 +690,6 @@ namespace SiliconStudio.Xenko.Graphics
             public void Restore(GraphicsDevice graphicsDevice)
             {
                 graphicsDevice.SetDepthAndRenderTargets(DepthStencilBuffer, RenderTargets);
-
-                graphicsDevice.SetBlendState(BlendState, BlendFactor, BlendMultiSampleMask);
-                graphicsDevice.SetDepthStencilState(DepthStencilState, StencilReference);
-                graphicsDevice.SetRasterizerState(RasterizerState);
 
                 graphicsDevice.needViewportUpdate = true;
             }

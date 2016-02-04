@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="depthStencilState">Depth and stencil options.</param>
         /// <param name="viewProjection">The view projection matrix used for this series of draw calls</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference</param>
-        public void Begin(ref Matrix viewProjection, BlendState blendState, DepthStencilState depthStencilState, int stencilValue)
+        public void Begin(ref Matrix viewProjection, BlendStateDescription? blendState, DepthStencilStateDescription? depthStencilState, int stencilValue)
         {
             Begin(ref viewProjection, blendState, null, null, depthStencilState, stencilValue);
         }        
@@ -159,7 +159,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="rasterizerState">Rasterization options.</param>
         /// <param name="viewProjection">The view projection matrix used for this series of draw calls</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference</param>
-        public void Begin(ref Matrix viewProjection, BlendState blendState, SamplerState samplerState, RasterizerState rasterizerState, DepthStencilState depthStencilState, int stencilValue)
+        public void Begin(ref Matrix viewProjection, BlendStateDescription? blendState, SamplerState samplerState, RasterizerStateDescription? rasterizerState, DepthStencilStateDescription? depthStencilState, int stencilValue)
         {
             viewProjectionMatrix = viewProjection;
 

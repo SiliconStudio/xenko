@@ -31,8 +31,8 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             Matrix viewInverse;
             Matrix.Invert(ref renderView.View, out viewInverse);
 
-            BlendState previousBlendState = null;
-            DepthStencilState previousDepthStencilState = null;
+            BlendStateDescription? previousBlendState = null;
+            DepthStencilStateDescription? previousDepthStencilState = null;
             EffectInstance previousEffect = null;
 
             var isPicking = false; //context.IsPicking();

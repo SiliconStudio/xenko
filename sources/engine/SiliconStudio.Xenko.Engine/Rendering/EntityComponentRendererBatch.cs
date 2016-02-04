@@ -72,7 +72,8 @@ namespace SiliconStudio.Xenko.Rendering
                     {
                         DrawRendererInternal(context, renderer, renderItems, fromIndex, i - 1);
 
-                        context.GraphicsDevice.ResetStates();
+                        // TODO GRAPHICS REFACTOR
+                        //context.GraphicsDevice.ResetStates();
 
                         DrawRendererInternal(context, renderItem.Renderer, renderItems, lastIndex, lastIndex);
                     }

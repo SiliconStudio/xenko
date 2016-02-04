@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="isGeomertryInverted"><c>true</c> if the rendered gometry is inverted through scaling, <c>false</c> otherwise.</param>
         /// <returns>The rasterizer state.</returns>
-        public virtual RasterizerState GetDefaultRasterizerState(bool isGeomertryInverted)
+        public virtual RasterizerStateDescription GetDefaultRasterizerState(bool isGeomertryInverted)
         {
             return isGeomertryInverted ? Context.GraphicsDevice.RasterizerStates.CullFront : Context.GraphicsDevice.RasterizerStates.CullBack;
         }

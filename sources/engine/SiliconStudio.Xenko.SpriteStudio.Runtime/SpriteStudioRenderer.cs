@@ -22,8 +22,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         public override bool SupportPicking => true;
 
-        public BlendState MultBlendState;
-        public BlendState SubBlendState;
+        public BlendStateDescription MultBlendState;
+        public BlendStateDescription SubBlendState;
 
         protected override void InitializeCore()
         {
@@ -35,16 +35,14 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             blendDesc.RenderTargets[0].BlendEnable = true;
             blendDesc.RenderTargets[0].ColorBlendFunction = BlendFunction.ReverseSubtract;
             blendDesc.RenderTargets[0].AlphaBlendFunction = BlendFunction.ReverseSubtract;
-            SubBlendState = BlendState.New(Context.GraphicsDevice, blendDesc).DisposeBy(Context.GraphicsDevice);
-            SubBlendState.Name = "Subtraction";
+            SubBlendState = blendDesc;
 
             blendDesc = new BlendStateDescription(Blend.DestinationColor, Blend.InverseSourceAlpha);
             blendDesc.RenderTargets[0].BlendEnable = true;
             blendDesc.RenderTargets[0].ColorBlendFunction = BlendFunction.Add;
             blendDesc.RenderTargets[0].AlphaSourceBlend = Blend.Zero;
             blendDesc.RenderTargets[0].AlphaBlendFunction = BlendFunction.Add;
-            MultBlendState = BlendState.New(Context.GraphicsDevice, blendDesc).DisposeBy(Context.GraphicsDevice);
-            MultBlendState.Name = "Multiplication";
+            MultBlendState = blendDesc;
         }
 
         protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
@@ -116,8 +114,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             var device = context.GraphicsDevice;
             var viewProjection = viewParameters.Get(TransformationKeys.ViewProjection);
 
-            BlendState previousBlendState = null;
-            DepthStencilState previousDepthStencilState = null;
+            BlendStateDescription? previousBlendState = null;
+            DepthStencilStateDescription? previousDepthStencilState = null;
             EffectInstance previousEffect = null;
 
             var isPicking = context.IsPicking();
@@ -136,7 +134,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
                     // Update the sprite batch
 
-                    BlendState spriteBlending;
+                    BlendStateDescription spriteBlending;
                     switch (node.BaseNode.AlphaBlending)
                     {
                         case SpriteStudioBlending.Mix:

@@ -130,6 +130,8 @@ namespace SiliconStudio.Xenko.Rendering
                     // TODO GRAPHICS REFACTOR
                     // pipelineState.RenderTargetFormats = 
 
+                    ProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderMesh, pipelineState);
+
                     context.Pipeline.Update(graphicsDevice);
                     renderEffect.PipelineState = context.Pipeline.CurrentState;
                 }

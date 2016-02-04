@@ -599,43 +599,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Set the blend state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="blendState">a blend-state</param>
-        /// <param name="blendFactor">Blend factors, one for each RGBA component. This requires a blend state object that specifies the <see cref="Blend.BlendFactor" /></param>
-        /// <param name="multiSampleMask">32-bit sample coverage. The default value is 0xffffffff.</param>
-        private void SetBlendStateImpl(BlendState blendState, Color4 blendFactor, int multiSampleMask = -1)
-        {
-            if (blendState == null)
-            {
-                NativeDeviceContext.OutputMerger.SetBlendState(null, ColorHelper.Convert(blendFactor), multiSampleMask);
-            }
-            else
-            {
-                NativeDeviceContext.OutputMerger.SetBlendState((SharpDX.Direct3D11.BlendState)blendState.NativeDeviceChild, ColorHelper.Convert(blendFactor), multiSampleMask);
-            }
-        }
-
-        /// <summary>
-        /// Sets the depth-stencil state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="depthStencilState">a depth-stencil state</param>
-        /// <param name="stencilReference">Reference value to perform against when doing a depth-stencil test.</param>
-        private void SetDepthStencilStateImpl(DepthStencilState depthStencilState, int stencilReference = 0)
-        {
-            NativeDeviceContext.OutputMerger.SetDepthStencilState(depthStencilState != null ? (SharpDX.Direct3D11.DepthStencilState)depthStencilState.NativeDeviceChild : null, stencilReference);
-        }
-
-        /// <summary>
-        /// Set the <strong>rasterizer state</strong> for the rasterizer stage of the pipeline. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="rasterizerState">The rasterizser state to set on this device.</param>
-        private void SetRasterizerStateImpl(RasterizerState rasterizerState)
-        {
-            NativeDeviceContext.Rasterizer.State = rasterizerState != null ? (SharpDX.Direct3D11.RasterizerState)rasterizerState.NativeDeviceChild : null;
-        }
-
-        /// <summary>
         /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>

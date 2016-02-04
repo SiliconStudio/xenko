@@ -104,7 +104,8 @@ namespace SiliconStudio.Xenko.Rendering
                     if (ResetGraphicsStates)
                     {
                         // Make sure that states are clean after this rendering
-                        context.GraphicsDevice.ResetStates();
+                        // TODO GRAPHICS REFACTOR
+                        //context.GraphicsDevice.ResetStates();
                     }
                 }
             }
