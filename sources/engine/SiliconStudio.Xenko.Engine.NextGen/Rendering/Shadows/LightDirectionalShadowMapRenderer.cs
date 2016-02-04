@@ -264,15 +264,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
                 Matrix adjustmentMatrix = Matrix.Scaling(leftX, -leftY, 1.0f) * Matrix.Translation(centerX, centerY, 0.0f);
                 // Calculate View Proj matrix from World space to Cascade space
                 Matrix.Multiply(ref shadowCamera.ViewProjectionMatrix, ref adjustmentMatrix, out shaderData.WorldToShadowCascadeUV[cascadeLevel]);
-
-                //// Render to the atlas
-                //lightShadowMap.Atlas.RenderFrame.Activate(context);
-                //graphicsDevice.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
-
-                //// Render the scene for this cascade
-//                shadowMapRenderer.RenderCasters(context, lightShadowMap.LightComponent.CullingMask);
-                ////// Copy texture coords with border
-                ////cascades[cascadeLevel].CascadeLevels.CascadeTextureCoordsBorder = cascadeTextureCoords;
             }
         }
 

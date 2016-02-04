@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Rendering
                 GraphicsDevice.PopState();
             }
 
-
+            // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
             Draw(RenderSystem, RenderContext, mainRenderView, mainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
         }
