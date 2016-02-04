@@ -342,7 +342,6 @@
     <Compile Include="Direct3D\Buffer.Direct3D.cs" />
     <Compile Include="Direct3D\ColorHelper.cs" />
     <Compile Include="Direct3D\CommandList.cs" />
-    <Compile Include="Direct3D\EffectSignatureLayout.cs" />
     <Compile Include="Direct3D\GraphicsAdapter.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsAdapterFactory.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsDevice.Direct3D.cs" />
