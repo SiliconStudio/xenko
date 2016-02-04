@@ -22,11 +22,7 @@ namespace SiliconStudio.Quantum
         public GraphNodeChangeListener(IGraphNode rootNode)
         {
             this.rootNode = rootNode;
-            foreach (var node in rootNode.GetAllChildNodes())
-            {
-                node.Content.Changing += ContentChanging;
-                node.Content.Changed += ContentChanged;
-            }
+            RegisterAllNodes();
         }
 
         /// <summary>
@@ -44,8 +40,27 @@ namespace SiliconStudio.Quantum
         {
             foreach (var node in rootNode.GetAllChildNodes())
             {
-                node.Content.Changing -= ContentChanging;
-                node.Content.Changed -= ContentChanged;
+                UnregisterNode(node);
+            }
+        }
+
+        protected virtual void RegisterNode(IGraphNode node)
+        {
+            node.Content.Changing += ContentChanging;
+            node.Content.Changed += ContentChanged;
+        }
+
+        protected virtual void UnregisterNode(IGraphNode node)
+        {
+            node.Content.Changing -= ContentChanging;
+            node.Content.Changed -= ContentChanged;
+        }
+
+        private void RegisterAllNodes()
+        {
+            foreach (var node in rootNode.GetAllChildNodes())
+            {
+                RegisterNode(node);
             }
         }
 
@@ -56,8 +71,7 @@ namespace SiliconStudio.Quantum
             {
                 foreach (var child in node.GetAllChildNodes())
                 {
-                    child.Content.Changing -= ContentChanging;
-                    child.Content.Changed -= ContentChanged;
+                    UnregisterNode(child);
                 }
             }
 
@@ -71,8 +85,7 @@ namespace SiliconStudio.Quantum
             {
                 foreach (var child in node.GetAllChildNodes())
                 {
-                    child.Content.Changing += ContentChanging;
-                    child.Content.Changed += ContentChanged;
+                    RegisterNode(child);
                 }
             }
 
