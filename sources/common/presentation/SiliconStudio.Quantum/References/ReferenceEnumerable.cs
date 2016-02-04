@@ -56,6 +56,11 @@ namespace SiliconStudio.Quantum.References
         /// <inheritdoc/>
         public int Count { get { return references.Count; } }
 
+        /// <summary>
+        /// Gets the indices of each reference in this instance.
+        /// </summary>
+        public IEnumerable<object> Indices => indices;
+
         /// <inheritdoc/>
         public ObjectReference this[object index] { get { return references.Single(x => Equals(x.Index, index)); } }
 
