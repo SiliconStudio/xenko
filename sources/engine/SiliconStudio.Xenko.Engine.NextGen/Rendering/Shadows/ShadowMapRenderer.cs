@@ -124,7 +124,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
                 RenderSystem.Views.Remove(renderView);
             shadowRenderViews.Clear();
 
-            // TODO GRAPHICS REFACTOR shadows are view dependent, but shadow map textures are global. how to handle multiple shadowed views?
+            // TODO GRAPHICS REFACTOR create ShadowMapRenderViews for each main render view.
+            // ShadowMapRenderViews needs to hold the LightShadmapTexture.ShaderData calculated in Extract
 
             // Collect shadow render views
             foreach (var shadowMapTexture in LightComponentsWithShadows)
