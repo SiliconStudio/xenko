@@ -164,7 +164,8 @@ namespace SiliconStudio.Xenko.Rendering
             var graphicsDevice = context.GraphicsDevice;
             try
             {
-                graphicsDevice.PushState();
+                // TODO GRAPHICS REFACTOR
+                //graphicsDevice.PushState();
 
                 // If we have a scene camera renderer use it to disable depth
                 if (sceneCameraRenderer != null)
@@ -195,7 +196,8 @@ namespace SiliconStudio.Xenko.Rendering
             }
             finally 
             {
-                graphicsDevice.PopState();
+                // TODO GRAPHICS REFACTOR
+                //graphicsDevice.PopState();
             }
 
         }
