@@ -420,6 +420,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             environmentLightsPerMesh.Clear();
             environmentLightShaderGroupEntryKeys.Clear();
 
+            // Create different parameter collections depending on shadows
+            // TODO GRAPHICS REFACTOR can we use the same parameter collection for shadowed/non-shadowed?
+            var isShadowReceiver = renderMesh.Material.IsShadowReceiver && modelComponent.IsShadowReceiver;
+            parametersKeyIdBuilder.Write(isShadowReceiver ? 1U : 0U);
+            shaderKeyIdBuilder.Write(isShadowReceiver ? 1U : 0U);
+            shaderKeyIdBuilder.Write((uint)effectSlot);
+
             // This loop is looking for visible lights per render model and calculate a ShaderId and ParametersId
             // TODO: Part of this loop could be processed outisde of the PrepareRenderMeshForRendering
             // For example: Environment lights or directional lights are always active, so we could pregenerate part of the 
@@ -500,7 +507,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                                     shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
                                 }
 
-                                directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, currentShadowRenderer));
+                                directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, isShadowReceiver ? currentShadowRenderer : null));
                                 currentShaderKey = new LightForwardShaderEntryKey(lightRendererId, shadowType, allocCountForNewLightType);
                                 currentShadowRenderer = newShadowRenderer;
                             }
@@ -516,15 +523,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         {
                             shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
                         }
-                        directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, currentShadowRenderer));
+                        directLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, isShadowReceiver ? currentShadowRenderer : null));
                     }
                 }
             }
-
-            // Create different parameter collections depending on shadows
-            // TODO GRAPHICS REFACTOR can we use the same parameter collection for shadowed/non-shadowed?
-            shaderKeyIdBuilder.Write((uint)effectSlot);
-            parametersKeyIdBuilder.Write(renderMesh.Material.IsShadowReceiver ? 1U : 0U);
 
             // Find or create an existing shaders/parameters permutation
 
