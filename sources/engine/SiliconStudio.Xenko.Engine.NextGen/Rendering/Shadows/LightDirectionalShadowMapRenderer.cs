@@ -143,7 +143,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 
             // Push a new graphics state
             var graphicsDevice = context.GraphicsDevice;
-            graphicsDevice.PushState();
 
             float splitMaxRatio = (minMaxDistance.X - camera.NearClipPlane) / (camera.FarClipPlane - camera.NearClipPlane);
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
@@ -432,7 +431,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             {
                 try
                 {
-                    context.GraphicsDevice.PushState();
+                    // TODO GRAPHICS REFACTOR seems to work without, need to make sure it's OK
+                    //context.GraphicsDevice.PushState();
                     minMax.SetInput(context.GraphicsDevice.DepthStencilBuffer);
                     minMax.Draw(context);
 
@@ -444,7 +444,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
                 }
                 finally 
                 {
-                    context.GraphicsDevice.PopState();
+                    // TODO GRAPHICS REFACTOR seems to work without, need to make sure it's OK
+                    //context.GraphicsDevice.PopState();
                 }
             }
         }

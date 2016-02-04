@@ -96,9 +96,11 @@ namespace SiliconStudio.Xenko.Rendering
         private void DrawRendererInternal(RenderContext context, IEntityComponentRenderer renderer, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             var graphicsDevice = context.GraphicsDevice;
-            graphicsDevice.PushState();
+            // TODO GRAPHICS REFACTOR
+            //graphicsDevice.PushState();
             renderer.Draw(context, renderItems, fromIndex, toIndex);
-            graphicsDevice.PopState();
+            // TODO GRAPHICS REFACTOR
+            //graphicsDevice.PopState();
         }
 
         private class RenderItemFrontToBackSorter : IComparer<RenderItem>
