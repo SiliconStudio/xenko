@@ -23,9 +23,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override bool SupportPicking { get { return true; } }
 
-        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        protected override void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
-            var cameraState = context.GetCurrentCamera();
+            var cameraState = context.RenderContext.GetCurrentCamera();
 
             if (cameraState == null)
                 return;
@@ -33,12 +33,12 @@ namespace SiliconStudio.Xenko.Rendering
             UpdateParameters(context, cameraState);
         }
 
-        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        protected override void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             // Nothing to draw for this camera
         }
 
-        public static void UpdateParameters(RenderContext context, CameraComponent camera)
+        public static void UpdateParameters(RenderDrawContext context, CameraComponent camera)
         {
             if (camera == null) throw new ArgumentNullException("camera");
 

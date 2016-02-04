@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             MultBlendState = blendDesc;
         }
 
-        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        protected override void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             spriteProcessor = SceneInstance.GetProcessor<SpriteStudioProcessor>();
             if (spriteProcessor == null)
@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             }
 
             // If no camera, early exit
-            var camera = context.GetCurrentCamera();
+            var camera = context.RenderContext.GetCurrentCamera();
             if (camera == null)
             {
                 return;
@@ -107,13 +107,13 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             }
         }
 
-        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        protected override void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             //var viewParameters = context.Parameters;
 
             var device = context.GraphicsDevice;
             // TODO GRAPHICS REFACTOR probably better to receive RenderView when reimplemented
-            var cameraState = context.GetCurrentCamera();
+            var cameraState = context.RenderContext.GetCurrentCamera();
             if (cameraState == null) throw new InvalidOperationException("No valid camera");
             var viewProjection = cameraState.ViewProjectionMatrix; // viewParameters.Get(TransformationKeys.ViewProjection);
 
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             DepthStencilStateDescription? previousDepthStencilState = null;
             EffectInstance previousEffect = null;
 
-            var isPicking = context.IsPicking();
+            var isPicking = context.RenderContext.IsPicking();
 
             bool hasBegin = false;
             for (var i = fromIndex; i <= toIndex; i++)

@@ -89,39 +89,22 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Draws a full screen quad using iterating on each pass of this effect.
         /// </summary>
-        public void Draw(RenderContext context, string name)
+        public void Draw(RenderDrawContext context, string name)
         {
             var previousDebugName = Name;
             if (name != null)
             {
                 Name = name;
             }
-            Draw(context);
+            base.Draw(context);
 
             Name = previousDebugName;
         }
-
+        
         /// <summary>
         /// Draws a full screen quad using iterating on each pass of this effect.
         /// </summary>
-        public void Draw(string name = null)
-        {
-            Draw(Context, name);
-        }
-
-        /// <summary>
-        /// Draws a full screen quad using iterating on each pass of this effect.
-        /// </summary>
-        public void Draw(string nameFormat, params object[] args)
-        {
-            // TODO: this is alocating a string, we should try to not allocate here.
-            Draw(string.Format(nameFormat, args));
-        }
-
-        /// <summary>
-        /// Draws a full screen quad using iterating on each pass of this effect.
-        /// </summary>
-        public void Draw(RenderContext context, string nameFormat, params object[] args)
+        public void Draw(RenderDrawContext context, string nameFormat, params object[] args)
         {
             // TODO: this is alocating a string, we should try to not allocate here.
             Draw(context, name: string.Format(nameFormat, args));

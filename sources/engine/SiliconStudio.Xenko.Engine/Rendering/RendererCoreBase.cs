@@ -147,11 +147,11 @@ namespace SiliconStudio.Xenko.Rendering
             Context = null;
         }
 
-        protected virtual void PreDrawCore(RenderContext context)
+        protected virtual void PreDrawCore(RenderDrawContext context)
         {
         }
 
-        protected virtual void PostDrawCore(RenderContext context)
+        protected virtual void PostDrawCore(RenderDrawContext context)
         {
         }
 
@@ -226,7 +226,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
 
-        protected void PreDrawCoreInternal(RenderContext context)
+        protected void PreDrawCoreInternal(RenderDrawContext context)
         {
             if (context == null)
             {
@@ -235,9 +235,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Context == null)
             {
-                Initialize(context);
+                Initialize(context.RenderContext);
             }
-            else if (Context != context)
+            else if (Context != context.RenderContext)
             {
                 throw new InvalidOperationException("Cannot use a different context between Load and Draw");
             }
@@ -253,7 +253,7 @@ namespace SiliconStudio.Xenko.Rendering
             isInDrawCore = true;
         }
 
-        protected void PostDrawCoreInternal(RenderContext context)
+        protected void PostDrawCoreInternal(RenderDrawContext context)
         {
             isInDrawCore = false;
 

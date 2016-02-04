@@ -24,11 +24,11 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
         }
 
-        protected override void DrawRenderer(RenderContext context, INextGenEntityComponentRenderer renderer)
+        protected override void DrawRenderer(RenderDrawContext context, INextGenEntityComponentRenderer renderer)
         {
         }
     }

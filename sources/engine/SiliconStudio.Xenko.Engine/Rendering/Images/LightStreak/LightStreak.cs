@@ -216,7 +216,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         [DataMemberIgnore]
         public Vector3[] AnamorphicOffsetsWeights { get; set; }
 
-        protected override void DrawCore(RenderContext contextParameters)
+        protected override void DrawCore(RenderDrawContext contextParameters)
         {
             var input = GetInput(0);
             var output = GetOutput(0) ?? input;
@@ -308,7 +308,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 combiner.SetInput(0, currentOutput);
                 combiner.Factors[0] = (1f / StreakCount) * 0.2f * Amount;
                 combiner.SetOutput(accumulationBuffer);
-                combiner.Draw(contextParameters);
+                ((RendererBase)combiner).Draw(contextParameters);
                 combiner.BlendState = GraphicsDevice.BlendStates.Default;
             }
             
@@ -317,18 +317,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var accumulationUpscaled = NewScopedRenderTarget2D(halfSizeRenderTarget.Description);
             Scaler.SetInput(accumulationBuffer);
             Scaler.SetOutput(accumulationUpscaled);
-            Scaler.Draw(contextParameters);
+            ((RendererBase)Scaler).Draw(contextParameters);
 
             blur.Radius = 3;
             blur.SetInput(accumulationUpscaled);
             blur.SetOutput(accumulationUpscaled);
-            blur.Draw(contextParameters);
+            ((RendererBase)blur).Draw(contextParameters);
 
             // Adds the result to the original color buffer.
             Scaler.BlendState = GraphicsDevice.BlendStates.Additive;
             Scaler.SetInput(accumulationUpscaled);
             Scaler.SetOutput(output);
-            Scaler.Draw(contextParameters);
+            ((RendererBase)Scaler).Draw(contextParameters);
             Scaler.BlendState = GraphicsDevice.BlendStates.Default;
         }
     }

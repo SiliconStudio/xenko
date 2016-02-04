@@ -55,7 +55,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             if (!ScreenShotAutomationEnabled)
                 AdjustEffectParameters();
 
-            DrawCustomEffect();
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services));
+            DrawCustomEffect(renderDrawContext);
 
             base.Draw(gameTime);
         }
@@ -86,13 +87,13 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 Log.Info("Bloom Amount: {0}", postProcessingEffects.Bloom.Amount);
             }
         }
-        private void DrawCustomEffect()
+        private void DrawCustomEffect(RenderDrawContext context)
         {
             GraphicsDevice.CopyRegion(hdrTexture, 0, null, hdrRenderTexture, 0);
 
             postProcessingEffects.SetInput(hdrRenderTexture);
             postProcessingEffects.SetOutput(GraphicsDevice.BackBuffer);
-            postProcessingEffects.Draw();
+            postProcessingEffects.Draw(context);
         }
 
         public static void Main()

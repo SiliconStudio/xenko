@@ -22,7 +22,6 @@ namespace SiliconStudio.Xenko.Rendering
     public sealed class RenderContext : ComponentBase
     {
         private const string SharedImageEffectContextKey = "__SharedRenderContext__";
-        private readonly Dictionary<Type, DrawEffect> sharedEffects = new Dictionary<Type, DrawEffect>();
         private readonly GraphicsResourceAllocator allocator;
 
         /// <summary>
@@ -74,28 +73,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <value>The allocator.</value>
         public GraphicsResourceAllocator Allocator => allocator;
-
-        /// <summary>
-        /// Gets or creates a shared effect.
-        /// </summary>
-        /// <typeparam name="T">Type of the shared effect (mush have a constructor taking a <see cref="RenderContext"/></typeparam>
-        /// <returns>A singleton instance of <typeparamref name="T"/></returns>
-        public T GetSharedEffect<T>() where T : DrawEffect, new()
-        {
-            // TODO: Add a way to support custom constructor
-            lock (sharedEffects)
-            {
-                DrawEffect effect;
-                if (!sharedEffects.TryGetValue(typeof(T), out effect))
-                {
-                    effect = new T();
-                    sharedEffects.Add(typeof(T), effect);
-                    effect.Initialize(this);
-                }
-
-                return (T)effect;
-            }
-        }
 
         /// <summary>
         /// Gets a global shared context.

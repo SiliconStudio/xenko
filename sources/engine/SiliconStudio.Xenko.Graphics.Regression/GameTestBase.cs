@@ -249,7 +249,7 @@ namespace SiliconStudio.Xenko.Graphics.Regression
             RunGameTest(game);
         }
 
-        protected void PerformDrawTest(Action<Game, RenderContext, RenderFrame> drawTestAction, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
+        protected void PerformDrawTest(Action<Game, RenderDrawContext, RenderFrame> drawTestAction, GraphicsProfile? profileOverride = null, string testName = null, bool takeSnapshot = true)
         {
             // create the game instance
             var typeGame = GetType();

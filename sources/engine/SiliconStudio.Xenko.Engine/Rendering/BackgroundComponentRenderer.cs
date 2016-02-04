@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Rendering
             spriteBatch = new SpriteBatch(Context.GraphicsDevice) { VirtualResolution = new Vector3(1)};
         }
 
-        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        protected override void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             var backgroundProcessor = SceneInstance.GetProcessor<BackgroundComponentProcessor>();
             if (backgroundProcessor == null)
@@ -46,7 +46,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        protected override void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             var graphicsDevice = context.GraphicsDevice;
             var destination = new RectangleF(0, 0, 1, 1);

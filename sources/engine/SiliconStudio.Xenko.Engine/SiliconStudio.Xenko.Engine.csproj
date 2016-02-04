@@ -197,6 +197,7 @@
     </Compile>
     <Compile Include="Rendering\Materials\MaterialFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
+    <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />

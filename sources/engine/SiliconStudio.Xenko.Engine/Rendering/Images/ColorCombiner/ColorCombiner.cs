@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        protected override void PreDrawCore(RenderContext context)
+        protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
             Parameters.SetValueSlow(FactorCount, InputCount);

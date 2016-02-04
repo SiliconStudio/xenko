@@ -427,14 +427,14 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 
             public Vector2 DepthMinMax { get; private set; }
 
-            protected override void DrawCore(RenderContext context)
+            protected override void DrawCore(RenderDrawContext context)
             {
                 try
                 {
                     // TODO GRAPHICS REFACTOR seems to work without, need to make sure it's OK
                     //context.GraphicsDevice.PushState();
                     minMax.SetInput(context.GraphicsDevice.DepthStencilBuffer);
-                    minMax.Draw(context);
+                    ((RendererBase)minMax).Draw(context);
 
                     IsResultAvailable = minMax.IsResultAvailable;
                     if (IsResultAvailable)

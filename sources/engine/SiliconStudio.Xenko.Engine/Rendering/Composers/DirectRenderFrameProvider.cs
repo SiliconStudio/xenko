@@ -28,7 +28,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
         /// <userdoc>The render frame to use.</userdoc>
         public RenderFrame RenderFrame { get; set; }
 
-        public override RenderFrame GetRenderFrame(RenderContext context)
+        public override RenderFrame GetRenderFrame(RenderDrawContext context)
         {
             return RenderFrame;
         }

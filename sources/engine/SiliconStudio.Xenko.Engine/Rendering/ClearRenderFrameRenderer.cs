@@ -82,7 +82,7 @@ namespace SiliconStudio.Xenko.Rendering
         [Display("Stencil Value")]
         public byte Stencil { get; set; }
 
-        protected override void DrawCore(RenderContext context, RenderFrame output)
+        protected override void DrawCore(RenderDrawContext context, RenderFrame output)
         {
             var graphicsDevice = context.GraphicsDevice;
 
