@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
         //public RendererBase RootRenderer;
         public NextGenRenderSystem RenderSystem;
-        public NextGenRenderContext RenderContext;
+        public RenderContext RenderContext;
 
         // Render views
         private RenderView mainRenderView;
@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Rendering
             base.InitializeCore();
 
             RenderSystem = new NextGenRenderSystem(Services);
-            RenderContext = new NextGenRenderContext(GraphicsDevice);
+            RenderContext = new RenderContext(Services);
 
             RenderSystem.Initialize(EffectSystem, GraphicsDevice);
 
@@ -292,7 +292,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        public static void Draw(NextGenRenderSystem renderSystem, NextGenRenderContext renderContext, RenderView renderView, RenderStage renderStage)
+        public static void Draw(NextGenRenderSystem renderSystem, RenderContext renderContext, RenderView renderView, RenderStage renderStage)
         {
             // Sync point: draw (from now, we should execute with a graphics device context to perform rendering)
 

@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(NextGenRenderContext context)
+        public override void Prepare(RenderContext context)
         {
             base.Prepare(context);
 
@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var graphicsDevice = RenderSystem.GraphicsDevice;
 
@@ -74,7 +74,6 @@ namespace SiliconStudio.Xenko.Rendering
                 renderFeature.Draw(context, renderView, renderViewStage, startIndex, endIndex);
             }
 
-            var pipelineState = context.Pipeline.State;
             Effect currentEffect = null;
             var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
 
@@ -93,8 +92,6 @@ namespace SiliconStudio.Xenko.Rendering
                 if (currentEffect != renderEffect.Effect)
                 {
                     currentEffect = renderEffect.Effect;
-                    pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
-                    pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
                 }
 
                 // Bind VB
@@ -122,6 +119,12 @@ namespace SiliconStudio.Xenko.Rendering
                 // TODO GRAPHICS REFACTOR invalidate if effect is destroyed, or some other cases
                 if (renderEffect.PipelineState == null)
                 {
+                    var pipelineState = MutablePipeline.State;
+
+                    // Effect
+                    pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
+                    pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
+
                     // Bind VAO
                     pipelineState.InputElements = drawData.VertexBuffers.CreateInputElements();
                     pipelineState.PrimitiveType = drawData.PrimitiveType;
@@ -131,8 +134,8 @@ namespace SiliconStudio.Xenko.Rendering
 
                     ProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderMesh, pipelineState);
 
-                    context.Pipeline.Update(graphicsDevice);
-                    renderEffect.PipelineState = context.Pipeline.CurrentState;
+                    MutablePipeline.Update(graphicsDevice);
+                    renderEffect.PipelineState = MutablePipeline.CurrentState;
                 }
 
                 graphicsDevice.SetPipelineState(renderEffect.PipelineState);
