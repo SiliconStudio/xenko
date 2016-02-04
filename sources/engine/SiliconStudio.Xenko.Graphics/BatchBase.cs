@@ -76,10 +76,10 @@ namespace SiliconStudio.Xenko.Graphics
 
         protected MutablePipelineState pipelineState = new MutablePipelineState();
         protected GraphicsDevice GraphicsDevice;
-        protected BlendState BlendState;
-        protected RasterizerState RasterizerState;
+        protected BlendStateDescription? BlendState;
+        protected RasterizerStateDescription? RasterizerState;
         protected SamplerState SamplerState;
-        protected DepthStencilState DepthStencilState;
+        protected DepthStencilStateDescription? DepthStencilState;
         protected int StencilReferenceValue;
         protected SpriteSortMode SortMode;
         private ResourceParameter<Texture>? textureUpdater;
@@ -162,7 +162,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="sessionRasterizerState">Rasterization state used for the Begin/End session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the Begin/End session</param>
         /// <exception cref="System.InvalidOperationException">Only one SpriteBatch at a time can use SpriteSortMode.Immediate</exception>
-        protected void Begin(EffectInstance effect, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
+        protected void Begin(EffectInstance effect, SpriteSortMode sessionSortMode, BlendStateDescription? sessionBlendState, SamplerState sessionSamplerState, DepthStencilStateDescription? sessionDepthStencilState, RasterizerStateDescription? sessionRasterizerState, int stencilValue)
         {
             CheckEndHasBeenCalled("begin");
 
@@ -220,9 +220,9 @@ namespace SiliconStudio.Xenko.Graphics
             pipelineState.State.SetDefaults();
             pipelineState.State.RootSignature = Effect.RootSignature;
             pipelineState.State.EffectBytecode = Effect.Effect.Bytecode;
-            pipelineState.State.BlendState = (BlendState ?? GraphicsDevice.BlendStates.AlphaBlend).Description;
-            pipelineState.State.DepthStencilState = (DepthStencilState ?? GraphicsDevice.DepthStencilStates.Default).Description;
-            pipelineState.State.RasterizerState = (RasterizerState ?? GraphicsDevice.RasterizerStates.CullBack).Description;
+            pipelineState.State.BlendState = BlendState ?? GraphicsDevice.BlendStates.AlphaBlend;
+            pipelineState.State.DepthStencilState = DepthStencilState ?? GraphicsDevice.DepthStencilStates.Default;
+            pipelineState.State.RasterizerState = RasterizerState ?? GraphicsDevice.RasterizerStates.CullBack;
             pipelineState.State.InputElements = ResourceContext.InputElements;
             pipelineState.State.PrimitiveType = PrimitiveType.TriangleList;
             pipelineState.Update(GraphicsDevice);

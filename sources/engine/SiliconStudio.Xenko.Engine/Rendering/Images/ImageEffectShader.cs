@@ -16,6 +16,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
     {
         private MutablePipelineState pipelineState = new MutablePipelineState();
         private bool pipelineStateDirty = true;
+        private BlendStateDescription blendState = new BlendStateDescription(Blend.One, Blend.Zero);
+
+        public BlendStateDescription BlendState
+        {
+            get { return blendState; }
+            set { blendState = value; pipelineStateDirty = true; }
+        }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
@@ -122,6 +129,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
                 pipelineState.State.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
                 pipelineState.State.PrimitiveType = PrimitiveQuad.PrimitiveType;
+                pipelineState.State.BlendState = blendState;
                 pipelineState.Update(GraphicsDevice);
                 pipelineStateDirty = false;
             }

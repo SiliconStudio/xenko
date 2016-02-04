@@ -28,8 +28,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         private double time;
 
-        private RasterizerState shadowMapState;
-
         public override string ModelEffect { get; set; }
 
         public bool Shadows { get; set; } = true;
@@ -60,6 +58,14 @@ namespace SiliconStudio.Xenko.Rendering
                         new MaterialRenderFeature(),
                         new ForwardLightingRenderFeature() { ShadowmapRenderStage = shadowmapRenderStage } ,
                     },
+            };
+
+            meshRenderFeature.ProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+            {
+                if (renderNode.RenderStage == shadowmapRenderStage)
+                {
+                    pipelineState.RasterizerState = new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false };
+                }
             };
 
             meshRenderFeature.ComputeRenderStages += (renderObject) =>
@@ -150,9 +156,6 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: Move that to a class that will handle all the details of shadow mapping
             if (Shadows)
             {
-                if (shadowMapState == null)
-                    shadowMapState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.None) { DepthClipEnable = false });
-
                 GraphicsDevice.PushState();
                 foreach (var renderView in RenderSystem.Views)
                 {
@@ -162,7 +165,6 @@ namespace SiliconStudio.Xenko.Rendering
                         var shadowMapRectangle = shadowmapRenderView.Rectangle;
                         shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
                         GraphicsDevice.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
-                        GraphicsDevice.SetRasterizerState(shadowMapState);
 
                         Draw(RenderSystem, RenderContext, shadowmapRenderView, shadowmapRenderStage);
                     }

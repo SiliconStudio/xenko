@@ -149,7 +149,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="isGeomertryInverted"><c>true</c> if the rendered gometry is inverted through scaling, <c>false</c> otherwise.</param>
         /// <returns>The rasterizer state.</returns>
-        public override RasterizerState GetDefaultRasterizerState(bool isGeomertryInverted)
+        public override RasterizerStateDescription GetDefaultRasterizerState(bool isGeomertryInverted)
         {
             if (EnableBackColor || ShowBackface)
                 return Context.GraphicsDevice.RasterizerStates.WireFrame;
@@ -183,9 +183,10 @@ namespace SiliconStudio.Xenko.Rendering
                 context.Parameters.Set(MaterialFrontBackBlendShaderKeys.AlphaBlend, AlphaBlend * BlendFactor);
                 context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorBlend, (EnableColorBlend ? ColorBlend : AlphaBlend) * BlendFactor);
 
-                graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
-                graphicsDevice.SetRasterizerState(EnableBackColor || ShowBackface ? graphicsDevice.RasterizerStates.WireFrame : graphicsDevice.RasterizerStates.WireFrameCullBack);
-                graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.Default);
+                // TODO GRAPHICS REFACTOR
+                //graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);
+                //graphicsDevice.SetRasterizerState(EnableBackColor || ShowBackface ? graphicsDevice.RasterizerStates.WireFrame : graphicsDevice.RasterizerStates.WireFrameCullBack);
+                //graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.Default);
 
                 // TODO GRAPHICS REFACTOR
                 //modelComponentAndPickingRenderer.ModelRenderer.ForceRasterizer = true;

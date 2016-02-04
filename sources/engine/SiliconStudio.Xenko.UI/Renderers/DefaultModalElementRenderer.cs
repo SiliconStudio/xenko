@@ -14,12 +14,12 @@ namespace SiliconStudio.Xenko.UI.Renderers
     {
         private Matrix identity = Matrix.Identity;
 
-        private readonly DepthStencilState noStencilNoDepth;
+        private readonly DepthStencilStateDescription noStencilNoDepth;
 
         public DefaultModalElementRenderer(IServiceRegistry services)
             : base(services)
         {
-            noStencilNoDepth = DepthStencilState.New(GraphicsDevice, new DepthStencilStateDescription(false, false));
+            noStencilNoDepth = new DepthStencilStateDescription(false, false);
         }
 
         public override void RenderColor(UIElement element, UIRenderingContext context)
@@ -45,8 +45,6 @@ namespace SiliconStudio.Xenko.UI.Renderers
         protected override void Destroy()
         {
             base.Destroy();
-            
-            noStencilNoDepth.Dispose();
         }
     }
 }

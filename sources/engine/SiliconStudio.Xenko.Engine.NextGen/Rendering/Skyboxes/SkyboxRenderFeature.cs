@@ -186,7 +186,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     pipelineState.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
                     pipelineState.PrimitiveType = PrimitiveQuad.PrimitiveType;
                     var oldDepthStencilState = pipelineState.DepthStencilState;
-                    pipelineState.DepthStencilState = graphicsDevice.DepthStencilStates.None.Description;
+                    pipelineState.DepthStencilState = graphicsDevice.DepthStencilStates.None;
 
                     // TODO GRAPHICS REFACTOR
                     // pipelineState.RenderTargetFormats = 
