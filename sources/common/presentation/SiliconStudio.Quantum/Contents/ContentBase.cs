@@ -1,7 +1,8 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-
+using System.Collections.Generic;
+using System.Linq;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Quantum.References;
 
@@ -41,6 +42,9 @@ namespace SiliconStudio.Quantum.Contents
 
         /// <inheritdoc/>
         public IReference Reference { get; }
+
+        /// <inheritdoc/>
+        public IEnumerable<object> Indices => GetIndices();
 
         /// <inheritdoc/>
         public bool ShouldProcessReference { get; internal set; }
@@ -135,6 +139,21 @@ namespace SiliconStudio.Quantum.Contents
             var args = new ContentChangeEventArgs(this, index, changeType, oldValue, newValue);
             Changed?.Invoke(this, args);
             FinalizeChange?.Invoke(this, args);
+        }
+
+        private IEnumerable<object> GetIndices()
+        {
+            var enumRef = Reference as ReferenceEnumerable;
+            if (enumRef != null)
+                return enumRef.Indices;
+
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            if (collectionDescriptor != null)
+            {
+                return Enumerable.Range(0, collectionDescriptor.GetCollectionCount(Value)).Cast<object>();
+            }
+            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+            return dictionaryDescriptor?.GetKeys(Value).Cast<object>();
         }
     }
 }

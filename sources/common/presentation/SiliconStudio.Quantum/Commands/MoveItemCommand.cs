@@ -10,10 +10,10 @@ namespace SiliconStudio.Quantum.Commands
     // TODO: this command is very similar to RenameStringKeyCommand - try to factorize them
     public class MoveItemCommand : SyncNodeCommand
     {
-        public const string StaticName = "MoveItem";
+        public const string CommandName = "MoveItem";
 
         /// <inheritdoc/>
-        public override string Name => StaticName;
+        public override string Name => CommandName;
 
         /// <inheritdoc/>
         public override CombineMode CombineMode => CombineMode.AlwaysCombine;
