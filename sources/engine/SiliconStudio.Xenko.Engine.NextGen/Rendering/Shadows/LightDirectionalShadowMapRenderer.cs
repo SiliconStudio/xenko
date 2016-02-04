@@ -141,10 +141,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             shaderData.DepthBias = shadow.BiasParameters.DepthBias;
             shaderData.OffsetScale = shadow.BiasParameters.NormalOffsetScale;
 
-            // Push a new graphics state
-            var graphicsDevice = context.GraphicsDevice;
-            graphicsDevice.PushState();
-
             float splitMaxRatio = (minMaxDistance.X - camera.NearClipPlane) / (camera.FarClipPlane - camera.NearClipPlane);
             for (int cascadeLevel = 0; cascadeLevel < cascadeCount; ++cascadeLevel)
             {
