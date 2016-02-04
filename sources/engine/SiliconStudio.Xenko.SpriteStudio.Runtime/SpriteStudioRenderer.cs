@@ -109,10 +109,13 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            var viewParameters = context.Parameters;
+            //var viewParameters = context.Parameters;
 
             var device = context.GraphicsDevice;
-            var viewProjection = viewParameters.Get(TransformationKeys.ViewProjection);
+            // TODO GRAPHICS REFACTOR probably better to receive RenderView when reimplemented
+            var cameraState = context.GetCurrentCamera();
+            if (cameraState == null) throw new InvalidOperationException("No valid camera");
+            var viewProjection = cameraState.ViewProjectionMatrix; // viewParameters.Get(TransformationKeys.ViewProjection);
 
             BlendStateDescription? previousBlendState = null;
             DepthStencilStateDescription? previousDepthStencilState = null;

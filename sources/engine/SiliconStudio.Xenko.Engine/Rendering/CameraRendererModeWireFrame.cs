@@ -173,16 +173,17 @@ namespace SiliconStudio.Xenko.Rendering
                     sceneCameraRenderer.ActivateOutput(context, !EnableDepth);
                 }
 
+                // TODO GRAPHICS REFACTOR
                 // Setup the backface paramters
-                if (context.Parameters.Get(MaterialFrontBackBlendShaderKeys.UseNormalBackFace) != EnableBackColor)
-                {
-                    context.Parameters.Set(MaterialFrontBackBlendShaderKeys.UseNormalBackFace, EnableBackColor);
-                }
-
-                context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorFront, FrontColor.ToColorSpace(graphicsDevice.ColorSpace));
-                context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorBack, (EnableBackColor ? BackColor : FrontColor).ToColorSpace(graphicsDevice.ColorSpace));
-                context.Parameters.Set(MaterialFrontBackBlendShaderKeys.AlphaBlend, AlphaBlend * BlendFactor);
-                context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorBlend, (EnableColorBlend ? ColorBlend : AlphaBlend) * BlendFactor);
+                //if (context.Parameters.Get(MaterialFrontBackBlendShaderKeys.UseNormalBackFace) != EnableBackColor)
+                //{
+                //    context.Parameters.Set(MaterialFrontBackBlendShaderKeys.UseNormalBackFace, EnableBackColor);
+                //}
+                //
+                //context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorFront, FrontColor.ToColorSpace(graphicsDevice.ColorSpace));
+                //context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorBack, (EnableBackColor ? BackColor : FrontColor).ToColorSpace(graphicsDevice.ColorSpace));
+                //context.Parameters.Set(MaterialFrontBackBlendShaderKeys.AlphaBlend, AlphaBlend * BlendFactor);
+                //context.Parameters.Set(MaterialFrontBackBlendShaderKeys.ColorBlend, (EnableColorBlend ? ColorBlend : AlphaBlend) * BlendFactor);
 
                 // TODO GRAPHICS REFACTOR
                 //graphicsDevice.SetBlendState(graphicsDevice.BlendStates.AlphaBlend);

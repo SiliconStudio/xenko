@@ -25,8 +25,6 @@ namespace SiliconStudio.Xenko.Rendering
         private readonly Dictionary<Type, DrawEffect> sharedEffects = new Dictionary<Type, DrawEffect>();
         private readonly GraphicsResourceAllocator allocator;
 
-        private readonly Stack<ParameterCollection> parametersStack;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="RenderContext" /> class.
         /// </summary>
@@ -40,8 +38,6 @@ namespace SiliconStudio.Xenko.Rendering
             Effects = services.GetSafeServiceAs<EffectSystem>();
             this.allocator = allocator ?? new GraphicsResourceAllocator(Services).DisposeBy(this);
             GraphicsDevice = services.GetSafeServiceAs<IGraphicsDeviceService>().GraphicsDevice;
-            parametersStack = new Stack<ParameterCollection>();
-            PushParameters(new ParameterCollection());
         }
 
         /// <summary>
@@ -68,30 +64,6 @@ namespace SiliconStudio.Xenko.Rendering
         public IServiceRegistry Services { get; private set; }
 
         /// <summary>
-        /// Gets the parameters shared with all <see cref="ImageEffect"/> instance.
-        /// </summary>
-        /// <value>The parameters.</value>
-        public ParameterCollection Parameters { get; private set; }
-
-        public void PushParameters(ParameterCollection parameters)
-        {
-            if (parameters == null) throw new ArgumentNullException("parameters");
-            parametersStack.Push(parameters);
-            Parameters = parameters;
-        }
-
-        public ParameterCollection PopParameters()
-        {
-            if (parametersStack.Count == 1)
-            {
-                throw new InvalidOperationException("Cannot Pop more than push");
-            }
-            var previous = parametersStack.Pop();
-            Parameters = parametersStack.Peek();
-            return previous;
-        }
-
-        /// <summary>
         /// Gets the time.
         /// </summary>
         /// <value>The time.</value>
@@ -101,13 +73,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Gets the <see cref="GraphicsResource"/> allocator.
         /// </summary>
         /// <value>The allocator.</value>
-        public GraphicsResourceAllocator Allocator
-        {
-            get
-            {
-                return allocator;
-            }
-        }
+        public GraphicsResourceAllocator Allocator => allocator;
 
         /// <summary>
         /// Gets or creates a shared effect.
