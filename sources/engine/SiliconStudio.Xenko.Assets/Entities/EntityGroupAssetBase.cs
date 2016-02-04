@@ -135,14 +135,25 @@ namespace SiliconStudio.Xenko.Assets.Entities
                 return mapBaseToInstanceIds;
             }
 
-            var mapInstanceIdToBaseId = new Dictionary<Guid, EntityGroupAssetBase>();
+            // This method is recovering links between a derived entity from a base part.
+            // This is done in 2 steps:
+
+
+            // Step 1) build the map <mapBasePartInstanceIdToBasePart>: <basePartInstanceId> => <base part asset>  
+            //
+            // - for each entity in the hierarchy of this instance
+            //   - Check if the entity has a <baseId> and a <basePartInstanceId>
+            //   - If yes, the entity is coming from a base part
+            //       - Find which AssetBase (actually EntityGroupAssetBase), is containing the <basePartInstanceId>
+            //       - We can then associate 
+            var mapBasePartInstanceIdToBasePart = new Dictionary<Guid, EntityGroupAssetBase>();
             foreach (var entityIt in Hierarchy.Entities)
             {
                 if (entityIt.Design.BaseId.HasValue && entityIt.Design.BasePartInstanceId.HasValue)
                 {
                     var basePartInstanceId = entityIt.Design.BasePartInstanceId.Value;
                     EntityGroupAssetBase existingAssetBase;
-                    if (!mapInstanceIdToBaseId.TryGetValue(basePartInstanceId, out existingAssetBase))
+                    if (!mapBasePartInstanceIdToBasePart.TryGetValue(basePartInstanceId, out existingAssetBase))
                     {
                         var baseId = entityIt.Design.BaseId.Value;
                         foreach (var basePart in baseParts)
@@ -157,13 +168,16 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
                         if (existingAssetBase != null)
                         {
-                            mapInstanceIdToBaseId.Add(basePartInstanceId, existingAssetBase);
+                            mapBasePartInstanceIdToBasePart.Add(basePartInstanceId, existingAssetBase);
                         }
                     }
                 }
             }
 
-            foreach (var it in mapInstanceIdToBaseId)
+            // Step 2) build the resulting reverse map <mapBaseToInstanceIds>: <base part asset> => list of <basePartInstanceId>
+            //
+            // - We simply build this map by using the mapBasePartInstanceIdToBasePart
+            foreach (var it in mapBasePartInstanceIdToBasePart)
             {
                 List<Guid> ids;
                 if (!mapBaseToInstanceIds.TryGetValue(it.Value, out ids))
@@ -175,6 +189,5 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
             return mapBaseToInstanceIds;
         }
-
     }
 }
