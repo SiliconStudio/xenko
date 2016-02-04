@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (camera == null) throw new ArgumentNullException("camera");
 
             // Setup viewport size
-            var currentViewport = context.GraphicsDevice.Viewport;
+            var currentViewport = context.CommandList.Viewport;
             var aspectRatio = currentViewport.AspectRatio;
 
             // Update the aspect ratio

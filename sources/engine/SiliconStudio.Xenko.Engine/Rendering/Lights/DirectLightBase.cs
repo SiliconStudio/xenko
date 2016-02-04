@@ -27,12 +27,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         public float ComputeScreenCoverage(RenderContext context, Vector3 position, Vector3 direction)
         {
-            var viewport = context.GraphicsDevice.Viewport;
             var camera = context.GetCurrentCamera();
-            if (camera == null)
+            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
+            if (camera == null || sceneCameraRenderer == null)
             {
                 return 0.0f;
             }
+            var viewport = sceneCameraRenderer.ComputedViewport;
             return ComputeScreenCoverage(camera, position, direction, viewport.Width, viewport.Height);
         }
 

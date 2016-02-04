@@ -146,7 +146,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DisplayGBuffer(RenderDrawContext context, RenderFrame frame)
         {
-            GraphicsDevice.DrawTexture(textures[renderTargetToDisplayIndex]);
+            GraphicsCommandList.DrawTexture(textures[renderTargetToDisplayIndex]);
         }
 
         private async Task GameScript1()

@@ -120,13 +120,14 @@ namespace SiliconStudio.Xenko.Rendering
 
             // evaluate the current draw time (game instance is null for thumbnails)
             var drawTime = game != null ? game.DrawTime : new GameTime();
-            
+
             // update the rendering context
+            renderingContext.GraphicsCommandList = context.CommandList;
             renderingContext.Time = drawTime;
             renderingContext.RenderTarget = CurrentRenderFrame.RenderTargets[0]; // TODO: avoid hardcoded index 0
 
             // cache the ratio between viewport and target.
-            var viewportSize = context.GraphicsDevice.Viewport.Size;
+            var viewportSize = context.CommandList.Viewport.Size;
             viewportTargetRatio = new Vector2(viewportSize.X / renderingContext.RenderTarget.Width, viewportSize.Y / renderingContext.RenderTarget.Height);
 
             // compact all the pointer events that happened since last frame to avoid performing useless hit tests.
@@ -238,13 +239,13 @@ namespace SiliconStudio.Xenko.Rendering
                 // clear and set the Depth buffer as required
                 if (uiComponent.IsFullScreen)
                 {
-                    context.GraphicsDevice.Clear(renderingContext.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
+                    context.CommandList.Clear(renderingContext.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
                 }
-                context.GraphicsDevice.SetDepthAndRenderTarget(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
+                context.CommandList.SetDepthAndRenderTarget(renderingContext.DepthStencilBuffer, renderingContext.RenderTarget);
 
                 // start the image draw session
                 renderingContext.StencilTestReferenceValue = 0;
-                batch.Begin(ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.CommandList, ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
 
                 // Render the UI elements in the final render target
                 ReccursiveDrawWithClipping(context, rootElement);
@@ -257,7 +258,7 @@ namespace SiliconStudio.Xenko.Rendering
             ClearPointerEvents();
 
             // revert the depth stencil buffer to the default value 
-            context.GraphicsDevice.SetDepthAndRenderTargets(CurrentRenderFrame.DepthStencil, CurrentRenderFrame.RenderTargets);
+            context.CommandList.SetDepthAndRenderTargets(CurrentRenderFrame.DepthStencil, CurrentRenderFrame.RenderTargets);
         }
 
         private void ReccursiveDrawWithClipping(RenderDrawContext context, UIElement element)
@@ -276,13 +277,13 @@ namespace SiliconStudio.Xenko.Rendering
                 batch.End();
                 
                 // render the clipping region
-                batch.Begin(ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.CommandList, ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.IncreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue += 1;
-                batch.Begin(ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.CommandList, ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
 
             // render the design of the element
@@ -301,13 +302,13 @@ namespace SiliconStudio.Xenko.Rendering
                 renderingContext.DepthBias = element.MaxChildrenDepthBias;
 
                 // render the clipping region
-                batch.Begin(ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.CommandList, ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.ColorDisabled, uiSystem.DecreaseStencilValueState, renderingContext.StencilTestReferenceValue);
                 renderer.RenderClipping(element, renderingContext);
                 batch.End();
 
                 // update context and restart the batch
                 renderingContext.StencilTestReferenceValue -= 1;
-                batch.Begin(ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
+                batch.Begin(context.CommandList, ref viewParameters.ViewProjectionMatrix, context.GraphicsDevice.BlendStates.AlphaBlend, uiSystem.KeepStencilValueState, renderingContext.StencilTestReferenceValue);
             }
         }
 

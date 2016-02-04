@@ -317,7 +317,8 @@ namespace SiliconStudio.Xenko.Profiling
                 Font = Asset.Load<SpriteFont>("XenkoDefaultFont");
             }
 
-            spriteBatch.Begin();
+            // TODO GRAPHICS REFACTOR where to get command list from?
+            spriteBatch.Begin(Game.GraphicsCommandList);
             lock (stringLock)
             {                
                 spriteBatch.DrawString(Font, gcMemoryString, new Vector2(10, 10), TextColor);

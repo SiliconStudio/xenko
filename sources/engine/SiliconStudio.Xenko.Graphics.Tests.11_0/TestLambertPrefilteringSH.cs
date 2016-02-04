@@ -102,36 +102,36 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
 
-            context.GraphicsDevice.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
-            context.GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Green);
+            context.CommandList.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
+            context.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Green);
 
             cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 1);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(0, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
             cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 2);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 0f, size.X, size.Y), Color.White);
             spriteBatch.End();
 
             cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 4);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
             cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 3);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 2f * size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
 
             cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 5);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(size.X, 3f * size.Y, size.X, size.Y), null, Color.White, 0f, Vector2.Zero, SpriteEffects.FlipVertically);
             spriteBatch.End();
 
             cubemapSpriteEffect.Parameters.SetValueSlow(CubemapSpriteKeys.ViewIndex, 0);
-            spriteBatch.Begin(SpriteSortMode.Texture, cubemapSpriteEffect);
+            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, cubemapSpriteEffect);
             spriteBatch.Draw(displayedCubemap, new RectangleF(2f * size.X, size.Y, size.X, size.Y), Color.White);
             spriteBatch.End();
         }
@@ -153,12 +153,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 displayedCubemap = outputCubemap;
 
             if(Input.IsKeyPressed(Keys.S))
-                SaveTexture(GraphicsDevice.BackBuffer, "LambertianPrefilteredImageCross.png");
+                SaveTexture(GraphicsDevice.Presenter.BackBuffer, "LambertianPrefilteredImageCross.png");
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services));
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsCommandList);
             PrefilterCubeMap(renderDrawContext);
             RenderCubeMap(renderDrawContext);
 

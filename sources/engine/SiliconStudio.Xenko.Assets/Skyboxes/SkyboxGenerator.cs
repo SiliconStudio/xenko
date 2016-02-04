@@ -33,7 +33,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             ((IContentable)EffectSystem).LoadContent();
             ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;
             RenderContext = RenderContext.GetShared(Services);
-            RenderDrawContext = new RenderDrawContext(Services, RenderContext);
+            RenderDrawContext = new RenderDrawContext(Services, RenderContext, new CommandList(GraphicsDevice));
         }
 
         public IServiceRegistry Services { get; private set; }
@@ -172,7 +172,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     specularRadiancePrefilterGGX.Draw(context.RenderDrawContext);
 
                     var cubeTexture = Texture.NewCube(context.GraphicsDevice, textureSize, true, skyboxTexture.Format);
-                    context.GraphicsDevice.Copy(outputTexture, cubeTexture);
+                    context.RenderDrawContext.CommandList.Copy(outputTexture, cubeTexture);
 
                     cubeTexture.SetSerializationData(cubeTexture.GetDataAsImage());
 

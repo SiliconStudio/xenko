@@ -86,12 +86,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             var cameraNear = 100;
             var projectionMatrix = Matrix.PerspectiveRH(cameraSize, cameraSize, cameraNear, 10000);
             var viewMatrix = Matrix.LookAtRH(cameraNear * Vector3.UnitZ, Vector3.Zero, Vector3.UnitY);
-            
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
 
-            batch.Begin(viewMatrix*projectionMatrix, rasterizerState: rasterizerState);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+
+            batch.Begin(GraphicsCommandList, viewMatrix*projectionMatrix, rasterizerState: rasterizerState);
 
             var leftTopCorner = new Vector3(-320, -320, 0);
             var pos = leftTopCorner;

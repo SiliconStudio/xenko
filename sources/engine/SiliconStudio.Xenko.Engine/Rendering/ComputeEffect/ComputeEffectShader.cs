@@ -83,10 +83,10 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
             Parameters.SetValueSlow(ComputeShaderBaseKeys.ThreadGroupCountGlobal, ThreadGroupCounts);
 
             // Apply the effect
-            EffectInstance.Apply(GraphicsDevice);
+            EffectInstance.Apply(context.CommandList);
 
             // Draw a full screen quad
-            GraphicsDevice.Dispatch(ThreadGroupCounts.X, ThreadGroupCounts.Y, ThreadGroupCounts.Z);
+            context.CommandList.Dispatch(ThreadGroupCounts.X, ThreadGroupCounts.Y, ThreadGroupCounts.Z);
 
             // Un-apply
             //throw new InvalidOperationException();

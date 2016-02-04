@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
                     ((RendererBase)secondPassEffect).Draw(context);
                 }
 
-                GraphicsDevice.Copy(intermediateTextures[intermediateTextures.Count - 1], stagingTextures[c]);
+                context.CommandList.Copy(intermediateTextures[intermediateTextures.Count - 1], stagingTextures[c]);
             }
 
             // Create and initialize result SH

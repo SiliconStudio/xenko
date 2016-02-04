@@ -82,11 +82,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawSpriteFont()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             // Render the text
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsCommandList);
 
             var text = "This text is in Arial 16 with anti-alias\nand multiline...";
             var dim = arial16.MeasureString(text);
@@ -161,7 +162,7 @@ ABCDEFGHIJ - ABCDEFGHIJ - A1C3E5G7I9
             base.Update(gameTime);
 
             if(Input.IsKeyReleased(Keys.S))
-                SaveTexture(GraphicsDevice.BackBuffer, "sprite-font-" + saveImageSuffix + ".png");
+                SaveTexture(GraphicsDevice.Presenter.BackBuffer, "sprite-font-" + saveImageSuffix + ".png");
         }
     }
 }

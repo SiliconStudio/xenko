@@ -54,16 +54,16 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawCustomEffect()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
             effectInstance.Parameters.SetValueSlow(MyCustomShaderKeys.ColorFactor2, (Vector4)Color.Red);
             effectInstance.Parameters.SetValueSlow(CustomShaderKeys.SwitchEffectLevel, switchEffectLevel);
             effectInstance.Parameters.SetResourceSlow(TexturingKeys.Texture0, UVTexture);
             switchEffectLevel++; // TODO: Add switch Effect to test and capture frames
 
-            GraphicsDevice.DrawQuad(effectInstance);
+            GraphicsCommandList.DrawQuad(effectInstance);
         }
 
         public static void Main()

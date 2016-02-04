@@ -16,8 +16,6 @@ namespace SiliconStudio.Xenko.Graphics
     {
         public static readonly int ThreadCount = 1; //AppConfig.GetConfiguration<Config>("RenderSystem").ThreadCount;
 
-        private const int MaxRenderTargetCount = 8;
-
         internal readonly Dictionary<SamplerStateDescription, SamplerState> CachedSamplerStates = new Dictionary<SamplerStateDescription, SamplerState>();
 
         /// <summary>
@@ -32,18 +30,13 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly bool isDeferred;
         private readonly ParameterCollection parameters = new ParameterCollection();
 
-        private bool needViewportUpdate = true;
-
         private readonly Dictionary<object, IDisposable> sharedDataPerDevice;
         private readonly Dictionary<object, IDisposable> sharedDataPerDeviceContext = new Dictionary<object, IDisposable>();
         private GraphicsPresenter presenter;
 
-        // Current states
-        private StateAndTargets currentState;
+        internal PipelineState DefaultPipelineState;
 
-        private int currentStateIndex;
-        private readonly List<StateAndTargets> allocatedStates = new List<StateAndTargets>(10);
-        private PrimitiveQuad primitiveQuad;
+        internal PrimitiveQuad PrimitiveQuad;
         private ColorSpace colorSpace;
 
         public uint FrameTriangleCount, FrameDrawCalls;
@@ -74,7 +67,7 @@ namespace SiliconStudio.Xenko.Graphics
             Recreate(adapter, profile, deviceCreationFlags, windowHandle);
 
             // Helpers
-            primitiveQuad = new PrimitiveQuad(this);
+            PrimitiveQuad = new PrimitiveQuad(this);
         }
 
         public void Recreate(GraphicsAdapter adapter, GraphicsProfile[] profile, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
@@ -100,16 +93,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             var defaultPipelineStateDescription = new PipelineStateDescription();
             defaultPipelineStateDescription.SetDefaults();
-            defaultPipelineState = PipelineState.New(this, defaultPipelineStateDescription);
-
-            currentState = null;
-            allocatedStates.Clear();
-            currentStateIndex = -1;
-            PushState();
-
-            Begin();
-            ClearState();
-            End();
+            DefaultPipelineState = PipelineState.New(this, defaultPipelineStateDescription);
         }
 
         protected override void Destroy()
@@ -124,9 +108,7 @@ namespace SiliconStudio.Xenko.Graphics
             BlendStates.Dispose();
             RasterizerStates.Dispose();
             DepthStencilStates.Dispose();
-            if (DepthStencilBuffer != null)
-                DepthStencilBuffer.Dispose();
-            primitiveQuad.Dispose();
+            PrimitiveQuad.Dispose();
 
             SamplerStates = null;
             BlendStates = null;
@@ -157,40 +139,12 @@ namespace SiliconStudio.Xenko.Graphics
         public GraphicsAdapter Adapter { get; private set; }
 
         /// <summary>
-        ///     Gets the render target buffer currently sets on this instance.
-        /// </summary>
-        /// <value>
-        ///     The render target buffer currently sets on this instance.
-        /// </value>
-        public Texture BackBuffer
-        {
-            get
-            {
-                return currentState.RenderTargets[0];
-            }
-        }
-
-        /// <summary>
         ///     Gets the <see cref="BlendStates" /> factory.
         /// </summary>
         /// <value>
         ///     The <see cref="BlendStates" /> factory.
         /// </value>
         public BlendStateFactory BlendStates { get; private set; }
-
-        /// <summary>
-        ///     Gets the depth stencil buffer currently sets on this instance.
-        /// </summary>
-        /// <value>
-        ///     The depth stencil buffer currently sets on this instance.
-        /// </value>
-        public Texture DepthStencilBuffer
-        {
-            get
-            {
-                return currentState.DepthStencilBuffer;
-            }
-        }
 
         /// <summary>
         ///     Gets the <see cref="DepthStencilStateFactory" /> factory.
@@ -265,13 +219,6 @@ namespace SiliconStudio.Xenko.Graphics
             set
             {
                 presenter = value;
-                if (presenter != null)
-                {
-                    Begin();
-                    SetDepthAndRenderTargets(presenter.DepthStencilBuffer, presenter.BackBuffer);
-                    SetViewport(presenter.DefaultViewport);
-                    End();
-                }
             }
         }
 
@@ -347,99 +294,6 @@ namespace SiliconStudio.Xenko.Graphics
             return new GraphicsDevice(adapter ?? GraphicsAdapterFactory.Default, graphicsProfiles, creationFlags, windowHandle);
         }
 
-
-        /// <summary>
-        ///     Gets the first viewport.
-        /// </summary>
-        /// <value>The first viewport.</value>
-        public Viewport Viewport
-        {
-            get
-            {
-                return currentState.Viewports[0];
-            }
-        }
-
-        /// <summary>
-        /// Clears the state and restore the state of the device.
-        /// </summary>
-        public void ClearState()
-        {
-            ClearStateImpl();
-
-            currentStateIndex = 0;
-            currentState = allocatedStates[currentStateIndex];
-
-            // Setup empty viewports
-            for (int i = 0; i < currentState.Viewports.Length; i++)
-                currentState.Viewports[i] = new Viewport();
-
-            // Setup the default render target
-            Texture depthStencilBuffer = null;
-            Texture backBuffer = null;
-            if (Presenter != null)
-            {
-                depthStencilBuffer = Presenter.DepthStencilBuffer;
-                backBuffer = Presenter.BackBuffer;
-            }
-            needViewportUpdate = true;
-            SetDepthAndRenderTarget(depthStencilBuffer, backBuffer);
-        }
-
-        /// <summary>
-        /// Draws a full screen quad. An <see cref="Effect"/> must be applied before calling this method.
-        /// </summary>
-        public void DrawQuad()
-        {
-            primitiveQuad.Draw();
-        }
-
-        /// <summary>
-        /// Draws a fullscreen texture using a <see cref="SamplerStateFactory.LinearClamp"/> sampler. See <see cref="Draw+a+texture"/> to learn how to use it.
-        /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
-        /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void DrawTexture(Texture texture, bool applyEffectStates = false)
-        {
-            DrawTexture(texture, null, Color4.White, applyEffectStates);
-        }
-
-        /// <summary>
-        /// Draws a fullscreen texture using the specified sampler. See <see cref="Draw+a+texture"/> to learn how to use it.
-        /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
-        /// <param name="sampler">The sampler.</param>
-        /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void DrawTexture(Texture texture, SamplerState sampler, bool applyEffectStates = false)
-        {
-            DrawTexture(texture, sampler, Color4.White, applyEffectStates);
-        }
-
-        /// <summary>
-        /// Draws a fullscreen texture using a <see cref="SamplerStateFactory.LinearClamp"/> sampler
-        /// and the texture color multiplied by a custom color. See <see cref="Draw+a+texture"/> to learn how to use it.
-        /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void DrawTexture(Texture texture, Color4 color, bool applyEffectStates = false)
-        {
-            DrawTexture(texture, null, color, applyEffectStates);
-        }
-
-        /// <summary>
-        /// Draws a fullscreen texture using the specified sampler
-        /// and the texture color multiplied by a custom color. See <see cref="Draw+a+texture"/> to learn how to use it.
-        /// </summary>
-        /// <param name="texture">The texture. Expecting an instance of <see cref="Texture"/>.</param>
-        /// <param name="sampler">The sampler.</param>
-        /// <param name="color">The color.</param>
-        /// <param name="applyEffectStates">The flag to apply effect states.</param>
-        public void DrawTexture(Texture texture, SamplerState sampler, Color4 color, bool applyEffectStates = false)
-        {
-            primitiveQuad.Draw(texture, sampler, color, applyEffectStates);
-        }
-
         /// <summary>
         ///     Presents the current Presenter.
         /// </summary>
@@ -450,167 +304,6 @@ namespace SiliconStudio.Xenko.Graphics
                 Presenter.Present();
             }
         }
-
-        /// <summary>
-        ///     Sets a new depthStencilBuffer to this GraphicsDevice. If there is any RenderTarget already bound, it will be unbinded. See <see cref="Textures+and+render+targets"/> to learn how to use it.
-        /// </summary>
-        /// <param name="depthStencilBuffer">The depth stencil.</param>
-        public void SetDepthTarget(Texture depthStencilBuffer)
-        {
-            SetDepthAndRenderTarget(depthStencilBuffer, null);
-        }
-
-        /// <summary>
-        /// Binds a single render target to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
-        /// </summary>
-        /// <param name="renderTargetView">A view of the render target to bind.</param>
-        public void SetRenderTarget(Texture renderTargetView)
-        {
-            SetDepthAndRenderTarget(null, renderTargetView);
-        }
-
-        /// <summary>
-        ///     <p>Bind one or more render targets atomically and the depth-stencil buffer to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.</p>
-        /// </summary>
-        /// <param name="renderTargetViews">A set of render target views to bind.</param>
-        public void SetRenderTargets(params Texture[] renderTargetViews)
-        {
-            SetDepthAndRenderTargets(null, renderTargetViews);
-        }
-
-        /// <summary>
-        /// Unbinds all depth-stencil buffer and render targets from the output-merger stage.
-        /// </summary>
-        public void ResetTargets()
-        {
-            ResetTargetsImpl();
-
-            currentState.DepthStencilBuffer = null;
-            for (int i = 0; i < currentState.RenderTargets.Length; i++)
-                currentState.RenderTargets[i] = null;
-        }
-
-        /// <summary>
-        /// Sets the viewport for the first render target.
-        /// </summary>
-        /// <value>The viewport.</value>
-        public void SetViewport(Viewport value)
-        {
-            SetViewport(0, value);
-        }
-
-        /// <summary>
-        /// Sets the viewport for the specified render target.
-        /// </summary>
-        /// <value>The viewport.</value>
-        public void SetViewport(int index, Viewport value)
-        {
-            currentState.Viewports[index] = value;
-            needViewportUpdate = true;
-        }
-
-        /// <summary>
-        /// Pushes the state of <see cref="DepthStencilState"/>, <see cref="RasterizerState"/>, <see cref="BlendState"/> and the Render targets bound to this instance. To restore the state, use <see cref="PopState"/>.
-        /// </summary>
-        public void PushState()
-        {
-            var previousState = currentState;
-
-            // Check if we need to allocate a new StateAndTargets
-            if (currentStateIndex == (allocatedStates.Count - 1))
-            {
-                currentState = new StateAndTargets();
-                allocatedStates.Add(currentState);
-            }
-            currentStateIndex++;
-            currentState = allocatedStates[currentStateIndex];
-            currentState.Initialize(this, previousState);
-        }
-
-        /// <summary>
-        /// Restore the state and targets.
-        /// </summary>
-        public void PopState()
-        {
-            if (currentStateIndex <= 0)
-            {
-                throw new InvalidOperationException("Cannot pop more than push");
-            }
-            currentStateIndex--;
-
-            currentState = allocatedStates[currentStateIndex];
-            currentState.Restore(this);
-        }
-
-        /// <summary>
-        /// Binds a depth-stencil buffer and a single render target to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
-        /// </summary>
-        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
-        /// <param name="renderTargetView">A view of the render target to bind.</param>
-        public void SetDepthAndRenderTarget(Texture depthStencilView, Texture renderTargetView)
-        {
-            currentState.DepthStencilBuffer = depthStencilView;
-            currentState.RenderTargets[0] = renderTargetView;
-
-            // Clear the other render targets bound
-            for (int i = 1; i < currentState.RenderTargets.Length; i++)
-            {
-                currentState.RenderTargets[i] = null;
-            }
-
-            CommonSetDepthAndRenderTargets(currentState.DepthStencilBuffer, currentState.RenderTargets);
-        }
-
-        /// <summary>
-        /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
-        /// </summary>
-        /// <param name="depthStencilView">A view of the depth-stencil buffer to bind.</param>
-        /// <param name="renderTargetViews">A set of render target views to bind.</param>
-        /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        public void SetDepthAndRenderTargets(Texture depthStencilView, params Texture[] renderTargetViews)
-        {
-            currentState.DepthStencilBuffer = depthStencilView;
-
-            if (renderTargetViews != null)
-            {
-                for (int i = 0; i < currentState.RenderTargets.Length; i++)
-                {
-                    currentState.RenderTargets[i] = i < renderTargetViews.Length ? renderTargetViews[i] : null;
-                }
-            }
-            else
-            {
-                for (int i = 0; i < currentState.RenderTargets.Length; i++)
-                {
-                    currentState.RenderTargets[i] = null;
-                }
-            }
-
-            CommonSetDepthAndRenderTargets(currentState.DepthStencilBuffer, currentState.RenderTargets);
-        }
-
-        private void CommonSetDepthAndRenderTargets(Texture depthStencilView, Texture[] renderTargetViews)
-        {
-            if (depthStencilView != null)
-            {
-                SetViewport(new Viewport(0, 0, depthStencilView.ViewWidth, depthStencilView.ViewHeight));
-            }
-            else
-            {
-                // Setup the viewport from the rendertarget view
-                foreach (var rtv in renderTargetViews)
-                {
-                    if (rtv != null)
-                    {
-                        SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
-                        break;
-                    }
-                }
-            }
-
-            SetDepthAndRenderTargetsImpl(depthStencilView, renderTargetViews);
-        }
-
 
         /// <summary>
         ///     Gets a shared data for this device context with a delegate to create the shared data if it is not present.
@@ -641,57 +334,6 @@ namespace SiliconStudio.Xenko.Graphics
                     dictionary.Add(key, localValue);
                 }
                 return (T)localValue;
-            }
-        }
-
-        /// <summary>
-        /// Holds blend, rasterizer and depth stencil, current viewports and render targets.
-        /// </summary>
-        private class StateAndTargets
-        {
-            public Viewport[] Viewports;
-
-            public Texture DepthStencilBuffer;
-
-            public Texture[] RenderTargets;
-
-            public void Initialize(GraphicsDevice device, StateAndTargets parentState)
-            {
-                int renderTargetCount = MaxRenderTargetCount;
-                switch (device.Features.Profile)
-                {
-                    case GraphicsProfile.Level_9_1:
-                    case GraphicsProfile.Level_9_2:
-                    case GraphicsProfile.Level_9_3:
-                        renderTargetCount = 1;
-                        break;
-                }
-
-                if (RenderTargets == null || RenderTargets.Length != renderTargetCount)
-                {
-                    RenderTargets = new Texture[renderTargetCount];
-                    Viewports = new Viewport[renderTargetCount];
-                }
-
-                if (parentState != null)
-                {
-                    DepthStencilBuffer = parentState.DepthStencilBuffer;
-
-                    for (int i = 0; i < renderTargetCount; i++)
-                    {
-                        Viewports[i] = parentState.Viewports[i];
-                        RenderTargets[i] = parentState.RenderTargets[i];
-                    }
-                }
-
-                device.needViewportUpdate = true;
-            }
-
-            public void Restore(GraphicsDevice graphicsDevice)
-            {
-                graphicsDevice.SetDepthAndRenderTargets(DepthStencilBuffer, RenderTargets);
-
-                graphicsDevice.needViewportUpdate = true;
             }
         }
     }

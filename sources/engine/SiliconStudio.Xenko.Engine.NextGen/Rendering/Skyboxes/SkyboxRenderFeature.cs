@@ -152,9 +152,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.Prepare(context);
         }
 
-        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
-            var graphicsDevice = RenderSystem.GraphicsDevice;
+            var commandList = context.CommandList;
 
             Effect currentEffect = null;
             var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
@@ -186,21 +186,21 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     // Bind VAO
                     pipelineState.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
                     pipelineState.PrimitiveType = PrimitiveQuad.PrimitiveType;
-                    pipelineState.DepthStencilState = graphicsDevice.DepthStencilStates.None;
+                    pipelineState.DepthStencilState = context.GraphicsDevice.DepthStencilStates.None;
 
                     // TODO GRAPHICS REFACTOR
                     // pipelineState.RenderTargetFormats = 
 
                     ProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderNode.RenderObject, pipelineState);
 
-                    MutablePipeline.Update(graphicsDevice);
+                    MutablePipeline.Update(context.GraphicsDevice);
                     renderEffect.PipelineState = MutablePipeline.CurrentState;
                 }
 
-                graphicsDevice.SetPipelineState(renderEffect.PipelineState);
+                commandList.SetPipelineState(renderEffect.PipelineState);
 
                 var resourceGroupOffset = ComputeResourceGroupOffset(renderNodeReference);
-                renderEffect.Reflection.BufferUploader.Apply(graphicsDevice, ResourceGroupPool, resourceGroupOffset);
+                renderEffect.Reflection.BufferUploader.Apply(context.GraphicsDevice, ResourceGroupPool, resourceGroupOffset);
 
                 // Bind descriptor sets
                 for (int i = 0; i < descriptorSets.Length; ++i)
@@ -210,9 +210,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                         descriptorSets[i] = resourceGroup.DescriptorSet;
                 }
 
-                graphicsDevice.SetDescriptorSets(0, descriptorSets);
+                commandList.SetDescriptorSets(0, descriptorSets);
 
-                graphicsDevice.DrawQuad();
+                commandList.DrawQuad();
             }
         }
     }
