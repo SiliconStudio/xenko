@@ -16,6 +16,9 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public abstract class RootEffectRenderFeature : RootRenderFeature
     {
+        // Helper class to build pipeline state
+        protected MutablePipelineState MutablePipeline = new MutablePipelineState();
+
         private readonly List<string> effectDescriptorSetSlots = new List<string>();
         private readonly Dictionary<string, int> effectPermutationSlots = new Dictionary<string, int>();
         private readonly Dictionary<ObjectId, FrameResourceGroupLayout> frameResourceLayouts = new Dictionary<ObjectId, FrameResourceGroupLayout>();
@@ -294,7 +297,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(NextGenRenderContext context)
+        public override void Prepare(RenderContext context)
         {
             EffectObjectNodes.Clear();
 

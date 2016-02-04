@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.PrepareEffectPermutations();
         }
 
-        public override void Prepare(NextGenRenderContext context)
+        public override void Prepare(RenderContext context)
         {
             base.Prepare(context);
 
@@ -152,11 +152,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.Prepare(context);
         }
 
-        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var graphicsDevice = RenderSystem.GraphicsDevice;
-
-            var pipelineState = context.Pipeline.State;
 
             Effect currentEffect = null;
             var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
@@ -173,27 +171,30 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 if (currentEffect != renderEffect.Effect)
                 {
                     currentEffect = renderEffect.Effect;
-                    pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
-                    pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
                 }
 
                 // First time, let's compile pipeline state
                 // TODO GRAPHICS REFACTOR invalidate if effect is destroyed, or some other cases
                 if (renderEffect.PipelineState == null)
                 {
+                    var pipelineState = MutablePipeline.State;
+
+                    // Effect
+                    pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
+                    pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
+
                     // Bind VAO
                     pipelineState.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
                     pipelineState.PrimitiveType = PrimitiveQuad.PrimitiveType;
-                    var oldDepthStencilState = pipelineState.DepthStencilState;
                     pipelineState.DepthStencilState = graphicsDevice.DepthStencilStates.None;
 
                     // TODO GRAPHICS REFACTOR
                     // pipelineState.RenderTargetFormats = 
 
-                    context.Pipeline.Update(graphicsDevice);
-                    renderEffect.PipelineState = context.Pipeline.CurrentState;
+                    ProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderNode.RenderObject, pipelineState);
 
-                    pipelineState.DepthStencilState = oldDepthStencilState;
+                    MutablePipeline.Update(graphicsDevice);
+                    renderEffect.PipelineState = MutablePipeline.CurrentState;
                 }
 
                 graphicsDevice.SetPipelineState(renderEffect.PipelineState);

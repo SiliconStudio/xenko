@@ -31,7 +31,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="services">The services.</param>
         /// <param name="allocator">The allocator.</param>
         /// <exception cref="System.ArgumentNullException">services</exception>
-        private RenderContext(IServiceRegistry services, GraphicsResourceAllocator allocator = null)
+        internal RenderContext(IServiceRegistry services, GraphicsResourceAllocator allocator = null)
         {
             if (services == null) throw new ArgumentNullException("services");
             Services = services;

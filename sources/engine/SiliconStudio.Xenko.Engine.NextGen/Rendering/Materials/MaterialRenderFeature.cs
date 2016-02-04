@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(NextGenRenderContext context)
+        public override void Prepare(RenderContext context)
         {
             foreach (var materialInfo in activeMaterialInfos)
             {

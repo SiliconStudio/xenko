@@ -9,12 +9,9 @@ namespace SiliconStudio.Xenko.Rendering
     {
         public readonly GraphicsDevice GraphicsDevice;
 
-        public readonly MutablePipelineState Pipeline;
-
         public NextGenRenderContext(GraphicsDevice graphicsDevice)
         {
             GraphicsDevice = graphicsDevice;
-            Pipeline = new MutablePipelineState();
         }
     }
 }
