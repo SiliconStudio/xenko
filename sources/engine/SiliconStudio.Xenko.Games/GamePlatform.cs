@@ -39,6 +39,8 @@ namespace SiliconStudio.Xenko.Games
 
         protected GameWindow gameWindow;
 
+        public string FullName { get; protected set; } = string.Empty;
+
         protected GamePlatform(GameBase game)
         {
             this.game = game;

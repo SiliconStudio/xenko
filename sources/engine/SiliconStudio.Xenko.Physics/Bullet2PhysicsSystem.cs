@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Physics
 
         public override void Initialize()
         {
-            physicsConfiguration = Game.Settings.Configurations.Get<PhysicsConfiguration>();
+            physicsConfiguration = Game?.Settings != null ? Game.Settings.Configurations.Get<PhysicsConfiguration>() : new PhysicsConfiguration();
         }
 
         protected override void Destroy()

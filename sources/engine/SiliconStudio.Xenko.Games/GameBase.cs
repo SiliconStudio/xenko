@@ -322,6 +322,11 @@ namespace SiliconStudio.Xenko.Games
             }
         }
 
+        /// <summary>
+        /// Gets the full name of the device this game is running if available
+        /// </summary>
+        public string FullPlatformName => gamePlatform.FullName;
+
         public GameState State { get; set; }
         
         #endregion
