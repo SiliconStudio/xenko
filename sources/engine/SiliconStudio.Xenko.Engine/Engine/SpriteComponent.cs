@@ -18,7 +18,8 @@ namespace SiliconStudio.Xenko.Engine
     /// </summary>
     [DataContract("SpriteComponent")]
     [Display("Sprite", Expand = ExpandRule.Once)]
-    [DefaultEntityComponentRenderer(typeof(SpriteComponentRenderer))]
+    // TODO GRAPHICS REFACTOR
+    //[DefaultEntityComponentRenderer(typeof(SpriteComponentRenderer))]
     [DefaultEntityComponentProcessor(typeof(SpriteProcessor))]
     [ComponentOrder(10000)]
     public sealed class SpriteComponent : ActivableEntityComponent

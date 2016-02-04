@@ -19,7 +19,6 @@ namespace SiliconStudio.Xenko.Rendering
         protected SceneRendererBase()
         {
             Output = new CurrentRenderFrameProvider();
-            Parameters = new ParameterCollection();
             ResetGraphicsStates = true;
         }
 
@@ -40,13 +39,6 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMember(110)]
         [DefaultValue(true)]
         public bool ResetGraphicsStates { get; set; }
-
-        /// <summary>
-        /// Gets the parameters used to in place of the default <see cref="RenderContext.Parameters"/>.
-        /// </summary>
-        /// <value>The parameters.</value>
-        [DataMemberIgnore]
-        public ParameterCollection Parameters { get; private set; }
 
         /// <summary>
         /// Gets the current output <see cref="RenderFrame"/> output.
@@ -91,7 +83,8 @@ namespace SiliconStudio.Xenko.Rendering
             {
                 try
                 {
-                    context.PushParameters(Parameters);
+                    // TODO GRAPHICS REFACTOR
+                    //context.PushParameters(Parameters);
 
                     ActivateOutput(context);
 
@@ -99,7 +92,8 @@ namespace SiliconStudio.Xenko.Rendering
                 }
                 finally
                 {
-                    context.PopParameters();
+                    // TODO GRAPHICS REFACTOR
+                    //context.PopParameters();
 
                     if (ResetGraphicsStates)
                     {

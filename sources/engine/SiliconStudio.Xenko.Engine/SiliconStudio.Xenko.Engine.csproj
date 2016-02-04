@@ -2221,7 +2221,6 @@
     <Compile Include="Rendering\Mesh.cs" />
     <Compile Include="Rendering\Model.cs" />
     <Compile Include="Rendering\EffectSystem.cs" />
-    <Compile Include="Rendering\SpriteComponentRenderer.cs" />
     <Compile Include="Rendering\TransformTRS.cs" />
     <Compile Include="Rendering\UIComponentRenderer.cs" />
     <Compile Include="Animations\AnimationOperation.cs" />

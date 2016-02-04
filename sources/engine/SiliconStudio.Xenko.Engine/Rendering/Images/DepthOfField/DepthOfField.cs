@@ -359,7 +359,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Render target will contain "CoC"(16 bits) "Linear depth"(16bits).
             var cocLinearDepthTexture = GetScopedRenderTarget(originalColorBuffer.Description, 1f, PixelFormat.R16G16_Float);
 
-            var farPlane = context.Parameters.Get(CameraKeys.FarClipPlane);
+            var cameraState = context.GetCurrentCamera();
+            if (cameraState == null) throw new InvalidOperationException("No valid camera");
+
+            var farPlane = cameraState.FarClipPlane;
 
             var depthAreas = DOFAreas;
             if (AutoFocus)
