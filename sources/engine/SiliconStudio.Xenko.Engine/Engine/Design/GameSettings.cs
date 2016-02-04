@@ -4,6 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Data;
@@ -15,7 +16,7 @@ namespace SiliconStudio.Xenko.Engine.Design
     public class PlatformConfigurations
     {
         [DataMemberIgnore]
-        internal GraphicsDevice GraphicsDevice;
+        internal Game CurrentGame;
 
         [DataMember]
         internal List<ConfigurationOverride> Configurations = new List<ConfigurationOverride>();
@@ -61,11 +62,21 @@ namespace SiliconStudio.Xenko.Engine.Design
                 config = platformConfig;
             }
 
-            //find per specific renderer settings
-            platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && x.SpecificFilter == string.Empty).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
-            if (platformConfig != null)
+            if (CurrentGame?.GraphicsDevice != null)
             {
-                config = platformConfig;
+                //find per specific renderer settings
+                platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && new Regex(x.SpecificFilter, RegexOptions.IgnoreCase).IsMatch(CurrentGame.GraphicsDevice.RendererName)).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
+                if (platformConfig != null)
+                {
+                    config = platformConfig;
+                }
+
+                //find per specific device settings
+                platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && new Regex(x.SpecificFilter, RegexOptions.IgnoreCase).IsMatch(CurrentGame.FullPlatformName)).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
+                if (platformConfig != null)
+                {
+                    config = platformConfig;
+                }
             }
 
             if (config == null)

@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Games
 {
     internal class GamePlatformAndroid : GamePlatform, IGraphicsDeviceFactory
     {
-        [DllImport("/system/lib/libc.so")]
+        [DllImport("libc.so")]
         private static extern int __system_property_get(string name, IntPtr value);
 
         const int MaxPropertyValueLength = 92;
