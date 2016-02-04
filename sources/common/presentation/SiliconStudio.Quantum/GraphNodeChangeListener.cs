@@ -26,12 +26,22 @@ namespace SiliconStudio.Quantum
         }
 
         /// <summary>
+        /// Raised before one of the node referenced by the related root node changes and before the <see cref="Changing"/> event is raised.
+        /// </summary>
+        public event EventHandler<ContentChangeEventArgs> PrepareChange;
+
+        /// <summary>
+        /// Raised after one of the node referenced by the related root node has changed and after the <see cref="Changed"/> event is raised.
+        /// </summary>
+        public event EventHandler<ContentChangeEventArgs> FinalizeChange;
+
+        /// <summary>
         /// Raised before one of the node referenced by the related root node changes.
         /// </summary>
         public event EventHandler<ContentChangeEventArgs> Changing;
 
         /// <summary>
-        /// Raised after one of the node referenced by the related root node changes.
+        /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
         public event EventHandler<ContentChangeEventArgs> Changed;
 
@@ -46,12 +56,16 @@ namespace SiliconStudio.Quantum
 
         protected virtual void RegisterNode(IGraphNode node)
         {
+            node.Content.PrepareChange += ContentPrepareChange;
+            node.Content.FinalizeChange += ContentFinalizeChange;
             node.Content.Changing += ContentChanging;
             node.Content.Changed += ContentChanged;
         }
 
         protected virtual void UnregisterNode(IGraphNode node)
         {
+            node.Content.PrepareChange += ContentPrepareChange;
+            node.Content.FinalizeChange += ContentFinalizeChange;
             node.Content.Changing -= ContentChanging;
             node.Content.Changed -= ContentChanged;
         }
@@ -64,7 +78,7 @@ namespace SiliconStudio.Quantum
             }
         }
 
-        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        private void ContentPrepareChange(object sender, ContentChangeEventArgs e)
         {
             var node = e.Content.OwnerNode as IGraphNode;
             if (node != null)
@@ -75,10 +89,10 @@ namespace SiliconStudio.Quantum
                 }
             }
 
-            Changing?.Invoke(sender, e);
+            PrepareChange?.Invoke(sender, e);
         }
 
-        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        private void ContentFinalizeChange(object sender, ContentChangeEventArgs e)
         {
             var node = e.Content.OwnerNode as IGraphNode;
             if (node != null)
@@ -89,6 +103,16 @@ namespace SiliconStudio.Quantum
                 }
             }
 
+            FinalizeChange?.Invoke(sender, e);
+        }
+
+        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        {
+            Changing?.Invoke(sender, e);
+        }
+
+        private void ContentChanged(object sender, ContentChangeEventArgs e)
+        {
             Changed?.Invoke(sender, e);
         }
     }
