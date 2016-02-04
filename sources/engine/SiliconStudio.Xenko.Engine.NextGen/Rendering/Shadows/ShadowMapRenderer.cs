@@ -87,6 +87,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
                 throw new InvalidOperationException("ShadowMapRenderer expects to be used inside the context of a SceneInstance.Draw()");
             }
 
+            // TODO GRAPHICS REFACTOR use current view/iterate all views instead of getting camera
+
             // Gets the current camera
             Camera = context.GetCurrentCamera();
             if (Camera == null)
@@ -121,6 +123,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             foreach (var renderView in shadowRenderViews)
                 RenderSystem.Views.Remove(renderView);
             shadowRenderViews.Clear();
+
+            // TODO GRAPHICS REFACTOR shadows are view dependent, but shadow map textures are global. how to handle multiple shadowed views?
 
             // Collect shadow render views
             foreach (var shadowMapTexture in LightComponentsWithShadows)
