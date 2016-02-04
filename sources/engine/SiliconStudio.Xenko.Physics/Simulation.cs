@@ -5,12 +5,9 @@ using SiliconStudio.Core.Mathematics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Engine;
-using SiliconStudio.Xenko.Engine.Design;
-using SiliconStudio.Xenko.Games;
 
 namespace SiliconStudio.Xenko.Physics
 {

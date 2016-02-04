@@ -5,14 +5,32 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Games
 {
     internal class GamePlatformAndroid : GamePlatform, IGraphicsDeviceFactory
     {
+        [DllImport("/system/lib/libc.so")]
+        private static extern int __system_property_get(string name, IntPtr value);
+
+        const int MaxPropertyValueLength = 92;
+
+        private void PopulateFullName()
+        {
+            var str = Marshal.AllocHGlobal(MaxPropertyValueLength);
+            __system_property_get("ro.product.manufacturer", str);
+            var manufacturer = Marshal.PtrToStringAnsi(str);
+            __system_property_get("ro.product.model", str);
+            var model = Marshal.PtrToStringAnsi(str);
+            Marshal.FreeHGlobal(str);
+            FullName = $"{manufacturer} - {model}";
+        }
+
         public GamePlatformAndroid(GameBase game) : base(game)
         {
+            PopulateFullName();
         }
 
         public override string DefaultAppDirectory
