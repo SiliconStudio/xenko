@@ -66,10 +66,11 @@ namespace SiliconStudio.Xenko.Engine.NextGen
                     {
                         var position = new Vector3((i - cubeWidth / 2) * 1.4f, (j - cubeWidth / 2) * 1.4f, (k - cubeWidth / 2) * 1.4f);
                         var material = (k/4)%2 == 0 ? material1 : material2;
+                        var isShadowReceiver = (k / 2) % 2 == 0;
 
                         var entity = new Entity
                         {
-                            new ModelComponent { Model = model, Materials = { material } },
+                            new ModelComponent { Model = model, Materials = { material }, IsShadowReceiver = isShadowReceiver },
                         };
                         entity.Transform.Position = position;
                         Scene.Entities.Add(entity);
@@ -119,6 +120,10 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
             var directionalLight = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White), Shadow = { Enabled = true } }, Intensity = 1 }, };
             Scene.Entities.Add(directionalLight);
+
+            var directionalLight2 = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White), Shadow = { Enabled = true } }, Intensity = 1 }, };
+            directionalLight2.Transform.Rotation = Quaternion.RotationY(MathUtil.PiOverTwo);
+            Scene.Entities.Add(directionalLight2);
 
             SceneSystem.SceneInstance = new SceneInstance(Services, Scene);
 
