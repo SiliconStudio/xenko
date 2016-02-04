@@ -23,26 +23,16 @@ namespace SiliconStudio.Xenko.Graphics
         public static readonly PrimitiveType PrimitiveType = PrimitiveType.TriangleList;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SpriteEffect"/>.
-        /// </summary>
-        /// <param name="graphicsDevice">The graphics device.</param>
-        public PrimitiveQuad(GraphicsDevice graphicsDevice)
-            : this(graphicsDevice, new Effect(graphicsDevice, SpriteEffect.Bytecode))
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a particular effect.
+        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class.
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
         /// <param name="effect">The effect.</param>
-        public PrimitiveQuad(GraphicsDevice graphicsDevice, Effect effect)
+        public PrimitiveQuad(GraphicsDevice graphicsDevice)
         {
             GraphicsDevice = graphicsDevice;
-            simpleEffect = effect;
             parameters = new ParameterCollection();
             parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
-            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
+            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice));
         }
 
         /// <summary>
@@ -123,7 +113,7 @@ namespace SiliconStudio.Xenko.Graphics
                 new VertexPositionNormalTexture(new Vector3(-1,-3, 0), new Vector3(0, 0, 1), new Vector2(0, 2)),
             };
 
-            public SharedData(GraphicsDevice device, EffectInputSignature defaultSignature)
+            public SharedData(GraphicsDevice device)
             {
                 var vertexBuffer = Buffer.Vertex.New(device, QuadsVertices).DisposeBy(this);
                 
