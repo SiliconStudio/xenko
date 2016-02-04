@@ -55,12 +55,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private readonly Dictionary<ObjectId, LightShaderPermutationEntry> shaderEntries;
         private readonly Dictionary<ObjectId, LightParametersPermutationEntry> lightParameterEntries;
 
-        private readonly List<LightEntry> directLightsPerModel = new List<LightEntry>();
+        private readonly List<LightEntry> directLightsPerModel;
         private FastListStruct<LightForwardShaderFullEntryKey> directLightShaderGroupEntryKeys;
 
-        private readonly List<LightEntry> environmentLightsPerModel = new List<LightEntry>();
+        private readonly List<LightEntry> environmentLightsPerModel;
         private FastListStruct<LightForwardShaderFullEntryKey> environmentLightShaderGroupEntryKeys;
-        private FastListStruct<LightForwardShaderFullEntryKey> directLightShaderGroupEntryKeysNoShadows;
 
         private ObjectPropertyKey<LightParametersPermutationEntry> renderModelObjectInfoKey;
 
@@ -100,7 +99,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         {
             directLightShaderGroupEntryKeys = new FastListStruct<LightForwardShaderFullEntryKey>(32);
             environmentLightShaderGroupEntryKeys = new FastListStruct<LightForwardShaderFullEntryKey>(32);
-            directLightShaderGroupEntryKeysNoShadows = new FastListStruct<LightForwardShaderFullEntryKey>(32);
 
             //directLightGroup = new LightGroupRenderer("directLightGroups", LightingKeys.DirectLightGroups);
             //environmentLightGroup = new LightGroupRenderer("environmentLights", LightingKeys.EnvironmentLights);
@@ -112,6 +110,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             shaderEntries = new Dictionary<ObjectId, LightShaderPermutationEntry>(1024);
 
             directLightsPerModel = new List<LightEntry>(16);
+            environmentLightsPerModel = new List<LightEntry>();
             activeLightGroups = new Dictionary<Type, LightComponentCollectionGroup>(16);
             activeLightGroupsWithShadows = new Dictionary<Type, LightComponentCollectionGroup>(16);
             activeRenderers = new List<ActiveLightGroupRenderer>(16);
@@ -217,7 +216,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         continue;
 
                     LightParametersPermutationEntry renderObjectInfo;
-                    PrepareRenderModelForRendering(renderMesh.RenderModel, out renderObjectInfo, renderEffect, effectSlotCount);
+                    PrepareRenderModelForRendering(renderMesh, out renderObjectInfo, renderEffect, effectSlotCount);
                     renderObjectInfoData[objectNodeReference] = renderObjectInfo;
 
                     if (renderObjectInfo == null)
@@ -411,19 +410,18 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        private void PrepareRenderModelForRendering(RenderModel model, out LightParametersPermutationEntry newShaderEntryParameters, RenderEffect renderEffect, int effectSlot)
+        private void PrepareRenderModelForRendering(RenderMesh renderMesh, out LightParametersPermutationEntry newShaderEntryParameters, RenderEffect renderEffect, int effectSlot)
         {
             var shaderKeyIdBuilder = new ObjectIdSimpleBuilder();
             var parametersKeyIdBuilder = new ObjectIdSimpleBuilder();
-            //var idBuilder = new ObjectIdBuilder();
 
-            var modelComponent = model.ModelComponent;
+            var renderModel = renderMesh.RenderModel;
+            var modelComponent = renderModel.ModelComponent;
             var group = modelComponent.Entity.Group;
             var modelBoundingBox = modelComponent.BoundingBox;
 
             directLightsPerModel.Clear();
             directLightShaderGroupEntryKeys.Clear();
-            directLightShaderGroupEntryKeysNoShadows.Clear();
 
             environmentLightsPerModel.Clear();
             environmentLightShaderGroupEntryKeys.Clear();
@@ -449,7 +447,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (lightRenderer.IsEnvironmentLight)
                 {
                     // The loop is simpler for environment lights (single group per light, no shadow maps, no bounding box...etc)
-
                     for (int i = 0; i < lightMaxCount; i++)
                     {
                         var light = lightCollection[i];
@@ -460,7 +457,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         }
                         parametersKeyIdBuilder.Write(light.Id);
 
-                        environmentLightsPerModel.Add(new LightEntry(environmentLightShaderGroupEntryKeys.Count, 0, light, null));
+                        environmentLightsPerModel.Add(new LightEntry(environmentLightShaderGroupEntryKeys.Count, light, null));
                         environmentLightShaderGroupEntryKeys.Add(new LightForwardShaderFullEntryKey(currentShaderKey, lightRenderer, null));
                     }
                 }
@@ -516,13 +513,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         }
 
                         parametersKeyIdBuilder.Write(light.Id);
-                        directLightsPerModel.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, directLightShaderGroupEntryKeysNoShadows.Count, light, shadowTexture));
+                        directLightsPerModel.Add(new LightEntry(directLightShaderGroupEntryKeys.Count, light, shadowTexture));
                     }
 
                     if (directLightsPerModel.Count > 0)
                     {
-                        directLightShaderGroupEntryKeysNoShadows.Add(new LightForwardShaderFullEntryKey(new LightForwardShaderEntryKey(lightRendererId, 0, (byte)directLightsPerModel.Count), lightRenderer, null));
-
                         unsafe
                         {
                             shaderKeyIdBuilder.Write(*(uint*)&currentShaderKey);
@@ -532,7 +527,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
             }
 
-            shaderKeyIdBuilder.Write(effectSlot);
+            // Create different parameter collections depending on shadows
+            // TODO GRAPHICS REFACTOR can we use the same parameter collection for shadowed/non-shadowed?
+            shaderKeyIdBuilder.Write((uint)effectSlot);
+            parametersKeyIdBuilder.Write(renderMesh.Material.IsShadowReceiver ? 1U : 0U);
 
             // Find or create an existing shaders/parameters permutation
 
@@ -561,10 +559,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private LightShaderPermutationEntry CreateShaderPermutationEntry(RenderEffect renderEffect)
         {
-            var shaderEntry = new LightShaderPermutationEntry
-            {
-                RenderEffect = renderEffect
-            };
+            var shaderEntry = new LightShaderPermutationEntry(renderEffect);
 
             // Direct Lights (with or without shadows)
             for (int i = 0; i < directLightShaderGroupEntryKeys.Count; i++)
@@ -585,18 +580,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 shaderEntry.DirectLightShaders.Add(lightShaderGroup.ShaderSource);
             }
 
-            // All Direct Lights
-            for (int i = 0; i < directLightShaderGroupEntryKeysNoShadows.Count; i++)
-            {
-                var shaderGroupEntry = directLightShaderGroupEntryKeysNoShadows.Items[i];
-
-                // TODO: Cache LightShaderGroup
-                var lightShaderGroup = shaderGroupEntry.LightGroupRenderer.CreateLightShaderGroup(DirectLightGroupsCompositionNames[i], shaderGroupEntry.Key.LightCount, null);
-
-                shaderEntry.DirectLightGroupsNoShadows.Add(lightShaderGroup);
-                shaderEntry.DirectLightShadersNoShadows.Add(lightShaderGroup.ShaderSource);
-            }
-
             // All Environment lights
             for (int i = 0; i < environmentLightShaderGroupEntryKeys.Count; i++)
             {
@@ -614,21 +597,15 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private LightParametersPermutationEntry CreateParametersPermutationEntry(LightShaderPermutationEntry lightShaderPermutationEntry)
         {
-            var parameterCollectionEntry = lightShaderPermutationEntry.parameterCollectionEntryPool.Add();
+            var parameterCollectionEntry = lightShaderPermutationEntry.ParameterCollectionEntryPool.Add();
             parameterCollectionEntry.Clear();
 
             var directLightGroups = parameterCollectionEntry.DirectLightGroupDatas;
-            var directLightGroupsNoShadows = parameterCollectionEntry.DirectLightGroupsNoShadowDatas;
             var environmentLights = parameterCollectionEntry.EnvironmentLightDatas;
 
             foreach (var directLightGroup in lightShaderPermutationEntry.DirectLightGroups)
             {
                 directLightGroups.Add(directLightGroup.CreateGroupData());
-            }
-
-            foreach (var directLightGroupNoShadow in lightShaderPermutationEntry.DirectLightGroupsNoShadows)
-            {
-                directLightGroupsNoShadows.Add(directLightGroupNoShadow.CreateGroupData());
             }
 
             foreach (var environmentLightGroup in lightShaderPermutationEntry.EnvironmentLights)
@@ -637,12 +614,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
 
             var parameters = parameterCollectionEntry.Parameters;
-            var parametersNoShadows = parameterCollectionEntry.ParametersNoShadows;
 
             foreach (var lightEntry in directLightsPerModel)
             {
                 directLightGroups[lightEntry.GroupIndex].AddLight(lightEntry.Light, lightEntry.Shadow);
-                directLightGroupsNoShadows[lightEntry.GroupIndexNoShadows].AddLight(lightEntry.Light, null);
             }
 
             foreach (var lightEntry in environmentLightsPerModel)
@@ -655,15 +630,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightGroup.ApplyParameters(parameters);
             }
 
-            foreach (var lightGroup in directLightGroupsNoShadows)
-            {
-                lightGroup.ApplyParameters(parametersNoShadows);
-            }
-
             foreach (var lightGroup in environmentLights)
             {
                 lightGroup.ApplyParameters(parameters);
-                lightGroup.ApplyParameters(parametersNoShadows);
             }
 
             return parameterCollectionEntry;
@@ -705,17 +674,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private struct LightEntry
         {
-            public LightEntry(int currentLightGroupIndex, int currentLightGroupIndexNoShadows, LightComponent light, LightShadowMapTexture shadow)
+            public LightEntry(int currentLightGroupIndex, LightComponent light, LightShadowMapTexture shadow)
             {
                 GroupIndex = currentLightGroupIndex;
-                GroupIndexNoShadows = currentLightGroupIndexNoShadows;
                 Light = light;
                 Shadow = shadow;
             }
 
             public readonly int GroupIndex;
-
-            public readonly int GroupIndexNoShadows;
 
             public readonly LightComponent Light;
 
@@ -760,32 +726,23 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private class LightShaderPermutationEntry
         {
-            public PoolListStruct<LightParametersPermutationEntry> parameterCollectionEntryPool;
-
-            public LightShaderPermutationEntry()
+            public LightShaderPermutationEntry(RenderEffect renderEffect)
             {
-                parameterCollectionEntryPool = new PoolListStruct<LightParametersPermutationEntry>(1, CreateParameterCollectionEntry);
+                RenderEffect = renderEffect;
+                ParameterCollectionEntryPool = new PoolListStruct<LightParametersPermutationEntry>(1, CreateParameterCollectionEntry);
 
                 DirectLightGroups = new List<LightShaderGroup>();
-                DirectLightGroupsNoShadows = new List<LightShaderGroup>();
-                DirectLightShadersNoShadows = new List<ShaderSource>();
                 EnvironmentLights = new List<LightShaderGroup>();
 
                 DirectLightShaders = new List<ShaderSource>();
-                DirectLightGroupsNoShadows = new List<LightShaderGroup>();
                 EnvironmentLightShaders = new List<ShaderSource>();
             }
 
             public void ResetGroupDatas()
             {
-                parameterCollectionEntryPool.Clear();
+                ParameterCollectionEntryPool.Clear();
 
                 foreach (var lightShaderGroup in DirectLightGroups)
-                {
-                    lightShaderGroup.Reset();
-                }
-
-                foreach (var lightShaderGroup in DirectLightGroupsNoShadows)
                 {
                     lightShaderGroup.Reset();
                 }
@@ -796,19 +753,17 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 }
             }
 
+            public PoolListStruct<LightParametersPermutationEntry> ParameterCollectionEntryPool;
+
             public readonly List<LightShaderGroup> DirectLightGroups;
 
             public readonly List<ShaderSource> DirectLightShaders;
-
-            public readonly List<LightShaderGroup> DirectLightGroupsNoShadows;
-
-            public readonly List<ShaderSource> DirectLightShadersNoShadows;
 
             public readonly List<LightShaderGroup> EnvironmentLights;
 
             public readonly List<ShaderSource> EnvironmentLightShaders;
 
-            public RenderEffect RenderEffect;
+            public readonly RenderEffect RenderEffect;
 
             public RenderModelLightInfo Info;
 
@@ -837,16 +792,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             {
                 ShaderPermutationEntry = shaderPermutationEntry;
                 Parameters = new NextGenParameterCollection();
-                ParametersNoShadows = new NextGenParameterCollection();
                 DirectLightGroupDatas = new List<LightShaderGroupData>();
-                DirectLightGroupsNoShadowDatas = new List<LightShaderGroupData>();
                 EnvironmentLightDatas = new List<LightShaderGroupData>();
             }
 
             public void Clear()
             {
                 DirectLightGroupDatas.Clear();
-                DirectLightGroupsNoShadowDatas.Clear();
                 EnvironmentLightDatas.Clear();
             }
 
@@ -854,55 +806,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             public readonly List<LightShaderGroupData> DirectLightGroupDatas;
 
-            public readonly List<LightShaderGroupData> DirectLightGroupsNoShadowDatas;
-
             public readonly List<LightShaderGroupData> EnvironmentLightDatas;
 
             public readonly NextGenParameterCollection Parameters;
-
-            public readonly NextGenParameterCollection ParametersNoShadows;
-        }
-
-        struct RenderModelLightsKey : IEquatable<RenderModelLightsKey>
-        {
-            public RenderModelLightsKey(LightShaderPermutationEntry lightShadersPermutation, LightParametersPermutationEntry parameters)
-            {
-                LightShadersPermutation = lightShadersPermutation;
-                Parameters = parameters;
-            }
-
-            public readonly LightShaderPermutationEntry LightShadersPermutation;
-
-            public readonly LightParametersPermutationEntry Parameters;
-
-            public bool Equals(RenderModelLightsKey other)
-            {
-                return LightShadersPermutation.Equals(other.LightShadersPermutation) && Parameters.Equals(other.Parameters);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (ReferenceEquals(null, obj)) return false;
-                return obj is RenderModelLightsKey && Equals((RenderModelLightsKey)obj);
-            }
-
-            public override int GetHashCode()
-            {
-                unchecked
-                {
-                    return (LightShadersPermutation.GetHashCode() * 397) ^ Parameters.GetHashCode();
-                }
-            }
-
-            public static bool operator ==(RenderModelLightsKey left, RenderModelLightsKey right)
-            {
-                return left.Equals(right);
-            }
-
-            public static bool operator !=(RenderModelLightsKey left, RenderModelLightsKey right)
-            {
-                return !left.Equals(right);
-            }
         }
 
         class RenderModelLightInfo
