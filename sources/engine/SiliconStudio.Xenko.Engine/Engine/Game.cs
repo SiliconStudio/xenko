@@ -223,6 +223,7 @@ namespace SiliconStudio.Xenko.Engine
                 if (Asset.Exists(GameSettings.AssetUrl))
                 {
                     Settings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
+                    Settings.Configurations.CurrentGame = this;
 
                     // Set ShaderProfile even if AutoLoadDefaultSettings is false (because that is what shaders in effect logs are compiled against, even if actual instantiated profile is different)
                     if (Settings.DefaultGraphicsProfileUsed > 0)
