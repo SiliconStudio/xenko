@@ -157,9 +157,9 @@ namespace SiliconStudio.Xenko.Rendering
             return isGeomertryInverted ? Context.GraphicsDevice.RasterizerStates.WireFrameCullFront : Context.GraphicsDevice.RasterizerStates.WireFrameCullBack;
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
-            var sceneCameraRenderer = context.Tags.Get(SceneCameraRenderer.Current);
+            var sceneCameraRenderer = context.RenderContext.Tags.Get(SceneCameraRenderer.Current);
 
             var graphicsDevice = context.GraphicsDevice;
             try

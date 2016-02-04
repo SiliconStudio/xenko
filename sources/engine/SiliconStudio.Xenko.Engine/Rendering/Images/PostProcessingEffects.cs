@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             colorTransformsGroup = ToLoadAndUnload(colorTransformsGroup);
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var input = GetInput(0);
             var output = GetOutput(0);
@@ -228,7 +228,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Gets the current camera state 
-            var camera = context.GetCameraFromSlot(Camera);
+            var camera = context.RenderContext.GetCameraFromSlot(Camera);
             if (camera != null)
             {
                 // Update the parameters for this post effect
@@ -241,7 +241,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 {
                     Scaler.SetInput(input);
                     Scaler.SetOutput(output);
-                    Scaler.Draw(context);
+                    ((RendererBase)Scaler).Draw(context);
                 }
                 return;
             }
@@ -263,7 +263,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 var inputDepthTexture = GetInput(1); // Depth
                 depthOfField.SetColorDepthInput(input, inputDepthTexture);
                 depthOfField.SetOutput(dofOutput);
-                depthOfField.Draw(context);
+                ((RendererBase)depthOfField).Draw(context);
                 currentInput = dofOutput;
             }
 
@@ -283,7 +283,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 luminanceEffect.SetInput(currentInput);
                 luminanceEffect.SetOutput(luminanceTexture);
-                luminanceEffect.Draw(context);
+                ((RendererBase)luminanceEffect).Draw(context);
 
                 // Set this parameter that will be used by the tone mapping
                 colorTransformsGroup.Parameters.SetValueSlow(LuminanceEffect.LuminanceResult, new LuminanceResult(luminanceEffect.AverageLuminance, luminanceTexture));
@@ -297,7 +297,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 brightFilter.SetInput(currentInput);
                 brightFilter.SetOutput(brightTexture);
-                brightFilter.Draw(context);
+                ((RendererBase)brightFilter).Draw(context);
             }
 
             // Bloom pass
@@ -305,7 +305,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             {
                 bloom.SetInput(brightTexture);
                 bloom.SetOutput(currentInput);
-                bloom.Draw(context);
+                ((RendererBase)bloom).Draw(context);
             }
 
             // Light streak pass
@@ -313,7 +313,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             {
                 lightStreak.SetInput(brightTexture);
                 lightStreak.SetOutput(currentInput);
-                lightStreak.Draw(context);
+                ((RendererBase)lightStreak).Draw(context);
             }
 
             // Lens flare pass
@@ -321,7 +321,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             {
                 lensFlare.SetInput(brightTexture);
                 lensFlare.SetOutput(currentInput);
-                lensFlare.Draw(context);
+                ((RendererBase)lensFlare).Draw(context);
             }
 
             var outputForLastEffectBeforeAntiAliasing = output;
@@ -354,7 +354,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var lastEffect = colorTransformsGroup.Enabled && !colorTransformsGroup.Faulted ? (ImageEffect)colorTransformsGroup: Scaler;
             lastEffect.SetInput(currentInput);
             lastEffect.SetOutput(outputForLastEffectBeforeAntiAliasing);
-            lastEffect.Draw(context);
+            ((RendererBase)lastEffect).Draw(context);
 
             if (ssaa != null && ssaa.Enabled && !ssaa.Faulted)
             {

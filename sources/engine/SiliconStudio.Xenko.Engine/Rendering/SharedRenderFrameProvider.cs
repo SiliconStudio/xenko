@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Rendering
         [DefaultValue(null)]
         public RenderFrame RenderFrame { get; set; }
 
-        public override RenderFrame GetRenderFrame(RenderContext context)
+        public override RenderFrame GetRenderFrame(RenderDrawContext context)
         {
             return RenderFrame;
         }

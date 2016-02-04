@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore]
         public ShaderSource MaterialFilter { get; set; }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             // TODO GRAPHICS REFACTOR should be part of PrepareEffectPermutations
             // TODO: Find a better extensibility point for PixelStageSurfaceFilter

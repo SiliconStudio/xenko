@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             HarmonicOrder = 3;
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var inputTexture = RadianceMap;
             if (inputTexture == null)
@@ -97,14 +97,14 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
                 firstPassEffect.Parameters.SetValueSlow(LambertianPrefilteringSHNoComputePass1Keys.CoefficientIndex, c);
                 firstPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHNoComputePass1Keys.RadianceMap, RadianceMap);
                 firstPassEffect.SetOutput(intermediateTextures[0]);
-                firstPassEffect.Draw(context);
+                ((RendererBase)firstPassEffect).Draw(context);
 
                 // Recursive summation
                 for (var i = 1; i < intermediateTextures.Count; i++)
                 {
                     secondPassEffect.SetInput(intermediateTextures[i - 1]);
                     secondPassEffect.SetOutput(intermediateTextures[i]);
-                    secondPassEffect.Draw(context);
+                    ((RendererBase)secondPassEffect).Draw(context);
                 }
 
                 GraphicsDevice.Copy(intermediateTextures[intermediateTextures.Count - 1], stagingTextures[c]);

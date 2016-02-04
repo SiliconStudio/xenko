@@ -342,7 +342,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         // Match: downscale level -> Texture
         private Dictionary<int, Texture> downscaledSources = new Dictionary<int, Texture>();
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var originalColorBuffer = GetSafeInput(0);
             var originalDepthBuffer = GetSafeInput(1);
@@ -359,7 +359,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Render target will contain "CoC"(16 bits) "Linear depth"(16bits).
             var cocLinearDepthTexture = GetScopedRenderTarget(originalColorBuffer.Description, 1f, PixelFormat.R16G16_Float);
 
-            var cameraState = context.GetCurrentCamera();
+            var cameraState = context.RenderContext.GetCurrentCamera();
             if (cameraState == null) throw new InvalidOperationException("No valid camera");
 
             var farPlane = cameraState.FarClipPlane;
@@ -388,10 +388,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 pointDepthShader.Parameters.SetValueSlow(PointDepthKeys.Coordinate, new Vector2(0.5f, 0.5f));
                 pointDepthShader.SetInput(cocLinearDepthTexture);
                 pointDepthShader.SetOutput(depthCenter1x1);
-                pointDepthShader.Draw("Center Depth");
+                pointDepthShader.Draw(context, "Center Depth");
 
                 depthReadBack.SetInput(depthCenter1x1);
-                depthReadBack.Draw("Center_Depth_Readback");
+                depthReadBack.Draw(context, "Center_Depth_Readback");
                 var centerDepth = depthReadBack.Result[0];
                 autoFocusDistanceTarget = centerDepth;
             }

@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering
         [Display("Viewport in %")]
         public bool IsViewportInPercentage { get; set; }
 
-        protected override void ActivateOutputCore(RenderContext context, RenderFrame output, bool disableDepth)
+        protected override void ActivateOutputCore(RenderDrawContext context, RenderFrame output, bool disableDepth)
         {
             base.ActivateOutputCore(context, output, disableDepth);
 

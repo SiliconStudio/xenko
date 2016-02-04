@@ -114,7 +114,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             FrameGameSystem.Draw(() => ChangeMaterial(1)).TakeScreenshot();
         }
 
-        protected override void PostCameraRendererDraw(RenderContext context, RenderFrame frame)
+        protected override void PostCameraRendererDraw(RenderDrawContext context, RenderFrame frame)
         {
             if (!debug)
                 return;

@@ -113,7 +113,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="renderContext">The render context.</param>
         /// <param name="enableDepth">if set to <c>true</c> [enable depth].</param>
         /// <exception cref="System.ArgumentNullException">renderContext</exception>
-        public void Activate(RenderContext renderContext, bool enableDepth = true)
+        public void Activate(RenderDrawContext renderContext, bool enableDepth = true)
         {
             if (renderContext == null) throw new ArgumentNullException("renderContext");
 

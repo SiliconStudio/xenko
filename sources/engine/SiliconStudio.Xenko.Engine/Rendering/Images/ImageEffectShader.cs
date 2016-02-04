@@ -85,7 +85,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Parameters.SetResourceSlow(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }
 
-        protected override void PreDrawCore(RenderContext context)
+        protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
 
@@ -118,7 +118,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             if (pipelineStateDirty)
             {

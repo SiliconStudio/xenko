@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Engine
             base.Destroy();
         }
 
-        protected override void DrawCore(RenderContext context, RenderFrame output)
+        protected override void DrawCore(RenderDrawContext context, RenderFrame output)
         {
             if (ChildScene == null || !ChildScene.Enabled)
             {

@@ -123,17 +123,17 @@ namespace SiliconStudio.Xenko.Rendering
             sceneInstance.Processors.Add(new SkyboxProcessor());
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             // Move viewpoint
             // TODO: Use camera system and Renderer
             time += EffectSystem.Game.DrawTime.Elapsed.TotalSeconds;
 
             // Update current camera to render view
-            UpdateCameraToRenderView(context, context.GetCurrentCamera(), mainRenderView);
+            UpdateCameraToRenderView(context, context.RenderContext.GetCurrentCamera(), mainRenderView);
 
             // Extract data from the scene
-            Extract(context);
+            Extract(context.RenderContext);
 
             // Perform most of computations
             Prepare();
@@ -177,7 +177,7 @@ namespace SiliconStudio.Xenko.Rendering
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
         }
 
-        private void UpdateCameraToRenderView(RenderContext context, CameraComponent camera, RenderView renderView)
+        private void UpdateCameraToRenderView(RenderDrawContext context, CameraComponent camera, RenderView renderView)
         {
             // Setup viewport size
             var currentViewport = context.GraphicsDevice.Viewport;

@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="context">The context.</param>
         /// <returns>RenderFrame.</returns>
-        public RenderFrame GetOutput(RenderContext context)
+        public RenderFrame GetOutput(RenderDrawContext context)
         {
             return Output.GetSafeRenderFrame(context);
         }
@@ -55,7 +55,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="context">The context.</param>
         /// <param name="disableDepth">if set to <c>true</c> [disable depth].</param>
-        public void ActivateOutput(RenderContext context, bool disableDepth = false)
+        public void ActivateOutput(RenderDrawContext context, bool disableDepth = false)
         {
             var output = GetOutput(context);
             if (output != null)
@@ -70,13 +70,13 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="context">The context.</param>
         /// <param name="output">The output.</param>
         /// <param name="disableDepth">if set to <c>true</c> [disable depth].</param>
-        protected virtual void ActivateOutputCore(RenderContext context, RenderFrame output, bool disableDepth)
+        protected virtual void ActivateOutputCore(RenderDrawContext context, RenderFrame output, bool disableDepth)
         {
             // Setup the render target
             context.GraphicsDevice.SetDepthAndRenderTargets(disableDepth ? null : output.DepthStencil, output.RenderTargets);
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var output = GetOutput(context);
             if (output != null)
@@ -105,7 +105,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        protected abstract void DrawCore(RenderContext context, RenderFrame output);
+        protected abstract void DrawCore(RenderDrawContext context, RenderFrame output);
 
         protected override void Destroy()
         {
