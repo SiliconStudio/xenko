@@ -105,8 +105,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// The effect used for the current Begin/End session.
         /// </summary>
         protected EffectInstance Effect { get; private set; }
-        protected readonly Effect DefaultEffect;
-        protected readonly Effect DefaultEffectSRgb;
+        protected readonly EffectInstance DefaultEffect;
+        protected readonly EffectInstance DefaultEffectSRgb;
 
         protected TextureIdComparer TextureComparer { get; set; }
         protected QueueComparer<ElementInfo> BackToFrontComparer { get; set; }
@@ -122,8 +122,8 @@ namespace SiliconStudio.Xenko.Graphics
             if (vertexDeclaration == null) throw new ArgumentNullException("vertexDeclaration");
 
             GraphicsDevice = device;
-            DefaultEffect = new Effect(device, defaultEffectByteCode) { Name = "BatchDefaultEffect"};
-            DefaultEffectSRgb = new Effect(device, defaultEffectByteCodeSRgb) { Name = "BatchDefaultEffectSRgb"};
+            DefaultEffect = new EffectInstance(new Effect(device, defaultEffectByteCode) { Name = "BatchDefaultEffect"});
+            DefaultEffectSRgb = new EffectInstance(new Effect(device, defaultEffectByteCodeSRgb) { Name = "BatchDefaultEffectSRgb"});
 
             drawsQueue = new ElementInfo[resourceBufferInfo.BatchCapacity];
             drawTextures = new Texture[resourceBufferInfo.BatchCapacity];
@@ -139,7 +139,7 @@ namespace SiliconStudio.Xenko.Graphics
             parameters = new ParameterCollection();
             
             // Creates the vertex buffer (shared by within a device context).
-            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect, vertexDeclaration, resourceBufferInfo, indexStructSize));
+            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect.Effect, vertexDeclaration, resourceBufferInfo, indexStructSize));
         }
 
         /// <summary>
@@ -173,7 +173,7 @@ namespace SiliconStudio.Xenko.Graphics
             RasterizerState = sessionRasterizerState;
             StencilReferenceValue = stencilValue;
 
-            Effect = effect ?? new EffectInstance(GraphicsDevice.ColorSpace == ColorSpace.Linear ? DefaultEffectSRgb : DefaultEffect);
+            Effect = effect ?? (GraphicsDevice.ColorSpace == ColorSpace.Linear ? DefaultEffectSRgb : DefaultEffect);
 
             // Force the effect to update
             Effect.UpdateEffect(GraphicsDevice);
