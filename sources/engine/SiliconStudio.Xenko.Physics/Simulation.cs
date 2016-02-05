@@ -70,7 +70,7 @@ namespace SiliconStudio.Xenko.Physics
         /// <param name="processor"></param>
         /// <param name="configuration"></param>
         /// <exception cref="System.NotImplementedException">SoftBody processing is not yet available</exception>
-        internal Simulation(PhysicsProcessor processor, PhysicsConfiguration configuration)
+        internal Simulation(PhysicsProcessor processor, PhysicsSettings configuration)
         {
             this.processor = processor;
 

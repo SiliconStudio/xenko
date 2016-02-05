@@ -11,6 +11,6 @@ namespace SiliconStudio.Xenko.Assets.Textures
     public class TextureSettings : Configuration
     {
         [DataMember(0)]
-        public TextureQuality TextureQuality = TextureQuality.Normal;
+        public TextureQuality TextureQuality = TextureQuality.Fast;
     }
 }

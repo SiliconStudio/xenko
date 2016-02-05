@@ -46,12 +46,13 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
             var updater = UpdatePlatformsTemplateGenerator.Default;
 
             var gameSettingsAsset = session.Session.Packages.Last().GetGameSettingsAsset();
+            var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
 
             var updateParams = new GameTemplateParameters
             {
                 Common = parameters,
                 ForcePlatformRegeneration = true,
-                GraphicsProfile = gameSettingsAsset.DefaultGraphicsProfile,
+                GraphicsProfile = renderingSettings.DefaultGraphicsProfile,
                 IsHDR = false,
                 Orientation = gameSettingsAsset.DisplayOrientation,
                 Platforms = AssetRegistry.SupportedPlatforms.ToList()

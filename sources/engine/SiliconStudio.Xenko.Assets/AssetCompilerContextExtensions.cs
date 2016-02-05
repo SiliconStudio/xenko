@@ -22,7 +22,7 @@ namespace SiliconStudio.Xenko.Assets
 
         public static ColorSpace GetColorSpace(this AssetCompilerContext context)
         {
-            var settings = context.GetGameSettingsAsset();
+            var settings = context.GetGameSettingsAsset().Get<RenderingSettings>(context.Platform);
             return settings.ColorSpace;
         }
 

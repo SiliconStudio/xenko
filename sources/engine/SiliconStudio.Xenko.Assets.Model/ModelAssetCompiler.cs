@@ -27,7 +27,8 @@ namespace SiliconStudio.Xenko.Assets.Model
             var assetSource = UPath.Combine(assetDirectory, asset.Source);
 
             var gameSettingsAsset = context.GetGameSettingsAsset();
-            var allow32BitIndex = gameSettingsAsset.DefaultGraphicsProfile >= GraphicsProfile.Level_9_2;
+            var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
+            var allow32BitIndex = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_9_2;
             var allowUnsignedBlendIndices = context.GetGraphicsPlatform() != GraphicsPlatform.OpenGLES;
             var extension = asset.Source.GetFileExtension();
 
