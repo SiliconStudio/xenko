@@ -28,6 +28,7 @@ namespace SiliconStudio.Xenko.Graphics
             public ParameterKey Key;
             public EffectParameterClass Class;
             public int ArraySize;
+            public SamplerState ImmutableSampler;
         }
     }
 }

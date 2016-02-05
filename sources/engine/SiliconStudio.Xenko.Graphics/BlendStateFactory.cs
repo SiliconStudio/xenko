@@ -17,57 +17,51 @@ namespace SiliconStudio.Xenko.Graphics
         {
             var blendDescription = new BlendStateDescription(Blend.One, Blend.Zero);
             blendDescription.SetDefaults();
-            Default = BlendState.New(device, blendDescription).DisposeBy(device);
-            Default.Name = "Default";
+            Default = blendDescription;
 
-            Additive = BlendState.New(device, new BlendStateDescription(Blend.SourceAlpha, Blend.One)).DisposeBy(device);
-            Additive.Name = "Additive";
+            Additive = new BlendStateDescription(Blend.SourceAlpha, Blend.One);
 
-            AlphaBlend = BlendState.New(device, new BlendStateDescription(Blend.One, Blend.InverseSourceAlpha)).DisposeBy(device);
-            AlphaBlend.Name = "AlphaBlend";
+            AlphaBlend = new BlendStateDescription(Blend.One, Blend.InverseSourceAlpha);
 
-            NonPremultiplied = BlendState.New(device, new BlendStateDescription(Blend.SourceAlpha, Blend.InverseSourceAlpha)).DisposeBy(device);
-            NonPremultiplied.Name = "NonPremultiplied";
+            NonPremultiplied = new BlendStateDescription(Blend.SourceAlpha, Blend.InverseSourceAlpha);
 
-            Opaque = BlendState.New(device, new BlendStateDescription(Blend.One, Blend.Zero)).DisposeBy(device);
-            Opaque.Name = "Opaque";
+            Opaque = new BlendStateDescription(Blend.One, Blend.Zero);
 
             var colorDisabledDescription = new BlendStateDescription();
             colorDisabledDescription.SetDefaults();
             colorDisabledDescription.RenderTargets[0].ColorWriteChannels = ColorWriteChannels.None;
-            ColorDisabled = BlendState.New(device, colorDisabledDescription).DisposeBy(device);
-            ColorDisabled.Name = "ColorDisabled";
+            ColorDisabled = colorDisabledDescription;
         }
 
         /// <summary>
         /// A built-in state object with settings for default blend, that is no blend at all.
         /// </summary>
-        public readonly BlendState Default;
+        public readonly BlendStateDescription Default;
 
         /// <summary>
         /// A built-in state object with settings for additive blend, that is adding the destination data to the source data without using alpha.
         /// </summary>
-        public readonly BlendState Additive;
+        public readonly BlendStateDescription Additive;
 
         /// <summary>
         /// A built-in state object with settings for alpha blend, that is blending the source and destination data using alpha.
         /// </summary>
-        public readonly BlendState AlphaBlend;
+        public readonly BlendStateDescription AlphaBlend;
 
         /// <summary>
         /// A built-in state object with settings for blending with non-premultipled alpha, that is blending source and destination data using alpha while assuming the color data contains no alpha information.
         /// </summary>
-        public readonly BlendState NonPremultiplied;
+        public readonly BlendStateDescription NonPremultiplied;
 
         /// <summary>
         /// A built-in state object with settings for opaque blend, that is overwriting the source with the destination data.
         /// </summary>
-        public readonly BlendState Opaque;
+        public readonly BlendStateDescription Opaque;
 
         /// <summary>
         /// A built-in state object with settings for no color rendering on target 0, that is only render to depth stencil buffer.
         /// </summary>
-        public readonly BlendState ColorDisabled;
+        public readonly BlendStateDescription ColorDisabled;
     }
 }
 

@@ -71,10 +71,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         protected override void Draw(GameTime gameTime)
         {
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services));
+
             computeShaderEffect.Parameters.SetValueSlow(ComputeShaderTestParams.NbOfIterations, ReductionRatio);
             computeShaderEffect.Parameters.SetResourceSlow(ComputeShaderTestKeys.input, inputTexture);
             computeShaderEffect.Parameters.SetResourceSlow(ComputeShaderTestKeys.output, outputTexture);
-            computeShaderEffect.Draw();
+            computeShaderEffect.Draw(renderDrawContext);
 
             if (displayedTexture == null || spriteBatch == null)
                 return;

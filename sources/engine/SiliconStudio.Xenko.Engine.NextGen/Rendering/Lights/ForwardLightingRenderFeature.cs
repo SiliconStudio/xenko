@@ -229,7 +229,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(NextGenRenderContext context)
+        public override void Prepare(RenderContext context)
         {
             var renderObjectInfoData = RootRenderFeature.GetData(renderModelObjectInfoKey);
 
@@ -242,7 +242,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (lightShadersPermutation.PerLightingLayout == null)
                 {
                     var renderEffect = lightShadersPermutation.RenderEffect;
-                    var descriptorLayout = renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerLighting");
+                    var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerLighting");
 
                     var parameterCollectionLayout = lightShadersPermutation.ParameterCollectionLayout = new NextGenParameterCollectionLayout();
                     parameterCollectionLayout.ProcessResources(descriptorLayout);
@@ -301,7 +301,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         }
 
         /// <inheritdoc/>
-        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
         }
 

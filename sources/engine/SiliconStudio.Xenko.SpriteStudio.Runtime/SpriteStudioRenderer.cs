@@ -22,8 +22,8 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
         public override bool SupportPicking => true;
 
-        public BlendState MultBlendState;
-        public BlendState SubBlendState;
+        public BlendStateDescription MultBlendState;
+        public BlendStateDescription SubBlendState;
 
         protected override void InitializeCore()
         {
@@ -35,19 +35,17 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             blendDesc.RenderTargets[0].BlendEnable = true;
             blendDesc.RenderTargets[0].ColorBlendFunction = BlendFunction.ReverseSubtract;
             blendDesc.RenderTargets[0].AlphaBlendFunction = BlendFunction.ReverseSubtract;
-            SubBlendState = BlendState.New(Context.GraphicsDevice, blendDesc).DisposeBy(Context.GraphicsDevice);
-            SubBlendState.Name = "Subtraction";
+            SubBlendState = blendDesc;
 
             blendDesc = new BlendStateDescription(Blend.DestinationColor, Blend.InverseSourceAlpha);
             blendDesc.RenderTargets[0].BlendEnable = true;
             blendDesc.RenderTargets[0].ColorBlendFunction = BlendFunction.Add;
             blendDesc.RenderTargets[0].AlphaSourceBlend = Blend.Zero;
             blendDesc.RenderTargets[0].AlphaBlendFunction = BlendFunction.Add;
-            MultBlendState = BlendState.New(Context.GraphicsDevice, blendDesc).DisposeBy(Context.GraphicsDevice);
-            MultBlendState.Name = "Multiplication";
+            MultBlendState = blendDesc;
         }
 
-        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        protected override void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             spriteProcessor = SceneInstance.GetProcessor<SpriteStudioProcessor>();
             if (spriteProcessor == null)
@@ -56,7 +54,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             }
 
             // If no camera, early exit
-            var camera = context.GetCurrentCamera();
+            var camera = context.RenderContext.GetCurrentCamera();
             if (camera == null)
             {
                 return;
@@ -109,18 +107,21 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
             }
         }
 
-        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        protected override void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            var viewParameters = context.Parameters;
+            //var viewParameters = context.Parameters;
 
             var device = context.GraphicsDevice;
-            var viewProjection = viewParameters.Get(TransformationKeys.ViewProjection);
+            // TODO GRAPHICS REFACTOR probably better to receive RenderView when reimplemented
+            var cameraState = context.RenderContext.GetCurrentCamera();
+            if (cameraState == null) throw new InvalidOperationException("No valid camera");
+            var viewProjection = cameraState.ViewProjectionMatrix; // viewParameters.Get(TransformationKeys.ViewProjection);
 
-            BlendState previousBlendState = null;
-            DepthStencilState previousDepthStencilState = null;
+            BlendStateDescription? previousBlendState = null;
+            DepthStencilStateDescription? previousDepthStencilState = null;
             EffectInstance previousEffect = null;
 
-            var isPicking = context.IsPicking();
+            var isPicking = context.RenderContext.IsPicking();
 
             bool hasBegin = false;
             for (var i = fromIndex; i <= toIndex; i++)
@@ -136,7 +137,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
 
                     // Update the sprite batch
 
-                    BlendState spriteBlending;
+                    BlendStateDescription spriteBlending;
                     switch (node.BaseNode.AlphaBlending)
                     {
                         case SpriteStudioBlending.Mix:

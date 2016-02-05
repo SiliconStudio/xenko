@@ -65,9 +65,9 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             base.Unload();
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
-            using (context.PushTagAndRestore(SceneCameraSlotCollection.Current, Cameras))
+            using (context.RenderContext.PushTagAndRestore(SceneCameraSlotCollection.Current, Cameras))
             {
                 // Draw the layers
                 Layers.Draw(context);

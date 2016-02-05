@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// Can perform much more work, even while game simulation keeps running.
         /// </summary>
         /// <param name="context"></param>
-        public virtual void Prepare(NextGenRenderContext context)
+        public virtual void Prepare(RenderContext context)
         {
         }
 
@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="renderViewStage"></param>
         /// <param name="startIndex"></param>
         /// <param name="endIndex"></param>
-        public virtual void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public virtual void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
         }
     }

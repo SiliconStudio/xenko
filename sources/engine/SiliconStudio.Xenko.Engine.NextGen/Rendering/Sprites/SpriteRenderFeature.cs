@@ -24,15 +24,15 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             sprite3DBatch = new Sprite3DBatch(RenderSystem.GraphicsDevice);
         }
 
-        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
             Matrix viewInverse;
             Matrix.Invert(ref renderView.View, out viewInverse);
 
-            BlendState previousBlendState = null;
-            DepthStencilState previousDepthStencilState = null;
+            BlendStateDescription? previousBlendState = null;
+            DepthStencilStateDescription? previousDepthStencilState = null;
             EffectInstance previousEffect = null;
 
             var isPicking = false; //context.IsPicking();

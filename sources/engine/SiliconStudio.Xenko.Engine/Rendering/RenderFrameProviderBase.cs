@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering
     [NonIdentifiable] // For now, we disable identifiable for all this class of objects, but we may renable it if they are used in lists
     public abstract class RenderFrameProviderBase : IRenderFrameProvider
     {
-        public abstract RenderFrame GetRenderFrame(RenderContext context);
+        public abstract RenderFrame GetRenderFrame(RenderDrawContext context);
 
         public virtual void Dispose()
         {

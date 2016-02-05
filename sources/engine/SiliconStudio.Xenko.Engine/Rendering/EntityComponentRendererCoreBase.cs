@@ -35,13 +35,13 @@ namespace SiliconStudio.Xenko.Rendering
             SceneCameraRenderer = Context.Tags.Get(SceneCameraRenderer.Current);
         }
 
-        protected override void PreDrawCore(RenderContext context)
+        protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
-            CurrentRenderFrame = context.Tags.GetSafe(RenderFrame.Current);
+            CurrentRenderFrame = context.RenderContext.Tags.GetSafe(RenderFrame.Current);
         }
 
-        protected override void PostDrawCore(RenderContext context)
+        protected override void PostDrawCore(RenderDrawContext context)
         {
             base.PostDrawCore(context);
             CurrentRenderFrame = null;

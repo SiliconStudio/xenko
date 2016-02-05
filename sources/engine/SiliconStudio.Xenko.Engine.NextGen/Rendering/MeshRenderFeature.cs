@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(NextGenRenderContext context)
+        public override void Prepare(RenderContext context)
         {
             base.Prepare(context);
 
@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <inheritdoc/>
-        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var graphicsDevice = RenderSystem.GraphicsDevice;
 
@@ -74,8 +74,9 @@ namespace SiliconStudio.Xenko.Rendering
                 renderFeature.Draw(context, renderView, renderViewStage, startIndex, endIndex);
             }
 
-            var pipelineState = context.Pipeline.State;
             Effect currentEffect = null;
+            var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
+
             for (int index = startIndex; index < endIndex; index++)
             {
                 var renderNodeReference = renderViewStage.RenderNodes[index].RenderNode;
@@ -91,15 +92,53 @@ namespace SiliconStudio.Xenko.Rendering
                 if (currentEffect != renderEffect.Effect)
                 {
                     currentEffect = renderEffect.Effect;
-                    renderEffect.Effect.ApplyProgram(graphicsDevice);
                 }
 
-                renderEffect.Reflection.Binder.Apply(graphicsDevice, ResourceGroupPool, ComputeResourceGroupOffset(renderNodeReference));
+                // Bind VB
+                for (int i = 0; i < drawData.VertexBuffers.Length; i++)
+                {
+                    var vertexBuffer = drawData.VertexBuffers[i];
+                    graphicsDevice.SetVertexBuffer(i, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
+                }
 
-                // Bind VAO
-                var vertexArrayObject = renderEffect.VertexArrayObject ??
-                                        (renderEffect.VertexArrayObject = VertexArrayObject.New(RenderSystem.GraphicsDevice, renderEffect.Effect.InputSignature, drawData.IndexBuffer, drawData.VertexBuffers));
-                graphicsDevice.SetVertexArrayObject(vertexArrayObject);
+                var resourceGroupOffset = ComputeResourceGroupOffset(renderNodeReference);
+                // Update cbuffer
+                renderEffect.Reflection.BufferUploader.Apply(graphicsDevice, ResourceGroupPool, resourceGroupOffset);
+
+                // Bind descriptor sets
+                for (int i = 0; i < descriptorSets.Length; ++i)
+                {
+                    var resourceGroup = ResourceGroupPool[resourceGroupOffset++];
+                    if (resourceGroup != null)
+                        descriptorSets[i] = resourceGroup.DescriptorSet;
+                }
+
+                graphicsDevice.SetDescriptorSets(0, descriptorSets);
+
+                // First time, let's compile pipeline state
+                // TODO GRAPHICS REFACTOR invalidate if effect is destroyed, or some other cases
+                if (renderEffect.PipelineState == null)
+                {
+                    var pipelineState = MutablePipeline.State;
+
+                    // Effect
+                    pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
+                    pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
+
+                    // Bind VAO
+                    pipelineState.InputElements = drawData.VertexBuffers.CreateInputElements();
+                    pipelineState.PrimitiveType = drawData.PrimitiveType;
+
+                    // TODO GRAPHICS REFACTOR
+                    // pipelineState.RenderTargetFormats = 
+
+                    ProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderMesh, pipelineState);
+
+                    MutablePipeline.Update(graphicsDevice);
+                    renderEffect.PipelineState = MutablePipeline.CurrentState;
+                }
+
+                graphicsDevice.SetPipelineState(renderEffect.PipelineState);
 
                 // Draw
                 if (drawData.IndexBuffer == null)
@@ -108,6 +147,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
                 else
                 {
+                    graphicsDevice.SetIndexBuffer(drawData.IndexBuffer.Buffer, drawData.IndexBuffer.Offset, drawData.IndexBuffer.Is32Bit);
                     graphicsDevice.DrawIndexed(drawData.PrimitiveType, drawData.DrawCount, drawData.StartLocation);
                 }
             }

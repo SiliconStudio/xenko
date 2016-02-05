@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             finalCombineEffect = ToLoadAndUnload(new ImageEffectShader("TripleRhombiCombineShader"));
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             // Make sure we keep our uniform weights in synchronization with the number of taps
             if (tapWeights == null || tapWeights.Length != tapCount)
@@ -129,7 +129,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         }
 
         // Naive approach: 6 passes
-        protected void DrawCoreNaive(RenderContext context)
+        protected void DrawCoreNaive(RenderDrawContext context)
         {
             var originalTexture = GetSafeInput(0);
             var outputTexture = GetSafeOutput(0);

@@ -81,7 +81,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// </summary>
         /// <param name="isGeomertryInverted"><c>true</c> if the rendered gometry is inverted through scaling, <c>false</c> otherwise.</param>
         /// <returns>The rasterizer state.</returns>
-        public virtual RasterizerState GetDefaultRasterizerState(bool isGeomertryInverted)
+        public virtual RasterizerStateDescription GetDefaultRasterizerState(bool isGeomertryInverted)
         {
             return isGeomertryInverted ? Context.GraphicsDevice.RasterizerStates.CullFront : Context.GraphicsDevice.RasterizerStates.CullBack;
         }
@@ -90,11 +90,11 @@ namespace SiliconStudio.Xenko.Rendering
         /// Draws entities from a specified <see cref="SceneCameraRenderer" />.
         /// </summary>
         /// <param name="context">The context.</param>
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             // Pre-create all batchRenderer
             // TODO: We should handle cases where we are removing components types to improve performance
-            var rendererTypes = context.Tags.GetSafe(RendererTypesKey);
+            var rendererTypes = context.RenderContext.Tags.GetSafe(RendererTypesKey);
 
             // Gets the renderer types
             sortedRendererTypes.Clear();

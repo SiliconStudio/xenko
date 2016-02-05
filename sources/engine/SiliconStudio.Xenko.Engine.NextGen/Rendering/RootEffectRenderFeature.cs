@@ -16,6 +16,9 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public abstract class RootEffectRenderFeature : RootRenderFeature
     {
+        // Helper class to build pipeline state
+        protected MutablePipelineState MutablePipeline = new MutablePipelineState();
+
         private readonly List<string> effectDescriptorSetSlots = new List<string>();
         private readonly Dictionary<string, int> effectPermutationSlots = new Dictionary<string, int>();
         private readonly Dictionary<ObjectId, FrameResourceGroupLayout> frameResourceLayouts = new Dictionary<ObjectId, FrameResourceGroupLayout>();
@@ -38,6 +41,11 @@ namespace SiliconStudio.Xenko.Rendering
 
         public List<FrameResourceGroupLayout> FrameLayouts { get; } = new List<FrameResourceGroupLayout>();
         public Action<NextGenRenderSystem, Effect, RenderEffectReflection> EffectCompiled;
+
+        internal delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
+        internal ProcessPipelineStateDelegate ProcessPipelineState;
+
+        public int EffectDescriptorSetSlotCount => effectDescriptorSetSlots.Count;
 
         /// <summary>
         /// Gets number of effect permutation slot, which is the number of effect cached per object.
@@ -263,13 +271,14 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffectReflection = new RenderEffectReflection();
 
                         // Build root signature automatically from reflection
-
-                        renderEffectReflection.Binder.Compile(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots);
+                        renderEffectReflection.DescriptorReflection = EffectDescriptorSetReflection.New(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots);
+                        renderEffectReflection.RootSignature = RootSignature.New(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection);
+                        renderEffectReflection.BufferUploader.Compile(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection, effect.Bytecode);
 
                         // Prepare well-known descriptor set layouts
-                        renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(RenderSystem, renderEffectReflection.Binder.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
-                        renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(RenderSystem, renderEffectReflection.Binder.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
-                        renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(RenderSystem, renderEffectReflection.Binder.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
+                        renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
+                        renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
+                        renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
 
                         InstantiatedEffects.Add(effect, renderEffectReflection);
 
@@ -288,7 +297,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(NextGenRenderContext context)
+        public override void Prepare(RenderContext context)
         {
             EffectObjectNodes.Clear();
 

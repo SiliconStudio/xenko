@@ -74,11 +74,12 @@ namespace SiliconStudio.Xenko.Graphics
         // TODO: dispose vertex array when Effect is disposed
         protected readonly DeviceResourceContext ResourceContext;
 
+        protected MutablePipelineState pipelineState = new MutablePipelineState();
         protected GraphicsDevice GraphicsDevice;
-        protected BlendState BlendState;
-        protected RasterizerState RasterizerState;
+        protected BlendStateDescription? BlendState;
+        protected RasterizerStateDescription? RasterizerState;
         protected SamplerState SamplerState;
-        protected DepthStencilState DepthStencilState;
+        protected DepthStencilStateDescription? DepthStencilState;
         protected int StencilReferenceValue;
         protected SpriteSortMode SortMode;
         private ResourceParameter<Texture>? textureUpdater;
@@ -104,8 +105,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// The effect used for the current Begin/End session.
         /// </summary>
         protected EffectInstance Effect { get; private set; }
-        protected readonly Effect DefaultEffect;
-        protected readonly Effect DefaultEffectSRgb;
+        protected readonly EffectInstance DefaultEffect;
+        protected readonly EffectInstance DefaultEffectSRgb;
 
         protected TextureIdComparer TextureComparer { get; set; }
         protected QueueComparer<ElementInfo> BackToFrontComparer { get; set; }
@@ -121,8 +122,8 @@ namespace SiliconStudio.Xenko.Graphics
             if (vertexDeclaration == null) throw new ArgumentNullException("vertexDeclaration");
 
             GraphicsDevice = device;
-            DefaultEffect = new Effect(device, defaultEffectByteCode) { Name = "BatchDefaultEffect"};
-            DefaultEffectSRgb = new Effect(device, defaultEffectByteCodeSRgb) { Name = "BatchDefaultEffectSRgb"};
+            DefaultEffect = new EffectInstance(new Effect(device, defaultEffectByteCode) { Name = "BatchDefaultEffect"});
+            DefaultEffectSRgb = new EffectInstance(new Effect(device, defaultEffectByteCodeSRgb) { Name = "BatchDefaultEffectSRgb"});
 
             drawsQueue = new ElementInfo[resourceBufferInfo.BatchCapacity];
             drawTextures = new Texture[resourceBufferInfo.BatchCapacity];
@@ -138,7 +139,7 @@ namespace SiliconStudio.Xenko.Graphics
             parameters = new ParameterCollection();
             
             // Creates the vertex buffer (shared by within a device context).
-            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect, vertexDeclaration, resourceBufferInfo, indexStructSize));
+            ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect.Effect, vertexDeclaration, resourceBufferInfo, indexStructSize));
         }
 
         /// <summary>
@@ -161,7 +162,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="sessionRasterizerState">Rasterization state used for the Begin/End session</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference for the Begin/End session</param>
         /// <exception cref="System.InvalidOperationException">Only one SpriteBatch at a time can use SpriteSortMode.Immediate</exception>
-        protected void Begin(EffectInstance effect, SpriteSortMode sessionSortMode, BlendState sessionBlendState, SamplerState sessionSamplerState, DepthStencilState sessionDepthStencilState, RasterizerState sessionRasterizerState, int stencilValue)
+        protected void Begin(EffectInstance effect, SpriteSortMode sessionSortMode, BlendStateDescription? sessionBlendState, SamplerState sessionSamplerState, DepthStencilStateDescription? sessionDepthStencilState, RasterizerStateDescription? sessionRasterizerState, int stencilValue)
         {
             CheckEndHasBeenCalled("begin");
 
@@ -172,7 +173,7 @@ namespace SiliconStudio.Xenko.Graphics
             RasterizerState = sessionRasterizerState;
             StencilReferenceValue = stencilValue;
 
-            Effect = effect ?? new EffectInstance(GraphicsDevice.ColorSpace == ColorSpace.Linear ? DefaultEffectSRgb : DefaultEffect);
+            Effect = effect ?? (GraphicsDevice.ColorSpace == ColorSpace.Linear ? DefaultEffectSRgb : DefaultEffect);
 
             // Force the effect to update
             Effect.UpdateEffect(GraphicsDevice);
@@ -216,12 +217,23 @@ namespace SiliconStudio.Xenko.Graphics
                 Parameters.Set(samplerUpdater.Value, localSamplerState);
 
             // Setup states (Blend, DepthStencil, Rasterizer)
-            GraphicsDevice.SetBlendState(BlendState ?? GraphicsDevice.BlendStates.AlphaBlend);
-            GraphicsDevice.SetDepthStencilState(DepthStencilState ?? GraphicsDevice.DepthStencilStates.Default, StencilReferenceValue);
-            GraphicsDevice.SetRasterizerState(RasterizerState ?? GraphicsDevice.RasterizerStates.CullBack);
+            pipelineState.State.SetDefaults();
+            pipelineState.State.RootSignature = Effect.RootSignature;
+            pipelineState.State.EffectBytecode = Effect.Effect.Bytecode;
+            pipelineState.State.BlendState = BlendState ?? GraphicsDevice.BlendStates.AlphaBlend;
+            pipelineState.State.DepthStencilState = DepthStencilState ?? GraphicsDevice.DepthStencilStates.Default;
+            pipelineState.State.RasterizerState = RasterizerState ?? GraphicsDevice.RasterizerStates.CullBack;
+            pipelineState.State.InputElements = ResourceContext.InputElements;
+            pipelineState.State.PrimitiveType = PrimitiveType.TriangleList;
+            pipelineState.Update(GraphicsDevice);
 
-            // Set VertexInputLayout
-            GraphicsDevice.SetVertexArrayObject(ResourceContext.VertexArrayObject);
+            // Bind pipeline
+            GraphicsDevice.SetPipelineState(pipelineState.CurrentState);
+
+            // Bind VB/IB
+            GraphicsDevice.SetVertexBuffer(0, ResourceContext.VertexBufferBinding.Buffer, ResourceContext.VertexBufferBinding.Offset, ResourceContext.VertexBufferBinding.Stride);
+            if (ResourceContext.IndexBuffer != null)
+                GraphicsDevice.SetIndexBuffer(ResourceContext.IndexBufferBinding.Buffer, ResourceContext.IndexBufferBinding.Offset, ResourceContext.IndexBufferBinding.Is32Bit);
 
             // If this is a deferred D3D context, reset position so the first Map call will use D3D11_MAP_WRITE_DISCARD.
             if (GraphicsDevice.IsDeferred)
@@ -731,9 +743,13 @@ namespace SiliconStudio.Xenko.Graphics
             public readonly bool IsIndexBufferDynamic;
 
             /// <summary>
-            /// The VertexArrayObject of the batch.
+            /// The VertexBufferBinding of the batch.
             /// </summary>
-            public readonly VertexArrayObject VertexArrayObject;
+            public readonly VertexBufferBinding VertexBufferBinding;
+
+            public readonly IndexBufferBinding IndexBufferBinding;
+
+            public readonly InputElementDescription[] InputElements;
 
             /// <summary>
             /// The current position in vertex into the vertex array buffer.
@@ -770,11 +786,9 @@ namespace SiliconStudio.Xenko.Graphics
                     IndexBuffer.Reload = graphicsResource => ((Buffer)graphicsResource).Recreate(resourceBufferInfo.StaticIndices);
                 }
 
-                var indexBufferBinding = new IndexBufferBinding(IndexBuffer, indexStructSize == sizeof(int), IndexBuffer.Description.SizeInBytes / indexStructSize);
-                var vertexBufferBinding = new VertexBufferBinding(VertexBuffer, declaration, VertexCount, vertexSize);
-
-                // Creates a VAO
-                VertexArrayObject = VertexArrayObject.New(device, effect.InputSignature, indexBufferBinding, vertexBufferBinding).DisposeBy(this);
+                IndexBufferBinding = new IndexBufferBinding(IndexBuffer, indexStructSize == sizeof(int), IndexBuffer.Description.SizeInBytes / indexStructSize);
+                VertexBufferBinding = new VertexBufferBinding(VertexBuffer, declaration, VertexCount, vertexSize);
+                InputElements = VertexBufferBinding.Declaration.CreateInputElements();
             }
         }
 

@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Runtime.InteropServices;
 
 using SiliconStudio.Core;
@@ -8,7 +10,7 @@ namespace SiliconStudio.Xenko.Graphics
 {
     [DataContract]
     [StructLayout(LayoutKind.Sequential)]
-    public struct DepthStencilStencilOpDescription
+    public struct DepthStencilStencilOpDescription : IEquatable<DepthStencilStencilOpDescription>
     {
         /// <summary>
         /// Gets or sets the stencil operation to perform if the stencil test fails. The default is StencilOperation.Keep.
@@ -29,5 +31,38 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets or sets the comparison function for the stencil test. The default is CompareFunction.Always.
         /// </summary>
         public CompareFunction StencilFunction { get; set; }
+
+        public bool Equals(DepthStencilStencilOpDescription other)
+        {
+            return StencilFail == other.StencilFail && StencilDepthBufferFail == other.StencilDepthBufferFail && StencilPass == other.StencilPass && StencilFunction == other.StencilFunction;
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(null, obj)) return false;
+            return obj is DepthStencilStencilOpDescription && Equals((DepthStencilStencilOpDescription)obj);
+        }
+
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = (int)StencilFail;
+                hashCode = (hashCode*397) ^ (int)StencilDepthBufferFail;
+                hashCode = (hashCode*397) ^ (int)StencilPass;
+                hashCode = (hashCode*397) ^ (int)StencilFunction;
+                return hashCode;
+            }
+        }
+
+        public static bool operator ==(DepthStencilStencilOpDescription left, DepthStencilStencilOpDescription right)
+        {
+            return left.Equals(right);
+        }
+
+        public static bool operator !=(DepthStencilStencilOpDescription left, DepthStencilStencilOpDescription right)
+        {
+            return !left.Equals(right);
+        }
     }
 }

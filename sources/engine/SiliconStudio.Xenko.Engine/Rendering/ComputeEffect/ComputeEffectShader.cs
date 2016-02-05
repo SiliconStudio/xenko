@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
         {
         }
 
-        protected override void PreDrawCore(RenderContext context)
+        protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
 
@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
         {
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             if (string.IsNullOrEmpty(ShaderSourceName))
                 return;

@@ -15,38 +15,31 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="device">The device.</param>
         internal DepthStencilStateFactory(GraphicsDevice device) : base(device)
         {
-            Default = DepthStencilState.New(device, new DepthStencilStateDescription(true, true)).DisposeBy(this);
-            Default.Name = "DepthStencilState.Default";
-
-            DefaultInverse = DepthStencilState.New(device, new DepthStencilStateDescription(true, true) { DepthBufferFunction = CompareFunction.GreaterEqual }).DisposeBy(this);
-            DefaultInverse.Name = "DepthStencilState.DefaultInverse";
-
-            DepthRead = DepthStencilState.New(device, new DepthStencilStateDescription(true, false)).DisposeBy(this);
-            DepthRead.Name = "DepthStencilState.DepthRead";
-
-            None = DepthStencilState.New(device, new DepthStencilStateDescription(false, false)).DisposeBy(this);
-            None.Name = "DepthStencilState.None";
+            Default = new DepthStencilStateDescription(true, true);
+            DefaultInverse = new DepthStencilStateDescription(true, true) { DepthBufferFunction = CompareFunction.GreaterEqual };
+            DepthRead = new DepthStencilStateDescription(true, false);
+            None = new DepthStencilStateDescription(false, false);
         }
 
         /// <summary>
         /// A built-in state object with default settings for using a depth stencil buffer.
         /// </summary>
-        public readonly DepthStencilState Default;
+        public readonly DepthStencilStateDescription Default;
 
         /// <summary>
         /// A built-in state object with default settings using greater comparison for Z.
         /// </summary>
-        public readonly DepthStencilState DefaultInverse;
+        public readonly DepthStencilStateDescription DefaultInverse;
 
         /// <summary>
         /// A built-in state object with settings for enabling a read-only depth stencil buffer.
         /// </summary>
-        public readonly DepthStencilState DepthRead;
+        public readonly DepthStencilStateDescription DepthRead;
 
         /// <summary>
         /// A built-in state object with settings for not using a depth stencil buffer.
         /// </summary>
-        public readonly DepthStencilState None;
+        public readonly DepthStencilStateDescription None;
     }
 }
 

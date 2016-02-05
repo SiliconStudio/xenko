@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.Destroy();
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var input = GetInput(0);
             var output = GetOutput(0);
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             bloomAfterimageShader.SetInput(0, input);
             bloomAfterimageShader.SetInput(1, persistenceTexture);
             bloomAfterimageShader.SetOutput(accumulationPersistence);
-            bloomAfterimageShader.Draw("Afterimage persistence accumulation");
+            bloomAfterimageShader.Draw(context, "Afterimage persistence accumulation");
 
             // Keep the final brightness buffer for the following frames
             GraphicsDevice.Copy(accumulationPersistence, persistenceTexture);
@@ -117,7 +117,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             bloomAfterimageCombineShader.SetInput(0, input);
             bloomAfterimageCombineShader.SetInput(1, persistenceTexture);
             bloomAfterimageCombineShader.SetOutput(output);
-            bloomAfterimageCombineShader.Draw("Afterimage persistence combine");
+            bloomAfterimageCombineShader.Draw(context, "Afterimage persistence combine");
         }
     }
 }

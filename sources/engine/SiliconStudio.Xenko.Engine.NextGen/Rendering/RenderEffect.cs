@@ -15,8 +15,10 @@ namespace SiliconStudio.Xenko.Rendering
         public Effect Effect;
         public RenderEffectReflection Reflection;
 
-        public VertexArrayObject VertexArrayObject;
-        public DescriptorSet[] DescriptorSets;
+        /// <summary>
+        /// Compiled pipeline state.
+        /// </summary>
+        public PipelineState PipelineState;
 
         /// <summary>
         /// Validates if effect needs to be compiled or recompiled.
@@ -54,6 +56,8 @@ namespace SiliconStudio.Xenko.Rendering
     /// </summary>
     public class RenderEffectReflection
     {
+        public RootSignature RootSignature;
+
         public FrameResourceGroupLayout PerFrameLayout;
         public ViewResourceGroupLayout PerViewLayout;
         public RenderSystemResourceGroupLayout PerDrawLayout;
@@ -64,6 +68,8 @@ namespace SiliconStudio.Xenko.Rendering
         // TODO: Should be stored in a per-effect property
         public ResourceGroupLayout PerLightingLayout;
 
-        public EffectBinder Binder;
+        public ResourceGroupBufferUploader BufferUploader;
+
+        public EffectDescriptorSetReflection DescriptorReflection;
     }
 }

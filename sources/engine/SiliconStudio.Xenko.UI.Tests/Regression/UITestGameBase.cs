@@ -80,7 +80,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             UIComponent.VirtualResolutionMode = VirtualResolutionMode.FixedWidthFixedHeight;
         }
 
-        protected virtual void SpecificDrawBeforeUI(RenderContext context, RenderFrame renderFrame)
+        protected virtual void SpecificDrawBeforeUI(RenderDrawContext context, RenderFrame renderFrame)
         {
         }
 

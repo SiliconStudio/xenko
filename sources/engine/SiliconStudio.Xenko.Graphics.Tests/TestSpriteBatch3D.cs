@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private SpriteSheet rotatedImages;
 
-        private RasterizerState rasterizerState;
+        private RasterizerStateDescription rasterizerState;
 
         public TestSpriteBatch3D()
         {
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             batch = new Sprite3DBatch(GraphicsDevice);
             sphere = Asset.Load<Texture>("Sphere");
             rotatedImages = Asset.Load<SpriteSheet>("RotatedImages");
-            rasterizerState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.None));
+            rasterizerState = new RasterizerStateDescription(CullMode.None);
         }
 
         protected override void Draw(GameTime gameTime)

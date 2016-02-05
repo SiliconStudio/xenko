@@ -27,7 +27,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private EffectInstance simpleEffect;
 
-        private VertexArrayObject vao;
+        // TODO GRAPHICS REFACTOR
+        //private VertexArrayObject vao;
 
         private DrawOptions[] myDraws;
 
@@ -79,7 +80,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
             simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Texture0, UVTexture);
 
-            vao = VertexArrayObject.New(GraphicsDevice, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
+            // TODO GRAPHICS REFACTOR
+            //vao = VertexArrayObject.New(GraphicsDevice, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
 
             myDraws = new DrawOptions[3];
             myDraws[0] = new DrawOptions { Sampler = GraphicsDevice.SamplerStates.LinearClamp, Transform = Matrix.Multiply(Matrix.Scaling(0.4f), Matrix.Translation(-0.5f, 0.5f, 0f)) };
@@ -104,9 +106,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.LightBlue);
             GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer | DepthStencilClearOptions.Stencil);
             GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
-            GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullNone);
 
-            GraphicsDevice.SetVertexArrayObject(vao);
+            // TODO GRAPHICS REFACTOR
+            //GraphicsDevice.SetRasterizerState(GraphicsDevice.RasterizerStates.CullNone);
+
+            // TODO GRAPHICS REFACTOR
+            //GraphicsDevice.SetVertexArrayObject(vao);
 
             for (var i = 0; i < myDraws.Length; ++i)
             {
@@ -115,7 +120,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 simpleEffect.Apply(GraphicsDevice);
                 GraphicsDevice.DrawIndexed(PrimitiveType.TriangleList, 6);
             }
-            GraphicsDevice.SetVertexArrayObject(null);
+
+            // TODO GRAPHICS REFACTOR
+            //GraphicsDevice.SetVertexArrayObject(null);
         }
 
         public static void Main()

@@ -56,7 +56,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             HarmonicOrder = 3;
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var inputTexture = RadianceMap;
             if (inputTexture == null)
@@ -84,7 +84,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             firstPassEffect.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
             firstPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass1Keys.RadianceMap, inputTexture);
             firstPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass1Keys.OutputBuffer, partialSumBuffer);
-            firstPassEffect.Draw(context);
+            ((RendererBase)firstPassEffect).Draw(context);
 
             // Recursively applies the pass2 (sums the coefficients together) as long as needed. Swap input/output buffer at each iteration.
             var secondPassInputBuffer = partialSumBuffer;
@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
                 secondPassEffect.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
                 secondPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass2Keys.InputBuffer, secondPassInputBuffer);
                 secondPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass2Keys.OutputBuffer, secondPassOutputBuffer);
-                secondPassEffect.Draw(context);
+                ((RendererBase)secondPassEffect).Draw(context);
 
                 // swap second pass input/output buffers.
                 var swapTemp = secondPassOutputBuffer;

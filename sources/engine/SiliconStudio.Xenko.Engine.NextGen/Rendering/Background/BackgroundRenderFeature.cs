@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
             spriteBatch = new SpriteBatch(RenderSystem.GraphicsDevice) { VirtualResolution = new Vector3(1) };
         }
 
-        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var target = RenderSystem.RenderContextOld.Tags.GetSafe(RenderFrame.Current);
             var graphicsDevice = context.GraphicsDevice;
