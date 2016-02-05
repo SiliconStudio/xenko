@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Rendering
     [Display("Layer Input")]
     public sealed class LayerInputFrameProvider : RenderFrameProviderBase, IImageEffectRendererInput
     {
-        public override RenderFrame GetRenderFrame(RenderContext context)
+        public override RenderFrame GetRenderFrame(RenderDrawContext context)
         {
             return context.Tags.GetSafe(SceneGraphicsLayer.CurrentInput);
         }

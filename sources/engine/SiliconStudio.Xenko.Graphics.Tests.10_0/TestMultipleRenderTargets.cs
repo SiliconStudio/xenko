@@ -144,7 +144,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             SceneSystem.SceneInstance = new SceneInstance(Services, scene);
         }
 
-        private void DisplayGBuffer(RenderContext context, RenderFrame frame)
+        private void DisplayGBuffer(RenderDrawContext context, RenderFrame frame)
         {
             GraphicsDevice.DrawTexture(textures[renderTargetToDisplayIndex]);
         }

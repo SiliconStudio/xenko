@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.PrepareEffectPermutations();
         }
 
-        public override void Prepare(NextGenRenderContext context)
+        public override void Prepare(RenderContext context)
         {
             base.Prepare(context);
 
@@ -87,7 +87,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                     throw new NotImplementedException();
                 }
 
-                var descriptorLayoutBuilder = renderEffect.Reflection.Binder.DescriptorReflection.Layouts[perLightingDescriptorSetSlot.Index].Layout;
+                var descriptorLayoutBuilder = renderEffect.Reflection.DescriptorReflection.Layouts[perLightingDescriptorSetSlot.Index].Layout;
 
                 if (!parameters.HasLayout)
                 {
@@ -152,11 +152,13 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.Prepare(context);
         }
 
-        public override void Draw(NextGenRenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var graphicsDevice = RenderSystem.GraphicsDevice;
 
             Effect currentEffect = null;
+            var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
+
             for (int index = startIndex; index < endIndex; index++)
             {
                 var renderNodeReference = renderViewStage.RenderNodes[index].RenderNode;
@@ -169,15 +171,48 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 if (currentEffect != renderEffect.Effect)
                 {
                     currentEffect = renderEffect.Effect;
-                    renderEffect.Effect.ApplyProgram(graphicsDevice);
                 }
 
-                renderEffect.Reflection.Binder.Apply(graphicsDevice, ResourceGroupPool, ComputeResourceGroupOffset(renderNodeReference));
+                // First time, let's compile pipeline state
+                // TODO GRAPHICS REFACTOR invalidate if effect is destroyed, or some other cases
+                if (renderEffect.PipelineState == null)
+                {
+                    var pipelineState = MutablePipeline.State;
 
-                graphicsDevice.PushState();
-                graphicsDevice.SetDepthStencilState(graphicsDevice.DepthStencilStates.None);
+                    // Effect
+                    pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
+                    pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
+
+                    // Bind VAO
+                    pipelineState.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
+                    pipelineState.PrimitiveType = PrimitiveQuad.PrimitiveType;
+                    pipelineState.DepthStencilState = graphicsDevice.DepthStencilStates.None;
+
+                    // TODO GRAPHICS REFACTOR
+                    // pipelineState.RenderTargetFormats = 
+
+                    ProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderNode.RenderObject, pipelineState);
+
+                    MutablePipeline.Update(graphicsDevice);
+                    renderEffect.PipelineState = MutablePipeline.CurrentState;
+                }
+
+                graphicsDevice.SetPipelineState(renderEffect.PipelineState);
+
+                var resourceGroupOffset = ComputeResourceGroupOffset(renderNodeReference);
+                renderEffect.Reflection.BufferUploader.Apply(graphicsDevice, ResourceGroupPool, resourceGroupOffset);
+
+                // Bind descriptor sets
+                for (int i = 0; i < descriptorSets.Length; ++i)
+                {
+                    var resourceGroup = ResourceGroupPool[resourceGroupOffset++];
+                    if (resourceGroup != null)
+                        descriptorSets[i] = resourceGroup.DescriptorSet;
+                }
+
+                graphicsDevice.SetDescriptorSets(0, descriptorSets);
+
                 graphicsDevice.DrawQuad();
-                graphicsDevice.PopState();
             }
         }
     }

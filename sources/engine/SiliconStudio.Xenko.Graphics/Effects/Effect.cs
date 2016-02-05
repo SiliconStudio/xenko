@@ -20,15 +20,9 @@ namespace SiliconStudio.Xenko.Graphics
     public class Effect : ComponentBase
     {
         private GraphicsDevice graphicsDeviceDefault;
-        private EffectProgram program;
         private EffectReflection reflection;
-        private EffectInputSignature inputSignature;
 
         private EffectBytecode bytecode;
-
-        public static readonly ParameterKey<RasterizerState> RasterizerStateKey = ParameterKeys.New<RasterizerState>();
-        public static readonly ParameterKey<DepthStencilState> DepthStencilStateKey = ParameterKeys.New<DepthStencilState>();
-        public static readonly ParameterKey<BlendState> BlendStateKey = ParameterKeys.New<BlendState>();
 
         internal Effect()
         {
@@ -61,18 +55,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Gets the input signature of this effect.
-        /// </summary>
-        /// <value>The input signature.</value>
-        public EffectInputSignature InputSignature
-        {
-            get
-            {
-                return inputSignature;
-            }
-        }
-
-        /// <summary>
         /// Gets the bytecode.
         /// </summary>
         /// <value>The bytecode.</value>
@@ -82,11 +64,6 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 return bytecode;
             }
-        }
-
-        public void ApplyProgram(GraphicsDevice graphicsDevice)
-        {
-            PrepareApply(graphicsDevice);
         }
 
         public bool HasParameter(ParameterKey parameterKey)
@@ -115,22 +92,11 @@ namespace SiliconStudio.Xenko.Graphics
             return false;
         }
 
-        private void PrepareApply(GraphicsDevice graphicsDevice)
-        {
-            if (graphicsDevice == null) throw new ArgumentNullException("graphicsDevice");
-
-            program.Apply(graphicsDevice);
-            graphicsDevice.CurrentEffect = this;
-            graphicsDevice.ApplyPlatformSpecificParams(this);
-        }
-
         private void Initialize()
         {
-            program = EffectProgram.New(graphicsDeviceDefault, bytecode);
-            reflection = program.Reflection;
+            reflection = bytecode.Reflection;
 
             PrepareReflection(reflection);
-            inputSignature = program.InputSignature;
             LoadDefaultParameters();
         }
 

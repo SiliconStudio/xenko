@@ -32,7 +32,8 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
             EffectSystem.Initialize();
             ((IContentable)EffectSystem).LoadContent();
             ((EffectCompilerCache)EffectSystem.Compiler).CompileEffectAsynchronously = false;
-            DrawEffectContext = RenderContext.GetShared(Services);
+            RenderContext = RenderContext.GetShared(Services);
+            RenderDrawContext = new RenderDrawContext(Services, RenderContext);
         }
 
         public IServiceRegistry Services { get; private set; }
@@ -43,7 +44,9 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
 
         public IGraphicsDeviceService GraphicsDeviceService { get; private set; }
 
-        public RenderContext DrawEffectContext { get; private set; }
+        public RenderContext RenderContext { get; private set; }
+
+        public RenderDrawContext RenderDrawContext { get; private set; }
 
         public void Dispose()
         {
@@ -92,12 +95,12 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 // -------------------------------------------------------------------
                 // Calculate Diffuse prefiltering
                 // -------------------------------------------------------------------
-                var lamberFiltering = new LambertianPrefilteringSHNoCompute(context.DrawEffectContext);
+                var lamberFiltering = new LambertianPrefilteringSHNoCompute(context.RenderContext);
 
 
                 lamberFiltering.HarmonicOrder = (int)asset.DiffuseSHOrder;
                 lamberFiltering.RadianceMap = skyboxTexture;
-                lamberFiltering.Draw();
+                lamberFiltering.Draw(context.RenderDrawContext);
 
                 var coefficients = lamberFiltering.PrefilteredLambertianSH.Coefficients;
 
@@ -152,7 +155,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 // -------------------------------------------------------------------
                 // Calculate Specular prefiltering
                 // -------------------------------------------------------------------
-                var specularRadiancePrefilterGGX = new RadiancePrefilteringGGXNoCompute(context.DrawEffectContext);
+                var specularRadiancePrefilterGGX = new RadiancePrefilteringGGXNoCompute(context.RenderContext);
 
                 var textureSize = asset.SpecularCubeMapSize <= 0 ? 64 : asset.SpecularCubeMapSize;
                 textureSize = (int)Math.Pow(2, Math.Round(Math.Log(textureSize, 2)));
@@ -166,7 +169,7 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                 {
                     specularRadiancePrefilterGGX.RadianceMap = skyboxTexture;
                     specularRadiancePrefilterGGX.PrefilteredRadiance = outputTexture;
-                    specularRadiancePrefilterGGX.Draw();
+                    specularRadiancePrefilterGGX.Draw(context.RenderDrawContext);
 
                     var cubeTexture = Texture.NewCube(context.GraphicsDevice, textureSize, true, skyboxTexture.Format);
                     context.GraphicsDevice.Copy(outputTexture, cubeTexture);

@@ -68,7 +68,7 @@ namespace SiliconStudio.Xenko.Rendering
             rendererManager.Dispose();
         }
 
-        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        protected override void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             var uiProcessor = SceneInstance.GetProcessor<UIComponentProcessor>();
             if (uiProcessor == null)
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        protected override void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             // build the list of the UI elements to render
             uiElementStates.Clear();
@@ -140,7 +140,7 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     var renderTarget = renderingContext.RenderTarget;
                     var description = TextureDescription.New2D(renderTarget.Width, renderTarget.Height, PixelFormat.D24_UNorm_S8_UInt, TextureFlags.DepthStencil);
-                    scopedDepthBuffer = PushScopedResource(context.Allocator.GetTemporaryTexture(description));
+                    scopedDepthBuffer = PushScopedResource(context.RenderContext.Allocator.GetTemporaryTexture(description));
                     break;
                 }
             }
@@ -260,7 +260,7 @@ namespace SiliconStudio.Xenko.Rendering
             context.GraphicsDevice.SetDepthAndRenderTargets(CurrentRenderFrame.DepthStencil, CurrentRenderFrame.RenderTargets);
         }
 
-        private void ReccursiveDrawWithClipping(RenderContext context, UIElement element)
+        private void ReccursiveDrawWithClipping(RenderDrawContext context, UIElement element)
         {
             // if the element is not visible, we also remove all its children
             if (!element.IsVisible)

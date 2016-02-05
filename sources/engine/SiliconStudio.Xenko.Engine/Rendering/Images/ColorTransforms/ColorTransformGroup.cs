@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        protected override void DrawCore(RenderContext context1)
+        protected override void DrawCore(RenderDrawContext context1)
         {
             var output = GetOutput(0);
             if (output == null)

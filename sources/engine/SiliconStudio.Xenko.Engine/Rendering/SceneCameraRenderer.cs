@@ -90,7 +90,7 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore]
         public SafeList<IGraphicsRenderer> PostRenderers { get; private set; }
 
-        protected override void DrawCore(RenderContext context, RenderFrame output)
+        protected override void DrawCore(RenderDrawContext context, RenderFrame output)
         {
             // Early exit if some properties are null
             if (Mode == null)
@@ -99,11 +99,11 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Gets the current camera state from the slot
-            var camera = context.GetCameraFromSlot(Camera);
+            var camera = context.RenderContext.GetCameraFromSlot(Camera);
 
             // Draw this camera.
-            using (context.PushTagAndRestore(Current, this))
-            using (context.PushTagAndRestore(CameraComponentRenderer.Current, camera))
+            using (context.RenderContext.PushTagAndRestore(Current, this))
+            using (context.RenderContext.PushTagAndRestore(CameraComponentRenderer.Current, camera))
             {
                 // Run all pre-renderers
                 foreach (var renderer in PreRenderers)

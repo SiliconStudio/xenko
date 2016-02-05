@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
 
         /// <param name="context"></param>
         /// <inheritdoc/>
-        public override void Prepare(NextGenRenderContext context)
+        public override void Prepare(RenderContext context)
         {
             foreach (var materialInfo in activeMaterialInfos)
             {
@@ -130,7 +130,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 if (materialInfo.PerMaterialLayout == null)
                 {
                     var renderEffect = materialInfo.RenderEffect;
-                    var descriptorLayout = renderEffect.Reflection.Binder.DescriptorReflection.GetLayout("PerMaterial");
+                    var descriptorLayout = renderEffect.Reflection.DescriptorReflection.GetLayout("PerMaterial");
 
                     var parameterCollectionLayout = new NextGenParameterCollectionLayout();
                     parameterCollectionLayout.ProcessResources(descriptorLayout);

@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        public void Prepare(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        public void Prepare(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             if (!Enabled)
             {
@@ -35,9 +35,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Context == null)
             {
-                Initialize(context);
+                Initialize(context.RenderContext);
             }
-            else if (Context != context)
+            else if (Context != context.RenderContext)
             {
                 throw new InvalidOperationException("Cannot use a different context between Load and Draw");
             }
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Rendering
             PrepareCore(context, opaqueList, transparentList);
         }
 
-        public void Draw(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        public void Draw(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             if (Enabled)
             {
@@ -60,8 +60,8 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        protected abstract void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList);
+        protected abstract void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList);
 
-        protected abstract void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex);
+        protected abstract void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex);
     }
 }

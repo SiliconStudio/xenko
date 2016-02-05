@@ -14,6 +14,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [DataContract("ImageEffectShader")]
     public class ImageEffectShader : ImageEffect
     {
+        private MutablePipelineState pipelineState = new MutablePipelineState();
+        private bool pipelineStateDirty = true;
+        private BlendStateDescription blendState = new BlendStateDescription(Blend.One, Blend.Zero);
+
+        public BlendStateDescription BlendState
+        {
+            get { return blendState; }
+            set { blendState = value; pipelineStateDirty = true; }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ImageEffectShader" /> class.
         /// </summary>
@@ -75,7 +85,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             Parameters.SetResourceSlow(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }
 
-        protected override void PreDrawCore(RenderContext context)
+        protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
 
@@ -108,8 +118,24 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
+            if (pipelineStateDirty)
+            {
+                EffectInstance.UpdateEffect(GraphicsDevice);
+
+                pipelineState.State.SetDefaults();
+                pipelineState.State.RootSignature = EffectInstance.RootSignature;
+                pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
+                pipelineState.State.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
+                pipelineState.State.PrimitiveType = PrimitiveQuad.PrimitiveType;
+                pipelineState.State.BlendState = blendState;
+                pipelineState.Update(GraphicsDevice);
+                pipelineStateDirty = false;
+            }
+
+            GraphicsDevice.SetPipelineState(pipelineState.CurrentState);
+
             // Draw a full screen quad
             GraphicsDevice.DrawQuad(EffectInstance);
         }

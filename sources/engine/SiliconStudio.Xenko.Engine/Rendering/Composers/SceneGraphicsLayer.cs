@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             base.Unload();
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             if (!Enabled || Output == null)
             {
@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
             }
 
             // Sets the input of the layer (== last Current)
-            var currentRenderFrame = context.Tags.Get(RenderFrame.Current);
+            var currentRenderFrame = context.RenderContext.Tags.Get(RenderFrame.Current);
             
             // Sets the output of the layer 
             // Master is always going to use the Master frame for the current frame.
@@ -132,7 +132,7 @@ namespace SiliconStudio.Xenko.Rendering.Composers
 
             using (var t1 = context.PushTagAndRestore(CurrentInput, currentRenderFrame))
             {
-                context.Tags.Set(RenderFrame.Current, renderFrame);
+                context.RenderContext.Tags.Set(RenderFrame.Current, renderFrame);
                 Renderers.Draw(context);
             }
         }

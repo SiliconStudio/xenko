@@ -124,7 +124,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             this.viewport = viewport; // TODO: support multiple viewport?
         }
 
-        protected override void PreDrawCore(RenderContext context)
+        protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
 
@@ -182,7 +182,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
         }
 
-        protected override void PostDrawCore(RenderContext context)
+        protected override void PostDrawCore(RenderDrawContext context)
         {
             if (EnableSetRenderTargets)
             {

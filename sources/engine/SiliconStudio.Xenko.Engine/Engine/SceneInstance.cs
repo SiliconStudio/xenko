@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Engine
         /// or
         /// toFrame
         /// </exception>
-        public void Draw(RenderContext context, RenderFrame toFrame, ISceneGraphicsCompositor compositorOverride = null)
+        public void Draw(RenderDrawContext context, RenderFrame toFrame, ISceneGraphicsCompositor compositorOverride = null)
         {
             if (context == null) throw new ArgumentNullException("context");
             if (toFrame == null) throw new ArgumentNullException("toFrame");
@@ -136,7 +136,7 @@ namespace SiliconStudio.Xenko.Engine
             bool hasGraphicsBegin = false;
 
             // Update global time
-            var gameTime = context.Time;
+            var gameTime = context.RenderContext.Time;
             context.GraphicsDevice.Parameters.Set(GlobalKeys.Time, (float)gameTime.Total.TotalSeconds);
             context.GraphicsDevice.Parameters.Set(GlobalKeys.TimeStep, (float)gameTime.Elapsed.TotalSeconds);
 
@@ -153,10 +153,10 @@ namespace SiliconStudio.Xenko.Engine
                 if (graphicsCompositor != null)
                 {
                     // Push context (pop after using)
-                    using (context.PushTagAndRestore(RenderFrame.Current, toFrame))
-                    using (context.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
-                    using (context.PushTagAndRestore(Current, this))
-                    using (context.PushTagAndRestore(CameraRendererMode.RendererTypesKey, RendererTypes))
+                    using (context.RenderContext.PushTagAndRestore(RenderFrame.Current, toFrame))
+                    using (context.RenderContext.PushTagAndRestore(SceneGraphicsLayer.Master, toFrame))
+                    using (context.RenderContext.PushTagAndRestore(Current, this))
+                    using (context.RenderContext.PushTagAndRestore(CameraRendererMode.RendererTypesKey, RendererTypes))
                     {
                         graphicsCompositor.Draw(context);
                     }

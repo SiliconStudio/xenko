@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Rendering
             transparentRenderItems = new RenderItemCollection(1024, true);
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             opaqueRenderItems.Clear();
             transparentRenderItems.Clear();
@@ -39,13 +39,13 @@ namespace SiliconStudio.Xenko.Rendering
             Draw(context, transparentRenderItems, RenderItemBackToFrontSorter.Default);
         }
 
-        protected override void DrawRenderer(RenderContext context, IEntityComponentRenderer renderer)
+        protected override void DrawRenderer(RenderDrawContext context, IEntityComponentRenderer renderer)
         {
-            if (!context.IsPicking() || renderer.SupportPicking)
+            if (!context.RenderContext.IsPicking() || renderer.SupportPicking)
                 renderer.Prepare(context, opaqueRenderItems, transparentRenderItems);
         }
 
-        private void Draw(RenderContext context, RenderItemCollection renderItems, IComparer<RenderItem> comparer)
+        private void Draw(RenderDrawContext context, RenderItemCollection renderItems, IComparer<RenderItem> comparer)
         {
             // Early exit
             if (renderItems.Count == 0)
@@ -72,7 +72,8 @@ namespace SiliconStudio.Xenko.Rendering
                     {
                         DrawRendererInternal(context, renderer, renderItems, fromIndex, i - 1);
 
-                        context.GraphicsDevice.ResetStates();
+                        // TODO GRAPHICS REFACTOR
+                        //context.GraphicsDevice.ResetStates();
 
                         DrawRendererInternal(context, renderItem.Renderer, renderItems, lastIndex, lastIndex);
                     }
@@ -92,12 +93,14 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        private void DrawRendererInternal(RenderContext context, IEntityComponentRenderer renderer, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        private void DrawRendererInternal(RenderDrawContext context, IEntityComponentRenderer renderer, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             var graphicsDevice = context.GraphicsDevice;
-            graphicsDevice.PushState();
+            // TODO GRAPHICS REFACTOR
+            //graphicsDevice.PushState();
             renderer.Draw(context, renderItems, fromIndex, toIndex);
-            graphicsDevice.PopState();
+            // TODO GRAPHICS REFACTOR
+            //graphicsDevice.PopState();
         }
 
         private class RenderItemFrontToBackSorter : IComparer<RenderItem>

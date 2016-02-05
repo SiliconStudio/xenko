@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             skyboxEffect = ToLoadAndUnload(new ImageEffectShader("SkyboxEffect"));
         }
 
-        protected override void PrepareCore(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
+        protected override void PrepareCore(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList)
         {
             skyboxProcessor = SceneInstance.GetProcessor<SkyboxProcessor>();
             if (skyboxProcessor == null)
@@ -93,7 +93,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             opaqueList.Add(new RenderItem(this, skybox, float.NegativeInfinity));
         }
 
-        protected override void DrawCore(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
+        protected override void DrawCore(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
             var viewport = context.GraphicsDevice.Viewport;
 
@@ -109,7 +109,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                 skyboxEffect.SetOutput(CurrentRenderFrame.RenderTargets);
                 skyboxEffect.SetViewport(viewport);
-                skyboxEffect.Draw();
+                skyboxEffect.Draw(context);
             }
 
             // Make sure to fully restore the current render frame

@@ -31,18 +31,6 @@ namespace SiliconStudio.Xenko.Graphics
             device.DrawQuad();
         }
 
-        /// <summary>
-        /// Resets the <see cref="BlendState"/>, <see cref="DepthStencilState"/> and <see cref="RasterizerState"/> to their 
-        /// default values.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        public static void ResetStates(this GraphicsDevice device)
-        {
-            device.SetBlendState(device.BlendStates.Default);
-            device.SetDepthStencilState(device.DepthStencilStates.Default);
-            device.SetRasterizerState(device.RasterizerStates.CullBack);
-        }
-
         public static Texture GetSharedWhiteTexture(this GraphicsDevice device)
         {
             return device.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "WhiteTexture", CreateWhiteTexture);

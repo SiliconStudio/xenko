@@ -19,27 +19,20 @@ namespace SiliconStudio.Xenko.Graphics
 
         private readonly ParameterCollection parameters;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a <see cref="SpriteEffect"/>.
-        /// </summary>
-        /// <param name="graphicsDevice">The graphics device.</param>
-        public PrimitiveQuad(GraphicsDevice graphicsDevice)
-            : this(graphicsDevice, new Effect(graphicsDevice, SpriteEffect.Bytecode))
-        {
-        }
+        public static readonly VertexDeclaration VertexDeclaration = VertexPositionNormalTexture.Layout;
+        public static readonly PrimitiveType PrimitiveType = PrimitiveType.TriangleList;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class with a particular effect.
+        /// Initializes a new instance of the <see cref="PrimitiveQuad" /> class.
         /// </summary>
         /// <param name="graphicsDevice">The graphics device.</param>
         /// <param name="effect">The effect.</param>
-        public PrimitiveQuad(GraphicsDevice graphicsDevice, Effect effect)
+        public PrimitiveQuad(GraphicsDevice graphicsDevice)
         {
             GraphicsDevice = graphicsDevice;
-            simpleEffect = effect;
             parameters = new ParameterCollection();
             parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
-            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice, simpleEffect.InputSignature));
+            sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice));
         }
 
         /// <summary>
@@ -65,9 +58,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         public void Draw()
         {
-            GraphicsDevice.SetVertexArrayObject(sharedData.VertexBuffer);
-            GraphicsDevice.Draw(PrimitiveType.TriangleList, QuadCount);
-            GraphicsDevice.SetVertexArrayObject(null);
+            //GraphicsDevice.SetVertexArrayObject(sharedData.VertexBuffer);
+            GraphicsDevice.SetVertexBuffer(0, sharedData.VertexBuffer.Buffer, sharedData.VertexBuffer.Offset, sharedData.VertexBuffer.Stride);
+            GraphicsDevice.Draw(PrimitiveType, QuadCount);
+            //GraphicsDevice.SetVertexArrayObject(null);
         }
 
         /// <summary>
@@ -110,7 +104,7 @@ namespace SiliconStudio.Xenko.Graphics
             /// <summary>
             /// The vertex buffer
             /// </summary>
-            public readonly VertexArrayObject VertexBuffer;
+            public readonly VertexBufferBinding VertexBuffer;
             
             private static readonly VertexPositionNormalTexture[] QuadsVertices =
             {
@@ -119,14 +113,14 @@ namespace SiliconStudio.Xenko.Graphics
                 new VertexPositionNormalTexture(new Vector3(-1,-3, 0), new Vector3(0, 0, 1), new Vector2(0, 2)),
             };
 
-            public SharedData(GraphicsDevice device, EffectInputSignature defaultSignature)
+            public SharedData(GraphicsDevice device)
             {
                 var vertexBuffer = Buffer.Vertex.New(device, QuadsVertices).DisposeBy(this);
                 
                 // Register reload
                 vertexBuffer.Reload = (graphicsResource) => ((Buffer)graphicsResource).Recreate(QuadsVertices);
 
-                VertexBuffer = VertexArrayObject.New(device, defaultSignature, new VertexBufferBinding(vertexBuffer, VertexPositionNormalTexture.Layout, QuadsVertices.Length, VertexPositionNormalTexture.Size)).DisposeBy(this);
+                VertexBuffer = new VertexBufferBinding(vertexBuffer, VertexDeclaration, QuadsVertices.Length, VertexPositionNormalTexture.Size);
             }
         }
     }

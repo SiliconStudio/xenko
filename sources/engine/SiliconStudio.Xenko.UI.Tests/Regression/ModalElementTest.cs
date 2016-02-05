@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
             uniformGrid.Children.Remove(modal2);
         }
 
-        protected override void SpecificDrawBeforeUI(RenderContext context, RenderFrame renderFrame)
+        protected override void SpecificDrawBeforeUI(RenderDrawContext context, RenderFrame renderFrame)
         {
             base.SpecificDrawBeforeUI(context, renderFrame);
 

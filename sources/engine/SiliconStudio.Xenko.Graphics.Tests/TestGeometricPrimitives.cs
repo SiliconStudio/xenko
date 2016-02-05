@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private bool isWireframe;
 
-        private RasterizerState wireframeState;
+        private RasterizerStateDescription wireframeState;
 
         private bool isPaused;
 
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            wireframeState = RasterizerState.New(GraphicsDevice, new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe });
+            wireframeState = new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe };
 
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
             parameterCollection = new ParameterCollection();
@@ -153,7 +153,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
                 // Disable Cull only for the plane primitive, otherwise use standard culling
                 var defaultRasterizerState = i == 0 ? GraphicsDevice.RasterizerStates.CullNone : GraphicsDevice.RasterizerStates.CullBack;
-                GraphicsDevice.SetRasterizerState(isWireframe? wireframeState: defaultRasterizerState);
+                // TODO GRAPHICS REFACTOR
+                //GraphicsDevice.SetRasterizerState(isWireframe? wireframeState: defaultRasterizerState);
 
                 // Draw the primitive using BasicEffect
                 simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));

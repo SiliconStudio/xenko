@@ -90,12 +90,13 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             var material = result.Material;
-            var blendState = material.Parameters.GetResourceSlow(Graphics.Effect.BlendStateKey);
-            if (blendState != null && blendState.GraphicsDevice == null)
-            {
-                var newState = BlendState.New(device, blendState.Description);
-                material.Parameters.SetResourceSlow(Effect.BlendStateKey, newState);
-            }
+            // TODO GRAPHICS REFACTOR
+            //var blendState = material.Parameters.GetResourceSlow(Graphics.Effect.BlendStateKey);
+            //if (blendState != null && blendState.GraphicsDevice == null)
+            //{
+            //    var newState = BlendState.New(device, blendState.Description);
+            //    material.Parameters.SetResourceSlow(Effect.BlendStateKey, newState);
+            //}
             // TODO: Add other states?
 
             return material;

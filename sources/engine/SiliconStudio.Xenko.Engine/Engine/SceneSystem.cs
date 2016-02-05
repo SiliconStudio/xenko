@@ -106,7 +106,8 @@ namespace SiliconStudio.Xenko.Engine
             SceneInstance.Draw(renderContext);
 
             // Renders the scene
-            SceneInstance.Draw(renderContext, MainRenderFrame);
+            var renderDrawContext = new RenderDrawContext(Services, renderContext);
+            SceneInstance.Draw(renderDrawContext, MainRenderFrame);
         }
     }
 }

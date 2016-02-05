@@ -38,14 +38,13 @@ namespace SiliconStudio.Xenko.Graphics
         private SharpDX.Direct3D11.OutputMergerStage outputMerger;
 
         private SharpDX.Direct3D11.DeviceCreationFlags creationFlags;
-        private EffectInputSignature currentEffectInputSignature;
-        private SharpDX.Direct3D11.InputLayout currentInputLayout;
-        private VertexArrayObject currentVertexArrayObject;
-        private VertexArrayLayout currentVertexArrayLayout;
-        private VertexArrayObject newVertexArrayObject;
 
         private PipelineState defaultPipelineState;
+
+        private PipelineState newPipelineState;
         private PipelineState currentPipelineState;
+
+        private DescriptorSet[] currentDescriptorSets = new DescriptorSet[32];
 
         /// <summary>
         /// Initializes a new instance of the <see cref="GraphicsDevice" /> class using the default GraphicsAdapter
@@ -59,7 +58,6 @@ namespace SiliconStudio.Xenko.Graphics
             creationFlags = device.creationFlags;
             Features = device.Features;
             sharedDataPerDevice = device.sharedDataPerDevice;
-            InputLayoutManager = device.InputLayoutManager;
             nativeDevice = device.NativeDevice;
             nativeDeviceContext = new SharpDX.Direct3D11.DeviceContext(NativeDevice).DisposeBy(this);
             nativeDeviceProfiler = SharpDX.ComObject.QueryInterfaceOrNull<SharpDX.Direct3D11.UserDefinedAnnotation>(nativeDeviceContext.NativePointer);
@@ -72,10 +70,6 @@ namespace SiliconStudio.Xenko.Graphics
             NeedWorkAroundForUpdateSubResource = !Features.HasDriverCommandLists;
 
             primitiveQuad = new PrimitiveQuad(this).DisposeBy(this);
-
-            var defaultPipelineStateDescription = new PipelineStateDescription();
-            defaultPipelineStateDescription.SetDefaults();
-            defaultPipelineState = PipelineState.New(this, defaultPipelineStateDescription);
 
             InitializeStages();
         }
@@ -132,12 +126,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        ///     Gets the input layout manager.
-        /// </summary>
-        /// <value>The input layout manager.</value>
-        internal InputLayoutManager InputLayoutManager { get; private set; }
-
-        /// <summary>
         ///     Gets the native device.
         /// </summary>
         /// <value>The native device.</value>
@@ -171,10 +159,6 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 inputAssembler.PrimitiveTopology = (SharpDX.Direct3D.PrimitiveTopology)value;
             }
-        }
-
-        public void ApplyPlatformSpecificParams(Effect effect)
-        {
         }
 
         /// <summary>
@@ -340,11 +324,9 @@ namespace SiliconStudio.Xenko.Graphics
             for (int i = 0; i < currentRenderTargetViews.Length; i++)
                 currentRenderTargetViews[i] = null;
 
-            currentEffectInputSignature = null;
-            currentVertexArrayLayout = null;
-            currentInputLayout = null;
-            currentVertexArrayObject = null;
-            CurrentEffect = null;
+            // Since nothing can be drawn in default state, no need to set anything (another SetPipelineState should happen before)
+            currentPipelineState = defaultPipelineState;
+            newPipelineState = defaultPipelineState;
         }
 
         public void Copy(GraphicsResource source, GraphicsResource destination)
@@ -610,43 +592,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Set the blend state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="blendState">a blend-state</param>
-        /// <param name="blendFactor">Blend factors, one for each RGBA component. This requires a blend state object that specifies the <see cref="Blend.BlendFactor" /></param>
-        /// <param name="multiSampleMask">32-bit sample coverage. The default value is 0xffffffff.</param>
-        private void SetBlendStateImpl(BlendState blendState, Color4 blendFactor, int multiSampleMask = -1)
-        {
-            if (blendState == null)
-            {
-                NativeDeviceContext.OutputMerger.SetBlendState(null, ColorHelper.Convert(blendFactor), multiSampleMask);
-            }
-            else
-            {
-                NativeDeviceContext.OutputMerger.SetBlendState((SharpDX.Direct3D11.BlendState)blendState.NativeDeviceChild, ColorHelper.Convert(blendFactor), multiSampleMask);
-            }
-        }
-
-        /// <summary>
-        /// Sets the depth-stencil state of the output-merger stage. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="depthStencilState">a depth-stencil state</param>
-        /// <param name="stencilReference">Reference value to perform against when doing a depth-stencil test.</param>
-        private void SetDepthStencilStateImpl(DepthStencilState depthStencilState, int stencilReference = 0)
-        {
-            NativeDeviceContext.OutputMerger.SetDepthStencilState(depthStencilState != null ? (SharpDX.Direct3D11.DepthStencilState)depthStencilState.NativeDeviceChild : null, stencilReference);
-        }
-
-        /// <summary>
-        /// Set the <strong>rasterizer state</strong> for the rasterizer stage of the pipeline. See <see cref="Render+states"/> to learn how to use it.
-        /// </summary>
-        /// <param name="rasterizerState">The rasterizser state to set on this device.</param>
-        private void SetRasterizerStateImpl(RasterizerState rasterizerState)
-        {
-            NativeDeviceContext.Rasterizer.State = rasterizerState != null ? (SharpDX.Direct3D11.RasterizerState)rasterizerState.NativeDeviceChild : null;
-        }
-
-        /// <summary>
         /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
@@ -706,15 +651,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             NativeDeviceContext.StreamOutput.SetTargets(streamOutputBufferBindings);
-        }
-
-        /// <summary>
-        /// Sets the vertex array object.
-        /// </summary>
-        /// <param name="vertexArrayObject">The vertex array object.</param>
-        public void SetVertexArrayObject(VertexArrayObject vertexArrayObject)
-        {
-            newVertexArrayObject = vertexArrayObject;
         }
 
         /// <summary>
@@ -889,10 +825,6 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             InitializeStages();
-
-            // Create the input layout manager
-            if (InputLayoutManager == null)
-                InputLayoutManager = new InputLayoutManager(this).DisposeBy(this);
         }
 
         protected void DestroyPlatformDevice()
@@ -913,17 +845,11 @@ namespace SiliconStudio.Xenko.Graphics
                 deviceDebug.ReportLiveDeviceObjects(SharpDX.Direct3D11.ReportingLevel.Detail);
             }
 
-            currentInputLayout = null;
-            currentEffectInputSignature = null;
-            currentVertexArrayObject = null;
-            currentVertexArrayLayout = null;
             nativeDevice.Dispose();
         }
 
         internal void OnDestroyed()
         {
-            // Clear input layouts cache
-            InputLayoutManager.OnDestroyed();
         }
 
         /// <summary>
@@ -933,78 +859,44 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException">Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method</exception>
         private void PrepareDraw(PrimitiveType primitiveType)
         {
-            if (CurrentEffect == null)
-            {
-                throw new InvalidOperationException("Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method");
-            }
-
             // Setup the primitive type
             PrimitiveType = primitiveType;
 
-            // If the vertex array object is null, simply set the InputLayout to null
-            if (newVertexArrayObject == null)
+            // Pipeline state
+            if (newPipelineState != currentPipelineState)
             {
-                if (currentVertexArrayObject != null)
-                {
-                    currentVertexArrayObject = null;
-                    currentVertexArrayLayout = null;
-                    currentEffectInputSignature = null;
-                    inputAssembler.InputLayout = currentInputLayout = null;
-                }
+                newPipelineState.Apply(this, currentPipelineState);
+                currentPipelineState = newPipelineState;
             }
-            else
-            {
-                var newVertexArrayLayout = newVertexArrayObject.Layout;
-                var newEffectInputSignature = CurrentEffect.InputSignature;
-                var oldInputLayout = currentInputLayout;
 
-                // Apply the VertexArrayObject
-                if (newVertexArrayObject != currentVertexArrayObject)
-                {
-                    currentVertexArrayObject = newVertexArrayObject;
-                    newVertexArrayObject.Apply(inputAssembler);
-                }
-
-                // If the input layout of the effect or the vertex buffer has changed, get the associated new input layout
-                if (!ReferenceEquals(newVertexArrayLayout, currentVertexArrayLayout) || !ReferenceEquals(newEffectInputSignature, currentEffectInputSignature))
-                {
-                    currentVertexArrayLayout = newVertexArrayLayout;
-                    currentEffectInputSignature = newEffectInputSignature;
-
-                    if (newVertexArrayObject.InputLayout != null && ReferenceEquals(newEffectInputSignature, newVertexArrayObject.EffectInputSignature))
-                    {
-                        // Default configuration
-                        currentInputLayout = newVertexArrayObject.InputLayout;
-                    }
-                    else if (ReferenceEquals(newEffectInputSignature, newVertexArrayObject.LastEffectInputSignature))
-                    {
-                        // Reuse previous configuration
-                        currentInputLayout = newVertexArrayObject.LastInputLayout;
-                    }
-                    // Slow path if the current VertexArrayObject is not optimized for the particular input (or not used right before)
-                    else
-                    {
-                        currentInputLayout = InputLayoutManager.GetInputLayout(newEffectInputSignature, currentVertexArrayLayout);
-
-                        // Store it in VAO since it will likely be used with same effect later
-                        newVertexArrayObject.LastInputLayout = currentInputLayout;
-                        newVertexArrayObject.LastEffectInputSignature = newEffectInputSignature;
-                    }
-
-                    // Setup the input layout (if it changed)
-                    if (currentInputLayout != oldInputLayout)
-                        inputAssembler.InputLayout = currentInputLayout;
-                }
-            }
+            // Resources
+            if (newPipelineState != null)
+                newPipelineState.ResourceBinder.BindResources(this, currentDescriptorSets);
 
             SetViewportImpl();
         }
 
         public void SetPipelineState(PipelineState pipelineState)
         {
-            var newPipelineState = pipelineState ?? defaultPipelineState;
-            newPipelineState.Apply(this, currentPipelineState ?? defaultPipelineState);
-            currentPipelineState = newPipelineState;
+            newPipelineState = pipelineState ?? defaultPipelineState;
+        }
+
+        public void SetVertexBuffer(int index, Buffer buffer, int offset, int stride)
+        {
+            inputAssembler.SetVertexBuffers(index, new SharpDX.Direct3D11.VertexBufferBinding(buffer.NativeBuffer, stride, offset));
+        }
+
+        public void SetIndexBuffer(Buffer buffer, int offset, bool is32bits)
+        {
+            inputAssembler.SetIndexBuffer(buffer != null ? buffer.NativeBuffer : null, is32bits ? Format.R32_UInt : Format.R16_UInt, offset);
+        }
+
+        public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
+        {
+            for (int i = 0; i < descriptorSets.Length; ++i)
+            {
+                currentDescriptorSets[index++] = descriptorSets[i];
+            }
         }
     }
 }

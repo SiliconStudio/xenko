@@ -115,7 +115,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.Reset();
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var input = GetSafeInput(0);
 

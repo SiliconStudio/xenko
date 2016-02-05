@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="opaqueList">The opaque list.</param>
         /// <param name="transparentList">The transparent list.</param>
         /// <remarks>The implementation should fill the opaqueList and/or the transparentList of render items to render with a proper depth value</remarks>
-        void Prepare(RenderContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList);
+        void Prepare(RenderDrawContext context, RenderItemCollection opaqueList, RenderItemCollection transparentList);
 
         /// <summary>
         /// Draws the specified list of <see cref="RenderItem"/>.
@@ -32,6 +32,6 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="renderItems">The render items.</param>
         /// <param name="fromIndex">From index.</param>
         /// <param name="toIndex">To index.</param>
-        void Draw(RenderContext context, RenderItemCollection renderItems, int fromIndex, int toIndex);
+        void Draw(RenderDrawContext context, RenderItemCollection renderItems, int fromIndex, int toIndex);
     }
 }

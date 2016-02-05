@@ -69,7 +69,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
             }
         }
 
-        protected override void DrawCore(RenderContext context)
+        protected override void DrawCore(RenderDrawContext context)
         {
             var output = PrefilteredRadiance;
             if (output == null || (output.Dimension != TextureDimension.Texture2D && output.Dimension != TextureDimension.TextureCube) || output.ArraySize != 6)
@@ -112,7 +112,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
                             shader.Parameters.SetValueSlow(RadiancePrefilteringGGXNoComputeShaderKeys.RadianceMapSize, input.Width);
                             shader.Parameters.SetValueSlow(RadiancePrefilteringGGXNoComputeParams.NbOfSamplings, SamplingsCount);
                             shader.SetOutput(outputView);
-                            shader.Draw(context);
+                            ((RendererBase)shader).Draw(context);
                         }
                     }
                 }
