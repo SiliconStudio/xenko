@@ -320,9 +320,8 @@ namespace SiliconStudio.Assets
         /// <summary>
         /// Deep clone this package.
         /// </summary>
-        /// <param name="deepCloneAsset">if set to <c>true</c> assets will stored in this package will be also deeply cloned.</param>
         /// <returns>The package cloned.</returns>
-        public Package Clone(bool deepCloneAsset)
+        public Package Clone()
         {
             // Use a new ShadowRegistry to copy override parameters
             // Clone this asset
@@ -330,7 +329,7 @@ namespace SiliconStudio.Assets
             package.FullPath = FullPath;
             foreach (var asset in Assets)
             {
-                var newAsset = deepCloneAsset ? (Asset)AssetCloner.Clone(asset.Asset) : asset.Asset;
+                var newAsset = asset.Asset;
                 var assetItem = new AssetItem(asset.Location, newAsset)
                 {
                     SourceFolder = asset.SourceFolder,
@@ -593,8 +592,6 @@ namespace SiliconStudio.Assets
             if (assetBaseItem != null)
             {
                 var newBase = (Asset)AssetCloner.Clone(assetBaseItem.Asset);
-                newBase.Base = null;
-                newBase.BaseParts = null;
                 return new AssetBase(assetBase.Location, newBase);
             }
             // TODO: If we don't find it, should we log an error instead?
