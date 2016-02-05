@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// Represents an single render operation of a <see cref="RenderObject"/> from a specific view with a specific effect, with attached properties.
     /// </summary>
-    struct RenderNode
+    public struct RenderNode
     {
         /// <summary>
         /// Underlying render object.

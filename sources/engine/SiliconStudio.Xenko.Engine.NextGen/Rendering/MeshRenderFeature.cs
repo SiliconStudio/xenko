@@ -64,6 +64,15 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        protected override void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
+        {
+            var renderMesh = (RenderMesh)renderObject;
+            var drawData = renderMesh.Mesh.Draw;
+
+            pipelineState.InputElements = drawData.VertexBuffers.CreateInputElements();
+            pipelineState.PrimitiveType = drawData.PrimitiveType;
+        }
+
         /// <inheritdoc/>
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
@@ -74,7 +83,6 @@ namespace SiliconStudio.Xenko.Rendering
                 renderFeature.Draw(context, renderView, renderViewStage, startIndex, endIndex);
             }
 
-            Effect currentEffect = null;
             var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
 
             for (int index = startIndex; index < endIndex; index++)
@@ -89,11 +97,6 @@ namespace SiliconStudio.Xenko.Rendering
                 // TODO: Use real effect slot
                 var renderEffect = renderNode.RenderEffect;
 
-                if (currentEffect != renderEffect.Effect)
-                {
-                    currentEffect = renderEffect.Effect;
-                }
-
                 // Bind VB
                 for (int i = 0; i < drawData.VertexBuffers.Length; i++)
                 {
@@ -102,6 +105,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 var resourceGroupOffset = ComputeResourceGroupOffset(renderNodeReference);
+                
                 // Update cbuffer
                 renderEffect.Reflection.BufferUploader.Apply(context.GraphicsDevice, ResourceGroupPool, resourceGroupOffset);
 
@@ -114,30 +118,6 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 commandList.SetDescriptorSets(0, descriptorSets);
-
-                // First time, let's compile pipeline state
-                // TODO GRAPHICS REFACTOR invalidate if effect is destroyed, or some other cases
-                if (renderEffect.PipelineState == null)
-                {
-                    var pipelineState = MutablePipeline.State;
-
-                    // Effect
-                    pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
-                    pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
-
-                    // Bind VAO
-                    pipelineState.InputElements = drawData.VertexBuffers.CreateInputElements();
-                    pipelineState.PrimitiveType = drawData.PrimitiveType;
-
-                    // TODO GRAPHICS REFACTOR
-                    // pipelineState.RenderTargetFormats = 
-
-                    ProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderMesh, pipelineState);
-
-                    MutablePipeline.Update(context.GraphicsDevice);
-                    renderEffect.PipelineState = MutablePipeline.CurrentState;
-                }
-
                 commandList.SetPipelineState(renderEffect.PipelineState);
 
                 // Draw

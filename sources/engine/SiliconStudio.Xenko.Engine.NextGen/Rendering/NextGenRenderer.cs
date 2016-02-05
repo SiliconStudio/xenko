@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Rendering
                     },
             };
 
-            meshRenderFeature.ProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+            meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
             {
                 if (renderNode.RenderStage == shadowmapRenderStage)
                 {
