@@ -2,11 +2,7 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using SiliconStudio.Core.Extensions;
 using SiliconStudio.Quantum.Contents;
-using SiliconStudio.Quantum.References;
 
 namespace SiliconStudio.Quantum
 {
@@ -26,12 +22,18 @@ namespace SiliconStudio.Quantum
         public GraphNodeChangeListener(IGraphNode rootNode)
         {
             this.rootNode = rootNode;
-            foreach (var node in GetAllChildNodes(rootNode))
-            {
-                node.Content.Changing += ContentChanging;
-                node.Content.Changed += ContentChanged;
-            }
+            RegisterAllNodes();
         }
+
+        /// <summary>
+        /// Raised before one of the node referenced by the related root node changes and before the <see cref="Changing"/> event is raised.
+        /// </summary>
+        public event EventHandler<ContentChangeEventArgs> PrepareChange;
+
+        /// <summary>
+        /// Raised after one of the node referenced by the related root node has changed and after the <see cref="Changed"/> event is raised.
+        /// </summary>
+        public event EventHandler<ContentChangeEventArgs> FinalizeChange;
 
         /// <summary>
         /// Raised before one of the node referenced by the related root node changes.
@@ -39,76 +41,79 @@ namespace SiliconStudio.Quantum
         public event EventHandler<ContentChangeEventArgs> Changing;
 
         /// <summary>
-        /// Raised after one of the node referenced by the related root node changes.
+        /// Raised after one of the node referenced by the related root node has changed.
         /// </summary>
         public event EventHandler<ContentChangeEventArgs> Changed;
 
         /// <inheritdoc/>
         public void Dispose()
         {
-            foreach (var node in GetAllChildNodes(rootNode))
+            foreach (var node in rootNode.GetAllChildNodes())
             {
-                node.Content.Changing -= ContentChanging;
-                node.Content.Changed -= ContentChanged;
+                UnregisterNode(node);
             }
         }
 
-        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        protected virtual void RegisterNode(IGraphNode node)
+        {
+            node.Content.PrepareChange += ContentPrepareChange;
+            node.Content.FinalizeChange += ContentFinalizeChange;
+            node.Content.Changing += ContentChanging;
+            node.Content.Changed += ContentChanged;
+        }
+
+        protected virtual void UnregisterNode(IGraphNode node)
+        {
+            node.Content.PrepareChange += ContentPrepareChange;
+            node.Content.FinalizeChange += ContentFinalizeChange;
+            node.Content.Changing -= ContentChanging;
+            node.Content.Changed -= ContentChanged;
+        }
+
+        private void RegisterAllNodes()
+        {
+            foreach (var node in rootNode.GetAllChildNodes())
+            {
+                RegisterNode(node);
+            }
+        }
+
+        private void ContentPrepareChange(object sender, ContentChangeEventArgs e)
         {
             var node = e.Content.OwnerNode as IGraphNode;
             if (node != null)
             {
-                foreach (var child in GetAllChildNodes(node))
+                foreach (var child in node.GetAllChildNodes())
                 {
-                    child.Content.Changing -= ContentChanging;
-                    child.Content.Changed -= ContentChanged;
+                    UnregisterNode(child);
                 }
             }
 
+            PrepareChange?.Invoke(sender, e);
+        }
+
+        private void ContentFinalizeChange(object sender, ContentChangeEventArgs e)
+        {
+            var node = e.Content.OwnerNode as IGraphNode;
+            if (node != null)
+            {
+                foreach (var child in node.GetAllChildNodes())
+                {
+                    RegisterNode(child);
+                }
+            }
+
+            FinalizeChange?.Invoke(sender, e);
+        }
+
+        private void ContentChanging(object sender, ContentChangeEventArgs e)
+        {
             Changing?.Invoke(sender, e);
         }
 
         private void ContentChanged(object sender, ContentChangeEventArgs e)
         {
-            var node = e.Content.OwnerNode as IGraphNode;
-            if (node != null)
-            {
-                foreach (var child in GetAllChildNodes(node))
-                {
-                    child.Content.Changing += ContentChanging;
-                    child.Content.Changed += ContentChanged;
-                }
-            }
-
             Changed?.Invoke(sender, e);
-        }
-
-        private static IEnumerable<IGraphNode> GetAllChildNodes(IGraphNode graphNode)
-        {
-            var processedNodes = new HashSet<IGraphNode>();
-            var nodeStack = new Stack<IGraphNode>();
-            nodeStack.Push(graphNode);
-
-            while (nodeStack.Count > 0)
-            {
-                var node = nodeStack.Pop();
-                processedNodes.Add(node);
-                // We don't want to include the initial node
-                if (node != graphNode)
-                    yield return node;
-
-                // Add child nodes
-                node.Children.ForEach(x => nodeStack.Push(x));
-
-                // Add object reference target node
-                var objectReference = node.Content.Reference as ObjectReference;
-                if (objectReference?.TargetNode != null)
-                    nodeStack.Push(objectReference.TargetNode);
-
-                // Add enumerable reference target nodes
-                var enumerableReference = node.Content.Reference as ReferenceEnumerable;
-                enumerableReference?.Select(x => x.TargetNode).NotNull().ForEach(x => nodeStack.Push(x));
-            }
         }
     }
 }

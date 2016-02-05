@@ -162,6 +162,7 @@
     </PropertyGroup>
     
     <!-- Run assembly processor -->
+    <Message Importance="low" Text="$(SiliconStudioAssemblyProcessorOptions)"/>
     <AssemblyProcessorTask Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
   </Target>
 

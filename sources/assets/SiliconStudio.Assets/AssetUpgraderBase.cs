@@ -16,16 +16,32 @@ namespace SiliconStudio.Assets
             // upgrade the asset
             UpgradeAsset(context, currentVersion, targetVersion, asset, assetFile);
             SetSerializableVersion(asset, dependencyName, targetVersion);
+
             // upgrade its base
-            var baseBranch = asset["~Base"];
+            var baseBranch = asset[Asset.BaseProperty];
             if (baseBranch != null)
             {
-                var baseAsset = baseBranch["Asset"];
-                if (baseAsset != null)
+                UpgradeBase(context, dependencyName, currentVersion, targetVersion, baseBranch, assetFile);
+            }
+
+            // upgrade base parts
+            var basePartsBranch = asset[Asset.BasePartsProperty] as DynamicYamlArray;
+            if (basePartsBranch != null)
+            {
+                foreach (dynamic assetBase in basePartsBranch)
                 {
-                    UpgradeAsset(context, currentVersion, targetVersion, baseAsset, assetFile);
-                    SetSerializableVersion(baseAsset, dependencyName, targetVersion);
+                    UpgradeBase(context, dependencyName, currentVersion, targetVersion, assetBase, assetFile);
                 }
+            }
+        }
+
+        private void UpgradeBase(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, dynamic assetBase, PackageLoadingAssetFile assetFile)
+        {
+            var baseAsset = assetBase[nameof(AssetBase.Asset)];
+            if (baseAsset != null)
+            {
+                UpgradeAsset(context, currentVersion, targetVersion, baseAsset, assetFile);
+                SetSerializableVersion(baseAsset, dependencyName, targetVersion);
             }
         }
 

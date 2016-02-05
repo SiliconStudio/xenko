@@ -11,10 +11,10 @@ namespace SiliconStudio.Quantum.Commands
 {
     public class RemoveItemCommand : SyncNodeCommand
     {
-        public const string StaticName = "RemoveItem";
+        public const string CommandName = "RemoveItem";
 
         /// <inheritdoc/>
-        public override string Name => StaticName;
+        public override string Name => CommandName;
 
         /// <inheritdoc/>
         public override CombineMode CombineMode => CombineMode.AlwaysCombine;
