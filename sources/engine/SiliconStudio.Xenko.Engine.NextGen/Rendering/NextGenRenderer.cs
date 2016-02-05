@@ -215,7 +215,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Ensure size of data arrays per objects
             foreach (var renderFeature in RenderSystem.RenderFeatures)
             {
-                renderFeature.PrepareDataArrays(RenderSystem);
+                renderFeature.PrepareDataArrays();
             }
 
             // Generate and execute extract jobs
@@ -269,7 +269,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Ensure size of all other data arrays
             foreach (var renderFeature in RenderSystem.RenderFeatures)
             {
-                renderFeature.PrepareDataArrays(RenderSystem);
+                renderFeature.PrepareDataArrays();
             }
         }
 

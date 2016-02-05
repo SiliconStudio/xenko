@@ -276,9 +276,9 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffectReflection.BufferUploader.Compile(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection, effect.Bytecode);
 
                         // Prepare well-known descriptor set layouts
-                        renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
-                        renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
-                        renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
+                        renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
+                        renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
+                        renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
 
                         InstantiatedEffects.Add(effect, renderEffectReflection);
 
@@ -416,7 +416,7 @@ namespace SiliconStudio.Xenko.Rendering
             FrameLayouts.Clear();
         }
 
-        public DescriptorSetLayout CreateUniqueDescriptorSetLayout(NextGenRenderSystem RenderSystem, DescriptorSetLayoutBuilder descriptorSetLayoutBuilder)
+        public DescriptorSetLayout CreateUniqueDescriptorSetLayout(DescriptorSetLayoutBuilder descriptorSetLayoutBuilder)
         {
             DescriptorSetLayout descriptorSetLayout;
 
@@ -429,7 +429,7 @@ namespace SiliconStudio.Xenko.Rendering
             return descriptorSetLayout;
         }
 
-        private RenderSystemResourceGroupLayout CreateDrawResourceGroupLayout(NextGenRenderSystem RenderSystem, DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
+        private RenderSystemResourceGroupLayout CreateDrawResourceGroupLayout(DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
         {
             if (bindingBuilder == null)
                 return null;
@@ -458,7 +458,7 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
-        private FrameResourceGroupLayout CreateFrameResourceGroupLayout(NextGenRenderSystem RenderSystem, DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
+        private FrameResourceGroupLayout CreateFrameResourceGroupLayout(DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
         {
             if (bindingBuilder == null)
                 return null;
@@ -500,7 +500,7 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
-        private ViewResourceGroupLayout CreateViewResourceGroupLayout(NextGenRenderSystem RenderSystem, DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
+        private ViewResourceGroupLayout CreateViewResourceGroupLayout(DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
         {
             if (bindingBuilder == null)
                 return null;
@@ -546,19 +546,19 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
-        protected override int ComputeDataArrayExpectedSize(NextGenRenderSystem RenderSystem, DataType type)
+        protected override int ComputeDataArrayExpectedSize(DataType type)
         {
             switch (type)
             {
                 case DataType.EffectObject:
                     return EffectObjectNodes.Count;
                 case DataType.EffectView:
-                    return base.ComputeDataArrayExpectedSize(RenderSystem, DataType.View) * EffectPermutationSlotCount;
+                    return base.ComputeDataArrayExpectedSize(DataType.View) * EffectPermutationSlotCount;
                 case DataType.StaticEffectObject:
-                    return base.ComputeDataArrayExpectedSize(RenderSystem, DataType.StaticObject) * EffectPermutationSlotCount;
+                    return base.ComputeDataArrayExpectedSize(DataType.StaticObject) * EffectPermutationSlotCount;
             }
 
-            return base.ComputeDataArrayExpectedSize(RenderSystem, type);
+            return base.ComputeDataArrayExpectedSize(type);
         }
 
         protected override void RemoveRenderObjectFromDataArray(DataArray dataArray, int removedIndex)
