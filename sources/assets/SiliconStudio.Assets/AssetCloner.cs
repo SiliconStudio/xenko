@@ -118,11 +118,13 @@ namespace SiliconStudio.Assets
                     if (objectRef != null)
                     {
                         var shadowObject = ShadowObject.GetOrCreate(objectRef);
-
-                        // Get the shadow id (may be a non-shadow, so we may duplicate it (e.g Entity)
-                        // but it should not be a big deal
-                        var id = shadowObject.GetId(objectRef);
-                        writer.Write(id);
+                        if (shadowObject.IsIdentifiable)
+                        {
+                            // Get the shadow id (may be a non-shadow, so we may duplicate it (e.g Entity)
+                            // but it should not be a big deal
+                            var id = shadowObject.GetId(objectRef);
+                            writer.Write(id);
+                        }
 
                         // Dump all members with overrides informations
                         foreach (var item in shadowObject)
