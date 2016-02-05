@@ -22,7 +22,6 @@
 // THE SOFTWARE.
 
 using System;
-using System.Collections.Generic;
 using System.Reflection;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Xenko.Games.Time;
