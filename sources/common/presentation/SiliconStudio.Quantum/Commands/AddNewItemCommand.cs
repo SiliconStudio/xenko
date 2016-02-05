@@ -19,8 +19,10 @@ namespace SiliconStudio.Quantum.Commands
     /// <remarks>No parameter is required when invoking this command.</remarks>
     public class AddNewItemCommand : SyncNodeCommand
     {
+        public const string CommandName = "AddNewItem";
+
         /// <inheritdoc/>
-        public override string Name => "AddNewItem";
+        public override string Name => CommandName;
 
         /// <inheritdoc/>
         public override CombineMode CombineMode => CombineMode.DoNotCombine;
