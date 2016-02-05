@@ -39,9 +39,10 @@ namespace SiliconStudio.Xenko.Assets.Skyboxes
                     var textureUrl = SkyboxGenerator.BuildTextureForSkyboxGenerationLocation(assetItem.Location);
 
                     var gameSettingsAsset = context.GetGameSettingsAsset();
+                    var renderingSettings = gameSettingsAsset.Get<RenderingSettings>(context.Platform);
 
                     // Select the best graphics profile
-                    var graphicsProfile = gameSettingsAsset.DefaultGraphicsProfile >= GraphicsProfile.Level_10_0 ? gameSettingsAsset.DefaultGraphicsProfile : GraphicsProfile.Level_10_0;
+                    var graphicsProfile = renderingSettings.DefaultGraphicsProfile >= GraphicsProfile.Level_10_0 ? renderingSettings.DefaultGraphicsProfile : GraphicsProfile.Level_10_0;
 
                     var textureAssetItem = new AssetItem(textureUrl, textureAsset);
 

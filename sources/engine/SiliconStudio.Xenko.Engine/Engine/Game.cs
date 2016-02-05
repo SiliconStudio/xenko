@@ -220,17 +220,20 @@ namespace SiliconStudio.Xenko.Engine
             {
                 InitializeAssetDatabase();
 
+                var renderingSettings = new RenderingSettings();
                 if (Asset.Exists(GameSettings.AssetUrl))
                 {
                     Settings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
                     Settings.Configurations.CurrentGame = this;
 
+                    renderingSettings = Settings.Configurations.Get<RenderingSettings>();
+
                     // Set ShaderProfile even if AutoLoadDefaultSettings is false (because that is what shaders in effect logs are compiled against, even if actual instantiated profile is different)
-                    if (Settings.DefaultGraphicsProfileUsed > 0)
+                    if (renderingSettings.DefaultGraphicsProfile > 0)
                     {
                         var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
                         if (!deviceManager.ShaderProfile.HasValue)
-                            deviceManager.ShaderProfile = Settings.DefaultGraphicsProfileUsed;
+                            deviceManager.ShaderProfile = renderingSettings.DefaultGraphicsProfile;
                     }
                 }
 
@@ -238,13 +241,13 @@ namespace SiliconStudio.Xenko.Engine
                 if (AutoLoadDefaultSettings)
                 {
                     var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
-                    if (Settings.DefaultGraphicsProfileUsed > 0)
+                    if (renderingSettings.DefaultGraphicsProfile > 0)
                     {
-                        deviceManager.PreferredGraphicsProfile = new[] { Settings.DefaultGraphicsProfileUsed };
+                        deviceManager.PreferredGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
                     }
-                    if (Settings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = Settings.DefaultBackBufferWidth;
-                    if (Settings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = Settings.DefaultBackBufferHeight;
-                    deviceManager.PreferredColorSpace = Settings.ColorSpace;
+                    if (renderingSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = renderingSettings.DefaultBackBufferWidth;
+                    if (renderingSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = renderingSettings.DefaultBackBufferHeight;
+                    deviceManager.PreferredColorSpace = renderingSettings.ColorSpace;
                     SceneSystem.InitialSceneUrl = Settings.DefaultSceneUrl;
                 }
             }

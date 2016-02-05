@@ -58,10 +58,6 @@ namespace SiliconStudio.Xenko.Assets
                     PackageId = package.Id,
                     PackageName = package.Meta.Name,
                     DefaultSceneUrl = AssetParameters.DefaultScene != null ? AttachedReferenceManager.GetUrl(AssetParameters.DefaultScene) : null,
-                    DefaultBackBufferWidth = AssetParameters.BackBufferWidth,
-                    DefaultBackBufferHeight = AssetParameters.BackBufferHeight,
-                    DefaultGraphicsProfileUsed = AssetParameters.DefaultGraphicsProfile,
-                    ColorSpace = AssetParameters.ColorSpace,
                     EffectCompilation = package.UserSettings.GetValue(GameUserSettings.Effect.EffectCompilation),
                     RecordUsedEffects = package.UserSettings.GetValue(GameUserSettings.Effect.RecordUsedEffects),
                     Configurations = new PlatformConfigurations()

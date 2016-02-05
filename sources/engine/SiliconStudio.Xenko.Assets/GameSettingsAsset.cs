@@ -4,20 +4,27 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
+using System.Security.Policy;
+using Microsoft.CodeAnalysis;
+using SharpYaml.Serialization;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Collections;
 using SiliconStudio.Core.Diagnostics;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Core.Settings;
+using SiliconStudio.Core.Yaml;
 using SiliconStudio.Xenko.Assets.Entities;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Data;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Engine.Design;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Physics;
 
 namespace SiliconStudio.Xenko.Assets
 { 
@@ -29,8 +36,12 @@ namespace SiliconStudio.Xenko.Assets
     [ContentSerializer(typeof(DataContentSerializer<GameSettingsAsset>))]
     [AssetCompiler(typeof(GameSettingsAssetCompiler))]
     [Display(80, "Game Settings")]
+    [AssetFormatVersion(XenkoConfig.PackageName, CurrentVersion)]
+    [AssetUpgrader(XenkoConfig.PackageName, "0", "1.6.0-beta", typeof(UpgraderPlatformsConfiguration))]
     public class GameSettingsAsset : Asset
     {
+        private const string CurrentVersion = "1.6.0-beta";
+
         /// <summary>
         /// The default file extension used by the <see cref="GameSettingsAsset"/>.
         /// </summary>
@@ -43,11 +54,29 @@ namespace SiliconStudio.Xenko.Assets
 
         public GameSettingsAsset()
         {
-            BackBufferWidth = 1280;
-            BackBufferHeight = 720;
-            DefaultGraphicsProfile = GraphicsProfile.Level_10_0;
+            // BackBufferWidth = 1280;
+            //BackBufferHeight = 720;
+            //DefaultGraphicsProfile = GraphicsProfile.Level_10_0;
             RenderingMode = RenderingMode.HDR;
-            ColorSpace = ColorSpace.Linear;
+            //ColorSpace = ColorSpace.Linear;
+
+            Defaults.Add(new RenderingSettings());
+            Defaults.Add(new TextureSettings());
+            Defaults.Add(new PhysicsSettings());
+            Defaults.Constraint = (list, configuration) =>
+            {
+                if (configuration == null) return true;
+
+                var old = list.FirstOrDefault(x => x != null && x.GetType() == configuration.GetType());
+                if (old == null) return true;
+
+                var index = list.IndexOf(old);
+                list[index] = null;
+                list[index] = configuration;
+
+                return false;
+            };
+            Defaults.ThrowException = false;
         }
 
         /// <summary>
@@ -57,37 +86,37 @@ namespace SiliconStudio.Xenko.Assets
         [DataMember(10)]
         public Scene DefaultScene { get; set; }
 
-        /// <summary>
-        /// Gets or sets the width of the back buffer.
-        /// </summary>
-        /// <userdoc>
-        /// The desired back buffer width.
-        /// Might be overriden depending on actual device resolution and/or ratio.
-        /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
-        /// </userdoc>
-        [DataMember(20)]
-        [Display(null, "Graphics")]
-        public int BackBufferWidth { get; set; }
+//        /// <summary>
+//        /// Gets or sets the width of the back buffer.
+//        /// </summary>
+//        /// <userdoc>
+//        /// The desired back buffer width.
+//        /// Might be overriden depending on actual device resolution and/or ratio.
+//        /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
+//        /// </userdoc>
+//        [DataMember(20)]
+//        [Display(null, "Graphics")]
+//        public int BackBufferWidth { get; set; }
+//
+//        /// <summary>
+//        /// Gets or sets the height of the back buffer.
+//        /// </summary>
+//        /// <userdoc>
+//        /// The desired back buffer height.
+//        /// Might be overriden depending on actual device resolution and/or ratio.
+//        /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
+//        /// </userdoc>
+//        [DataMember(30)]
+//        [Display(null, "Graphics")]
+//        public int BackBufferHeight { get; set; }
 
-        /// <summary>
-        /// Gets or sets the height of the back buffer.
-        /// </summary>
-        /// <userdoc>
-        /// The desired back buffer height.
-        /// Might be overriden depending on actual device resolution and/or ratio.
-        /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
-        /// </userdoc>
-        [DataMember(30)]
-        [Display(null, "Graphics")]
-        public int BackBufferHeight { get; set; }
-
-        /// <summary>
-        /// Gets or sets the default graphics profile.
-        /// </summary>
-        /// <userdoc>The graphics feature level this game require.</userdoc>
-        [DataMember(40)]
-        [Display(null, "Graphics")]
-        public GraphicsProfile DefaultGraphicsProfile { get; set; }
+//        /// <summary>
+//        /// Gets or sets the default graphics profile.
+//        /// </summary>
+//        /// <userdoc>The graphics feature level this game require.</userdoc>
+//        [DataMember(40)]
+//        [Display(null, "Graphics")]
+//        public GraphicsProfile DefaultGraphicsProfile { get; set; }
 
         /// <summary>
         /// Gets or sets the display orientation.
@@ -115,15 +144,15 @@ namespace SiliconStudio.Xenko.Assets
         [Display("Editor Rendering Mode", "Graphics")]
         public RenderingMode RenderingMode { get; set; }
 
-        /// <summary>
-        /// Gets or sets the colorspace.
-        /// </summary>
-        /// <value>The colorspace.</value>
-        /// <userdoc>The colorspace (Gamma or Linear) used for rendering. This value affects both the runtime and editor.</userdoc>
-        [DataMember(80)]
-        [DefaultValue(ColorSpace.Linear)]
-        [Display(null, "Graphics")]
-        public ColorSpace ColorSpace { get; set; }
+//        /// <summary>
+//        /// Gets or sets the colorspace.
+//        /// </summary>
+//        /// <value>The colorspace.</value>
+//        /// <userdoc>The colorspace (Gamma or Linear) used for rendering. This value affects both the runtime and editor.</userdoc>
+//        [DataMember(80)]
+//        [DefaultValue(ColorSpace.Linear)]
+//        [Display(null, "Graphics")]
+//        public ColorSpace ColorSpace { get; set; }
 
         /// <summary>
         /// Gets or sets the game settings per profiles.
@@ -135,10 +164,26 @@ namespace SiliconStudio.Xenko.Assets
 
         [DataMember(100)]
         [NotNullItems]
-        public List<Configuration> Defaults { get; } = new List<Configuration>();
+        public ConstrainedList<Configuration> Defaults { get; } = new ConstrainedList<Configuration>();
 
         [DataMember(110)]
         public List<ConfigurationOverride> Overrides { get; } = new List<ConfigurationOverride>();
+
+        public T Get<T>() where T : Configuration, new()
+        {
+            return (T)Defaults.FirstOrDefault(x => x.GetType() == typeof(T)) ?? new T();
+        }
+
+        public T Get<T>(PlatformType platform) where T : Configuration, new()
+        {
+            var platVersion = Overrides.FirstOrDefault(x => x.Platforms.HasFlag(platform) && x.GetType() == typeof(T) && x.Configuration != null);
+            if (platVersion != null)
+            {
+                return (T)platVersion.Configuration;
+            }
+
+            return Get<T>();
+        }
 
         internal class UpgraderVersion130
         {
@@ -185,11 +230,14 @@ namespace SiliconStudio.Xenko.Assets
                     var gameSettingsAsset = new GameSettingsAsset
                     {
                         DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location),
-                        BackBufferWidth = Get(packageSharedProfile.Properties, BackBufferWidth),
-                        BackBufferHeight = Get(packageSharedProfile.Properties, BackBufferHeight),
-                        DefaultGraphicsProfile = defaultGraphicsProfile,
-                        DisplayOrientation = Get(packageSharedProfile.Properties, DisplayOrientation),
+                        DisplayOrientation = Get(packageSharedProfile.Properties, DisplayOrientation)
                     };
+
+                    var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
+                    renderingSettings.ColorSpace = ColorSpace.Linear;
+                    renderingSettings.DefaultBackBufferWidth = Get(packageSharedProfile.Properties, BackBufferWidth);
+                    renderingSettings.DefaultBackBufferHeight = Get(packageSharedProfile.Properties, BackBufferHeight);
+                    renderingSettings.DefaultGraphicsProfile = defaultGraphicsProfile;
 
                     // Add asset
                     using (var memoryStream = new MemoryStream())
@@ -210,6 +258,36 @@ namespace SiliconStudio.Xenko.Assets
                 }
 
                 return true;
+            }
+        }
+
+        internal class UpgraderPlatformsConfiguration : AssetUpgraderBase
+        {
+            protected override void UpgradeAsset(AssetMigrationContext context, PackageVersion currentVersion, PackageVersion targetVersion, dynamic asset, PackageLoadingAssetFile assetFile)
+            {
+                int backBufferWidth = asset.BackBufferWidth ?? 1280;
+                asset.RemoveChild("BackBufferWidth");
+                int backBufferHeight = asset.BackBufferHeight ?? 720;
+                asset.RemoveChild("BackBufferHeight");
+                GraphicsProfile profile = asset.DefaultGraphicsProfile ?? GraphicsProfile.Level_9_1;
+                asset.RemoveChild("DefaultGraphicsProfile");
+                ColorSpace colorSpace = asset.ColorSpace ?? ColorSpace.Linear;
+                asset.RemoveChild("ColorSpace");
+
+                var configurations = new DynamicYamlArray(new YamlSequenceNode());
+                asset.Defaults = configurations;
+
+                dynamic renderingSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Graphics.RenderingSettings" });
+                renderingSettings.DefaultBackBufferWidth = backBufferWidth;
+                renderingSettings.DefaultBackBufferHeight = backBufferHeight;
+                renderingSettings.DefaultGraphicsProfile = profile;
+                renderingSettings.ColorSpace = colorSpace;
+                asset.Defaults.Add(renderingSettings);
+
+                dynamic textSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Assets.Textures.TextureSettings" });
+                asset.Defaults.Add(textSettings);
+                dynamic physicsSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics" });
+                asset.Defaults.Add(physicsSettings);               
             }
         }
     }

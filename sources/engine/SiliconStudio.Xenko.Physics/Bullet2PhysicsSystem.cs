@@ -34,11 +34,11 @@ namespace SiliconStudio.Xenko.Physics
             Enabled = true; //enabled by default
         }
 
-        private PhysicsConfiguration physicsConfiguration;
+        private PhysicsSettings physicsConfiguration;
 
         public override void Initialize()
         {
-            physicsConfiguration = Game?.Settings != null ? Game.Settings.Configurations.Get<PhysicsConfiguration>() : new PhysicsConfiguration();
+            physicsConfiguration = Game?.Settings != null ? Game.Settings.Configurations.Get<PhysicsSettings>() : new PhysicsSettings();
         }
 
         protected override void Destroy()

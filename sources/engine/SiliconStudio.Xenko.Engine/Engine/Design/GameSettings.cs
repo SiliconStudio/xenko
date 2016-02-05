@@ -28,14 +28,6 @@ namespace SiliconStudio.Xenko.Engine.Design
 
         public string DefaultSceneUrl { get; set; }
 
-        public int DefaultBackBufferWidth { get; set; }
-
-        public int DefaultBackBufferHeight { get; set; }
-
-        public GraphicsProfile DefaultGraphicsProfileUsed { get; set; }
-
-        public ColorSpace ColorSpace { get; set; }
-
         /// <summary>
         /// Gets or sets a value indicating whether effect compile should be allowed, and if yes, should it be done locally (if possible) or remotely?
         /// </summary>

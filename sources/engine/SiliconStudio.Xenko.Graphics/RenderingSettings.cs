@@ -17,9 +17,9 @@ namespace SiliconStudio.Xenko.Graphics
         public int DefaultBackBufferHeight = 720;
 
         [DataMember(20)]
-        public GraphicsProfile DefaultGraphicsProfileUsed = GraphicsProfile.Level_9_1;
+        public GraphicsProfile DefaultGraphicsProfile = GraphicsProfile.Level_10_0;
 
         [DataMember(30)]
-        public ColorSpace ColorSpace = ColorSpace.Gamma;
+        public ColorSpace ColorSpace = ColorSpace.Linear;
     }
 }

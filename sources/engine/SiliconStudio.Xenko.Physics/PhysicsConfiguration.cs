@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Physics
 {
     [DataContract]
     [Display("Physics Settings")]
-    public class PhysicsConfiguration : Configuration
+    public class PhysicsSettings : Configuration
     {
         [DataMember(10)]
         public PhysicsEngineFlags Flags;
