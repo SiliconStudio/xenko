@@ -537,7 +537,7 @@ namespace SiliconStudio.Assets
                             var assetBase = asset.Asset.Base;
                             if (assetBase != null && !assetBase.IsRootImport)
                             {
-                                assetBase.Asset.Base = UpdateAssetBase(assetBase);
+                                asset.Asset.Base = UpdateAssetBase(assetBase);
                             }
 
                             // Update base for BaseParts
