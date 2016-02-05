@@ -37,8 +37,9 @@ namespace SiliconStudio.Quantum.Commands
             var indices = (Tuple<int, int>)parameter;
             var sourceIndex = indices.Item1;
             var targetIndex = indices.Item2;
+            var value = content.Retrieve(sourceIndex);
             content.Remove(sourceIndex);
-            content.Add(targetIndex);
+            content.Add(targetIndex, value);
             return null;
         }
     }
