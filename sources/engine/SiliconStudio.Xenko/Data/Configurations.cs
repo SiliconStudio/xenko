@@ -18,6 +18,8 @@ namespace SiliconStudio.Xenko.Data
     [DataContract]
     public abstract class Configuration
     {
+        [DataMemberIgnore]
+        public bool OfflineOnly { get; protected set; }
     }
 
     [DataContract]

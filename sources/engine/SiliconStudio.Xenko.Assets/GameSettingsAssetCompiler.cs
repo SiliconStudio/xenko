@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Assets
 
                 //start from the default platform and go down overriding
 
-                foreach (var configuration in AssetParameters.Defaults)
+                foreach (var configuration in AssetParameters.Defaults.Where(x => !x.OfflineOnly))
                 {
                     result.Configurations.Configurations.Add(new ConfigurationOverride
                     {
@@ -75,7 +75,7 @@ namespace SiliconStudio.Xenko.Assets
                     });
                 }
 
-                foreach (var configurationOverride in AssetParameters.Overrides)
+                foreach (var configurationOverride in AssetParameters.Overrides.Where(x => x.Configuration != null && !x.Configuration.OfflineOnly))
                 {
                     result.Configurations.Configurations.Add(configurationOverride);
                 }

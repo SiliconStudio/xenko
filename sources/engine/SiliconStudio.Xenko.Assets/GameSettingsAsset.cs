@@ -54,29 +54,23 @@ namespace SiliconStudio.Xenko.Assets
 
         public GameSettingsAsset()
         {
-            // BackBufferWidth = 1280;
-            //BackBufferHeight = 720;
-            //DefaultGraphicsProfile = GraphicsProfile.Level_10_0;
-            RenderingMode = RenderingMode.HDR;
-            //ColorSpace = ColorSpace.Linear;
-
-            Defaults.Add(new RenderingSettings());
-            Defaults.Add(new TextureSettings());
-            Defaults.Add(new PhysicsSettings());
-            Defaults.Constraint = (list, configuration) =>
-            {
-                if (configuration == null) return true;
-
-                var old = list.FirstOrDefault(x => x != null && x.GetType() == configuration.GetType());
-                if (old == null) return true;
-
-                var index = list.IndexOf(old);
-                list[index] = null;
-                list[index] = configuration;
-
-                return false;
-            };
-            Defaults.ThrowException = false;
+//            Defaults.Add(new RenderingSettings());
+//            Defaults.Add(new TextureSettings());
+//            Defaults.Add(new PhysicsSettings());
+//            Defaults.Constraint = (list, configuration) =>
+//            {
+//                if (configuration == null) return true;
+//
+//                var old = list.FirstOrDefault(x => x != null && x.GetType() == configuration.GetType());
+//                if (old == null) return true;
+//
+//                var index = list.IndexOf(old);
+//                list[index] = null;
+//                list[index] = configuration;
+//
+//                return false;
+//            };
+//            Defaults.ThrowException = false;
         }
 
         /// <summary>
@@ -85,74 +79,6 @@ namespace SiliconStudio.Xenko.Assets
         /// <userdoc>The default scene that will be loaded at game startup.</userdoc>
         [DataMember(10)]
         public Scene DefaultScene { get; set; }
-
-//        /// <summary>
-//        /// Gets or sets the width of the back buffer.
-//        /// </summary>
-//        /// <userdoc>
-//        /// The desired back buffer width.
-//        /// Might be overriden depending on actual device resolution and/or ratio.
-//        /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
-//        /// </userdoc>
-//        [DataMember(20)]
-//        [Display(null, "Graphics")]
-//        public int BackBufferWidth { get; set; }
-//
-//        /// <summary>
-//        /// Gets or sets the height of the back buffer.
-//        /// </summary>
-//        /// <userdoc>
-//        /// The desired back buffer height.
-//        /// Might be overriden depending on actual device resolution and/or ratio.
-//        /// On Windows, it will be the window size. On Android/iOS, it will be the off-screen target resolution.
-//        /// </userdoc>
-//        [DataMember(30)]
-//        [Display(null, "Graphics")]
-//        public int BackBufferHeight { get; set; }
-
-//        /// <summary>
-//        /// Gets or sets the default graphics profile.
-//        /// </summary>
-//        /// <userdoc>The graphics feature level this game require.</userdoc>
-//        [DataMember(40)]
-//        [Display(null, "Graphics")]
-//        public GraphicsProfile DefaultGraphicsProfile { get; set; }
-
-        /// <summary>
-        /// Gets or sets the display orientation.
-        /// </summary>
-        /// <userdoc>The display orientations this game support.</userdoc>
-        [DataMember(50)]
-        [Display(null, "Graphics")]
-        public DisplayOrientation DisplayOrientation { get; set; }
-
-        /// <summary>
-        /// Gets or sets the texture quality.
-        /// </summary>
-        /// <userdoc>The texture quality when encoding textures. Higher settings might result in much slower build depending on the target platform.</userdoc>
-        [DataMember(60)]
-        [Display(null, "Graphics")]
-        public TextureQuality TextureQuality { get; set; }
-
-        /// <summary>
-        /// Gets or sets the rendering mode.
-        /// </summary>
-        /// <value>The rendering mode.</value>
-        /// <userdoc>The default rendering mode (HDR or LDR) used to render the preview and thumbnail. This value doesn't affect the runtime but only the editor.</userdoc>
-        [DataMember(70)]
-        [DefaultValue(Assets.RenderingMode.HDR)]
-        [Display("Editor Rendering Mode", "Graphics")]
-        public RenderingMode RenderingMode { get; set; }
-
-//        /// <summary>
-//        /// Gets or sets the colorspace.
-//        /// </summary>
-//        /// <value>The colorspace.</value>
-//        /// <userdoc>The colorspace (Gamma or Linear) used for rendering. This value affects both the runtime and editor.</userdoc>
-//        [DataMember(80)]
-//        [DefaultValue(ColorSpace.Linear)]
-//        [Display(null, "Graphics")]
-//        public ColorSpace ColorSpace { get; set; }
 
         /// <summary>
         /// Gets or sets the game settings per profiles.
@@ -164,19 +90,23 @@ namespace SiliconStudio.Xenko.Assets
 
         [DataMember(100)]
         [NotNullItems]
-        public ConstrainedList<Configuration> Defaults { get; } = new ConstrainedList<Configuration>();
+        public List<Configuration> Defaults { get; } = new List<Configuration>();
 
         [DataMember(110)]
         public List<ConfigurationOverride> Overrides { get; } = new List<ConfigurationOverride>();
 
         public T Get<T>() where T : Configuration, new()
         {
-            return (T)Defaults.FirstOrDefault(x => x.GetType() == typeof(T)) ?? new T();
+            var settings = (T)Defaults.FirstOrDefault(x => x != null && x.GetType() == typeof(T));
+            if (settings != null) return settings;
+            settings = new T();
+            Defaults.Add(settings);
+            return settings;
         }
 
         public T Get<T>(PlatformType platform) where T : Configuration, new()
         {
-            var platVersion = Overrides.FirstOrDefault(x => x.Platforms.HasFlag(platform) && x.GetType() == typeof(T) && x.Configuration != null);
+            var platVersion = Overrides.FirstOrDefault(x => x != null && x.Platforms.HasFlag(platform) && x.GetType() == typeof(T) && x.Configuration != null);
             if (platVersion != null)
             {
                 return (T)platVersion.Configuration;
@@ -229,11 +159,11 @@ namespace SiliconStudio.Xenko.Assets
                     // Create asset
                     var gameSettingsAsset = new GameSettingsAsset
                     {
-                        DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location),
-                        DisplayOrientation = Get(packageSharedProfile.Properties, DisplayOrientation)
+                        DefaultScene = AttachedReferenceManager.CreateSerializableVersion<Scene>(defaultScene.Id, defaultScene.Location)
                     };
 
                     var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
+                    renderingSettings.DisplayOrientation = Get(packageSharedProfile.Properties, DisplayOrientation);
                     renderingSettings.ColorSpace = ColorSpace.Linear;
                     renderingSettings.DefaultBackBufferWidth = Get(packageSharedProfile.Properties, BackBufferWidth);
                     renderingSettings.DefaultBackBufferHeight = Get(packageSharedProfile.Properties, BackBufferHeight);
@@ -273,21 +203,34 @@ namespace SiliconStudio.Xenko.Assets
                 asset.RemoveChild("DefaultGraphicsProfile");
                 ColorSpace colorSpace = asset.ColorSpace ?? ColorSpace.Linear;
                 asset.RemoveChild("ColorSpace");
+                DisplayOrientation displayOrientation = asset.DisplayOrientation ?? DisplayOrientation.Default;
+                asset.RemoveChild("DisplayOrientation");
+                TextureQuality textureQuality = asset.TextureQuality ?? TextureQuality.Fast;
+                asset.RemoveChild("TextureQuality");
+                RenderingMode renderingMode = asset.RenderingMode ?? RenderingMode.HDR;
+                asset.RemoveChild("RenderingMode");
 
                 var configurations = new DynamicYamlArray(new YamlSequenceNode());
                 asset.Defaults = configurations;
 
-                dynamic renderingSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Graphics.RenderingSettings" });
+                dynamic renderingSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Graphics.RenderingSettings,SiliconStudio.Xenko.Graphics" });
                 renderingSettings.DefaultBackBufferWidth = backBufferWidth;
                 renderingSettings.DefaultBackBufferHeight = backBufferHeight;
                 renderingSettings.DefaultGraphicsProfile = profile;
                 renderingSettings.ColorSpace = colorSpace;
+                renderingSettings.DisplayOrientation = displayOrientation;
                 asset.Defaults.Add(renderingSettings);
 
-                dynamic textSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Assets.Textures.TextureSettings" });
+                dynamic textSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Assets.Textures.TextureSettings,SiliconStudio.Xenko.Assets" });
+                textSettings.TextureQuality = textureQuality;
                 asset.Defaults.Add(textSettings);
+
                 dynamic physicsSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics" });
-                asset.Defaults.Add(physicsSettings);               
+                asset.Defaults.Add(physicsSettings);
+
+                dynamic editorSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.GameStudio.Plugin.EditorConfiguration,SiliconStudio.Xenko.GameStudio.Plugin" });
+                editorSettings.RenderingMode = renderingMode;
+                asset.Defaults.Add(editorSettings);
             }
         }
     }
