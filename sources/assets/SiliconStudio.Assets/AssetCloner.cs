@@ -9,6 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
 {
@@ -104,6 +105,49 @@ namespace SiliconStudio.Assets
             return streamOrValueType;
         }
 
+        private ObjectId GetHashId()
+        {
+            // This methods use the stream that is already filled-up by the standard binary serialization of the object
+            // Here we add ids and overrides metadata informations to the stream in order to calculate an accurate id
+            var stream = streamOrValueType as MemoryStream;
+            if (stream != null)
+            {
+                var writer = new BinarySerializationWriter(stream);
+                foreach (var objectRef in objectReferences)
+                {
+                    if (objectRef != null)
+                    {
+                        var shadowObject = ShadowObject.GetOrCreate(objectRef);
+                        if (shadowObject.IsIdentifiable)
+                        {
+                            // Get the shadow id (may be a non-shadow, so we may duplicate it (e.g Entity)
+                            // but it should not be a big deal
+                            var id = shadowObject.GetId(objectRef);
+                            writer.Write(id);
+                        }
+
+                        // Dump all members with overrides informations
+                        foreach (var item in shadowObject)
+                        {
+                            if (item.Key.Item2 == Override.OverrideKey)
+                            {
+                                // Use the member name to ensure a stable id
+                                var memberName = ((IMemberDescriptor)item.Key.Item1).Name;
+                                writer.Write(memberName);
+                                writer.Write((int)(OverrideType)item.Value);
+                            }
+                        }
+                    }
+                }
+                writer.Flush();
+                stream.Position = 0;
+
+                return ObjectId.FromBytes(stream.ToArray());
+            }
+
+            return ObjectId.Empty;
+        }
+
         private void OnObjectDeserialized(int i, object newObject)
         {
             if (objectReferences != null && newObject != null)
@@ -130,7 +174,37 @@ namespace SiliconStudio.Assets
                 return null;
             }
             var cloner = new AssetCloner(asset, flags);
-            return cloner.Clone();
+            var newObject = cloner.Clone();
+
+            // By default, a clone doesn't copy the base/baseParts for Asset
+            if ((flags & AssetClonerFlags.KeepBases) == 0)
+            {
+                var newAsset = newObject as Asset;
+                if (newAsset != null)
+                {
+                    newAsset.Base = null;
+                    newAsset.BaseParts = null;
+                }
+            }
+            return newObject;
+        }
+
+        /// <summary>
+        /// Generates a runtime hash id from the serialization of this asset.
+        /// </summary>
+        /// <param name="asset">The asset to get the runtime hash id</param>
+        /// <param name="flags">Flags used to control the serialization process</param>
+        /// <returns>An object id</returns>
+        internal static ObjectId ComputeHash(object asset, AssetClonerFlags flags = AssetClonerFlags.None)
+        {
+            if (asset == null)
+            {
+                return ObjectId.Empty;
+            }
+
+            var cloner = new AssetCloner(asset, flags);
+            var result = cloner.GetHashId();
+            return result;
         }
     }
 }
