@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Rendering.Background;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -101,10 +102,17 @@ namespace SiliconStudio.Xenko.Rendering
                 renderObject.ActiveRenderStages[mainRenderStage.Index] = new ActiveRenderStage("SkyboxEffect");
             };
 
+            var backgroundFeature = new BackgroundRenderFeature();
+            backgroundFeature.ComputeRenderStages += renderObject =>
+            {
+                renderObject.ActiveRenderStages[mainRenderStage.Index] = new ActiveRenderStage("Test");
+            };
+
             // Register top level renderers
             RenderSystem.RenderFeatures.Add(meshRenderFeature);
             RenderSystem.RenderFeatures.Add(spriteRenderFeature);
             RenderSystem.RenderFeatures.Add(skyboxRenderFeature);
+            RenderSystem.RenderFeatures.Add(backgroundFeature);
 
             RenderSystem.Views.Add(mainRenderView);
 
@@ -114,6 +122,7 @@ namespace SiliconStudio.Xenko.Rendering
             var sceneInstance = SceneInstance.GetCurrent(Context);
             sceneInstance.Processors.Add(new NextGenModelProcessor());
             sceneInstance.Processors.Add(new NextGenSpriteProcessor());
+            sceneInstance.Processors.Add(new BackgroundProcessor());
             sceneInstance.Processors.Add(new SkyboxProcessor());
         }
 

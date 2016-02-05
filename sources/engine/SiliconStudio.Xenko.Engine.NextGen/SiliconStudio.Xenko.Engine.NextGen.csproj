@@ -170,6 +170,9 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Rendering\Background\BackgroundProcessor.cs" />
+    <Compile Include="Rendering\Background\BackgroundRenderFeature.cs" />
+    <Compile Include="Rendering\Background\RenderBackground.cs" />
     <Compile Include="Rendering\NextGenRenderContext.cs" />
     <Compile Include="Rendering\Properties.cs">
       <AutoGen>True</AutoGen>
