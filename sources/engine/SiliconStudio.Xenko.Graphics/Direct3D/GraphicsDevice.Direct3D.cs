@@ -212,18 +212,6 @@ namespace SiliconStudio.Xenko.Graphics
             simulateReset = true;
         }
 
-        internal unsafe void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox)
-        {
-            if (resource == null) throw new ArgumentNullException("resource");
-            NativeDeviceContext.UpdateSubresource(*(SharpDX.DataBox*)Interop.Cast(ref databox), resource.NativeResource, subResourceIndex);
-        }
-
-        internal unsafe void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox, ResourceRegion region)
-        {
-            if (resource == null) throw new ArgumentNullException("resource");
-            NativeDeviceContext.UpdateSubresource(*(SharpDX.DataBox*)Interop.Cast(ref databox), resource.NativeResource, subResourceIndex, *(SharpDX.Direct3D11.ResourceRegion*)Interop.Cast(ref region));
-        }
-
         private void InitializeFactories()
         {
             

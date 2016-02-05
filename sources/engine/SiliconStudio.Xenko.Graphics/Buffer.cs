@@ -236,49 +236,21 @@ namespace SiliconStudio.Xenko.Graphics
         {
             GetData(stagingTexture, new DataPointer(Interop.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()));
         }
-
-        /// <summary>
-        /// Copies the content of a single structure data from CPU memory to this buffer into GPU memory.
-        /// </summary>
-        /// <typeparam name="TData">The type of the T data.</typeparam>
-        /// <param name="fromData">The data to copy from.</param>
-        /// <param name="offsetInBytes">The offset in bytes to write to.</param>
-        /// <exception cref="System.ArgumentException"></exception>
-        /// <remarks>
-        /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>. See the unmanaged documentation about Map/UnMap for usage and restrictions.
-        /// </remarks>
-        public void SetData<TData>(ref TData fromData, int offsetInBytes = 0) where TData : struct
-        {
-            SetData(GraphicsDevice, ref fromData, offsetInBytes);
-        }
-
-        /// <summary>
-        /// Copies the content an array of data from CPU memory to this buffer into GPU memory.
-        /// </summary>
-        /// <typeparam name="TData">The type of the T data.</typeparam>
-        /// <param name="fromData">The data to copy from.</param>
-        /// <param name="offsetInBytes">The offset in bytes to write to.</param>
-        /// <exception cref="System.ArgumentException"></exception>
-        /// <remarks>
-        /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>. See the unmanaged documentation about Map/UnMap for usage and restrictions.
-        /// </remarks>
-        public unsafe void SetData<TData>(TData[] fromData, int offsetInBytes = 0) where TData : struct
-        {
-            SetData(GraphicsDevice, fromData, offsetInBytes);
-        }
-
+        
         /// <summary>
         /// Copies the content an array of data on CPU memory to this buffer into GPU memory.
         /// </summary>
-        /// <param name="fromData">A data pointer.</param>
+        /// <typeparam name="TData">The type of the T data.</typeparam>
+        /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
+        /// <param name="fromData">The data to copy from.</param>
         /// <param name="offsetInBytes">The offset in bytes to write to.</param>
         /// <exception cref="System.ArgumentException"></exception>
         /// <remarks>
-        /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>. See the unmanaged documentation about Map/UnMap for usage and restrictions.
+        /// See the unmanaged documentation about Map/UnMap for usage and restrictions.
         /// </remarks>
-        public void SetData(DataPointer fromData, int offsetInBytes = 0)
+        public unsafe void SetData<TData>(CommandList commandList, ref TData fromData, int offsetInBytes = 0) where TData : struct
         {
-            SetData(GraphicsDevice, fromData, offsetInBytes);
+            SetData(commandList, new DataPointer(Interop.Fixed(ref fromData), Utilities.SizeOf<TData>()), offsetInBytes);
         }
 
         /// <summary>
@@ -292,25 +264,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// See the unmanaged documentation about Map/UnMap for usage and restrictions.
         /// </remarks>
-        public unsafe void SetData<TData>(GraphicsDevice device, ref TData fromData, int offsetInBytes = 0) where TData : struct
+        public unsafe void SetData<TData>(CommandList commandList, TData[] fromData, int offsetInBytes = 0) where TData : struct
         {
-            SetData(device, new DataPointer(Interop.Fixed(ref fromData), Utilities.SizeOf<TData>()), offsetInBytes);
-        }
-
-        /// <summary>
-        /// Copies the content an array of data on CPU memory to this buffer into GPU memory.
-        /// </summary>
-        /// <typeparam name="TData">The type of the T data.</typeparam>
-        /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
-        /// <param name="fromData">The data to copy from.</param>
-        /// <param name="offsetInBytes">The offset in bytes to write to.</param>
-        /// <exception cref="System.ArgumentException"></exception>
-        /// <remarks>
-        /// See the unmanaged documentation about Map/UnMap for usage and restrictions.
-        /// </remarks>
-        public unsafe void SetData<TData>(GraphicsDevice device, TData[] fromData, int offsetInBytes = 0) where TData : struct
-        {
-            SetData(device, new DataPointer(Interop.Fixed(fromData), (fromData.Length * Utilities.SizeOf<TData>())), offsetInBytes);
+            SetData(commandList, new DataPointer(Interop.Fixed(fromData), (fromData.Length * Utilities.SizeOf<TData>())), offsetInBytes);
         }
 
 
@@ -350,7 +306,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// See the unmanaged documentation about Map/UnMap for usage and restrictions.
         /// </remarks>
-        public void SetData(GraphicsDevice device, DataPointer fromData, int offsetInBytes = 0)
+        public void SetData(CommandList commandList, DataPointer fromData, int offsetInBytes = 0)
         {
             // Check size validity of data to copy to
             if (fromData.Size > this.Description.SizeInBytes)
@@ -362,12 +318,12 @@ namespace SiliconStudio.Xenko.Graphics
                 // Setup the dest region inside the buffer
                 if ((this.Description.BufferFlags & BufferFlags.ConstantBuffer) != 0)
                 {
-                    device.UpdateSubresource(this, 0, new DataBox(fromData.Pointer, 0, 0));
+                    commandList.UpdateSubresource(this, 0, new DataBox(fromData.Pointer, 0, 0));
                 }
                 else
                 {
                     var destRegion = new ResourceRegion(offsetInBytes, 0, 0, offsetInBytes + fromData.Size, 1, 1);
-                    device.UpdateSubresource(this, 0, new DataBox(fromData.Pointer, 0, 0), destRegion);
+                    commandList.UpdateSubresource(this, 0, new DataBox(fromData.Pointer, 0, 0), destRegion);
                 }
             }
             else
@@ -375,9 +331,9 @@ namespace SiliconStudio.Xenko.Graphics
                 if (offsetInBytes > 0)
                     throw new ArgumentException("offset is only supported for textured declared with ResourceUsage.Default", "offsetInBytes");
 
-                var mappedResource = device.MapSubresource(this, 0, MapMode.WriteDiscard);
+                var mappedResource = commandList.GraphicsDevice.MapSubresource(this, 0, MapMode.WriteDiscard);
                 Utilities.CopyMemory(mappedResource.DataBox.DataPointer, fromData.Pointer, fromData.Size);
-                device.UnmapSubresource(mappedResource);
+                commandList.GraphicsDevice.UnmapSubresource(mappedResource);
             }
         }
 
@@ -686,33 +642,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Copies the content of a single structure data from CPU memory to this buffer into GPU memory.
         /// </summary>
-        /// <param name="fromData">The data to copy from.</param>
-        /// <param name="offsetInBytes">The offset in bytes to write to.</param>
-        /// <exception cref="System.ArgumentException"></exception>
-        /// <remarks>
-        /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>. See the unmanaged documentation about Map/UnMap for usage and restrictions.
-        /// </remarks>
-        public void SetData(ref T fromData, int offsetInBytes = 0)
-        {
-            base.SetData(ref fromData, offsetInBytes);
-        }
-
-        /// <summary>
-        /// Copies the content an array of data from CPU memory to this buffer into GPU memory.
-        /// </summary>
-        /// <param name="fromData">The data to copy from.</param>
-        /// <param name="offsetInBytes">The offset in bytes to write to.</param>
-        /// <remarks>
-        /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>. See the unmanaged documentation about Map/UnMap for usage and restrictions.
-        /// </remarks>
-        public void SetData(T[] fromData, int offsetInBytes = 0)
-        {
-            base.SetData(fromData, offsetInBytes);
-        }
-
-        /// <summary>
-        /// Copies the content of a single structure data from CPU memory to this buffer into GPU memory.
-        /// </summary>
         /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
         /// <param name="fromData">The data to copy from.</param>
         /// <param name="offsetInBytes">The offset in bytes to write to.</param>
@@ -720,9 +649,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>. See the unmanaged documentation about Map/UnMap for usage and restrictions.
         /// </remarks>
-        public void SetData(GraphicsDevice device, ref T fromData, int offsetInBytes = 0)
+        public void SetData(CommandList commandList, ref T fromData, int offsetInBytes = 0)
         {
-            base.SetData(device, ref fromData, offsetInBytes);
+            base.SetData(commandList, ref fromData, offsetInBytes);
         }
 
         /// <summary>
@@ -734,9 +663,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>. See the unmanaged documentation about Map/UnMap for usage and restrictions.
         /// </remarks>
-        public void SetData(GraphicsDevice device, T[] fromData, int offsetInBytes = 0)
+        public void SetData(CommandList commandList, T[] fromData, int offsetInBytes = 0)
         {
-            base.SetData(fromData, offsetInBytes);
+            base.SetData(commandList, fromData, offsetInBytes);
         }
     }
 }
