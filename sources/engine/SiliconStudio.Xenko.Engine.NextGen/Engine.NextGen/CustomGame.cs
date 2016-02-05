@@ -58,6 +58,10 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             var skyboxEntity = new Entity { new SkyboxComponent { Skybox = skybox } };
             Scene.Entities.Add(skyboxEntity);
 
+            //var backgroundTexture = Asset.Load<Texture>("XenkoBackground");
+            //var backgroundEntity = new Entity { new BackgroundComponent { Texture = backgroundTexture } };
+            //Scene.Entities.Add(backgroundEntity);
+
             for (int i = 0; i < cubeWidth; ++i)
             {
                 for (int j = 0; j < cubeWidth; ++j)
