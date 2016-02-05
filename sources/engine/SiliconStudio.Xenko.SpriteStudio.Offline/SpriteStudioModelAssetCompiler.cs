@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Offline
                     urlInStorage + texIndex,
                     new TextureConvertParameters(texture, textureAsset, context.Platform,
                         context.GetGraphicsPlatform(), renderingSettings.DefaultGraphicsProfile,
-                        gameSettingsAsset.TextureQuality, colorSpace)));
+                        gameSettingsAsset.Get<TextureSettings>().TextureQuality, colorSpace)));
 
                 asset.BuildTextures.Add(urlInStorage + texIndex);
 
