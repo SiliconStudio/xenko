@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
-        internal void Apply(GraphicsDevice graphicsDevice, ResourceGroup[] resourceGroups, int resourceGroupsOffset)
+        internal void Apply(CommandList commandList, ResourceGroup[] resourceGroups, int resourceGroupsOffset)
         {
             if (resourceGroupBindings.Length == 0)
                 return;
@@ -87,9 +87,9 @@ namespace SiliconStudio.Xenko.Graphics
 
                     if (needUpdate)
                     {
-                        var mappedConstantBuffer = graphicsDevice.MapSubresource(preallocatedBuffer, 0, MapMode.WriteDiscard);
+                        var mappedConstantBuffer = commandList.MapSubresource(preallocatedBuffer, 0, MapMode.WriteDiscard);
                         Utilities.CopyMemory(mappedConstantBuffer.DataBox.DataPointer, resourceGroup.ConstantBuffer.Data, resourceGroup.ConstantBuffer.Size);
-                        graphicsDevice.UnmapSubresource(mappedConstantBuffer);
+                        commandList.UnmapSubresource(mappedConstantBuffer);
                     }
 
                     resourceGroup.DescriptorSet.SetConstantBuffer(resourceGroupBinding.ConstantBufferSlot, preallocatedBuffer, 0, resourceGroup.ConstantBuffer.Size);

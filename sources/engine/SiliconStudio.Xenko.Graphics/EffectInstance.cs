@@ -154,7 +154,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Update cbuffer
-            bufferUploader.Apply(commandList.GraphicsDevice, resourceGroups, 0);
+            bufferUploader.Apply(commandList, resourceGroups, 0);
 
             // Bind descriptor sets
             var descriptorSets = new DescriptorSet[resourceGroups.Length];

@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var resourceGroupOffset = ComputeResourceGroupOffset(renderNodeReference);
                 
                 // Update cbuffer
-                renderEffect.Reflection.BufferUploader.Apply(context.GraphicsDevice, ResourceGroupPool, resourceGroupOffset);
+                renderEffect.Reflection.BufferUploader.Apply(context.CommandList, ResourceGroupPool, resourceGroupOffset);
 
                 // Bind descriptor sets
                 for (int i = 0; i < descriptorSets.Length; ++i)

@@ -630,10 +630,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>.
         /// This method creates internally a stagging resource, copies to it and map it to memory. Use method with explicit staging resource
         /// for optimal performances.</remarks>
-        public TData[] GetData<TData>(int arraySlice = 0, int mipSlice = 0) where TData : struct
+        public TData[] GetData<TData>(CommandList commandList, int arraySlice = 0, int mipSlice = 0) where TData : struct
         {
             var toData = new TData[this.CalculatePixelDataCount<TData>(mipSlice)];
-            GetData(toData, arraySlice, mipSlice);
+            GetData(commandList, toData, arraySlice, mipSlice);
             return toData;
         }
 
@@ -650,19 +650,19 @@ namespace SiliconStudio.Xenko.Graphics
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>.
         /// This method creates internally a stagging resource if this texture is not already a stagging resouce, copies to it and map it to memory. Use method with explicit staging resource
         /// for optimal performances.</remarks>
-        public bool GetData<TData>(TData[] toData, int arraySlice = 0, int mipSlice = 0, bool doNotWait = false) where TData : struct
+        public bool GetData<TData>(CommandList commandList, TData[] toData, int arraySlice = 0, int mipSlice = 0, bool doNotWait = false) where TData : struct
         {
             // Get data from this resource
             if (Usage == GraphicsResourceUsage.Staging)
             {
                 // Directly if this is a staging resource
-                return GetData(this, toData, arraySlice, mipSlice, doNotWait);
+                return GetData(commandList, this, toData, arraySlice, mipSlice, doNotWait);
             }
             else
             {
                 // Unefficient way to use the Copy method using dynamic staging texture
                 using (var throughStaging = this.ToStaging())
-                    return GetData(throughStaging, toData, arraySlice, mipSlice, doNotWait);
+                    return GetData(commandList, throughStaging, toData, arraySlice, mipSlice, doNotWait);
             }
         }
 
@@ -680,9 +680,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>.
         /// </remarks>
-        public unsafe bool GetData<TData>(Texture stagingTexture, TData[] toData, int arraySlice = 0, int mipSlice = 0, bool doNotWait = false) where TData : struct
+        public unsafe bool GetData<TData>(CommandList commandList, Texture stagingTexture, TData[] toData, int arraySlice = 0, int mipSlice = 0, bool doNotWait = false) where TData : struct
         {
-            return GetData(stagingTexture, new DataPointer((IntPtr)Interop.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, doNotWait);
+            return GetData(commandList, stagingTexture, new DataPointer((IntPtr)Interop.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, doNotWait);
         }
 
         /// <summary>
@@ -716,7 +716,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>.
         /// </remarks>
-        public unsafe bool GetData(Texture stagingTexture, DataPointer toData, int arraySlice = 0, int mipSlice = 0, bool doNotWait = false)
+        public unsafe bool GetData(CommandList commandList, Texture stagingTexture, DataPointer toData, int arraySlice = 0, int mipSlice = 0, bool doNotWait = false)
         {
             if (stagingTexture == null) throw new ArgumentNullException("stagingTexture");
             var device = GraphicsDevice;
@@ -744,13 +744,13 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Copy the actual content of the texture to the staging resource
             if (!ReferenceEquals(this, stagingTexture))
-                device.Copy(this, stagingTexture);
+                commandList.Copy(this, stagingTexture);
 
             // Calculate the subResourceIndex for a Texture
             int subResourceIndex = this.GetSubResourceIndex(arraySlice, mipSlice);
 
             // Map the staging resource to a CPU accessible memory
-            var mappedResource = device.MapSubresource(stagingTexture, subResourceIndex, MapMode.Read, doNotWait);
+            var mappedResource = commandList.MapSubresource(stagingTexture, subResourceIndex, MapMode.Read, doNotWait);
 
             // Box can be empty if DoNotWait is set to true, return false if empty
             var box = mappedResource.DataBox;
@@ -807,7 +807,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Make sure that we unmap the resource in case of an exception
-            device.UnmapSubresource(mappedResource);
+            commandList.UnmapSubresource(mappedResource);
 
             return true;
         }
@@ -912,7 +912,7 @@ namespace SiliconStudio.Xenko.Graphics
             }
             else
             {
-                var mappedResource = commandList.GraphicsDevice.MapSubresource(this, subResourceIndex, this.Usage == GraphicsResourceUsage.Dynamic ? MapMode.WriteDiscard : MapMode.Write);
+                var mappedResource = commandList.MapSubresource(this, subResourceIndex, this.Usage == GraphicsResourceUsage.Dynamic ? MapMode.WriteDiscard : MapMode.Write);
                 var box = mappedResource.DataBox;
 
                 // If depth == 1 (Texture, Texture or TextureCube), then depthStride is not used
@@ -944,7 +944,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                 }
-                commandList.GraphicsDevice.UnmapSubresource(mappedResource);
+                commandList.UnmapSubresource(mappedResource);
             }
         }
 
@@ -1040,23 +1040,23 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="stream">The stream.</param>
         /// <param name="fileType">Type of the image file.</param>
-        public void Save(Stream stream, ImageFileType fileType)
+        public void Save(CommandList commandList, Stream stream, ImageFileType fileType)
         {
             if (stream == null) throw new ArgumentNullException("stream");
             using (var staging = ToStaging())
-                Save(stream, staging, fileType);
+                Save(commandList, stream, staging, fileType);
         }
 
         /// <summary>
         /// Gets the GPU content of this texture as an <see cref="Image"/> on the CPU.
         /// </summary>
-        public Image GetDataAsImage()
+        public Image GetDataAsImage(CommandList commandList)
         {
             if (Usage == GraphicsResourceUsage.Staging)
-                return GetDataAsImage(this); // Directly if this is a staging resource
+                return GetDataAsImage(commandList, this); // Directly if this is a staging resource
 
             using (var stagingTexture = ToStaging())
-                return GetDataAsImage(stagingTexture);
+                return GetDataAsImage(commandList, stagingTexture);
         }
 
         /// <summary>
@@ -1064,7 +1064,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <param name="stagingTexture">The staging texture used to temporary transfer the image from the GPU to CPU.</param>
         /// <exception cref="ArgumentException">If stagingTexture is not a staging texture.</exception>
-        public Image GetDataAsImage(Texture stagingTexture)
+        public Image GetDataAsImage(CommandList commandList, Texture stagingTexture)
         {
             if (stagingTexture == null) throw new ArgumentNullException("stagingTexture");
             if (stagingTexture.Usage != GraphicsResourceUsage.Staging)
@@ -1077,7 +1077,7 @@ namespace SiliconStudio.Xenko.Graphics
                     for (int mipLevel = 0; mipLevel < image.Description.MipLevels; mipLevel++)
                     {
                         var pixelBuffer = image.PixelBuffer[arrayIndex, mipLevel];
-                        GetData(stagingTexture, new DataPointer(pixelBuffer.DataPointer, pixelBuffer.BufferStride), arrayIndex, mipLevel);
+                        GetData(commandList, stagingTexture, new DataPointer(pixelBuffer.DataPointer, pixelBuffer.BufferStride), arrayIndex, mipLevel);
                     }
                 }
 
@@ -1097,9 +1097,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="stagingTexture">The staging texture used to temporary transfer the image from the GPU to CPU.</param>
         /// <param name="fileType">Type of the image file.</param>
         /// <exception cref="ArgumentException">If stagingTexture is not a staging texture.</exception>
-        public void Save(Stream stream, Texture stagingTexture, ImageFileType fileType)
+        public void Save(CommandList commandList, Stream stream, Texture stagingTexture, ImageFileType fileType)
         {
-            using (var image = GetDataAsImage(stagingTexture))
+            using (var image = GetDataAsImage(commandList, stagingTexture))
                 image.Save(stream, fileType);
         }
 

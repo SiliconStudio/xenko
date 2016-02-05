@@ -150,10 +150,10 @@ namespace SiliconStudio.Xenko.Graphics
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>.
         /// This method creates internally a stagging resource if this texture is not already a stagging resouce, copies to it and map it to memory. Use method with explicit staging resource
         /// for optimal performances.</remarks>
-        public TData[] GetData<TData>() where TData : struct
+        public TData[] GetData<TData>(CommandList commandList) where TData : struct
         {
             var toData = new TData[this.Description.SizeInBytes / Utilities.SizeOf<TData>()];
-            GetData(toData);
+            GetData(commandList, toData);
             return toData;
         }
 
@@ -166,19 +166,19 @@ namespace SiliconStudio.Xenko.Graphics
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>.
         /// This method creates internally a stagging resource if this texture is not already a stagging resouce, copies to it and map it to memory. Use method with explicit staging resource
         /// for optimal performances.</remarks>
-        public void GetData<TData>(TData[] toData) where TData : struct
+        public void GetData<TData>(CommandList commandList, TData[] toData) where TData : struct
         {
             // Get data from this resource
             if (this.Description.Usage == GraphicsResourceUsage.Staging)
             {
                 // Directly if this is a staging resource
-                GetData(this, toData);
+                GetData(commandList, this, toData);
             }
             else
             {
                 // Unefficient way to use the Copy method using dynamic staging texture
                 using (var throughStaging = this.ToStaging())
-                    GetData(throughStaging, toData);
+                    GetData(commandList, throughStaging, toData);
             }
         }
 
@@ -191,19 +191,19 @@ namespace SiliconStudio.Xenko.Graphics
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>.
         /// This method creates internally a stagging resource if this texture is not already a stagging resouce, copies to it and map it to memory. Use method with explicit staging resource
         /// for optimal performances.</remarks>
-        public void GetData<TData>(ref TData toData) where TData : struct
+        public void GetData<TData>(CommandList commandList, ref TData toData) where TData : struct
         {
             // Get data from this resource
             if (this.Description.Usage == GraphicsResourceUsage.Staging)
             {
                 // Directly if this is a staging resource
-                GetData(this, ref toData);
+                GetData(commandList, this, ref toData);
             }
             else
             {
                 // Unefficient way to use the Copy method using dynamic staging texture
                 using (var throughStaging = this.ToStaging())
-                    GetData(throughStaging, ref toData);
+                    GetData(commandList, throughStaging, ref toData);
             }
         }
 
@@ -217,9 +217,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>.
         /// </remarks>
-        public unsafe void GetData<TData>(Buffer stagingTexture, ref TData toData) where TData : struct
+        public unsafe void GetData<TData>(CommandList commandList, Buffer stagingTexture, ref TData toData) where TData : struct
         {
-            GetData(stagingTexture, new DataPointer(Interop.Fixed(ref toData), Utilities.SizeOf<TData>()));
+            GetData(commandList, stagingTexture, new DataPointer(Interop.Fixed(ref toData), Utilities.SizeOf<TData>()));
         }
 
         /// <summary>
@@ -232,9 +232,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>.
         /// </remarks>
-        public unsafe void GetData<TData>(Buffer stagingTexture, TData[] toData) where TData : struct
+        public unsafe void GetData<TData>(CommandList commandList, Buffer stagingTexture, TData[] toData) where TData : struct
         {
-            GetData(stagingTexture, new DataPointer(Interop.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()));
+            GetData(commandList, stagingTexture, new DataPointer(Interop.Fixed(toData), toData.Length * Utilities.SizeOf<TData>()));
         }
         
         /// <summary>
@@ -279,7 +279,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice"/>.
         /// </remarks>
-        public void GetData(Buffer stagingTexture, DataPointer toData)
+        public void GetData(CommandList commandList, Buffer stagingTexture, DataPointer toData)
         {
             // Check size validity of data to copy to
             if (toData.Size > this.Description.SizeInBytes)
@@ -287,13 +287,13 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Copy the texture to a staging resource
             if (!ReferenceEquals(this, stagingTexture))
-                GraphicsDevice.Copy(this, stagingTexture);
+                commandList.Copy(this, stagingTexture);
 
             // Map the staging resource to a CPU accessible memory
-            var mappedResource = GraphicsDevice.MapSubresource(stagingTexture, 0, MapMode.Read);
+            var mappedResource = commandList.MapSubresource(stagingTexture, 0, MapMode.Read);
             Utilities.CopyMemory(toData.Pointer, mappedResource.DataBox.DataPointer, toData.Size);
             // Make sure that we unmap the resource in case of an exception
-            GraphicsDevice.UnmapSubresource(mappedResource);
+            commandList.UnmapSubresource(mappedResource);
         }
 
         /// <summary>
@@ -331,9 +331,9 @@ namespace SiliconStudio.Xenko.Graphics
                 if (offsetInBytes > 0)
                     throw new ArgumentException("offset is only supported for textured declared with ResourceUsage.Default", "offsetInBytes");
 
-                var mappedResource = commandList.GraphicsDevice.MapSubresource(this, 0, MapMode.WriteDiscard);
+                var mappedResource = commandList.MapSubresource(this, 0, MapMode.WriteDiscard);
                 Utilities.CopyMemory(mappedResource.DataBox.DataPointer, fromData.Pointer, fromData.Size);
-                commandList.GraphicsDevice.UnmapSubresource(mappedResource);
+                commandList.UnmapSubresource(mappedResource);
             }
         }
 
@@ -634,9 +634,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>This method is only working when called from the main thread that is accessing the main <see cref="GraphicsDevice" />.
         /// This method creates internally a stagging resource if this texture is not already a stagging resouce, copies to it and map it to memory. Use method with explicit staging resource
         /// for optimal performances.</remarks>
-        public T[] GetData()
+        public T[] GetData(CommandList commandList)
         {
-            return GetData<T>();
+            return GetData<T>(commandList);
         }
 
         /// <summary>

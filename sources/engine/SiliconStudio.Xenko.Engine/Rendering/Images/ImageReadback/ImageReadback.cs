@@ -135,7 +135,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             if (ForceGetLatestBlocking)
             {
-                stagingTargets[currentStagingIndex].GetData(result);
+                stagingTargets[currentStagingIndex].GetData(context.CommandList, result);
                 IsResultAvailable = true;
                 IsSlow = true;
             }
@@ -153,11 +153,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
                         if (i == 0)
                         {
                             // Get data blocking (otherwise we would loop without getting any readback if StagingCount is not enough high)
-                            stagingTarget.GetData(result);
+                            stagingTarget.GetData(context.CommandList, result);
                             IsSlow = true;
                             IsResultAvailable = true;
                         }
-                        else if (stagingTarget.GetData(result, 0, 0, true)) // Get data non-blocking
+                        else if (stagingTarget.GetData(context.CommandList, result, 0, 0, true)) // Get data non-blocking
                         {
                             IsResultAvailable = true;
                         }

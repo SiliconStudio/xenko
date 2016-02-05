@@ -607,6 +607,35 @@ namespace SiliconStudio.Xenko.Graphics
             NativeDeviceContext.UpdateSubresource(*(SharpDX.DataBox*)Interop.Cast(ref databox), resource.NativeResource, subResourceIndex, *(SharpDX.Direct3D11.ResourceRegion*)Interop.Cast(ref region));
         }
 
+        // TODO GRAPHICS REFACTOR what should we do with this?
+        /// <summary>
+        /// Maps a subresource.
+        /// </summary>
+        /// <param name="resource">The resource.</param>
+        /// <param name="subResourceIndex">Index of the sub resource.</param>
+        /// <param name="mapMode">The map mode.</param>
+        /// <param name="doNotWait">if set to <c>true</c> this method will return immediately if the resource is still being used by the GPU for writing. Default is false</param>
+        /// <param name="offsetInBytes">The offset information in bytes.</param>
+        /// <param name="lengthInBytes">The length information in bytes.</param>
+        /// <returns>Pointer to the sub resource to map.</returns>
+        public unsafe MappedResource MapSubresource(GraphicsResource resource, int subResourceIndex, MapMode mapMode, bool doNotWait = false, int offsetInBytes = 0, int lengthInBytes = 0)
+        {
+            if (resource == null) throw new ArgumentNullException("resource");
+            SharpDX.DataBox dataBox = NativeDeviceContext.MapSubresource(resource.NativeResource, subResourceIndex, (SharpDX.Direct3D11.MapMode)mapMode, doNotWait ? SharpDX.Direct3D11.MapFlags.DoNotWait : SharpDX.Direct3D11.MapFlags.None);
+            var databox = *(DataBox*)Interop.Cast(ref dataBox);
+            if (!dataBox.IsEmpty)
+            {
+                databox.DataPointer = (IntPtr)((byte*)databox.DataPointer + offsetInBytes);
+            }
+            return new MappedResource(resource, subResourceIndex, databox);
+        }
+
+        // TODO GRAPHICS REFACTOR what should we do with this?
+        public void UnmapSubresource(MappedResource unmapped)
+        {
+            NativeDeviceContext.UnmapSubresource(unmapped.Resource.NativeResource, unmapped.SubResourceIndex);
+        }
+
         private void InitializeStages()
         {
             inputAssembler = nativeDeviceContext.InputAssembler;
