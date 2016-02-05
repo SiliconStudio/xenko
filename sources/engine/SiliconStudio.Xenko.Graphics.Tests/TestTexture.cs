@@ -457,7 +457,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             // Sets new data on the gpu
             data[0] = 1;
             data[31] = 255;
-            texture.SetData(data);
+            texture.SetData(GraphicsCommandList, data);
 
             // Get back the data from the gpu
             data2 = texture.GetData<byte>();

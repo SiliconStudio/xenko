@@ -686,41 +686,6 @@ namespace SiliconStudio.Xenko.Graphics
         }
 
         /// <summary>
-        /// Copies the content an array of data on CPU memory to this texture into GPU memory.
-        /// </summary>
-        /// <typeparam name="TData">The type of the T data.</typeparam>
-        /// <param name="fromData">The data to copy from.</param>
-        /// <param name="arraySlice">The array slice index. This value must be set to 0 for Texture 3D.</param>
-        /// <param name="mipSlice">The mip slice index.</param>
-        /// <param name="region">Destination region</param>
-        /// <exception cref="System.ArgumentException">When strides is different from optimal strides, and TData is not the same size as the pixel format, or Width * Height != toData.Length</exception>
-        /// <remarks>
-        /// This method is only working on the main graphics device. Use method with explicit graphics device to set data on a deferred context.
-        /// See also unmanaged documentation about Map/UnMap for usage and restrictions.
-        /// </remarks>
-        public void SetData<TData>(TData[] fromData, int arraySlice = 0, int mipSlice = 0, ResourceRegion? region = null) where TData : struct
-        {
-            SetData(GraphicsDevice, fromData, arraySlice, mipSlice, region);
-        }
-
-        /// <summary>
-        /// Copies the content an data on CPU memory to this texture into GPU memory using the specified <see cref="GraphicsDevice"/> (The graphics device could be deffered).
-        /// </summary>
-        /// <param name="fromData">The data to copy from.</param>
-        /// <param name="arraySlice">The array slice index. This value must be set to 0 for Texture 3D.</param>
-        /// <param name="mipSlice">The mip slice index.</param>
-        /// <param name="region">Destination region</param>
-        /// <exception cref="System.ArgumentException">When strides is different from optimal strides, and TData is not the same size as the pixel format, or Width * Height != toData.Length</exception>
-        /// <remarks>
-        /// This method is only working on the main graphics device. Use method with explicit graphics device to set data on a deferred context.
-        /// See also unmanaged documentation about Map/UnMap for usage and restrictions.
-        /// </remarks>
-        public void SetData(DataPointer fromData, int arraySlice = 0, int mipSlice = 0, ResourceRegion? region = null)
-        {
-            SetData(GraphicsDevice, fromData, arraySlice, mipSlice, region);
-        }
-
-        /// <summary>
         /// Copies the content an array of data on CPU memory to this texture into GPU memory using the specified <see cref="GraphicsDevice"/> (The graphics device could be deffered).
         /// </summary>
         /// <typeparam name="TData">The type of the T data.</typeparam>
@@ -733,9 +698,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// See unmanaged documentation for usage and restrictions.
         /// </remarks>
-        public unsafe void SetData<TData>(GraphicsDevice device, TData[] fromData, int arraySlice = 0, int mipSlice = 0, ResourceRegion? region = null) where TData : struct
+        public unsafe void SetData<TData>(CommandList commandList, TData[] fromData, int arraySlice = 0, int mipSlice = 0, ResourceRegion? region = null) where TData : struct
         {
-            SetData(device, new DataPointer((IntPtr)Interop.Fixed(fromData), fromData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, region);
+            SetData(commandList, new DataPointer((IntPtr)Interop.Fixed(fromData), fromData.Length * Utilities.SizeOf<TData>()), arraySlice, mipSlice, region);
         }
 
         /// <summary>
@@ -850,7 +815,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// Copies the content an data on CPU memory to this texture into GPU memory.
         /// </summary>
-        /// <param name="device">The <see cref="GraphicsDevice"/>.</param>
+        /// <param name="commandList">The <see cref="CommandList"/>.</param>
         /// <param name="fromData">The data to copy from.</param>
         /// <param name="arraySlice">The array slice index. This value must be set to 0 for Texture 3D.</param>
         /// <param name="mipSlice">The mip slice index.</param>
@@ -859,9 +824,9 @@ namespace SiliconStudio.Xenko.Graphics
         /// <remarks>
         /// See unmanaged documentation for usage and restrictions.
         /// </remarks>
-        public unsafe void SetData(GraphicsDevice device, DataPointer fromData, int arraySlice = 0, int mipSlice = 0, ResourceRegion? region = null)
+        public unsafe void SetData(CommandList commandList, DataPointer fromData, int arraySlice = 0, int mipSlice = 0, ResourceRegion? region = null)
         {
-            if (device == null) throw new ArgumentNullException("device");
+            if (commandList == null) throw new ArgumentNullException("commandList");
             if (region.HasValue && this.Usage != GraphicsResourceUsage.Default)
                 throw new ArgumentException("Region is only supported for textures with ResourceUsage.Default");
 
@@ -927,7 +892,7 @@ namespace SiliconStudio.Xenko.Graphics
 
                     // Workaround when using region with a deferred context and a device that does not support CommandList natively
                     // see http://blogs.msdn.com/b/chuckw/archive/2010/07/28/known-issue-direct3d-11-updatesubresource-and-deferred-contexts.aspx
-                    if (device.NeedWorkAroundForUpdateSubResource)
+                    if (commandList.GraphicsDevice.NeedWorkAroundForUpdateSubResource)
                     {
                         if (IsBlockCompressed)
                         {
@@ -938,16 +903,16 @@ namespace SiliconStudio.Xenko.Graphics
                         }
                         sourceDataPtr = new IntPtr((byte*)sourceDataPtr - (regionValue.Front * textureDepthStride) - (regionValue.Top * rowStride) - (regionValue.Left * sizePerElement));
                     }
-                    device.UpdateSubresource(this, subResourceIndex, new DataBox(sourceDataPtr, rowStride, textureDepthStride), regionValue);
+                    commandList.UpdateSubresource(this, subResourceIndex, new DataBox(sourceDataPtr, rowStride, textureDepthStride), regionValue);
                 }
                 else
                 {
-                    device.UpdateSubresource(this, subResourceIndex, new DataBox(fromData.Pointer, rowStride, textureDepthStride));
+                    commandList.UpdateSubresource(this, subResourceIndex, new DataBox(fromData.Pointer, rowStride, textureDepthStride));
                 }
             }
             else
             {
-                var mappedResource = device.MapSubresource(this, subResourceIndex, this.Usage == GraphicsResourceUsage.Dynamic ? MapMode.WriteDiscard : MapMode.Write);
+                var mappedResource = commandList.GraphicsDevice.MapSubresource(this, subResourceIndex, this.Usage == GraphicsResourceUsage.Dynamic ? MapMode.WriteDiscard : MapMode.Write);
                 var box = mappedResource.DataBox;
 
                 // If depth == 1 (Texture, Texture or TextureCube), then depthStride is not used
@@ -979,7 +944,7 @@ namespace SiliconStudio.Xenko.Graphics
                     }
 
                 }
-                device.UnmapSubresource(mappedResource);
+                commandList.GraphicsDevice.UnmapSubresource(mappedResource);
             }
         }
 

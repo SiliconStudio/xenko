@@ -462,7 +462,7 @@ namespace SiliconStudio.Xenko.Graphics
                 drawCommand.Matrix.M42 /= invW;
             }
 
-            font.InternalUIDraw(ref proxy, ref drawCommand);
+            font.InternalUIDraw(CommandList, ref proxy, ref drawCommand);
         }
 
         protected override unsafe void UpdateBufferValuesFromElementInfo(ref ElementInfo elementInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset)
