@@ -27,6 +27,8 @@ namespace SiliconStudio.Core.Reflection
             isIdentifiable = IdentifiableHelper.IsIdentifiable(type);
         }
 
+        public bool IsIdentifiable => isIdentifiable;
+
         /// <summary>
         /// Gets or sets a boolean indicating whether this object is selected by an editor.
         /// </summary>
@@ -152,7 +154,10 @@ namespace SiliconStudio.Core.Reflection
             {
                 var newShadow = Shadows.GetValue(toInstance, key => new ShadowObject());
                 shadow.CopyTo(newShadow);
-                newShadow.SetId(toInstance, shadow.GetId(fromInstance));
+                if (shadow.IsIdentifiable)
+                {
+                    newShadow.SetId(toInstance, shadow.GetId(fromInstance));
+                }
             }
         }
 
