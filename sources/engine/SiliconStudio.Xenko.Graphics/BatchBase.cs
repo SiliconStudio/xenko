@@ -479,9 +479,9 @@ namespace SiliconStudio.Xenko.Graphics
                 //else
                 {
                     var mappedIndices = new MappedResource();
-                    var mappedVertices = GraphicsDevice.MapSubresource(ResourceContext.VertexBuffer, 0, noOverwriteVertex, false, offsetVertexInBytes, vertexCount * vertexStructSize);
+                    var mappedVertices = CommandList.MapSubresource(ResourceContext.VertexBuffer, 0, noOverwriteVertex, false, offsetVertexInBytes, vertexCount * vertexStructSize);
                     if (ResourceContext.IsIndexBufferDynamic)
-                        mappedIndices = GraphicsDevice.MapSubresource(ResourceContext.IndexBuffer, 0, noOverwriteIndex, false, offsetIndexInBytes, indexCount * indexStructSize);
+                        mappedIndices = CommandList.MapSubresource(ResourceContext.IndexBuffer, 0, noOverwriteIndex, false, offsetIndexInBytes, indexCount * indexStructSize);
 
                     var vertexPointer = mappedVertices.DataBox.DataPointer;
                     var indexPointer = mappedIndices.DataBox.DataPointer;
@@ -497,9 +497,9 @@ namespace SiliconStudio.Xenko.Graphics
                         indexPointer += indexStructSize * sprites[spriteIndex].IndexCount;
                     }
 
-                    GraphicsDevice.UnmapSubresource(mappedVertices);
+                    CommandList.UnmapSubresource(mappedVertices);
                     if (ResourceContext.IsIndexBufferDynamic)
-                        GraphicsDevice.UnmapSubresource(mappedIndices);
+                        CommandList.UnmapSubresource(mappedIndices);
                 }
 
                 // Draw from the specified index

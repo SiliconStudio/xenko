@@ -17,8 +17,9 @@ namespace SiliconStudio.Xenko.Extensions
         private static byte[] GetDataSafe(this Buffer buffer)
         {
             var data = buffer.GetSerializationData();
-
-            return data != null ? data.Content : buffer.GetData<byte>();
+            if (data == null)
+                throw new InvalidOperationException("Could not find underlying CPU buffer data");
+            return data.Content;
         }
 
         /// <summary>

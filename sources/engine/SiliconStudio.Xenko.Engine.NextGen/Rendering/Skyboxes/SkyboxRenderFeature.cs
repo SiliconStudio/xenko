@@ -178,7 +178,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 commandList.SetPipelineState(renderEffect.PipelineState);
 
                 var resourceGroupOffset = ComputeResourceGroupOffset(renderNodeReference);
-                renderEffect.Reflection.BufferUploader.Apply(context.GraphicsDevice, ResourceGroupPool, resourceGroupOffset);
+                renderEffect.Reflection.BufferUploader.Apply(context.CommandList, ResourceGroupPool, resourceGroupOffset);
 
                 // Bind descriptor sets
                 for (int i = 0; i < descriptorSets.Length; ++i)
