@@ -105,8 +105,10 @@ namespace SiliconStudio.Assets
             return streamOrValueType;
         }
 
-        private ObjectId GetRuntimeId()
+        private ObjectId GetHashId()
         {
+            // This methods use the stream that is already filled-up by the standard binary serialization of the object
+            // Here we add ids and overrides metadata informations to the stream in order to calculate an accurate id
             var stream = streamOrValueType as MemoryStream;
             if (stream != null)
             {
@@ -115,34 +117,23 @@ namespace SiliconStudio.Assets
                 {
                     if (objectRef != null)
                     {
-                        var shadowObject = ShadowObject.Get(objectRef);
-                        if (shadowObject != null)
+                        var shadowObject = ShadowObject.GetOrCreate(objectRef);
+
+                        // Get the shadow id (may be a non-shadow, so we may duplicate it (e.g Entity)
+                        // but it should not be a big deal
+                        var id = shadowObject.GetId(objectRef);
+                        writer.Write(id);
+
+                        // Dump all members with overrides informations
+                        foreach (var item in shadowObject)
                         {
-                            // Set a flag that we have a shadow object
-                            writer.Write(1);
-
-                            // Get the shadow id (may be a non-shadow, so we may duplicate it (e.g Entity)
-                            // but it should not be a big deal
-                            var id = shadowObject.GetId(objectRef);
-                            writer.Write(id);
-
-                            // Dump all members and overrides informations
-                            foreach (var item in shadowObject)
+                            if (item.Key.Item2 == Override.OverrideKey)
                             {
-                                if (item.Key.Item2 == Override.OverrideKey)
-                                {
-                                    // Use a runtime id helper
-                                    // NOTE: it means that the generated id is only valid at runtime!
-                                    // In order to have an id that work offline time, we would have to use a different value storage (PropertyKey directly?)
-                                    var memberId = RuntimeIdHelper.ToRuntimeId(item.Key.Item1);
-                                    writer.Write(memberId);
-                                    writer.Write((int)(OverrideType)item.Value);
-                                }
+                                // Use the member name to ensure a stable id
+                                var memberName = ((IMemberDescriptor)item.Key.Item1).Name;
+                                writer.Write(memberName);
+                                writer.Write((int)(OverrideType)item.Value);
                             }
-                        }
-                        else
-                        {
-                            writer.Write(0);
                         }
                     }
                 }
@@ -202,7 +193,7 @@ namespace SiliconStudio.Assets
         /// <param name="asset">The asset to get the runtime hash id</param>
         /// <param name="flags">Flags used to control the serialization process</param>
         /// <returns>An object id</returns>
-        public static ObjectId GetRuntimeHash(object asset, AssetClonerFlags flags = AssetClonerFlags.None)
+        internal static ObjectId ComputeHash(object asset, AssetClonerFlags flags = AssetClonerFlags.None)
         {
             if (asset == null)
             {
@@ -210,7 +201,7 @@ namespace SiliconStudio.Assets
             }
 
             var cloner = new AssetCloner(asset, flags);
-            var result = cloner.GetRuntimeId();
+            var result = cloner.GetHashId();
             return result;
         }
     }
