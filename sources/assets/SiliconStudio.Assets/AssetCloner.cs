@@ -130,7 +130,20 @@ namespace SiliconStudio.Assets
                 return null;
             }
             var cloner = new AssetCloner(asset, flags);
-            return cloner.Clone();
+            var newObject = cloner.Clone();
+
+            // By default, a clone doesn't copy the base/baseParts for Asset
+            if ((flags & AssetClonerFlags.KeepBases) == 0)
+            {
+                var newAsset = newObject as Asset;
+                if (newAsset != null)
+                {
+                    newAsset.Base = null;
+                    newAsset.BaseParts = null;
+                }
+            }
+            return newObject;
+        }
         }
     }
 }
