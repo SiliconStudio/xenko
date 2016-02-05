@@ -9,6 +9,7 @@ using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Core.Storage;
 
 namespace SiliconStudio.Assets
 {
@@ -104,6 +105,56 @@ namespace SiliconStudio.Assets
             return streamOrValueType;
         }
 
+        private ObjectId GetRuntimeId()
+        {
+            var stream = streamOrValueType as MemoryStream;
+            if (stream != null)
+            {
+                var writer = new BinarySerializationWriter(stream);
+                foreach (var objectRef in objectReferences)
+                {
+                    if (objectRef != null)
+                    {
+                        var shadowObject = ShadowObject.Get(objectRef);
+                        if (shadowObject != null)
+                        {
+                            // Set a flag that we have a shadow object
+                            writer.Write(1);
+
+                            // Get the shadow id (may be a non-shadow, so we may duplicate it (e.g Entity)
+                            // but it should not be a big deal
+                            var id = shadowObject.GetId(objectRef);
+                            writer.Write(id);
+
+                            // Dump all members and overrides informations
+                            foreach (var item in shadowObject)
+                            {
+                                if (item.Key.Item2 == Override.OverrideKey)
+                                {
+                                    // Use a runtime id helper
+                                    // NOTE: it means that the generated id is only valid at runtime!
+                                    // In order to have an id that work offline time, we would have to use a different value storage (PropertyKey directly?)
+                                    var memberId = RuntimeIdHelper.ToRuntimeId(item.Key.Item1);
+                                    writer.Write(memberId);
+                                    writer.Write((int)(OverrideType)item.Value);
+                                }
+                            }
+                        }
+                        else
+                        {
+                            writer.Write(0);
+                        }
+                    }
+                }
+                writer.Flush();
+                stream.Position = 0;
+
+                return ObjectId.FromBytes(stream.ToArray());
+            }
+
+            return ObjectId.Empty;
+        }
+
         private void OnObjectDeserialized(int i, object newObject)
         {
             if (objectReferences != null && newObject != null)
@@ -144,6 +195,23 @@ namespace SiliconStudio.Assets
             }
             return newObject;
         }
+
+        /// <summary>
+        /// Generates a runtime hash id from the serialization of this asset.
+        /// </summary>
+        /// <param name="asset">The asset to get the runtime hash id</param>
+        /// <param name="flags">Flags used to control the serialization process</param>
+        /// <returns>An object id</returns>
+        public static ObjectId GetRuntimeHash(object asset, AssetClonerFlags flags = AssetClonerFlags.None)
+        {
+            if (asset == null)
+            {
+                return ObjectId.Empty;
+            }
+
+            var cloner = new AssetCloner(asset, flags);
+            var result = cloner.GetRuntimeId();
+            return result;
         }
     }
 }
