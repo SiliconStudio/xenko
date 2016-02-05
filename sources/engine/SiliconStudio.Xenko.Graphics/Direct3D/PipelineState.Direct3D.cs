@@ -186,15 +186,21 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 if (computeShader != null)
                 {
-                    nativeDeviceContext.ComputeShader.Set(computeShader);
+                    if (computeShader != previousPipeline.computeShader)
+                        nativeDeviceContext.ComputeShader.Set(computeShader);
                 }
                 else
                 {
-                    nativeDeviceContext.VertexShader.Set(vertexShader);
-                    nativeDeviceContext.PixelShader.Set(pixelShader);
-                    nativeDeviceContext.HullShader.Set(hullShader);
-                    nativeDeviceContext.DomainShader.Set(domainShader);
-                    nativeDeviceContext.GeometryShader.Set(geometryShader);
+                    if (vertexShader != previousPipeline.vertexShader)
+                        nativeDeviceContext.VertexShader.Set(vertexShader);
+                    if (pixelShader != previousPipeline.pixelShader)
+                        nativeDeviceContext.PixelShader.Set(pixelShader);
+                    if (hullShader != previousPipeline.hullShader)
+                        nativeDeviceContext.HullShader.Set(hullShader);
+                    if (domainShader != previousPipeline.domainShader)
+                        nativeDeviceContext.DomainShader.Set(domainShader);
+                    if (geometryShader != previousPipeline.geometryShader)
+                        nativeDeviceContext.GeometryShader.Set(geometryShader);
                 }
             }
 
