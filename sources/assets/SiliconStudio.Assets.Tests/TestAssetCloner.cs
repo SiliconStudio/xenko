@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core;
@@ -80,18 +81,23 @@ namespace SiliconStudio.Assets.Tests
                 Name = "Test1",
                 SubObject = new TestAssetClonerObject() { Name = "Test2" }
             };
+
+            // Setup some proper id on objects so serialization is stable
+            IdentifiableHelper.SetId(obj1, new Guid("EC86143E-896F-45C5-9A4D-627317D22955"));
+            IdentifiableHelper.SetId(obj1.SubObject, new Guid("34E160CD-1D94-468E-8BFD-F82FF96013FC"));
+
             var obj2 = (TestAssetClonerObject)AssetCloner.Clone(obj1);
 
-            var hash1 = AssetCloner.GetRuntimeHash(obj1);
-            var hash2 = AssetCloner.GetRuntimeHash(obj2);
+            var hash1 = AssetHash.Compute(obj1);
+            var hash2 = AssetHash.Compute(obj2);
             Assert.AreEqual(hash1, hash2);
 
             obj1.Name = "Yes";
-            var hash11 = AssetCloner.GetRuntimeHash(obj1);
+            var hash11 = AssetHash.Compute(obj1);
             Assert.AreNotEqual(hash11, hash2);
             obj1.Name = "Test1";
 
-            var hash12 = AssetCloner.GetRuntimeHash(obj1);
+            var hash12 = AssetHash.Compute(obj1);
             Assert.AreEqual(hash12, hash2);
 
             // Test the same with overrides
@@ -102,8 +108,8 @@ namespace SiliconStudio.Assets.Tests
 
             obj2 = (TestAssetClonerObject)AssetCloner.Clone(obj1);
 
-            var hash1WithOverrides = AssetCloner.GetRuntimeHash(obj1);
-            var hash2WithOverrides = AssetCloner.GetRuntimeHash(obj2);
+            var hash1WithOverrides = AssetHash.Compute(obj1);
+            var hash2WithOverrides = AssetHash.Compute(obj2);
             Assert.AreNotEqual(hash1, hash1WithOverrides);
             Assert.AreNotEqual(hash2, hash2WithOverrides);
             Assert.AreEqual(hash1WithOverrides, hash2WithOverrides);
