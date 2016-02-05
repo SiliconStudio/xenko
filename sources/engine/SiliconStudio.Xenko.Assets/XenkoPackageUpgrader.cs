@@ -219,7 +219,7 @@ namespace SiliconStudio.Xenko.Assets
                 foreach (var modelAsset in modelAssets)
                 {
                     modelAsset.DynamicRootNode.Nodes = DynamicYamlEmpty.Default;
-                    modelAsset.DynamicRootNode["~Base"].Asset.Nodes = DynamicYamlEmpty.Default;
+                    modelAsset.DynamicRootNode[Asset.BaseProperty].Asset.Nodes = DynamicYamlEmpty.Default;
                 }
 
                 // Save back
