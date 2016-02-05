@@ -134,7 +134,7 @@ namespace SiliconStudio.Assets
         {
             if (location == null) throw new ArgumentNullException(nameof(location));
 
-            // Clone this asset
+            // Clone this asset to make the base
             var assetBase = (Asset)AssetCloner.Clone(this);
 
             // Remove the base
@@ -143,6 +143,10 @@ namespace SiliconStudio.Assets
 
             // Clone it again without the base and without overrides (as we want all parameters to inherit from base)
             var newAsset = (Asset)AssetCloner.Clone(assetBase, AssetClonerFlags.RemoveOverrides);
+
+            // Remove the base
+            newAsset.Base = null;
+            newAsset.BaseParts = null;
 
             // Sets a new identifier for this asset
             newAsset.Id = Guid.NewGuid();
