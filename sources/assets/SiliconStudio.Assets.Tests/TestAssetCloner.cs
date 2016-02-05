@@ -71,5 +71,42 @@ namespace SiliconStudio.Assets.Tests
             Assert.AreEqual(OverrideType.Base, newInstance.GetOverride(memberDesc));
             Assert.AreEqual(OverrideType.Base, newInstance.SubObject.GetOverride(memberDesc));
         }
+
+        [Test]
+        public void TestRuntimeHash()
+        {
+            var obj1 = new TestAssetClonerObject
+            {
+                Name = "Test1",
+                SubObject = new TestAssetClonerObject() { Name = "Test2" }
+            };
+            var obj2 = (TestAssetClonerObject)AssetCloner.Clone(obj1);
+
+            var hash1 = AssetCloner.GetRuntimeHash(obj1);
+            var hash2 = AssetCloner.GetRuntimeHash(obj2);
+            Assert.AreEqual(hash1, hash2);
+
+            obj1.Name = "Yes";
+            var hash11 = AssetCloner.GetRuntimeHash(obj1);
+            Assert.AreNotEqual(hash11, hash2);
+            obj1.Name = "Test1";
+
+            var hash12 = AssetCloner.GetRuntimeHash(obj1);
+            Assert.AreEqual(hash12, hash2);
+
+            // Test the same with overrides
+            var objDesc = TypeDescriptorFactory.Default.Find(typeof(TestAssetClonerObject));
+            var memberDesc = objDesc.Members.First(t => t.Name == "Name");
+            obj1.SetOverride(memberDesc, OverrideType.New);
+            obj1.SubObject.SetOverride(memberDesc, OverrideType.Sealed);
+
+            obj2 = (TestAssetClonerObject)AssetCloner.Clone(obj1);
+
+            var hash1WithOverrides = AssetCloner.GetRuntimeHash(obj1);
+            var hash2WithOverrides = AssetCloner.GetRuntimeHash(obj2);
+            Assert.AreNotEqual(hash1, hash1WithOverrides);
+            Assert.AreNotEqual(hash2, hash2WithOverrides);
+            Assert.AreEqual(hash1WithOverrides, hash2WithOverrides);
+        }
     }
 }
