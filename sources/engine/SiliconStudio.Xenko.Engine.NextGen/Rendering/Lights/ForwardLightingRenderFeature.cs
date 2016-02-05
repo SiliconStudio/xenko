@@ -596,6 +596,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private LightParametersPermutationEntry CreateParametersPermutationEntry(LightShaderPermutationEntry lightShaderPermutationEntry)
         {
+            // TODO GRAPHICS REFACTOR Tto use Set*() instead of Set*Slow() we would need to pool data by LightShaderPermutationEntry (just like NextGenParameterCollections)
+
             var parameterCollectionEntry = lightShaderPermutationEntry.ParameterCollectionEntryPool.Add();
             parameterCollectionEntry.Clear();
 
