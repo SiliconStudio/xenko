@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="childEntity">The child parent Entity.</param>
         /// <returns>The this instance.</returns>
         /// <exception cref="System.ArgumentNullException">childEntity</exception>
-        public static T AddChild<T>(this T parentEntity, Entity childEntity) where T : Entity
+        public static Entity AddChild(this Entity parentEntity, Entity childEntity)
         {
             if (childEntity == null) throw new ArgumentNullException(nameof(childEntity));
             parentEntity.Transform.Children.Add(childEntity.Transform);
@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Engine
         /// <param name="childEntity">The child Entity.</param>
         /// <returns>The this instance.</returns>
         /// <exception cref="System.ArgumentNullException">childEntity</exception>
-        public static T RemoveChild<T>(this T parentEntity, Entity childEntity) where T : Entity
+        public static Entity RemoveChild(this Entity parentEntity, Entity childEntity)
         {
             if (childEntity == null) throw new ArgumentNullException(nameof(childEntity));
             parentEntity.Transform.Children.Remove(childEntity.Transform);

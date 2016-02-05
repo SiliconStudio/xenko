@@ -25,8 +25,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
 
             var compiledUpdate = UpdateEngine.Compile(typeof(Entity), new List<UpdateMemberInfo>
             {
-                new UpdateMemberInfo("[ModelComponent.Key]", 0),
-                new UpdateMemberInfo("child1[LightComponent.Key].Intensity", 0),
+                new UpdateMemberInfo("[ModelComponent]", 0),
+                new UpdateMemberInfo("child1[LightComponent.Key].Intensity", 0), // Keep key just for backward comp, we will remove it
             });
 
             var testData = new TestData[] { 32.0f };
@@ -36,8 +36,8 @@ namespace SiliconStudio.Xenko.Engine.Tests
                 UpdateEngine.Run(entity, compiledUpdate, (IntPtr)dataPtr, new[] { new UpdateObjectData(modelComponent) });
             }
 
-            Assert.That(entity.Get(ModelComponent.Key), Is.EqualTo(modelComponent));
-            Assert.That(entity.GetChild(0).Get(LightComponent.Key).Intensity, Is.EqualTo(32.0f));
+            Assert.That(entity.Get<ModelComponent>(), Is.EqualTo(modelComponent));
+            Assert.That(entity.GetChild(0).Get<LightComponent>().Intensity, Is.EqualTo(32.0f));
         }
 
         struct TestData

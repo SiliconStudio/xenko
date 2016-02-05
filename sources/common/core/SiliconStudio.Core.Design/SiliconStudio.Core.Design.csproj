@@ -68,7 +68,6 @@
     <Compile Include="Reflection\IAttributeRegistry.cs" />
     <Compile Include="Reflection\IDataCustomVisitor.cs" />
     <Compile Include="Reflection\IDataVisitor.cs" />
-    <Compile Include="Reflection\IdentifiableHelper.cs" />
     <Compile Include="Reflection\IMemberDescriptor.cs" />
     <Compile Include="Reflection\ITypeDescriptor.cs" />
     <Compile Include="Reflection\ITypeDescriptorFactory.cs" />
@@ -84,10 +83,7 @@
     <Compile Include="Reflection\PrimitiveDescriptor.cs" />
     <Compile Include="Reflection\PropertyDescriptor.cs" />
     <Compile Include="Reflection\MemberPath.cs" />
-    <Compile Include="Reflection\ShadowAttributes.cs" />
-    <Compile Include="Reflection\ShadowContainer.cs" />
-    <Compile Include="Reflection\ShadowId.cs" />
-    <Compile Include="Reflection\ShadowObject.cs" />
+    <Compile Include="Reflection\ShadowObjectExtensions.cs" />
     <Compile Include="Reflection\ThisDescriptor.cs" />
     <Compile Include="Reflection\TypeDescriptorFactory.cs" />
     <Compile Include="Reflection\TypeExtensions.cs" />

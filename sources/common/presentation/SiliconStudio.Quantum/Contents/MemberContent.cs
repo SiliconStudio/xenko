@@ -12,19 +12,17 @@ namespace SiliconStudio.Quantum.Contents
     /// <summary>
     /// An implementation of <see cref="IContent"/> that gives access to a member of an object.
     /// </summary>
-    public class MemberContent : ContentBase, IUpdatableContent
+    public class MemberContent : ContentBase
     {
-        protected IContent Container;
-        private readonly ModelContainer modelContainer;
-        private IModelNode modelNode;
+        private readonly NodeContainer nodeContainer;
 
         public MemberContent(INodeBuilder nodeBuilder, IContent container, IMemberDescriptor member, bool isPrimitive, IReference reference)
             : base(nodeBuilder.TypeDescriptorFactory.Find(member.Type), isPrimitive, reference)
         {
-            if (container == null) throw new ArgumentNullException("container");
+            if (container == null) throw new ArgumentNullException(nameof(container));
             Member = member;
             Container = container;
-            modelContainer = nodeBuilder.ModelContainer;
+            nodeContainer = nodeBuilder.NodeContainer;
         }
 
         /// <summary>
@@ -32,40 +30,126 @@ namespace SiliconStudio.Quantum.Contents
         /// </summary>
         public IMemberDescriptor Member { get; protected set; }
 
+        /// <summary>
+        /// Gets the name of the node holding this content.
+        /// </summary>
+        public string Name => OwnerNode?.Name;
+
+        /// <summary>
+        /// Gets the container content of this member content.
+        /// </summary>
+        public IContent Container { get; }
+
         /// <inheritdoc/>
-        public sealed override object Value
+        public sealed override object Value { get { if (Container.Value == null) throw new InvalidOperationException("Container's value is null"); return Member.Get(Container.Value); } }
+
+        /// <inheritdoc/>
+        public override void Update(object newValue, object index = null)
         {
-            get
+            var oldValue = Retrieve(index);
+            NotifyContentChanging(index, ContentChangeType.ValueChange, oldValue, newValue);
+            if (index != null)
             {
-                if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
-                return Member.Get(Container.Value);
+                var collectionDescriptor = Descriptor as CollectionDescriptor;
+                var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+                if (collectionDescriptor != null)
+                {
+                    collectionDescriptor.SetValue(Value, (int)index, newValue);
+                }
+                else if (dictionaryDescriptor != null)
+                {
+                    dictionaryDescriptor.SetValue(Value, index, newValue);
+                }
+                else
+                    throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
             }
-            set
+            else
             {
                 if (Container.Value == null) throw new InvalidOperationException("Container's value is null");
                 var containerValue = Container.Value;
-                Member.Set(containerValue, value);
+                Member.Set(containerValue, newValue);
 
                 if (Container.Value.GetType().GetTypeInfo().IsValueType)
-                    Container.Value = containerValue;
+                    Container.Update(containerValue);
+            }
+            UpdateReferences();
+            NotifyContentChanged(index, ContentChangeType.ValueChange, oldValue, newValue);
+        }
 
-                if (modelContainer != null && modelNode != null)
+        public override void Add(object newItem)
+        {
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            if (collectionDescriptor != null)
+            {
+                var index = collectionDescriptor.GetCollectionCount(Value);
+                NotifyContentChanging(index, ContentChangeType.CollectionAdd, null, newItem);
+                    collectionDescriptor.Add(Value, newItem);
+
+                UpdateReferences();
+                NotifyContentChanged(index, ContentChangeType.CollectionAdd, null, newItem);
+            }
+            else
+                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+        }
+
+        public override void Add(object itemIndex, object newItem)
+        {
+            NotifyContentChanging(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+            if (collectionDescriptor != null)
+            {
+                var index = (int)itemIndex;
+                if (collectionDescriptor.GetCollectionCount(Value) == index)
                 {
-                    modelContainer.UpdateReferences(modelNode);
+                    collectionDescriptor.Add(Value, newItem);
+                }
+                else
+                {
+                    collectionDescriptor.Insert(Value, index, newItem);
                 }
             }
+            else if (dictionaryDescriptor != null)
+            {
+                dictionaryDescriptor.SetValue(Value, itemIndex, newItem);
+            }
+            else
+                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+
+            UpdateReferences();
+            NotifyContentChanged(itemIndex, ContentChangeType.CollectionAdd, null, newItem);
         }
 
-        internal void UpdateReferences()
+        public override void Remove(object itemIndex)
         {
-            if (modelContainer != null && modelNode != null)
+            if (itemIndex == null) throw new ArgumentNullException(nameof(itemIndex));
+            var oldValue = Retrieve(itemIndex);
+            NotifyContentChanging(itemIndex, ContentChangeType.CollectionRemove, oldValue, null);
+            var collectionDescriptor = Descriptor as CollectionDescriptor;
+            var dictionaryDescriptor = Descriptor as DictionaryDescriptor;
+            if (collectionDescriptor != null)
             {
-                modelContainer.UpdateReferences(modelNode);
+                var index = (int)itemIndex;
+                collectionDescriptor.RemoveAt(Value, index);
             }
+            else if (dictionaryDescriptor != null)
+            {
+                dictionaryDescriptor.Remove(Value, itemIndex);
+            }
+            else
+                throw new NotSupportedException("Unable to set the node value, the collection is unsupported");
+
+            UpdateReferences();
+            NotifyContentChanged(itemIndex, ContentChangeType.CollectionRemove, oldValue, null);
         }
-        void IUpdatableContent.RegisterOwner(IModelNode node)
+
+        private void UpdateReferences()
         {
-            modelNode = node;
+            var graphNode = OwnerNode as IGraphNode;
+            if (graphNode != null)
+            {
+                nodeContainer?.UpdateReferences(graphNode);
+            }
         }
     }
 }

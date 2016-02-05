@@ -9,18 +9,18 @@ namespace SiliconStudio.Quantum.Commands
 {
     public class CreateNewInstanceCommand : ChangeValueCommand
     {
-        private static readonly object SetToNullObject = new object();
+        public const string CommandName = "CreateNewInstance";
 
         /// <summary>
         /// An object that can be passed as parameter to the command, in order to set the value of the node to <c>null</c>.
         /// </summary>
-        public static object SetToNull { get { return SetToNullObject; } }
+        public static object SetToNull { get; } = new object();
 
         /// <inheritdoc/>
-        public override string Name { get { return "CreateNewInstance"; } }
+        public override string Name => CommandName;
 
         /// <inheritdoc/>
-        public override CombineMode CombineMode { get { return CombineMode.CombineOnlyForAll; } }
+        public override CombineMode CombineMode => CombineMode.CombineOnlyForAll;
 
         /// <inheritdoc/>
         public override bool CanAttach(ITypeDescriptor typeDescriptor, MemberDescriptorBase memberDescriptor)
@@ -35,7 +35,7 @@ namespace SiliconStudio.Quantum.Commands
             return result;
         }
 
-        protected override object ChangeValue(object currentValue, object parameter, bool isRedo)
+        protected override object ChangeValue(object currentValue, object parameter)
         {
             if (parameter == SetToNull)
                 return null;

@@ -61,6 +61,9 @@
     <Compile Include="AnonymousDisposable.cs" />
     <Compile Include="BrowsableAttribute.cs" />
     <Compile Include="CategoryAttribute.cs" />
+    <Compile Include="Collections\ArrayHelper.cs" />
+    <Compile Include="Collections\OrderedCollection.cs" />
+    <Compile Include="Collections\FastCollection.cs" />
     <Compile Include="Collections\ITrackingCollectionChanged.cs" />
     <Compile Include="Collections\KeyedSortedList.cs" />
     <Compile Include="Collections\PoolListStruct.cs" />
@@ -72,6 +75,10 @@
     <Compile Include="DisplayAttribute.cs" />
     <Compile Include="DisposeBase.cs" />
     <Compile Include="Extensions\ExceptionExtensions.cs" />
+    <Compile Include="Reflection\IdentifiableHelper.cs" />
+    <Compile Include="Reflection\ShadowObject.cs" />
+    <Compile Include="Reflection\ShadowObjectPropertyKey.cs" />
+    <Compile Include="Reflection\TypeHelper.cs" />
     <Compile Include="RuntimeIdHelper.cs" />
     <Compile Include="IIdentifiable.cs" />
     <Compile Include="IO\NativeFile.cs" />

@@ -1,7 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-#if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP && SILICONSTUDIO_XENKO_UI_SDL
+#if SILICONSTUDIO_XENKO_UI_SDL
 using System;
 using SiliconStudio.Xenko.Graphics.SDL;
 using SiliconStudio.Core.Mathematics;
@@ -78,7 +78,6 @@ namespace SiliconStudio.Xenko.Games
         private FormWindowState previousWindowState;
         //private DisplayMonitor monitor;
         private bool isUserResizing;
-        private bool isActive;
 
         private void GameForm_MinimizedActions(SDL.SDL_WindowEvent e)
         {
@@ -110,13 +109,11 @@ namespace SiliconStudio.Xenko.Games
         private void GameForm_DeActivateActions(SDL.SDL_WindowEvent e)
         {
             AppActivated?.Invoke(this, EventArgs.Empty);
-            isActive = false;
         }
 
         private void GameForm_ActivateActions(SDL.SDL_WindowEvent e)
         {
             AppDeactivated?.Invoke(this, EventArgs.Empty);
-            isActive = true;
         }
 
 

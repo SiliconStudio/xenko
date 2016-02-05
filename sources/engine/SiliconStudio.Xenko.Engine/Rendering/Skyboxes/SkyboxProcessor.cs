@@ -16,7 +16,6 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         /// Initializes a new instance of the <see cref="SkyboxProcessor" /> class.
         /// </summary>
         public SkyboxProcessor()
-            : base(SkyboxComponent.Key)
         {
         }
 
@@ -27,16 +26,16 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
         public SkyboxComponent ActiveSkyboxBackground { get; private set; }
 
         /// <inheritdoc/>
-        protected override SkyboxComponent GenerateAssociatedData(Entity entity)
+        protected override SkyboxComponent GenerateComponentData(Entity entity, SkyboxComponent component)
         {
-            return entity.Get(SkyboxComponent.Key);
+            return component;
         }
 
         public override void Draw(RenderContext context)
         {
             ActiveSkyboxBackground = null;
 
-            foreach (var entityKeyPair in matchingEntities)
+            foreach (var entityKeyPair in ComponentDatas)
             {
                 var skybox = entityKeyPair.Value;
                 if (skybox.Enabled && skybox.Skybox != null)

@@ -1,3 +1,6 @@
+// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
+
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -35,25 +38,25 @@ namespace SiliconStudio.Xenko.Physics
             characterMaterial.Parameters.Set(Effect.RasterizerStateKey, rasterizer);
         }
 
-        public Entity CreateDebugEntity(PhysicsElementBase physicsElement)
+        public Entity CreateDebugEntity(PhysicsComponent component)
         {
-            if (physicsElement?.ColliderShape == null) return null;
+            if (component?.ColliderShape == null) return null;
 
-            if (physicsElement.DebugEntity != null) return null;
+            if (component.DebugEntity != null) return null;
 
             var debugEntity = new Entity();
 
-            var colliderEntity = CreateChildEntity(physicsElement.ColliderShape, physicsElement.Type, true);
+            var colliderEntity = CreateChildEntity(component, component.ColliderShape, true);
             if (colliderEntity == null) return null;
 
             debugEntity.AddChild(colliderEntity);
 
-            if (physicsElement.CanScaleShape)
+            if (component.CanScaleShape)
             {
-                debugEntity.Transform.Scale = physicsElement.ColliderShape.Scaling;
+                debugEntity.Transform.Scale = component.ColliderShape.Scaling;
             }
 
-            var skinnedElement = physicsElement as PhysicsSkinnedElementBase;
+            var skinnedElement = component as PhysicsSkinnedComponentBase;
             if (skinnedElement != null && skinnedElement.BoneIndex != -1)
             {
                 Vector3 scale, pos;
@@ -66,7 +69,7 @@ namespace SiliconStudio.Xenko.Physics
             {
                 Vector3 scale, pos;
                 Quaternion rot;
-                physicsElement.Data.TransformComponent.WorldMatrix.Decompose(out scale, out rot, out pos);
+                component.Entity.Transform.WorldMatrix.Decompose(out scale, out rot, out pos);
                 debugEntity.Transform.Position = pos;
                 debugEntity.Transform.Rotation = rot;
             }
@@ -74,9 +77,9 @@ namespace SiliconStudio.Xenko.Physics
             return debugEntity;
         }
 
-        private Entity CreateChildEntity(ColliderShape shape, PhysicsElementBase.Types type, bool addOffset = false)
+        private Entity CreateChildEntity(PhysicsComponent component, ColliderShape shape, bool addOffset = false)
         {
-            if (shape == null)
+            if (shape  == null)
                 return null;
 
             switch (shape.Type)
@@ -95,7 +98,7 @@ namespace SiliconStudio.Xenko.Physics
                         for (var i = 0; i < compound.Count; i++)
                         {
                             var subShape = compound[i];
-                            var subEntity = CreateChildEntity(subShape, type, true);
+                            var subEntity = CreateChildEntity(component, subShape, true);
 
                             subEntity.Transform.UseTRS = false;
                             entity.AddChild(subEntity);
@@ -108,32 +111,20 @@ namespace SiliconStudio.Xenko.Physics
                     }
                 default:
                     {
-                        Material mat;
-                        switch (type)
+                        var mat = triggerMaterial;
+
+                        if (component is RigidbodyComponent)
                         {
-                            case PhysicsElementBase.Types.PhantomCollider:
-                                mat = triggerMaterial;
-                                break;
+                            mat = ((RigidbodyComponent)component).IsKinematic ? kinematicMaterial : dynamicMaterial;
 
-                            case PhysicsElementBase.Types.StaticCollider:
-                            case PhysicsElementBase.Types.StaticRigidBody:
-                                mat = staticMaterial;
-                                break;
-
-                            case PhysicsElementBase.Types.DynamicRigidBody:
-                                mat = dynamicMaterial;
-                                break;
-
-                            case PhysicsElementBase.Types.KinematicRigidBody:
-                                mat = kinematicMaterial;
-                                break;
-
-                            case PhysicsElementBase.Types.CharacterController:
-                                mat = characterMaterial;
-                                break;
-
-                            default:
-                                throw new ArgumentOutOfRangeException("type", type, null);
+                        }
+                        else if (component is CharacterComponent)
+                        {
+                            mat = characterMaterial;
+                        }
+                        else if (component is StaticColliderComponent)
+                        {
+                            mat = staticMaterial;
                         }
 
                         var entity = new Entity

@@ -25,20 +25,29 @@
     <Compile Include="CombineMode.cs" />
     <Compile Include="Commands\CreateNewInstanceCommand.cs" />
     <Compile Include="Commands\ChangeValueCommand.cs" />
-    <Compile Include="Commands\NodeCommand.cs" />
+    <Compile Include="Commands\MoveItemCommand.cs" />
+    <Compile Include="Commands\NodeCommandActionItem.cs" />
+    <Compile Include="Commands\NodeCommandBase.cs" />
+    <Compile Include="Commands\ActionItemNodeCommand.cs" />
     <Compile Include="Commands\RenameStringKeyCommand.cs" />
-    <Compile Include="Commands\UncancellableCommand.cs" />
+    <Compile Include="Commands\SimpleNodeCommandActionItem.cs" />
+    <Compile Include="Commands\SyncNodeCommand.cs" />
+    <Compile Include="Contents\ContentChangeEventArgs.cs" />
+    <Compile Include="ActionStack\ContentValueChangedActionItem.cs" />
     <Compile Include="DefaultContentFactory.cs" />
+    <Compile Include="GraphNodeChangeListener.cs" />
+    <Compile Include="GraphNodeContentLinker.cs" />
     <Compile Include="IContentFactory.cs" />
+    <Compile Include="IContentNode.cs" />
     <Compile Include="IModelBuilderPlugin.cs" />
     <Compile Include="IGuidContainer.cs" />
     <Compile Include="INodeBuilder.cs" />
-    <Compile Include="Contents\IUpdatableContent.cs" />
     <Compile Include="NodeConstructedArgs.cs" />
     <Compile Include="NodeConstructingArgs.cs" />
+    <Compile Include="NodeFactoryId.cs" />
     <Compile Include="QuantumConsistencyException.cs" />
     <Compile Include="ModelConsistencyCheckVisitor.cs" />
-    <Compile Include="ModelNodePath.cs" />
+    <Compile Include="GraphNodePath.cs" />
     <Compile Include="Contents\BoxedContent.cs" />
     <Compile Include="References\IReference.cs" />
     <Compile Include="Commands\INodeCommand.cs" />
@@ -47,19 +56,17 @@
     <Compile Include="Contents\MemberContent.cs" />
     <Compile Include="Contents\ObjectContent.cs" />
     <Compile Include="Contents\ContentBase.cs" />
-    <Compile Include="Contents\ViewModelContentSerializeFlags.cs" />
-    <Compile Include="Contents\ViewModelContentState.cs" />
-    <Compile Include="IModelNode.cs" />
+    <Compile Include="IGraphNode.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="References\Reference.cs" />
     <Compile Include="References\ReferenceEnumerable.cs" />
     <Compile Include="Commands\RemoveItemCommand.cs" />
-    <Compile Include="DefaultModelBuilder.cs" />
-    <Compile Include="ModelContainer.cs" />
+    <Compile Include="DefaultNodeBuilder.cs" />
+    <Compile Include="NodeContainer.cs" />
     <Compile Include="DebugExtensions.cs" />
-    <Compile Include="ModelNodeExtensions.cs" />
+    <Compile Include="GraphNodeExtensions.cs" />
     <Compile Include="GuidContainer.cs" />
-    <Compile Include="ModelNode.cs" />
+    <Compile Include="GraphNode.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\core\SiliconStudio.Core.Design\SiliconStudio.Core.Design.csproj">
@@ -83,6 +90,7 @@
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

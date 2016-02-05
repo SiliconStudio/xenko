@@ -21,8 +21,8 @@ namespace SiliconStudio.Quantum.References
         internal ObjectReference(object objectValue, Type objectType, object index)
         {
             Reference.CheckReferenceCreationSafeGuard();
-            if (objectType == null) throw new ArgumentNullException("objectType");
-            if (objectValue != null && !objectType.IsInstanceOfType(objectValue)) throw new ArgumentException(@"The given type does not match the given object.", "objectValue");
+            if (objectType == null) throw new ArgumentNullException(nameof(objectType));
+            if (objectValue != null && !objectType.IsInstanceOfType(objectValue)) throw new ArgumentException(@"The given type does not match the given object.", nameof(objectValue));
             orphanObject = objectValue;
             Type = objectType;
             Index = index;
@@ -31,19 +31,19 @@ namespace SiliconStudio.Quantum.References
         /// <summary>
         /// Gets the model node targeted by this reference, if available.
         /// </summary>
-        public IModelNode TargetNode { get; private set; }
+        public IGraphNode TargetNode { get; private set; }
 
         /// <inheritdoc/>
-        public object ObjectValue { get { return TargetNode != null ? TargetNode.Content.Value : orphanObject; } }
+        public object ObjectValue => TargetNode != null ? TargetNode.Content.Value : orphanObject;
 
         /// <inheritdoc/>
-        public Type Type { get; private set; }
+        public Type Type { get; }
 
         /// <inheritdoc/>
-        public object Index { get; private set; }
+        public object Index { get; }
 
         /// <inheritdoc/>
-        public ObjectReference AsObject { get { return this; } }
+        public ObjectReference AsObject => this;
 
         /// <inheritdoc/>
         public ReferenceEnumerable AsEnumerable { get { throw new InvalidCastException("This reference is not a ReferenceEnumerable"); } }
@@ -69,13 +69,14 @@ namespace SiliconStudio.Quantum.References
         }
 
         /// <summary>
-        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="ModelContainer"/>.
+        /// Set the <see cref="TargetNode"/> and <see cref="TargetGuid"/> of the targeted object by retrieving it from or creating it to the given <see cref="NodeContainer"/>.
         /// </summary>
-        /// <param name="modelContainer">The <see cref="ModelContainer"/> used to retrieve or create the target node.</param>
-        public IModelNode SetTarget(ModelContainer modelContainer)
+        /// <param name="nodeContainer">The <see cref="NodeContainer"/> used to retrieve or create the target node.</param>
+        /// <param name="nodeFactory">The factory to use to create nodes.</param>
+        internal IGraphNode SetTarget(NodeContainer nodeContainer, NodeFactoryDelegate nodeFactory)
         {
-            if (modelContainer == null) throw new ArgumentNullException("modelContainer");
-            IModelNode targetNode = modelContainer.GetOrCreateModelNode(ObjectValue, Type);
+            if (nodeContainer == null) throw new ArgumentNullException(nameof(nodeContainer));
+            IGraphNode targetNode = nodeContainer.GetOrCreateNode(ObjectValue, nodeFactory);
             if (targetNode != null)
             {
                 if (targetNode.Content.Value != null && !Type.IsInstanceOfType(targetNode.Content.Value)) throw new InvalidOperationException(@"The type of the retrieved node content does not match the type of this reference");
@@ -109,7 +110,7 @@ namespace SiliconStudio.Quantum.References
             else if (TargetGuid != Guid.Empty)
                 result += "[HasGuid] ";
 
-            result += TargetGuid + " " + (ObjectValue != null ? ObjectValue.ToString() : "null");
+            result += TargetGuid + " " + (ObjectValue?.ToString() ?? "null");
             return result;
         }
     }

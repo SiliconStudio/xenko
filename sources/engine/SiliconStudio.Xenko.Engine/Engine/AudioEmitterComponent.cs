@@ -27,13 +27,12 @@ namespace SiliconStudio.Xenko.Engine
     /// To get the AudioEmitterSoundController associated to a SoundEffect use the <see cref="GetSoundEffectController"/> function.
     /// </para>
     /// </remarks>
-    [Display(7000, "Audio Emitter", Expand = ExpandRule.Once)]
+    [Display("Audio Emitter", Expand = ExpandRule.Once)]
     [DataContract("AudioEmitterComponent")]
     [DefaultEntityComponentProcessor(typeof(AudioEmitterProcessor))]
+    [ComponentOrder(7000)]
     public sealed class AudioEmitterComponent : EntityComponent
     {
-        public static PropertyKey<AudioEmitterComponent> Key = new PropertyKey<AudioEmitterComponent>("Key", typeof(AudioEmitterComponent));
-
         /// <summary>
         /// Dictionary associating each soundEffect to a single soundController.
         /// The controller a valid as long as the corresponding SoundEffect is present in the dictionary.
@@ -270,10 +269,5 @@ namespace SiliconStudio.Xenko.Engine
         /// </summary>
         [DataMemberIgnore]
         internal bool ShouldBeProcessed { get; set; }
-
-        public override PropertyKey GetDefaultKey()
-        {
-            return Key;
-        }
     }
 }

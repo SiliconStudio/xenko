@@ -4,27 +4,37 @@
 using System;
 using SharpYaml.Serialization;
 using SharpYaml.Serialization.Serializers;
-
+using SiliconStudio.Core.Reflection;
 using SiliconStudio.Xenko.Engine;
+using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    //[YamlSerializerFactory]
-    public class EntityGroupAssetSerializer : ObjectSerializer //, IDataCustomVisitor
+    /// <summary>
+    /// Default serializer for <see cref="EntityGroupAsset"/> and <see cref="SceneAsset"/>
+    /// </summary>
+    /// <remarks>
+    /// This serializer handle the case where Entity/Components used inside an <see cref="EntityComponent"/> 
+    /// or a <see cref="SceneSettings"/>, should be serialized as references instead of by value.
+    /// </remarks>
+    public class EntityGroupAssetSerializer : ObjectSerializer
     {
-        // TODO: Add some comments to explain how this is working and why we need a specialized serializer
+        // Entity (level -> 1)
+        //   Component (level -> 2)
+        //       *Entity/Component as references (level -> 3+) 
+        // SceneSettings (level -> 3)
+        private const int SerializeComponentAsReferenceLevel = 3;
 
-        [ThreadStatic]
-        private static bool isSerializingAsReference;
+        /// <summary>
+        /// <c>true/c> if the object visited must be serialized as a reference.
+        /// </summary>
+        private bool IsSerializingAsReference => componentLevel >= SerializeComponentAsReferenceLevel;
 
-        [ThreadStatic]
-        private static int sceneSettingsLevel;
-
+        /// <summary>
+        /// See <see cref="EnterNode"/> for usage.
+        /// </summary>
         [ThreadStatic]
         private static int componentLevel;
-
-        [ThreadStatic]
-        private static int scriptLevel;
 
         public override IYamlSerializable TryCreate(SerializerContext context, ITypeDescriptor typeDescriptor)
         {
@@ -36,22 +46,15 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         protected override void CreateOrTransformObject(ref ObjectContext objectContext)
         {
-            if (isSerializingAsReference)
+            if (IsSerializingAsReference)
             {
                 // Create appropriate reference type for both serialization and deserialization
                 if (objectContext.SerializerContext.IsSerializing)
                 {
                     var entityComponent = objectContext.Instance as EntityComponent;
-                    var entityScript = objectContext.Instance as Script;
                     if (entityComponent != null)
                     {
                         objectContext.Instance = new EntityComponentReference(entityComponent);
-                    }
-                    else if (entityScript != null && scriptLevel > 1)
-                    {
-                        var script = new EntityScriptReference(entityScript);
-                        objectContext.Instance = script;
-                        objectContext.Tag = objectContext.Settings.TagTypeRegistry.TagFromType(entityScript.GetType());
                     }
                     else if (objectContext.Instance is Entity)
                     {
@@ -63,11 +66,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
                     var type = objectContext.Descriptor.Type;
                     if (typeof(EntityComponent).IsAssignableFrom(type))
                     {
-                        objectContext.Instance = new EntityComponentReference();
-                    }
-                    else if (typeof(Script).IsAssignableFrom(type) && scriptLevel > 1)
-                    {
-                        objectContext.Instance = new EntityScriptReference { ScriptType = objectContext.Descriptor.Type };
+                        objectContext.Instance = new EntityComponentReference() { ComponentType = type };
                     }
                     else if (type == typeof(Entity))
                     {
@@ -77,37 +76,32 @@ namespace SiliconStudio.Xenko.Assets.Entities
             }
 
             base.CreateOrTransformObject(ref objectContext);
+
+            // When deserializing, we don't keep the TransformComponent created when the Entity is created
+            if (!objectContext.SerializerContext.IsSerializing && objectContext.Instance is Entity)
+            {
+                var entity = (Entity)objectContext.Instance;
+                entity.Components.Clear();
+            }
         }
 
         protected override void TransformObjectAfterRead(ref ObjectContext objectContext)
         {
-            if (isSerializingAsReference)
+            if (IsSerializingAsReference)
             {
                 // Transform the deserialized reference into a fake Entity, EntityComponent, etc...
                 // Fake objects will later be fixed later with EntityAnalysis.FixupEntityReferences()
                 if (!objectContext.SerializerContext.IsSerializing)
                 {
                     var entityComponentReference = objectContext.Instance as EntityComponentReference;
-                    var entityScriptReference = objectContext.Instance as EntityScriptReference;
                     if (entityComponentReference != null)
                     {
                         var entityReference = new Entity { Id = entityComponentReference.Entity.Id };
                         var entityComponent = (EntityComponent)Activator.CreateInstance(entityComponentReference.ComponentType);
+                        IdentifiableHelper.SetId(entityComponent, entityComponentReference.Id);
                         entityComponent.Entity = entityReference;
 
                         objectContext.Instance = entityComponent;
-                    }
-                    else if (entityScriptReference != null)
-                    {
-                        var entityReference = new Entity { Id = entityScriptReference.Entity.Id };
-                        var scriptComponent = new ScriptComponent();
-                        entityReference.Add(scriptComponent);
-
-                        var entityScript = (Script)Activator.CreateInstance(entityScriptReference.ScriptType);
-                        entityScript.Id = entityScriptReference.Id;
-                        scriptComponent.Scripts.Add(entityScript);
-
-                        objectContext.Instance = entityScript;
                     }
                     else if (objectContext.Instance is EntityReference)
                     {
@@ -161,44 +155,40 @@ namespace SiliconStudio.Xenko.Assets.Entities
 
         private static void EnterNode(Type type)
         {
-            // SceneSettings: Pretend we are already inside an entity so add one level
             if (type == typeof(SceneSettings))
             {
-                sceneSettingsLevel++;
+                // Any Entity, Entitycomponent in a SceneSettings are a references
+                componentLevel += SerializeComponentAsReferenceLevel;
             }
-            else if (typeof(EntityComponent).IsAssignableFrom(type))
+            else if (typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type))
             {
+                // Everytime we enter into an Entity/EntityComponent, we increase the componentLevel by 1
+
+                // Usually, comes like this:
+                // Entity (level -> 1)
+                //   Component (level -> 2)
+                //       references (level -> 3+)
                 componentLevel++;
             }
-            else if (typeof(Script).IsAssignableFrom(type))
-            {
-                scriptLevel++;
-            }
-
-            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 1 || scriptLevel > 1;
         }
 
         private static void LeaveNode(Type type)
         {
+            // Restore the level
             if (type == typeof(SceneSettings))
             {
-                sceneSettingsLevel--;
+                componentLevel -= SerializeComponentAsReferenceLevel;
             }
-            else if (typeof(EntityComponent).IsAssignableFrom(type))
+            else if (typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type))
             {
+                // Everytime we exit from an Entity/EntityComponent, we decrease the componentLevel by 1
                 componentLevel--;
             }
-            else if (typeof(Script).IsAssignableFrom(type))
-            {
-                scriptLevel--;
-            }
-
-            isSerializingAsReference = sceneSettingsLevel > 0 || componentLevel > 1 || scriptLevel > 1;
         }
 
-        public bool CanVisit(Type type)
+        private static bool CanVisit(Type type)
         {
-            return typeof(EntityGroupAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type) || typeof(Script).IsAssignableFrom(type);
+            return typeof(EntityGroupAssetBase).IsAssignableFrom(type) || type == typeof(SceneSettings) || typeof(Entity).IsAssignableFrom(type) || typeof(EntityComponent).IsAssignableFrom(type);
         }
     }
 }

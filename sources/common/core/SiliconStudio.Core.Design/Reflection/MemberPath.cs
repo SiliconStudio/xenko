@@ -416,7 +416,7 @@ namespace SiliconStudio.Core.Reflection
                             nextReference = referenceItem.GetValue(nextReference); // id is set on element itself
 
                             Guid referenceId;
-                            if (!nextReference.GetId(out referenceId))
+                            if (!IdentifiableHelper.TryGetId(nextReference, out referenceId))
                                 continue;
 
                             for (var k = 0; k < Int32.MaxValue; ++k)
@@ -426,7 +426,7 @@ namespace SiliconStudio.Core.Reflection
 
                                 Guid dualId;
                                 var dualElt = dualItem.GetValue(nextDual);
-                                if (dualElt.GetId(out dualId) && referenceId == dualId)
+                                if (IdentifiableHelper.TryGetId(dualElt, out dualId) && referenceId == dualId)
                                 {
                                     var path = dualPath.Clone();
                                     path.AddItem(dualItem);
