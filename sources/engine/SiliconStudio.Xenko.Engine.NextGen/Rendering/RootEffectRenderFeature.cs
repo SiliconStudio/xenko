@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering
         public Action<NextGenRenderSystem, Effect, RenderEffectReflection> EffectCompiled;
 
         internal delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
-        internal ProcessPipelineStateDelegate ProcessPipelineState;
+        internal ProcessPipelineStateDelegate PostProcessPipelineState;
 
         public int EffectDescriptorSetSlotCount => effectDescriptorSetSlots.Count;
 
@@ -286,8 +286,13 @@ namespace SiliconStudio.Xenko.Rendering
                         EffectCompiled?.Invoke(RenderSystem, effect, renderEffectReflection);
                     }
 
+                    // Update effect
                     renderEffect.Effect = effect;
                     renderEffect.Reflection = renderEffectReflection;
+
+                    // Invalidate pipeline state (new effect)
+                    renderEffect.PipelineState = null;
+
                     renderEffects[staticEffectObjectNode] = renderEffect;
 
                     compilerParameters.Clear();
@@ -365,12 +370,38 @@ namespace SiliconStudio.Xenko.Rendering
                     ResourceGroupPool[descriptorSetPoolOffset + perViewDescriptorSetSlot.Index] = renderEffect.Reflection.PerViewLayout.Entries[view.Index].Resources;
                     ResourceGroupPool[descriptorSetPoolOffset + perDrawDescriptorSetSlot.Index] = renderNode.Resources;
 
+                    // Compile pipeline state object (if first time or need change)
+                    // TODO GRAPHICS REFACTOR how to invalidate if we want to change some state? (setting to null should be fine)
+                    if (renderEffect.PipelineState == null)
+                    {
+                        var pipelineState = MutablePipeline.State;
+
+                        // Effect
+                        pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
+                        pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
+
+                        // Bind VAO
+                        ProcessPipelineState(context, renderNodeReference, ref renderNode, renderObject, pipelineState);
+
+                        // TODO GRAPHICS REFACTOR we should probably extract that from RenderStage
+                        // pipelineState.RenderTargetFormats = 
+
+                        PostProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderObject, pipelineState);
+
+                        MutablePipeline.Update(context.GraphicsDevice);
+                        renderEffect.PipelineState = MutablePipeline.CurrentState;
+                    }
+
                     renderNodes[renderNodeReference.Index] = renderNode;
 
                     // Create EffectObjectNode
                     EffectObjectNodes.Add(new EffectObjectNode(renderEffect, viewObjectNode.ObjectNode));
                 }
             }
+        }
+
+        protected virtual void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
+        {
         }
 
         private ResourceGroup AllocateTemporaryResourceGroup()
