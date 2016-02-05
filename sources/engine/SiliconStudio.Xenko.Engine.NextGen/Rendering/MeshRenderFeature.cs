@@ -85,6 +85,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
 
+            MeshDraw currentDrawData = null;
             for (int index = startIndex; index < endIndex; index++)
             {
                 var renderNodeReference = renderViewStage.RenderNodes[index].RenderNode;
@@ -98,10 +99,16 @@ namespace SiliconStudio.Xenko.Rendering
                 var renderEffect = renderNode.RenderEffect;
 
                 // Bind VB
-                for (int i = 0; i < drawData.VertexBuffers.Length; i++)
+                if (currentDrawData != drawData)
                 {
-                    var vertexBuffer = drawData.VertexBuffers[i];
-                    commandList.SetVertexBuffer(i, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
+                    for (int i = 0; i < drawData.VertexBuffers.Length; i++)
+                    {
+                        var vertexBuffer = drawData.VertexBuffers[i];
+                        commandList.SetVertexBuffer(i, vertexBuffer.Buffer, vertexBuffer.Offset, vertexBuffer.Stride);
+                    }
+                    if (drawData.IndexBuffer != null)
+                        commandList.SetIndexBuffer(drawData.IndexBuffer.Buffer, drawData.IndexBuffer.Offset, drawData.IndexBuffer.Is32Bit);
+                    currentDrawData = drawData;
                 }
 
                 var resourceGroupOffset = ComputeResourceGroupOffset(renderNodeReference);
@@ -127,7 +134,6 @@ namespace SiliconStudio.Xenko.Rendering
                 }
                 else
                 {
-                    commandList.SetIndexBuffer(drawData.IndexBuffer.Buffer, drawData.IndexBuffer.Offset, drawData.IndexBuffer.Is32Bit);
                     commandList.DrawIndexed(drawData.DrawCount, drawData.StartLocation);
                 }
             }
