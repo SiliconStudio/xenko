@@ -206,6 +206,11 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 
         private void CollectShadowMaps(List<LightComponent> visibleLights)
         {
+            // TODO GRAPHICS REFACTOR Get viewport from RenderFrame of this render view
+            var sceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
+            var camera = RenderSystem.RenderContextOld.GetCurrentCamera();
+            //var viewport = RenderSystem.GraphicsDevice.Presenter.BackBuffer;
+
             foreach (var lightComponent in visibleLights)
             {
                 var light = lightComponent.Type as IDirectLight;
@@ -232,7 +237,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
                 var position = lightComponent.Position;
 
                 // Compute the coverage of this light on the screen
-                var size = light.ComputeScreenCoverage(RenderSystem.RenderContextOld, position, direction);
+                var size = light.ComputeScreenCoverage(camera, position, direction, RenderSystem.GraphicsDevice.Presenter.BackBuffer.Width, RenderSystem.GraphicsDevice.Presenter.BackBuffer.Height);
 
                 // Converts the importance into a shadow size factor
                 var sizeFactor = ComputeSizeFactor(shadowMap.Size);
