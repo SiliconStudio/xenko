@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Graphics
             ViewFlags = viewFlags;
             InitCountAndViewFormat(out this.elementCount, ref viewFormat);
             ViewFormat = viewFormat;
-            NativeDeviceChild = new SharpDX.Direct3D11.Buffer(GraphicsDevice.RootDevice.NativeDevice, dataPointer, nativeDescription);
+            NativeDeviceChild = new SharpDX.Direct3D11.Buffer(GraphicsDevice.NativeDevice, dataPointer, nativeDescription);
 
             // Staging resource don't have any views
             if (nativeDescription.Usage != ResourceUsage.Staging)
@@ -79,7 +79,7 @@ namespace SiliconStudio.Xenko.Graphics
                 || Description.Usage == GraphicsResourceUsage.Default)
                 return false;
 
-            NativeDeviceChild = new SharpDX.Direct3D11.Buffer(GraphicsDevice.RootDevice.NativeDevice, IntPtr.Zero, nativeDescription);
+            NativeDeviceChild = new SharpDX.Direct3D11.Buffer(GraphicsDevice.NativeDevice, IntPtr.Zero, nativeDescription);
 
             // Staging resource don't have any views
             if (nativeDescription.Usage != ResourceUsage.Staging)
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="dataPointer"></param>
         public void Recreate(IntPtr dataPointer)
         {
-            NativeDeviceChild = new SharpDX.Direct3D11.Buffer(GraphicsDevice.RootDevice.NativeDevice, dataPointer, nativeDescription);
+            NativeDeviceChild = new SharpDX.Direct3D11.Buffer(GraphicsDevice.NativeDevice, dataPointer, nativeDescription);
 
             // Staging resource don't have any views
             if (nativeDescription.Usage != ResourceUsage.Staging)
