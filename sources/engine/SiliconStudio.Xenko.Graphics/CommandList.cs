@@ -17,12 +17,6 @@ namespace SiliconStudio.Xenko.Graphics
         private Texture[] renderTargets = new Texture[MaxRenderTargetCount];
 
         /// <summary>
-        /// Gets the native device context.
-        /// </summary>
-        /// <value>The native device context.</value>
-        internal SharpDX.Direct3D11.DeviceContext NativeDeviceContext => nativeDeviceContext;
-
-        /// <summary>
         ///     Gets the first viewport.
         /// </summary>
         /// <value>The first viewport.</value>

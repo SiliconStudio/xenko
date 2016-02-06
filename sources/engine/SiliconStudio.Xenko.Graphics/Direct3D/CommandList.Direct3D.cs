@@ -44,6 +44,13 @@ namespace SiliconStudio.Xenko.Graphics
             ClearState();
         }
 
+        /// <summary>
+        /// Gets the native device context.
+        /// </summary>
+        /// <value>The native device context.</value>
+        internal SharpDX.Direct3D11.DeviceContext NativeDeviceContext => nativeDeviceContext;
+
+
         private void ClearStateImpl()
         {
             NativeDeviceContext.ClearState();
