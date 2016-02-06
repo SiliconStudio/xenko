@@ -56,8 +56,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="windowHandle">The window handle.</param>
         protected GraphicsDevice(GraphicsAdapter adapter, GraphicsProfile[] profile, DeviceCreationFlags deviceCreationFlags, WindowHandle windowHandle)
         {
-            RootDevice = this;
-
             // Setup IsDeferred to false for the main device
             isDeferred = false;
 
@@ -229,12 +227,6 @@ namespace SiliconStudio.Xenko.Graphics
         ///     The <see cref="RasterizerStates" /> factory.
         /// </value>
         public RasterizerStateFactory RasterizerStates { get; private set; }
-
-        /// <summary>
-        ///     Gets the root device.
-        /// </summary>
-        /// <value>The root device.</value>
-        public GraphicsDevice RootDevice { get; private set; }
 
         /// <summary>
         ///     Gets the <see cref="SamplerStateFactory" /> factory.

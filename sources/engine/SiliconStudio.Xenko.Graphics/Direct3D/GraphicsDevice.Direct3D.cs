@@ -25,31 +25,6 @@ namespace SiliconStudio.Xenko.Graphics
 
         private SharpDX.Direct3D11.DeviceCreationFlags creationFlags;
 
-        /// <summary>
-        /// Initializes a new instance of the <see cref="GraphicsDevice" /> class using the default GraphicsAdapter
-        /// and the Level10 <see cref="GraphicsProfile" />.
-        /// </summary>
-        /// <param name="device">The device.</param>
-        private GraphicsDevice(GraphicsDevice device)
-        {
-            RootDevice = device;
-            Adapter = device.Adapter;
-            creationFlags = device.creationFlags;
-            Features = device.Features;
-            sharedDataPerDevice = device.sharedDataPerDevice;
-            nativeDevice = device.NativeDevice;
-            nativeDeviceContext = new SharpDX.Direct3D11.DeviceContext(NativeDevice).DisposeBy(this);
-            isDeferred = true;
-            IsDebugMode = device.IsDebugMode;
-            if (IsDebugMode)
-            {
-                GraphicsResourceBase.SetDebugName(device, nativeDeviceContext, "DeferredContext");
-            }
-            NeedWorkAroundForUpdateSubResource = !Features.HasDriverCommandLists;
-
-            PrimitiveQuad = new PrimitiveQuad(this).DisposeBy(this);
-        }
-
         // Used by Texture.SetData
 
         /// <summary>
@@ -159,15 +134,6 @@ namespace SiliconStudio.Xenko.Graphics
             //
             //NativeDeviceContext.ExecuteCommandList(((CommandList)commandList).NativeCommandList, false);
             //commandList.Dispose();
-        }
-
-        /// <summary>
-        /// Creates a new deferred device used for multithread deferred rendering.
-        /// </summary>
-        /// <returns>GraphicsDevice.</returns>
-        public GraphicsDevice NewDeferred()
-        {
-            return new GraphicsDevice(RootDevice);
         }
 
         public void SimulateReset()
