@@ -319,12 +319,10 @@
     <Compile Include="OpenGL\UseOpenGLCreationContext.cs" />
     <Compile Include="RenderTargetGraphicsPresenter.cs" />
     <Compile Include="Direct3D\GraphicsResource.Direct3D.cs" />
-    <Compile Include="Direct3D\Shader.Direct3D.cs" />
     <Compile Include="Null\EffectProgram.Null.cs" />
     <Compile Include="Null\Shader.Null.cs" />
     <Compile Include="OpenGL\EffectProgram.OpenGL.cs" />
     <Compile Include="OpenGL\OpenGLShaderBytecodeData.cs" />
-    <Compile Include="Shader.cs" />
     <Compile Include="Direct3D\GraphicsDeviceFeatures.Direct3D.cs" />
     <Compile Include="FormatSupport.cs" />
     <Compile Include="GraphicsDeviceFeatures.cs" />
