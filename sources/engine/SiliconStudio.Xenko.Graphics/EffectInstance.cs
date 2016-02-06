@@ -30,7 +30,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         // Describes how to update resource bindings
         private ResourceGroupBufferUploader bufferUploader;
-        public ResourceBinder resourceBinder;
 
         private EffectDescriptorSetReflection descriptorReflection;
 
@@ -67,7 +66,6 @@ namespace SiliconStudio.Xenko.Rendering
                 descriptorReflection = EffectDescriptorSetReflection.New(graphicsDevice, effect.Bytecode, layouts);
                 RootSignature = RootSignature.New(graphicsDevice, descriptorReflection);
                 bufferUploader.Compile(graphicsDevice, descriptorReflection, effect.Bytecode);
-                resourceBinder.Compile(graphicsDevice, descriptorReflection, effect.Bytecode);
 
                 // Process constant buffers
                 var parameterCollectionLayout = new NextGenParameterCollectionLayout();
@@ -161,7 +159,6 @@ namespace SiliconStudio.Xenko.Rendering
             for (int i = 0; i < descriptorSets.Length; ++i)
                 descriptorSets[i] = resourceGroups[i].DescriptorSet;
 
-            //resourceBinder.BindResources(graphicsDevice, descriptorSets);
             commandList.SetDescriptorSets(0, descriptorSets);
         }
     }
