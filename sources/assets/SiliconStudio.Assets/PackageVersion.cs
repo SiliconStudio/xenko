@@ -23,6 +23,7 @@ namespace SiliconStudio.Assets
     /// allow older 4-digit versioning schemes to continue working.
     /// </summary>
     [DataContract("PackageVersion")]
+    [NonIdentifiable]
     [DataSerializer(typeof(PackageVersionDataSerializer))]
     public sealed class PackageVersion : IComparable, IComparable<PackageVersion>, IEquatable<PackageVersion>
     {
