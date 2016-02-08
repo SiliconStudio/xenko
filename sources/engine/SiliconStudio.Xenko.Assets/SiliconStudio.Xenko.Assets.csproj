@@ -202,7 +202,7 @@
     <Compile Include="Effect\EffectShaderAsset.cs" />
     <Compile Include="Entities\ConvertedDescriptor.cs" />
     <Compile Include="Entities\EntityAnalysis.cs" />
-    <Compile Include="Entities\EntityGroupAsset.cs" />
+    <Compile Include="Entities\PrefabAsset.cs" />
     <Compile Include="Entities\EntityGroupAssetBase.cs" />
     <Compile Include="Entities\EntityGroupAssetMerge.cs" />
     <Compile Include="Entities\EntityHierarchyData.cs" />

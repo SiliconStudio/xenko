@@ -11,7 +11,7 @@ using ITypeDescriptor = SharpYaml.Serialization.ITypeDescriptor;
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
-    /// Default serializer for <see cref="EntityGroupAsset"/> and <see cref="SceneAsset"/>
+    /// Default serializer for <see cref="PrefabAsset"/> and <see cref="SceneAsset"/>
     /// </summary>
     /// <remarks>
     /// This serializer handle the case where Entity/Components used inside an <see cref="EntityComponent"/> 

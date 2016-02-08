@@ -6,19 +6,17 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Assets.Entities
 {
-    [DataContract("EntityGroupAsset")]
+    [DataContract("PrefabAsset")]
     [AssetDescription(FileExtension, false)]
     //[AssetCompiler(typeof(SceneAssetCompiler))]
-    //[ThumbnailCompiler(PreviewerCompilerNames.EntityThumbnailCompilerQualifiedName, true)]
-    [Display("Entity")]
-    //[AssetFormatVersion(AssetFormatVersion, typeof(Upgrader))]
-    public class EntityGroupAsset : EntityGroupAssetBase
+    [Display("Prefab")]
+    public class PrefabAsset : EntityGroupAssetBase
     {
         public const int AssetFormatVersion = 0;
 
         /// <summary>
-        /// The default file extension used by the <see cref="EntityGroupAsset"/>.
+        /// The default file extension used by the <see cref="PrefabAsset"/>.
         /// </summary>
-        public const string FileExtension = ".xkentity;.pdxentity";
+        public const string FileExtension = ".xkprefab";
     }
 }
