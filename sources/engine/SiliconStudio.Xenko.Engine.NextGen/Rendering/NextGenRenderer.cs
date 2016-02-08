@@ -26,6 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
         private RenderStage transparentRenderStage = new RenderStage("Main");
         private RenderStage gbufferRenderStage = new RenderStage("GBuffer");
         private RenderStage shadowmapRenderStage = new RenderStage("ShadowMapCaster");
+        private RenderStage pickingRenderStage = new RenderStage("Picking");
 
         private double time;
 
@@ -33,6 +34,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public bool Shadows { get; set; } = true;
         public bool GBuffer { get; set; } = false;
+        public bool Picking { get; set; } = true;
 
         protected override void InitializeCore()
         {
@@ -47,9 +49,10 @@ namespace SiliconStudio.Xenko.Rendering
             RenderSystem.RenderStages.Add(transparentRenderStage);
             RenderSystem.RenderStages.Add(gbufferRenderStage);
             RenderSystem.RenderStages.Add(shadowmapRenderStage);
+            RenderSystem.RenderStages.Add(pickingRenderStage);
 
             // Describe views
-            mainRenderView = new RenderView { RenderStages = { mainRenderStage, transparentRenderStage, gbufferRenderStage } };
+            mainRenderView = new RenderView { RenderStages = { mainRenderStage, transparentRenderStage, gbufferRenderStage, pickingRenderStage } };
             var meshRenderFeature = new MeshRenderFeature
             {
                 RenderFeatures =
@@ -57,7 +60,8 @@ namespace SiliconStudio.Xenko.Rendering
                         new TransformRenderFeature(),
                         //new SkinningRenderFeature(),
                         new MaterialRenderFeature(),
-                        new ForwardLightingRenderFeature() { ShadowmapRenderStage = shadowmapRenderStage } ,
+                        new ForwardLightingRenderFeature() { ShadowmapRenderStage = shadowmapRenderStage },
+                        new PickingRenderFeature(),
                     },
             };
 
@@ -89,6 +93,9 @@ namespace SiliconStudio.Xenko.Rendering
                     if (GBuffer)
                         renderMesh.ActiveRenderStages[gbufferRenderStage.Index] = new ActiveRenderStage("TestEffect.GBuffer");
                 }
+
+                if (Picking)
+                    renderMesh.ActiveRenderStages[pickingRenderStage.Index] = new ActiveRenderStage("TestEffect.Picking");
             };
 
             var spriteRenderFeature = new SpriteRenderFeature();
@@ -158,6 +165,7 @@ namespace SiliconStudio.Xenko.Rendering
                 GraphicsDevice.Clear(gbuffer, Color4.Black);
                 GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, gbuffer);
                 Draw(RenderSystem, RenderContext, mainRenderView, gbufferRenderStage);
+
                 GraphicsDevice.PopState();
             }
 
@@ -184,6 +192,19 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
             Draw(RenderSystem, RenderContext, mainRenderView, mainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
+
+            // Picking
+            if (Picking)
+            {
+                GraphicsDevice.PushState();
+
+                var pickingRenderTarget = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.R32G32B32A32_SInt));
+                GraphicsDevice.Clear(pickingRenderTarget, Color.Transparent);
+                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, pickingRenderTarget);
+                Draw(RenderSystem, RenderContext, mainRenderView, pickingRenderStage);
+
+                GraphicsDevice.PopState();
+            }
         }
 
         private void UpdateCameraToRenderView(RenderDrawContext context, CameraComponent camera, RenderView renderView)

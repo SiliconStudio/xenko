@@ -199,6 +199,18 @@
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
+    <Compile Include="Rendering\Utils\Picking.cs">
+      <DependentUpon>Picking.xkfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="Rendering\Utils\PickingShader.cs">
+      <DependentUpon>PickingShader.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
     <Compile Include="Shaders.Compiler\RemoteEffectCompiler.cs" />
     <Compile Include="Engine\Processors\BackgroundComponentProcessor.cs" />
     <Compile Include="Engine\AnimationComponent.cs" />
@@ -3270,6 +3282,14 @@
     <None Include="Rendering\Materials\Shaders\MaterialVertexStream.xksl">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Utils\Picking.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>Picking.cs</LastGenOutput>
+    </None>
+    <None Include="Rendering\Utils\PickingShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>PickingShader.cs</LastGenOutput>
     </None>
     <None Include="Rendering\XenkoWireFrameShadingEffect.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>

@@ -103,6 +103,11 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
                     context.Mixin(mixin, "ShadowMapCaster");
                     return;
                 }
+                if (context.ChildEffectName == "Picking")
+                {
+                    context.Mixin(mixin, "Picking");
+                    return;
+                }
             }
 
             [ModuleInitializer]
