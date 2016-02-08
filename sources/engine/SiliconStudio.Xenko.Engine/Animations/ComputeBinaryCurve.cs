@@ -43,13 +43,11 @@ namespace SiliconStudio.Xenko.Animations
         /// <inheritdoc/>
         public bool UpdateChanges()
         {
-            if (hasChanged)
-            {
-                hasChanged = false;
-                return true;
-            }
-
-            return (leftChild?.UpdateChanges() ?? false) || (rightChild?.UpdateChanges() ?? false);
+            var tmp = hasChanged;
+            hasChanged = false;
+            tmp |= leftChild?.UpdateChanges() ?? false;
+            tmp |= rightChild?.UpdateChanges() ?? false;
+            return tmp;
         }
 
         /// <inheritdoc/>
