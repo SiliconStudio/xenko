@@ -286,6 +286,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <inheritdoc />
         public void Dispatch(int threadCountX, int threadCountY, int threadCountZ)
         {
+            PrepareDraw();
+
             NativeDeviceContext.Dispatch(threadCountX, threadCountY, threadCountZ);
         }
 
@@ -296,6 +298,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="offsetInBytes">The offset information bytes.</param>
         public void Dispatch(Buffer indirectBuffer, int offsetInBytes)
         {
+            PrepareDraw();
+
             if (indirectBuffer == null) throw new ArgumentNullException("indirectBuffer");
             NativeDeviceContext.DispatchIndirect(indirectBuffer.NativeBuffer, offsetInBytes);
         }

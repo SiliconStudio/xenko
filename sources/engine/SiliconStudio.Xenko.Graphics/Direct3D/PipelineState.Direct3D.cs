@@ -80,6 +80,11 @@ namespace SiliconStudio.Xenko.Graphics
                                 commandList.SetShaderResourceView(bindingOperation.Stage, bindingOperation.SlotStart, (GraphicsResource)value.Value);
                                 break;
                             }
+                        case EffectParameterClass.UnorderedAccessView:
+                            {
+                                commandList.SetUnorderedAccessView(bindingOperation.Stage, bindingOperation.SlotStart, (GraphicsResource)value.Value);
+                                break;
+                            }
                         default:
                             throw new ArgumentOutOfRangeException();
                     }
