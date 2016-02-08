@@ -170,6 +170,13 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Rendering\Lights\LightAmbientRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightDirectionalGroupRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightGroupRendererBase.cs" />
+    <Compile Include="Rendering\Lights\LightPointGroupRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightShaderGroup.cs" />
+    <Compile Include="Rendering\Lights\LightSkyboxRenderer.cs" />
+    <Compile Include="Rendering\Lights\LightSpotlGroupRenderer.cs" />
     <Compile Include="Rendering\NextGenRenderContext.cs" />
     <Compile Include="Rendering\Properties.cs">
       <AutoGen>True</AutoGen>
