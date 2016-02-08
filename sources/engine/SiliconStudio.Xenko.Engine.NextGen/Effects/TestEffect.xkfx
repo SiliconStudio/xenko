@@ -75,5 +75,6 @@ namespace SiliconStudio.Xenko.Engine.NextGen.Effects
 
         mixin child GBuffer;
         mixin child ShadowMapCaster;
+        mixin child Picking;
     }
 }

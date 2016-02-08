@@ -1,0 +1,21 @@
+﻿namespace SiliconStudio.Xenko.Rendering
+{
+    /// <summary>
+    /// A shader used to output the id of the model component, mesh and material for a particular RenderMesh
+    /// </summary>
+    class PickingShader : ShaderBase
+    {
+        cbuffer PerDraw
+        {
+            stage int3 PickingData;
+        }
+
+        stage override void PSMain()
+        {
+            streams.ColorTarget = int4(PickingData, 0);
+            //streams.ColorTarget = PickingData.x;
+            //streams.ColorTarget1 = PickingData.y;
+            //streams.ColorTarget2 = PickingData.z;
+        }
+    };
+}
