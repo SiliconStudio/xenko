@@ -34,7 +34,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         private LightProcessor lightProcessor;
 
         // Might be null if shadow mapping is not enabled (i.e. graphics device feature level too low)
-        private ShadowMapRenderer shadowMapRenderer;
 
         private readonly List<KeyValuePair<Type, LightGroupRendererBase>> lightRenderers;
 
@@ -77,6 +76,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private static readonly string[] DirectLightGroupsCompositionNames;
         private static readonly string[] EnvironmentLightGroupsCompositionNames;
+
+        public ShadowMapRenderer ShadowMapRenderer { get; private set; }
 
         public RenderStage ShadowmapRenderStage { get; set; }
 
@@ -165,9 +166,9 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 if (RenderSystem.RenderContextOld.GraphicsDevice.Features.Profile >= GraphicsProfile.Level_10_0
                     && (Platform.Type == PlatformType.Windows || Platform.Type == PlatformType.WindowsStore || Platform.Type == PlatformType.Windows10))
                 {
-                    shadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowmapRenderStage);
-                    shadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
-                    shadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
+                    ShadowMapRenderer = new ShadowMapRenderer(RenderSystem, ShadowmapRenderStage);
+                    ShadowMapRenderer.Renderers.Add(typeof(LightDirectional), new LightDirectionalShadowMapRenderer());
+                    ShadowMapRenderer.Renderers.Add(typeof(LightSpot), new LightSpotShadowMapRenderer());
                 }
 
                 isShadowMapRendererSetUp = true;
@@ -177,7 +178,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             CollectVisibleLights();
 
             // Draw shadow maps
-            shadowMapRenderer?.Extract(RenderSystem.RenderContextOld, visibleLightsWithShadows);
+            ShadowMapRenderer?.Extract(RenderSystem.RenderContextOld, visibleLightsWithShadows);
 
             // Prepare active renderers in an ordered list (by type and shadow on/off)
             CollectActiveLightRenderers(RenderSystem.RenderContextOld);
@@ -300,12 +301,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             }
         }
 
-        /// <inheritdoc/>
-        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
-        {
-            shadowMapRenderer?.ClearAtlasRenderTargets(context.CommandList);
-        }
-
         protected void RegisterLightGroupRenderer(Type lightType, LightGroupRendererBase renderer)
         {
             if (lightType == null) throw new ArgumentNullException("lightType");
@@ -386,7 +381,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 visibleLights.Add(light);
 
                 // Add light to a special list if it has shadows
-                if (directLight != null && directLight.Shadow.Enabled && shadowMapRenderer != null)
+                if (directLight != null && directLight.Shadow.Enabled && ShadowMapRenderer != null)
                 {
                     // A visible light with shadows
                     visibleLightsWithShadows.Add(light);
@@ -481,7 +476,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                         LightShadowType shadowType = 0;
                         ILightShadowMapRenderer newShadowRenderer = null;
 
-                        if (shadowMapRenderer != null && shadowMapRenderer.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
+                        if (ShadowMapRenderer != null && ShadowMapRenderer.LightComponentsWithShadows.TryGetValue(light, out shadowTexture))
                         {
                             shadowType = shadowTexture.ShadowType;
                             newShadowRenderer = (ILightShadowMapRenderer)shadowTexture.Renderer;
@@ -661,7 +656,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             LightComponentCollectionGroup lightGroup;
 
             var directLight = light.Type as IDirectLight;
-            var lightGroups = directLight != null && directLight.Shadow.Enabled && shadowMapRenderer != null
+            var lightGroups = directLight != null && directLight.Shadow.Enabled && ShadowMapRenderer != null
                 ? activeLightGroupsWithShadows
                 : activeLightGroups;
 
