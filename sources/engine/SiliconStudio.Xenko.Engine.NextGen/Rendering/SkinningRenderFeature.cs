@@ -38,7 +38,7 @@ namespace SiliconStudio.Xenko.Rendering
             renderModelObjectInfoKey = RootRenderFeature.CreateObjectKey<RenderModelFrameInfo>();
             renderEffectKey = ((RootEffectRenderFeature)RootRenderFeature).RenderEffectKey;
 
-            blendMatrices = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot("TransformationSkinning.BlendMatrixArray");
+            blendMatrices = ((RootEffectRenderFeature)RootRenderFeature).CreateDrawCBufferOffsetSlot(TransformationSkinningKeys.BlendMatrixArray.Name);
         }
 
         /// <inheritdoc/>

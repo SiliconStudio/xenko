@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering
                 var renderModelObjectInfo = renderModelObjectInfoData[renderNode.RenderObject.ObjectNode];
 
                 var mappedCB = renderNode.Resources.ConstantBuffer.Data;
-                var world = (Matrix*)((byte*)mappedCB);
+                var world = (Matrix*)((byte*)mappedCB + worldOffset);
                 *world++ = renderModelObjectInfo.World; // World
                 *world = renderModelObjectInfo.World; // WorldInverseTranspose
                 world->Transpose();
