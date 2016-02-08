@@ -10,7 +10,7 @@ using SiliconStudio.Core;
 namespace SiliconStudio.Xenko.Assets.Entities
 {
     /// <summary>
-    /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="EntityGroupAsset"/>)
+    /// Base class for entity assets (<see cref="SceneAsset"/> and <see cref="PrefabAsset"/>)
     /// </summary>
     [DataContract()]
     public abstract class EntityGroupAssetBase : AssetComposite
