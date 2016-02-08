@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Graphics
     public class DescriptorSetLayoutBuilder
     {
         internal int ElementCount;
-        internal List<DescriptorSetLayout.Entry> Entries = new List<DescriptorSetLayout.Entry>();
+        internal List<Entry> Entries = new List<Entry>();
 
         private ObjectIdBuilder hashBuilder = new ObjectIdBuilder();
 
@@ -32,7 +32,15 @@ namespace SiliconStudio.Xenko.Graphics
             hashBuilder.Write(arraySize);
 
             ElementCount += arraySize;
-            Entries.Add(new DescriptorSetLayout.Entry { Key = key, Class = @class, ArraySize = arraySize, ImmutableSampler = immutableSampler });
+            Entries.Add(new Entry { Key = key, Class = @class, ArraySize = arraySize, ImmutableSampler = immutableSampler });
+        }
+
+        internal struct Entry
+        {
+            public ParameterKey Key;
+            public EffectParameterClass Class;
+            public int ArraySize;
+            public SamplerState ImmutableSampler;
         }
     }
 }

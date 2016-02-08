@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-            var virtualResolution = new Vector3(GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight, 200);
+            var virtualResolution = new Vector3(GraphicsDevice.Presenter.BackBuffer.ViewWidth, GraphicsDevice.Presenter.BackBuffer.ViewHeight, 200);
             spriteBatch = new SpriteBatch(GraphicsDevice) { VirtualResolution = virtualResolution };
             spheres = Asset.Load<SpriteSheet>("SpriteSphere");
             round = Asset.Load<Texture>("round");
@@ -69,18 +69,18 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void SetVirtualResolutionAndDraw(Vector2 factor)
         {
-            spriteBatch.VirtualResolution = new Vector3(factor.X * GraphicsDevice.BackBuffer.ViewWidth, factor.Y*GraphicsDevice.BackBuffer.ViewHeight, 100);
+            spriteBatch.VirtualResolution = new Vector3(factor.X * GraphicsDevice.Presenter.BackBuffer.ViewWidth, factor.Y*GraphicsDevice.Presenter.BackBuffer.ViewHeight, 100);
 
             DrawSprites();
         }
 
         private void DrawSprites()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
 
-            spriteBatch.Begin();
+            spriteBatch.Begin(GraphicsCommandList);
             
             var x = 20f;
             var y = 20f;
@@ -108,7 +108,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             var fontName = useDynamicFont ? "Dynamic" : "Static";
             var spriteFont = useDynamicFont ? dynamicFont : staticFont;
-            var targetSize = new Vector2(GraphicsDevice.BackBuffer.ViewWidth, GraphicsDevice.BackBuffer.ViewHeight);
+            var targetSize = new Vector2(GraphicsDevice.Presenter.BackBuffer.ViewWidth, GraphicsDevice.Presenter.BackBuffer.ViewHeight);
             var resolutionRatio = Vector2.One;
             if (useDynamicFont && spriteBatch.VirtualResolution.HasValue)
             {

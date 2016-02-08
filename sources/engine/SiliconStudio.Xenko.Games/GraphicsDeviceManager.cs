@@ -470,15 +470,16 @@ namespace SiliconStudio.Xenko.Games
 
             GraphicsDevice.Begin();
 
-            // Before drawing, we should clear the state to make sure that there is no unstable graphics device states (On some WP8 devices for example)
-            // An application should not rely on previous state (last frame...etc.) after BeginDraw.
-            GraphicsDevice.ClearState();
-
-            // By default, we setup the render target to the back buffer, and the viewport as well.
-            if (GraphicsDevice.BackBuffer != null)
-            {
-                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
-            }
+            // TODO GRAPHICS REFACTOR
+            //// Before drawing, we should clear the state to make sure that there is no unstable graphics device states (On some WP8 devices for example)
+            //// An application should not rely on previous state (last frame...etc.) after BeginDraw.
+            //GraphicsDevice.ClearState();
+            //
+            //// By default, we setup the render target to the back buffer, and the viewport as well.
+            //if (GraphicsDevice.BackBuffer != null)
+            //{
+            //    GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
+            //}
 
             beginDrawOk = true;
             return beginDrawOk;

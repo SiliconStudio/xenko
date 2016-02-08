@@ -244,7 +244,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Name != null && Profiling)
             {
-                context.GraphicsDevice.BeginProfile(Color.Green, Name);
+                context.CommandList.BeginProfile(Color.Green, Name);
             }
 
             PreDrawCore(context);
@@ -264,7 +264,7 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (Name != null && Profiling)
             {
-                context.GraphicsDevice.EndProfile();
+                context.CommandList.EndProfile();
             }
         }
     }

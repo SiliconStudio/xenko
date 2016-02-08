@@ -16,7 +16,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
     {
         private readonly GuillotinePacker packer = new GuillotinePacker();
 
-        private bool isRenderTargetCleared;
+        private bool clearNeeded;
 
         public ShadowMapAtlasTexture(Texture texture, int textureId)
         {
@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
         public void Clear()
         {
             packer.Clear();
-            isRenderTargetCleared = false;
+            clearNeeded = false;
         }
 
         public bool Insert(int width, int height, ref Rectangle bestRectangle)
@@ -58,12 +58,17 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
             return packer.TryInsert(width, height, count, inserted);
         }
 
-        public void ClearRenderTarget(RenderContext context)
+        public void MarkClearNeeded()
         {
-            if (!isRenderTargetCleared)
+            clearNeeded = true;
+        }
+
+        public void ClearRenderTargetIfNecessary(CommandList commandList)
+        {
+            if (clearNeeded)
             {
-                context.GraphicsDevice.Clear(Texture, DepthStencilClearOptions.DepthBuffer);
-                isRenderTargetCleared = true;
+                // TODO GRAPHICS REFACTOR
+                commandList.Clear(Texture, DepthStencilClearOptions.DepthBuffer);
             }
         }
     }

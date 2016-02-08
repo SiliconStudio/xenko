@@ -65,7 +65,7 @@ namespace SiliconStudio.Xenko.Rendering
                     },
             };
 
-            meshRenderFeature.ProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
+            meshRenderFeature.PostProcessPipelineState += (RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState) =>
             {
                 if (renderNode.RenderStage == shadowmapRenderStage)
                 {
@@ -154,26 +154,27 @@ namespace SiliconStudio.Xenko.Rendering
             // Perform most of computations
             Prepare();
 
-            var currentViewport = context.GraphicsDevice.Viewport;
+            var currentViewport = context.CommandList.Viewport;
 
             // GBuffer
             if (GBuffer)
             {
-                GraphicsDevice.PushState();
+                context.PushRenderTargets();
 
                 var gbuffer = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.R11G11B10_Float));
-                GraphicsDevice.Clear(gbuffer, Color4.Black);
-                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, gbuffer);
-                Draw(RenderSystem, RenderContext, mainRenderView, gbufferRenderStage);
+                context.CommandList.Clear(gbuffer, Color4.Black);
+                context.CommandList.SetDepthAndRenderTarget(context.CommandList.DepthStencilBuffer, gbuffer);
+                Draw(RenderSystem, context, mainRenderView, gbufferRenderStage);
 
-                GraphicsDevice.PopState();
+                context.PopRenderTargets();
             }
 
             // Shadow maps
             // TODO: Move that to a class that will handle all the details of shadow mapping
             if (Shadows)
             {
-                GraphicsDevice.PushState();
+                context.PushRenderTargets();
+
                 foreach (var renderView in RenderSystem.Views)
                 {
                     var shadowmapRenderView = renderView as ShadowMapRenderView;
@@ -181,16 +182,16 @@ namespace SiliconStudio.Xenko.Rendering
                     {
                         var shadowMapRectangle = shadowmapRenderView.Rectangle;
                         shadowmapRenderView.ShadowMapTexture.Atlas.RenderFrame.Activate(context);
-                        GraphicsDevice.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
+                        context.CommandList.SetViewport(new Viewport(shadowMapRectangle.X, shadowMapRectangle.Y, shadowMapRectangle.Width, shadowMapRectangle.Height));
 
-                        Draw(RenderSystem, RenderContext, shadowmapRenderView, shadowmapRenderStage);
+                        Draw(RenderSystem, context, shadowmapRenderView, shadowmapRenderStage);
                     }
                 }
-                GraphicsDevice.PopState();
-            }
 
+                context.PopRenderTargets();
             // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
-            Draw(RenderSystem, RenderContext, mainRenderView, mainRenderStage);
+            }
+            Draw(RenderSystem, context, mainRenderView, mainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
 
             // Picking
@@ -210,7 +211,7 @@ namespace SiliconStudio.Xenko.Rendering
         private void UpdateCameraToRenderView(RenderDrawContext context, CameraComponent camera, RenderView renderView)
         {
             // Setup viewport size
-            var currentViewport = context.GraphicsDevice.Viewport;
+            var currentViewport = context.CommandList.Viewport;
             var aspectRatio = currentViewport.AspectRatio;
 
             // Update the aspect ratio
@@ -243,7 +244,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Ensure size of data arrays per objects
             foreach (var renderFeature in RenderSystem.RenderFeatures)
             {
-                renderFeature.PrepareDataArrays(RenderSystem);
+                renderFeature.PrepareDataArrays();
             }
 
             // Generate and execute extract jobs
@@ -297,7 +298,7 @@ namespace SiliconStudio.Xenko.Rendering
             // Ensure size of all other data arrays
             foreach (var renderFeature in RenderSystem.RenderFeatures)
             {
-                renderFeature.PrepareDataArrays(RenderSystem);
+                renderFeature.PrepareDataArrays();
             }
         }
 
@@ -322,7 +323,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        public static void Draw(NextGenRenderSystem renderSystem, RenderContext renderContext, RenderView renderView, RenderStage renderStage)
+        public static void Draw(NextGenRenderSystem renderSystem, RenderDrawContext renderDrawContext, RenderView renderView, RenderStage renderStage)
         {
             // Sync point: draw (from now, we should execute with a graphics device context to perform rendering)
 
@@ -356,7 +357,7 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 // Divide into task chunks for parallelism
-                currentRenderFeature.Draw(renderContext, renderView, renderViewStage, currentStart, currentEnd);
+                currentRenderFeature.Draw(renderDrawContext, renderView, renderViewStage, currentStart, currentEnd);
             }
         }
     }

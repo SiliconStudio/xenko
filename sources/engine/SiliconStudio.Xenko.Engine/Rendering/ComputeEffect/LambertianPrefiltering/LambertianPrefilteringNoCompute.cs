@@ -107,7 +107,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
                     ((RendererBase)secondPassEffect).Draw(context);
                 }
 
-                GraphicsDevice.Copy(intermediateTextures[intermediateTextures.Count - 1], stagingTextures[c]);
+                context.CommandList.Copy(intermediateTextures[intermediateTextures.Count - 1], stagingTextures[c]);
             }
 
             // Create and initialize result SH
@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             // Read back coefficients and store it in the SH
             for (var c = 0; c < coefficientsCount; c++)
             {
-                var value = stagingTextures[c].GetData<Vector4>()[0];
+                var value = stagingTextures[c].GetData<Vector4>(context.CommandList)[0];
                 PrefilteredLambertianSH.Coefficients[c] = 4 * MathUtil.Pi / value.W * new Color3(value.X, value.Y, value.Z);
             }
         }

@@ -96,7 +96,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
                     {
                         var inputSubresource = inputLevel + f * input.MipLevels;
                         var outputSubresource = 0 + f * output.MipLevels;
-                        GraphicsDevice.CopyRegion(input, inputSubresource, null, output, outputSubresource);
+                        context.CommandList.CopyRegion(input, inputSubresource, null, output, outputSubresource);
                     }
                 }
                 else

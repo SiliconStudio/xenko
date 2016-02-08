@@ -344,7 +344,7 @@ namespace SiliconStudio.Xenko.Engine
 
                     using (var stream = System.IO.File.Create(newFileName))
                     {
-                        GraphicsDevice.BackBuffer.Save(stream, ImageFileType.Png);
+                        GraphicsDevice.Presenter.BackBuffer.Save(GraphicsCommandList, stream, ImageFileType.Png);
                     }
                 }
             }

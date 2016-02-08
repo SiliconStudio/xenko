@@ -5,26 +5,27 @@ namespace SiliconStudio.Xenko.Graphics
     /// <summary>
     /// Storage area for <see cref="DescriptorSet"/>.
     /// </summary>
-    public class DescriptorPool : GraphicsResourceBase
+    public partial class DescriptorPool : GraphicsResourceBase
     {
+        public static DescriptorPool New(GraphicsDevice graphicsDevice, DescriptorTypeCount[] counts)
+        {
+            return new DescriptorPool(graphicsDevice, counts);
+        }
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         internal readonly DescriptorSetEntry[] Entries;
         private int descriptorAllocationOffset;
 
-        public DescriptorPool(int totalCount)
-        {
-            Entries = new DescriptorSetEntry[totalCount];
-        }
-
-        public static DescriptorPool New(GraphicsDevice device, DescriptorTypeCount[] counts)
+        private DescriptorPool(GraphicsDevice graphicsDevice, DescriptorTypeCount[] counts)
         {
             // For now, we put everything together so let's compute total count
             var totalCount = 0;
             foreach (var count in counts)
             {
-                totalCount = count.Count;
+                totalCount += count.Count;
             }
 
-            return new DescriptorPool(totalCount);
+            Entries = new DescriptorSetEntry[totalCount];
         }
 
         public void Reset()
@@ -40,5 +41,6 @@ namespace SiliconStudio.Xenko.Graphics
             descriptorAllocationOffset += size;
             return result;
         }
+#endif
     }
 }

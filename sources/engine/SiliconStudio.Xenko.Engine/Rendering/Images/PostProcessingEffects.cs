@@ -250,7 +250,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             if (input == output)
             {
                 var newInput = NewScopedRenderTarget2D(input.Width, input.Height, input.Format);
-                GraphicsDevice.Copy(input, newInput);
+                context.CommandList.Copy(input, newInput);
                 input = newInput;
             }
             

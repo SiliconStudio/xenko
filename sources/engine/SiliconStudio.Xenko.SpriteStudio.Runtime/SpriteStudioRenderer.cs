@@ -165,7 +165,7 @@ namespace SiliconStudio.Xenko.SpriteStudio.Runtime
                         {
                             sprite3DBatch.End();
                         }
-                        sprite3DBatch.Begin(viewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
+                        sprite3DBatch.Begin(context.CommandList, viewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
                         hasBegin = true;
                     }
 

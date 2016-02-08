@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="presentationParameters"> </param>
         protected GraphicsPresenter(GraphicsDevice device, PresentationParameters presentationParameters)
         {
-            GraphicsDevice = device.RootDevice;
+            GraphicsDevice = device;
             var description = presentationParameters.Clone();
 
             // If we are creating a GraphicsPresenter with 

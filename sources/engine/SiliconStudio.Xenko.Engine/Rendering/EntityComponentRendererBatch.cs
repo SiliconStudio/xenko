@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         private void DrawRendererInternal(RenderDrawContext context, IEntityComponentRenderer renderer, RenderItemCollection renderItems, int fromIndex, int toIndex)
         {
-            var graphicsDevice = context.GraphicsDevice;
+            var commandList = context.CommandList;
             // TODO GRAPHICS REFACTOR
             //graphicsDevice.PushState();
             renderer.Draw(context, renderItems, fromIndex, toIndex);

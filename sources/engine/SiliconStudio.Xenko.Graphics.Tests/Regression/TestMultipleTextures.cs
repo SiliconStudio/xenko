@@ -52,9 +52,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests.Regression
 
         public void DrawTexture()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.DrawTexture(texture, GraphicsDevice.SamplerStates.PointClamp);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
         }
 
         /// <summary>

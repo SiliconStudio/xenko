@@ -20,15 +20,15 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="device">The device.</param>
         /// <param name="effectInstance">The effect instance.</param>
         /// <exception cref="System.ArgumentNullException">effect</exception>
-        public static void DrawQuad(this GraphicsDevice device, EffectInstance effectInstance)
+        public static void DrawQuad(this CommandList commandList, EffectInstance effectInstance)
         {
             if (effectInstance == null) throw new ArgumentNullException("effectInstance");
 
             // Apply the effect
-            effectInstance.Apply(device);
+            effectInstance.Apply(commandList);
 
             // Draw a full screen quad
-            device.DrawQuad();
+            commandList.DrawQuad();
         }
 
         public static Texture GetSharedWhiteTexture(this GraphicsDevice device)

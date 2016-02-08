@@ -198,7 +198,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Copy the input texture to the output
             if (ShowOnlyMip || ShowOnlyBloom)
             {
-                GraphicsDevice.Clear(output, Color.Black);
+                context.CommandList.Clear(output, Color.Black);
             }
 
             // Switch to additive
