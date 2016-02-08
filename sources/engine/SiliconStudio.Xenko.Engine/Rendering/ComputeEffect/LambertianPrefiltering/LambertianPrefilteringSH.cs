@@ -134,8 +134,8 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             // Get the data out of the final buffer
             var sizeResult = coefficientsCount * sumsToPerfomRemaining * PixelFormat.R32G32B32A32_Float.SizeInBytes();
             var stagedBuffer = NewScopedBuffer(new BufferDescription(sizeResult, BufferFlags.None, GraphicsResourceUsage.Staging));
-            GraphicsDevice.CopyRegion(secondPassInputBuffer, 0, new ResourceRegion(0, 0, 0, sizeResult, 1, 1), stagedBuffer, 0);
-            var finalsValues =  stagedBuffer.GetData<Vector4>();    
+            context.CommandList.CopyRegion(secondPassInputBuffer, 0, new ResourceRegion(0, 0, 0, sizeResult, 1, 1), stagedBuffer, 0);
+            var finalsValues =  stagedBuffer.GetData<Vector4>(context.CommandList);    
             
             // performs last possible additions, normalize the result and store it in the SH
             for (var c = 0; c < coefficientsCount; c++)

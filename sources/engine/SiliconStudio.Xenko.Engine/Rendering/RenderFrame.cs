@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: Handle support for shared depth stencil buffer
 
             // Sets the depth and render target
-            renderContext.GraphicsDevice.SetDepthAndRenderTargets(enableDepth ? DepthStencil : null, RenderTargets);
+            renderContext.CommandList.SetDepthAndRenderTargets(enableDepth ? DepthStencil : null, RenderTargets);
         }
 
         /// <summary>
@@ -273,7 +273,8 @@ namespace SiliconStudio.Xenko.Rendering
             if (description.DepthFormat == RenderFrameDepthFormat.None && description.Format == RenderFrameFormat.None)
                 return;
 
-            var referenceTexture = referenceFrame != null ? referenceFrame.ReferenceTexture : device.BackBuffer;
+            // TODO GRAPHICS REFACTOR check if it's OK to use Presenter targets
+            var referenceTexture = referenceFrame != null ? referenceFrame.ReferenceTexture : device.Presenter.BackBuffer;
 
             int width = description.Width;
             int height = description.Height;

@@ -102,23 +102,15 @@ namespace SiliconStudio.Xenko.Graphics.GeometricPrimitives
         /// <summary>
         /// Draws this <see cref="GeometricPrimitive" />.
         /// </summary>
-        public void Draw()
-        {
-            Draw(GraphicsDevice);
-        }
-
-        /// <summary>
-        /// Draws this <see cref="GeometricPrimitive" />.
-        /// </summary>
-        /// <param name="graphicsDevice">The graphics device.</param>
-        public void Draw(GraphicsDevice graphicsDevice)
+        /// <param name="commandList">The command list.</param>
+        public void Draw(CommandList commandList)
         {
             // Setup the Vertex Buffer
-            graphicsDevice.SetIndexBuffer(IndexBuffer, 0, IsIndex32Bits);
-            graphicsDevice.SetVertexBuffer(0, VertexBuffer, 0, VertexBufferBinding.Stride);
+            commandList.SetIndexBuffer(IndexBuffer, 0, IsIndex32Bits);
+            commandList.SetVertexBuffer(0, VertexBuffer, 0, VertexBufferBinding.Stride);
 
             // Finally Draw this mesh
-            graphicsDevice.DrawIndexed(PrimitiveType.TriangleList, IndexBuffer.ElementCount);
+            commandList.DrawIndexed(IndexBuffer.ElementCount);
         }
 
         /// <summary>

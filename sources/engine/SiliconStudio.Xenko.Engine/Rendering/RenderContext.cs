@@ -51,7 +51,7 @@ namespace SiliconStudio.Xenko.Rendering
         public EffectSystem Effects { get; private set; }
 
         /// <summary>
-        /// Gets or sets the graphics device.
+        /// Gets the graphics device.
         /// </summary>
         /// <value>The graphics device.</value>
         public GraphicsDevice GraphicsDevice { get; private set; }

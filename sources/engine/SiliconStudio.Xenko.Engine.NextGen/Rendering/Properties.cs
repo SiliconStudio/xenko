@@ -42,7 +42,7 @@
     {
     }
 
-	partial struct ViewObjectNodeReference
+	public partial struct ViewObjectNodeReference
     {
         internal readonly int Index;
 
@@ -120,7 +120,7 @@
     {
     }
 
-	partial struct ObjectNodeReference
+	public partial struct ObjectNodeReference
     {
         internal readonly int Index;
 
@@ -198,7 +198,7 @@
     {
     }
 
-	partial struct RenderNodeReference
+	public partial struct RenderNodeReference
     {
         internal readonly int Index;
 
@@ -276,7 +276,7 @@
     {
     }
 
-	partial struct EffectObjectNodeReference
+	public partial struct EffectObjectNodeReference
     {
         internal readonly int Index;
 
@@ -354,7 +354,7 @@
     {
     }
 
-	partial struct ViewNodeReference
+	public partial struct ViewNodeReference
     {
         internal readonly int Index;
 
@@ -432,7 +432,7 @@
     {
     }
 
-	partial struct EffectViewNodeReference
+	public partial struct EffectViewNodeReference
     {
         internal readonly int Index;
 
@@ -510,7 +510,7 @@
     {
     }
 
-	partial struct StaticObjectNodeReference
+	public partial struct StaticObjectNodeReference
     {
         internal readonly int Index;
 
@@ -588,7 +588,7 @@
     {
     }
 
-	partial struct StaticEffectObjectNodeReference
+	public partial struct StaticEffectObjectNodeReference
     {
         internal readonly int Index;
 

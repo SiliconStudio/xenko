@@ -166,18 +166,18 @@ namespace SiliconStudio.Xenko.Rendering
             renderNodes.Clear();
         }
 
-        public void PrepareDataArrays(NextGenRenderSystem renderSystem)
+        public void PrepareDataArrays()
         {
             for (int i = 0; i < dataArrays.Count; ++i)
             {
                 var dataArrayInfo = dataArrays[i].Info;
-                var expectedSize = ComputeDataArrayExpectedSize(renderSystem, dataArrayInfo.Type);
+                var expectedSize = ComputeDataArrayExpectedSize(dataArrayInfo.Type);
 
                 dataArrayInfo.EnsureSize(ref dataArrays.Items[i].Array, expectedSize);
             }
         }
 
-        protected virtual int ComputeDataArrayExpectedSize(NextGenRenderSystem renderSystem, DataType type)
+        protected virtual int ComputeDataArrayExpectedSize(DataType type)
         {
             switch (type)
             {
@@ -188,7 +188,7 @@ namespace SiliconStudio.Xenko.Rendering
                 case DataType.Render:
                     return renderNodes.Count;
                 case DataType.View:
-                    return renderSystem.Views.Count;
+                    return RenderSystem.Views.Count;
                 case DataType.StaticObject:
                     return RenderObjects.Count;
                 default:

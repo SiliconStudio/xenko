@@ -419,9 +419,8 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             {
                 try
                 {
-                    // TODO GRAPHICS REFACTOR seems to work without, need to make sure it's OK
-                    //context.GraphicsDevice.PushState();
-                    minMax.SetInput(context.GraphicsDevice.DepthStencilBuffer);
+                    context.PushRenderTargets();
+                    minMax.SetInput(context.CommandList.DepthStencilBuffer);
                     ((RendererBase)minMax).Draw(context);
 
                     IsResultAvailable = minMax.IsResultAvailable;
@@ -432,8 +431,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
                 }
                 finally 
                 {
-                    // TODO GRAPHICS REFACTOR seems to work without, need to make sure it's OK
-                    //context.GraphicsDevice.PopState();
+                    context.PopRenderTargets();
                 }
             }
         }

@@ -124,6 +124,7 @@
     <Compile Include="AppContextType.cs" />
     <Compile Include="BatchBase.cs" />
     <Compile Include="BufferPool.cs" />
+    <Compile Include="CommandList.cs" />
     <Compile Include="Data\TextureContentSerializer.cs" />
     <Compile Include="DescriptorPool.cs" />
     <Compile Include="DescriptorSet.cs" />
@@ -318,12 +319,10 @@
     <Compile Include="OpenGL\UseOpenGLCreationContext.cs" />
     <Compile Include="RenderTargetGraphicsPresenter.cs" />
     <Compile Include="Direct3D\GraphicsResource.Direct3D.cs" />
-    <Compile Include="Direct3D\Shader.Direct3D.cs" />
     <Compile Include="Null\EffectProgram.Null.cs" />
     <Compile Include="Null\Shader.Null.cs" />
     <Compile Include="OpenGL\EffectProgram.OpenGL.cs" />
     <Compile Include="OpenGL\OpenGLShaderBytecodeData.cs" />
-    <Compile Include="Shader.cs" />
     <Compile Include="Direct3D\GraphicsDeviceFeatures.Direct3D.cs" />
     <Compile Include="FormatSupport.cs" />
     <Compile Include="GraphicsDeviceFeatures.cs" />
@@ -337,7 +336,7 @@
     <Compile Include="TextAlignment.cs" />
     <Compile Include="Direct3D\Buffer.Direct3D.cs" />
     <Compile Include="Direct3D\ColorHelper.cs" />
-    <Compile Include="Direct3D\CommandList.cs" />
+    <Compile Include="Direct3D\CommandList.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsAdapter.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsAdapterFactory.Direct3D.cs" />
     <Compile Include="Direct3D\GraphicsDevice.Direct3D.cs" />
@@ -421,7 +420,6 @@
     <Compile Include="Texture.Extensions1D.cs" />
     <Compile Include="DepthStencilStencilOpDescription.cs" />
     <Compile Include="GraphicsResourceMap.cs" />
-    <Compile Include="ICommandList.cs" />
     <Compile Include="IndexElementSize.cs" />
     <Compile Include="MapMode.cs" />
     <Compile Include="RasterizerStateDescription.cs" />

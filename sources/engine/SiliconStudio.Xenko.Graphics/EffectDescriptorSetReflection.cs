@@ -7,7 +7,7 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public class EffectDescriptorSetReflection
     {
-        public static EffectDescriptorSetReflection New(GraphicsDevice graphicsDevice, EffectBytecode effectBytecode, List<string> effectDescriptorSetSlots)
+        public static EffectDescriptorSetReflection New(GraphicsDevice graphicsDevice, EffectBytecode effectBytecode, List<string> effectDescriptorSetSlots, string defaultSetSlot)
         {
             // Find resource groups
             // TODO: We should precompute most of that at compile time in BytecodeReflection
@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Graphics
                 // Find all resources related to this slot name
                 var descriptorSetLayoutBuilder = new DescriptorSetLayoutBuilder();
                 foreach (var resourceBinding in effectBytecode.Reflection.ResourceBindings
-                    .Where(x => x.Param.ResourceGroup == effectDescriptorSetSlot || (effectDescriptorSetSlot == "Globals" && x.Param.ResourceGroup == null))
+                    .Where(x => x.Param.ResourceGroup == effectDescriptorSetSlot || (effectDescriptorSetSlot == defaultSetSlot && (x.Param.ResourceGroup == null || x.Param.ResourceGroup == "Globals")))
                     .GroupBy(x => new { Key = x.Param.Key, Class = x.Param.Class, SlotCount = x.SlotCount })
                     .OrderBy(x => x.Key.Class == EffectParameterClass.ConstantBuffer ? 0 : 1)) // Note: Putting cbuffer first for now
                 {

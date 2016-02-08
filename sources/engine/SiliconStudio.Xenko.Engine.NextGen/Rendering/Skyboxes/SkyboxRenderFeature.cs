@@ -152,11 +152,18 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
             transformRenderFeature.Prepare(context);
         }
 
-        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        protected override void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
         {
-            var graphicsDevice = RenderSystem.GraphicsDevice;
+            // Bind VAO
+            pipelineState.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
+            pipelineState.PrimitiveType = PrimitiveQuad.PrimitiveType;
+            pipelineState.DepthStencilState = context.GraphicsDevice.DepthStencilStates.None;
+        }
 
-            Effect currentEffect = null;
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        {
+            var commandList = context.CommandList;
+
             var descriptorSets = new DescriptorSet[EffectDescriptorSetSlotCount];
 
             for (int index = startIndex; index < endIndex; index++)
@@ -168,39 +175,10 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 // TODO: Use real effect slot
                 var renderEffect = renderNode.RenderEffect;
 
-                if (currentEffect != renderEffect.Effect)
-                {
-                    currentEffect = renderEffect.Effect;
-                }
-
-                // First time, let's compile pipeline state
-                // TODO GRAPHICS REFACTOR invalidate if effect is destroyed, or some other cases
-                if (renderEffect.PipelineState == null)
-                {
-                    var pipelineState = MutablePipeline.State;
-
-                    // Effect
-                    pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
-                    pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
-
-                    // Bind VAO
-                    pipelineState.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
-                    pipelineState.PrimitiveType = PrimitiveQuad.PrimitiveType;
-                    pipelineState.DepthStencilState = graphicsDevice.DepthStencilStates.None;
-
-                    // TODO GRAPHICS REFACTOR
-                    // pipelineState.RenderTargetFormats = 
-
-                    ProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderNode.RenderObject, pipelineState);
-
-                    MutablePipeline.Update(graphicsDevice);
-                    renderEffect.PipelineState = MutablePipeline.CurrentState;
-                }
-
-                graphicsDevice.SetPipelineState(renderEffect.PipelineState);
+                commandList.SetPipelineState(renderEffect.PipelineState);
 
                 var resourceGroupOffset = ComputeResourceGroupOffset(renderNodeReference);
-                renderEffect.Reflection.BufferUploader.Apply(graphicsDevice, ResourceGroupPool, resourceGroupOffset);
+                renderEffect.Reflection.BufferUploader.Apply(context.CommandList, ResourceGroupPool, resourceGroupOffset);
 
                 // Bind descriptor sets
                 for (int i = 0; i < descriptorSets.Length; ++i)
@@ -210,9 +188,9 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                         descriptorSets[i] = resourceGroup.DescriptorSet;
                 }
 
-                graphicsDevice.SetDescriptorSets(0, descriptorSets);
+                commandList.SetDescriptorSets(0, descriptorSets);
 
-                graphicsDevice.DrawQuad();
+                commandList.DrawQuad();
             }
         }
     }

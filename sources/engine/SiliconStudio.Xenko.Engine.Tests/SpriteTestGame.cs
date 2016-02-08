@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Engine.Tests
             await base.LoadContent();
             
             // sets the virtual resolution
-            areaSize = new Vector2(GraphicsDevice.BackBuffer.Width, GraphicsDevice.BackBuffer.Height);
+            areaSize = new Vector2(GraphicsDevice.Presenter.BackBuffer.Width, GraphicsDevice.Presenter.BackBuffer.Height);
 
             // Creates the camera
             CameraComponent.UseCustomProjectionMatrix = true;

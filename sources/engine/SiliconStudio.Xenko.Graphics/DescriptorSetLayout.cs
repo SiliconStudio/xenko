@@ -7,28 +7,22 @@ namespace SiliconStudio.Xenko.Graphics
     /// <summary>
     /// Defines a list of descriptor layout. This is used to allocate a <see cref="DescriptorSet"/>.
     /// </summary>
-    public class DescriptorSetLayout
+    public partial class DescriptorSetLayout
     {
-        internal readonly int ElementCount;
-        internal readonly Entry[] Entries;
-
-        private DescriptorSetLayout(int elementCount, Entry[] entries)
-        {
-            ElementCount = elementCount;
-            Entries = entries;
-        }
-
         public static DescriptorSetLayout New(GraphicsDevice device, DescriptorSetLayoutBuilder builder)
         {
-            return new DescriptorSetLayout(builder.ElementCount, builder.Entries.ToArray());
+            return new DescriptorSetLayout(device, builder);
         }
 
-        internal struct Entry
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+        internal readonly int ElementCount;
+        internal readonly DescriptorSetLayoutBuilder.Entry[] Entries;
+
+        private DescriptorSetLayout(GraphicsDevice device, DescriptorSetLayoutBuilder builder)
         {
-            public ParameterKey Key;
-            public EffectParameterClass Class;
-            public int ArraySize;
-            public SamplerState ImmutableSampler;
+            ElementCount = builder.ElementCount;
+            Entries = builder.Entries.ToArray();
         }
+#endif
     }
 }

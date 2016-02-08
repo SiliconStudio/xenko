@@ -24,7 +24,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
             sprite3DBatch = new Sprite3DBatch(RenderSystem.GraphicsDevice);
         }
 
-        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             base.Draw(context, renderView, renderViewStage, startIndex, endIndex);
 
@@ -74,7 +74,7 @@ namespace SiliconStudio.Xenko.Rendering.Sprites
                     {
                         sprite3DBatch.End();
                     }
-                    sprite3DBatch.Begin(renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
+                    sprite3DBatch.Begin(context.CommandList, renderView.ViewProjection, SpriteSortMode.Deferred, blendState, null, depthStencilState, device.RasterizerStates.CullNone, currentEffect);
                     hasBegin = true;
                 }
                 previousEffect = currentEffect;

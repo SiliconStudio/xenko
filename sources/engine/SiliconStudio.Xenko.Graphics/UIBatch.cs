@@ -140,30 +140,32 @@ namespace SiliconStudio.Xenko.Graphics
         /// Begins a image batch rendering using the specified blend state, depth stencil and a view-projection transformation matrix. 
         /// Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.None).
         /// </summary>
+        /// <param name="commandList">The command list to fill.</param>
         /// <param name="blendState">Blending options.</param>
         /// <param name="depthStencilState">Depth and stencil options.</param>
         /// <param name="viewProjection">The view projection matrix used for this series of draw calls</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference</param>
-        public void Begin(ref Matrix viewProjection, BlendStateDescription? blendState, DepthStencilStateDescription? depthStencilState, int stencilValue)
+        public void Begin(CommandList commandList, ref Matrix viewProjection, BlendStateDescription? blendState, DepthStencilStateDescription? depthStencilState, int stencilValue)
         {
-            Begin(ref viewProjection, blendState, null, null, depthStencilState, stencilValue);
-        }        
-        
+            Begin(commandList, ref viewProjection, blendState, null, null, depthStencilState, stencilValue);
+        }
+
         /// <summary>
         /// Begins a image batch rendering using the specified blend state, sampler, depth stencil, rasterizer state objects, and the view-projection transformation matrix. 
         /// Passing null for any of the state objects selects the default default state objects (BlendState.AlphaBlend, DepthStencilState.None, RasterizerState.CullCounterClockwise, SamplerState.LinearClamp). 
         /// </summary>
+        /// <param name="commandList">The command list to fill.</param>
         /// <param name="blendState">Blending options.</param>
         /// <param name="samplerState">Texture sampling options.</param>
         /// <param name="depthStencilState">Depth and stencil options.</param>
         /// <param name="rasterizerState">Rasterization options.</param>
         /// <param name="viewProjection">The view projection matrix used for this series of draw calls</param>
         /// <param name="stencilValue">The value of the stencil buffer to take as reference</param>
-        public void Begin(ref Matrix viewProjection, BlendStateDescription? blendState, SamplerState samplerState, RasterizerStateDescription? rasterizerState, DepthStencilStateDescription? depthStencilState, int stencilValue)
+        public void Begin(CommandList commandList, ref Matrix viewProjection, BlendStateDescription? blendState, SamplerState samplerState, RasterizerStateDescription? rasterizerState, DepthStencilStateDescription? depthStencilState, int stencilValue)
         {
             viewProjectionMatrix = viewProjection;
 
-            Begin(null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
+            Begin(commandList, null, SpriteSortMode.BackToFront, blendState, samplerState, depthStencilState, rasterizerState, stencilValue);
         }
 
         /// <summary>
@@ -449,8 +451,8 @@ namespace SiliconStudio.Xenko.Graphics
             if (drawCommand.SnapText)
             {
                 var invW = 1.0f / drawCommand.Matrix.M44;
-                var backBufferHalfWidth = GraphicsDevice.BackBuffer.ViewWidth / 2;
-                var backBufferHalfHeight = GraphicsDevice.BackBuffer.ViewHeight / 2;
+                var backBufferHalfWidth = CommandList.RenderTarget.ViewWidth / 2;
+                var backBufferHalfHeight = CommandList.RenderTarget.ViewHeight / 2;
 
                 drawCommand.Matrix.M41 *= invW;
                 drawCommand.Matrix.M42 *= invW;
@@ -460,7 +462,7 @@ namespace SiliconStudio.Xenko.Graphics
                 drawCommand.Matrix.M42 /= invW;
             }
 
-            font.InternalUIDraw(ref proxy, ref drawCommand);
+            font.InternalUIDraw(CommandList, ref proxy, ref drawCommand);
         }
 
         protected override unsafe void UpdateBufferValuesFromElementInfo(ref ElementInfo elementInfo, IntPtr vertexPtr, IntPtr indexPtr, int vertexOffset)
@@ -592,8 +594,8 @@ namespace SiliconStudio.Xenko.Graphics
             if (drawInfo->SnapImage)
             {
                 var invW = 1.0f / currentPosition.W;
-                var backBufferHalfWidth = GraphicsDevice.BackBuffer.ViewWidth / 2;
-                var backBufferHalfHeight = GraphicsDevice.BackBuffer.ViewHeight / 2;
+                var backBufferHalfWidth = CommandList.RenderTarget.ViewWidth / 2;
+                var backBufferHalfHeight = CommandList.RenderTarget.ViewHeight / 2;
 
                 currentPosition.X *= invW;
                 currentPosition.Y *= invW;
@@ -623,8 +625,8 @@ namespace SiliconStudio.Xenko.Graphics
 
                     if (drawInfo->SnapImage)
                     {
-                        var backBufferHalfWidth = GraphicsDevice.BackBuffer.ViewWidth / 2;
-                        var backBufferHalfHeight = GraphicsDevice.BackBuffer.ViewHeight / 2;
+                        var backBufferHalfWidth = CommandList.RenderTarget.ViewWidth / 2;
+                        var backBufferHalfHeight = CommandList.RenderTarget.ViewHeight / 2;
                         vertex->Position.X = (float)(Math.Round(vertex->Position.X * backBufferHalfWidth) / backBufferHalfWidth);
                         vertex->Position.Y = (float)(Math.Round(vertex->Position.Y * backBufferHalfHeight) / backBufferHalfHeight);
                     }

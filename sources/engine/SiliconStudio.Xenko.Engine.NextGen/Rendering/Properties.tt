@@ -45,7 +45,7 @@ namespace SiliconStudio.Xenko.Rendering
     {
     }
 
-	partial struct <#=type#>NodeReference
+	public partial struct <#=type#>NodeReference
     {
         internal readonly int Index;
 

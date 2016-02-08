@@ -149,6 +149,15 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             }
         }
 
+        public void ClearAtlasRenderTargets(CommandList commandList)
+        {
+            // Clear atlases
+            foreach (var atlas in atlases)
+            {
+                atlas.ClearRenderTargetIfNecessary(commandList);
+            }
+        }
+
         private void AssignRectangles()
         {
             // Clear atlases
@@ -199,7 +208,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             }
 
             // Make sure the atlas cleared (will be clear just once)
-            currentAtlas.ClearRenderTarget(RenderSystem.RenderContextOld);
+            currentAtlas.MarkClearNeeded();
             lightShadowMapTexture.TextureId = (byte)currentAtlas.Id;
             lightShadowMapTexture.Atlas = currentAtlas;
         }

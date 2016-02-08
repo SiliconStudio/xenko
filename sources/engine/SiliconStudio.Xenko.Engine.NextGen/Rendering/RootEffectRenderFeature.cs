@@ -43,7 +43,7 @@ namespace SiliconStudio.Xenko.Rendering
         public Action<NextGenRenderSystem, Effect, RenderEffectReflection> EffectCompiled;
 
         internal delegate void ProcessPipelineStateDelegate(RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState);
-        internal ProcessPipelineStateDelegate ProcessPipelineState;
+        internal ProcessPipelineStateDelegate PostProcessPipelineState;
 
         public int EffectDescriptorSetSlotCount => effectDescriptorSetSlots.Count;
 
@@ -271,14 +271,14 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffectReflection = new RenderEffectReflection();
 
                         // Build root signature automatically from reflection
-                        renderEffectReflection.DescriptorReflection = EffectDescriptorSetReflection.New(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots);
+                        renderEffectReflection.DescriptorReflection = EffectDescriptorSetReflection.New(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots, "PerFrame");
                         renderEffectReflection.RootSignature = RootSignature.New(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection);
                         renderEffectReflection.BufferUploader.Compile(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection, effect.Bytecode);
 
                         // Prepare well-known descriptor set layouts
-                        renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
-                        renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
-                        renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(RenderSystem, renderEffectReflection.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
+                        renderEffectReflection.PerDrawLayout = CreateDrawResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerDraw"), effect.Bytecode);
+                        renderEffectReflection.PerFrameLayout = CreateFrameResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerFrame"), effect.Bytecode);
+                        renderEffectReflection.PerViewLayout = CreateViewResourceGroupLayout(renderEffectReflection.DescriptorReflection.GetLayout("PerView"), effect.Bytecode);
 
                         InstantiatedEffects.Add(effect, renderEffectReflection);
 
@@ -286,8 +286,13 @@ namespace SiliconStudio.Xenko.Rendering
                         EffectCompiled?.Invoke(RenderSystem, effect, renderEffectReflection);
                     }
 
+                    // Update effect
                     renderEffect.Effect = effect;
                     renderEffect.Reflection = renderEffectReflection;
+
+                    // Invalidate pipeline state (new effect)
+                    renderEffect.PipelineState = null;
+
                     renderEffects[staticEffectObjectNode] = renderEffect;
 
                     compilerParameters.Clear();
@@ -361,9 +366,31 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Bind well-known descriptor sets
                     var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
-                    ResourceGroupPool[descriptorSetPoolOffset + perFrameDescriptorSetSlot.Index] = renderEffect.Reflection.PerFrameResources;
+                    ResourceGroupPool[descriptorSetPoolOffset + perFrameDescriptorSetSlot.Index] = frameLayout?.Entry.Resources;
                     ResourceGroupPool[descriptorSetPoolOffset + perViewDescriptorSetSlot.Index] = renderEffect.Reflection.PerViewLayout.Entries[view.Index].Resources;
                     ResourceGroupPool[descriptorSetPoolOffset + perDrawDescriptorSetSlot.Index] = renderNode.Resources;
+
+                    // Compile pipeline state object (if first time or need change)
+                    // TODO GRAPHICS REFACTOR how to invalidate if we want to change some state? (setting to null should be fine)
+                    if (renderEffect.PipelineState == null)
+                    {
+                        var pipelineState = MutablePipeline.State;
+
+                        // Effect
+                        pipelineState.EffectBytecode = renderEffect.Effect.Bytecode;
+                        pipelineState.RootSignature = renderEffect.Reflection.RootSignature;
+
+                        // Bind VAO
+                        ProcessPipelineState(context, renderNodeReference, ref renderNode, renderObject, pipelineState);
+
+                        // TODO GRAPHICS REFACTOR we should probably extract that from RenderStage
+                        // pipelineState.RenderTargetFormats = 
+
+                        PostProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderObject, pipelineState);
+
+                        MutablePipeline.Update(context.GraphicsDevice);
+                        renderEffect.PipelineState = MutablePipeline.CurrentState;
+                    }
 
                     renderNodes[renderNodeReference.Index] = renderNode;
 
@@ -371,6 +398,10 @@ namespace SiliconStudio.Xenko.Rendering
                     EffectObjectNodes.Add(new EffectObjectNode(renderEffect, viewObjectNode.ObjectNode));
                 }
             }
+        }
+
+        protected virtual void ProcessPipelineState(RenderContext context, RenderNodeReference renderNodeReference, ref RenderNode renderNode, RenderObject renderObject, PipelineStateDescription pipelineState)
+        {
         }
 
         private ResourceGroup AllocateTemporaryResourceGroup()
@@ -385,7 +416,7 @@ namespace SiliconStudio.Xenko.Rendering
             FrameLayouts.Clear();
         }
 
-        public DescriptorSetLayout CreateUniqueDescriptorSetLayout(NextGenRenderSystem RenderSystem, DescriptorSetLayoutBuilder descriptorSetLayoutBuilder)
+        public DescriptorSetLayout CreateUniqueDescriptorSetLayout(DescriptorSetLayoutBuilder descriptorSetLayoutBuilder)
         {
             DescriptorSetLayout descriptorSetLayout;
 
@@ -398,7 +429,7 @@ namespace SiliconStudio.Xenko.Rendering
             return descriptorSetLayout;
         }
 
-        private RenderSystemResourceGroupLayout CreateDrawResourceGroupLayout(NextGenRenderSystem RenderSystem, DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
+        private RenderSystemResourceGroupLayout CreateDrawResourceGroupLayout(DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
         {
             if (bindingBuilder == null)
                 return null;
@@ -427,7 +458,7 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
-        private FrameResourceGroupLayout CreateFrameResourceGroupLayout(NextGenRenderSystem RenderSystem, DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
+        private FrameResourceGroupLayout CreateFrameResourceGroupLayout(DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
         {
             if (bindingBuilder == null)
                 return null;
@@ -469,7 +500,7 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
-        private ViewResourceGroupLayout CreateViewResourceGroupLayout(NextGenRenderSystem RenderSystem, DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
+        private ViewResourceGroupLayout CreateViewResourceGroupLayout(DescriptorSetLayoutBuilder bindingBuilder, EffectBytecode effectBytecode)
         {
             if (bindingBuilder == null)
                 return null;
@@ -515,19 +546,19 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
-        protected override int ComputeDataArrayExpectedSize(NextGenRenderSystem RenderSystem, DataType type)
+        protected override int ComputeDataArrayExpectedSize(DataType type)
         {
             switch (type)
             {
                 case DataType.EffectObject:
                     return EffectObjectNodes.Count;
                 case DataType.EffectView:
-                    return base.ComputeDataArrayExpectedSize(RenderSystem, DataType.View) * EffectPermutationSlotCount;
+                    return base.ComputeDataArrayExpectedSize(DataType.View) * EffectPermutationSlotCount;
                 case DataType.StaticEffectObject:
-                    return base.ComputeDataArrayExpectedSize(RenderSystem, DataType.StaticObject) * EffectPermutationSlotCount;
+                    return base.ComputeDataArrayExpectedSize(DataType.StaticObject) * EffectPermutationSlotCount;
             }
 
-            return base.ComputeDataArrayExpectedSize(RenderSystem, type);
+            return base.ComputeDataArrayExpectedSize(type);
         }
 
         protected override void RemoveRenderObjectFromDataArray(DataArray dataArray, int removedIndex)

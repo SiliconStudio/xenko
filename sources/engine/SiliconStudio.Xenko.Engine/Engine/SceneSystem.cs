@@ -63,7 +63,8 @@ namespace SiliconStudio.Xenko.Engine
 
             if (MainRenderFrame == null)
             {
-                MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.BackBuffer, GraphicsDevice.DepthStencilBuffer);
+                // TODO GRAPHICS REFACTOR Check if this is a good idea to use Presenter targets
+                MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.Presenter.BackBuffer, GraphicsDevice.Presenter.DepthStencilBuffer);
                 if (MainRenderFrame != null)
                 {
                     previousWidth = MainRenderFrame.Width;
@@ -106,7 +107,7 @@ namespace SiliconStudio.Xenko.Engine
             SceneInstance.Draw(renderContext);
 
             // Renders the scene
-            var renderDrawContext = new RenderDrawContext(Services, renderContext);
+            var renderDrawContext = new RenderDrawContext(Services, renderContext, Game.GraphicsCommandList);
             SceneInstance.Draw(renderDrawContext, MainRenderFrame);
         }
     }

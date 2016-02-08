@@ -130,14 +130,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
             if (EnableSetRenderTargets)
             {
-                SetRenderTargets();
+                SetRenderTargets(context);
             }
         }
 
         /// <summary>
         /// Set the render targets for the image effect.
         /// </summary>
-        protected virtual void SetRenderTargets()
+        /// <param name="context"></param>
+        protected virtual void SetRenderTargets(RenderDrawContext context)
         {
             if (outputRenderTargetView != null)
             {
@@ -149,34 +150,34 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     for (int i = 0; i < createdOutputRenderTargetViews.Length; i++)
                         createdOutputRenderTargetViews[i] = outputRenderTargetView.ToTextureView(ViewType.Single, i, 0);
 
-                    GraphicsDevice.SetRenderTargets(createdOutputRenderTargetViews);
+                    context.CommandList.SetRenderTargets(createdOutputRenderTargetViews);
 
                     if (viewport.HasValue)
                     {
                         for (int i = 0; i < createdOutputRenderTargetViews.Length; i++)
                         {
-                            GraphicsDevice.SetViewport(i, viewport.Value);
+                            context.CommandList.SetViewport(i, viewport.Value);
                         }
                     }
                 }
                 else
                 {
-                    GraphicsDevice.SetRenderTarget(outputRenderTargetView);
+                    context.CommandList.SetRenderTarget(outputRenderTargetView);
                     if (viewport.HasValue)
                     {
-                        GraphicsDevice.SetViewport(viewport.Value);
+                        context.CommandList.SetViewport(viewport.Value);
                     }
                 }
             }
             else if (outputRenderTargetViews != null)
             {
-                GraphicsDevice.SetRenderTargets(outputRenderTargetViews);
+                context.CommandList.SetRenderTargets(outputRenderTargetViews);
 
                 if (viewport.HasValue)
                 {
                     for (int i = 0; i < outputRenderTargetViews.Length; i++)
                     {
-                        GraphicsDevice.SetViewport(i, viewport.Value);
+                        context.CommandList.SetViewport(i, viewport.Value);
                     }
                 }
             }

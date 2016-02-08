@@ -65,10 +65,11 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawScene()
         {
-            GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Black);
-            GraphicsDevice.Clear(GraphicsDevice.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
-            GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, GraphicsDevice.BackBuffer);
-            spriteBatch.Begin();
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Black);
+            GraphicsCommandList.Clear(GraphicsDevice.Presenter.DepthStencilBuffer, DepthStencilClearOptions.DepthBuffer);
+            GraphicsCommandList.SetDepthAndRenderTarget(GraphicsDevice.Presenter.DepthStencilBuffer, GraphicsDevice.Presenter.BackBuffer);
+
+            spriteBatch.Begin(GraphicsCommandList);
 
             var pos = new Vector2(0f);
             var noRotation = rotatedImages["NoRotation"];
@@ -130,7 +131,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             const int NbRows = 1;
             const int NbColumns = 5;
-            var textureOffset = new Vector2((float)GraphicsDevice.BackBuffer.ViewWidth / NbColumns, (float)GraphicsDevice.BackBuffer.ViewHeight / NbRows);
+            var textureOffset = new Vector2((float)GraphicsDevice.Presenter.BackBuffer.ViewWidth / NbColumns, (float)GraphicsDevice.Presenter.BackBuffer.ViewHeight / NbRows);
             var textureOrigin = new Vector2(SphereWidth / 2.0f, SphereHeight / 2.0f);
             var random = new Random(0);
 

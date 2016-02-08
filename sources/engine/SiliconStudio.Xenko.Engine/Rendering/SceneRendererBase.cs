@@ -73,7 +73,7 @@ namespace SiliconStudio.Xenko.Rendering
         protected virtual void ActivateOutputCore(RenderDrawContext context, RenderFrame output, bool disableDepth)
         {
             // Setup the render target
-            context.GraphicsDevice.SetDepthAndRenderTargets(disableDepth ? null : output.DepthStencil, output.RenderTargets);
+            context.CommandList.SetDepthAndRenderTargets(disableDepth ? null : output.DepthStencil, output.RenderTargets);
         }
 
         protected override void DrawCore(RenderDrawContext context)

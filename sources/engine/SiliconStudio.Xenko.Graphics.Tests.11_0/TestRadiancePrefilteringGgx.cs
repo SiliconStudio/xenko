@@ -126,10 +126,10 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             var size = new Vector2(screenSize.X / 3f, screenSize.Y / 4f);
 
-            context.GraphicsDevice.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
-            context.GraphicsDevice.Clear(GraphicsDevice.BackBuffer, Color.Green);
+            context.CommandList.SetRenderTarget(GraphicsDevice.Presenter.BackBuffer);
+            context.CommandList.Clear(GraphicsDevice.Presenter.BackBuffer, Color.Green);
 
-            spriteBatch.Begin(SpriteSortMode.Texture, spriteEffect);
+            spriteBatch.Begin(GraphicsCommandList, SpriteSortMode.Texture, spriteEffect);
             spriteBatch.Draw(displayedViews[1], new RectangleF(0, size.Y, size.X, size.Y), Color.White);
             spriteBatch.Draw(displayedViews[2], new RectangleF(size.X, 0f, size.X, size.Y), Color.White);
             spriteBatch.Draw(displayedViews[4], new RectangleF(size.X, size.Y, size.X, size.Y), Color.White);
@@ -183,12 +183,12 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             }
 
             if (Input.IsKeyPressed(Keys.S))
-                SaveTexture(GraphicsDevice.BackBuffer, "RadiancePrefilteredGGXCross_level{0}.png".ToFormat(displayedLevel));
+                SaveTexture(GraphicsDevice.Presenter.BackBuffer, "RadiancePrefilteredGGXCross_level{0}.png".ToFormat(displayedLevel));
         }
 
         protected override void Draw(GameTime gameTime)
         {
-            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services));
+            var renderDrawContext = new RenderDrawContext(Services, RenderContext.GetShared(Services), GraphicsCommandList);
 
             PrefilterCubeMap(renderDrawContext);
             RenderCubeMap(renderDrawContext);

@@ -8,20 +8,21 @@ namespace SiliconStudio.Xenko.Graphics
     /// <summary>
     /// Contains a list descriptors (such as textures) that can be bound together to the graphics pipeline.
     /// </summary>
-    public struct DescriptorSet
+    public partial struct DescriptorSet
     {
+        public static DescriptorSet New(GraphicsDevice graphicsDevice, DescriptorPool pool, DescriptorSetLayout desc)
+        {
+            return new DescriptorSet(graphicsDevice, pool, desc);
+        }
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         internal readonly DescriptorSetEntry[] HeapObjects;
         internal readonly int DescriptorStartOffset;
 
-        internal DescriptorSet(DescriptorSetEntry[] heapObjects, int descriptorStartOffset)
+        private DescriptorSet(GraphicsDevice graphicsDevice, DescriptorPool pool, DescriptorSetLayout desc)
         {
-            this.HeapObjects = heapObjects;
-            this.DescriptorStartOffset = descriptorStartOffset;
-        }
-
-        public static DescriptorSet New(GraphicsDevice graphicsDevice, DescriptorPool pool, DescriptorSetLayout desc)
-        {
-            return new DescriptorSet(pool.Entries, pool.Allocate(desc.ElementCount));
+            this.HeapObjects = pool.Entries;
+            this.DescriptorStartOffset = pool.Allocate(desc.ElementCount);
         }
 
         /// <summary>
@@ -75,5 +76,6 @@ namespace SiliconStudio.Xenko.Graphics
         {
             HeapObjects[DescriptorStartOffset + slot].Value = unorderedAccessView;
         }
+#endif
     }
 }

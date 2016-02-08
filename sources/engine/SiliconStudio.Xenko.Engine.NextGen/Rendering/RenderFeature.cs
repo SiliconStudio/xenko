@@ -47,7 +47,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <param name="renderViewStage"></param>
         /// <param name="startIndex"></param>
         /// <param name="endIndex"></param>
-        public virtual void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public virtual void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
         }
     }

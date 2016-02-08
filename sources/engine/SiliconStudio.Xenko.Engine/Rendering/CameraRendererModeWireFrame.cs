@@ -161,7 +161,7 @@ namespace SiliconStudio.Xenko.Rendering
         {
             var sceneCameraRenderer = context.RenderContext.Tags.Get(SceneCameraRenderer.Current);
 
-            var graphicsDevice = context.GraphicsDevice;
+            var commandList = context.CommandList;
             try
             {
                 // TODO GRAPHICS REFACTOR

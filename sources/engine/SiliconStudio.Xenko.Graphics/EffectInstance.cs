@@ -30,7 +30,6 @@ namespace SiliconStudio.Xenko.Rendering
 
         // Describes how to update resource bindings
         private ResourceGroupBufferUploader bufferUploader;
-        public ResourceBinder resourceBinder;
 
         private EffectDescriptorSetReflection descriptorReflection;
 
@@ -64,10 +63,9 @@ namespace SiliconStudio.Xenko.Rendering
 
                 // Update reflection and rearrange buffers/resources
                 var layouts = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup ?? "Globals").Distinct().ToList();
-                descriptorReflection = EffectDescriptorSetReflection.New(graphicsDevice, effect.Bytecode, layouts);
+                descriptorReflection = EffectDescriptorSetReflection.New(graphicsDevice, effect.Bytecode, layouts, "Globals");
                 RootSignature = RootSignature.New(graphicsDevice, descriptorReflection);
                 bufferUploader.Compile(graphicsDevice, descriptorReflection, effect.Bytecode);
-                resourceBinder.Compile(graphicsDevice, descriptorReflection, effect.Bytecode);
 
                 // Process constant buffers
                 var parameterCollectionLayout = new NextGenParameterCollectionLayout();
@@ -108,25 +106,25 @@ namespace SiliconStudio.Xenko.Rendering
         {
         }
 
-        public void Apply(GraphicsDevice graphicsDevice)
+        public void Apply(CommandList commandList)
         {
-            UpdateEffect(graphicsDevice);
+            UpdateEffect(commandList.GraphicsDevice);
 
             //effect.ApplyProgram(graphicsDevice);
 
             // Bind resources
             // TODO: What descriptor pool should we use?
-            var descriptorPool = DescriptorPool.New(graphicsDevice, new[]
+            var descriptorPool = DescriptorPool.New(commandList.GraphicsDevice, new[]
             {
                 new DescriptorTypeCount(EffectParameterClass.ConstantBuffer, 256),
             });
 
-            var bufferPool = BufferPool.New(graphicsDevice, constantBufferTotalSize);
+            var bufferPool = BufferPool.New(commandList.GraphicsDevice, constantBufferTotalSize);
 
             // Instantiate descriptor sets
             for (int i = 0; i < resourceGroups.Length; ++i)
             {
-                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(graphicsDevice, descriptorPool, bufferPool, resourceGroupLayouts[i], BufferPoolAllocationType.UsedOnce, resourceGroups[i]);
+                NextGenParameterCollectionLayoutExtensions.PrepareResourceGroup(commandList.GraphicsDevice, descriptorPool, bufferPool, resourceGroupLayouts[i], BufferPoolAllocationType.UsedOnce, resourceGroups[i]);
             }
 
             // Set resources
@@ -154,15 +152,16 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Update cbuffer
-            bufferUploader.Apply(graphicsDevice, resourceGroups, 0);
+            bufferUploader.Apply(commandList, resourceGroups, 0);
 
             // Bind descriptor sets
             var descriptorSets = new DescriptorSet[resourceGroups.Length];
             for (int i = 0; i < descriptorSets.Length; ++i)
                 descriptorSets[i] = resourceGroups[i].DescriptorSet;
 
-            //resourceBinder.BindResources(graphicsDevice, descriptorSets);
-            graphicsDevice.SetDescriptorSets(0, descriptorSets);
+            commandList.SetDescriptorSets(0, descriptorSets);
+
+            descriptorPool.Dispose();
         }
     }
 }

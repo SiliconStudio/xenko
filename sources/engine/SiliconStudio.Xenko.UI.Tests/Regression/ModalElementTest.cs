@@ -120,7 +120,7 @@ namespace SiliconStudio.Xenko.UI.Tests.Regression
         {
             base.SpecificDrawBeforeUI(context, renderFrame);
 
-            GraphicsDevice.DrawTexture(Sprites["GameScreen"].Texture);
+            context.CommandList.DrawTexture(Sprites["GameScreen"].Texture);
         }
 
         protected override void Update(GameTime gameTime)
