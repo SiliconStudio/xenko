@@ -239,14 +239,12 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Lights\LightPointGroupRenderer.cs" />
     <Compile Include="Rendering\Lights\LightUtil.cs">
       <DependentUpon>LightUtil.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Lights\LightSpotlGroupRenderer.cs" />
     <Compile Include="Rendering\Lights\LightSpotGroup.cs">
       <DependentUpon>LightSpotGroup.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -385,7 +383,6 @@
     <Compile Include="Rendering\Lights\DirectLightBase.cs" />
     <Compile Include="Rendering\Lights\IColorLight.cs" />
     <Compile Include="Rendering\Lights\ILightShadowMapFilterType.cs" />
-    <Compile Include="Rendering\Lights\LightAmbientRenderer.cs" />
     <Compile Include="Rendering\Lights\LightPoint.cs" />
     <Compile Include="Rendering\Lights\LightShadowMapCascadeCount.cs" />
     <Compile Include="Rendering\Lights\LightShadowMapFilterTypePCF.cs" />
@@ -1577,12 +1574,9 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Lights\LightDirectionalGroupRenderer.cs" />
-    <Compile Include="Rendering\Lights\LightGroupRendererBase.cs" />
     <Compile Include="Rendering\Lights\LightingKeys.cs" />
     <Compile Include="Rendering\Lights\LightModelRendererBase.cs" />
     <Compile Include="Rendering\Lights\LightProcessor.cs" />
-    <Compile Include="Rendering\Lights\LightShaderGroup.cs" />
     <Compile Include="Rendering\Lights\LightShadowMap.cs" />
     <Compile Include="Rendering\Lights\LightSimpleAmbient.cs">
       <DependentUpon>LightSimpleAmbient.xksl</DependentUpon>
@@ -1591,7 +1585,6 @@
       <DesignTime>True</DesignTime>
     </Compile>
     <Compile Include="Rendering\Lights\LightSkybox.cs" />
-    <Compile Include="Rendering\Lights\LightSkyboxRenderer.cs" />
     <Compile Include="Rendering\Lights\LightSkyboxShader.cs">
       <DependentUpon>LightSkyboxShader.xksl</DependentUpon>
       <AutoGen>True</AutoGen>

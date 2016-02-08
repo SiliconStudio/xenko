@@ -89,6 +89,10 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             ShadowGroup?.ApplyParameters(parameters);
         }
 
+        public virtual void ApplyEffectPermutations(RenderEffect renderEffect)
+        {
+        }
+
         protected abstract void AddLightInternal(LightComponent light);
 
         protected abstract void ApplyParametersInternal(NextGenParameterCollection parameters);

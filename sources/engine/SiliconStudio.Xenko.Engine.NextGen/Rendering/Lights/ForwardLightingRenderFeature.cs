@@ -554,6 +554,8 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 lightParameterEntries.Add(parametersKeyId, newShaderEntryParameters);
             }
 
+            newShaderEntryParameters.ApplyEffectPermutations(renderEffect);
+
             return newShaderEntryParameters;
         }
 
@@ -817,6 +819,20 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             public readonly List<LightShaderGroupData> EnvironmentLightDatas;
 
             public readonly NextGenParameterCollection Parameters;
+
+            public void ApplyEffectPermutations(RenderEffect renderEffect)
+            {
+                foreach (var lightGroup in DirectLightGroupDatas)
+                {
+                    lightGroup.ApplyEffectPermutations(renderEffect);
+                }
+
+                foreach (var lightGroup in EnvironmentLightDatas)
+                {
+                    lightGroup.ApplyEffectPermutations(renderEffect);
+                }
+            }
+
         }
     }
 }
