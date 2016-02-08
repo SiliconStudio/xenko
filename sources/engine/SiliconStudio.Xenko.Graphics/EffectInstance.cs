@@ -160,6 +160,8 @@ namespace SiliconStudio.Xenko.Rendering
                 descriptorSets[i] = resourceGroups[i].DescriptorSet;
 
             commandList.SetDescriptorSets(0, descriptorSets);
+
+            descriptorPool.Dispose();
         }
     }
 }
