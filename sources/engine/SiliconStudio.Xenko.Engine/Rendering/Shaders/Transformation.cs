@@ -25,13 +25,13 @@ namespace SiliconStudio.Xenko.Rendering
         public static readonly ParameterKey<Matrix> ViewProjection = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Vector2> ProjScreenRay = ParameterKeys.New<Vector2>();
         public static readonly ParameterKey<Vector4> Eye = ParameterKeys.New<Vector4>();
-        public static readonly ParameterKey<Vector4> EyeMS = ParameterKeys.New<Vector4>();
         public static readonly ParameterKey<Matrix> World = ParameterKeys.New<Matrix>();
-        public static readonly ParameterKey<Matrix> WorldInverseTranspose = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> WorldInverse = ParameterKeys.New<Matrix>();
+        public static readonly ParameterKey<Matrix> WorldInverseTranspose = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> WorldView = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> WorldViewInverse = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Matrix> WorldViewProjection = ParameterKeys.New<Matrix>();
         public static readonly ParameterKey<Vector3> WorldScale = ParameterKeys.New<Vector3>();
+        public static readonly ParameterKey<Vector4> EyeMS = ParameterKeys.New<Vector4>();
     }
 }
