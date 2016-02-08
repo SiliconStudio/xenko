@@ -21,6 +21,7 @@
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Windows10'">Direct3D11</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Android'">OpenGLES</SiliconStudioXenkoGraphicsApi>
     <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'iOS'">OpenGLES</SiliconStudioXenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi Condition="'$(SiliconStudioXenkoGraphicsApi)' == '' and '$(SiliconStudioPlatform)' == 'Linux'">OpenGL</SiliconStudioXenkoGraphicsApi>
 
     <!--By default, turn on assembly processor-->
     <SiliconStudioAssemblyProcessor Condition="'$(SiliconStudioAssemblyProcessor)' == ''">true</SiliconStudioAssemblyProcessor>
@@ -165,6 +166,7 @@
     </PropertyGroup>
     
     <!-- Run assembly processor -->
+    <Message Importance="low" Text="$(SiliconStudioAssemblyProcessorOptions)"/>
     <AssemblyProcessorTask Arguments="$(SiliconStudioAssemblyProcessorOptions)"/>
   </Target>
 

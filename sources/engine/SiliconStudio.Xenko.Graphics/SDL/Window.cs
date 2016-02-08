@@ -20,6 +20,14 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             SDL.SDL_Init(SDL.SDL_INIT_EVERYTHING);
                 // Disable effect of doing Alt+F4
             SDL.SDL_SetHint(SDL.SDL_HINT_WINDOWS_NO_CLOSE_ON_ALT_F4, "1");
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+            // Set our OpenGL version. It has to be done before any SDL window creation
+            // SDL_GL_CONTEXT_CORE gives us only the newer version, deprecated functions are disabled
+            int res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_PROFILE_MASK, (int)SDL.SDL_GLprofile.SDL_GL_CONTEXT_PROFILE_CORE);
+            // 4.2 is the lowest version we support.
+            res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+            res = SDL.SDL_GL_SetAttribute(SDL.SDL_GLattr.SDL_GL_CONTEXT_MINOR_VERSION, 2);
+#endif
         }
 
         /// <summary>
@@ -28,9 +36,13 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// <param name="title">Title of the window, see Text property.</param>
         public Window(string title)
         {
-                // Create the SDL window and then extract the native handle.
-            SdlHandle = SDL.SDL_CreateWindow(title, SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 640, 480,
-                SDL.SDL_WindowFlags.SDL_WINDOW_RESIZABLE | SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN);
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+            var flags = SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN | SDL.SDL_WindowFlags.SDL_WINDOW_OPENGL;
+#else
+            var flags = SDL.SDL_WindowFlags.SDL_WINDOW_HIDDEN;
+#endif
+            // Create the SDL window and then extract the native handle.
+            SdlHandle = SDL.SDL_CreateWindow(title, SDL.SDL_WINDOWPOS_UNDEFINED, SDL.SDL_WINDOWPOS_UNDEFINED, 640, 480, flags);
 
             if (SdlHandle == IntPtr.Zero)
             {
@@ -40,8 +52,7 @@ namespace SiliconStudio.Xenko.Graphics.SDL
             {
                 SDL.SDL_SysWMinfo info = default(SDL.SDL_SysWMinfo);
                 SDL.SDL_VERSION(out info.version);
-                SDL.SDL_bool res = SDL.SDL_GetWindowWMInfo(SdlHandle, ref info);
-                if (res == SDL.SDL_bool.SDL_FALSE)
+                if (SDL.SDL_GetWindowWMInfo(SdlHandle, ref info) == SDL.SDL_bool.SDL_FALSE)
                 {
                     throw new Exception("Cannot get Window information: " + SDL.SDL_GetError());
                 }
@@ -49,10 +60,28 @@ namespace SiliconStudio.Xenko.Graphics.SDL
                 {
 #if SILICONSTUDIO_PLATFORM_WINDOWS_DESKTOP
                     Handle = info.info.win.window;
+#elif SILICONSTUDIO_PLATFORM_LINUX
+                    Handle = info.info.x11.window;
 #endif
                 }
+                Application.RegisterWindow(this);
+                Application.ProcessEvents();
+
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                var context = SDL.SDL_GL_CreateContext(SdlHandle);
+                if (context == IntPtr.Zero)
+                {
+                    throw new Exception("Cannot create OpenGL context: " + SDL.SDL_GetError());
+                }
+
+                // The external context must be made current to initialize OpenGL
+                SDL.SDL_GL_MakeCurrent(SdlHandle, context);
+
+                // Create a dummy OpenTK context, that will be used to call some OpenGL features
+                // we need to later create the various context in GraphicsDevice.OpenGL.
+                DummyGLContext = new OpenTK.Graphics.GraphicsContext(new OpenTK.ContextHandle(context), SDL.SDL_GL_GetProcAddress, () => new OpenTK.ContextHandle(SDL.SDL_GL_GetCurrentContext()));
+#endif
             }
-            Application.RegisterWindow(this);
         }
 #endregion
 
@@ -226,8 +255,14 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
             get
             {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                int w, h;
+                SDL.SDL_GL_GetDrawableSize(SdlHandle, out w, out h);
+                return new Size2(w, h);
+#else
                 SDL.SDL_Surface *surfPtr = (SDL.SDL_Surface *) SDL.SDL_GetWindowSurface(SdlHandle);
                 return new Size2(surfPtr->w, surfPtr->h);
+#endif
             }
             set
             {
@@ -244,8 +279,14 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
             get
             {
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+                int w, h;
+                SDL.SDL_GL_GetDrawableSize(SdlHandle, out w, out h);
+                return new Rectangle(0, 0, w, h);
+#else
                 SDL.SDL_Surface *surfPtr = (SDL.SDL_Surface *) SDL.SDL_GetWindowSurface(SdlHandle);
                 return new Rectangle(0, 0, surfPtr->w, surfPtr->h);
+#endif
             }
             set
             {
@@ -346,6 +387,11 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         {
             switch (e.type)
             {
+                case SDL.SDL_EventType.SDL_QUIT:
+                        // When SDL sends a SDL_QUIT message, we have actually clicked on the close button.
+                    CloseActions?.Invoke();
+                    break;
+
                 case SDL.SDL_EventType.SDL_MOUSEBUTTONDOWN:
                     PointerButtonPressActions?.Invoke(e.button);
                     break;
@@ -448,7 +494,33 @@ namespace SiliconStudio.Xenko.Graphics.SDL
         /// </summary>
         public IntPtr SdlHandle { get; private set; }
 
-#region Disposal
+        /// <summary>
+        /// Is the Window still alive?
+        /// </summary>
+        public bool Exists
+        {
+            get { return SdlHandle != IntPtr.Zero; }
+        }
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+        /// <summary>
+        /// Current instance as seen as a IWindowInfo.
+        /// </summary>
+        public OpenTK.Platform.IWindowInfo WindowInfo
+        {
+            get
+            {
+                    // Create the proper Sdl2WindowInfo context.
+                return OpenTK.Platform.Utilities.CreateSdl2WindowInfo(SdlHandle);
+            }
+        }
+
+        /// <summary>
+        /// The OpenGL Context if any
+        /// </summary>
+        public OpenTK.Graphics.IGraphicsContext DummyGLContext;
+#endif
+
+        #region Disposal
         /// <inheritDoc/>
         ~Window()
         {

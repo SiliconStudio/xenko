@@ -14,10 +14,10 @@ namespace SiliconStudio.Quantum.Commands
 {
     public class AddPrimitiveKeyCommand : SyncNodeCommand
     {
-        public const string StaticName = "AddPrimitiveKey";
+        public const string CommandName = "AddPrimitiveKey";
 
         /// <inheritdoc/>
-        public override string Name => StaticName;
+        public override string Name => CommandName;
 
         /// <inheritdoc/>
         public override CombineMode CombineMode => CombineMode.CombineOnlyForAll;

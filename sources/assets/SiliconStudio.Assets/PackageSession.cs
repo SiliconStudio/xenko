@@ -722,7 +722,7 @@ namespace SiliconStudio.Assets
                         package.Save(log);
 
                         // Clone the package (but not all assets inside, just the structure)
-                        var packageClone = package.Clone(false);
+                        var packageClone = package.Clone();
                         packagesCopy.Add(packageClone);
                     }
 
@@ -937,7 +937,7 @@ namespace SiliconStudio.Assets
             if (package.State < PackageState.AssetsReady)
                 return;
 
-            packagesCopy.Add(package.Clone(false));
+            packagesCopy.Add(package.Clone());
         }
 
         private void UnRegisterPackage(Package package)

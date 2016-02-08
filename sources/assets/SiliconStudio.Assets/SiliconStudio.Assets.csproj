@@ -66,6 +66,7 @@
     <Compile Include="Analysis\AssetCollision.cs" />
     <Compile Include="AssetClonerFlags.cs" />
     <Compile Include="AssetComposite.cs" />
+    <Compile Include="AssetHash.cs" />
     <Compile Include="AssetImport.cs" />
     <Compile Include="AssetImporterParameters.cs" />
     <Compile Include="AssetImportExtensions.cs" />
