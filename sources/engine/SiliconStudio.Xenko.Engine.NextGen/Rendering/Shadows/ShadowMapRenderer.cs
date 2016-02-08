@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
             // TODO GRAPHICS REFACTOR Get viewport from RenderFrame of this render view
             var sceneCameraRenderer = RenderSystem.RenderContextOld.Tags.Get(SceneCameraRenderer.Current);
             var camera = RenderSystem.RenderContextOld.GetCurrentCamera();
-            //var viewport = RenderSystem.GraphicsDevice.Presenter.BackBuffer;
+            var viewport = sceneCameraRenderer.ComputedViewport;
 
             foreach (var lightComponent in visibleLights)
             {
@@ -246,7 +246,7 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
                 var position = lightComponent.Position;
 
                 // Compute the coverage of this light on the screen
-                var size = light.ComputeScreenCoverage(camera, position, direction, RenderSystem.GraphicsDevice.Presenter.BackBuffer.Width, RenderSystem.GraphicsDevice.Presenter.BackBuffer.Height);
+                var size = light.ComputeScreenCoverage(camera, position, direction, viewport.Width, viewport.Height);
 
                 // Converts the importance into a shadow size factor
                 var sizeFactor = ComputeSizeFactor(shadowMap.Size);
