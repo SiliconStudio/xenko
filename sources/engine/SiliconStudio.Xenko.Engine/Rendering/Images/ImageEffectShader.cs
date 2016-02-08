@@ -29,8 +29,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         public ImageEffectShader(string effectName = null)
         {
-            EffectName = effectName;
-            EffectInstance = new DynamicEffectInstance(EffectName, Parameters);
+            EffectInstance = new DynamicEffectInstance(effectName, Parameters);
         }
 
         /// <inheritdoc/>
@@ -55,7 +54,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Effect name.
         /// </summary>
         [DataMemberIgnore]
-        public string EffectName { get; protected set; }
+        public string EffectName
+        {
+            get { return EffectInstance.EffectName; }
+            protected set { EffectInstance.EffectName = value; }
+        }
 
         /// <summary>
         /// Optional shared parameters. This list must be setup before calling <see cref="Initialize"/>.
