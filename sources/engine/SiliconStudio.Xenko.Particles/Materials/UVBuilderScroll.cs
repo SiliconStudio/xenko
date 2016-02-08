@@ -32,14 +32,24 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("End frame")]
         public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);
 
-        public unsafe override void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter)
+        public unsafe override void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);
 
             if (!lifeField.IsValid())
                 return;
 
-            var texAttribute = vertexBuilder.GetAccessor(vertexBuilder.DefaultTexCoords);
+            var texAttribute = vertexBuilder.GetAccessor(texCoordsDescription);
+            if (texAttribute.Size == 0 && texAttribute.Offset == 0)
+            {
+                return;
+            }
+
+            var texDefault = vertexBuilder.GetAccessor(vertexBuilder.DefaultTexCoords);
+            if (texDefault.Size == 0 && texDefault.Offset == 0)
+            {
+                return;
+            }
 
             foreach (var particle in sorter)
             {
@@ -56,10 +66,13 @@ namespace SiliconStudio.Xenko.Particles.Materials
                         value.Y = uvTransform.Y + uvTransform.W * value.Y;
                     };
 
-                vertexBuilder.TransformAttributePerParticle(texAttribute, transformCoords);
+                vertexBuilder.TransformAttributePerParticle(texDefault, texAttribute, transformCoords);
 
                 vertexBuilder.NextParticle();
             }
+
+
+            vertexBuilder.RestartBuffer();
         }
     }
 }
