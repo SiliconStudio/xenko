@@ -69,6 +69,7 @@ namespace SiliconStudio.Assets.CompilerApp
             }
 
             assetLogger = new RemoteLogForwarder(builderOptions.Logger, builderOptions.LogPipeNames);
+            AssetCompilerContext context = null;
             GlobalLogger.GlobalMessageLogged += assetLogger;
             PackageSession projectSession = null;
             try
@@ -118,7 +119,7 @@ namespace SiliconStudio.Assets.CompilerApp
                 }
 
                 // Create context
-                var context = new AssetCompilerContext
+                context = new AssetCompilerContext
                 {
                     Profile = builderOptions.BuildProfile,
                     Platform = builderOptions.Platform
@@ -163,17 +164,10 @@ namespace SiliconStudio.Assets.CompilerApp
             }
             finally
             {
-                if (builder != null)
-                {
-                    builder.Dispose();
-                }
-
+                builder?.Dispose();
                 // Dispose the session (in order to unload assemblies)
-                if (projectSession != null)
-                {
-                    projectSession.Dispose();
-                }
-
+                projectSession?.Dispose();
+                context?.Dispose();
                 // Flush and close logger
                 GlobalLogger.GlobalMessageLogged -= assetLogger;
                 assetLogger.Dispose();

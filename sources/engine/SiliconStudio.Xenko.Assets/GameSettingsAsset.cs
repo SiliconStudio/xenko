@@ -46,28 +46,8 @@ namespace SiliconStudio.Xenko.Assets
         public const string FileExtensions = FileExtension + ";.pdxgamesettings";
 
         public const string GameSettingsLocation = GameSettings.AssetUrl;
-        public const string DefaultSceneLocation = "MainScene";
 
-        public GameSettingsAsset()
-        {
-//            Defaults.Add(new RenderingSettings());
-//            Defaults.Add(new TextureSettings());
-//            Defaults.Add(new PhysicsSettings());
-//            Defaults.Constraint = (list, configuration) =>
-//            {
-//                if (configuration == null) return true;
-//
-//                var old = list.FirstOrDefault(x => x != null && x.GetType() == configuration.GetType());
-//                if (old == null) return true;
-//
-//                var index = list.IndexOf(old);
-//                list[index] = null;
-//                list[index] = configuration;
-//
-//                return false;
-//            };
-//            Defaults.ThrowException = false;
-        }
+        public const string DefaultSceneLocation = "MainScene";
 
         /// <summary>
         /// Gets or sets the default scene.
@@ -79,16 +59,16 @@ namespace SiliconStudio.Xenko.Assets
         /// <summary>
         /// Gets or sets the game settings per profiles.
         /// </summary>
-        [DataMember(90)]
+        [DataMember(20)]
         [Display(Browsable = false)]
         [DefaultValue(null)]
         public Dictionary<string, IGameSettingsProfile> Profiles { get; set; }
 
-        [DataMember(100)]
+        [DataMember(30)]
         [NotNullItems]
         public List<Configuration> Defaults { get; } = new List<Configuration>();
 
-        [DataMember(110)]
+        [DataMember(40)]
         public List<ConfigurationOverride> Overrides { get; } = new List<ConfigurationOverride>();
 
         public T Get<T>() where T : Configuration, new()
@@ -203,7 +183,15 @@ namespace SiliconStudio.Xenko.Assets
                 asset.RemoveChild("DisplayOrientation");
                 TextureQuality textureQuality = asset.TextureQuality ?? TextureQuality.Fast;
                 asset.RemoveChild("TextureQuality");
-                RenderingMode renderingMode = asset.RenderingMode ?? RenderingMode.HDR;
+                var renderingMode = RenderingMode.HDR;;
+                if (asset.RenderingMode != null)
+                {
+                    if (asset.RenderingMode == "LDR")
+                    {
+                        renderingMode = RenderingMode.LDR;
+                    }
+                }
+                GameUserSettings.Editor.EditorRenderingMode.SetValue(renderingMode, context.Package.UserSettings.Profile);
                 asset.RemoveChild("RenderingMode");
 
                 var configurations = new DynamicYamlArray(new YamlSequenceNode());
@@ -223,10 +211,6 @@ namespace SiliconStudio.Xenko.Assets
 
                 dynamic physicsSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics" });
                 asset.Defaults.Add(physicsSettings);
-
-                dynamic editorSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.GameStudio.Plugin.EditorConfiguration,SiliconStudio.Xenko.GameStudio.Plugin" });
-                editorSettings.RenderingMode = renderingMode;
-                asset.Defaults.Add(editorSettings);
             }
         }
     }
