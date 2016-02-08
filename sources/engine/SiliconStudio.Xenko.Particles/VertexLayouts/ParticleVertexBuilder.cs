@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
         public delegate void TransformAttributeDelegate<T>(ref T value);
 
-        private readonly int vertexStructSize;
+        private int vertexStructSize;
         private readonly int indexStructSize;
 
         private DeviceResourceContext ResourceContext;
@@ -111,6 +111,9 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             //        d => new DeviceResourceContext(device, effect, VertexDeclaration, vertexCount, indexStructSize, indexCount));
 
             ResourceContext = new DeviceResourceContext(device, effect, VertexDeclaration, vertexCount, indexStructSize, indexCount);
+
+
+            vertexStructSize = VertexDeclaration.VertexStride;
 
             var mappedIndices = device.MapSubresource(ResourceContext.IndexBuffer, 0, MapMode.WriteDiscard, false, 0, indexCount * indexStructSize);
             var indexPointer = mappedIndices.DataBox.DataPointer;
@@ -218,6 +221,18 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
                 transformMethod(ref temp);
 
                 Utilities.Write(vertexBuffer + accessor.Offset + i * VertexDeclaration.VertexStride, ref temp);
+            }
+        }
+
+        public void TransformAttributePerParticle<T>(AttributeAccessor accessorFrom, AttributeAccessor accessorTo, TransformAttributeDelegate<T> transformMethod) where T : struct
+        {
+            for (var i = 0; i < verticesPerParticle; i++)
+            {
+                var temp = Utilities.Read<T>(vertexBuffer + accessorFrom.Offset + i * VertexDeclaration.VertexStride);
+
+                transformMethod(ref temp);
+
+                Utilities.Write(vertexBuffer + accessorTo.Offset + i * VertexDeclaration.VertexStride, ref temp);
             }
         }
 

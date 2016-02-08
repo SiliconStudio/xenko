@@ -43,6 +43,16 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("UV coords")]
         public UVBuilder UVBuilder;
 
+        /// <summary>
+        /// Forces the creation of texture coordinates as vertex attribute
+        /// </summary>
+        /// <userdoc>
+        /// Forces the creation of texture coordinates as vertex attribute
+        /// </userdoc>
+        [DataMember(300)]
+        [Display("Force texcoords")]
+        public bool ForceTexCoords = false;
+
         [DataMemberIgnore]
         private ShaderGeneratorContext shaderGeneratorContext;
 
@@ -78,6 +88,9 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             if (ComputeColor != null)
             {
+                // Don't forget to set the proper color space!
+                shaderGeneratorContext.ColorSpace = context.GraphicsDevice.ColorSpace;
+
                 var shaderBaseColor = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
 
                 shaderGeneratorContext.Parameters.Set(ParticleBaseKeys.BaseColor, shaderBaseColor);
@@ -108,6 +121,16 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
 
             var coordIndex = code?.IndexOf("TEXCOORD", 0, StringComparison.Ordinal) ?? -1;
+
+            if (coordIndex < 0)
+            {
+                // If there is no explicit texture coordinate usage, but we can still force it
+                if (ForceTexCoords)
+                {
+                    vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[0]);
+                }
+            }
+
             while (coordIndex >= 0)
             {
                 var semanticIndex = 0;
@@ -138,7 +161,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
             base.PatchVertexBuffer(vertexBuilder, invViewX, invViewY, sorter);
 
-            UVBuilder?.BuildUVCoordinates(vertexBuilder, sorter);
+            UVBuilder?.BuildUVCoordinates(vertexBuilder, sorter, vertexBuilder.DefaultTexCoords);
 
             // TODO Copy Texture fields
 
