@@ -33,7 +33,6 @@ namespace SiliconStudio.Assets.Serializers
             objectContext.Instance = ((AssetBaseMutable)objectContext.Instance).ToAssetBase();
         }
 
-        [NonIdentifiable]
         private class AssetBaseMutable
         {
             public AssetBaseMutable()
