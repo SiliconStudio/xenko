@@ -63,7 +63,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                 // Update reflection and rearrange buffers/resources
                 var layouts = effect.Bytecode.Reflection.ResourceBindings.Select(x => x.Param.ResourceGroup ?? "Globals").Distinct().ToList();
-                descriptorReflection = EffectDescriptorSetReflection.New(graphicsDevice, effect.Bytecode, layouts);
+                descriptorReflection = EffectDescriptorSetReflection.New(graphicsDevice, effect.Bytecode, layouts, "Globals");
                 RootSignature = RootSignature.New(graphicsDevice, descriptorReflection);
                 bufferUploader.Compile(graphicsDevice, descriptorReflection, effect.Bytecode);
 
