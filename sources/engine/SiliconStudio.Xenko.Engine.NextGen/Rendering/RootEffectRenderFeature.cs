@@ -271,7 +271,7 @@ namespace SiliconStudio.Xenko.Rendering
                         renderEffectReflection = new RenderEffectReflection();
 
                         // Build root signature automatically from reflection
-                        renderEffectReflection.DescriptorReflection = EffectDescriptorSetReflection.New(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots);
+                        renderEffectReflection.DescriptorReflection = EffectDescriptorSetReflection.New(RenderSystem.GraphicsDevice, effect.Bytecode, effectDescriptorSetSlots, "PerFrame");
                         renderEffectReflection.RootSignature = RootSignature.New(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection);
                         renderEffectReflection.BufferUploader.Compile(RenderSystem.GraphicsDevice, renderEffectReflection.DescriptorReflection, effect.Bytecode);
 
@@ -366,7 +366,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     // Bind well-known descriptor sets
                     var descriptorSetPoolOffset = ComputeResourceGroupOffset(renderNodeReference);
-                    ResourceGroupPool[descriptorSetPoolOffset + perFrameDescriptorSetSlot.Index] = renderEffect.Reflection.PerFrameResources;
+                    ResourceGroupPool[descriptorSetPoolOffset + perFrameDescriptorSetSlot.Index] = frameLayout?.Entry.Resources;
                     ResourceGroupPool[descriptorSetPoolOffset + perViewDescriptorSetSlot.Index] = renderEffect.Reflection.PerViewLayout.Entries[view.Index].Resources;
                     ResourceGroupPool[descriptorSetPoolOffset + perDrawDescriptorSetSlot.Index] = renderNode.Resources;
 
