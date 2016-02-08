@@ -48,9 +48,10 @@ namespace SiliconStudio.Xenko.Rendering.Background
                 var sourceSize = new Vector2(target.Width * imageBufferMinRatio, target.Height * imageBufferMinRatio);
                 var source = new RectangleF((texture.ViewWidth - sourceSize.X) / 2, (texture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
 
-                spriteBatch.Begin(SpriteSortMode.FrontToBack, graphicsDevice.BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, graphicsDevice.DepthStencilStates.None, null, backgroundEffect);
+                // TODO GRAPHICS REFACTOR: Disable depth once we sort properly
+                spriteBatch.Begin(SpriteSortMode.FrontToBack, graphicsDevice.BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, graphicsDevice.DepthStencilStates.DepthRead, null, backgroundEffect);
                 spriteBatch.Parameters.SetValueSlow(BackgroundEffectKeys.Intensity, renderBackground.Intensity);
-                spriteBatch.Draw(texture, destination, source, Color.White, 0, Vector2.Zero);
+                spriteBatch.Draw(texture, destination, source, Color.White, 0, Vector2.Zero, layerDepth: -0.5f);
                 spriteBatch.End();
             }
 
