@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.ComputeEffect
 {
@@ -13,6 +14,9 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
     /// </summary>
     public class ComputeEffectShader : DrawEffect
     {
+        private MutablePipelineState pipelineState = new MutablePipelineState();
+        private bool pipelineStateDirty = true;
+
         public ComputeEffectShader(RenderContext context)
             : this(context, null)
         {
@@ -81,6 +85,20 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
             EffectInstance.SetPermutationValue(ComputeEffectShaderKeys.ThreadNumbers, ThreadNumbers);
             EffectInstance.SetPermutationValue(ComputeEffectShaderKeys.ComputeShaderName, ShaderSourceName);
             Parameters.SetValueSlow(ComputeShaderBaseKeys.ThreadGroupCountGlobal, ThreadGroupCounts);
+
+            if (pipelineStateDirty)
+            {
+                EffectInstance.UpdateEffect(GraphicsDevice);
+
+                pipelineState.State.SetDefaults();
+                pipelineState.State.RootSignature = EffectInstance.RootSignature;
+                pipelineState.State.EffectBytecode = EffectInstance.Effect.Bytecode;
+                pipelineState.Update(GraphicsDevice);
+                pipelineStateDirty = false;
+            }
+
+            // Apply pipeline state
+            context.CommandList.SetPipelineState(pipelineState.CurrentState);
 
             // Apply the effect
             EffectInstance.Apply(context.CommandList);
