@@ -39,12 +39,13 @@ namespace SiliconStudio.AssemblyProcessor
             var references = new HashSet<AssemblyDefinition>();
             EnumerateReferences(references, context.Assembly);
 
+            var coreAssembly = CecilExtensions.FindCorlibAssembly(context.Assembly);
+
             // Only process assemblies depending on Xenko.Engine
             if (!references.Any(x => x.Name.Name == "SiliconStudio.Xenko.Engine"))
             {
                 // Make sure Xenko.Engine.Serializers can access everything internally
-                var mscorlibAssembly = CecilExtensions.FindCorlibAssembly(context.Assembly);
-                var internalsVisibleToAttribute = mscorlibAssembly.MainModule.GetTypeResolved(typeof(InternalsVisibleToAttribute).FullName);
+                var internalsVisibleToAttribute = coreAssembly.MainModule.GetTypeResolved(typeof(InternalsVisibleToAttribute).FullName);
                 var serializationAssemblyName = "SiliconStudio.Xenko.Engine.Serializers";
 
                 // Add [InteralsVisibleTo] attribute
@@ -107,15 +108,23 @@ namespace SiliconStudio.AssemblyProcessor
             var updatableArrayUpdateResolverGenericType = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.ArrayUpdateResolver`1");
             updatableArrayUpdateResolverGenericCtor = updatableArrayUpdateResolverGenericType.Methods.First(x => x.IsConstructor && !x.IsStatic);
 
-            updateEngineRegisterMemberMethod = context.Assembly.MainModule.ImportReference(siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngine").Methods.First(x => x.Name == "RegisterMember"));
-            updateEngineRegisterMemberResolverMethod = context.Assembly.MainModule.ImportReference(siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngine").Methods.First(x => x.Name == "RegisterMemberResolver"));
+            var registerMemberMethod = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngine").Methods.First(x => x.Name == "RegisterMember");
+            var pclVisitor = new PclFixupTypeVisitor(coreAssembly);
+            pclVisitor.VisitMethod(registerMemberMethod);
+            updateEngineRegisterMemberMethod = context.Assembly.MainModule.ImportReference(registerMemberMethod);
 
-            var typeType = CecilExtensions.FindCorlibAssembly(context.Assembly).MainModule.GetTypeResolved(typeof(Type).FullName);
+            var registerMemberResolverMethod = siliconStudioXenkoEngineModule.GetType("SiliconStudio.Xenko.Updater.UpdateEngine") .Methods.First(x => x.Name == "RegisterMemberResolver");
+            pclVisitor.VisitMethod(registerMemberResolverMethod);
+            updateEngineRegisterMemberResolverMethod = context.Assembly.MainModule.ImportReference(registerMemberResolverMethod);
+
+            var typeType = coreAssembly.MainModule.GetTypeResolved(typeof(Type).FullName);
             getTypeFromHandleMethod = context.Assembly.MainModule.ImportReference(typeType.Methods.First(x => x.Name == "GetTypeFromHandle"));
 
             // Make sure it is called at module startup
             var moduleInitializerAttribute = siliconStudioCoreModule.GetType("SiliconStudio.Core.ModuleInitializerAttribute");
-            mainPrepareMethod.CustomAttributes.Add(new CustomAttribute(context.Assembly.MainModule.ImportReference(moduleInitializerAttribute.GetConstructors().Single(x => !x.IsStatic))));
+            var ctorMethod = moduleInitializerAttribute.GetConstructors().Single(x => !x.IsStatic);
+            pclVisitor.VisitMethod(ctorMethod);
+            mainPrepareMethod.CustomAttributes.Add(new CustomAttribute(context.Assembly.MainModule.ImportReference(ctorMethod)));
 
             // Emit serialization code for all the types we care about
             var processedTypes = new HashSet<TypeDefinition>(TypeReferenceEqualityComparer.Default);

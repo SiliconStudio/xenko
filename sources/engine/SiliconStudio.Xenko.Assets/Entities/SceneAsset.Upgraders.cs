@@ -35,9 +35,9 @@ namespace SiliconStudio.Xenko.Assets.Entities
             public void Upgrade(AssetMigrationContext context, string dependencyName, PackageVersion currentVersion, PackageVersion targetVersion, YamlMappingNode yamlAssetNode, PackageLoadingAssetFile assetFile)
             {
                 dynamic asset = new DynamicYamlMapping(yamlAssetNode);
-                var baseBranch = asset["~Base"];
+                var baseBranch = asset[Asset.BaseProperty];
                 if (baseBranch != null)
-                    asset["~Base"] = DynamicYamlEmpty.Default;
+                    asset[BaseProperty] = DynamicYamlEmpty.Default;
 
                 AssetUpgraderBase.SetSerializableVersion(asset, dependencyName, targetVersion);
             }

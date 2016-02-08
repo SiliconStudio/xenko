@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Engine
             get
             {
                 if (Entity == null)
-                    throw new InvalidOperationException(string.Format("Entity on this instance [{0}] cannot be null", GetType().Name));
+                    throw new InvalidOperationException($"Entity on this instance [{GetType().Name}] cannot be null");
                 return Entity;
             }
         }
