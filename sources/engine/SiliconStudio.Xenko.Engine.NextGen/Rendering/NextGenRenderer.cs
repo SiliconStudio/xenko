@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
@@ -189,22 +190,23 @@ namespace SiliconStudio.Xenko.Rendering
                 }
 
                 context.PopRenderTargets();
-            // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
             }
+
+            // TODO: Once there is more than one mainRenderView, shadowsRenderViews have to be rendered before their respective mainRenderView
             Draw(RenderSystem, context, mainRenderView, mainRenderStage);
             //Draw(RenderContext, mainRenderView, transparentRenderStage);
 
             // Picking
             if (Picking)
             {
-                GraphicsDevice.PushState();
+                context.PushRenderTargets();
 
                 var pickingRenderTarget = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.R32G32B32A32_SInt));
-                GraphicsDevice.Clear(pickingRenderTarget, Color.Transparent);
-                GraphicsDevice.SetDepthAndRenderTarget(GraphicsDevice.DepthStencilBuffer, pickingRenderTarget);
-                Draw(RenderSystem, RenderContext, mainRenderView, pickingRenderStage);
+                context.CommandList.Clear(pickingRenderTarget, Color.Transparent);
+                context.CommandList.SetDepthAndRenderTarget(context.CommandList.DepthStencilBuffer, pickingRenderTarget);
+                Draw(RenderSystem, context, mainRenderView, pickingRenderStage);
 
-                GraphicsDevice.PopState();
+                context.PopRenderTargets();
             }
         }
 

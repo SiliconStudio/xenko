@@ -29,13 +29,11 @@ namespace SiliconStudio.Xenko.Rendering.Background
             spriteBatch = new SpriteBatch(RenderSystem.GraphicsDevice) { VirtualResolution = new Vector3(1) };
         }
 
-        public override void Draw(RenderContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
+        public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
             var target = RenderSystem.RenderContextOld.Tags.GetSafe(RenderFrame.Current);
             var graphicsDevice = context.GraphicsDevice;
             var destination = new RectangleF(0, 0, 1, 1);
-
-            graphicsDevice.PushState();
 
             for (int index = startIndex; index < endIndex; index++)
             {
@@ -49,13 +47,11 @@ namespace SiliconStudio.Xenko.Rendering.Background
                 var source = new RectangleF((texture.ViewWidth - sourceSize.X) / 2, (texture.ViewHeight - sourceSize.Y) / 2, sourceSize.X, sourceSize.Y);
 
                 // TODO GRAPHICS REFACTOR: Disable depth once we sort properly
-                spriteBatch.Begin(SpriteSortMode.FrontToBack, graphicsDevice.BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, graphicsDevice.DepthStencilStates.DepthRead, null, backgroundEffect);
+                spriteBatch.Begin(context.CommandList, SpriteSortMode.FrontToBack, graphicsDevice.BlendStates.Opaque, graphicsDevice.SamplerStates.LinearClamp, graphicsDevice.DepthStencilStates.DepthRead, null, backgroundEffect);
                 spriteBatch.Parameters.SetValueSlow(BackgroundEffectKeys.Intensity, renderBackground.Intensity);
                 spriteBatch.Draw(texture, destination, source, Color.White, 0, Vector2.Zero, layerDepth: -0.5f);
                 spriteBatch.End();
             }
-
-            graphicsDevice.PopState();
         }
     }
 }
