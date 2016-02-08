@@ -124,8 +124,8 @@ namespace SiliconStudio.Xenko.Rendering
                         descriptorSets[i] = resourceGroup.DescriptorSet;
                 }
 
-                commandList.SetDescriptorSets(0, descriptorSets);
                 commandList.SetPipelineState(renderEffect.PipelineState);
+                commandList.SetDescriptorSets(0, descriptorSets);
 
                 // Draw
                 if (drawData.IndexBuffer == null)
