@@ -11,6 +11,7 @@ namespace SiliconStudio.Assets
     /// An asset item part of a <see cref="Package"/> accessible through <see cref="Package.Assets"/>.
     /// </summary>
     [DataContract("AssetBase")]
+    [NonIdentifiable]
     [DataSerializer(typeof(AssetBase.Serializer))]
     public sealed class AssetBase : IContentReference
     {
