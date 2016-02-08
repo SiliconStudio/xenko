@@ -31,6 +31,8 @@ namespace SiliconStudio.Xenko.Rendering
 
         private double time;
 
+        private ForwardLightingRenderFeature forwardLightingRenderFeasture;
+
         public override string ModelEffect { get; set; }
 
         public bool Shadows { get; set; } = true;
@@ -61,7 +63,7 @@ namespace SiliconStudio.Xenko.Rendering
                         new TransformRenderFeature(),
                         //new SkinningRenderFeature(),
                         new MaterialRenderFeature(),
-                        new ForwardLightingRenderFeature() { ShadowmapRenderStage = shadowmapRenderStage },
+                        (forwardLightingRenderFeasture = new ForwardLightingRenderFeature { ShadowmapRenderStage = shadowmapRenderStage }),
                         new PickingRenderFeature(),
                     },
             };
@@ -174,6 +176,8 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: Move that to a class that will handle all the details of shadow mapping
             if (Shadows)
             {
+                forwardLightingRenderFeasture.ShadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
+
                 context.PushRenderTargets();
 
                 foreach (var renderView in RenderSystem.Views)
