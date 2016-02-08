@@ -15,7 +15,7 @@ namespace SiliconStudio.Xenko.Graphics
             return new DescriptorSet(graphicsDevice, pool, desc);
         }
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11 || SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
         internal readonly DescriptorSetEntry[] HeapObjects;
         internal readonly int DescriptorStartOffset;
 
