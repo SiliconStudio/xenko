@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Serialization.Contents;
+using SiliconStudio.Xenko.Data;
 
 namespace SiliconStudio.Xenko.Engine.Design
 {
