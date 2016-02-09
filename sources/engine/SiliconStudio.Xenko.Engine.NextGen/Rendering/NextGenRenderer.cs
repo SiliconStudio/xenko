@@ -5,6 +5,7 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Background;
+using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Rendering.Shadows;
@@ -31,11 +32,11 @@ namespace SiliconStudio.Xenko.Rendering
 
         private double time;
 
-        private ForwardLightingRenderFeature forwardLightingRenderFeasture;
+        private ForwardLightingRenderFeature forwardLightingRenderFeature;
 
         public override string ModelEffect { get; set; }
 
-        public bool Shadows { get; set; } = true;
+        public bool Shadows { get; set; } = false;
         public bool GBuffer { get; set; } = false;
         public bool Picking { get; set; } = true;
 
@@ -63,7 +64,7 @@ namespace SiliconStudio.Xenko.Rendering
                         new TransformRenderFeature(),
                         //new SkinningRenderFeature(),
                         new MaterialRenderFeature(),
-                        (forwardLightingRenderFeasture = new ForwardLightingRenderFeature { ShadowmapRenderStage = shadowmapRenderStage }),
+                        (forwardLightingRenderFeature = new ForwardLightingRenderFeature { ShadowmapRenderStage = shadowmapRenderStage }),
                         new PickingRenderFeature(),
                     },
             };
@@ -176,7 +177,7 @@ namespace SiliconStudio.Xenko.Rendering
             // TODO: Move that to a class that will handle all the details of shadow mapping
             if (Shadows)
             {
-                forwardLightingRenderFeasture.ShadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
+                forwardLightingRenderFeature.ShadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
 
                 context.PushRenderTargets();
 
@@ -203,6 +204,12 @@ namespace SiliconStudio.Xenko.Rendering
             // Picking
             if (Picking)
             {
+                if (pickingReadback == null)
+                {
+                    pickingReadback = new ImageReadback<Int4>();
+                    pickingTexture = Texture.New2D(GraphicsDevice, 1, 1, PixelFormat.R32G32B32A32_SInt, TextureFlags.None, 1, GraphicsResourceUsage.Staging);
+                }
+
                 context.PushRenderTargets();
 
                 var pickingRenderTarget = PushScopedResource(Context.Allocator.GetTemporaryTexture2D((int)currentViewport.Width, (int)currentViewport.Height, PixelFormat.R32G32B32A32_SInt));
@@ -211,8 +218,40 @@ namespace SiliconStudio.Xenko.Rendering
                 Draw(RenderSystem, context, mainRenderView, pickingRenderStage);
 
                 context.PopRenderTargets();
+
+                var mousePosition = Vector2.One / 2;
+                CopyPicking(context, pickingRenderTarget, mousePosition);
+
+                pickingReadback.SetInput(pickingTexture);
+                pickingReadback.Draw(context);
+
+                // TODO: Move to extract phase
+                if (pickingReadback.IsResultAvailable)
+                {
+                    PickingResult = pickingReadback.Result[0];
+                }
             }
         }
+
+        private void CopyPicking(RenderDrawContext context, Texture pickingRenderTarget, Vector2 mousePosition)
+        {
+            var renderTargetSize = new Vector2(pickingRenderTarget.Width, pickingRenderTarget.Height);
+            var positionInTexture = Vector2.Modulate(renderTargetSize, mousePosition);
+            var region = new ResourceRegion(
+                Math.Max(0, Math.Min((int)renderTargetSize.X - 1, (int)positionInTexture.X)),
+                Math.Max(0, Math.Min((int)renderTargetSize.Y - 1, (int)positionInTexture.Y)),
+                0,
+                Math.Max(0, Math.Min((int)renderTargetSize.X - 1, (int)positionInTexture.X + 1)),
+                Math.Max(0, Math.Min((int)renderTargetSize.Y - 1, (int)positionInTexture.Y + 1)),
+                1);
+
+            // Copy results to 1x1 target
+            context.CommandList.CopyRegion(pickingRenderTarget, 0, region, pickingTexture, 0);
+        }
+
+        public static Int4 PickingResult; 
+        private ImageReadback<Int4> pickingReadback;
+        private Texture pickingTexture;
 
         private void UpdateCameraToRenderView(RenderDrawContext context, CameraComponent camera, RenderView renderView)
         {
