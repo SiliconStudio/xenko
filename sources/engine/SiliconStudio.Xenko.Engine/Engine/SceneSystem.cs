@@ -64,7 +64,7 @@ namespace SiliconStudio.Xenko.Engine
             if (MainRenderFrame == null)
             {
                 // TODO GRAPHICS REFACTOR Check if this is a good idea to use Presenter targets
-                MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.Presenter.BackBuffer, GraphicsDevice.Presenter.DepthStencilBuffer);
+                MainRenderFrame = RenderFrame.FromTexture(GraphicsDevice.Presenter?.BackBuffer, GraphicsDevice.Presenter?.DepthStencilBuffer);
                 if (MainRenderFrame != null)
                 {
                     previousWidth = MainRenderFrame.Width;
