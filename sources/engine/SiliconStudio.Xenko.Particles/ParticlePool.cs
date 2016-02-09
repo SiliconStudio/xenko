@@ -35,7 +35,6 @@ namespace SiliconStudio.Xenko.Particles
             // DynamicStack            
         }
 
-        private bool disposed;
         private readonly ListPolicy listPolicy;
 
         /// <summary>
@@ -63,7 +62,7 @@ namespace SiliconStudio.Xenko.Particles
             if (nextFreeIndex > newCapacity)
                 nextFreeIndex = newCapacity;
 
-            RelocatePool(ParticleSize, newCapacity, CapacityChangedRelocate);
+            ReallocatePool(ParticleSize, newCapacity, CapacityChangedRelocate);
         }
 
         /// <summary>
@@ -123,10 +122,10 @@ namespace SiliconStudio.Xenko.Particles
 
             nextFreeIndex = 0;
 
-            RelocatePool(size, capacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
+            ReallocatePool(size, capacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
         }
 
-        private void RelocatePool(int newSize, int newCapacity, CopyParticlePoolDelegate poolCopy)
+        private void ReallocatePool(int newSize, int newCapacity, CopyParticlePoolDelegate poolCopy)
         {
             if (newCapacity == ParticleCapacity && newSize == ParticleSize)
                 return;
@@ -159,8 +158,12 @@ namespace SiliconStudio.Xenko.Particles
         {
             fields.Clear();
             fieldDescriptions.Clear();
-            RelocatePool(0, ParticleCapacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
+            ReallocatePool(0, ParticleCapacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
         }
+
+        #region Dispose
+
+        private bool disposed = false;
 
         ~ParticlePool()
         {
@@ -183,15 +186,24 @@ namespace SiliconStudio.Xenko.Particles
             ParticleCapacity = 0;
         }
 
-        protected virtual void Dispose(bool managed)
+        protected virtual void Dispose(bool disposing)
         {
             if (disposed)
                 return;
+            disposed = true;
 
+            // Dispose unmanaged resources
             DisposeParticleData();
 
-            disposed = true;
+            if (!disposing)
+                return;
+
+            // Dispose managed resources
         }
+
+        #endregion Dispose
+
+
 
         private void CopyParticleData(int dst, int src)
         {
@@ -311,7 +323,7 @@ namespace SiliconStudio.Xenko.Particles
             fieldDescriptions.Add(fieldDesc);
             fields.Add(fieldDesc, newField);
 
-            RelocatePool(newParticleSize, ParticleCapacity, FieldAddedRelocate);
+            ReallocatePool(newParticleSize, ParticleCapacity, FieldAddedRelocate);
 
             return fields[fieldDesc];
         }
@@ -409,7 +421,7 @@ namespace SiliconStudio.Xenko.Particles
 #endif
 
             // The field is not removed yet. During relocation it will appear as having Size and Offset of 0, and should be ignored for the purpose of copying memory
-            RelocatePool(newParticleSize, ParticleCapacity, FieldRemovedRelocate);
+            ReallocatePool(newParticleSize, ParticleCapacity, FieldRemovedRelocate);
 
             fields.Remove(fieldDesc);
 

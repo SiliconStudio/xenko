@@ -37,6 +37,11 @@ namespace SiliconStudio.Xenko.Particles.Components
             }
         }
 
+        ~ParticleSystemComponent()
+        {
+            particleSystem = null;
+        }
+
         [DataMember(1)]
         [Display("Editor control")]
         public ParticleSystemControl Control = new ParticleSystemControl();
