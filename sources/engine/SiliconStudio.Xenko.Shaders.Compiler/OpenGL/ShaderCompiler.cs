@@ -6,6 +6,7 @@ using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
 
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Core.Serialization;
 using SiliconStudio.Core.Storage;
 using SiliconStudio.Xenko.Graphics;
@@ -57,7 +58,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             var shaderBytecodeResult = new ShaderBytecodeResult();
             byte[] rawData;
 
-            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, shaderBytecodeResult, sourceFilename);
+            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, shaderBytecodeResult, reflection, sourceFilename);
 
             if (shader == null)
                 return shaderBytecodeResult;
@@ -74,7 +75,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 else
                 {
                     shaderBytecodes.DataES2 = shader;
-                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, shaderBytecodeResult, sourceFilename);
+                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, shaderBytecodeResult, reflection, sourceFilename);
                 }
                 using (var stream = new MemoryStream())
                 {
@@ -102,7 +103,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             return shaderBytecodeResult;
         }
 
-        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, ShaderBytecodeResult shaderBytecodeResult, string sourceFilename = null)
+        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, ShaderBytecodeResult shaderBytecodeResult, EffectReflection reflection, string sourceFilename = null)
         {
             if (isOpenGLES && !isOpenGLES3 && renderTargetCount > 1)
                 shaderBytecodeResult.Error("OpenGL ES 2 does not support multiple render targets.");
@@ -170,6 +171,36 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     else
                     {
                         constantBuffer.Qualifiers |= new LayoutQualifier(new LayoutKeyValue("std140"));
+                    }
+
+                    // Update constant buffer itself (first time only)
+                    var reflectionConstantBuffer = reflection.ConstantBuffers.FirstOrDefault(x => x.Name == constantBuffer.Name && x.Size == 0);
+                    if (reflectionConstantBuffer != null)
+                    {
+                        // Used to compute constant buffer size and member offsets (std140 rule)
+                        int constantBufferOffset = 0;
+
+                        // Fill members
+                        for (int index = 0; index < reflectionConstantBuffer.Members.Length; index++)
+                        {
+                            var member = reflectionConstantBuffer.Members[index];
+
+                            // Properly compute size and offset according to std140 rules
+                            int alignment;
+                            var memberSize = ComputeMemberSize(ref member, out alignment);
+
+                            // Align offset and store it as member offset
+                            constantBufferOffset = (constantBufferOffset + alignment - 1)/alignment*alignment;
+                            member.Offset = constantBufferOffset;
+
+                            // Adjust offset for next item
+                            constantBufferOffset += memberSize;
+
+                            reflectionConstantBuffer.Members[index] = member;
+                        }
+
+                        reflectionConstantBuffer.Size = constantBufferOffset;
+                        reflectionConstantBuffer.Stage = stage; // Should we store a flag/bitfield?
                     }
                 }
 
@@ -263,6 +294,73 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 #endif
 
             return realShaderSource;
+        }
+
+        private static int ComputeMemberSize(ref EffectParameterValueData member, out int alignment)
+        {
+            var elementSize = ComputeTypeSize(member.Param.Type);
+            int size;
+
+            switch (member.Param.Class)
+            {
+                case EffectParameterClass.Scalar:
+                    {
+                        size = elementSize;
+                        alignment = size;
+                        break;
+                    }
+                case EffectParameterClass.Color:
+                case EffectParameterClass.Vector:
+                    {
+                        size = elementSize * member.ColumnCount;
+                        alignment = (member.ColumnCount == 3 ? 4 : member.ColumnCount) * elementSize; // vec3 uses alignment of vec4
+                        break;
+                    }
+                case EffectParameterClass.MatrixColumns:
+                    {
+                        size = elementSize * 4 * member.RowCount;
+                        alignment = size;
+                        break;
+                    }
+                case EffectParameterClass.MatrixRows:
+                    {
+                        size = elementSize * 4 * member.ColumnCount;
+                        alignment = size;
+                        break;
+                    }
+                default:
+                    throw new NotImplementedException();
+            }
+
+            // Array
+            if (member.Count > 1)
+            {
+                var roundedSize = (size + 15) / 16 * 16; // Round up to vec4
+                size = roundedSize * member.Count; // last element might be smaller than vec4
+                alignment = size;
+            }
+
+            // Alignment is rounded up to vec4
+            if (alignment > 16)
+                alignment = 16;
+
+            return size;
+        }
+
+        private static int ComputeTypeSize(EffectParameterType type)
+        {
+            switch (type)
+            {
+                case EffectParameterType.Bool:
+                case EffectParameterType.Float:
+                case EffectParameterType.Int:
+                case EffectParameterType.UInt:
+                    return 4;
+                case EffectParameterType.Double:
+                    return 8;
+                default:
+                    throw new NotImplementedException();
+            }
         }
 
         private string RunOptimizer(ShaderBytecodeResult shaderBytecodeResult, string baseShader, bool openGLES, bool es30, bool vertex)

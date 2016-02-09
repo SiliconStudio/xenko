@@ -101,8 +101,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             if (parameterKey == null) return;
 
             var resolvedType = variable.Type.ResolveType();
+            var slotCount = 1;
             if (resolvedType is ArrayType)
             {
+                // TODO: Use evaluator?
+                slotCount = (int)((LiteralExpression)((ArrayType)resolvedType).Dimensions[0]).Literal.Value;
                 resolvedType = ((ArrayType)resolvedType).Type;
             }
             if (resolvedType is StateType)
@@ -224,11 +227,11 @@ namespace SiliconStudio.Xenko.Shaders.Parser
                 }
 
                 effectReflection.SamplerStates.Add(new EffectSamplerStateBinding(parameterKey.Name, samplerState));
-                LinkVariable(effectReflection, variable.Name, parameterKey);
+                LinkVariable(effectReflection, variable.Name, parameterKey, slotCount);
             }
             else if (variable.Type is TextureType || variable.Type is GenericType)
             {
-                LinkVariable(effectReflection, variable.Name, parameterKey);
+                LinkVariable(effectReflection, variable.Name, parameterKey, slotCount);
             }
             else
             {
@@ -284,7 +287,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             {
                 var parameterKey = this.GetLinkParameterKey(node);
                 if (parameterKey != null)
-                    LinkVariable(effectReflection, ((IDeclaration)node).Name, parameterKey);
+                    LinkVariable(effectReflection, ((IDeclaration)node).Name, parameterKey, parameterKey.Count);
             }
 
             node.Childrens(OnProcessor);
@@ -536,9 +539,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             }
         }
 
-        private static void LinkVariable(EffectReflection reflection, string variableName, LocalParameterKey parameterKey)
+        private static void LinkVariable(EffectReflection reflection, string variableName, LocalParameterKey parameterKey, int slotCount)
         {
-            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, ResourceGroup = parameterKey.ResourceGroup, RawName = variableName }, SlotStart = -1 };
+            var binding = new EffectParameterResourceData { Param = { KeyName = parameterKey.Name, Class = parameterKey.Class, Type = parameterKey.Type, ResourceGroup = parameterKey.ResourceGroup, RawName = variableName }, SlotStart = -1, SlotCount = slotCount };
             reflection.ResourceBindings.Add(binding);
         }
 
@@ -550,7 +553,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser
             {
                 constantBuffer = new ShaderConstantBufferDescription() {Name = cbName};
                 effectReflection.ConstantBuffers.Add(constantBuffer);
-                var constantBufferBinding = new EffectParameterResourceData { Param = { KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName, ResourceGroup = cbName }, SlotStart = -1 };
+                var constantBufferBinding = new EffectParameterResourceData { Param = { KeyName = cbName, Class = EffectParameterClass.ConstantBuffer, Type = EffectParameterType.Buffer, RawName = cbName, ResourceGroup = cbName }, SlotStart = -1, SlotCount = 1 };
                 effectReflection.ResourceBindings.Add(constantBufferBinding);
                 valueBindings.Add(constantBuffer, new List<EffectParameterValueData>());
             }

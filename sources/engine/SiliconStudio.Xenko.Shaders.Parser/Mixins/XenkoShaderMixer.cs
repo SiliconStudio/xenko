@@ -17,8 +17,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
 {
     internal class XenkoShaderMixer
     {
-        private readonly static string FlipRendertargetVariableName = "XenkoFlipRendertarget";
-        
         #region Public members
 
         /// <summary>
@@ -1065,9 +1063,6 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         {
             foreach (var variable in references.VariablesReferences)
             {
-                if (variable.Key.Name.Text == FlipRendertargetVariableName) // DO NOT RENAME THIS SPECIFIC VARIABLE
-                    continue;
-
                 foreach (var varRef in variable.Value)
                 {
                     if (varRef.Expression is MemberReferenceExpression)
@@ -1297,7 +1292,7 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
                 bool used;
                 if (variablesUsages.TryGetValue(variable, out used))
                 {
-                    if (!used && variable.Name.Text != FlipRendertargetVariableName)
+                    if (!used)
                         MixedShader.Members.Remove(variable);
                 }
             }

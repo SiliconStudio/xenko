@@ -139,6 +139,9 @@
     <Compile Include="InputElementDescription.cs" />
     <Compile Include="MutablePipelineState.cs" />
     <Compile Include="RenderOutputDescription.cs" />
+    <Compile Include="OpenGL\CommandList.OpenGL.cs" />
+    <Compile Include="OpenGL\PipelineState.OpenGL.cs" />
+    <Compile Include="ResourceBinder.cs" />
     <Compile Include="ResourceGroupBufferUploader.cs" />
     <Compile Include="EffectDescriptorSetReflection.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />
@@ -215,7 +218,6 @@
     <Compile Include="ImageOrientation.cs" />
     <Compile Include="OpenGL\OpenGLUtils.cs" />
     <Compile Include="OpenGL\GraphicsOutput.OpenGL.cs" />
-    <Compile Include="OpenGL\VertexArrayObjectInstance.cs" />
     <Compile Include="OpenGL\VertexAttrib.cs" />
     <Compile Include="ResumeManager.cs" />
     <Compile Include="Effects\Effect.cs" />
@@ -250,7 +252,6 @@
     <Compile Include="IVertex.cs" />
     <Compile Include="MappedResource.cs" />
     <Compile Include="NamespaceDoc.cs" />
-    <Compile Include="OpenGL\EffectInputSignature.OpenGL.cs" />
     <Compile Include="OpenGL\SwapChainGraphicsPresenter.iOS.cs" />
     <Compile Include="PrimitiveQuad.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Direct3D11.Level_9_1.cs" />
@@ -330,7 +331,6 @@
     <Compile Include="Null\GraphicsDeviceFeatures.Null.cs" />
     <Compile Include="Null\Texture2DBase.Null.cs" />
     <Compile Include="OpenGL\GraphicsDeviceFeatures.OpenGL.cs" />
-    <Compile Include="OpenGL\Shader.OpenGL.cs" />
     <Compile Include="Rational.cs" />
     <Compile Include="Direct3D\SwapChainGraphicsPresenter.Direct3D.cs" />
     <Compile Include="SwizzleMode.cs" />
@@ -393,7 +393,6 @@
     <Compile Include="OpenGL\RasterizerState.OpenGL.cs" />
     <Compile Include="OpenGL\SamplerState.OpenGL.cs" />
     <Compile Include="OpenGL\Texture.OpenGL.cs" />
-    <Compile Include="OpenGL\VertexArrayObject.OpenGL.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\shared\SharedAssemblyInfo.cs">

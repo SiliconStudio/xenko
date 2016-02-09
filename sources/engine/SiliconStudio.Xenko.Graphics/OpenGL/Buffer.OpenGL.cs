@@ -192,8 +192,8 @@ namespace SiliconStudio.Xenko.Graphics
             {
                 // If we're on main context, unbind VAO before binding context.
                 // It will be bound again on next draw.
-                if (!creationContext.UseDeviceCreationContext)
-                    GraphicsDevice.UnbindVertexArrayObject();
+                //if (!creationContext.UseDeviceCreationContext)
+                //    GraphicsDevice.UnbindVertexArrayObject();
 
                 GL.GenBuffers(1, out resourceId);
                 GL.BindBuffer(bufferTarget, resourceId);

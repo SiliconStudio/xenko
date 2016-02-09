@@ -54,7 +54,6 @@ namespace SiliconStudio.Xenko.Games.Android
 
         protected override void CreateFrameBuffer()
         {
-            int requestedStencil = 0;
             ColorFormat requestedColorFormat = 32;
 
             switch (RequestedBackBufferFormat)
@@ -87,7 +86,7 @@ namespace SiliconStudio.Xenko.Games.Android
                     continue;
                 }
                 ContextRenderingApi = version;
-                GraphicsMode = new GraphicsMode(requestedColorFormat, 0, requestedStencil);
+                GraphicsMode = new GraphicsMode(requestedColorFormat, 0, 0);
                 base.CreateFrameBuffer();
                 return;
             }

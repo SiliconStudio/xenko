@@ -85,6 +85,8 @@ namespace SiliconStudio.Xenko.Graphics
 #else
             deviceRoot.HasVAO = true;
 
+            deviceRoot.HasDXT = SupportedExtensions.Contains("GL_EXT_texture_compression_s3tc");
+
             // Compute shaders available in OpenGL 4.3
             HasComputeShaders = deviceRoot.versionMajor >= 4 && deviceRoot.versionMinor >= 3;
             HasDoublePrecision = SupportedExtensions.Contains("GL_ARB_vertex_attrib_64bit");
