@@ -121,6 +121,7 @@
     <Compile Include="Effects\ParameterKeyValueMetadata.cs" />
     <Compile Include="Effects\ParameterKeys.cs" />
     <Compile Include="Effects\ParameterKeySerializer.cs" />
+    <Compile Include="Data\PlatformConfigurations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

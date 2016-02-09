@@ -3,18 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using SiliconStudio.Core;
-using SiliconStudio.Xenko.Data;
 
-namespace SiliconStudio.Xenko.Engine.Design
+namespace SiliconStudio.Xenko.Data
 {
     [DataContract]
     public class PlatformConfigurations
     {
-        [DataMemberIgnore]
-        internal Game CurrentGame;
+        public static string RendererName = string.Empty;
+
+        public static string DeviceModel = string.Empty;
 
         [DataMember]
-        internal List<ConfigurationOverride> Configurations = new List<ConfigurationOverride>();
+        public List<ConfigurationOverride> Configurations = new List<ConfigurationOverride>();
 
         public T Get<T>() where T : Configuration, new()
         {
@@ -57,21 +57,18 @@ namespace SiliconStudio.Xenko.Engine.Design
                 config = platformConfig;
             }
 
-            if (CurrentGame?.GraphicsDevice != null)
+            //find per specific renderer settings
+            platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && new Regex(x.SpecificFilter, RegexOptions.IgnoreCase).IsMatch(RendererName)).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
+            if (platformConfig != null)
             {
-                //find per specific renderer settings
-                platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && new Regex(x.SpecificFilter, RegexOptions.IgnoreCase).IsMatch(CurrentGame.GraphicsDevice.RendererName)).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
-                if (platformConfig != null)
-                {
-                    config = platformConfig;
-                }
+                config = platformConfig;
+            }
 
-                //find per specific device settings
-                platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && new Regex(x.SpecificFilter, RegexOptions.IgnoreCase).IsMatch(CurrentGame.FullPlatformName)).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
-                if (platformConfig != null)
-                {
-                    config = platformConfig;
-                }
+            //find per specific device settings
+            platformConfig = Configurations.Where(x => x.Platforms.HasFlag(platform) && new Regex(x.SpecificFilter, RegexOptions.IgnoreCase).IsMatch(DeviceModel)).FirstOrDefault(x => x.Configuration.GetType() == typeof(T));
+            if (platformConfig != null)
+            {
+                config = platformConfig;
             }
 
             if (config == null)

@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Assets
         {
             var gameSettings = context.GetGameSettingsAsset();
             IGameSettingsProfile gameSettingsProfile = null;
-            if (gameSettings != null && gameSettings.Profiles != null)
+            if (gameSettings?.Profiles != null)
             {
                 gameSettings.Profiles.TryGetValue(context.Profile, out gameSettingsProfile);
             }
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Assets
             return graphicsPlatform;
         }
 
-        public static Xenko.Graphics.GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)
+        public static GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)
         {
             switch (platformType)
             {
@@ -58,12 +58,12 @@ namespace SiliconStudio.Xenko.Assets
                 case PlatformType.WindowsPhone:
                 case PlatformType.WindowsStore:
                 case PlatformType.Windows10:
-                    return Xenko.Graphics.GraphicsPlatform.Direct3D11;
+                    return GraphicsPlatform.Direct3D11;
                 case PlatformType.Android:
                 case PlatformType.iOS:
-                    return Xenko.Graphics.GraphicsPlatform.OpenGLES;
+                    return GraphicsPlatform.OpenGLES;
                 case PlatformType.Linux:
-                    return Xenko.Graphics.GraphicsPlatform.OpenGL;
+                    return GraphicsPlatform.OpenGL;
                 default:
                     throw new ArgumentOutOfRangeException();
             }

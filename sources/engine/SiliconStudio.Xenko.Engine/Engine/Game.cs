@@ -223,7 +223,6 @@ namespace SiliconStudio.Xenko.Engine
                 if (Asset.Exists(GameSettings.AssetUrl))
                 {
                     Settings = Asset.Load<GameSettings>(GameSettings.AssetUrl);
-                    Settings.Configurations.CurrentGame = this;
 
                     renderingSettings = Settings.Configurations.Get<RenderingSettings>();
 
@@ -247,7 +246,7 @@ namespace SiliconStudio.Xenko.Engine
                     if (renderingSettings.DefaultBackBufferWidth > 0) deviceManager.PreferredBackBufferWidth = renderingSettings.DefaultBackBufferWidth;
                     if (renderingSettings.DefaultBackBufferHeight > 0) deviceManager.PreferredBackBufferHeight = renderingSettings.DefaultBackBufferHeight;
                     deviceManager.PreferredColorSpace = renderingSettings.ColorSpace;
-                    SceneSystem.InitialSceneUrl = Settings.DefaultSceneUrl;
+                    SceneSystem.InitialSceneUrl = Settings?.DefaultSceneUrl;
                 }
             }
         }
@@ -255,6 +254,15 @@ namespace SiliconStudio.Xenko.Engine
         protected override void Initialize()
         {
             base.Initialize();
+
+            //now we probably are capable of detecting the gpu so we try again settings
+            var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
+            if (renderingSettings != null)
+            {
+                Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
+                Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
+                Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+            }
 
             // ---------------------------------------------------------
             // Add common GameSystems - Adding order is important

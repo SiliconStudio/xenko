@@ -88,7 +88,6 @@
     <Compile Include="Engine\Design\EffectCompilationMode.cs" />
     <Compile Include="Engine\Design\EntityChildPropertyResolver.cs" />
     <Compile Include="Engine\Design\ExecutionMode.cs" />
-    <Compile Include="Engine\Design\PlatformConfigurations.cs" />
     <Compile Include="Engine\EntityComponentAttributeBase.cs" />
     <Compile Include="Engine\EntityComponentAttributes.cs" />
     <Compile Include="Engine\EntityComponentCollection.cs" />
