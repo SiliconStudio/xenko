@@ -83,13 +83,15 @@ namespace SiliconStudio.Xenko.Graphics
         /// Binds a depth-stencil buffer and a set of render targets to the output-merger stage. See <see cref="Textures+and+render+targets"/> to learn how to use it.
         /// </summary>
         /// <param name="depthStencilBuffer">The depth stencil buffer.</param>
+        /// <param name="renderTargetCount">The number of render targets.</param>
         /// <param name="renderTargets">The render targets.</param>
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
-        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, Texture[] renderTargets)
+        private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, int renderTargetCount, Texture[] renderTargets)
         {
-            for (int i = 0; i < renderTargets.Length; i++)
-                currentRenderTargetViews[i] = renderTargets[i] != null ? renderTargets[i].NativeRenderTargetView : null;
-            outputMerger.SetTargets(depthStencilBuffer != null ? depthStencilBuffer.NativeDepthStencilView : null, currentRenderTargetViews.Length, currentRenderTargetViews);
+            for (int i = 0; i < renderTargetCount; i++)
+                currentRenderTargetViews[i] = renderTargets[i].NativeRenderTargetView;
+
+            outputMerger.SetTargets(depthStencilBuffer != null ? depthStencilBuffer.NativeDepthStencilView : null, renderTargetCount, currentRenderTargetViews);
         }
 
         /// <summary>

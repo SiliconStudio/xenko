@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using SiliconStudio.Core;
+using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering
 {
@@ -16,5 +18,11 @@ namespace SiliconStudio.Xenko.Rendering
         {
             Name = name;
         }
+
+        /// <summary>
+        /// Defines render targets this stage outputs to.
+        /// </summary>
+        [DataMemberIgnore]
+        public RenderOutputDescription Output;
     }
 }

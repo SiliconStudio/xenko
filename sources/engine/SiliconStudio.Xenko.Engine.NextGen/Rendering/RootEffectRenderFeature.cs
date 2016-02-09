@@ -383,8 +383,8 @@ namespace SiliconStudio.Xenko.Rendering
                         // Bind VAO
                         ProcessPipelineState(context, renderNodeReference, ref renderNode, renderObject, pipelineState);
 
-                        // TODO GRAPHICS REFACTOR we should probably extract that from RenderStage
-                        // pipelineState.RenderTargetFormats = 
+                        // Extract outputs from render stage
+                        pipelineState.Output = renderNode.RenderStage.Output;
 
                         PostProcessPipelineState?.Invoke(renderNodeReference, ref renderNode, renderObject, pipelineState);
 
