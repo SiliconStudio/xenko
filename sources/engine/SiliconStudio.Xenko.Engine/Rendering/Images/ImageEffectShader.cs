@@ -133,6 +133,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 pipelineState.State.InputElements = PrimitiveQuad.VertexDeclaration.CreateInputElements();
                 pipelineState.State.PrimitiveType = PrimitiveQuad.PrimitiveType;
                 pipelineState.State.BlendState = blendState;
+                pipelineState.State.Output.CaptureState(context.CommandList);
                 pipelineState.Update(GraphicsDevice);
                 pipelineStateDirty = false;
             }

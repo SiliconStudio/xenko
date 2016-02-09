@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.Graphics
         private Texture depthStencilBuffer;
 
         private Texture[] renderTargets = new Texture[MaxRenderTargetCount];
+        private int renderTargetCount;
 
         /// <summary>
         ///     Gets the first viewport.
@@ -39,6 +40,8 @@ namespace SiliconStudio.Xenko.Graphics
         public Texture RenderTarget => renderTargets[0];
 
         public IReadOnlyList<Texture> RenderTargets => renderTargets;
+
+        public int RenderTargetCount => renderTargetCount;
 
         public IReadOnlyList<Viewport> Viewports => viewports;
 
@@ -78,6 +81,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             depthStencilBuffer = depthStencilView;
             renderTargets[0] = renderTargetView;
+            renderTargetCount = renderTargetView != null ? 1 : 0;
 
             // Clear the other render targets bound
             for (int i = 1; i < renderTargets.Length; i++)
@@ -85,7 +89,7 @@ namespace SiliconStudio.Xenko.Graphics
                 renderTargets[i] = null;
             }
 
-            CommonSetDepthAndRenderTargets(depthStencilBuffer, renderTargets);
+            CommonSetDepthAndRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
         /// <summary>
@@ -151,11 +155,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <value>The viewport.</value>
         public void SetViewports(Viewport[] values)
         {
-            for (int i = 0; i < viewports.Length; i++)
+            for (int i = 0; i < values.Length; i++)
             {
-                if (i >= values.Length)
-                    break;
-
                 viewports[i] = values[i];
             }
         }
@@ -172,42 +173,38 @@ namespace SiliconStudio.Xenko.Graphics
 
             if (renderTargetViews != null)
             {
-                for (int i = 0; i < renderTargets.Length; i++)
+                renderTargetCount = renderTargetViews.Length;
+                for (int i = 0; i < renderTargetViews.Length; i++)
                 {
-                    renderTargets[i] = i < renderTargetViews.Length ? renderTargetViews[i] : null;
+                    renderTargets[i] = renderTargetViews[i];
                 }
             }
             else
             {
+                renderTargetCount = 0;
                 for (int i = 0; i < renderTargets.Length; i++)
                 {
                     renderTargets[i] = null;
                 }
             }
 
-            CommonSetDepthAndRenderTargets(depthStencilBuffer, renderTargets);
+            CommonSetDepthAndRenderTargets(depthStencilBuffer, renderTargetCount, renderTargets);
         }
 
-        private void CommonSetDepthAndRenderTargets(Texture depthStencilView, Texture[] renderTargetViews)
+        private void CommonSetDepthAndRenderTargets(Texture depthStencilView, int renderTargetCount, Texture[] renderTargetViews)
         {
             if (depthStencilView != null)
             {
                 SetViewport(new Viewport(0, 0, depthStencilView.ViewWidth, depthStencilView.ViewHeight));
             }
-            else
+            else if (renderTargetCount > 0)
             {
                 // Setup the viewport from the rendertarget view
-                foreach (var rtv in renderTargetViews)
-                {
-                    if (rtv != null)
-                    {
-                        SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
-                        break;
-                    }
-                }
+                var rtv = renderTargetViews[0];
+                SetViewport(new Viewport(0, 0, rtv.ViewWidth, rtv.ViewHeight));
             }
 
-            SetDepthAndRenderTargetsImpl(depthStencilView, renderTargetViews);
+            SetDepthAndRenderTargetsImpl(depthStencilView, renderTargetCount, renderTargetViews);
         }
 
         #region DrawQuad/DrawTexture Helpers
