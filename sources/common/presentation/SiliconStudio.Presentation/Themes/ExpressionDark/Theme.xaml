@@ -3758,6 +3758,19 @@
     <Setter Property="VerticalAlignment" Value="Stretch"/>
   </Style>
 
+  <Style TargetType="{x:Type ctrl:CanvasView}">
+    <Setter Property="Template">
+      <Setter.Value>
+        <ControlTemplate TargetType="{x:Type ctrl:CanvasView}">
+          <Border Background="{TemplateBinding Background}"
+                  BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
+            <Canvas x:Name="PART_Canvas" ClipToBounds="True" SnapsToDevicePixels="True" />
+          </Border>
+        </ControlTemplate>
+      </Setter.Value>
+    </Setter>
+  </Style>
+
   <!--  EDITORS  -->
   <Style x:Key="{x:Static ctrl:VectorEditorResources.ToggleButtonStyleKey}" TargetType="{x:Type ToggleButton}" BasedOn="{StaticResource {x:Type ToggleButton}}" x:Shared="False">
     <Setter Property="ToolTip" Value="Toggle editing mode" />

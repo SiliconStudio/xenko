@@ -1,7 +1,6 @@
 ﻿using System.Windows;
 using System.Windows.Input;
 using System.Windows.Interactivity;
-using SiliconStudio.Core.Mathematics;
 
 namespace SiliconStudio.Presentation.Behaviors
 {
@@ -129,9 +128,8 @@ namespace SiliconStudio.Presentation.Behaviors
             }
             var cmd = Command;
             var position = e.GetPosition(AssociatedObject);
-            var vectorPosition = new Vector2((float)position.X, (float)position.Y);
-            if (cmd != null && cmd.CanExecute(vectorPosition))
-                cmd.Execute(vectorPosition);
+            if (cmd != null && cmd.CanExecute(position))
+                cmd.Execute(position);
         }
     }
 }

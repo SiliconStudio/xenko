@@ -1,5 +1,7 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
+
+using System;
 using System.Windows;
 
 namespace SiliconStudio.Presentation.Behaviors
@@ -31,7 +33,7 @@ namespace SiliconStudio.Presentation.Behaviors
         public object Value { get { return GetValue(ValueProperty); } set { SetValue(ValueProperty, value); } }
 
         /// <inheritdoc/>
-        protected override void OnEvent()
+        protected override void OnEvent(EventArgs e)
         {
             AssociatedObject.SetCurrentValue(Property, Value);
         }
