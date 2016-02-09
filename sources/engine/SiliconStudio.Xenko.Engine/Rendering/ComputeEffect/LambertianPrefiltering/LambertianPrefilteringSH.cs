@@ -32,8 +32,8 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             {
                 harmonicalOrder = Math.Max(1, Math.Min(5, value));
 
-                firstPassEffect.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
-                secondPassEffect.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+                firstPassEffect.EffectInstance.SetPermutationValue(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+                secondPassEffect.EffectInstance.SetPermutationValue(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
             }
         }
 
@@ -80,8 +80,8 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
             // Project the radiance on the SH basis and sum up the results along the 4x4 blocks
             firstPassEffect.ThreadNumbers = new Int3(FirstPassBlockSize, FirstPassBlockSize, 1);
             firstPassEffect.ThreadGroupCounts = new Int3(inputSize.X/FirstPassBlockSize, inputSize.Y/FirstPassBlockSize, faceCount);
-            firstPassEffect.Parameters.SetValueSlow(LambertianPrefilteringSHParameters.BlockSize, FirstPassBlockSize);
-            firstPassEffect.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+            firstPassEffect.EffectInstance.SetPermutationValue(LambertianPrefilteringSHParameters.BlockSize, FirstPassBlockSize);
+            firstPassEffect.EffectInstance.SetPermutationValue(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
             firstPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass1Keys.RadianceMap, inputTexture);
             firstPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass1Keys.OutputBuffer, partialSumBuffer);
             ((RendererBase)firstPassEffect).Draw(context);
@@ -116,8 +116,8 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.LambertianPrefiltering
                 // draw pass 2
                 secondPassEffect.ThreadNumbers = new Int3(sumsCount, 1, 1);
                 secondPassEffect.ThreadGroupCounts = new Int3(groupCountX, groupCountY, coefficientsCount);
-                secondPassEffect.Parameters.SetValueSlow(LambertianPrefilteringSHParameters.BlockSize, sumsCount);
-                secondPassEffect.Parameters.SetValueSlow(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
+                secondPassEffect.EffectInstance.SetPermutationValue(LambertianPrefilteringSHParameters.BlockSize, sumsCount);
+                secondPassEffect.EffectInstance.SetPermutationValue(SphericalHarmonicsParameters.HarmonicsOrder, harmonicalOrder);
                 secondPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass2Keys.InputBuffer, secondPassInputBuffer);
                 secondPassEffect.Parameters.SetResourceSlow(LambertianPrefilteringSHPass2Keys.OutputBuffer, secondPassOutputBuffer);
                 ((RendererBase)secondPassEffect).Draw(context);

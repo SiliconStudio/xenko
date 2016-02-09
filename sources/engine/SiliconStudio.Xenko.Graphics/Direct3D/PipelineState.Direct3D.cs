@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -78,6 +78,11 @@ namespace SiliconStudio.Xenko.Graphics
                         case EffectParameterClass.ShaderResourceView:
                             {
                                 commandList.SetShaderResourceView(bindingOperation.Stage, bindingOperation.SlotStart, (GraphicsResource)value.Value);
+                                break;
+                            }
+                        case EffectParameterClass.UnorderedAccessView:
+                            {
+                                commandList.SetUnorderedAccessView(bindingOperation.Stage, bindingOperation.SlotStart, (GraphicsResource)value.Value);
                                 break;
                             }
                         default:

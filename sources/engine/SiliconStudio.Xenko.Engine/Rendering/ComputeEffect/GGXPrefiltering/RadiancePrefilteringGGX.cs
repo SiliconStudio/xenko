@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
                     computeShader.Parameters.SetResourceSlow(RadiancePrefilteringGGXShaderKeys.RadianceMap, input);
                     computeShader.Parameters.SetValueSlow(RadiancePrefilteringGGXShaderKeys.RadianceMapSize, input.Width);
                     computeShader.Parameters.SetResourceSlow(RadiancePrefilteringGGXShaderKeys.FilteredRadiance, outputView);
-                    computeShader.Parameters.SetValueSlow(RadiancePrefilteringGGXParams.NbOfSamplings, SamplingsCount);
+                    computeShader.EffectInstance.SetPermutationValue(RadiancePrefilteringGGXParams.NbOfSamplings, SamplingsCount);
                     ((RendererBase)computeShader).Draw(context);
 
                     outputView.Dispose();
