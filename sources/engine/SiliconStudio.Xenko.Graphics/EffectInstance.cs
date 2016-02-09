@@ -131,6 +131,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (Parameters.ResourceValues != null)
             {
                 var descriptorStartSlot = 0;
+                var bufferStartOffset = 0;
                 for (int layoutIndex = 0; layoutIndex < descriptorReflection.Layouts.Count; layoutIndex++)
                 {
                     var resourceGroup = resourceGroups[layoutIndex];
@@ -146,7 +147,8 @@ namespace SiliconStudio.Xenko.Rendering
 
                     if (resourceGroup.ConstantBuffer.Size > 0)
                     {
-                        Utilities.CopyMemory(resourceGroup.ConstantBuffer.Data, Parameters.DataValues, resourceGroup.ConstantBuffer.Size);
+                        Utilities.CopyMemory(resourceGroup.ConstantBuffer.Data, Parameters.DataValues + bufferStartOffset, resourceGroup.ConstantBuffer.Size);
+                        bufferStartOffset += resourceGroup.ConstantBuffer.Size;
                     }
                 }
             }

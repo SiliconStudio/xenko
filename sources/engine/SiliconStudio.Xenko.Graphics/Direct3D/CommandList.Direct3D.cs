@@ -1,6 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D
+#if SILICONSTUDIO_XENKO_GRAPHICS_API_DIRECT3D11
 using System;
 using SharpDX.Mathematics.Interop;
 using SiliconStudio.Core;
@@ -286,6 +286,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <inheritdoc />
         public void Dispatch(int threadCountX, int threadCountY, int threadCountZ)
         {
+            PrepareDraw();
+
             NativeDeviceContext.Dispatch(threadCountX, threadCountY, threadCountZ);
         }
 
@@ -296,6 +298,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="offsetInBytes">The offset information bytes.</param>
         public void Dispatch(Buffer indirectBuffer, int offsetInBytes)
         {
+            PrepareDraw();
+
             if (indirectBuffer == null) throw new ArgumentNullException("indirectBuffer");
             NativeDeviceContext.DispatchIndirect(indirectBuffer.NativeBuffer, offsetInBytes);
         }

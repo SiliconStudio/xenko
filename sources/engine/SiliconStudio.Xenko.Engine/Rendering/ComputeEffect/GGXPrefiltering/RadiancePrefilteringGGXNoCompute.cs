@@ -110,7 +110,7 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect.GGXPrefiltering
                             shader.Parameters.SetValueSlow(RadiancePrefilteringGGXNoComputeShaderKeys.MipmapCount, input.MipLevels - 1);
                             shader.Parameters.SetResourceSlow(RadiancePrefilteringGGXNoComputeShaderKeys.RadianceMap, input);
                             shader.Parameters.SetValueSlow(RadiancePrefilteringGGXNoComputeShaderKeys.RadianceMapSize, input.Width);
-                            shader.Parameters.SetValueSlow(RadiancePrefilteringGGXNoComputeParams.NbOfSamplings, SamplingsCount);
+                            shader.EffectInstance.SetPermutationValue(RadiancePrefilteringGGXNoComputeParams.NbOfSamplings, SamplingsCount);
                             shader.SetOutput(outputView);
                             ((RendererBase)shader).Draw(context);
                         }

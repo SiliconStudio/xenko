@@ -133,25 +133,20 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 previousSkybox = skybox;
             }
 
+            public override void ApplyEffectPermutations(RenderEffect renderEffect)
+            {
+                renderEffect.EffectValidator.ValidateParameter(lightDiffuseColorKey, lightDiffuseColorShader);
+                renderEffect.EffectValidator.ValidateParameter(lightSpecularColorKey, lightSpecularColorShader);
+            }
+
             protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
             {
                 // global parameters
                 parameters.SetValueSlow(intensityKey, intensity);
                 parameters.SetValueSlow(skyMatrixKey, rotationMatrix);
 
-                // TODO GRAPHICS REFACTOR belongs in permutation generation
-                //if (!ReferenceEquals(parameters.Get(lightDiffuseColorKey), lightDiffuseColorShader))
-                //{
-                //    parameters.Set(lightDiffuseColorKey, lightDiffuseColorShader);
-                //}
-                //if (!ReferenceEquals(parameters.Get(lightSpecularColorKey), lightSpecularColorShader))
-                //{
-                //    parameters.Set(lightSpecularColorKey, lightSpecularColorShader);
-                //}
-
-                throw new NotImplementedException();
                 // This need to be working with new system
-                //parameters.Set(sphericalColorsKey, sphericalColors);
+                parameters.SetValueSlow(sphericalColorsKey, sphericalColors);
                 parameters.SetResourceSlow(specularCubeMapkey, specularCubemap);
                 parameters.SetValueSlow(specularMipCountKey, specularCubemapLevels);
             }

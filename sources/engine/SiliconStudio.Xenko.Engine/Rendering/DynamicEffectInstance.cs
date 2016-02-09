@@ -14,12 +14,18 @@ namespace SiliconStudio.Xenko.Rendering
         // Parameter keys used for effect permutation
         private KeyValuePair<ParameterKey, object>[] effectParameterKeys;
 
-        private readonly string effectName;
+        private string effectName;
         private EffectSystem effectSystem;
 
         public DynamicEffectInstance(string effectName, NextGenParameterCollection parameters = null) : base(null, parameters)
         {
             this.effectName = effectName;
+        }
+
+        public string EffectName
+        {
+            get { return effectName; }
+            set { effectName = value; }
         }
 
         public void Initialize(IServiceRegistry services)
