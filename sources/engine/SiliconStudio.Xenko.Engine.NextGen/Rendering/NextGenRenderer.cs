@@ -49,6 +49,12 @@ namespace SiliconStudio.Xenko.Rendering
 
             RenderSystem.Initialize(EffectSystem, GraphicsDevice);
 
+            // Setup stage targets
+            mainRenderStage.Output = new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
+            transparentRenderStage.Output = new RenderOutputDescription(GraphicsDevice.Presenter.BackBuffer.ViewFormat, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
+            gbufferRenderStage.Output = new RenderOutputDescription(PixelFormat.R11G11B10_Float, GraphicsDevice.Presenter.DepthStencilBuffer.ViewFormat);
+            shadowmapRenderStage.Output = new RenderOutputDescription(PixelFormat.None, PixelFormat.D32_Float);
+
             RenderSystem.RenderStages.Add(mainRenderStage);
             RenderSystem.RenderStages.Add(transparentRenderStage);
             RenderSystem.RenderStages.Add(gbufferRenderStage);
