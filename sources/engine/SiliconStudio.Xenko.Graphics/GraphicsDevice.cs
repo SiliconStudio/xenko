@@ -79,10 +79,10 @@ namespace SiliconStudio.Xenko.Graphics
             // Initialize this instance
             InitializePlatformDevice(profile, deviceCreationFlags, windowHandle);
 
-            InitializeFactories();
-
             // Create a new graphics device
             Features = new GraphicsDeviceFeatures(this);
+
+            InitializePostFeatures();
 
             SamplerStates = new SamplerStateFactory(this);
             BlendStates = new BlendStateFactory(this);

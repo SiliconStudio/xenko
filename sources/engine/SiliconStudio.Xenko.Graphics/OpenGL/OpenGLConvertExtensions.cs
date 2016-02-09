@@ -6,6 +6,7 @@ using System;
 using OpenTK.Graphics.ES30;
 using ES30 = OpenTK.Graphics.ES30;
 using PixelFormatGl = OpenTK.Graphics.ES30.PixelFormat;
+using PrimitiveTypeGl = OpenTK.Graphics.ES30.PrimitiveType;
 #if SILICONSTUDIO_PLATFORM_IOS
 using ExtTextureFormatBgra8888 = OpenTK.Graphics.ES30.All;
 using ImgTextureCompressionPvrtc = OpenTK.Graphics.ES30.All;
@@ -73,33 +74,6 @@ namespace SiliconStudio.Xenko.Graphics
 #endif
         }
 
-#if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-#if !SILICONSTUDIO_PLATFORM_MONO_MOBILE
-        public static ES30.PrimitiveType ToOpenGL(this PrimitiveType primitiveType)
-        {
-            return primitiveType.ToOpenGLES();
-        }
-#else
-        public static BeginMode ToOpenGL(this PrimitiveType primitiveType)
-        {
-            switch (primitiveType)
-            {
-                case PrimitiveType.PointList:
-                    return BeginMode.Points;
-                case PrimitiveType.LineList:
-                    return BeginMode.Lines;
-                case PrimitiveType.LineStrip:
-                    return BeginMode.LineStrip;
-                case PrimitiveType.TriangleList:
-                    return BeginMode.Triangles;
-                case PrimitiveType.TriangleStrip:
-                    return BeginMode.TriangleStrip;
-                default:
-                    throw new NotImplementedException();
-            }
-        }
-#endif
-#else
         public static PrimitiveTypeGl ToOpenGL(this PrimitiveType primitiveType)
         {
             switch (primitiveType)
@@ -115,10 +89,10 @@ namespace SiliconStudio.Xenko.Graphics
                 case PrimitiveType.TriangleStrip:
                     return PrimitiveTypeGl.TriangleStrip;
                 default:
-                    throw new NotImplementedException();
+                    // Undefined
+                    return PrimitiveTypeGl.Triangles;
             }
         }
-#endif
 
         public static BufferAccessMask ToOpenGLMask(this MapMode mapMode)
         {
@@ -395,6 +369,24 @@ namespace SiliconStudio.Xenko.Graphics
                     format = graphicsDevice.currentVersionMajor < 3 ? (PixelFormatGl)SrgbAlpha : PixelFormatGl.Bgra;
                     type = PixelType.UnsignedByte;
                     pixelSize = 4;
+                    break;
+                case PixelFormat.BC1_UNorm:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedRgbaS3tcDxt1Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
+                    break;
+                case PixelFormat.BC1_UNorm_SRgb:
+                    if (!graphicsDevice.HasDXT)
+                        throw new NotSupportedException();
+                    internalFormat = PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext;
+                    format = (PixelFormatGl)PixelInternalFormat.CompressedSrgbAlphaS3tcDxt1Ext;
+                    pixelSize = 4;
+                    type = PixelType.UnsignedByte;
+                    compressed = true;
                     break;
 #endif
                 case PixelFormat.R16_Float:

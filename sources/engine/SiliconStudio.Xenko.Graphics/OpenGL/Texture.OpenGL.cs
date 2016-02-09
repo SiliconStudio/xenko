@@ -481,7 +481,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private bool IsFlipped()
         {
-            return GraphicsDevice.windowProvidedRenderTexture == this || GraphicsDevice.windowProvidedDepthTexture == this;
+            return GraphicsDevice.WindowProvidedRenderTexture == this;
         }
 
         private void InitializePixelBufferObject()

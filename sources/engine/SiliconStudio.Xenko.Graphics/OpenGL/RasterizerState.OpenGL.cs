@@ -10,29 +10,41 @@ using OpenTK.Graphics.OpenGL;
 
 namespace SiliconStudio.Xenko.Graphics
 {
-    public partial class RasterizerState
+    class RasterizerState
     {
+        private bool scissorTestEnable;
+
+        private bool needCulling;
+        private CullFaceMode cullMode;
+        private int depthBias;
+        private float slopeScaleDepthBias;
+        private FrontFaceDirection frontFaceDirection;
+
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
         private PolygonMode polygonMode;
 #endif
 
-        private RasterizerState(GraphicsDevice device, RasterizerStateDescription rasterizerStateDescription) : base(device)
+        internal RasterizerState(RasterizerStateDescription rasterizerStateDescription)
         {
-            Description = rasterizerStateDescription;
+            scissorTestEnable = rasterizerStateDescription.ScissorTestEnable;
+
+            needCulling = rasterizerStateDescription.CullMode != CullMode.None;
+            cullMode = GetCullMode(rasterizerStateDescription.CullMode);
+
+            frontFaceDirection =
+                rasterizerStateDescription.FrontFaceCounterClockwise
+                ? FrontFaceDirection.Cw
+                : FrontFaceDirection.Ccw;
+
+            depthBias = rasterizerStateDescription.DepthBias;
+            slopeScaleDepthBias = rasterizerStateDescription.SlopeScaleDepthBias;
 
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
-            polygonMode = Description.FillMode == FillMode.Solid ? PolygonMode.Fill : PolygonMode.Line;
+            polygonMode = rasterizerStateDescription.FillMode == FillMode.Solid ? PolygonMode.Fill : PolygonMode.Line;
 #endif
-            
-            // TODO: DepthBiasClamp and various other properties are not fully supported yet
-            if (Description.DepthBiasClamp != 0.0f) throw new NotSupportedException();
-        }
 
-        /// <inheritdoc/>
-        protected internal override bool OnRecreate()
-        {
-            base.OnRecreate();
-            return true;
+            // TODO: DepthBiasClamp and various other properties are not fully supported yet
+            if (rasterizerStateDescription.DepthBiasClamp != 0.0f) throw new NotSupportedException();
         }
 
         public void Apply()
@@ -40,24 +52,27 @@ namespace SiliconStudio.Xenko.Graphics
 #if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES
             GL.PolygonMode(MaterialFace.FrontAndBack, polygonMode);
 #endif
-            GL.PolygonOffset(Description.DepthBias, Description.SlopeScaleDepthBias);
-            
-            if (Description.CullMode == CullMode.None)
-                GL.Disable(EnableCap.CullFace);
-            else
+            GL.PolygonOffset(depthBias, slopeScaleDepthBias);
+
+            GL.FrontFace(frontFaceDirection);
+
+            if (needCulling)
             {
                 GL.Enable(EnableCap.CullFace);
-                GL.CullFace(GetCullMode(Description.CullMode));
+                GL.CullFace(cullMode);
+            }
+            else
+            {
+                GL.Disable(EnableCap.CullFace);
             }
 
-
-            if (Description.ScissorTestEnable)
+            if (scissorTestEnable)
                 GL.Enable(EnableCap.ScissorTest);
             else
                 GL.Disable(EnableCap.ScissorTest);
         }
 
-        public static CullFaceMode GetCullMode(CullMode cullMode)
+        private static CullFaceMode GetCullMode(CullMode cullMode)
         {
             switch (cullMode)
             {
@@ -65,9 +80,8 @@ namespace SiliconStudio.Xenko.Graphics
                     return CullFaceMode.Front;
                 case CullMode.Back:
                     return CullFaceMode.Back;
-                case CullMode.None:
                 default:
-                    return CullFaceMode.FrontAndBack;
+                    return CullFaceMode.Back; // not used if CullMode.None
             }
         }
     }

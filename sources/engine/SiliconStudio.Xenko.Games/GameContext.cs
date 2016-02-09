@@ -66,6 +66,12 @@ namespace SiliconStudio.Xenko.Games
         internal GraphicsProfile[] RequestedGraphicsProfile;
 
         /// <summary>
+        /// The device creation flags that will be used to create the <see cref="GraphicsDevice"/>.
+        /// </summary>
+        /// <value>The device creation flags.</value>
+        public DeviceCreationFlags DeviceCreationFlags;
+
+        /// <summary>
         /// Indicate whether the game must initialize the default database when it starts running.
         /// </summary>
         public bool InitializeDatabase = true;

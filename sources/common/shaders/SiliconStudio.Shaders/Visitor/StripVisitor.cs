@@ -159,7 +159,7 @@ namespace SiliconStudio.Shaders.Visitor
                 if (declaration is Variable)
                 {
                     var variableDeclaration = (Variable)declaration;
-                    if ((!stripUniforms && variableDeclaration.Qualifiers.Contains(Ast.StorageQualifier.Uniform)) || variableDeclaration.Name.Text == "XenkoFlipRendertarget")
+                    if ((!stripUniforms && variableDeclaration.Qualifiers.Contains(Ast.StorageQualifier.Uniform)))
                         continue;
 
                     if (variableDeclaration.IsGroup)
