@@ -211,7 +211,7 @@ namespace SiliconStudio.Xenko.Graphics
             isBeginCalled = true;
         }
 
-        protected virtual void PrepareForRendering()
+        protected unsafe virtual void PrepareForRendering()
         {
             // Use LinearClamp for sampler state
             var localSamplerState = SamplerState ?? GraphicsDevice.SamplerStates.LinearClamp;
@@ -229,6 +229,7 @@ namespace SiliconStudio.Xenko.Graphics
             MutablePipeline.State.RasterizerState = RasterizerState ?? GraphicsDevice.RasterizerStates.CullBack;
             MutablePipeline.State.InputElements = ResourceContext.InputElements;
             MutablePipeline.State.PrimitiveType = PrimitiveType.TriangleList;
+            MutablePipeline.State.Output.CaptureState(CommandList);
             MutablePipeline.Update(GraphicsDevice);
 
             // Bind pipeline

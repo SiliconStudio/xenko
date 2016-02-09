@@ -138,6 +138,7 @@
     <Compile Include="InputClassification.cs" />
     <Compile Include="InputElementDescription.cs" />
     <Compile Include="MutablePipelineState.cs" />
+    <Compile Include="RenderOutputDescription.cs" />
     <Compile Include="ResourceGroupBufferUploader.cs" />
     <Compile Include="EffectDescriptorSetReflection.cs" />
     <Compile Include="Font\DynamicSpriteFontContentSerializer.cs" />

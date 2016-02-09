@@ -25,10 +25,10 @@ namespace SiliconStudio.Xenko.Graphics
         public InputElementDescription[] InputElements;
 
         public PrimitiveType PrimitiveType;
-        public PixelFormat[] RenderTargetFormats;
-        public PixelFormat DepthStencilFormat;
 
-        public PipelineStateDescription Clone()
+        public RenderOutputDescription Output;
+
+        public unsafe PipelineStateDescription Clone()
         {
             InputElementDescription[] inputElements;
             if (InputElements != null)
@@ -40,18 +40,6 @@ namespace SiliconStudio.Xenko.Graphics
             else
             {
                 inputElements = null;
-            }
-
-            PixelFormat[] renderTargetFormats;
-            if (RenderTargetFormats != null)
-            {
-                renderTargetFormats = new PixelFormat[RenderTargetFormats.Length];
-                for (int i = 0; i < renderTargetFormats.Length; ++i)
-                    renderTargetFormats[i] = RenderTargetFormats[i];
-            }
-            else
-            {
-                renderTargetFormats = null;
             }
 
             return new PipelineStateDescription
@@ -66,8 +54,8 @@ namespace SiliconStudio.Xenko.Graphics
                 InputElements = inputElements,
 
                 PrimitiveType = PrimitiveType,
-                RenderTargetFormats = renderTargetFormats,
-                DepthStencilFormat = DepthStencilFormat,
+
+                Output = Output,
             };
         }
 
@@ -89,7 +77,7 @@ namespace SiliconStudio.Xenko.Graphics
                 && RasterizerState.Equals(other.RasterizerState)
                 && DepthStencilState.Equals(other.DepthStencilState)
                 && PrimitiveType == other.PrimitiveType
-                && DepthStencilFormat == other.DepthStencilFormat))
+                && Output == other.Output))
                 return false;
 
             if ((InputElements != null) != (other.InputElements != null))
@@ -99,17 +87,6 @@ namespace SiliconStudio.Xenko.Graphics
                 for (int i = 0; i < InputElements.Length; ++i)
                 {
                     if (!InputElements[i].Equals(other.InputElements[i]))
-                        return false;
-                }
-            }
-
-            if ((RenderTargetFormats != null) != (other.RenderTargetFormats != null))
-                return false;
-            if (RenderTargetFormats != null)
-            {
-                for (int i = 0; i < RenderTargetFormats.Length; ++i)
-                {
-                    if (!RenderTargetFormats[i].Equals(other.RenderTargetFormats[i]))
                         return false;
                 }
             }
@@ -139,10 +116,7 @@ namespace SiliconStudio.Xenko.Graphics
                     foreach (var inputElement in InputElements)
                         hashCode = (hashCode*397) ^ inputElement.GetHashCode();
                 hashCode = (hashCode*397) ^ (int)PrimitiveType;
-                if (RenderTargetFormats != null)
-                    foreach (var renderTargetFormat in RenderTargetFormats)
-                        hashCode = (hashCode*397) ^ renderTargetFormat.GetHashCode();
-                hashCode = (hashCode*397) ^ (int)DepthStencilFormat;
+                hashCode = (hashCode*397) ^ Output.GetHashCode();
                 return hashCode;
             }
         }
