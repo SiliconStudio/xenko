@@ -9,6 +9,12 @@ namespace SiliconStudio.Presentation.Controls
 
         void Detach(CanvasView view);
 
-        void Render(CanvasRenderer renderer);
+        /// <summary>
+        /// Renders the canvas with the specified renderer.
+        /// </summary>
+        /// <param name="renderer">The renderer.</param>
+        /// <param name="width">The available width.</param>
+        /// <param name="height">The available height.</param>
+        void Render(CanvasRenderer renderer, double width, double height);
     }
 }
