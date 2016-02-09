@@ -15,7 +15,7 @@ using SiliconStudio.Xenko.Rendering;
 namespace SiliconStudio.Xenko.Particles
 {
     [DataContract("ParticleSystem")]
-    public class ParticleSystem
+    public class ParticleSystem : IDisposable
     {
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleSystem"/> is enabled.
@@ -318,5 +318,43 @@ namespace SiliconStudio.Xenko.Particles
             RestartSimulation();
             isPaused = true;
         }
+
+
+
+        #region Dispose
+        private bool disposed = false;
+
+        ~ParticleSystem()
+        {
+            Dispose(false);
+        }
+
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            disposed = true;
+
+            // Dispose unmanaged resources
+
+            if (!disposing)
+                return;
+
+            // Dispose managed resources
+            foreach (var particleEmitter in Emitters)
+            {
+                particleEmitter.Dispose();
+            }
+
+            Emitters.Clear();
+        }
+        #endregion Dispose
+
     }
 }

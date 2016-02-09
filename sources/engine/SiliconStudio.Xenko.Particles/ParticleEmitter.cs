@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Particles
 
 
     [DataContract("ParticleEmitter")]
-    public class ParticleEmitter
+    public class ParticleEmitter : IDisposable
     {
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleEmitter"/> is enabled.
@@ -77,6 +77,38 @@ namespace SiliconStudio.Xenko.Particles
 
         [DataMemberIgnore]
         internal ParticleSorter ParticleSorter;
+
+        #region Dispose
+        private bool disposed = false;
+
+        ~ParticleEmitter()
+        {
+            Dispose(false);
+        }
+       
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (disposed)
+                return;
+            disposed = true;
+
+            // Dispose unmanaged resources
+
+            if (!disposing)
+                return;
+
+            // Dispose managed resources
+            pool?.Dispose();
+        }
+
+        #endregion Dispose
+
 
         private void PoolChangedNotification()
         {
