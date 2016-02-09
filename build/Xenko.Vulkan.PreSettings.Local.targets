@@ -1,0 +1,14 @@
+<!-- Build file pre-included by all Xenko projects -->
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <SiliconStudioCommonPreSettingsName>Xenko</SiliconStudioCommonPreSettingsName>
+
+    <!--  Defines the API used by Xenko - Values are Direct3D/Null/OpenGL/OpenGLES -->
+    <XenkoGraphicsApi Condition=" '$(XenkoGraphicsApi)' == '' ">Vulkan</XenkoGraphicsApi>
+    <SiliconStudioXenkoGraphicsApi>$(XenkoGraphicsApi)</SiliconStudioXenkoGraphicsApi>
+
+    <!-- Defines the platform used by Xenko - Values are Windows/WindowsStore/WindowsPhone/Android/iOS...etc. -->
+    <SiliconStudioPlatform Condition=" '$(SiliconStudioPlatform)' == '' ">Windows</SiliconStudioPlatform>
+  </PropertyGroup>
+</Project>
+

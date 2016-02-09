@@ -75,6 +75,9 @@ namespace {1}
                 case GraphicsPlatform.OpenGLES:
                     xenkoDefine = "SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES";
                     break;
+                case GraphicsPlatform.Vulkan:
+                    xenkoDefine = "SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN";
+                    break;
             }
 
             writer.WriteLine("#if {0}", xenkoDefine);

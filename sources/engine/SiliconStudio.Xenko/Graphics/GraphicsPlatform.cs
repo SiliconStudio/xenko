@@ -23,6 +23,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <summary>
         /// GLSL OpenGL ES Shader.
         /// </summary>
-        OpenGLES
+        OpenGLES,
+		
+        /// <summary>
+        /// GLSL/SPIR-V Shader.
+        /// </summary>
+        Vulkan
     }
 }

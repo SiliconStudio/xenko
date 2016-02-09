@@ -86,6 +86,16 @@
     </When>
   </Choose>
   <Choose>
+    <When Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
+      <ItemGroup>
+        <Reference Include="SharpVulkan">
+          <SpecificVersion>False</SpecificVersion>
+          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpVulkan.dll</HintPath>
+        </Reference>
+      </ItemGroup>
+    </When>
+  </Choose>
+  <Choose>
     <When Condition=" '$(SiliconStudioPlatform)' == 'Windows' ">
       <ItemGroup>
         <Content Include="..\..\..\deps\SDL2\$(SiliconStudioPlatform)\**\SDL2.dll">

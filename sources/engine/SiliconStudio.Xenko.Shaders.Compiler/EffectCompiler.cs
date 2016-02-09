@@ -116,6 +116,9 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL", 1);
                     shaderMixinSource.AddMacro("SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES", 1);
                     break;
+                case GraphicsPlatform.Vulkan:
+                    shaderMixinSource.AddMacro("SILICONSTUDIO_PARADOX_GRAPHICS_API_VULKAN", 1);
+                    break;
                 default:
                     throw new NotSupportedException();
             }
@@ -195,6 +198,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler
 #endif
                 case GraphicsPlatform.OpenGL:
                 case GraphicsPlatform.OpenGLES:
+                case GraphicsPlatform.Vulkan:
                     // get the number of render target outputs
                     var rtOutputs = 0;
                     var psOutput = parsingResult.Shader.Declarations.OfType<StructType>().FirstOrDefault(x => x.Name.Text == "PS_OUTPUT");
