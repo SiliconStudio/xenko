@@ -58,18 +58,17 @@ namespace SiliconStudio.Presentation.Behaviors
         /// <summary>
         /// Invoked when the monitored event is raised.
         /// </summary>
-        protected abstract void OnEvent();
+        protected abstract void OnEvent(EventArgs e);
 
         /// <inheritdoc/>
         protected override void OnAttached()
         {
             if (EventName == null)
-                throw new ArgumentException(string.Format("The EventName property must be set on behavior '{0}'.", GetType().FullName));
+                throw new ArgumentException($"The EventName property must be set on behavior '{GetType().FullName}'.");
 
             var eventOwnerType = EventOwnerType ?? AssociatedObject.GetType();
 
-            RoutedEvent[] routedEvents = EventManager.GetRoutedEvents().Where(evt => evt.Name == EventName && evt.OwnerType.IsAssignableFrom(eventOwnerType)).ToArray();
-
+            var routedEvents = EventManager.GetRoutedEvents().Where(evt => evt.Name == EventName && evt.OwnerType.IsAssignableFrom(eventOwnerType)).ToArray();
             if (routedEvents.Length > 0)
             {
                 if (routedEvents.Length > 1)
@@ -83,7 +82,7 @@ namespace SiliconStudio.Presentation.Behaviors
                 var eventInfo = AssociatedObject.GetType().GetEvent(EventName);
 
                 if (eventInfo == null)
-                    throw new InvalidOperationException(string.Format("Impossible to find a valid event named '{0}'.", EventName));
+                    throw new InvalidOperationException($"Impossible to find a valid event named '{EventName}'.");
 
                 eventHandler = AnonymousEventHandler.RegisterEventHandler(eventInfo, AssociatedObject, OnEvent);
             }
@@ -110,7 +109,7 @@ namespace SiliconStudio.Presentation.Behaviors
             {
                 e.Handled = true;
             }
-            OnEvent();
+            OnEvent(e);
         }
     }
 }
