@@ -23,14 +23,6 @@
                 </Reference>
               </ItemGroup>
             </When>
-            <When Condition="'$(XenkoGraphicsApi)' == 'Vulkan'">
-              <ItemGroup>
-                <Reference Include="SharpVulkan">
-                  <SpecificVersion>False</SpecificVersion>
-                  <HintPath>$(XenkoSharpDXSdkBinDir)\SharpVulkan.dll</HintPath>
-                </Reference>
-              </ItemGroup>
-            </When>
           </Choose>
           <Choose>
             <When Condition="'$(AutoIncludeSystemAssembly)' != 'true'">

@@ -90,7 +90,7 @@
       <ItemGroup>
         <Reference Include="SharpVulkan">
           <SpecificVersion>False</SpecificVersion>
-          <HintPath>$(XenkoSharpDXSdkBinDir)\SharpVulkan.dll</HintPath>
+          <HintPath>$(XenkoDependenciesDir)\SharpVulkan\Bin\SharpVulkan.dll</HintPath>
         </Reference>
       </ItemGroup>
     </When>
@@ -171,13 +171,19 @@
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\BackgroundEffect.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\BackgroundEffect.Extensions.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteBatch.bytecodeSRgb.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\SpriteEffect.bytecode.Vulkan.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecode.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Direct3D11.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGL.Level_9_1.cs" />
     <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.OpenGLES.Level_9_1.cs" />
+    <Compile Include="Shaders.Bytecodes\UIEffect.bytecodeSRgb.Vulkan.Level_9_1.cs" />
     <Compile Include="Shaders\BackgroundEffect.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -367,6 +373,20 @@
     <Compile Include="VertexPositionNormalColor.cs" />
     <Compile Include="VertexPositionNormalTexture.cs" />
     <Compile Include="VertexPositionTexture.cs" />
+    <None Include="Vulkan\Buffer.Vulkan.cs" />
+    <None Include="Vulkan\CommandList.Vulkan.cs" />
+    <None Include="Vulkan\DescriptorPool.Vulkan.cs" />
+    <None Include="Vulkan\DescriptorSet.Vulkan.cs" />
+    <None Include="Vulkan\DescriptorSetLayout.Vulkan.cs" />
+    <None Include="Vulkan\GraphicsDevice.Vulkan.cs" />
+    <None Include="Vulkan\GraphicsDeviceFeatures.Vulkan.cs" />
+    <None Include="Vulkan\GraphicsOutput.Vulkan.cs" />
+    <None Include="Vulkan\GraphicsResource.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsResourceBase.Vulkan.cs" />
+    <None Include="Vulkan\MappedResource.Vulkan.cs" />
+    <None Include="Vulkan\PipelineState.Vulkan.cs" />
+    <None Include="Vulkan\SamplerState.Vulkan.cs" />
+    <None Include="Vulkan\Texture.Vulkan.cs" />
     <Compile Include="WindowContext.cs" />
   </ItemGroup>
   <!-- Files for Null device -->
