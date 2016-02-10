@@ -13,10 +13,34 @@ namespace SiliconStudio.Xenko.Animations
     [Display("Sampler Vector4")]
     public class ComputeCurveSamplerVector4 : ComputeCurveSampler<Vector4>
     {
+        public ComputeCurveSamplerVector4()
+        {
+            curve = new ComputeAnimationCurveVector4();
+        }
+
         /// <inheritdoc/>
         public override void Linear(ref Vector4 value1, ref Vector4 value2, float t, out Vector4 result)
         {
             Interpolator.Vector4.Linear(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Sampler container for Vector4 data type
+    /// </summary>
+    [DataContract("ComputeCurveSamplerFloat")]
+    [Display("Sampler Float")]
+    public class ComputeCurveSamplerFloat : ComputeCurveSampler<float>
+    {
+        public ComputeCurveSamplerFloat()
+        {
+            curve = new ComputeAnimationCurveFloat();
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref float value1, ref float value2, float t, out float result)
+        {
+            result = value1 + (value2 - value1) * t;
         }
     }
 
