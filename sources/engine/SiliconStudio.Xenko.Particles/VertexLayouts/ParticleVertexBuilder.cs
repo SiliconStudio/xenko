@@ -98,19 +98,19 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
             livingQuads = minQuads;
 
-            if (minQuads > requiredQuads || maxQuads <= requiredQuads / 2)
+            if (requiredQuads == 0 || minQuads > requiredQuads || maxQuads <= requiredQuads / 2)
             {
                 requiredQuads = maxQuads;
                 bufferIsDirty = true;
             }
         }
 
-        private unsafe void InitBuffer(GraphicsDevice device, Effect effect, int vertexCount, int indexCount)
+        private unsafe void InitBuffer(GraphicsDevice device, int vertexCount, int indexCount)
         {
             //    ResourceContext = device.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, "ResourceKey",
             //        d => new DeviceResourceContext(device, effect, VertexDeclaration, vertexCount, indexStructSize, indexCount));
 
-            ResourceContext = new DeviceResourceContext(device, effect, VertexDeclaration, vertexCount, indexStructSize, indexCount);
+            ResourceContext = new DeviceResourceContext(device, VertexDeclaration, vertexCount, indexStructSize, indexCount);
 
 
             vertexStructSize = VertexDeclaration.VertexStride;
@@ -136,11 +136,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
         private IntPtr vertexBuffer = IntPtr.Zero;
         private IntPtr vertexBufferOrigin = IntPtr.Zero;
 
-        public IntPtr StartBuffer(GraphicsDevice device, Effect effect)
+        public IntPtr MapBuffer(GraphicsDevice device)
         {
             if (bufferIsDirty && requiredQuads > 0)
             {
-                InitBuffer(device, effect, requiredQuads * verticesPerQuad, requiredQuads * indicesPerQuad);
+                InitBuffer(device, requiredQuads * verticesPerQuad, requiredQuads * indicesPerQuad);
                 bufferIsDirty = false;
             }
 
@@ -158,12 +158,17 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             return mappedVertices.DataBox.DataPointer;
         }
 
+        public void CreateVAO(GraphicsDevice device, Effect effect)
+        {
+            ResourceContext.CreateVAO(device, effect, VertexDeclaration, indexStructSize);
+        }
+
         public void RestartBuffer()
         {
             vertexBuffer = vertexBufferOrigin;
         }
 
-        public void FlushBuffer(GraphicsDevice device)
+        public void UnmapBuffer(GraphicsDevice device)
         {
             if (bufferIsDirty)
                 return;
@@ -172,6 +177,12 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             vertexBufferOrigin = IntPtr.Zero;
 
             device.UnmapSubresource(mappedVertices);
+        }
+
+        public void Draw(GraphicsDevice device)
+        {
+            if (bufferIsDirty)
+                return;
 
             device.SetVertexArrayObject(ResourceContext.VertexArrayObject);
 
@@ -271,7 +282,7 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
             /// <summary>
             /// The VertexArrayObject of the batch.
             /// </summary>
-            public readonly VertexArrayObject VertexArrayObject;
+            public VertexArrayObject VertexArrayObject;
 
             /// <summary>
             /// The current position in vertex into the vertex array buffer.
@@ -285,11 +296,11 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
 
             public EffectInputSignature EffectInputSignature;
 
-            public DeviceResourceContext(GraphicsDevice device, Effect effect, VertexDeclaration declaration, int vertexCount, int indexStructSize, int indexCount)
+            private bool dirty = false;
+
+            public DeviceResourceContext(GraphicsDevice device, VertexDeclaration declaration, int vertexCount, int indexStructSize, int indexCount)
             {
                 var vertexSize = declaration.CalculateSize();
-
-                EffectInputSignature = effect.InputSignature;
 
                 VertexCount = vertexCount;
                 IndexCount  = indexCount;
@@ -297,6 +308,18 @@ namespace SiliconStudio.Xenko.Particles.VertexLayouts
                 VertexBuffer = Buffer.Vertex.New(device, VertexCount * vertexSize, GraphicsResourceUsage.Dynamic).DisposeBy(this);
 
                 IndexBuffer = Buffer.Index.New(device, IndexCount * indexStructSize, GraphicsResourceUsage.Dynamic).DisposeBy(this);
+
+                dirty = true;
+            }
+
+            public void CreateVAO(GraphicsDevice device, Effect effect, VertexDeclaration declaration, int indexStructSize)
+            {
+                if (!dirty)
+                    return;
+                dirty = false;
+
+                var vertexSize = declaration.CalculateSize();
+                EffectInputSignature = effect.InputSignature;
 
                 var indexBufferBinding = new IndexBufferBinding(IndexBuffer, indexStructSize == sizeof(int), IndexBuffer.Description.SizeInBytes / indexStructSize);
                 var vertexBufferBinding = new VertexBufferBinding(VertexBuffer, declaration, VertexCount, vertexSize);
