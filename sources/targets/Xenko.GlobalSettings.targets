@@ -44,7 +44,7 @@
   </PropertyGroup>
 
   <PropertyGroup Condition=" '$(XenkoGraphicsApi)' == 'Vulkan' ">
-    <ParadoxGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN</ParadoxGraphicsApiDefines>
+    <XenkoGraphicsApiDefines>SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN</XenkoGraphicsApiDefines>
   </PropertyGroup>
   
   <!-- 
