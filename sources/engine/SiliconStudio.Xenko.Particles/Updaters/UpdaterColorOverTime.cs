@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Particles.Modules;
 
@@ -12,9 +13,9 @@ namespace SiliconStudio.Xenko.Particles.Updaters
     /// <summary>
     /// Updater which sets the particle's size to a fixed value sampled based on the particle's normalized life value
     /// </summary>
-    [DataContract("UpdaterSizeOverTime")]
-    [Display("Size over life")]
-    public class UpdaterSizeOverTime : ParticleUpdater
+    [DataContract("UpdaterColorOverTime")]
+    [Display("Color over life")]
+    public class UpdaterColorOverTime : ParticleUpdater
     {
         /// <inheritdoc />
         [DataMemberIgnore]
@@ -29,7 +30,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         [DataMember(100)]
         [NotNull]
         [Display("Main")]
-        public ComputeCurveSampler<float> SamplerMain { get; set; } = new ComputeCurveSamplerFloat();
+        public ComputeCurveSampler<Vector4> SamplerMain { get; set; } = new ComputeCurveSamplerVector4();
 
         /// <summary>
         /// Optional sampler. If present, particles will pick a random value between the two sampled curves
@@ -39,7 +40,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         /// </userdoc>
         [DataMember(200)]
         [Display("Optional")]
-        public ComputeCurveSampler<float> SamplerOptional { get; set; }
+        public ComputeCurveSampler<Vector4> SamplerOptional { get; set; }
 
         /// <summary>
         /// Seed offset. You can use this offset to bind the randomness to other random values, or to make them completely unrelated
@@ -52,18 +53,18 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         public UInt32 SeedOffset { get; set; } = 0;
 
         /// <inheritdoc />
-        public UpdaterSizeOverTime()
+        public UpdaterColorOverTime()
         {
-            RequiredFields.Add(ParticleFields.Size);
+            RequiredFields.Add(ParticleFields.Color);
 
-            var curve = new ComputeAnimationCurveFloat();
+            var curve = new ComputeAnimationCurveVector4();
             SamplerMain.Curve = curve;
         }
 
         /// <inheritdoc />
         public override void Update(float dt, ParticlePool pool)
         {
-            if (!pool.FieldExists(ParticleFields.Size) || !pool.FieldExists(ParticleFields.Life))
+            if (!pool.FieldExists(ParticleFields.Color) || !pool.FieldExists(ParticleFields.Life))
                 return;
 
             if (SamplerOptional == null)
@@ -77,8 +78,8 @@ namespace SiliconStudio.Xenko.Particles.Updaters
 
         private unsafe void UpdateSingleSampler(ParticlePool pool)
         {
-            var sizeField = pool.GetField(ParticleFields.Size);
-            var lifeField = pool.GetField(ParticleFields.Life);
+            var colorField = pool.GetField(ParticleFields.Color);
+            var lifeField  = pool.GetField(ParticleFields.Life);
 
             SamplerMain.UpdateChanges();
 
@@ -86,15 +87,22 @@ namespace SiliconStudio.Xenko.Particles.Updaters
             {
                 var life = 1f - (*((float*)particle[lifeField]));   // The Life field contains remaining life, so for sampling we take (1 - life)
 
-                (*((float*)particle[sizeField])) = SamplerMain.Evaluate(life);
+                var color = (Color4)SamplerMain.Evaluate(life);
+
+                // Premultiply alpha
+                color.R *= color.A;
+                color.G *= color.A;
+                color.B *= color.A;
+
+                (*((Color4*)particle[colorField])) = color;
             }
         }
 
         private unsafe void UpdateDoubleSampler(ParticlePool pool)
         {
-            var sizeField = pool.GetField(ParticleFields.Size);
-            var lifeField = pool.GetField(ParticleFields.Life);
-            var randField = pool.GetField(ParticleFields.RandomSeed);
+            var colorField = pool.GetField(ParticleFields.Color);
+            var lifeField  = pool.GetField(ParticleFields.Life);
+            var randField  = pool.GetField(ParticleFields.RandomSeed);
 
             SamplerMain.UpdateChanges();
             SamplerOptional.UpdateChanges();
@@ -106,12 +114,17 @@ namespace SiliconStudio.Xenko.Particles.Updaters
                 var randSeed = particle.Get(randField);
                 var lerp = randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset);
 
-                var size1 = SamplerMain.Evaluate(life);
-                var size2 = SamplerOptional.Evaluate(life);
+                var colorMin = (Color4) SamplerMain.Evaluate(life);
+                var colorMax = (Color4) SamplerOptional.Evaluate(life);                
+                var color    =  Color4.Lerp(colorMin, colorMax, lerp);
 
-                (*((float*)particle[sizeField])) = size1 + (size2 - size1) * lerp;
+                // Premultiply alpha
+                color.R *= color.A;
+                color.G *= color.A;
+                color.B *= color.A;
+
+                (*((Color4*)particle[colorField])) = color;
             }
         }
-
     }
 }
