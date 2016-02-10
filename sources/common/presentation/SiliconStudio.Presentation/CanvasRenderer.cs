@@ -215,10 +215,10 @@ namespace SiliconStudio.Presentation
         /// </summary>
         /// <param name="point"></param>
         /// <param name="color">The color of the text.</param>
-        /// <param name="text"></param>
-        /// <param name="fontFamily"></param>
-        /// <param name="fontSize"></param>
-        /// <param name="fontWeight"></param>
+        /// <param name="text">The text.</param>
+        /// <param name="fontFamily">The font family.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <param name="fontWeight">The font weight.</param>
         public void DrawText(Point point, Color color, string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight)
         {
             var textBlock = Create<TextBlock>();
@@ -228,6 +228,32 @@ namespace SiliconStudio.Presentation
             textBlock.FontWeight = fontWeight;
             textBlock.Text = text;
             textBlock.RenderTransform = new TranslateTransform(point.X, point.Y);
+        }
+
+        /// <summary>
+        /// Measures the size of the specified text.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="fontFamily">The font family.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <param name="fontWeight">The font weight.</param>
+        /// <returns>
+        /// The size of the text (in device independent units, 1/96 inch).
+        /// </returns>
+        public Size MeasureText(string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight)
+        {
+            if (string.IsNullOrEmpty(text))
+                return Size.Empty;
+
+            var textBlock = new TextBlock
+            {
+                FontFamily = fontFamily,
+                FontSize = fontSize,
+                FontWeight = fontWeight,
+                Text = text,
+            };
+            textBlock.Measure(new Size(double.MaxValue, double.MaxValue));
+            return new Size(textBlock.DesiredSize.Width, textBlock.DesiredSize.Height);
         }
 
         /// <summary>
@@ -296,5 +322,6 @@ namespace SiliconStudio.Presentation
                 shape.StrokeDashOffset = dashOffset;
             }
         }
+
     }
 }
