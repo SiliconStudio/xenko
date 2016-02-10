@@ -6,6 +6,32 @@ using SiliconStudio.Xenko.Data;
 
 namespace SiliconStudio.Xenko.Graphics
 {
+    //Workaround needed for now, since we don't support orientation changes during game play
+    public enum RequiredDisplayOrientation
+    {
+        /// <summary>
+        /// The default value for the orientation.
+        /// </summary>
+        Default = 0,
+
+        /// <summary>
+        /// Displays in landscape mode to the left.
+        /// </summary>
+        [Display("Landscape Left")]
+        LandscapeLeft = 1,
+
+        /// <summary>
+        /// Displays in landscape mode to the right.
+        /// </summary>
+        [Display("Landscape Right")]
+        LandscapeRight = 2,
+
+        /// <summary>
+        /// Displays in portrait mode.
+        /// </summary>
+        Portrait = 4
+    }
+
     [DataContract]
     [Display("Rendering Settings")]
     public class RenderingSettings : Configuration
@@ -52,6 +78,6 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         /// <userdoc>The display orientations this game support.</userdoc>
         [DataMember(40)]
-        public DisplayOrientation DisplayOrientation = DisplayOrientation.Default;
+        public RequiredDisplayOrientation DisplayOrientation = RequiredDisplayOrientation.Default;
     }
 }

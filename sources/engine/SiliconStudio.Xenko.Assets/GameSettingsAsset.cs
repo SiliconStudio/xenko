@@ -170,7 +170,7 @@ namespace SiliconStudio.Xenko.Assets
                     };
 
                     var renderingSettings = gameSettingsAsset.Get<RenderingSettings>();
-                    renderingSettings.DisplayOrientation = Get(packageSharedProfile.Properties, DisplayOrientation);
+                    renderingSettings.DisplayOrientation = (RequiredDisplayOrientation) Get(packageSharedProfile.Properties, DisplayOrientation);
                     renderingSettings.ColorSpace = ColorSpace.Linear;
                     renderingSettings.DefaultBackBufferWidth = Get(packageSharedProfile.Properties, BackBufferWidth);
                     renderingSettings.DefaultBackBufferHeight = Get(packageSharedProfile.Properties, BackBufferHeight);

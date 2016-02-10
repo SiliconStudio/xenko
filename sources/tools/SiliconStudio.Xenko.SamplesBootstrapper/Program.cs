@@ -54,7 +54,7 @@ namespace SiliconStudio.Xenko.SamplesBootstrapper
                 ForcePlatformRegeneration = true,
                 GraphicsProfile = renderingSettings.DefaultGraphicsProfile,
                 IsHDR = false,
-                Orientation = renderingSettings.DisplayOrientation,
+                Orientation = (DisplayOrientation) renderingSettings.DisplayOrientation,
                 Platforms = AssetRegistry.SupportedPlatforms.ToList()
             };
 
