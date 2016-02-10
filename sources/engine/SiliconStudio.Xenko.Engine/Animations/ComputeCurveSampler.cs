@@ -13,7 +13,7 @@ namespace SiliconStudio.Xenko.Animations
     [DataContract(Inherited = true)]
     public abstract class ComputeCurveSampler<T> where T : struct
     {
-        private IComputeCurve<T> curve;
+        protected IComputeCurve<T> curve;
 
         [NotNull]
         [DataMember(10)]
