@@ -1,6 +1,7 @@
 // Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -85,7 +86,34 @@ namespace SiliconStudio.Xenko.Assets
 
         public T Get<T>(PlatformType platform) where T : Configuration, new()
         {
-            var platVersion = Overrides.FirstOrDefault(x => x != null && x.Platforms.HasFlag(platform) && x.GetType() == typeof(T) && x.Configuration != null);
+            ConfigPlatforms configPlatform;
+            switch (platform)
+            {
+                case PlatformType.Windows:
+                    configPlatform = ConfigPlatforms.Windows;
+                    break;
+                case PlatformType.WindowsPhone:
+                    configPlatform = ConfigPlatforms.WindowsPhone;
+                    break;
+                case PlatformType.WindowsStore:
+                    configPlatform = ConfigPlatforms.WindowsStore;
+                    break;
+                case PlatformType.Android:
+                    configPlatform = ConfigPlatforms.Android;
+                    break;
+                case PlatformType.iOS:
+                    configPlatform = ConfigPlatforms.iOS;
+                    break;
+                case PlatformType.Windows10:
+                    configPlatform = ConfigPlatforms.Windows10;
+                    break;
+                case PlatformType.Linux:
+                    configPlatform = ConfigPlatforms.Linux;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
+            }
+            var platVersion = Overrides.FirstOrDefault(x => x != null && x.Platforms.HasFlag(configPlatform) && x.GetType() == typeof(T) && x.Configuration != null);
             if (platVersion != null)
             {
                 return (T)platVersion.Configuration;

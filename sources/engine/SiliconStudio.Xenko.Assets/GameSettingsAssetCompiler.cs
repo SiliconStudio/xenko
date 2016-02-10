@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Assets
                     result.Configurations.Configurations.Add(new ConfigurationOverride
                     {
                         Platforms = ConfigPlatforms.None,
-                        SpecificFilter = string.Empty,
+                        SpecificFilter = -1,
                         Configuration = configuration
                     });
                 }
@@ -76,6 +76,8 @@ namespace SiliconStudio.Xenko.Assets
                 {
                     result.Configurations.Configurations.Add(configurationOverride);
                 }
+
+                result.Configurations.PlatformFilters = AssetParameters.PlatformFilters;
 
                 // TODO: Platform-specific settings have priority
                 //if (platform != PlatformType.Shared)

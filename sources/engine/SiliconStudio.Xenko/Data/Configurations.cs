@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Data
@@ -12,7 +13,8 @@ namespace SiliconStudio.Xenko.Data
         WindowsStore = 1 << 2,
         WindowsPhone = 1 << 3,
         iOS = 1 << 4,
-        Android = 1 << 5
+        Android = 1 << 5,
+        Linux = 1 << 6
     }
 
     [DataContract]
@@ -29,7 +31,8 @@ namespace SiliconStudio.Xenko.Data
         public ConfigPlatforms Platforms;
 
         [DataMember(20)]
-        public string SpecificFilter;
+        [DefaultValue(-1)]
+        public int SpecificFilter = -1;
 
         [DataMember(30)]
         public Configuration Configuration;

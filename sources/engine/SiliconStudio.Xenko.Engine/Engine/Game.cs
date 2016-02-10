@@ -259,9 +259,10 @@ namespace SiliconStudio.Xenko.Engine
             var renderingSettings = Settings?.Configurations.Get<RenderingSettings>();
             if (renderingSettings != null)
             {
-                Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
-                Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
-                Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
+                var deviceManager = (GraphicsDeviceManager)graphicsDeviceManager;
+                deviceManager.PreferredGraphicsProfile = Context.RequestedGraphicsProfile = new[] { renderingSettings.DefaultGraphicsProfile };
+                deviceManager.PreferredBackBufferWidth = Context.RequestedWidth = renderingSettings.DefaultBackBufferWidth;
+                deviceManager.PreferredBackBufferHeight = Context.RequestedHeight = renderingSettings.DefaultBackBufferHeight;
             }
 
             // ---------------------------------------------------------
