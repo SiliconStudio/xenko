@@ -669,23 +669,13 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
-        /// Render the particles contained in this emitter with the specified device and context
+        /// Build the vertex buffer from particle data
+        /// Should come before <see cref="KickVertexBuffer"/>
         /// </summary>
         /// <param name="device">The graphics device, used to rebuild vertex layouts and shaders if needed</param>
-        /// <param name="context">The rendering context</param>
-        /// <param name="viewMatrix">The current camera's view matrix</param>
-        /// <param name="projMatrix">The current camera's projection matrix</param>
         /// <param name="invViewMatrix">The current camera's inverse view matrix</param>
-        /// <param name="color">Color scale (color shade) for all particles</param>
-        public void Draw(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, ref Matrix invViewMatrix, Color4 color)
+        public void BuildVertexBuffer(GraphicsDevice device, ref Matrix invViewMatrix)
         {
-            // Because the edit-time class and the runtime design are the same we have delayed setup for materials
-            // The first time Draw(...) is called and every time the shader or the layout change, we have to rebuild the material and possible the vertex buffer builder
-            Material.Setup(device, context, viewMatrix, projMatrix, color);
-            Material.ApplyEffect(device);
-            PrepareForDraw();
-
-
             // Get camera-space X and Y axes for billboard expansion and sort the particles if needed
             var unitX = new Vector3(invViewMatrix.M11, invViewMatrix.M12, invViewMatrix.M13);
             var unitY = new Vector3(invViewMatrix.M21, invViewMatrix.M22, invViewMatrix.M23);
@@ -700,17 +690,16 @@ namespace SiliconStudio.Xenko.Particles
             var scaleIdentity = 1f;
             if (simulationSpace == EmitterSimulationSpace.Local)
             {
-                posIdentity   = drawPosition;
-                rotIdentity   = drawRotation;
+                posIdentity = drawPosition;
+                rotIdentity = drawRotation;
                 scaleIdentity = drawScale;
             }
 
+            PrepareForDraw();
 
-            // Prepare the vertex buffer and draw the quads (or other shapes) directly, then flush it
-            // The shape material defines the shape and vertices per particle, but the material can patch the buffer later, usually with attributes which are defined per-particle
             vertexBuilder.SetRequiredQuads(ShapeBuilder.QuadsPerParticle, pool.LivingParticles, pool.ParticleCapacity);
 
-            vertexBuilder.StartBuffer(device, Material.Effect);
+            vertexBuilder.MapBuffer(device);
 
             ShapeBuilder.BuildVertexBuffer(vertexBuilder, unitX, unitY, ref posIdentity, ref rotIdentity, scaleIdentity, ParticleSorter);
 
@@ -718,7 +707,28 @@ namespace SiliconStudio.Xenko.Particles
 
             Material.PatchVertexBuffer(vertexBuilder, unitX, unitY, ParticleSorter);
 
-            vertexBuilder.FlushBuffer(device);
+            vertexBuilder.UnmapBuffer(device);
+        }
+
+
+        /// <summary>
+        /// Setup the material and kick the vertex buffer
+        /// Should come after <see cref="BuildVertexBuffer"/>
+        /// </summary>
+        /// <param name="device">The graphics device, used to rebuild vertex layouts and shaders if needed</param>
+        /// <param name="context">The rendering context</param>
+        /// <param name="viewMatrix">The current camera's view matrix</param>
+        /// <param name="projMatrix">The current camera's projection matrix</param>
+        /// <param name="color">Color scale (color shade) for all particles</param>
+        public void KickVertexBuffer(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, Color4 color)
+        {
+            Material.Setup(device, context, viewMatrix, projMatrix, color);
+
+            Material.ApplyEffect(device);
+
+            vertexBuilder.CreateVAO(device, Material.Effect);
+
+            vertexBuilder.Draw(device);
         }
         #endregion
 
