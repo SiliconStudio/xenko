@@ -241,6 +241,9 @@ namespace SiliconStudio.Xenko.Rendering
 #if SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGLES 
             compilerParameters.Platform = GraphicsPlatform.OpenGLES;
 #endif
+#if SILICONSTUDIO_PARADOX_GRAPHICS_API_VULKAN
+            compilerParameters.Platform = GraphicsPlatform.Vulkan;
+#endif
 
             // Compile shader
             var isXkfx = ShaderMixinManager.Contains(effectName);

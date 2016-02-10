@@ -13,3 +13,5 @@ Profiles:
         GraphicsPlatform: OpenGL
     Windows-OpenGLES: !WindowsGameSettingsProfile
         GraphicsPlatform: OpenGLES
+    Windows-Vulkan: !WindowsGameSettingsProfile
+        GraphicsPlatform: Vulkan		

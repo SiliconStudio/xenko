@@ -54,10 +54,12 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
         {
             var isOpenGLES = compilerParameters.Get(CompilerParameters.GraphicsPlatformKey) == GraphicsPlatform.OpenGLES;
             var isOpenGLES3 = compilerParameters.Get(CompilerParameters.GraphicsProfileKey) >= GraphicsProfile.Level_10_0;
+            var isVulkan = compilerParameters.Get(CompilerParameters.GraphicsPlatformKey) == GraphicsPlatform.Vulkan;
+
             var shaderBytecodeResult = new ShaderBytecodeResult();
             byte[] rawData;
 
-            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, shaderBytecodeResult, sourceFilename);
+            var shader = Compile(shaderSource, entryPoint, stage, isOpenGLES, isOpenGLES3, isVulkan, shaderBytecodeResult, sourceFilename);
 
             if (shader == null)
                 return shaderBytecodeResult;
@@ -74,7 +76,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 else
                 {
                     shaderBytecodes.DataES2 = shader;
-                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, shaderBytecodeResult, sourceFilename);
+                    shaderBytecodes.DataES3 = Compile(shaderSource, entryPoint, stage, true, true, false, shaderBytecodeResult, sourceFilename);
                 }
                 using (var stream = new MemoryStream())
                 {
@@ -86,6 +88,53 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     rawData = stream.ToArray();
 #endif
                 }
+            }
+            else if (isVulkan)
+            {
+                string inputFileExtension;
+                switch (stage)
+                {
+                    case ShaderStage.Vertex: inputFileExtension = ".vert"; break;
+                    case ShaderStage.Pixel: inputFileExtension = ".frag"; break;
+                    case ShaderStage.Geometry: inputFileExtension = ".geom"; break;
+                    case ShaderStage.Domain: inputFileExtension = ".tese"; break;
+                    case ShaderStage.Hull: inputFileExtension = ".tesc"; break;
+                    case ShaderStage.Compute: inputFileExtension = ".comp"; break;
+                    default:
+                        shaderBytecodeResult.Error("Unknown shader profile");
+                        return shaderBytecodeResult;
+                }
+
+                var inputFileName = Path.ChangeExtension(Path.GetTempFileName(), inputFileExtension);
+                var outputFileName = Path.ChangeExtension(inputFileName, ".spv");
+
+                // Write shader source to disk
+                File.WriteAllBytes(inputFileName, Encoding.ASCII.GetBytes(shader));
+
+                // Run shader compiler
+                var process = new Process
+                {
+                    StartInfo =
+                    {
+                        FileName = "glslangValidator.exe",
+                        Arguments = $"-V -s -o {outputFileName} {inputFileName}"
+                    }
+                };
+                process.Start();
+                process.WaitForExit();
+
+                if (!File.Exists(outputFileName))
+                {
+                    shaderBytecodeResult.Error("Failed to generate SPIR-V from GLSL");
+                    return shaderBytecodeResult;
+                }
+
+                // Read compiled shader
+                rawData = File.ReadAllBytes(outputFileName);
+
+                // Cleanup temp files
+                File.Delete(inputFileName);
+                File.Delete(outputFileName);
             }
             else
             {
@@ -102,7 +151,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             return shaderBytecodeResult;
         }
 
-        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, ShaderBytecodeResult shaderBytecodeResult, string sourceFilename = null)
+        private string Compile(string shaderSource, string entryPoint, ShaderStage stage, bool isOpenGLES, bool isOpenGLES3, bool isVulkan, ShaderBytecodeResult shaderBytecodeResult, string sourceFilename = null)
         {
             if (isOpenGLES && !isOpenGLES3 && renderTargetCount > 1)
                 shaderBytecodeResult.Error("OpenGL ES 2 does not support multiple render targets.");
@@ -148,7 +197,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
             {
                 // Convert from HLSL to GLSL
                 // Note that for now we parse from shader as a string, but we could simply clone effectPass.Shader to avoid multiple parsing.
-                var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3);
+                var glslConvertor = new ShaderConverter(isOpenGLES, isOpenGLES3, isVulkan);
                 var glslShader = glslConvertor.Convert(shaderSource, entryPoint, pipelineStage, sourceFilename, shaderBytecodeResult);
 
                 if (glslShader == null || shaderBytecodeResult.HasErrors)
@@ -157,7 +206,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                 // Add std140 layout
                 foreach (var constantBuffer in glslShader.Declarations.OfType<ConstantBuffer>())
                 {
-                    if (isOpenGLES3) // TODO: for OpenGL too?
+                    if (isOpenGLES3 || isVulkan) // TODO: for OpenGL too?
                     {
                         var layoutQualifier = constantBuffer.Qualifiers.OfType<SiliconStudio.Shaders.Ast.Glsl.LayoutQualifier>().FirstOrDefault();
                         if (layoutQualifier == null)

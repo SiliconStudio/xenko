@@ -21,13 +21,16 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
 
         private bool isOpenGLES3;
 
+        private bool isVulkan;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="ShaderConverter"/> class.
         /// </summary>
-        public ShaderConverter(bool isOpenGLES, bool isOpenGLES3)
+        public ShaderConverter(bool isOpenGLES, bool isOpenGLES3, bool isVulkan)
         {
             this.isOpenGLES = isOpenGLES;
             this.isOpenGLES3 = isOpenGLES3;
+            this.isVulkan = isVulkan;
             Log = Console.Out;
             IsVerboseLog = true;
             Macros = new List<ShaderMacro>();
@@ -139,7 +142,7 @@ namespace SiliconStudio.Xenko.Shaders.Compiler.OpenGL
                     UseSemanticForVariable = true,
                     IsPointSpriteShader = false,
                     ViewFrustumRemap = true,
-                    FlipRenderTargetFlag = "XenkoFlipRendertarget",
+                    FlipRenderTargetFlag = !isVulkan ? "XenkoFlipRendertarget" : null,
                     KeepNonUniformArrayInitializers = !isOpenGLES,
                     IsOpenGLES2 = isOpenGLES && !isOpenGLES3
                 };
