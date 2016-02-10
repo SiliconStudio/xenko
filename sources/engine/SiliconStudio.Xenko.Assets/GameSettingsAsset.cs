@@ -71,6 +71,9 @@ namespace SiliconStudio.Xenko.Assets
         [DataMember(40)]
         public List<ConfigurationOverride> Overrides { get; } = new List<ConfigurationOverride>();
 
+        [DataMember(50)]
+        public List<string> PlatformFilters { get; } = new List<string>(); 
+
         public T Get<T>() where T : Configuration, new()
         {
             var settings = (T)Defaults.FirstOrDefault(x => x != null && x.GetType() == typeof(T));
@@ -183,7 +186,7 @@ namespace SiliconStudio.Xenko.Assets
                 asset.RemoveChild("DisplayOrientation");
                 TextureQuality textureQuality = asset.TextureQuality ?? TextureQuality.Fast;
                 asset.RemoveChild("TextureQuality");
-                var renderingMode = RenderingMode.HDR;;
+                var renderingMode = RenderingMode.HDR;
                 if (asset.RenderingMode != null)
                 {
                     if (asset.RenderingMode == "LDR")
@@ -211,7 +214,37 @@ namespace SiliconStudio.Xenko.Assets
 
                 dynamic physicsSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Physics.PhysicsSettings,SiliconStudio.Xenko.Physics" });
                 asset.Defaults.Add(physicsSettings);
+
+                var defaultFilters = new DynamicYamlArray(new YamlSequenceNode());
+                asset.PlatformFilters = defaultFilters;
+                asset.PlatformFilters.Add("PowerVR SGX 54[0-9]");
+                asset.PlatformFilters.Add("Adreno \\(TM\\) 2[0-9][0-9]");
+                asset.PlatformFilters.Add("Adreno (TM) 320");
+                asset.PlatformFilters.Add("Adreno (TM) 330");
+                asset.PlatformFilters.Add("Adreno \\(TM\\) 4[0-9][0-9]");
+                asset.PlatformFilters.Add("NVIDIA Tegra");
+                asset.PlatformFilters.Add("Intel(R) HD Graphics");
+                asset.PlatformFilters.Add("^Mali\\-4");
+                asset.PlatformFilters.Add("^Mali\\-T6");
+                asset.PlatformFilters.Add("^Mali\\-T7");
             }
+        }
+
+        public static GameSettingsAsset New()
+        {
+            var asset = new GameSettingsAsset();
+            //add default filters , todo maybe a config file somewhere is better
+            asset.PlatformFilters.Add("PowerVR SGX 54[0-9]");
+            asset.PlatformFilters.Add("Adreno \\(TM\\) 2[0-9][0-9]");
+            asset.PlatformFilters.Add("Adreno (TM) 320");
+            asset.PlatformFilters.Add("Adreno (TM) 330");
+            asset.PlatformFilters.Add("Adreno \\(TM\\) 4[0-9][0-9]");
+            asset.PlatformFilters.Add("NVIDIA Tegra");
+            asset.PlatformFilters.Add("Intel(R) HD Graphics");
+            asset.PlatformFilters.Add("^Mali\\-4");
+            asset.PlatformFilters.Add("^Mali\\-T6");
+            asset.PlatformFilters.Add("^Mali\\-T7");
+            return asset;
         }
     }
 }
