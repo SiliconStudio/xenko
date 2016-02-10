@@ -98,6 +98,7 @@
     <Compile Include="Sorters\ParticleSorterCustom.cs" />
     <Compile Include="Sorters\ParticleSorterDefault.cs" />
     <Compile Include="Sorters\ParticleSorterLiving.cs" />
+    <Compile Include="Updaters\UpdaterColorOverTime.cs" />
     <Compile Include="Updaters\UpdaterSizeOverTime.cs" />
     <Compile Include="Updaters\FieldShapes\Cube.cs" />
     <Compile Include="Updaters\FieldShapes\Cylinder.cs" />
