@@ -57,22 +57,14 @@ namespace SiliconStudio.Xenko.Assets
         [DataMember(10)]
         public Scene DefaultScene { get; set; }
 
-        /// <summary>
-        /// Gets or sets the game settings per profiles.
-        /// </summary>
         [DataMember(20)]
-        [Display(Browsable = false)]
-        [DefaultValue(null)]
-        public Dictionary<string, IGameSettingsProfile> Profiles { get; set; }
-
-        [DataMember(30)]
         [NotNullItems]
         public List<Configuration> Defaults { get; } = new List<Configuration>();
 
-        [DataMember(40)]
+        [DataMember(30)]
         public List<ConfigurationOverride> Overrides { get; } = new List<ConfigurationOverride>();
 
-        [DataMember(50)]
+        [DataMember(40)]
         public List<string> PlatformFilters { get; } = new List<string>(); 
 
         public T Get<T>() where T : Configuration, new()
