@@ -142,4 +142,14 @@
   <Target Name="CompileNativeClang_Linux_Clean" Condition="'$(SiliconStudioPlatform)' == 'Linux'" BeforeTargets="Clean">
     <Delete Files="$(SiliconStudioXenkoSdkBinDir)\x86\libxenkonative.so;$(SiliconStudioXenkoSdkBinDir)\x64\libxenkonative.so" />
   </Target>
+
+  <ItemGroup>
+    <ObjFiles Include="$(ProjectDir)\obj\*.obj" />
+    <OFiles Include="$(ProjectDir)\obj\*.o" />
+  </ItemGroup>
+
+  <Target Name="CompileNativeClang_Clean" BeforeTargets="Clean">
+    <Delete Files="@(ObjFiles)" />
+    <Delete Files="@(OFiles)" />
+  </Target>
 </Project>
