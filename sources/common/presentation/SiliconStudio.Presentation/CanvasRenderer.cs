@@ -45,6 +45,11 @@ namespace SiliconStudio.Presentation
         private const int MaxPolylinesPerLine = 64;
         private const int MinPointsPerPolyline = 16;
 
+        /// <summary>
+        /// The clip rectangle.
+        /// </summary>
+        private Rect? clip;
+
         public CanvasRenderer(Canvas canvas)
         {
             if (canvas == null) throw new ArgumentNullException(nameof(canvas));
@@ -281,6 +286,23 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
+        /// Resets the clip rectangle.
+        /// </summary>
+        public void ResetClip()
+        {
+            clip = null;
+        }
+
+        /// <summary>
+        /// Sets the clipping rectangle.
+        /// </summary>
+        /// <param name="clippingRect">The clipping rectangle.</param>
+        public void SetClip(Rect clippingRect)
+        {
+            clip = clippingRect;
+        }
+
+        /// <summary>
         /// Creates an element and adds it to the canvas.
         /// </summary>
         /// <typeparam name="TElement"></typeparam>
@@ -288,22 +310,10 @@ namespace SiliconStudio.Presentation
         private TElement Create<TElement>()
             where TElement : UIElement, new()
         {
-            return Create<TElement>(Rect.Empty);
-        }
-
-        /// <summary>
-        /// Creates an element and adds it to the canvas.
-        /// </summary>
-        /// <typeparam name="TElement"></typeparam>
-        /// <param name="clip"></param>
-        /// <returns></returns>
-        private TElement Create<TElement>(Rect clip)
-            where TElement : UIElement, new()
-        {
             var element = new TElement();
-            if (!clip.IsEmpty)
+            if (clip.HasValue && !clip.Value.IsEmpty)
             {
-                element.Clip = new RectangleGeometry(clip);
+                element.Clip = new RectangleGeometry(clip.Value);
             }
             Canvas.Children.Add(element);
             return element;
