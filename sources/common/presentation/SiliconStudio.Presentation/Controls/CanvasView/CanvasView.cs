@@ -198,7 +198,7 @@ namespace SiliconStudio.Presentation.Controls
             // Clear the canvas
             this.renderer.Clear();
             // Render the model
-            this.Model?.Render(renderer, this.ActualHeight, this.ActualWidth);
+            this.Model?.Render(renderer, this.ActualWidth, this.ActualHeight);
         }
     }
 }
