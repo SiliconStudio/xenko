@@ -2,10 +2,13 @@
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
-
+using System.Diagnostics;
+using System.Linq;
 using SiliconStudio.Assets;
 using SiliconStudio.Assets.Compiler;
+using SiliconStudio.BuildEngine;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Settings;
 using SiliconStudio.Xenko.Assets.Textures;
 using SiliconStudio.Xenko.Graphics;
 
@@ -31,23 +34,23 @@ namespace SiliconStudio.Xenko.Assets
             context.Properties.Set(GameSettingsAssetKey, gameSettingsAsset);
         }
 
-        public static IGameSettingsProfile GetGameSettingsForCurrentProfile(this AssetCompilerContext context)
+        public static GraphicsPlatform GetGraphicsPlatform(this AssetCompilerContext context, Package package)
         {
-            var gameSettings = context.GetGameSettingsAsset();
-            IGameSettingsProfile gameSettingsProfile = null;
-            if (gameSettings?.Profiles != null)
+            var buildProfile = package.Profiles.FirstOrDefault(pair => pair.Name == context.Profile);
+            if (buildProfile == null)
             {
-                gameSettings.Profiles.TryGetValue(context.Profile, out gameSettingsProfile);
+                return context.Platform.GetDefaultGraphicsPlatform();
             }
-            // TODO: Return default game settings profile based on the platform
-            return gameSettingsProfile;
-        }
 
-        public static GraphicsPlatform GetGraphicsPlatform(this AssetCompilerContext context)
-        {
-            var  gameSettingsProfile = GetGameSettingsForCurrentProfile(context);
-            var graphicsPlatform =  gameSettingsProfile?.GraphicsPlatform ?? context.Platform.GetDefaultGraphicsPlatform();
-            return graphicsPlatform;
+            var propertyKey = (SettingsKey<GraphicsPlatform >)buildProfile.Properties.Container.GetSettingsKey("Xenko.GraphicsPlatform");
+            if (propertyKey == null)
+            {
+                // For now, graphics platform is implicit.
+                // It will need to be readded to GameSettingsAsset at some point.
+                propertyKey = new SettingsKey<GraphicsPlatform>("Xenko.GraphicsPlatform", buildProfile.Properties.Container, context.Platform.GetDefaultGraphicsPlatform());
+            }
+
+            return propertyKey.GetValue(buildProfile.Properties, true);
         }
 
         public static GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)
