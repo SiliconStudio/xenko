@@ -43,33 +43,33 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void CreateNativeDeviceChild()
         {
-            SharpDX.Direct3D12.SamplerStateDescription nativeDescription;
+            //SharpDX.Direct3D12.SamplerStateDescription nativeDescription;
 
-            nativeDescription.AddressU = (SharpDX.Direct3D12.TextureAddressMode)Description.AddressU;
-            nativeDescription.AddressV = (SharpDX.Direct3D12.TextureAddressMode)Description.AddressV;
-            nativeDescription.AddressW = (SharpDX.Direct3D12.TextureAddressMode)Description.AddressW;
-            nativeDescription.BorderColor = ColorHelper.Convert(Description.BorderColor);
-            nativeDescription.ComparisonFunction = (SharpDX.Direct3D12.Comparison)Description.CompareFunction;
-            nativeDescription.Filter = (SharpDX.Direct3D12.Filter)Description.Filter;
-            nativeDescription.MaximumAnisotropy = Description.MaxAnisotropy;
-            nativeDescription.MaximumLod = Description.MaxMipLevel;
-            nativeDescription.MinimumLod = Description.MinMipLevel;
-            nativeDescription.MipLodBias = Description.MipMapLevelOfDetailBias;
+            //nativeDescription.AddressU = (SharpDX.Direct3D12.TextureAddressMode)Description.AddressU;
+            //nativeDescription.AddressV = (SharpDX.Direct3D12.TextureAddressMode)Description.AddressV;
+            //nativeDescription.AddressW = (SharpDX.Direct3D12.TextureAddressMode)Description.AddressW;
+            //nativeDescription.BorderColor = ColorHelper.Convert(Description.BorderColor);
+            //nativeDescription.ComparisonFunction = (SharpDX.Direct3D12.Comparison)Description.CompareFunction;
+            //nativeDescription.Filter = (SharpDX.Direct3D12.Filter)Description.Filter;
+            //nativeDescription.MaximumAnisotropy = Description.MaxAnisotropy;
+            //nativeDescription.MaximumLod = Description.MaxMipLevel;
+            //nativeDescription.MinimumLod = Description.MinMipLevel;
+            //nativeDescription.MipLodBias = Description.MipMapLevelOfDetailBias;
 
-            // For 9.1, anisotropy cannot be larger then 2
-            // mirror once is not supported either
-            if (GraphicsDevice.Features.Profile == GraphicsProfile.Level_9_1)
-            {
-                // TODO: Min with user-value instead?
-                nativeDescription.MaximumAnisotropy = 2;
+            //// For 9.1, anisotropy cannot be larger then 2
+            //// mirror once is not supported either
+            //if (GraphicsDevice.Features.Profile == GraphicsProfile.Level_9_1)
+            //{
+            //    // TODO: Min with user-value instead?
+            //    nativeDescription.MaximumAnisotropy = 2;
 
-                if (nativeDescription.AddressU == SharpDX.Direct3D12.TextureAddressMode.MirrorOnce)
-                    nativeDescription.AddressU = SharpDX.Direct3D12.TextureAddressMode.Mirror;
-                if (nativeDescription.AddressV == SharpDX.Direct3D12.TextureAddressMode.MirrorOnce)
-                    nativeDescription.AddressV = SharpDX.Direct3D12.TextureAddressMode.Mirror;
-                if (nativeDescription.AddressW == SharpDX.Direct3D12.TextureAddressMode.MirrorOnce)
-                    nativeDescription.AddressW = SharpDX.Direct3D12.TextureAddressMode.Mirror;
-            }
+            //    if (nativeDescription.AddressU == SharpDX.Direct3D12.TextureAddressMode.MirrorOnce)
+            //        nativeDescription.AddressU = SharpDX.Direct3D12.TextureAddressMode.Mirror;
+            //    if (nativeDescription.AddressV == SharpDX.Direct3D12.TextureAddressMode.MirrorOnce)
+            //        nativeDescription.AddressV = SharpDX.Direct3D12.TextureAddressMode.Mirror;
+            //    if (nativeDescription.AddressW == SharpDX.Direct3D12.TextureAddressMode.MirrorOnce)
+            //        nativeDescription.AddressW = SharpDX.Direct3D12.TextureAddressMode.Mirror;
+            //}
         }
     }
 } 

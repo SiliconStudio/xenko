@@ -24,7 +24,7 @@
 using System;
 using System.Globalization;
 using System.Windows.Forms;
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && !SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
 using SharpDX.Win32;
 #endif
 using System.Runtime.InteropServices;

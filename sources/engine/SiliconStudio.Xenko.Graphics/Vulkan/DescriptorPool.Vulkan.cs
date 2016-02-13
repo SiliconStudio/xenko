@@ -8,8 +8,8 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class DescriptorPool
     {
-        internal DescriptorHeap SrvHeap;
-        internal DescriptorHeap SamplerHeap;
+        //internal DescriptorHeap SrvHeap;
+        //internal DescriptorHeap SamplerHeap;
 
         internal int SrvOffset;
         internal int SrvCount;
@@ -33,31 +33,31 @@ namespace SiliconStudio.Xenko.Graphics
                     SrvCount += count.Count;
             }
 
-            if (SrvCount > 0)
-            {
-                SrvHeap = graphicsDevice.NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
-                {
-                    DescriptorCount = SrvCount,
-                    Flags = DescriptorHeapFlags.None,
-                    Type = DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView,
-                });
-            }
+            //if (SrvCount > 0)
+            //{
+            //    SrvHeap = graphicsDevice.NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
+            //    {
+            //        DescriptorCount = SrvCount,
+            //        Flags = DescriptorHeapFlags.None,
+            //        Type = DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView,
+            //    });
+            //}
 
-            if (SamplerCount > 0)
-            {
-                SamplerHeap = graphicsDevice.NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
-                {
-                    DescriptorCount = SamplerCount,
-                    Flags = DescriptorHeapFlags.None,
-                    Type = DescriptorHeapType.Sampler,
-                });
-            }
+            //if (SamplerCount > 0)
+            //{
+            //    SamplerHeap = graphicsDevice.NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
+            //    {
+            //        DescriptorCount = SamplerCount,
+            //        Flags = DescriptorHeapFlags.None,
+            //        Type = DescriptorHeapType.Sampler,
+            //    });
+            //}
         }
 
         protected override void DestroyImpl()
         {
-            GraphicsDevice.TemporaryResources.Add(SrvHeap);
-            GraphicsDevice.TemporaryResources.Add(SamplerHeap);
+            //GraphicsDevice.TemporaryResources.Add(SrvHeap);
+            //GraphicsDevice.TemporaryResources.Add(SamplerHeap);
         }
     }
 }

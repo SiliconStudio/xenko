@@ -13,8 +13,8 @@ namespace SiliconStudio.Xenko.Graphics
         internal readonly int[] BindingOffsets;
         internal readonly DescriptorSetLayout Description;
 
-        internal readonly CpuDescriptorHandle SrvStart;
-        internal readonly CpuDescriptorHandle SamplerStart;
+        //internal readonly CpuDescriptorHandle SrvStart;
+        //internal readonly CpuDescriptorHandle SamplerStart;
 
         private DescriptorSet(GraphicsDevice graphicsDevice, DescriptorPool pool, DescriptorSetLayout desc)
         {
@@ -28,8 +28,8 @@ namespace SiliconStudio.Xenko.Graphics
             }
 
             // Store start CpuDescriptorHandle
-            SrvStart = desc.SrvCount > 0 ? (pool.SrvHeap.CPUDescriptorHandleForHeapStart + graphicsDevice.SrvHandleIncrementSize * pool.SrvOffset) : new CpuDescriptorHandle();
-            SamplerStart = desc.SamplerCount > 0 ? (pool.SamplerHeap.CPUDescriptorHandleForHeapStart + graphicsDevice.SamplerHandleIncrementSize * pool.SamplerOffset) : new CpuDescriptorHandle();
+            //SrvStart = desc.SrvCount > 0 ? (pool.SrvHeap.CPUDescriptorHandleForHeapStart + graphicsDevice.SrvHandleIncrementSize * pool.SrvOffset) : new CpuDescriptorHandle();
+            //SamplerStart = desc.SamplerCount > 0 ? (pool.SamplerHeap.CPUDescriptorHandleForHeapStart + graphicsDevice.SamplerHandleIncrementSize * pool.SamplerOffset) : new CpuDescriptorHandle();
 
             // Allocation is done, bump offsets
             // TODO D3D12 thread safety?
@@ -58,7 +58,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="shaderResourceView">The shader resource view.</param>
         public void SetShaderResourceView(int slot, GraphicsResource shaderResourceView)
         {
-            Device.NativeDevice.CopyDescriptorsSimple(1, SrvStart + BindingOffsets[slot], shaderResourceView.NativeShaderResourceView, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
+            //Device.NativeDevice.CopyDescriptorsSimple(1, SrvStart + BindingOffsets[slot], shaderResourceView.NativeShaderResourceView, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
         }
 
         /// <summary>
@@ -81,11 +81,11 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="size">The constant buffer view size.</param>
         public void SetConstantBuffer(int slot, Buffer buffer, int offset, int size)
         {
-            Device.NativeDevice.CreateConstantBufferView(new ConstantBufferViewDescription
-            {
-                BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
-                SizeInBytes = (size + 255) & ~255, // CB size needs to be 256-byte aligned
-            }, SrvStart + BindingOffsets[slot]);
+            //Device.NativeDevice.CreateConstantBufferView(new ConstantBufferViewDescription
+            //{
+            //    BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
+            //    SizeInBytes = (size + 255) & ~255, // CB size needs to be 256-byte aligned
+            //}, SrvStart + BindingOffsets[slot]);
         }
 
         /// <summary>

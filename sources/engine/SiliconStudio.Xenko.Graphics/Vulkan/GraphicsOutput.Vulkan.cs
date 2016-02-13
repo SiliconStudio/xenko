@@ -29,7 +29,6 @@ using SharpVulkan;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 
-using ResultCode = SharpDX.DXGI.ResultCode;
 
 namespace SiliconStudio.Xenko.Graphics
 {
@@ -42,8 +41,8 @@ namespace SiliconStudio.Xenko.Graphics
     public partial class GraphicsOutput
     {
         private readonly int outputIndex;
-        private readonly Output output;
-        private readonly OutputDescription outputDescription;
+        //private readonly Output output;
+        //private readonly OutputDescription outputDescription;
 
         /// <summary>
         /// Initializes a new instance of <see cref="GraphicsOutput" />.
@@ -56,16 +55,16 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (adapter == null) throw new ArgumentNullException("adapter");
 
-            this.outputIndex = outputIndex;
-            this.adapter = adapter;
-            this.output = adapter.NativeAdapter.GetOutput(outputIndex).DisposeBy(this);
-            outputDescription = output.Description;
+            //this.outputIndex = outputIndex;
+            //this.adapter = adapter;
+            //this.output = adapter.NativeAdapter.GetOutput(outputIndex).DisposeBy(this);
+            //outputDescription = output.Description;
 
-            unsafe
-            {
-                var rectangle = outputDescription.DesktopBounds;
-                desktopBounds = *(Rectangle*)&rectangle;
-            }
+            //unsafe
+            //{
+            //    var rectangle = outputDescription.DesktopBounds;
+            //    desktopBounds = *(Rectangle*)&rectangle;
+            //}
         }
 
         /// <summary>
@@ -80,37 +79,38 @@ namespace SiliconStudio.Xenko.Graphics
         {
             if (targetProfiles == null) throw new ArgumentNullException("targetProfiles");
 
-            ModeDescription closestDescription;
-            SharpDX.Direct3D12.Device deviceTemp = null;
-            for (int i = 0; i < targetProfiles.Length; i++)
-            {
-                // Create Device D3D12 with feature Level based on profile
-                try
-                {
-                    deviceTemp = new SharpDX.Direct3D12.Device(Adapter.NativeAdapter, (FeatureLevel)targetProfiles[i]);
-                    break;
-                }
-                catch (Exception)
-                {
-                }
-            }
+            //ModeDescription closestDescription;
+            //SharpDX.Direct3D12.Device deviceTemp = null;
+            //for (int i = 0; i < targetProfiles.Length; i++)
+            //{
+            //    // Create Device D3D12 with feature Level based on profile
+            //    try
+            //    {
+            //        deviceTemp = new SharpDX.Direct3D12.Device(Adapter.NativeAdapter, (FeatureLevel)targetProfiles[i]);
+            //        break;
+            //    }
+            //    catch (Exception)
+            //    {
+            //    }
+            //}
 
-            if (deviceTemp == null)
-                throw new InvalidOperationException("Could not create D3D12 graphics device");
+            //if (deviceTemp == null)
+            //    throw new InvalidOperationException("Could not create D3D12 graphics device");
 
-            var description = new SharpDX.DXGI.ModeDescription()
-            {
-                Width = mode.Width,
-                Height = mode.Height,
-                RefreshRate = mode.RefreshRate.ToSharpDX(),
-                Format = (SharpDX.DXGI.Format)mode.Format,
-                Scaling = DisplayModeScaling.Unspecified,
-                ScanlineOrdering = DisplayModeScanlineOrder.Unspecified
-            };
-            using (var device = deviceTemp)
-                output.GetClosestMatchingMode(device, description, out closestDescription);
+            //var description = new SharpDX.DXGI.ModeDescription()
+            //{
+            //    Width = mode.Width,
+            //    Height = mode.Height,
+            //    RefreshRate = mode.RefreshRate.ToSharpDX(),
+            //    Format = (SharpDX.DXGI.Format)mode.Format,
+            //    Scaling = DisplayModeScaling.Unspecified,
+            //    ScanlineOrdering = DisplayModeScanlineOrder.Unspecified
+            //};
+            //using (var device = deviceTemp)
+            //    output.GetClosestMatchingMode(device, description, out closestDescription);
 
-            return DisplayMode.FromDescription(closestDescription);
+            //return DisplayMode.FromDescription(closestDescription);
+            return default(DisplayMode);
         }
 
         /// <summary>
@@ -119,19 +119,19 @@ namespace SiliconStudio.Xenko.Graphics
         /// <msdn-id>bb173068</msdn-id>	
         /// <unmanaged>HMONITOR Monitor</unmanaged>	
         /// <unmanaged-short>HMONITOR Monitor</unmanaged-short>	
-        public IntPtr MonitorHandle { get { return outputDescription.MonitorHandle; } }
+        //public IntPtr MonitorHandle { get { return outputDescription.MonitorHandle; } }
 
         /// <summary>
         /// Gets the native output.
         /// </summary>
         /// <value>The native output.</value>
-        internal Output NativeOutput
-        {
-            get
-            {
-                return output;
-            }
-        }
+        //internal Output NativeOutput
+        //{
+        //    get
+        //    {
+        //        return output;
+        //    }
+        //}
 
         /// <summary>
         /// Enumerates all available display modes for this output and stores them in <see cref="SupportedDisplayModes"/>.
@@ -141,46 +141,46 @@ namespace SiliconStudio.Xenko.Graphics
             var modesAvailable = new List<DisplayMode>();
             var modesMap = new Dictionary<string, DisplayMode>();
 
-#if DIRECTX11_1
-            var output1 = output.QueryInterface<Output1>();
-#endif
+//#if DIRECTX11_1
+//            var output1 = output.QueryInterface<Output1>();
+//#endif
 
-            try
-            {
-                const DisplayModeEnumerationFlags displayModeEnumerationFlags = DisplayModeEnumerationFlags.Interlaced | DisplayModeEnumerationFlags.Scaling;
+//            try
+//            {
+//                const DisplayModeEnumerationFlags displayModeEnumerationFlags = DisplayModeEnumerationFlags.Interlaced | DisplayModeEnumerationFlags.Scaling;
 
-                foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))
-                {
-                    var dxgiFormat = (Format)format;
-#if DIRECTX11_1
-                    var modes = output1.GetDisplayModeList1(dxgiFormat, displayModeEnumerationFlags);
-#else
-                    var modes = output.GetDisplayModeList(dxgiFormat, displayModeEnumerationFlags);
-#endif
+//                foreach (var format in Enum.GetValues(typeof(SharpDX.DXGI.Format)))
+//                {
+//                    var dxgiFormat = (Format)format;
+//#if DIRECTX11_1
+//                    var modes = output1.GetDisplayModeList1(dxgiFormat, displayModeEnumerationFlags);
+//#else
+//                    var modes = output.GetDisplayModeList(dxgiFormat, displayModeEnumerationFlags);
+//#endif
 
-                    foreach (var mode in modes)
-                    {
-                        if (mode.Scaling == DisplayModeScaling.Unspecified)
-                        {
-                            var key = format + ";" + mode.Width + ";" + mode.Height + ";" + mode.RefreshRate.Numerator + ";" + mode.RefreshRate.Denominator;
+//                    foreach (var mode in modes)
+//                    {
+//                        if (mode.Scaling == DisplayModeScaling.Unspecified)
+//                        {
+//                            var key = format + ";" + mode.Width + ";" + mode.Height + ";" + mode.RefreshRate.Numerator + ";" + mode.RefreshRate.Denominator;
 
-                            DisplayMode oldMode;
-                            if (!modesMap.TryGetValue(key, out oldMode))
-                            {
-                                var displayMode = DisplayMode.FromDescription(mode);
+//                            DisplayMode oldMode;
+//                            if (!modesMap.TryGetValue(key, out oldMode))
+//                            {
+//                                var displayMode = DisplayMode.FromDescription(mode);
 
-                                modesMap.Add(key, displayMode);
-                                modesAvailable.Add(displayMode);
-                            }
-                        }
-                    }
-                }
-            }
-            catch (SharpDX.SharpDXException dxgiException)
-            {
-                if (dxgiException.ResultCode != ResultCode.NotCurrentlyAvailable)
-                    throw;
-            }
+//                                modesMap.Add(key, displayMode);
+//                                modesAvailable.Add(displayMode);
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            catch (SharpDX.SharpDXException dxgiException)
+//            {
+//                if (dxgiException.ResultCode != ResultCode.NotCurrentlyAvailable)
+//                    throw;
+//            }
 
 #if DIRECTX11_1
             output1.Dispose();
@@ -195,8 +195,8 @@ namespace SiliconStudio.Xenko.Graphics
         /// if it is not found - it checks for <see cref="Format.B8G8R8A8_UNorm"/>.</remarks>
         private void InitializeCurrentDisplayMode()
         {
-            currentDisplayMode = TryFindMatchingDisplayMode(Format.R8G8B8A8_UNorm)
-                                 ?? TryFindMatchingDisplayMode(Format.B8G8R8A8_UNorm);
+            //currentDisplayMode = TryFindMatchingDisplayMode(Format.R8G8B8A8_UNorm)
+            //                     ?? TryFindMatchingDisplayMode(Format.B8G8R8A8_UNorm);
         }
 
         /// <summary>
@@ -207,21 +207,21 @@ namespace SiliconStudio.Xenko.Graphics
         /// <returns>A matched <see cref="DisplayMode"/> or null if nothing is found.</returns>
         private DisplayMode TryFindMatchingDisplayMode(Format format)
         {
-            var desktopBounds = outputDescription.DesktopBounds;
+            //var desktopBounds = outputDescription.DesktopBounds;
 
-            foreach (var supportedDisplayMode in SupportedDisplayModes)
-            {
-                var width = desktopBounds.Right - desktopBounds.Left;
-                var height = desktopBounds.Bottom - desktopBounds.Top;
+            //foreach (var supportedDisplayMode in SupportedDisplayModes)
+            //{
+            //    var width = desktopBounds.Right - desktopBounds.Left;
+            //    var height = desktopBounds.Bottom - desktopBounds.Top;
 
-                if (supportedDisplayMode.Width == width
-                    && supportedDisplayMode.Height == height
-                    && (Format)supportedDisplayMode.Format == format)
-                {
-                    // Stupid DXGI, there is no way to get the DXGI.Format, nor the refresh rate.
-                    return new DisplayMode((PixelFormat)format, width, height, supportedDisplayMode.RefreshRate);
-                }
-            }
+            //    if (supportedDisplayMode.Width == width
+            //        && supportedDisplayMode.Height == height
+            //        && (Format)supportedDisplayMode.Format == format)
+            //    {
+            //        // Stupid DXGI, there is no way to get the DXGI.Format, nor the refresh rate.
+            //        return new DisplayMode((PixelFormat)format, width, height, supportedDisplayMode.RefreshRate);
+            //    }
+            //}
 
             return null;
         }

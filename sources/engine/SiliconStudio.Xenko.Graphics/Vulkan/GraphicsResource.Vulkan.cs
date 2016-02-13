@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public abstract partial class GraphicsResource
     {
-        internal CpuDescriptorHandle NativeShaderResourceView;
+        //internal CpuDescriptorHandle NativeShaderResourceView;
 
         protected bool IsDebugMode
         {

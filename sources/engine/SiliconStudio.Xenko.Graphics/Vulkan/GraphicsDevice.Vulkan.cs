@@ -20,27 +20,27 @@ namespace SiliconStudio.Xenko.Graphics
 
         private bool simulateReset = false;
 
-        private SharpDX.Direct3D12.Device nativeDevice;
-        internal CommandQueue NativeCommandQueue;
+        private SharpVulkan.Device nativeDevice;
+        //internal CommandQueue NativeCommandQueue;
 
-        internal CommandAllocator NativeCopyCommandAllocator;
-        internal GraphicsCommandList NativeCopyCommandList;
+        //internal CommandAllocator NativeCopyCommandAllocator;
+        //internal GraphicsCommandList NativeCopyCommandList;
 
-        internal DescriptorAllocator ShaderResourceViewAllocator;
-        internal DescriptorAllocator DepthStencilViewAllocator;
-        internal DescriptorAllocator RenderTargetViewAllocator;
+        //internal DescriptorAllocator ShaderResourceViewAllocator;
+        //internal DescriptorAllocator DepthStencilViewAllocator;
+        //internal DescriptorAllocator RenderTargetViewAllocator;
 
-        private SharpDX.Direct3D12.Resource nativeUploadBuffer;
-        private IntPtr nativeUploadBufferStart;
-        private int nativeUploadBufferOffset;
+        //private SharpDX.Direct3D12.Resource nativeUploadBuffer;
+        //private IntPtr nativeUploadBufferStart;
+        //private int nativeUploadBufferOffset;
 
         internal int SrvHandleIncrementSize;
         internal int SamplerHandleIncrementSize;
 
-        private Fence nativeFence;
-        private int fenceValue = 1;
-        private AutoResetEvent fenceEvent = new AutoResetEvent(false);
-        internal List<SharpDX.Direct3D12.Pageable> TemporaryResources = new List<SharpDX.Direct3D12.Pageable>();
+        //private Fence nativeFence;
+        //private int fenceValue = 1;
+        //private AutoResetEvent fenceEvent = new AutoResetEvent(false);
+        //internal List<SharpDX.Direct3D12.Pageable> TemporaryResources = new List<SharpDX.Direct3D12.Pageable>();
 
         /// <summary>
         ///     Gets the status of this device.
@@ -56,36 +56,36 @@ namespace SiliconStudio.Xenko.Graphics
                     return GraphicsDeviceStatus.Reset;
                 }
 
-                var result = NativeDevice.DeviceRemovedReason;
-                if (result == SharpDX.DXGI.ResultCode.DeviceRemoved)
-                {
-                    return GraphicsDeviceStatus.Removed;
-                }
+                //var result = NativeDevice.DeviceRemovedReason;
+                //if (result == SharpDX.DXGI.ResultCode.DeviceRemoved)
+                //{
+                //    return GraphicsDeviceStatus.Removed;
+                //}
 
-                if (result == SharpDX.DXGI.ResultCode.DeviceReset)
-                {
-                    return GraphicsDeviceStatus.Reset;
-                }
+                //if (result == SharpDX.DXGI.ResultCode.DeviceReset)
+                //{
+                //    return GraphicsDeviceStatus.Reset;
+                //}
 
-                if (result == SharpDX.DXGI.ResultCode.DeviceHung)
-                {
-                    return GraphicsDeviceStatus.Hung;
-                }
+                //if (result == SharpDX.DXGI.ResultCode.DeviceHung)
+                //{
+                //    return GraphicsDeviceStatus.Hung;
+                //}
 
-                if (result == SharpDX.DXGI.ResultCode.DriverInternalError)
-                {
-                    return GraphicsDeviceStatus.InternalError;
-                }
+                //if (result == SharpDX.DXGI.ResultCode.DriverInternalError)
+                //{
+                //    return GraphicsDeviceStatus.InternalError;
+                //}
 
-                if (result == SharpDX.DXGI.ResultCode.InvalidCall)
-                {
-                    return GraphicsDeviceStatus.InvalidCall;
-                }
+                //if (result == SharpDX.DXGI.ResultCode.InvalidCall)
+                //{
+                //    return GraphicsDeviceStatus.InvalidCall;
+                //}
 
-                if (result.Code < 0)
-                {
-                    return GraphicsDeviceStatus.Reset;
-                }
+                //if (result.Code < 0)
+                //{
+                //    return GraphicsDeviceStatus.Reset;
+                //}
 
                 return GraphicsDeviceStatus.Normal;
             }
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Graphics
         ///     Gets the native device.
         /// </summary>
         /// <value>The native device.</value>
-        internal SharpDX.Direct3D12.Device NativeDevice
+        internal SharpVulkan.Device NativeDevice
         {
             get
             {
@@ -157,103 +157,103 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="windowHandle">The window handle.</param>
         private void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, object windowHandle)
         {
-            if (nativeDevice != null)
-            {
-                // Destroy previous device
-                ReleaseDevice();
-            }
+            //if (nativeDevice != null)
+            //{
+            //    // Destroy previous device
+            //    ReleaseDevice();
+            //}
 
-            // Profiling is supported through pix markers
-            IsProfilingSupported = true;
+            //// Profiling is supported through pix markers
+            //IsProfilingSupported = true;
 
-            // Map GraphicsProfile to D3D11 FeatureLevel
-            SharpDX.Direct3D.FeatureLevel[] levels = graphicsProfiles.ToFeatureLevel();
-            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
-            {
-                SharpDX.Direct3D12.DebugInterface.Get().EnableDebugLayer();
-            }
+            //// Map GraphicsProfile to D3D11 FeatureLevel
+            //SharpDX.Direct3D.FeatureLevel[] levels = graphicsProfiles.ToFeatureLevel();
+            //if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
+            //{
+            //    SharpDX.Direct3D12.DebugInterface.Get().EnableDebugLayer();
+            //}
 
-            // Create Device D3D12 with feature Level based on profile
-            foreach (var level in levels)
-            {
-                try
-                {
-                    nativeDevice = new SharpDX.Direct3D12.Device(Adapter.NativeAdapter, level);
-                    break;
-                }
-                catch (Exception)
-                {
-                    continue;
-                }
-            }
-            if (nativeDevice == null)
-                throw new InvalidOperationException("Could not create D3D12 graphics device");
+            //// Create Device D3D12 with feature Level based on profile
+            //foreach (var level in levels)
+            //{
+            //    try
+            //    {
+            //        nativeDevice = new SharpDX.Direct3D12.Device(Adapter.NativeAdapter, level);
+            //        break;
+            //    }
+            //    catch (Exception)
+            //    {
+            //        continue;
+            //    }
+            //}
+            //if (nativeDevice == null)
+            //    throw new InvalidOperationException("Could not create D3D12 graphics device");
 
-            // Describe and create the command queue.
-            var queueDesc = new SharpDX.Direct3D12.CommandQueueDescription(SharpDX.Direct3D12.CommandListType.Direct);
-            NativeCommandQueue = nativeDevice.CreateCommandQueue(queueDesc);
+            //// Describe and create the command queue.
+            //var queueDesc = new SharpDX.Direct3D12.CommandQueueDescription(SharpDX.Direct3D12.CommandListType.Direct);
+            //NativeCommandQueue = nativeDevice.CreateCommandQueue(queueDesc);
 
-            SrvHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
-            SamplerHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.Sampler);
+            //SrvHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
+            //SamplerHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.Sampler);
 
-            // Prepare descriptor allocators
-            ShaderResourceViewAllocator = new DescriptorAllocator(this, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
-            DepthStencilViewAllocator = new DescriptorAllocator(this, DescriptorHeapType.DepthStencilView);
-            RenderTargetViewAllocator = new DescriptorAllocator(this, DescriptorHeapType.RenderTargetView);
+            //// Prepare descriptor allocators
+            //ShaderResourceViewAllocator = new DescriptorAllocator(this, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
+            //DepthStencilViewAllocator = new DescriptorAllocator(this, DescriptorHeapType.DepthStencilView);
+            //RenderTargetViewAllocator = new DescriptorAllocator(this, DescriptorHeapType.RenderTargetView);
 
-            // Prepare copy command list (start it closed, so that every new use start with a Reset)
-            NativeCopyCommandAllocator = NativeDevice.CreateCommandAllocator(CommandListType.Direct);
-            NativeCopyCommandList = NativeDevice.CreateCommandList(CommandListType.Direct, NativeCopyCommandAllocator, null);
-            NativeCopyCommandList.Close();
+            //// Prepare copy command list (start it closed, so that every new use start with a Reset)
+            //NativeCopyCommandAllocator = NativeDevice.CreateCommandAllocator(CommandListType.Direct);
+            //NativeCopyCommandList = NativeDevice.CreateCommandList(CommandListType.Direct, NativeCopyCommandAllocator, null);
+            //NativeCopyCommandList.Close();
 
-            // Fence for next frame and resource cleaning
-            nativeFence = NativeDevice.CreateFence(0, FenceFlags.None);
+            //// Fence for next frame and resource cleaning
+            //nativeFence = NativeDevice.CreateFence(0, FenceFlags.None);
         }
 
-        internal IntPtr AllocateUploadBuffer(int size, out SharpDX.Direct3D12.Resource resource, out int offset)
-        {
-            // TODO D3D12 thread safety, should we simply use locks?
-            if (nativeUploadBuffer == null || nativeUploadBufferOffset + size > nativeUploadBuffer.Description.Width)
-            {
-                // Allocate new buffer
-                // TODO D3D12 recycle old ones (using fences to know when GPU is done with them)
-                // TODO D3D12 ResourceStates.CopySource not working?
-                var bufferSize = Math.Max(4 * 1024*1024, size);
-                nativeUploadBuffer = NativeDevice.CreateCommittedResource(new HeapProperties(HeapType.Upload), HeapFlags.None, ResourceDescription.Buffer(bufferSize), ResourceStates.GenericRead);
-                TemporaryResources.Add(nativeUploadBuffer);
-                nativeUploadBufferStart = nativeUploadBuffer.Map(0);
-                nativeUploadBufferOffset = 0;
-            }
+        //internal IntPtr AllocateUploadBuffer(int size, out SharpDX.Direct3D12.Resource resource, out int offset)
+        //{
+        //    // TODO D3D12 thread safety, should we simply use locks?
+        //    if (nativeUploadBuffer == null || nativeUploadBufferOffset + size > nativeUploadBuffer.Description.Width)
+        //    {
+        //        // Allocate new buffer
+        //        // TODO D3D12 recycle old ones (using fences to know when GPU is done with them)
+        //        // TODO D3D12 ResourceStates.CopySource not working?
+        //        var bufferSize = Math.Max(4 * 1024*1024, size);
+        //        nativeUploadBuffer = NativeDevice.CreateCommittedResource(new HeapProperties(HeapType.Upload), HeapFlags.None, ResourceDescription.Buffer(bufferSize), ResourceStates.GenericRead);
+        //        TemporaryResources.Add(nativeUploadBuffer);
+        //        nativeUploadBufferStart = nativeUploadBuffer.Map(0);
+        //        nativeUploadBufferOffset = 0;
+        //    }
 
-            // Bump allocate
-            resource = nativeUploadBuffer;
-            offset = nativeUploadBufferOffset;
-            nativeUploadBufferOffset += size;
-            return nativeUploadBufferStart + offset;
-        }
+        //    // Bump allocate
+        //    resource = nativeUploadBuffer;
+        //    offset = nativeUploadBufferOffset;
+        //    nativeUploadBufferOffset += size;
+        //    return nativeUploadBufferStart + offset;
+        //}
 
         internal void ReleaseTemporaryResources()
         {
-            // Wait for frame to be finished
-            int localFence = fenceValue;
-            NativeCommandQueue.Signal(this.nativeFence, localFence);
-            fenceValue++;
+            //// Wait for frame to be finished
+            //int localFence = fenceValue;
+            //NativeCommandQueue.Signal(this.nativeFence, localFence);
+            //fenceValue++;
 
-            // Wait until the previous frame is finished.
-            if (nativeFence.CompletedValue < localFence)
-            {
-                nativeFence.SetEventOnCompletion(localFence, fenceEvent.SafeWaitHandle.DangerousGetHandle());
-                fenceEvent.WaitOne();
-            }
+            //// Wait until the previous frame is finished.
+            //if (nativeFence.CompletedValue < localFence)
+            //{
+            //    nativeFence.SetEventOnCompletion(localFence, fenceEvent.SafeWaitHandle.DangerousGetHandle());
+            //    fenceEvent.WaitOne();
+            //}
 
-            // Release previous frame resources
-            foreach (var resource in TemporaryResources)
-            {
-                resource.Dispose();
-            }
-            nativeUploadBuffer = null;
+            //// Release previous frame resources
+            //foreach (var resource in TemporaryResources)
+            //{
+            //    resource.Dispose();
+            //}
+            //nativeUploadBuffer = null;
 
-            TemporaryResources.Clear();
+            //TemporaryResources.Clear();
         }
 
         protected void DestroyPlatformDevice()
@@ -263,7 +263,7 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void ReleaseDevice()
         {
-            nativeDevice.Dispose();
+            //nativeDevice.Dispose();
         }
 
         internal void OnDestroyed()
@@ -275,44 +275,44 @@ namespace SiliconStudio.Xenko.Graphics
         /// </summary>
         internal class DescriptorAllocator
         {
-            private const int DescriptorPerHeap = 256;
+            //private const int DescriptorPerHeap = 256;
 
-            private GraphicsDevice device;
-            private DescriptorHeapType descriptorHeapType;
-            private DescriptorHeap currentHeap;
-            private CpuDescriptorHandle currentHandle;
-            private int remainingHandles;
-            private readonly int descriptorSize;
+            //private GraphicsDevice device;
+            //private DescriptorHeapType descriptorHeapType;
+            //private DescriptorHeap currentHeap;
+            //private CpuDescriptorHandle currentHandle;
+            //private int remainingHandles;
+            //private readonly int descriptorSize;
 
-            public DescriptorAllocator(GraphicsDevice device, DescriptorHeapType descriptorHeapType)
-            {
-                this.device = device;
-                this.descriptorHeapType = descriptorHeapType;
-                this.descriptorSize = device.NativeDevice.GetDescriptorHandleIncrementSize(descriptorHeapType);
-            }
+            //public DescriptorAllocator(GraphicsDevice device, DescriptorHeapType descriptorHeapType)
+            //{
+            //    this.device = device;
+            //    this.descriptorHeapType = descriptorHeapType;
+            //    this.descriptorSize = device.NativeDevice.GetDescriptorHandleIncrementSize(descriptorHeapType);
+            //}
 
-            public CpuDescriptorHandle Allocate(int count)
-            {
-                if (currentHeap == null || remainingHandles < count)
-                {
-                    currentHeap = device.NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
-                    {
-                        Flags = DescriptorHeapFlags.None,
-                        Type = descriptorHeapType,
-                        DescriptorCount = DescriptorPerHeap,
-                        NodeMask = 1,
-                    });
-                    remainingHandles = DescriptorPerHeap;
-                    currentHandle = currentHeap.CPUDescriptorHandleForHeapStart;
-                }
+            //public CpuDescriptorHandle Allocate(int count)
+            //{
+            //    if (currentHeap == null || remainingHandles < count)
+            //    {
+            //        currentHeap = device.NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
+            //        {
+            //            Flags = DescriptorHeapFlags.None,
+            //            Type = descriptorHeapType,
+            //            DescriptorCount = DescriptorPerHeap,
+            //            NodeMask = 1,
+            //        });
+            //        remainingHandles = DescriptorPerHeap;
+            //        currentHandle = currentHeap.CPUDescriptorHandleForHeapStart;
+            //    }
 
-                var result = currentHandle;
+            //    var result = currentHandle;
 
-                currentHandle.Ptr += descriptorSize;
-                remainingHandles -= count;
+            //    currentHandle.Ptr += descriptorSize;
+            //    remainingHandles -= count;
 
-                return result;
-            }
+            //    return result;
+            //}
         }
     }
 }

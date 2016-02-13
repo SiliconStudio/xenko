@@ -35,7 +35,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// </remarks>
     public partial struct GraphicsDeviceFeatures
     {
-        private readonly static List<SharpDX.DXGI.Format> ObsoleteFormatToExcludes = new List<SharpDX.DXGI.Format>() { Format.R1_UNorm, Format.B5G6R5_UNorm, Format.B5G5R5A1_UNorm };
+        //private readonly static List<SharpDX.DXGI.Format> ObsoleteFormatToExcludes = new List<SharpDX.DXGI.Format>() { Format.R1_UNorm, Format.B5G6R5_UNorm, Format.B5G5R5A1_UNorm };
 
         internal GraphicsDeviceFeatures(GraphicsDevice deviceRoot)
         {
@@ -47,11 +47,11 @@ namespace SiliconStudio.Xenko.Graphics
 
             // Set back the real GraphicsProfile that is used
             // TODO D3D12
-            Profile = GraphicsProfileHelper.FromFeatureLevel(FeatureLevel.Level_11_0);
+            Profile = GraphicsProfile.Level_11_0;//GraphicsProfileHelper.FromFeatureLevel(FeatureLevel.Level_11_0);
 
             // TODO D3D12
             HasComputeShaders = true;
-            HasDoublePrecision = nativeDevice.D3D12Options.DoublePrecisionFloatShaderOps;
+            HasDoublePrecision = false;//nativeDevice.D3D12Options.DoublePrecisionFloatShaderOps;
 
             HasMultiThreadingConcurrentResources = true;
             HasDriverCommandLists = true;

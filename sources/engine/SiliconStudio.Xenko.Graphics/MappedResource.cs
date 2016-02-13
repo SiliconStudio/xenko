@@ -5,7 +5,7 @@ namespace SiliconStudio.Xenko.Graphics
     /// <summary>
     /// A GPU resource mapped for CPU access. This is returned by using <see cref="GraphicsDevice.MapSubresource"/>
     /// </summary>
-    public struct MappedResource
+    public partial struct MappedResource
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="MappedResource"/> struct.

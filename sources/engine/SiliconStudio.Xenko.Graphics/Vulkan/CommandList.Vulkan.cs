@@ -14,26 +14,26 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class CommandList
     {
-        private CommandAllocator nativeCommandAllocator;
-        internal GraphicsCommandList NativeCommandList;
+        //private CommandAllocator nativeCommandAllocator;
+        //internal GraphicsCommandList NativeCommandList;
 
-        private const int SrvHeapSize = 2048;
-        private DescriptorHeap srvHeap;
-        private int srvHeapOffset = SrvHeapSize;
-        private const int SamplerHeapSize = 64;
-        private DescriptorHeap samplerHeap;
-        private int samplerHeapOffset = SamplerHeapSize;
+        //private const int SrvHeapSize = 2048;
+        //private DescriptorHeap srvHeap;
+        //private int srvHeapOffset = SrvHeapSize;
+        //private const int SamplerHeapSize = 64;
+        //private DescriptorHeap samplerHeap;
+        //private int samplerHeapOffset = SamplerHeapSize;
 
-        private PipelineState boundPipelineState;
-        private DescriptorHeap[] descriptorHeaps = new DescriptorHeap[2];
+        //private PipelineState boundPipelineState;
+        //private DescriptorHeap[] descriptorHeaps = new DescriptorHeap[2];
 
-        private Dictionary<IntPtr, GpuDescriptorHandle> srvMapping = new Dictionary<IntPtr, GpuDescriptorHandle>();
-        private Dictionary<IntPtr, GpuDescriptorHandle> samplerMapping = new Dictionary<IntPtr, GpuDescriptorHandle>();
+        //private Dictionary<IntPtr, GpuDescriptorHandle> srvMapping = new Dictionary<IntPtr, GpuDescriptorHandle>();
+        //private Dictionary<IntPtr, GpuDescriptorHandle> samplerMapping = new Dictionary<IntPtr, GpuDescriptorHandle>();
 
         public CommandList(GraphicsDevice device) : base(device)
         {
-            nativeCommandAllocator = device.NativeDevice.CreateCommandAllocator(CommandListType.Direct);
-            NativeCommandList = device.NativeDevice.CreateCommandList(CommandListType.Direct, nativeCommandAllocator, null);
+            //nativeCommandAllocator = device.NativeDevice.CreateCommandAllocator(CommandListType.Direct);
+            //NativeCommandList = device.NativeDevice.CreateCommandList(CommandListType.Direct, nativeCommandAllocator, null);
 
             ResetSrvHeap();
             ResetSamplerHeap();
@@ -41,29 +41,29 @@ namespace SiliconStudio.Xenko.Graphics
 
         public void Reset()
         {
-            GraphicsDevice.ReleaseTemporaryResources();
+            //GraphicsDevice.ReleaseTemporaryResources();
 
-            ResetSrvHeap();
-            ResetSamplerHeap();
+            //ResetSrvHeap();
+            //ResetSamplerHeap();
 
-            // Clear descriptor mappings
-            srvMapping.Clear();
-            samplerMapping.Clear();
+            //// Clear descriptor mappings
+            //srvMapping.Clear();
+            //samplerMapping.Clear();
 
-            nativeCommandAllocator.Reset();
-            NativeCommandList.Reset(nativeCommandAllocator, null);
+            //nativeCommandAllocator.Reset();
+            //NativeCommandList.Reset(nativeCommandAllocator, null);
 
-            // TODO D3D12 This should happen at beginning of frame only on main command list
-            NativeCommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer.NativeResource, ResourceStates.Present, ResourceStates.RenderTarget);
+            //// TODO D3D12 This should happen at beginning of frame only on main command list
+            //NativeCommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer.NativeResource, ResourceStates.Present, ResourceStates.RenderTarget);
         }
 
         public void Close()
         {
-            // TODO D3D12 This should happen at end of frame only on main command list
-            NativeCommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer.NativeResource, ResourceStates.RenderTarget, ResourceStates.Present);
+            //// TODO D3D12 This should happen at end of frame only on main command list
+            //NativeCommandList.ResourceBarrierTransition(GraphicsDevice.Presenter.BackBuffer.NativeResource, ResourceStates.RenderTarget, ResourceStates.Present);
 
-            NativeCommandList.Close();
-            GraphicsDevice.NativeCommandQueue.ExecuteCommandList(NativeCommandList);
+            //NativeCommandList.Close();
+            //GraphicsDevice.NativeCommandQueue.ExecuteCommandList(NativeCommandList);
         }
 
         private void ClearStateImpl()
@@ -85,22 +85,22 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentNullException">renderTargetViews</exception>
         private void SetDepthAndRenderTargetsImpl(Texture depthStencilBuffer, Texture[] renderTargets)
         {
-            // TODO D3D12 we don't have a way to provide array + size with SharpDX
-            var renderTargetLength = renderTargets.Length;
-            for (int i = 0; i < renderTargets.Length; ++i)
-            {
-                if (renderTargets[i] == null)
-                {
-                    renderTargetLength = i;
-                    break;
-                }
-            }
-            var renderTargetHandles = new CpuDescriptorHandle[renderTargetLength];
-            for (int i = 0; i < renderTargetHandles.Length; ++i)
-            {
-                renderTargetHandles[i] = renderTargets[i].NativeRenderTargetView;
-            }
-            NativeCommandList.SetRenderTargets(renderTargetHandles, depthStencilBuffer?.NativeDepthStencilView);
+            //// TODO D3D12 we don't have a way to provide array + size with SharpDX
+            //var renderTargetLength = renderTargets.Length;
+            //for (int i = 0; i < renderTargets.Length; ++i)
+            //{
+            //    if (renderTargets[i] == null)
+            //    {
+            //        renderTargetLength = i;
+            //        break;
+            //    }
+            //}
+            //var renderTargetHandles = new CpuDescriptorHandle[renderTargetLength];
+            //for (int i = 0; i < renderTargetHandles.Length; ++i)
+            //{
+            //    renderTargetHandles[i] = renderTargets[i].NativeRenderTargetView;
+            //}
+            //NativeCommandList.SetRenderTargets(renderTargetHandles, depthStencilBuffer?.NativeDepthStencilView);
         }
 
         /// <summary>
@@ -158,149 +158,149 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException">Cannot GraphicsDevice.Draw*() without an effect being previously applied with Effect.Apply() method</exception>
         private void PrepareDraw()
         {
-            // TODO D3D12 Hardcoded for one viewport
-            var viewport = viewports[0];
-            NativeCommandList.SetViewport(new RawViewportF { Width = viewport.Width, Height = viewport.Height, X = viewport.X, Y = viewport.Y, MinDepth = viewport.MinDepth, MaxDepth = viewport.MaxDepth });
-            NativeCommandList.SetScissorRectangles(new RawRectangle { Right = (int)viewport.Width, Bottom = (int)viewport.Height });
+            //// TODO D3D12 Hardcoded for one viewport
+            //var viewport = viewports[0];
+            //NativeCommandList.SetViewport(new RawViewportF { Width = viewport.Width, Height = viewport.Height, X = viewport.X, Y = viewport.Y, MinDepth = viewport.MinDepth, MaxDepth = viewport.MaxDepth });
+            //NativeCommandList.SetScissorRectangles(new RawRectangle { Right = (int)viewport.Width, Bottom = (int)viewport.Height });
         }
 
         public void SetPipelineState(PipelineState pipelineState)
         {
-            boundPipelineState = pipelineState;
-            if (pipelineState.CompiledState != null)
-            {
-                NativeCommandList.PipelineState = pipelineState.CompiledState;
-                NativeCommandList.SetGraphicsRootSignature(pipelineState.RootSignature);
-            }
-            NativeCommandList.PrimitiveTopology = pipelineState.PrimitiveTopology;
+            //boundPipelineState = pipelineState;
+            //if (pipelineState.CompiledState != null)
+            //{
+            //    NativeCommandList.PipelineState = pipelineState.CompiledState;
+            //    NativeCommandList.SetGraphicsRootSignature(pipelineState.RootSignature);
+            //}
+            //NativeCommandList.PrimitiveTopology = pipelineState.PrimitiveTopology;
         }
 
         public void SetVertexBuffer(int index, Buffer buffer, int offset, int stride)
         {
-            NativeCommandList.SetVertexBuffer(index, new VertexBufferView
-            {
-                BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
-                StrideInBytes = stride,
-                SizeInBytes = buffer.SizeInBytes - offset
-            });
+            //NativeCommandList.SetVertexBuffer(index, new VertexBufferView
+            //{
+            //    BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
+            //    StrideInBytes = stride,
+            //    SizeInBytes = buffer.SizeInBytes - offset
+            //});
         }
 
         public void SetIndexBuffer(Buffer buffer, int offset, bool is32bits)
         {
-            NativeCommandList.SetIndexBuffer(buffer != null ? (IndexBufferView?)new IndexBufferView
-            {
-                BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
-                Format = is32bits ? SharpDX.DXGI.Format.R32_UInt : SharpDX.DXGI.Format.R16_UInt,
-                SizeInBytes = buffer.SizeInBytes - offset
-            } : null);
+            //NativeCommandList.SetIndexBuffer(buffer != null ? (IndexBufferView?)new IndexBufferView
+            //{
+            //    BufferLocation = buffer.NativeResource.GPUVirtualAddress + offset,
+            //    Format = is32bits ? SharpDX.DXGI.Format.R32_UInt : SharpDX.DXGI.Format.R16_UInt,
+            //    SizeInBytes = buffer.SizeInBytes - offset
+            //} : null);
         }
 
         public void SetDescriptorSets(int index, DescriptorSet[] descriptorSets)
         {
-        RestartWithNewHeap:
-            NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
-            var descriptorTableIndex = 0;
-            for (int i = 0; i < descriptorSets.Length; ++i)
-            {
-                // Find what is already mapped
-                var descriptorSet = descriptorSets[i];
+        //RestartWithNewHeap:
+        //    NativeCommandList.SetDescriptorHeaps(2, descriptorHeaps);
+        //    var descriptorTableIndex = 0;
+        //    for (int i = 0; i < descriptorSets.Length; ++i)
+        //    {
+        //        // Find what is already mapped
+        //        var descriptorSet = descriptorSets[i];
 
-                if ((IntPtr)descriptorSet.SrvStart.Ptr != IntPtr.Zero)
-                {
-                    GpuDescriptorHandle gpuSrvStart;
+        //        if ((IntPtr)descriptorSet.SrvStart.Ptr != IntPtr.Zero)
+        //        {
+        //            GpuDescriptorHandle gpuSrvStart;
 
-                    // Check if we need to copy them to shader visible descriptor heap
-                    if (!srvMapping.TryGetValue(descriptorSet.SrvStart.Ptr, out gpuSrvStart))
-                    {
-                        var srvCount = descriptorSet.Description.SrvCount;
+        //            // Check if we need to copy them to shader visible descriptor heap
+        //            if (!srvMapping.TryGetValue(descriptorSet.SrvStart.Ptr, out gpuSrvStart))
+        //            {
+        //                var srvCount = descriptorSet.Description.SrvCount;
 
-                        // Make sure heap is big enough
-                        if (srvHeapOffset + srvCount > SrvHeapSize)
-                        {
-                            ResetSrvHeap();
-                            goto RestartWithNewHeap;
-                        }
+        //                // Make sure heap is big enough
+        //                if (srvHeapOffset + srvCount > SrvHeapSize)
+        //                {
+        //                    ResetSrvHeap();
+        //                    goto RestartWithNewHeap;
+        //                }
 
-                        // Copy
-                        NativeDevice.CopyDescriptorsSimple(srvCount, srvHeap.CPUDescriptorHandleForHeapStart + srvHeapOffset * GraphicsDevice.SrvHandleIncrementSize, descriptorSet.SrvStart, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
+        //                // Copy
+        //                NativeDevice.CopyDescriptorsSimple(srvCount, srvHeap.CPUDescriptorHandleForHeapStart + srvHeapOffset * GraphicsDevice.SrvHandleIncrementSize, descriptorSet.SrvStart, DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
 
-                        // Store mapping
-                        srvMapping.Add(descriptorSet.SrvStart.Ptr, gpuSrvStart = srvHeap.GPUDescriptorHandleForHeapStart + srvHeapOffset * GraphicsDevice.SrvHandleIncrementSize);
+        //                // Store mapping
+        //                srvMapping.Add(descriptorSet.SrvStart.Ptr, gpuSrvStart = srvHeap.GPUDescriptorHandleForHeapStart + srvHeapOffset * GraphicsDevice.SrvHandleIncrementSize);
 
-                        // Bump
-                        srvHeapOffset += srvCount;
-                    }
+        //                // Bump
+        //                srvHeapOffset += srvCount;
+        //            }
 
-                    // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
-                    var srvBindCount = boundPipelineState.SrvBindCounts[i];
-                    for (int j = 0; j < srvBindCount; ++j)
-                        NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSrvStart);
-                }
+        //            // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
+        //            var srvBindCount = boundPipelineState.SrvBindCounts[i];
+        //            for (int j = 0; j < srvBindCount; ++j)
+        //                NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSrvStart);
+        //        }
 
-                if ((IntPtr)descriptorSet.SamplerStart.Ptr != IntPtr.Zero)
-                {
-                    GpuDescriptorHandle gpuSamplerStart;
+        //        if ((IntPtr)descriptorSet.SamplerStart.Ptr != IntPtr.Zero)
+        //        {
+        //            GpuDescriptorHandle gpuSamplerStart;
 
-                    // Check if we need to copy them to shader visible descriptor heap
-                    if (!samplerMapping.TryGetValue(descriptorSet.SamplerStart.Ptr, out gpuSamplerStart))
-                    {
-                        var samplerCount = descriptorSet.Description.SamplerCount;
+        //            // Check if we need to copy them to shader visible descriptor heap
+        //            if (!samplerMapping.TryGetValue(descriptorSet.SamplerStart.Ptr, out gpuSamplerStart))
+        //            {
+        //                var samplerCount = descriptorSet.Description.SamplerCount;
 
-                        // Make sure heap is big enough
-                        if (samplerHeapOffset + samplerCount > SamplerHeapSize)
-                        {
-                            ResetSamplerHeap();
-                            goto RestartWithNewHeap;
-                        }
+        //                // Make sure heap is big enough
+        //                if (samplerHeapOffset + samplerCount > SamplerHeapSize)
+        //                {
+        //                    ResetSamplerHeap();
+        //                    goto RestartWithNewHeap;
+        //                }
 
-                        // Copy
-                        NativeDevice.CopyDescriptorsSimple(samplerCount, samplerHeap.CPUDescriptorHandleForHeapStart + samplerHeapOffset * GraphicsDevice.SamplerHandleIncrementSize, descriptorSet.SamplerStart, DescriptorHeapType.Sampler);
+        //                // Copy
+        //                NativeDevice.CopyDescriptorsSimple(samplerCount, samplerHeap.CPUDescriptorHandleForHeapStart + samplerHeapOffset * GraphicsDevice.SamplerHandleIncrementSize, descriptorSet.SamplerStart, DescriptorHeapType.Sampler);
 
-                        // Store mapping
-                        samplerMapping.Add(descriptorSet.SamplerStart.Ptr, gpuSamplerStart = samplerHeap.GPUDescriptorHandleForHeapStart + samplerHeapOffset * GraphicsDevice.SamplerHandleIncrementSize);
+        //                // Store mapping
+        //                samplerMapping.Add(descriptorSet.SamplerStart.Ptr, gpuSamplerStart = samplerHeap.GPUDescriptorHandleForHeapStart + samplerHeapOffset * GraphicsDevice.SamplerHandleIncrementSize);
 
-                        // Bump
-                        samplerHeapOffset += samplerCount;
-                    }
+        //                // Bump
+        //                samplerHeapOffset += samplerCount;
+        //            }
 
-                    // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
-                    var samplerBindCount = boundPipelineState.SamplerBindCounts[i];
-                    for (int j = 0; j < samplerBindCount; ++j)
-                        NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSamplerStart);
-                }
-            }
+        //            // Bind resource tables (note: once per using stage, until we solve how to choose shader registers effect-wide at compile time)
+        //            var samplerBindCount = boundPipelineState.SamplerBindCounts[i];
+        //            for (int j = 0; j < samplerBindCount; ++j)
+        //                NativeCommandList.SetGraphicsRootDescriptorTable(descriptorTableIndex++, gpuSamplerStart);
+        //        }
+        //    }
         }
 
         private void ResetSrvHeap()
         {
-            // Running out of space, create new heap and restart everything (to make sure everything is copied)
-            // TODO D3D12 probably could do a count before copying to avoid copying part of it for nothing?
-            srvHeap = NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
-            {
-                DescriptorCount = SrvHeapSize,
-                Flags = DescriptorHeapFlags.ShaderVisible,
-                Type = DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView,
-            });
-            GraphicsDevice.TemporaryResources.Add(srvHeap);
-            srvHeapOffset = 0;
-            srvMapping.Clear();
-            descriptorHeaps[0] = srvHeap;
+            //// Running out of space, create new heap and restart everything (to make sure everything is copied)
+            //// TODO D3D12 probably could do a count before copying to avoid copying part of it for nothing?
+            //srvHeap = NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
+            //{
+            //    DescriptorCount = SrvHeapSize,
+            //    Flags = DescriptorHeapFlags.ShaderVisible,
+            //    Type = DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView,
+            //});
+            //GraphicsDevice.TemporaryResources.Add(srvHeap);
+            //srvHeapOffset = 0;
+            //srvMapping.Clear();
+            //descriptorHeaps[0] = srvHeap;
         }
 
         private void ResetSamplerHeap()
         {
-            // Running out of space, create new heap and restart everything (to make sure everything is copied)
-            // TODO D3D12 probably could do a count before copying to avoid copying part of it for nothing?
-            samplerHeap = NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
-            {
-                DescriptorCount = SamplerHeapSize,
-                Flags = DescriptorHeapFlags.ShaderVisible,
-                Type = DescriptorHeapType.Sampler,
-            });
-            GraphicsDevice.TemporaryResources.Add(samplerHeap);
-            samplerHeapOffset = 0;
-            samplerMapping.Clear();
-            descriptorHeaps[1] = samplerHeap;
+            //// Running out of space, create new heap and restart everything (to make sure everything is copied)
+            //// TODO D3D12 probably could do a count before copying to avoid copying part of it for nothing?
+            //samplerHeap = NativeDevice.CreateDescriptorHeap(new DescriptorHeapDescription
+            //{
+            //    DescriptorCount = SamplerHeapSize,
+            //    Flags = DescriptorHeapFlags.ShaderVisible,
+            //    Type = DescriptorHeapType.Sampler,
+            //});
+            //GraphicsDevice.TemporaryResources.Add(samplerHeap);
+            //samplerHeapOffset = 0;
+            //samplerMapping.Clear();
+            //descriptorHeaps[1] = samplerHeap;
         }
 
         /// <inheritdoc />
@@ -326,7 +326,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             PrepareDraw();
 
-            NativeCommandList.DrawInstanced(vertexCount, 1, startVertexLocation, 0);
+            //NativeCommandList.DrawInstanced(vertexCount, 1, startVertexLocation, 0);
 
             GraphicsDevice.FrameTriangleCount += (uint)vertexCount;
             GraphicsDevice.FrameDrawCalls++;
@@ -354,7 +354,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             PrepareDraw();
 
-            NativeCommandList.DrawIndexedInstanced(indexCount, 1, startIndexLocation, baseVertexLocation, 0);
+            //NativeCommandList.DrawIndexedInstanced(indexCount, 1, startIndexLocation, baseVertexLocation, 0);
 
             GraphicsDevice.FrameDrawCalls++;
             GraphicsDevice.FrameTriangleCount += (uint)indexCount;
@@ -372,7 +372,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             PrepareDraw();
 
-            NativeCommandList.DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
+            //NativeCommandList.DrawIndexedInstanced(indexCountPerInstance, instanceCount, startIndexLocation, baseVertexLocation, startInstanceLocation);
 
             GraphicsDevice.FrameDrawCalls++;
             GraphicsDevice.FrameTriangleCount += (uint)(indexCountPerInstance * instanceCount);
@@ -405,7 +405,7 @@ namespace SiliconStudio.Xenko.Graphics
         {
             PrepareDraw();
 
-            NativeCommandList.DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
+            //NativeCommandList.DrawInstanced(vertexCountPerInstance, instanceCount, startVertexLocation, startInstanceLocation);
 
             GraphicsDevice.FrameDrawCalls++;
             GraphicsDevice.FrameTriangleCount += (uint)(vertexCountPerInstance * instanceCount);
@@ -453,7 +453,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.InvalidOperationException"></exception>
         public void Clear(Texture depthStencilBuffer, DepthStencilClearOptions options, float depth = 1, byte stencil = 0)
         {
-            NativeCommandList.ClearDepthStencilView(depthStencilBuffer.NativeDepthStencilView, (ClearFlags)options, depth, stencil);
+            //NativeCommandList.ClearDepthStencilView(depthStencilBuffer.NativeDepthStencilView, (ClearFlags)options, depth, stencil);
         }
 
         /// <summary>
@@ -464,7 +464,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <exception cref="System.ArgumentNullException">renderTarget</exception>
         public unsafe void Clear(Texture renderTarget, Color4 color)
         {
-            NativeCommandList.ClearRenderTargetView(renderTarget.NativeRenderTargetView, *(RawColor4*)&color);
+            //NativeCommandList.ClearRenderTargetView(renderTarget.NativeRenderTargetView, *(RawColor4*)&color);
         }
 
         /// <summary>
@@ -556,29 +556,29 @@ namespace SiliconStudio.Xenko.Graphics
 
         internal void UpdateSubresource(GraphicsResource resource, int subResourceIndex, DataBox databox, ResourceRegion region)
         {
-            var texture = resource as Texture;
-            if (texture != null)
-            {
-                if (texture.Dimension != TextureDimension.Texture2D)
-                    throw new NotImplementedException();
+            //var texture = resource as Texture;
+            //if (texture != null)
+            //{
+            //    if (texture.Dimension != TextureDimension.Texture2D)
+            //        throw new NotImplementedException();
 
-                var width = region.Right - region.Left;
-                var height = region.Bottom - region.Top;
+            //    var width = region.Right - region.Left;
+            //    var height = region.Bottom - region.Top;
 
-                // TODO D3D12 allocate in upload heap (placed resources?)
-                var nativeUploadTexture = NativeDevice.CreateCommittedResource(new HeapProperties(CpuPageProperty.WriteBack, MemoryPool.L0), HeapFlags.None,
-                    ResourceDescription.Texture2D((SharpDX.DXGI.Format)texture.Format, width, height),
-                    ResourceStates.GenericRead);
+            //    // TODO D3D12 allocate in upload heap (placed resources?)
+            //    var nativeUploadTexture = NativeDevice.CreateCommittedResource(new HeapProperties(CpuPageProperty.WriteBack, MemoryPool.L0), HeapFlags.None,
+            //        ResourceDescription.Texture2D((SharpDX.DXGI.Format)texture.Format, width, height),
+            //        ResourceStates.GenericRead);
 
-                GraphicsDevice.TemporaryResources.Add(nativeUploadTexture);
+            //    GraphicsDevice.TemporaryResources.Add(nativeUploadTexture);
 
-                nativeUploadTexture.WriteToSubresource(0, null, databox.DataPointer, databox.RowPitch, databox.SlicePitch);
+            //    nativeUploadTexture.WriteToSubresource(0, null, databox.DataPointer, databox.RowPitch, databox.SlicePitch);
 
-                // Trigger copy
-                NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.Common, ResourceStates.CopyDestination);
-                NativeCommandList.CopyTextureRegion(new TextureCopyLocation(resource.NativeResource, subResourceIndex), region.Left, region.Top, region.Front, new TextureCopyLocation(nativeUploadTexture, 0), null);
-                NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.CopyDestination, ResourceStates.Common);
-            }
+            //    // Trigger copy
+            //    NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.Common, ResourceStates.CopyDestination);
+            //    NativeCommandList.CopyTextureRegion(new TextureCopyLocation(resource.NativeResource, subResourceIndex), region.Left, region.Top, region.Front, new TextureCopyLocation(nativeUploadTexture, 0), null);
+            //    NativeCommandList.ResourceBarrierTransition(resource.NativeResource, ResourceStates.CopyDestination, ResourceStates.Common);
+            //}
         }
 
         // TODO GRAPHICS REFACTOR what should we do with this?
@@ -611,28 +611,29 @@ namespace SiliconStudio.Xenko.Graphics
                 }
             }
 
-            SharpDX.Direct3D12.Resource uploadResource;
-            int uploadOffset;
-            var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes, out uploadResource, out uploadOffset);
+            //SharpDX.Direct3D12.Resource uploadResource;
+            //int uploadOffset;
+            //var uploadMemory = GraphicsDevice.AllocateUploadBuffer(lengthInBytes, out uploadResource, out uploadOffset);
 
-            return new MappedResource(resource, subResourceIndex, new DataBox(uploadMemory, 0, 0), offsetInBytes, lengthInBytes)
-            {
-                UploadResource = uploadResource,
-                UploadOffset = uploadOffset,
-            };
+            //return new MappedResource(resource, subResourceIndex, new DataBox(uploadMemory, 0, 0), offsetInBytes, lengthInBytes)
+            //{
+            //    UploadResource = uploadResource,
+            //    UploadOffset = uploadOffset,
+            //};
+            return default(MappedResource);
         }
 
         // TODO GRAPHICS REFACTOR what should we do with this?
         public void UnmapSubresource(MappedResource unmapped)
         {
             // Copy back
-            var buffer = unmapped.Resource as Buffer;
-            if (buffer != null)
-            {
-                NativeCommandList.ResourceBarrierTransition(buffer.NativeResource, buffer.NativeResourceStates, ResourceStates.CopyDestination);
-                NativeCommandList.CopyBufferRegion(buffer.NativeResource, unmapped.OffsetInBytes, unmapped.UploadResource, unmapped.UploadOffset, unmapped.SizeInBytes);
-                NativeCommandList.ResourceBarrierTransition(buffer.NativeResource, ResourceStates.CopyDestination, buffer.NativeResourceStates);
-            }
+            //var buffer = unmapped.Resource as Buffer;
+            //if (buffer != null)
+            //{
+            //    NativeCommandList.ResourceBarrierTransition(buffer.NativeResource, buffer.NativeResourceStates, ResourceStates.CopyDestination);
+            //    NativeCommandList.CopyBufferRegion(buffer.NativeResource, unmapped.OffsetInBytes, unmapped.UploadResource, unmapped.UploadOffset, unmapped.SizeInBytes);
+            //    NativeCommandList.ResourceBarrierTransition(buffer.NativeResource, ResourceStates.CopyDestination, buffer.NativeResourceStates);
+            //}
         }
     }
 }
