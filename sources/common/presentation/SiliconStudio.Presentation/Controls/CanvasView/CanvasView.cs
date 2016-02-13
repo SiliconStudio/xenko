@@ -87,8 +87,8 @@ namespace SiliconStudio.Presentation.Controls
 
         public CanvasView()
         {
-            this.Loaded += OnLoaded;
-            this.SizeChanged += OnSizeChanged;
+            Loaded += OnLoaded;
+            SizeChanged += OnSizeChanged;
         }
 
         public Rect CanvasBounds { get { return (Rect)GetValue(CanvasBoundsProperty); } private set { SetValue(CanvasBoundsPropertyKey, value); } }
@@ -118,21 +118,21 @@ namespace SiliconStudio.Presentation.Controls
         {
             base.OnApplyTemplate();
 
-            this.grid = GetTemplateChild(GridPartName) as Grid;
-            if (this.grid == null)
+            grid = GetTemplateChild(GridPartName) as Grid;
+            if (grid == null)
                 throw new InvalidOperationException($"A part named '{GridPartName}' must be present in the ControlTemplate, and must be of type '{typeof(Grid).FullName}'.");
 
             var canvas = new Canvas();
-            this.grid.Children.Add(canvas);
+            grid.Children.Add(canvas);
             canvas.UpdateLayout();
-            this.renderer = new CanvasRenderer(canvas);
+            renderer = new CanvasRenderer(canvas);
         }
 
         protected override Size ArrangeOverride(Size arrangeBounds)
         {
-            if (this.ActualWidth > 0 && this.ActualHeight > 0)
+            if (ActualWidth > 0 && ActualHeight > 0)
             {
-                if (!this.IsCanvasValid)
+                if (!IsCanvasValid)
                 {
                     UpdateVisuals();
                 }
@@ -153,21 +153,24 @@ namespace SiliconStudio.Presentation.Controls
         /// (<see cref="DispatcherPriority.Background"/> priority). Thus it is safe to call it every time the canvas should be redraw
         /// even when other operations are coming.
         /// </summary>
-        public void InvalidateCanvas()
+        /// <param name="updateData"></param>
+        public void InvalidateCanvas(bool updateData = true)
         {
-            if (this.renderer == null || this.Model == null || !this.IsCanvasValid)
+            if (renderer == null || Model == null || !IsCanvasValid)
                 return;
 
-            this.IsCanvasValid = false;
-            // Invalidate the arrange state for the element.
-            // After the invalidation, the element will have its layout updated,
-            // which will occur asynchronously unless subsequently forced by UpdateLayout.
+            UpdateModel(updateData);
+
+            IsCanvasValid = false;
             Dispatcher.InvokeAsync(() =>
             {
+                // Invalidate the arrange state for the element.
+                // After the invalidation, the element will have its layout updated,
+                // which will occur asynchronously unless subsequently forced by UpdateLayout.
                 InvalidateArrange();
                 Dispatcher.InvokeAsync(() =>
                 {
-                    CanvasBounds = VisualTreeHelper.GetDescendantBounds(this.renderer.Canvas);
+                    CanvasBounds = VisualTreeHelper.GetDescendantBounds(renderer.Canvas);
                     IsCanvasValid = true;
                     //InvalidateMeasure();
                     // We must wait after the canvas is rendered to get correct values
@@ -178,7 +181,7 @@ namespace SiliconStudio.Presentation.Controls
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             // Make sure InvalidateArrange is called when the canvas is invalidated
-            this.IsCanvasValid = false;
+            IsCanvasValid = false;
             InvalidateCanvas();
         }
 
@@ -190,15 +193,24 @@ namespace SiliconStudio.Presentation.Controls
             }
         }
 
+        /// <summary>
+        /// Updates the model.
+        /// </summary>
+        /// <param name="updateData"></param>
+        private void UpdateModel(bool updateData)
+        {
+            Model?.Update(updateData);
+        }
+
         private void UpdateVisuals()
         {
-            if (this.renderer == null)
+            if (renderer == null)
                 return;
 
             // Clear the canvas
-            this.renderer.Clear();
+            renderer.Clear();
             // Render the model
-            this.Model?.Render(renderer, this.ActualWidth, this.ActualHeight);
+            Model?.Render(renderer, ActualWidth, ActualHeight);
         }
     }
 }
