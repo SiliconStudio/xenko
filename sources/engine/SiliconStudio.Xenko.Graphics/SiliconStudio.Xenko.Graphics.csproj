@@ -374,19 +374,26 @@
     <Compile Include="VertexPositionNormalTexture.cs" />
     <Compile Include="VertexPositionTexture.cs" />
     <Compile Include="Vulkan\Buffer.Vulkan.cs" />
+    <Compile Include="Vulkan\ColorHelper.cs" />
     <Compile Include="Vulkan\CommandList.Vulkan.cs" />
     <Compile Include="Vulkan\DescriptorPool.Vulkan.cs" />
     <Compile Include="Vulkan\DescriptorSet.Vulkan.cs" />
     <Compile Include="Vulkan\DescriptorSetLayout.Vulkan.cs" />
+    <Compile Include="Vulkan\DisplayMode.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsAdapter.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsAdapterFactory.Vulkan.cs" />
     <Compile Include="Vulkan\GraphicsDevice.Vulkan.cs" />
     <Compile Include="Vulkan\GraphicsDeviceFeatures.Vulkan.cs" />
     <Compile Include="Vulkan\GraphicsOutput.Vulkan.cs" />
+    <Compile Include="Vulkan\GraphicsProfileHelper.cs" />
     <Compile Include="Vulkan\GraphicsResource.Vulkan.cs" />
     <Compile Include="Vulkan\GraphicsResourceBase.Vulkan.cs" />
     <Compile Include="Vulkan\MappedResource.Vulkan.cs" />
     <Compile Include="Vulkan\PipelineState.Vulkan.cs" />
     <Compile Include="Vulkan\SamplerState.Vulkan.cs" />
+    <Compile Include="Vulkan\SwapChainGraphicsPresenter.Vulkan.cs" />
     <Compile Include="Vulkan\Texture.Vulkan.cs" />
+    <Compile Include="Vulkan\VulkanConvertExtensions.cs" />
     <Compile Include="WindowContext.cs" />
   </ItemGroup>
   <!-- Files for Null device -->

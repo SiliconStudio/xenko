@@ -30,9 +30,21 @@ namespace SiliconStudio.Xenko.Graphics
 {
     public partial class Texture
     {
-        //internal CpuDescriptorHandle NativeRenderTargetView;
-        //internal CpuDescriptorHandle NativeDepthStencilView;
-        public bool HasStencil;
+        internal SharpVulkan.Image NativeImage;
+        internal ImageView NativeColorAttachmentView;
+        internal ImageView NativeDepthStencilView;
+        internal ImageView NativeImageView;
+
+        private bool isNotOwningResources;
+        private bool isPersistentImage;
+
+        private Format nativeFormat;
+        internal int RowPitch;
+        internal int DepthPitch;
+        internal bool HasStencil;
+
+        internal ImageLayout PreferredLayout;
+        internal ImageLayout CurrentLayout;
 
         public void Recreate(DataBox[] dataBoxes = null)
         {
@@ -41,27 +53,170 @@ namespace SiliconStudio.Xenko.Graphics
 
         public static bool IsDepthStencilReadOnlySupported(GraphicsDevice device)
         {
-            return device.Features.Profile >= GraphicsProfile.Level_11_0;
+            // TODO VULKAN
+            return true;
         }
 
-        /// <summary>
-        /// Initializes from a native SharpDX.Texture
-        /// </summary>
-        /// <param name="texture">The texture.</param>
-        //internal Texture InitializeFrom(SharpDX.Direct3D12.Resource texture, bool isSrgb)
-        //{
-        //    NativeDeviceChild = texture;
-        //    var newTextureDescription = ConvertFromNativeDescription(texture.Description);
-
-        //    // We might have created the swapchain as a non-srgb format (esp on Win10&RT) but we want it to behave like it is (esp. for the view and render target)
-        //    if (isSrgb)
-        //        newTextureDescription.Format = newTextureDescription.Format.ToSRgb();
-
-        //    return InitializeFrom(newTextureDescription);
-        //}
-
-        private void InitializeFromImpl(DataBox[] dataBoxes = null)
+        internal Texture InitializeFromPersistent(TextureDescription description, SharpVulkan.Image nativeImage)
         {
+            NativeImage = nativeImage;
+
+            isPersistentImage = true;
+            return InitializeFrom(description);
+        }
+
+        internal Texture InitializeWithoutResources(TextureDescription description)
+        {
+            isNotOwningResources = true;
+            return InitializeFrom(description);
+        }
+
+        internal void SetNativeHandles(SharpVulkan.Image image, ImageView attachmentView)
+        {
+            NativeImage = image;
+            NativeColorAttachmentView = attachmentView;
+        }
+
+        private unsafe void InitializeFromImpl(DataBox[] dataBoxes = null)
+        {
+            int pixelSize;
+            bool compressed;
+            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out nativeFormat, out pixelSize, out compressed);
+
+            DepthPitch = Description.Width * Description.Height * pixelSize;
+            RowPitch = Description.Width * pixelSize;
+
+            if (ParentTexture != null)
+            {
+                // Create only a view
+                NativeImage = ParentTexture.NativeImage;
+            }
+            else
+            {
+                if (NativeImage.Equals(default(SharpVulkan.Image)))
+                {
+                    if (!isNotOwningResources)
+                    {
+                        // Create a new image
+                        var createInfo = new ImageCreateInfo
+                        {
+                            StructureType = StructureType.ImageCreateInfo,
+                            ArrayLayers = (uint)ArraySize,
+                            Extent = new Extent3D((uint)Width, (uint)Height, (uint)Depth),
+                            MipLevels = (uint)MipLevels,
+                            Samples = SampleCountFlags.Sample1,
+                            Format = nativeFormat,
+                            Flags = ImageCreateFlags.None,
+                            Tiling = ImageTiling.Optimal,
+                        };
+
+                        switch (Dimension)
+                        {
+                            case TextureDimension.Texture1D:
+                                createInfo.ImageType = ImageType.Image1D;
+                                break;
+                            case TextureDimension.Texture2D:
+                                createInfo.ImageType = ImageType.Image2D;
+                                break;
+                            case TextureDimension.Texture3D:
+                                createInfo.ImageType = ImageType.Image3D;
+                                break;
+                            case TextureDimension.TextureCube:
+                                createInfo.ImageType = ImageType.Image2D;
+                                createInfo.Flags |= ImageCreateFlags.CubeCompatible;
+                                break;
+                        }
+
+                        if (IsRenderTarget)
+                            createInfo.Usage |= ImageUsageFlags.ColorAttachment;
+
+                        if (IsDepthStencil)
+                            createInfo.Usage |= ImageUsageFlags.DepthStencilAttachment;
+
+                        if (IsShaderResource)
+                            createInfo.Usage |= ImageUsageFlags.Sampled;
+
+                        if (Usage == GraphicsResourceUsage.Default || Usage == GraphicsResourceUsage.Staging)
+                            createInfo.Usage |= ImageUsageFlags.TransferSource | ImageUsageFlags.TransferDestination;
+
+                        if (Usage == GraphicsResourceUsage.Immutable)
+                            createInfo.Usage |= ImageUsageFlags.TransferDestination; // TODO: TransferSource too?
+
+                        var memoryProperties = MemoryPropertyFlags.DeviceLocal;
+                        if (Usage == GraphicsResourceUsage.Dynamic || Usage == GraphicsResourceUsage.Staging)
+                        {
+                            createInfo.Tiling = ImageTiling.Linear;
+                            memoryProperties = MemoryPropertyFlags.HostVisible;
+                        }
+
+                        // TODO: Multisampling, flags, usage, etc.
+
+                        NativeImage = GraphicsDevice.NativeDevice.CreateImage(ref createInfo);
+
+                        //AllocateMemory(IntPtr.Zero, memoryProperties);
+
+                        //if (dataBoxes != null && dataBoxes.Length > 0)
+                        //{
+                        //    if ((memoryProperties & MemoryPropertyFlags.HostVisible) != 0)
+                        //    {
+                        //        long offset = 0;
+                        //        for (var i = 0; i < dataBoxes.Length; i++)
+                        //        {
+                        //            var subresource = new ImageSubresource
+                        //            {
+                        //                Aspect = ImageAspect.Color,
+                        //                ArraySlice = i / MipLevels,
+                        //                MipLevel = i % MipLevels
+                        //            };
+
+                        //            var mipMapDesc = GetMipMapDescription(i % MipLevels);
+
+                        //            // TODO: Not reporting correct values for subresources for linear tiling textures?
+                        //            var subresourceLayout = GraphicsDevice.NativeDevice.GetImageSubresourceLayout(NativeImage, subresource);
+
+                        //            subresourceLayout.Offset = offset;
+                        //            subresourceLayout.Size = mipMapDesc.Depth * mipMapDesc.DepthStride;
+
+                        //            var dataPointer = GraphicsDevice.NativeDevice.MapMemory(NativeMemory, subresourceLayout.Offset, subresourceLayout.Size, 0);
+                        //            Utilities.CopyMemory(dataPointer, dataBoxes[i].DataPointer, (int)subresourceLayout.Size);
+                        //            GraphicsDevice.NativeDevice.UnmapMemory(NativeMemory);
+
+                        //            offset += subresourceLayout.Size;
+                        //        }
+                        //    }
+                        //    else
+                        //    {
+                        //        using (var stagingTexture = New(GraphicsDevice, Description.ToStagingDescription(), dataBoxes))
+                        //        {
+                        //            GraphicsDevice.Copy(stagingTexture, this);
+                        //        }
+                        //    }
+
+                            //// Trigger copy
+                            //var commandList = GraphicsDevice.NativeCopyCommandList;
+                            //commandList.Reset(GraphicsDevice.NativeCopyCommandAllocator, null);
+                            //commandList.CopyResource(NativeResource, nativeUploadTexture);
+                            //commandList.ResourceBarrierTransition(NativeResource, ResourceStates.CopyDestination, ResourceStates.Common);
+                            //commandList.Close();
+
+                            //GraphicsDevice.NativeCommandQueue.ExecuteCommandList(commandList);
+                        //}
+                    }
+
+                    PreferredLayout = IsRenderTarget ? ImageLayout.ColorAttachmentOptimal : IsDepthStencil ? ImageLayout.DepthStencilAttachmentOptimal : IsShaderResource ? ImageLayout.ShaderReadOnlyOptimal : ImageLayout.General;
+
+                    //GraphicsDevice.SetImageLayout(this, IsDepthStencil ? ImageAspectFlags.Depth : ImageAspectFlags.Color, ImageLayout.Undefined, PreferredLayout);
+                    //GraphicsDevice.Flush();
+                }
+            }
+
+            if (!isNotOwningResources && Usage != GraphicsResourceUsage.Staging)
+            {
+                NativeImageView = GetImageView(ViewType, ArraySlice, MipLevel);
+                NativeColorAttachmentView = GetColorAttachmentView(ViewType, ArraySlice, MipLevel);
+                NativeDepthStencilView = GetDepthStencilView(out HasStencil);
+            }
+
             //if (ParentTexture != null)
             //{
             //    NativeDeviceChild = ParentTexture.NativeDeviceChild;
@@ -136,19 +291,42 @@ namespace SiliconStudio.Xenko.Graphics
             //NativeDepthStencilView = GetDepthStencilView(out HasStencil);
         }
 
-        protected override void DestroyImpl()
+        protected unsafe override void DestroyImpl()
         {
-            //// If it was a View, do not release reference
-            //if (ParentTexture != null)
-            //{
-            //    NativeDeviceChild = null;
-            //}
-            //else if(GraphicsDevice != null)
-            //{
-            //    GraphicsDevice.TextureMemory -= (Depth*DepthStride) / (float)0x100000;
-            //}
+            if (ParentTexture != null || isNotOwningResources)
+            {
+                NativeImage = SharpVulkan.Image.Null;
+                //NativeMemory = 0;
+            }
 
-            //base.DestroyImpl();
+            if (!isNotOwningResources)
+            {
+                if (NativeImage != SharpVulkan.Image.Null)
+                {
+                    GraphicsDevice.NativeDevice.DestroyImage(NativeImage);
+                    NativeImage = SharpVulkan.Image.Null;
+                }
+
+                if (NativeImageView != ImageView.Null)
+                {
+                    GraphicsDevice.NativeDevice.DestroyImageView(NativeImageView);
+                    NativeImageView = ImageView.Null;
+                }
+
+                if (NativeColorAttachmentView != ImageView.Null)
+                {
+                    GraphicsDevice.NativeDevice.DestroyImageView(NativeColorAttachmentView);
+                    NativeColorAttachmentView = ImageView.Null;
+                }
+
+                if (NativeDepthStencilView != ImageView.Null)
+                {
+                    GraphicsDevice.NativeDevice.DestroyImageView(NativeDepthStencilView);
+                    NativeDepthStencilView = ImageView.Null;
+                }
+            }
+
+            base.DestroyImpl();
         }
 
         /// <inheritdoc/>
@@ -160,6 +338,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         private void OnRecreateImpl()
         {
+            throw new NotImplementedException();
+
             // Dependency: wait for underlying texture to be recreated
             if (ParentTexture != null && ParentTexture.LifetimeState != GraphicsResourceLifetimeState.Active)
                 return;
@@ -170,13 +350,201 @@ namespace SiliconStudio.Xenko.Graphics
                 && !IsRenderTarget && !IsDepthStencil)
                 return;
 
-            if (ParentTexture == null && GraphicsDevice != null)
+            //InitializeFromImpl();
+        }
+
+        private unsafe ImageView GetImageView(ViewType viewType, int arrayOrDepthSlice, int mipIndex)
+        {
+            if (!IsShaderResource)
+                return ImageView.Null;
+
+            if (viewType == ViewType.MipBand)
+                throw new NotSupportedException("ViewSlice.MipBand is not supported for render targets");
+
+            int arrayCount;
+            int mipCount;
+            GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayCount, out mipCount);
+
+            Format nativeViewFormat;
+            int pixelSize;
+            bool compressed;
+            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out nativeViewFormat, out pixelSize, out compressed);
+
+            var createInfo = new ImageViewCreateInfo
             {
-                GraphicsDevice.TextureMemory -= (Depth * DepthStride)/(float)0x100000;
+                StructureType = StructureType.ImageViewCreateInfo,
+                Format = nativeViewFormat,
+                Image = NativeImage,
+                Components = new ComponentMapping { R = ComponentSwizzle.R, G = ComponentSwizzle.G, B = ComponentSwizzle.B, A = ComponentSwizzle.A },
+                SubresourceRange = new ImageSubresourceRange
+                {
+                    BaseArrayLayer = (uint)arrayOrDepthSlice,
+                    LayerCount = (uint)arrayCount,
+                    BaseMipLevel = (uint)mipIndex,
+                    LevelCount = (uint)mipCount,
+                    AspectMask = ImageAspectFlags.Color
+                }
+            };
+
+            if (IsMultiSample)
+                throw new NotImplementedException();
+
+            if (this.ArraySize > 1)
+            {
+                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                    throw new NotSupportedException("Multisample is only supported for 2D Textures");
+
+                if (Dimension == TextureDimension.Texture3D)
+                    throw new NotSupportedException("Texture Array is not supported for Texture3D");
+
+                switch (Dimension)
+                {
+                    case TextureDimension.Texture1D:
+                        createInfo.ViewType = ImageViewType.Image1DArray;
+                        break;
+                    case TextureDimension.Texture2D:
+                        createInfo.ViewType = ImageViewType.Image2DArray;
+                        break;
+                    case TextureDimension.TextureCube:
+                        createInfo.ViewType = ImageViewType.ImageCubeArray;
+                        break;
+                }
+            }
+            else
+            {
+                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                    throw new NotSupportedException("Multisample is only supported for 2D RenderTarget Textures");
+
+                if (Dimension == TextureDimension.TextureCube)
+                    throw new NotSupportedException("TextureCube dimension is expecting an arraysize > 1");
+
+                switch (Dimension)
+                {
+                    case TextureDimension.Texture1D:
+                        createInfo.ViewType = ImageViewType.Image1D;
+                        break;
+                    case TextureDimension.Texture2D:
+                        createInfo.ViewType = ImageViewType.Image2D;
+                        break;
+                    case TextureDimension.Texture3D:
+                        createInfo.ViewType = ImageViewType.Image3D;
+                        break;
+                    case TextureDimension.TextureCube:
+                        createInfo.ViewType = ImageViewType.ImageCube;
+                        break;
+                }
             }
 
-            InitializeFromImpl();
+            return GraphicsDevice.NativeDevice.CreateImageView(ref createInfo);
         }
+
+        private unsafe ImageView GetColorAttachmentView(ViewType viewType, int arrayOrDepthSlice, int mipIndex)
+        {
+            if (!IsRenderTarget)
+                return ImageView.Null;
+
+            if (viewType == ViewType.MipBand)
+                throw new NotSupportedException("ViewSlice.MipBand is not supported for render targets");
+
+            int arrayCount;
+            int mipCount;
+            GetViewSliceBounds(viewType, ref arrayOrDepthSlice, ref mipIndex, out arrayCount, out mipCount);
+
+            Format backBufferFormat;
+            int pixelSize;
+            bool compressed;
+            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out backBufferFormat, out pixelSize, out compressed);
+
+            var createInfo = new ImageViewCreateInfo
+            {
+                StructureType = StructureType.ImageViewCreateInfo,
+                ViewType = ImageViewType.Image2D,
+                Format = backBufferFormat,
+                Image = NativeImage,
+                Components = new ComponentMapping { R = ComponentSwizzle.R, G = ComponentSwizzle.G, B = ComponentSwizzle.B, A = ComponentSwizzle.A },
+                SubresourceRange = new ImageSubresourceRange
+                {
+                    BaseArrayLayer = (uint)arrayOrDepthSlice,
+                    LayerCount = (uint)arrayCount,
+                    BaseMipLevel = (uint)mipIndex,
+                    LevelCount = (uint)mipCount,
+                    AspectMask = ImageAspectFlags.Color
+                }
+            };
+
+            if (IsMultiSample)
+                throw new NotImplementedException();
+
+            if (this.ArraySize > 1)
+            {
+                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                    throw new NotSupportedException("Multisample is only supported for 2D Textures");
+
+                if (Dimension == TextureDimension.Texture3D)
+                    throw new NotSupportedException("Texture Array is not supported for Texture3D");
+            }
+            else
+            {
+                if (IsMultiSample && Dimension != TextureDimension.Texture2D)
+                    throw new NotSupportedException("Multisample is only supported for 2D RenderTarget Textures");
+
+                if (Dimension == TextureDimension.TextureCube)
+                    throw new NotSupportedException("TextureCube dimension is expecting an arraysize > 1");
+            }
+
+            return GraphicsDevice.NativeDevice.CreateImageView(ref createInfo);
+        }
+
+        private unsafe ImageView GetDepthStencilView(out bool hasStencil)
+        {
+            hasStencil = false;
+            if (!IsDepthStencil)
+                return ImageView.Null;
+
+            Format nativeFormat;
+            int pixelSize;
+            bool compressed;
+            VulkanConvertExtensions.ConvertPixelFormat(ViewFormat, out nativeFormat, out pixelSize, out compressed);
+
+            // Check that the format is supported
+            //if (ComputeShaderResourceFormatFromDepthFormat(ViewFormat) == PixelFormat.None)
+            //    throw new NotSupportedException("Depth stencil format [{0}] not supported".ToFormat(ViewFormat));
+
+            // Setup the HasStencil flag
+            hasStencil = IsStencilFormat(ViewFormat);
+
+            // Create a Depth stencil view on this texture2D
+            var createInfo = new ImageViewCreateInfo
+            {
+                StructureType = StructureType.ImageViewCreateInfo,
+                ViewType = ImageViewType.Image2D,
+                Format = nativeFormat,
+                Image = NativeImage,
+                Components = new ComponentMapping { R = ComponentSwizzle.R, G = ComponentSwizzle.G, B = ComponentSwizzle.B, A = ComponentSwizzle.A },
+                SubresourceRange = new ImageSubresourceRange
+                {
+                    BaseArrayLayer = 0,
+                    LayerCount = 1,
+                    BaseMipLevel = 0,
+                    LevelCount = 1,
+                    AspectMask = ImageAspectFlags.Depth | (HasStencil ? ImageAspectFlags.Stencil : ImageAspectFlags.None)
+                }
+            };
+
+            //if (IsDepthStencilReadOnly)
+            //{
+            //    if (!IsDepthStencilReadOnlySupported(GraphicsDevice))
+            //        throw new NotSupportedException("Cannot instantiate ReadOnly DepthStencilBuffer. Not supported on this device.");
+
+            //    // Create a Depth stencil view on this texture2D
+            //    createInfo.SubresourceRange.AspectMask =  ? ;
+            //    if (HasStencil)
+            //        createInfo.Flags |= (int)AttachmentViewCreateFlags.AttachmentViewCreateReadOnlyStencilBit;
+            //}
+
+            return GraphicsDevice.NativeDevice.CreateImageView(ref createInfo);
+        }
+
 
         /// <summary>
         /// Gets a specific <see cref="ShaderResourceView" /> from this texture.
@@ -559,32 +927,9 @@ namespace SiliconStudio.Xenko.Graphics
         //    return ResourceDescription.Texture2D(format, textureDescription.Width, textureDescription.Height, (short)textureDescription.ArraySize, (short)textureDescription.MipLevels, (short)textureDescription.MultiSampleLevel, 0, GetBindFlagsFromTextureFlags(flags));
         //}
 
-        internal static SharpVulkan.Format ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
+        internal static PixelFormat ComputeShaderResourceFormatFromDepthFormat(PixelFormat format)
         {
-            throw new NotImplementedException();
-            //SharpDX.DXGI.Format viewFormat;
-
-            //// Determine TypeLess Format and ShaderResourceView Format
-            //switch (format)
-            //{
-            //    case PixelFormat.D16_UNorm:
-            //        viewFormat = SharpDX.DXGI.Format.R16_Float;
-            //        break;
-            //    case PixelFormat.D32_Float:
-            //        viewFormat = SharpDX.DXGI.Format.R32_Float;
-            //        break;
-            //    case PixelFormat.D24_UNorm_S8_UInt:
-            //        viewFormat = SharpDX.DXGI.Format.R24_UNorm_X8_Typeless;
-            //        break;
-            //    case PixelFormat.D32_Float_S8X24_UInt:
-            //        viewFormat = SharpDX.DXGI.Format.R32_Float_X8X24_Typeless;
-            //        break;
-            //    default:
-            //        viewFormat = SharpDX.DXGI.Format.Unknown;
-            //        break;
-            //}
-
-            //return viewFormat;
+            return format;
         }
 
         //internal static SharpDX.DXGI.Format ComputeDepthViewFormatFromTextureFormat(PixelFormat format)

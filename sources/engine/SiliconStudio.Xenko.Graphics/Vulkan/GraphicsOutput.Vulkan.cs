@@ -40,9 +40,8 @@ namespace SiliconStudio.Xenko.Graphics
     /// <unmanaged-short>IDXGIOutput</unmanaged-short>	
     public partial class GraphicsOutput
     {
+        private readonly DisplayProperties displayProperties;
         private readonly int outputIndex;
-        //private readonly Output output;
-        //private readonly OutputDescription outputDescription;
 
         /// <summary>
         /// Initializes a new instance of <see cref="GraphicsOutput" />.
@@ -51,20 +50,14 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="outputIndex">Index of the output.</param>
         /// <exception cref="System.ArgumentNullException">output</exception>
         /// <exception cref="ArgumentOutOfRangeException">output</exception>
-        internal GraphicsOutput(GraphicsAdapter adapter, int outputIndex)
+        internal GraphicsOutput(GraphicsAdapter adapter, DisplayProperties displayProperties, int outputIndex)
         {
             if (adapter == null) throw new ArgumentNullException("adapter");
 
-            //this.outputIndex = outputIndex;
-            //this.adapter = adapter;
-            //this.output = adapter.NativeAdapter.GetOutput(outputIndex).DisposeBy(this);
-            //outputDescription = output.Description;
+            this.outputIndex = outputIndex;
+            this.displayProperties = displayProperties;
 
-            //unsafe
-            //{
-            //    var rectangle = outputDescription.DesktopBounds;
-            //    desktopBounds = *(Rectangle*)&rectangle;
-            //}
+            desktopBounds = new Rectangle(0, 0, (int)displayProperties.PhysicalResolution.Width, (int)displayProperties.PhysicalResolution.Height);
         }
 
         /// <summary>
@@ -78,6 +71,8 @@ namespace SiliconStudio.Xenko.Graphics
         public DisplayMode FindClosestMatchingDisplayMode(GraphicsProfile[] targetProfiles, DisplayMode mode)
         {
             if (targetProfiles == null) throw new ArgumentNullException("targetProfiles");
+
+            // TODO VULKAN
 
             //ModeDescription closestDescription;
             //SharpDX.Direct3D12.Device deviceTemp = null;
@@ -110,7 +105,7 @@ namespace SiliconStudio.Xenko.Graphics
             //    output.GetClosestMatchingMode(device, description, out closestDescription);
 
             //return DisplayMode.FromDescription(closestDescription);
-            return default(DisplayMode);
+            return mode;
         }
 
         /// <summary>
@@ -119,7 +114,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// <msdn-id>bb173068</msdn-id>	
         /// <unmanaged>HMONITOR Monitor</unmanaged>	
         /// <unmanaged-short>HMONITOR Monitor</unmanaged-short>	
-        //public IntPtr MonitorHandle { get { return outputDescription.MonitorHandle; } }
+        public IntPtr MonitorHandle { get { return IntPtr.Zero; } }
 
         /// <summary>
         /// Gets the native output.

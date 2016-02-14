@@ -20,8 +20,8 @@ namespace SiliconStudio.Xenko.Graphics
 
         private bool simulateReset = false;
 
-        private SharpVulkan.Device nativeDevice;
-        //internal CommandQueue NativeCommandQueue;
+        private Device nativeDevice;
+        internal Queue NativeCommandQueue;
 
         //internal CommandAllocator NativeCopyCommandAllocator;
         //internal GraphicsCommandList NativeCopyCommandList;
@@ -95,7 +95,7 @@ namespace SiliconStudio.Xenko.Graphics
         ///     Gets the native device.
         /// </summary>
         /// <value>The native device.</value>
-        internal SharpVulkan.Device NativeDevice
+        internal Device NativeDevice
         {
             get
             {
@@ -155,43 +155,42 @@ namespace SiliconStudio.Xenko.Graphics
         /// <param name="graphicsProfiles">The graphics profiles.</param>
         /// <param name="deviceCreationFlags">The device creation flags.</param>
         /// <param name="windowHandle">The window handle.</param>
-        private void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, object windowHandle)
+        private unsafe void InitializePlatformDevice(GraphicsProfile[] graphicsProfiles, DeviceCreationFlags deviceCreationFlags, object windowHandle)
         {
-            //if (nativeDevice != null)
-            //{
-            //    // Destroy previous device
-            //    ReleaseDevice();
-            //}
+            if (nativeDevice != Device.Null)
+            {
+                // Destroy previous device
+                ReleaseDevice();
+            }
 
-            //// Profiling is supported through pix markers
-            //IsProfilingSupported = true;
+            // Profiling is supported through pix markers
+            IsProfilingSupported = true;
 
-            //// Map GraphicsProfile to D3D11 FeatureLevel
-            //SharpDX.Direct3D.FeatureLevel[] levels = graphicsProfiles.ToFeatureLevel();
-            //if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
-            //{
-            //    SharpDX.Direct3D12.DebugInterface.Get().EnableDebugLayer();
-            //}
+            if ((deviceCreationFlags & DeviceCreationFlags.Debug) != 0)
+            {
+                // TODO VULKAN debug layer
+            }
 
-            //// Create Device D3D12 with feature Level based on profile
-            //foreach (var level in levels)
-            //{
-            //    try
-            //    {
-            //        nativeDevice = new SharpDX.Direct3D12.Device(Adapter.NativeAdapter, level);
-            //        break;
-            //    }
-            //    catch (Exception)
-            //    {
-            //        continue;
-            //    }
-            //}
-            //if (nativeDevice == null)
-            //    throw new InvalidOperationException("Could not create D3D12 graphics device");
+            var queueProperties = Adapter.PhysicalDevice.QueueFamilyProperties;
 
-            //// Describe and create the command queue.
-            //var queueDesc = new SharpDX.Direct3D12.CommandQueueDescription(SharpDX.Direct3D12.CommandListType.Direct);
-            //NativeCommandQueue = nativeDevice.CreateCommandQueue(queueDesc);
+            // TODO VULKAN
+            // Create Vulkan device based on profile
+            var queueCreateInfo = new DeviceQueueCreateInfo
+            {
+                StructureType = StructureType.DeviceQueueCreateInfo,
+                QueueFamilyIndex = 0,
+                QueueCount = 1,
+            };
+
+            var deviceCreateInfo = new DeviceCreateInfo
+            {
+                StructureType = StructureType.DeviceCreateInfo,
+                QueueCreateInfoCount = 1,
+                QueueCreateInfos = new IntPtr(&queueCreateInfo),
+            };
+
+            nativeDevice = Adapter.PhysicalDevice.CreateDevice(ref deviceCreateInfo);
+            NativeCommandQueue = nativeDevice.GetQueue(0, 0);
 
             //SrvHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.ConstantBufferViewShaderResourceViewUnorderedAccessView);
             //SamplerHandleIncrementSize = NativeDevice.GetDescriptorHandleIncrementSize(DescriptorHeapType.Sampler);
@@ -261,9 +260,9 @@ namespace SiliconStudio.Xenko.Graphics
             ReleaseDevice();
         }
 
-        private void ReleaseDevice()
+        private unsafe void ReleaseDevice()
         {
-            //nativeDevice.Dispose();
+            nativeDevice.Destroy();
         }
 
         internal void OnDestroyed()
