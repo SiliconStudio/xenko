@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Games
 
         private static Form CreateForm()
         {
-#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL && !SILICONSTUDIO_XENKO_GRAPHICS_API_VULKAN
+#if !SILICONSTUDIO_XENKO_GRAPHICS_API_OPENGL
             return new GameForm();
 #else
             // Not Reachable.
