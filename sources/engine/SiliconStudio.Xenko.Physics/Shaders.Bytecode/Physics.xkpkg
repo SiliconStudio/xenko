@@ -5,7 +5,7 @@ Meta:
     Version: 1.0.0.0
     Dependencies:
         -   Name: Xenko
-            Version: 1.0.0.0
+            Version: 1.2.0.0
 Profiles:
     - Name: Shared
       AssetFolders:
@@ -13,6 +13,9 @@ Profiles:
         - Path: .
     -   Name: Windows
         Platform: Windows
-        Properties:
-            Xenko.GraphicsPlatform: !GraphicsPlatform Direct3D11
-            GameSettingsAsset.DefaultGraphicsProfile: !GraphicsProfile Level_9_3
+    -   Name: Windows-OpenGL
+        Platform: Windows
+    -   Name: Windows-OpenGLES
+        Platform: Windows
+    -   Name: Windows-Vulkan
+        Platform: Windows

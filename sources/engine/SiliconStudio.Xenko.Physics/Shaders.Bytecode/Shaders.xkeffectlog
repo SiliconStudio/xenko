@@ -1,0 +1,7 @@
+---
+!EffectCompileRequest
+EffectName: PhysicsDebugEffect
+UsedParameters:
+    CompilerParameters.DebugKey: true
+    EffectSourceCode.Enable: true
+    EffectSourceCode.Namespace: SiliconStudio.Xenko.Physics
