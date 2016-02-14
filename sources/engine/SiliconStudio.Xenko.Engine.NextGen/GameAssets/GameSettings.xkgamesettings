@@ -4,6 +4,6 @@ Tags: []
 DefaultScene: a2e30260-ce47-4837-b469-68fd68eb3274:MainScene
 BackBufferWidth: 1280
 BackBufferHeight: 720
-DefaultGraphicsProfile: Level_10_0
+DefaultGraphicsProfile: Level_11_0
 DisplayOrientation: LandscapeRight
 TextureQuality: Fast

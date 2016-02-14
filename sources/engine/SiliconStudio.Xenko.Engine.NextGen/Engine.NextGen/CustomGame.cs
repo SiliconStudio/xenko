@@ -25,7 +25,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
         protected Entity Camera = new Entity();
         private SceneGraphicsCompositorLayers graphicsCompositor;
 
-        private Model model;
+        private Model model1, model2;
         private Material material1, material2;
         private NextGenRenderer nextGenRenderer;
 
@@ -41,21 +41,27 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             }
         }
 
+        public CustomGame()
+        {
+            GraphicsDeviceManager.DeviceCreationFlags = DeviceCreationFlags.Debug;
+        }
+
         protected override Task LoadContent()
         {
             //Profiler.Enable(GameProfilingKeys.GameDrawFPS);
             ProfilerSystem.EnableProfiling(false, GameProfilingKeys.GameDrawFPS);
 
-            model = Asset.Load<Model>("Model");
+            model1 = Asset.Load<Model>("Model");
+            model2 = Asset.Load<Model>("Model2");
             material1 = Asset.Load<Material>("Material1");
             material2 = Asset.Load<Material>("Material2");
 
             SetupScene();
 
-            int cubeWidth = 16;
+            int cubeWidth = 4;
 
             var skybox = Asset.Load<Skybox>("Skybox");
-            var skyboxEntity = new Entity { new SkyboxComponent { Skybox = skybox } };
+            var skyboxEntity = new Entity { new SkyboxComponent { Skybox = skybox }, new LightComponent { Type = new LightSkybox(), Intensity = 1 } };
             Scene.Entities.Add(skyboxEntity);
 
             for (int i = 0; i < cubeWidth; ++i)
@@ -70,7 +76,7 @@ namespace SiliconStudio.Xenko.Engine.NextGen
 
                         var entity = new Entity
                         {
-                            new ModelComponent { Model = model, Materials = { material }, IsShadowReceiver = isShadowReceiver },
+                            new ModelComponent { Model = ((i + j + k) % 2) == 0 ? model1 : model2, Materials = { material }, IsShadowReceiver = isShadowReceiver },
                         };
                         entity.Transform.Position = position;
                         Scene.Entities.Add(entity);
@@ -118,7 +124,8 @@ namespace SiliconStudio.Xenko.Engine.NextGen
             ////ambientLight.Transform.RotationEulerXYZ = new Vector3(0.0f, (float) Math.PI, 0.0f);
             //Scene.Entities.Add(ambientLight);
 
-            var directionalLight = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White), Shadow = { Enabled = true } }, Intensity = 1 }, };
+            var directionalLight = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White), Shadow = { Enabled = false } }, Intensity = 1 }, };
+            directionalLight.Transform.RotationEulerXYZ = new Vector3((float)Math.PI*-0.3f, (float)Math.PI*-0.3f, (float)Math.PI*-0.3f);
             Scene.Entities.Add(directionalLight);
 
             //var directionalLight2 = new Entity { new LightComponent { Type = new LightDirectional { Color = new ColorRgbProvider(Color.White), Shadow = { Enabled = true } }, Intensity = 1 }, };

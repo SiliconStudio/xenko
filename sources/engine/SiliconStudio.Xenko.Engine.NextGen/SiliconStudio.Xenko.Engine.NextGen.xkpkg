@@ -41,6 +41,7 @@ Bundles: []
 TemplateFolders: []
 RootAssets:
     - 30f8ca08-885b-417c-9d49-c0d315b2b3ec:Material1
+    - 878181e4-ea39-495f-8f1d-e586e650cc82:Model2
     - 879181e4-ed39-495f-8f1d-e586e650cc82:Model
     - a2e30260-ce47-4837-b469-68fd68eb3274:MainScene
     - bf8844a5-1ce4-402f-a538-b8a7edb40fcf:Skybox

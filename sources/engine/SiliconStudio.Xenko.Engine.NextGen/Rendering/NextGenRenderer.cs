@@ -30,7 +30,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         public override string ModelEffect { get; set; }
 
-        public bool Shadows { get; set; } = true;
+        public bool Shadows { get; set; } = false;
         public bool GBuffer { get; set; } = false;
 
         protected override void InitializeCore()
