@@ -23,6 +23,12 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             return 0;
         }
 
+        /// <summary>
+        /// Additive animation for the particle position. If present, particle's own position will be added to the sampled curve value
+        /// </summary>
+        /// <userdoc>
+        /// Additive animation for the particle position. If present, particle's own position will be added to the sampled curve value
+        /// </userdoc>
         [DataMember(100)]
         [Display("Additive Position Animation")]
         public ComputeCurveSampler<Vector3> SamplerPosition { get; set; }
@@ -58,6 +64,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
             return particleSize * SamplerSize.Evaluate(life);
         }
+
 
     }
 }

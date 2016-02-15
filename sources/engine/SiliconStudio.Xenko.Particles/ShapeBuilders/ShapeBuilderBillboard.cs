@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
+using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Particles.Sorters;
 using SiliconStudio.Xenko.Particles.VertexLayouts;
 
@@ -19,7 +20,12 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
+            // Update the curve samplers if required
             base.BuildVertexBuffer(vtxBuilder, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, sorter);
+
+            SamplerRotation?.UpdateChanges();
+
+
 
             // Get all the required particle fields
             var positionField = sorter.GetField(ParticleFields.Position);
@@ -53,7 +59,6 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                     spaceRotation.Rotate(ref centralPos);
                     centralPos = centralPos * spaceScale + spaceTranslation;
                     particleSize *= spaceScale;
-                    // TODO Rotation
                 }
 
                 var unitX = invViewX * particleSize; 
@@ -62,7 +67,8 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
                 // Particle rotation. Positive value means clockwise rotation.
                 if (hasAngle)
                 {
-                    var rotationAngle = particle.Get(angleField);
+                    var rotationAngle = GetParticleRotation(particle, angleField, lifeField);
+
                     var cosA = (float)Math.Cos(rotationAngle);
                     var sinA = (float)Math.Sin(rotationAngle);
                     var tempX = unitX * cosA - unitY * sinA;
@@ -108,5 +114,28 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
             var vtxPerShape = 4 * QuadsPerParticle;
             return renderedParticles * vtxPerShape;
         }
+
+        /// <summary>
+        /// Additive animation for the particle rotation. If present, particle's own rotation will be added to the sampled curve value
+        /// </summary>
+        /// <userdoc>
+        /// Additive animation for the particle rotation. If present, particle's own rotation will be added to the sampled curve value
+        /// </userdoc>
+        [DataMember(300)]
+        [Display("Additive Rotation Animation")]
+        public ComputeCurveSampler<float> SamplerRotation { get; set; }
+
+        protected unsafe float GetParticleRotation(Particle particle, ParticleFieldAccessor<float> rotationField, ParticleFieldAccessor<float> lifeField)
+        {
+            var particleRotation = rotationField.IsValid() ? particle.Get(rotationField) : 1f;
+
+            if (SamplerRotation == null)
+                return particleRotation;
+
+            var life = 1f - (*((float*)particle[lifeField]));   // The Life field contains remaining life, so for sampling we take (1 - life)
+
+            return particleRotation + MathUtil.DegreesToRadians(SamplerRotation.Evaluate(life));
+        }
+
     }
 }

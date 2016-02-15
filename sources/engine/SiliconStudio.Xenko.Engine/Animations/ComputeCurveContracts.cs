@@ -230,4 +230,80 @@ namespace SiliconStudio.Xenko.Animations
     }
 
     #endregion
+
+    #region Quaternion
+    /// <summary>
+    /// Sampler container for Quaternion data type
+    /// </summary>
+    [DataContract("ComputeCurveSamplerQuaternion")]
+    [Display("Sampler Quaternion")]
+    public class ComputeCurveSamplerQuaternion : ComputeCurveSampler<Quaternion>
+    {
+        public ComputeCurveSamplerQuaternion()
+        {
+            curve = new ComputeAnimationCurveQuaternion();
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Quaternion value1, ref Quaternion value2, float t, out Quaternion result)
+        {
+            Interpolator.Quaternion.SphericalLinear(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Constant Quaternion value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeConstCurveQuaternion")]
+    [Display("Constant")]
+    public class ComputeConstCurveQuaternion : ComputeConstCurve<Quaternion> { }
+
+    /// <summary>
+    /// Constant Quaternion value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeAnimationCurveQuaternion")]
+    [Display("Animation")]
+    public class ComputeAnimationCurveQuaternion : ComputeAnimationCurve<Quaternion>
+    {
+        /// <inheritdoc/>
+        public override void Cubic(ref Quaternion value1, ref Quaternion value2, ref Quaternion value3, ref Quaternion value4, float t, out Quaternion result)
+        {
+            Interpolator.Quaternion.Cubic(ref value1, ref value2, ref value3, ref value4, t, out result);
+        }
+
+        /// <inheritdoc/>
+        public override void Linear(ref Quaternion value1, ref Quaternion value2, float t, out Quaternion result)
+        {
+            Interpolator.Quaternion.SphericalLinear(ref value1, ref value2, t, out result);
+        }
+    }
+
+    /// <summary>
+    /// Binary operator Quaternion value for the IComputeCurve interface
+    /// </summary>
+    [DataContract("ComputeBinaryCurveQuaternion")]
+    [Display("Binary Operation")]
+    public class ComputeBinaryCurveQuaternion : ComputeBinaryCurve<Quaternion>
+    {
+        /// <inheritdoc/>
+        protected override Quaternion Add(Quaternion a, Quaternion b)
+        {
+            return a + b;
+        }
+
+        /// <inheritdoc/>
+        protected override Quaternion Subtract(Quaternion a, Quaternion b)
+        {
+            return a - b;
+        }
+
+        /// <inheritdoc/>
+        protected override Quaternion Multiply(Quaternion a, Quaternion b)
+        {
+            return a * b;
+        }
+    }
+
+    #endregion
+
 }
