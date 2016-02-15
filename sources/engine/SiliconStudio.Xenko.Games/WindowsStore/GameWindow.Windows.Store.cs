@@ -27,9 +27,7 @@ using System.Diagnostics;
 using Windows.Graphics.Display;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_10
 using Windows.Foundation;
-#endif
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -218,7 +216,7 @@ namespace SiliconStudio.Xenko.Games
             OnClientSizeChanged(sender, EventArgs.Empty);
         }
 
-        private void HandleSizeChanged(object sender, Windows.Foundation.Size newSize)
+        private void HandleSizeChanged(object sender, Size newSize)
         {
             var bounds = newSize;
 
@@ -240,7 +238,7 @@ namespace SiliconStudio.Xenko.Games
                 panelWidth = bounds.Width;
                 panelHeight = bounds.Height;
                 var panelRatio = panelWidth / panelHeight;
-                var currentRatio = currentWidth / currentHeight;
+                var currentRatio = currentWidth / (double)currentHeight;
 
                 if (panelRatio < currentRatio)
                 {
