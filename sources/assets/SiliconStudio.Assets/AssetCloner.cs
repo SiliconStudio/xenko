@@ -4,7 +4,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-
+using System.Linq;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
 using SiliconStudio.Core.Serialization;
@@ -47,8 +47,10 @@ namespace SiliconStudio.Assets
             if (value != null && !value.GetType().IsValueType)
             {
                 invariantObjects = new List<object>();
+
                 // TODO: keepOnlySealedOverride is currently ignored
                 // TODO Clone is not supporting SourceCodeAsset (The SourceCodeAsset.Text won't be cloned)
+
                 var stream = new MemoryStream();
                 var writer = new BinarySerializationWriter(stream);
                 writer.Context.SerializerSelector = ClonerSelector;
@@ -60,10 +62,12 @@ namespace SiliconStudio.Assets
                 writer.SerializeExtended(value, ArchiveMode.Serialize);
                 writer.Flush();
 
-                // Retrieve back object references
+                // Retrieve back all object references that were discovered while serializing
+                // They will be used layer by OnObjectDeserialized when cloning ShadowObject datas
                 var objectRefs = writer.Context.Get(MemberSerializer.ObjectSerializeReferences);
                 if (objectRefs != null)
                 {
+                    // Remap object references to a simple array
                     objectReferences = new object[objectRefs.Count];
                     foreach (var objRef in objectRefs)
                     {
@@ -112,33 +116,80 @@ namespace SiliconStudio.Assets
             var stream = streamOrValueType as MemoryStream;
             if (stream != null)
             {
+                // ------------------------------------------------------
+                // Un-comment the following code to debug the ObjectId of the serialized version without taking into account overrides
+                // ------------------------------------------------------
+                //var savedPosition = stream.Position;
+                //stream.Position = 0;
+                //var intermediateHashId = ObjectId.FromBytes(stream.ToArray());
+                //stream.Position = savedPosition;
+
                 var writer = new BinarySerializationWriter(stream);
+                Dictionary<string, OverrideType> overrides = null;
+                List<string> orderedNames = null;
                 foreach (var objectRef in objectReferences)
                 {
-                    if (objectRef != null)
+                    // If the object is actually a reference to another asset, we can skip it as their won't be any overrides
+                    if (AttachedReferenceManager.GetAttachedReference(objectRef) != null)
                     {
-                        var shadowObject = ShadowObject.GetOrCreate(objectRef);
-                        if (shadowObject.IsIdentifiable)
-                        {
-                            // Get the shadow id (may be a non-shadow, so we may duplicate it (e.g Entity)
-                            // but it should not be a big deal
-                            var id = shadowObject.GetId(objectRef);
-                            writer.Write(id);
-                        }
+                        continue;
+                    }
 
-                        // Dump all members with overrides informations
-                        foreach (var item in shadowObject)
+                    // Else gets the id if there are any (including shadows that are not part of the standard serialization)
+                    var shadowObject = ShadowObject.GetOrCreate(objectRef);
+                    if (shadowObject.IsIdentifiable)
+                    {
+                        // Get the shadow id (may be a non-shadow, so we may duplicate it in the stream (e.g Entity)
+                        // but it should not be a big deal
+                        var id = shadowObject.GetId(objectRef);
+                        writer.Write(id);
+                    }
+
+                    // Dump all members with overrides informations
+                    foreach (var item in shadowObject)
+                    {
+                        if (item.Key.Item2 == Override.OverrideKey)
                         {
-                            if (item.Key.Item2 == Override.OverrideKey)
+                            // Use the member name to ensure a stable id
+                            var memberName = ((IMemberDescriptor)item.Key.Item1).Name;
+                            // Only creates the overrides dictionary if needed
+                            if (overrides == null)
                             {
-                                // Use the member name to ensure a stable id
-                                var memberName = ((IMemberDescriptor)item.Key.Item1).Name;
-                                writer.Write(memberName);
-                                writer.Write((int)(OverrideType)item.Value);
+                                overrides = new Dictionary<string, OverrideType>();
                             }
+                            overrides.Add(memberName, (OverrideType)item.Value);
                         }
                     }
+
+                    // Write any overrides information to the stream
+                    if (overrides != null)
+                    {
+                        // Collect names and order them by alphabetical order in order to make sure that we will get a stable id 
+                        // (Dictionary doesn't ensure order)
+                        if (orderedNames == null)
+                        {
+                            orderedNames = new List<string>();
+                        }
+                        orderedNames.Clear();
+                        foreach (var entry in overrides)
+                        {
+                            orderedNames.Add(entry.Key);
+                        }
+                        orderedNames.Sort();
+
+                        // Write all overrides for the current object reference
+                        foreach (var name in orderedNames)
+                        {
+                            writer.Write(name);
+                            // Write the override as an int
+                            writer.Write((int)overrides[name]);
+                        }
+
+                        // Clear overrides for next entry
+                        overrides.Clear();
+                    }
                 }
+
                 writer.Flush();
                 stream.Position = 0;
 
@@ -153,6 +204,13 @@ namespace SiliconStudio.Assets
             if (objectReferences != null && newObject != null)
             {
                 var previousObject = objectReferences[i];
+
+                // If the object is an attached reference, there is no need to copy the shadow object
+                if (AttachedReferenceManager.GetAttachedReference(previousObject) != null)
+                {
+                    return;
+                }
+
                 ShadowObject.Copy(previousObject, newObject);
                 if ((flags & AssetClonerFlags.RemoveOverrides) != 0)
                 {
