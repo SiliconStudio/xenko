@@ -4,6 +4,7 @@
 using System;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Annotations;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Animations;
 using SiliconStudio.Xenko.Particles.Modules;
 
@@ -12,9 +13,9 @@ namespace SiliconStudio.Xenko.Particles.Updaters
     /// <summary>
     /// Updater which sets the particle's size to a fixed value sampled based on the particle's normalized life value
     /// </summary>
-    [DataContract("UpdaterSizeOverTime")]
-    [Display("Size Animation")]
-    public class UpdaterSizeOverTime : ParticleUpdater
+    [DataContract("UpdaterRotationOverTime")]
+    [Display("Rotation Animation")]
+    public class UpdaterRotationOverTime : ParticleUpdater
     {
         /// <inheritdoc />
         [DataMemberIgnore]
@@ -52,9 +53,9 @@ namespace SiliconStudio.Xenko.Particles.Updaters
         public UInt32 SeedOffset { get; set; } = 0;
 
         /// <inheritdoc />
-        public UpdaterSizeOverTime()
+        public UpdaterRotationOverTime()
         {
-            RequiredFields.Add(ParticleFields.Size);
+            RequiredFields.Add(ParticleFields.Angle);
 
             var curve = new ComputeAnimationCurveFloat();
             SamplerMain.Curve = curve;
@@ -77,7 +78,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
 
         private unsafe void UpdateSingleSampler(ParticlePool pool)
         {
-            var sizeField = pool.GetField(ParticleFields.Size);
+            var angleField = pool.GetField(ParticleFields.Angle);
             var lifeField = pool.GetField(ParticleFields.Life);
 
             SamplerMain.UpdateChanges();
@@ -86,13 +87,13 @@ namespace SiliconStudio.Xenko.Particles.Updaters
             {
                 var life = 1f - (*((float*)particle[lifeField]));   // The Life field contains remaining life, so for sampling we take (1 - life)
 
-                (*((float*)particle[sizeField])) = WorldScale.X * SamplerMain.Evaluate(life);
+                (*((float*)particle[angleField])) = MathUtil.DegreesToRadians(SamplerMain.Evaluate(life));
             }
         }
 
         private unsafe void UpdateDoubleSampler(ParticlePool pool)
         {
-            var sizeField = pool.GetField(ParticleFields.Size);
+            var angleField = pool.GetField(ParticleFields.Angle);
             var lifeField = pool.GetField(ParticleFields.Life);
             var randField = pool.GetField(ParticleFields.RandomSeed);
 
@@ -106,10 +107,10 @@ namespace SiliconStudio.Xenko.Particles.Updaters
                 var randSeed = particle.Get(randField);
                 var lerp = randSeed.GetFloat(RandomOffset.Offset1A + SeedOffset);
 
-                var size1 = SamplerMain.Evaluate(life);
-                var size2 = SamplerOptional.Evaluate(life);
+                var angle1 = SamplerMain.Evaluate(life);
+                var angle2 = SamplerOptional.Evaluate(life);
 
-                (*((float*)particle[sizeField])) = WorldScale.X * (size1 + (size2 - size1) * lerp);
+                (*((float*)particle[angleField])) = MathUtil.DegreesToRadians(angle1 + (angle2 - angle1) * lerp);
             }
         }
 

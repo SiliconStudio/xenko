@@ -14,7 +14,7 @@ namespace SiliconStudio.Xenko.Particles.Updaters
     /// Updater which sets the particle's size to a fixed value sampled based on the particle's normalized life value
     /// </summary>
     [DataContract("UpdaterColorOverTime")]
-    [Display("Color over life")]
+    [Display("Color Animation")]
     public class UpdaterColorOverTime : ParticleUpdater
     {
         /// <inheritdoc />
