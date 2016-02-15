@@ -32,7 +32,6 @@ SOFTWARE.
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -43,39 +42,41 @@ namespace SiliconStudio.Presentation
     public class CanvasRenderer
     {
         private readonly Dictionary<Color, Brush> cachedBrushes = new Dictionary<Color, Brush>();
+        private const int MaxPolylinesPerLine = 64;
+        private const int MinPointsPerPolyline = 16;
+
+        /// <summary>
+        /// The clip rectangle.
+        /// </summary>
+        private Rect? clip;
 
         public CanvasRenderer(Canvas canvas)
         {
             if (canvas == null) throw new ArgumentNullException(nameof(canvas));
-            this.Canvas = canvas;
+            Canvas = canvas;
+            UseStreamGeometry = true;
         }
 
+        /// <summary>
+        /// Gets or sets the thickness limit for "balanced" line drawing.
+        /// </summary>
+        public double BalancedLineDrawingThicknessLimit { get; set; }
+
         public Canvas Canvas { get; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to use stream geometry for lines and polygons rendering.
+        /// </summary>
+        /// <value><c>true</c> if stream geometry should be used; otherwise, <c>false</c> .</value>
+        /// <remarks>Using stream geometry seems to be slightly faster than using path geometry.</remarks>
+        public bool UseStreamGeometry { get; set; }
 
         /// <summary>
         /// Clears the canvas.
         /// </summary>
         public void Clear()
         {
-            this.Canvas.Children.Clear();
-        }
-
-        /// <summary>
-        /// Draws a circle in the canvas.
-        /// </summary>
-        /// <param name="point"></param>
-        /// <param name="radius">The radius of the circle.</param>
-        /// <param name="fillColor">The color of the shape's interior.</param>
-        /// <param name="strokeColor">The color of the shape's outline.</param>
-        /// <param name="thickness">The wifdth of the shape's outline.</param>
-        /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
-        /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
-        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public void DrawCircle(Point point, double radius, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
-        {
-            DrawEllipse(point, new Size(radius, radius), fillColor, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            Canvas.Children.Clear();
         }
 
         /// <summary>
@@ -127,39 +128,44 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
-        /// Draws line segments in the canvas.
+        /// Draws line segments defined by points (0,1) (2,3) (4,5) etc in the canvas.
         /// </summary>
-        /// <param name="points"></param>
+        /// <param name="points">The points.</param>
         /// <param name="strokeColor">The color of the shape's outline.</param>
         /// <param name="thickness">The wifdth of the shape's outline.</param>
         /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
         /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
-        public void DrawLineSegments(ICollection<Point> points, Color strokeColor,
+        public void DrawLineSegments(IList<Point> points, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
         {
             if (points == null) throw new ArgumentNullException(nameof(points));
             if (points.Count < 2)
                 return;
 
-            var figure = new PathFigure
+            if (UseStreamGeometry)
             {
-                IsClosed = false,
-                StartPoint = points.First(),
-            };
-            foreach (var p in points.Skip(1))
+                DrawLineSegmentsByStreamGeometry(points, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+                return;
+            }
+
+            var pathGeometry = new PathGeometry();
+            for (var i = 0; i < points.Count - 1; i += 2)
             {
+                var figure = new PathFigure
+                {
+                    IsClosed = false,
+                    StartPoint = points[i],
+                };
                 var segment = new LineSegment
                 {
                     IsSmoothJoin = false,
                     IsStroked = true,
-                    Point = p,
+                    Point = points[i + 1],
                 };
                 figure.Segments.Add(segment);
+                pathGeometry.Figures.Add(figure);
             }
-
-            var pathGeometry = new PathGeometry();
-            pathGeometry.Figures.Add(figure);
 
             var path = Create<Path>();
             SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset);
@@ -196,9 +202,14 @@ namespace SiliconStudio.Presentation
         /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
         /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
-        public void DrawPolyline(ICollection<Point> points, Color strokeColor,
+        public void DrawPolyline(IList<Point> points, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
         {
+            if (thickness < BalancedLineDrawingThicknessLimit)
+            {
+                DrawPolylineBalanced(points, strokeColor, thickness, lineJoin, dashArray);
+            }
+
             var polyline = Create<Polyline>();
             SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, dashOffset);
             polyline.Points = new PointCollection(points);
@@ -233,10 +244,10 @@ namespace SiliconStudio.Presentation
         /// </summary>
         /// <param name="point"></param>
         /// <param name="color">The color of the text.</param>
-        /// <param name="text"></param>
-        /// <param name="fontFamily"></param>
-        /// <param name="fontSize"></param>
-        /// <param name="fontWeight"></param>
+        /// <param name="text">The text.</param>
+        /// <param name="fontFamily">The font family.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <param name="fontWeight">The font weight.</param>
         public void DrawText(Point point, Color color, string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight)
         {
             var textBlock = Create<TextBlock>();
@@ -249,6 +260,49 @@ namespace SiliconStudio.Presentation
         }
 
         /// <summary>
+        /// Measures the size of the specified text.
+        /// </summary>
+        /// <param name="text">The text.</param>
+        /// <param name="fontFamily">The font family.</param>
+        /// <param name="fontSize">Size of the font.</param>
+        /// <param name="fontWeight">The font weight.</param>
+        /// <returns>
+        /// The size of the text (in device independent units, 1/96 inch).
+        /// </returns>
+        public Size MeasureText(string text, FontFamily fontFamily, double fontSize, FontWeight fontWeight)
+        {
+            if (string.IsNullOrEmpty(text))
+                return Size.Empty;
+
+            var textBlock = new TextBlock
+            {
+                FontFamily = fontFamily,
+                FontSize = fontSize,
+                FontWeight = fontWeight,
+                Text = text,
+            };
+            textBlock.Measure(new Size(double.MaxValue, double.MaxValue));
+            return new Size(textBlock.DesiredSize.Width, textBlock.DesiredSize.Height);
+        }
+
+        /// <summary>
+        /// Resets the clip rectangle.
+        /// </summary>
+        public void ResetClip()
+        {
+            clip = null;
+        }
+
+        /// <summary>
+        /// Sets the clipping rectangle.
+        /// </summary>
+        /// <param name="clippingRect">The clipping rectangle.</param>
+        public void SetClip(Rect clippingRect)
+        {
+            clip = clippingRect;
+        }
+
+        /// <summary>
         /// Creates an element and adds it to the canvas.
         /// </summary>
         /// <typeparam name="TElement"></typeparam>
@@ -256,25 +310,103 @@ namespace SiliconStudio.Presentation
         private TElement Create<TElement>()
             where TElement : UIElement, new()
         {
-            return Create<TElement>(Rect.Empty);
+            var element = new TElement();
+            if (clip.HasValue && !clip.Value.IsEmpty)
+            {
+                element.Clip = new RectangleGeometry(clip.Value);
+            }
+            Canvas.Children.Add(element);
+            return element;
         }
 
         /// <summary>
-        /// Creates an element and adds it to the canvas.
+        /// Draws the line segments by stream geometry.
         /// </summary>
-        /// <typeparam name="TElement"></typeparam>
-        /// <param name="clip"></param>
-        /// <returns></returns>
-        private TElement Create<TElement>(Rect clip)
-            where TElement : UIElement, new()
+        /// <param name="points">The points.</param>
+        /// <param name="strokeColor">The stroke color.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="lineJoin">The line join.</param>
+        /// <param name="dashArray">The dash array. Use <c>null</c> to get a solid line.</param>
+        /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <remarks>Using stream geometry seems to be slightly faster than using path geometry.</remarks>
+        private void DrawLineSegmentsByStreamGeometry(IList<Point> points, Color strokeColor,
+            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset)
         {
-            var element = new TElement();
-            if (!clip.IsEmpty)
+            var streamGeometry = new StreamGeometry();
+
+            var streamGeometryContext = streamGeometry.Open();
+            for (var i = 0; i < points.Count - 1; i += 2)
             {
-                element.Clip = new RectangleGeometry(clip);
+                streamGeometryContext.BeginFigure(points[i], false, false);
+                streamGeometryContext.LineTo(points[i + 1], true, false);
             }
-            this.Canvas.Children.Add(element);
-            return element;
+            streamGeometryContext.Close();
+
+            var path = Create<Path>();
+            SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            path.Data = streamGeometry;
+        }
+
+        /// <summary>
+        /// Draws the line using the MaxPolylinesPerLine and MinPointsPerPolyline properties.
+        /// </summary>
+        /// <param name="points">The points.</param>
+        /// <param name="strokeColor">The stroke color.</param>
+        /// <param name="thickness">The thickness.</param>
+        /// <param name="lineJoin">The line join.</param>
+        /// <param name="dashArray">The dash array. Use <c>null</c> to get a solid line.</param>
+        /// <remarks>See <a href="https://oxyplot.codeplex.com/discussions/456679">discussion</a>.</remarks>
+        private void DrawPolylineBalanced(IList<Point> points, Color strokeColor, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray)
+        {
+            // balance the number of points per polyline and the number of polylines
+            var numPointsPerPolyline = Math.Max(points.Count / MaxPolylinesPerLine, MinPointsPerPolyline);
+
+            var polyline = Create<Polyline>();
+            SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, 0);
+            var pointCollection = new PointCollection(numPointsPerPolyline);
+
+            var pointCount = points.Count;
+            double lineLength = 0;
+            var dashPatternLength = dashArray?.Sum() ?? 0;
+            var last = new Point();
+            for (var i = 0; i < pointCount; i++)
+            {
+                var current = points[i];
+                pointCollection.Add(current);
+
+                // get line length
+                if (dashArray != null)
+                {
+                    if (i > 0)
+                    {
+                        var delta = current - last;
+                        var dist = Math.Sqrt((delta.X * delta.X) + (delta.Y * delta.Y));
+                        lineLength += dist;
+                    }
+
+                    last = current;
+                }
+
+                // use multiple polylines with limited number of points to improve WPF performance
+                if (pointCollection.Count >= numPointsPerPolyline)
+                {
+                    polyline.Points = pointCollection;
+
+                    if (i < pointCount - 1)
+                    {
+                        // start a new polyline at last point so there is no gap (it is not necessary to use the % operator)
+                        var dashOffset = dashPatternLength > 0 ? lineLength / thickness : 0;
+                        polyline = Create<Polyline>();
+                        SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+                        pointCollection = new PointCollection(numPointsPerPolyline) { pointCollection.Last() };
+                    }
+                }
+            }
+
+            if (pointCollection.Count > 1 || pointCount == 1)
+            {
+                polyline.Points = pointCollection;
+            }
         }
 
         /// <summary>
@@ -293,11 +425,12 @@ namespace SiliconStudio.Presentation
             }
 
             Brush brush;
-            if (!this.cachedBrushes.TryGetValue(color, out brush))
+            if (!cachedBrushes.TryGetValue(color, out brush))
             {
                 brush = new SolidColorBrush(color);
-                brush.Freeze(); // Should improve rendering performance
-                this.cachedBrushes.Add(color, brush);
+                if (brush.CanFreeze)
+                    brush.Freeze(); // Should improve rendering performance
+                cachedBrushes.Add(color, brush);
             }
 
             return brush;
@@ -314,5 +447,6 @@ namespace SiliconStudio.Presentation
                 shape.StrokeDashOffset = dashOffset;
             }
         }
+
     }
 }

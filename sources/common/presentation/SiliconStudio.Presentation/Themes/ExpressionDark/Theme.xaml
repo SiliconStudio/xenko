@@ -3764,7 +3764,7 @@
         <ControlTemplate TargetType="{x:Type ctrl:CanvasView}">
           <Border Background="{TemplateBinding Background}"
                   BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}">
-            <Canvas x:Name="PART_Canvas" ClipToBounds="True" SnapsToDevicePixels="True" />
+            <Grid x:Name="PART_Grid" />
           </Border>
         </ControlTemplate>
       </Setter.Value>

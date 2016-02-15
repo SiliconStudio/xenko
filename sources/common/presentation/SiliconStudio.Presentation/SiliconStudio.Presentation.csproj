@@ -120,6 +120,7 @@
     <Compile Include="Core\AutoUnsubscribeHandler.cs" />
     <Compile Include="Core\BindingProxy.cs" />
     <Compile Include="Core\DependencyPropertyWatcher.cs" />
+    <Compile Include="Extensions\CanvasRendererExtensions.cs" />
     <Compile Include="Extensions\MathExtensions.cs" />
     <Compile Include="Extensions\WindowHelper.cs" />
     <Compile Include="Core\Utils.cs" />

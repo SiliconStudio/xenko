@@ -37,13 +37,13 @@ using System.Windows.Threading;
 
 namespace SiliconStudio.Presentation.Controls
 {
-    [TemplatePart(Name = CanvasPartName, Type = typeof(Canvas))]
+    [TemplatePart(Name = GridPartName, Type = typeof(Grid))]
     public sealed class CanvasView : Control
     {
         /// <summary>
         /// The name of the part for the <see cref="Canvas"/>.
         /// </summary>
-        private const string CanvasPartName = "PART_Canvas";
+        private const string GridPartName = "PART_Grid";
 
         /// <summary>
         /// Identifies the <see cref="CanvasBounds"/> dependency property key.
@@ -64,13 +64,17 @@ namespace SiliconStudio.Presentation.Controls
         /// Identifies the <see cref="IsCanvasValid"/> dependency property.
         /// </summary>
         private static readonly DependencyProperty IsCanvasValidProperty = IsCanvasValidPropertyKey.DependencyProperty;
-       
+
         /// <summary>
         /// Identifies the <see cref="Model"/> dependency property.
         /// </summary>
         public static readonly DependencyProperty ModelProperty =
             DependencyProperty.Register(nameof(Model), typeof(ICanvasViewItem), typeof(CanvasView), new PropertyMetadata(null, OnModelPropertyChanged));
 
+        /// <summary>
+        /// The grid.
+        /// </summary>
+        private Grid grid;
         /// <summary>
         /// The renderer.
         /// </summary>
@@ -81,20 +85,21 @@ namespace SiliconStudio.Presentation.Controls
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CanvasView), new FrameworkPropertyMetadata(typeof(CanvasView)));
         }
 
+        public CanvasView()
+        {
+            Loaded += OnLoaded;
+            SizeChanged += OnSizeChanged;
+        }
+
         public Rect CanvasBounds { get { return (Rect)GetValue(CanvasBoundsProperty); } private set { SetValue(CanvasBoundsPropertyKey, value); } }
 
         /// <summary>
         /// Returns True if the current rendering is valid. False otherwise.
         /// </summary>
         /// <remarks>When the value is False, it means that the canvas will be redrawn at the end of this frame.</remarks>
-        public bool IsCanvasValid { get { return (bool)GetValue(IsCanvasValidProperty); } private set { SetValue(IsCanvasValidPropertyKey, value); }
-        }
+        public bool IsCanvasValid { get { return (bool)GetValue(IsCanvasValidProperty); } private set { SetValue(IsCanvasValidPropertyKey, value); } }
 
-        public ICanvasViewItem Model
-        {
-            get { return (ICanvasViewItem)GetValue(ModelProperty); }
-            set { SetValue(ModelProperty, value); }
-        }
+        public ICanvasViewItem Model { get { return (ICanvasViewItem)GetValue(ModelProperty); } set { SetValue(ModelProperty, value); } }
 
         private static void OnModelPropertyChanged(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
@@ -113,47 +118,99 @@ namespace SiliconStudio.Presentation.Controls
         {
             base.OnApplyTemplate();
 
-            var canvas = GetTemplateChild(CanvasPartName) as Canvas;
-            if (canvas == null)
-                throw new InvalidOperationException($"A part named '{CanvasPartName}' must be present in the ControlTemplate, and must be of type '{typeof(Canvas).FullName}'.");
+            grid = GetTemplateChild(GridPartName) as Grid;
+            if (grid == null)
+                throw new InvalidOperationException($"A part named '{GridPartName}' must be present in the ControlTemplate, and must be of type '{typeof(Grid).FullName}'.");
 
+            var canvas = new Canvas();
+            grid.Children.Add(canvas);
             canvas.UpdateLayout();
-            this.renderer = new CanvasRenderer(canvas);
-
-            InvalidateCanvas();
+            renderer = new CanvasRenderer(canvas);
         }
 
-        protected override Size MeasureOverride(Size availableSize)
+        protected override Size ArrangeOverride(Size arrangeBounds)
         {
-            var realBounds = new Rect();
-            realBounds.Union(CanvasBounds);
-            return new Size(realBounds.Width, realBounds.Height);
+            if (ActualWidth > 0 && ActualHeight > 0)
+            {
+                if (!IsCanvasValid)
+                {
+                    UpdateVisuals();
+                }
+            }
+
+            return base.ArrangeOverride(arrangeBounds);
         }
+
+        //protected override Size MeasureOverride(Size availableSize)
+        //{
+        //    var realBounds = new Rect(0, 0, this.ActualWidth, this.ActualHeight);
+        //    realBounds.Union(CanvasBounds);
+        //    return new Size(realBounds.Width, realBounds.Height);
+        //}
 
         /// <summary>
         /// Invalidates the canvas. The <see cref="Model"/> will render it only once, after all non-idle operations are completed
         /// (<see cref="DispatcherPriority.Background"/> priority). Thus it is safe to call it every time the canvas should be redraw
         /// even when other operations are coming.
         /// </summary>
-        public void InvalidateCanvas()
+        /// <param name="updateData"></param>
+        public void InvalidateCanvas(bool updateData = true)
         {
             if (renderer == null || Model == null || !IsCanvasValid)
                 return;
 
-            // This ensure that the canvas will be rendered only once all changes have been made.
+            UpdateModel(updateData);
+
             IsCanvasValid = false;
             Dispatcher.InvokeAsync(() =>
             {
-                renderer.Clear();
-                Model.Render(renderer);
+                // Invalidate the arrange state for the element.
+                // After the invalidation, the element will have its layout updated,
+                // which will occur asynchronously unless subsequently forced by UpdateLayout.
+                InvalidateArrange();
                 Dispatcher.InvokeAsync(() =>
                 {
-                    CanvasBounds = VisualTreeHelper.GetDescendantBounds(this.renderer.Canvas);
+                    CanvasBounds = VisualTreeHelper.GetDescendantBounds(renderer.Canvas);
                     IsCanvasValid = true;
-                    InvalidateMeasure();
+                    //InvalidateMeasure();
                     // We must wait after the canvas is rendered to get correct values
                 }, DispatcherPriority.Loaded);
             }, DispatcherPriority.Background);
+        }
+        
+        private void OnLoaded(object sender, RoutedEventArgs e)
+        {
+            // Make sure InvalidateArrange is called when the canvas is invalidated
+            IsCanvasValid = false;
+            InvalidateCanvas();
+        }
+
+        private void OnSizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (e.NewSize.Height > 0 && e.NewSize.Width > 0)
+            {
+                InvalidateCanvas();
+            }
+        }
+
+        /// <summary>
+        /// Updates the model.
+        /// </summary>
+        /// <param name="updateData"></param>
+        private void UpdateModel(bool updateData)
+        {
+            Model?.Update(updateData);
+        }
+
+        private void UpdateVisuals()
+        {
+            if (renderer == null)
+                return;
+
+            // Clear the canvas
+            renderer.Clear();
+            // Render the model
+            Model?.Render(renderer, ActualWidth, ActualHeight);
         }
     }
 }
