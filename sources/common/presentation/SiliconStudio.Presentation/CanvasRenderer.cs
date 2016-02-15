@@ -93,13 +93,14 @@ namespace SiliconStudio.Presentation
         public void DrawEllipse(Point point, Size size, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
         {
-            var ellipse = Create<Ellipse>();
+            point.Offset(-size.Width / 2, -size.Height / 2);
+            var rect = new Rect(point, size);
+
+            var ellipse = Create<Ellipse>(rect.Left, rect.Top);
 
             ellipse.Fill = GetBrush(fillColor);
             SetStroke(ellipse, strokeColor, thickness, lineJoin, dashArray, dashOffset);
 
-            point.Offset(-size.Width / 2, -size.Height / 2);
-            var rect = new Rect(point, size);
             ellipse.Height = rect.Height;
             ellipse.Width = rect.Width;
             Canvas.SetLeft(ellipse, rect.Left);
@@ -228,7 +229,7 @@ namespace SiliconStudio.Presentation
         public void DrawRectangle(Rect rect, Color fillColor, Color strokeColor,
             double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
         {
-            var rectangle = Create<Rectangle>();
+            var rectangle = Create<Rectangle>(rect.Left, rect.Top);
 
             rectangle.Fill = GetBrush(fillColor);
             SetStroke(rectangle, strokeColor, thickness, lineJoin, dashArray, dashOffset);
@@ -306,14 +307,21 @@ namespace SiliconStudio.Presentation
         /// Creates an element and adds it to the canvas.
         /// </summary>
         /// <typeparam name="TElement"></typeparam>
+        /// <param name="clipOffsetX"></param>
+        /// <param name="clipOffsetY"></param>
         /// <returns></returns>
-        private TElement Create<TElement>()
+        private TElement Create<TElement>(double clipOffsetX = 0, double clipOffsetY = 0)
             where TElement : UIElement, new()
         {
             var element = new TElement();
             if (clip.HasValue && !clip.Value.IsEmpty)
             {
-                element.Clip = new RectangleGeometry(clip.Value);
+                element.Clip = new RectangleGeometry(
+                    new Rect(
+                        clip.Value.X - clipOffsetX,
+                        clip.Value.Y - clipOffsetY,
+                        clip.Value.Width,
+                        clip.Value.Height));
             }
             Canvas.Children.Add(element);
             return element;
