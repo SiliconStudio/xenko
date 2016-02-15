@@ -1,6 +1,7 @@
 ﻿// Copyright (c) 2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
+using System;
 using SiliconStudio.Core;
 using SiliconStudio.Xenko.Data;
 
@@ -30,6 +31,27 @@ namespace SiliconStudio.Xenko.Graphics
         /// Displays in portrait mode.
         /// </summary>
         Portrait = 4
+    }
+
+    public enum PreferredGraphicsPlatform
+    {
+        Default,
+
+        /// <summary>
+        /// HLSL Direct3D Shader.
+        /// </summary>
+        Direct3D11,
+
+        /// <summary>
+        /// GLSL OpenGL Shader.
+        /// </summary>
+        OpenGL,
+
+        /// <summary>
+        /// GLSL OpenGL ES Shader.
+        /// </summary>
+        [Display("OpenGL ES")]
+        OpenGLES
     }
 
     [DataContract]
@@ -79,5 +101,54 @@ namespace SiliconStudio.Xenko.Graphics
         /// <userdoc>The display orientations this game support.</userdoc>
         [DataMember(40)]
         public RequiredDisplayOrientation DisplayOrientation = RequiredDisplayOrientation.Default;
+
+        /// <summary>
+        /// Gets or sets the display orientation.
+        /// </summary>
+        /// <userdoc>The display orientations this game support.</userdoc>
+        [DataMember(50)]
+        public PreferredGraphicsPlatform PreferredGraphicsPlatform = PreferredGraphicsPlatform.Default;
+
+        private static GraphicsPlatform GetDefaultGraphicsPlatform(PlatformType platformType)
+        {
+            switch (platformType)
+            {
+                case PlatformType.Windows:
+                case PlatformType.WindowsPhone:
+                case PlatformType.WindowsStore:
+                case PlatformType.Windows10:
+                    return GraphicsPlatform.Direct3D11;
+                case PlatformType.Android:
+                case PlatformType.iOS:
+                    return GraphicsPlatform.OpenGLES;
+                case PlatformType.Linux:
+                    return GraphicsPlatform.OpenGL;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+
+        public static GraphicsPlatform GetGraphicsPlatform(PlatformType platform, PreferredGraphicsPlatform preferredGraphicsPlatform)
+        {
+            GraphicsPlatform graphicsPlatform;
+            switch (preferredGraphicsPlatform)
+            {
+                case PreferredGraphicsPlatform.Default:
+                    graphicsPlatform = GetDefaultGraphicsPlatform(platform);
+                    break;
+                case PreferredGraphicsPlatform.Direct3D11:
+                    graphicsPlatform = GraphicsPlatform.Direct3D11;
+                    break;
+                case PreferredGraphicsPlatform.OpenGL:
+                    graphicsPlatform = GraphicsPlatform.OpenGL;
+                    break;
+                case PreferredGraphicsPlatform.OpenGLES:
+                    graphicsPlatform = GraphicsPlatform.OpenGLES;
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
+            return graphicsPlatform;
+        }
     }
 }

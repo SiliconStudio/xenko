@@ -42,15 +42,8 @@ namespace SiliconStudio.Xenko.Assets
                 return context.Platform.GetDefaultGraphicsPlatform();
             }
 
-            var propertyKey = (SettingsKey<GraphicsPlatform >)buildProfile.Properties.Container.GetSettingsKey("Xenko.GraphicsPlatform");
-            if (propertyKey == null)
-            {
-                // For now, graphics platform is implicit.
-                // It will need to be readded to GameSettingsAsset at some point.
-                propertyKey = new SettingsKey<GraphicsPlatform>("Xenko.GraphicsPlatform", buildProfile.Properties.Container, context.Platform.GetDefaultGraphicsPlatform());
-            }
-
-            return propertyKey.GetValue(buildProfile.Properties, true);
+            var settings = package.GetGameSettingsAsset();
+            return RenderingSettings.GetGraphicsPlatform(context.Platform, settings.Get<RenderingSettings>().PreferredGraphicsPlatform);
         }
 
         public static GraphicsPlatform GetDefaultGraphicsPlatform(this PlatformType platformType)
