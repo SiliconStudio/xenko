@@ -24,12 +24,11 @@
 
 using System;
 using System.Diagnostics;
+using System.Threading.Tasks;
 using Windows.Graphics.Display;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_10
 using Windows.Foundation;
-#endif
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -53,6 +52,7 @@ namespace SiliconStudio.Xenko.Games
         private int currentHeight;
         private readonly CoreWindow coreWindow;
         private static readonly Windows.Devices.Input.MouseCapabilities mouseCapabilities = new Windows.Devices.Input.MouseCapabilities();
+        private readonly DispatcherTimer resizeTimer;
         #endregion
 
         #region Public Properties
@@ -60,7 +60,9 @@ namespace SiliconStudio.Xenko.Games
         public GameWindowWindowsRuntimeSwapChainPanel()
         {
             coreWindow = CoreWindow.GetForCurrentThread();
-        }
+            resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
+            resizeTimer.Tick += ResizeTimerOnTick;
+        } 
 
         public override bool AllowUserResizing
         {
@@ -209,8 +211,8 @@ namespace SiliconStudio.Xenko.Games
 
         private void CurrentWindowOnSizeChanged(object sender, WindowSizeChangedEventArgs windowSizeChangedEventArgs)
         {
-            var bounds = windowSizeChangedEventArgs.Size;
-            HandleSizeChanged(sender, bounds);
+            var newBounds = windowSizeChangedEventArgs.Size;
+            HandleSizeChanged(sender, newBounds);
         }
 
         void swapChainPanel_CompositionScaleChanged(SwapChainPanel sender, object args)
@@ -218,7 +220,13 @@ namespace SiliconStudio.Xenko.Games
             OnClientSizeChanged(sender, EventArgs.Empty);
         }
 
-        private void HandleSizeChanged(object sender, Windows.Foundation.Size newSize)
+        private void ResizeTimerOnTick(object sender, object o)
+        {
+            resizeTimer.Stop();
+            OnClientSizeChanged(sender, EventArgs.Empty);
+        }
+
+        private void HandleSizeChanged(object sender, Size newSize)
         {
             var bounds = newSize;
 
@@ -240,7 +248,7 @@ namespace SiliconStudio.Xenko.Games
                 panelWidth = bounds.Width;
                 panelHeight = bounds.Height;
                 var panelRatio = panelWidth / panelHeight;
-                var currentRatio = currentWidth / currentHeight;
+                var currentRatio = currentWidth / (double)currentHeight;
 
                 if (panelRatio < currentRatio)
                 {
@@ -264,7 +272,8 @@ namespace SiliconStudio.Xenko.Games
                 }
             }
 
-            OnClientSizeChanged(sender, EventArgs.Empty);
+            resizeTimer.Stop();
+            resizeTimer.Start();
         }
 
         private void swapChainPanel_SizeChanged(object sender, SizeChangedEventArgs e)
