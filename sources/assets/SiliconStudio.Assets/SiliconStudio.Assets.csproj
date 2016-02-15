@@ -305,6 +305,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Diagrams\AssetsDiagram.cd" />
+    <None Include="Diagrams\BuildCommands.cd" />
   </ItemGroup>
   <Import Project="$(SiliconStudioPostSettingsTargets)" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
