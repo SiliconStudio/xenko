@@ -6,6 +6,8 @@ using System.Linq;
 using NUnit.Framework;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Reflection;
+using SiliconStudio.Core.Serialization;
+using SiliconStudio.Core.Serialization.Contents;
 
 namespace SiliconStudio.Assets.Tests
 {
@@ -15,6 +17,15 @@ namespace SiliconStudio.Assets.Tests
         public string Name { get; set; }
 
         public TestAssetClonerObject SubObject { get; set; }
+
+        public TestObjectReference ObjectWithAttachedReference { get; set; }
+    }
+
+    [DataContract]
+    [ContentSerializer(typeof(DataContentSerializer<TestObjectReference>))]
+    [DataSerializerGlobal(typeof(ReferenceSerializer<TestObjectReference>), Profile = "Asset")]
+    public class TestObjectReference
+    {        
     }
 
     [TestFixture]
@@ -74,13 +85,19 @@ namespace SiliconStudio.Assets.Tests
         }
 
         [Test]
-        public void TestRuntimeHash()
+        public void TestHash()
         {
             var obj1 = new TestAssetClonerObject
             {
                 Name = "Test1",
-                SubObject = new TestAssetClonerObject() { Name = "Test2" }
+                SubObject = new TestAssetClonerObject() { Name = "Test2" },
+                ObjectWithAttachedReference = new TestObjectReference()
             };
+
+            // Create a fake reference to make sure that the attached reference will not be serialized
+            var attachedReference = AttachedReferenceManager.GetOrCreateAttachedReference(obj1.ObjectWithAttachedReference);
+            attachedReference.Url = "just_for_test";
+            attachedReference.Id = Guid.NewGuid();
 
             // Setup some proper id on objects so serialization is stable
             IdentifiableHelper.SetId(obj1, new Guid("EC86143E-896F-45C5-9A4D-627317D22955"));

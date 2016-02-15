@@ -138,6 +138,9 @@ namespace SiliconStudio.Core.Reflection
             if (toInstance == null) throw new ArgumentNullException(nameof(toInstance));
 
             var type = fromInstance.GetType();
+
+            // If the type is identifiable, we need to force the creation of a ShadowObject in order to
+            // generate an id
             bool forceShadowCreation = IdentifiableHelper.IsIdentifiable(type);
 
             ShadowObject shadow;
