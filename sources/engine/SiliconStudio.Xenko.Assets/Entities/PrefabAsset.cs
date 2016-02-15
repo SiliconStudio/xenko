@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
     [DataContract("PrefabAsset")]
     [AssetDescription(FileExtension)]
     //[AssetCompiler(typeof(SceneAssetCompiler))]
-    [Display("Prefab")]
+    [Display(195, "Prefab")]
     public class PrefabAsset : EntityGroupAssetBase
     {
         public const int AssetFormatVersion = 0;
