@@ -218,7 +218,7 @@ namespace SiliconStudio.Xenko.Games
             OnClientSizeChanged(sender, EventArgs.Empty);
         }
 
-        private void HandleSizeChanged(object sender, Windows.Foundation.Size newSize)
+        private void HandleSizeChanged(object sender, Size newSize)
         {
             var bounds = newSize;
 
@@ -240,7 +240,7 @@ namespace SiliconStudio.Xenko.Games
                 panelWidth = bounds.Width;
                 panelHeight = bounds.Height;
                 var panelRatio = panelWidth / panelHeight;
-                var currentRatio = currentWidth / currentHeight;
+                var currentRatio = currentWidth / (double)currentHeight;
 
                 if (panelRatio < currentRatio)
                 {
