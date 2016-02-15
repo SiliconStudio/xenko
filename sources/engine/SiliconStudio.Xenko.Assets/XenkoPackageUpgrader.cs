@@ -78,25 +78,34 @@ namespace SiliconStudio.Xenko.Assets
 
                 foreach (var legacyAsset in legacyAssets.ToArray())
                 {
+                    var assetFile = legacyAsset.AssetFile;
+                    var filePath = assetFile.FilePath;
+
                     // Load asset data, so the renamed file will have it's AssetContent set
-                    if (legacyAsset.AssetFile.AssetContent == null)
-                        legacyAsset.AssetFile.AssetContent = File.ReadAllBytes(legacyAsset.AssetFile.FilePath);
+                    if (assetFile.AssetContent == null)
+                        assetFile.AssetContent = File.ReadAllBytes(filePath);
 
                     // Change legacy namespaces and default effect names in all shader source files
                     // TODO: Use syntax analysis? What about shaders referenced in other assets?
                     if (legacyAsset.NewExtension == ".xksl" || legacyAsset.NewExtension == ".xkfx" || legacyAsset.NewExtension == ".xkeffectlog")
                     {
-                        var sourceText = System.Text.Encoding.UTF8.GetString(legacyAsset.AssetFile.AssetContent);
+                        var sourceText = System.Text.Encoding.UTF8.GetString(assetFile.AssetContent);
                         var newSourceText = sourceText.Replace("Paradox", "Xenko");
+                        var newAssetContent = System.Text.Encoding.UTF8.GetBytes(newSourceText);
 
                         if (newSourceText != sourceText)
                         {
-                            legacyAsset.AssetFile.AssetContent = System.Text.Encoding.UTF8.GetBytes(newSourceText);
+                            assetFile.AssetContent = newAssetContent;
                         }
+
+                        // Write SourceCodeAssets to new file, as they are serialized differently
+                        // TODO: Handle SourceCodeAssets properly (should probably force saving)
+                        var newFileName = new UFile(filePath.FullPath.Replace(filePath.GetFileExtension(), legacyAsset.NewExtension));
+                        File.WriteAllBytes(newFileName, newAssetContent);
                     }
 
                     // Create asset copy with new extension
-                    ChangeFileExtension(assetFiles, legacyAsset.AssetFile, legacyAsset.NewExtension);
+                    ChangeFileExtension(assetFiles, assetFile, legacyAsset.NewExtension);
                 }
 
                 // Force loading of user settings with old extension
