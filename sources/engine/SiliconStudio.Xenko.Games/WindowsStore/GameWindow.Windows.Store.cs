@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Games
         public GameWindowWindowsRuntimeSwapChainPanel()
         {
             coreWindow = CoreWindow.GetForCurrentThread();
-            resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(250) };
+            resizeTimer = new DispatcherTimer { Interval = TimeSpan.FromMilliseconds(100) };
             resizeTimer.Tick += ResizeTimerOnTick;
         } 
 
@@ -247,19 +247,19 @@ namespace SiliconStudio.Xenko.Games
                 double panelHeight;
                 panelWidth = bounds.Width;
                 panelHeight = bounds.Height;
-                var panelRatio = panelWidth / panelHeight;
-                var currentRatio = currentWidth / (double)currentHeight;
-
-                if (panelRatio < currentRatio)
-                {
-                    panelWidth = bounds.Width;
-                    panelHeight = (int)(currentHeight * bounds.Width / currentWidth);
-                }
-                else
-                {
-                    panelHeight = bounds.Height;
-                    panelWidth = (int)(currentWidth * bounds.Height / currentHeight);
-                }
+//                var panelRatio = panelWidth / panelHeight;
+//                var currentRatio = currentWidth / (double)currentHeight;
+//
+//                if (panelRatio < currentRatio)
+//                {
+//                    panelWidth = bounds.Width;
+//                    panelHeight = (int)(currentHeight * bounds.Width / currentWidth);
+//                }
+//                else
+//                {
+//                    panelHeight = bounds.Height;
+//                    panelWidth = (int)(currentWidth * bounds.Height / currentHeight);
+//                }
 
                 if (swapChainPanel.Width != panelWidth || swapChainPanel.Height != panelHeight)
                 {
