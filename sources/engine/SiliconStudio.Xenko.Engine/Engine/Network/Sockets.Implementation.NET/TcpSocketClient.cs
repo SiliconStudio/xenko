@@ -176,13 +176,7 @@ namespace Sockets.Plugin
 
         private void InitializeWriteStream()
         {
-#if !SILICONSTUDIO_RUNTIME_CORECLR
             _writeStream = _bufferSize != 0 ? (Stream)new BufferedStream(_backingTcpClient.GetStream(), _bufferSize) : _backingTcpClient.GetStream();
-#else
-                // Note that BufferedStream is planned for a future release of CoreFX, so once this 
-                // is available we can remove the #if.
-            _writeStream = _backingTcpClient.GetStream();
-#endif
         }
 
         private void Dispose(bool disposing)
