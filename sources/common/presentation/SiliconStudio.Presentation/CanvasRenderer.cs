@@ -99,7 +99,7 @@ namespace SiliconStudio.Presentation
             var ellipse = Create<Ellipse>(rect.Left, rect.Top);
 
             ellipse.Fill = GetBrush(fillColor);
-            SetStroke(ellipse, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            SetStroke(ellipse, strokeColor, thickness, lineJoin, dashArray, dashOffset, false);
 
             ellipse.Height = rect.Height;
             ellipse.Width = rect.Width;
@@ -117,11 +117,12 @@ namespace SiliconStudio.Presentation
         /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
         /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="aliased"></param>
         public void DrawLine(Point p1, Point p2, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false)
         {
             var line = Create<Line>();
-            SetStroke(line, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            SetStroke(line, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
             line.X1 = p1.X;
             line.Y1 = p1.Y;
             line.X2 = p2.X;
@@ -137,8 +138,9 @@ namespace SiliconStudio.Presentation
         /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
         /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="aliased"></param>
         public void DrawLineSegments(IList<Point> points, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false)
         {
             if (points == null) throw new ArgumentNullException(nameof(points));
             if (points.Count < 2)
@@ -146,7 +148,7 @@ namespace SiliconStudio.Presentation
 
             if (UseStreamGeometry)
             {
-                DrawLineSegmentsByStreamGeometry(points, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+                DrawLineSegmentsByStreamGeometry(points, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
                 return;
             }
 
@@ -156,20 +158,20 @@ namespace SiliconStudio.Presentation
                 var figure = new PathFigure
                 {
                     IsClosed = false,
-                    StartPoint = points[i],
+                    StartPoint = aliased ? ToPixelAlignedPoint(points[i]) : points[i],
                 };
                 var segment = new LineSegment
                 {
                     IsSmoothJoin = false,
                     IsStroked = true,
-                    Point = points[i + 1],
+                    Point = aliased ? ToPixelAlignedPoint(points[i+1]) : points[i + 1],
                 };
                 figure.Segments.Add(segment);
                 pathGeometry.Figures.Add(figure);
             }
 
             var path = Create<Path>();
-            SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
             path.Data = pathGeometry;
         }
 
@@ -183,15 +185,16 @@ namespace SiliconStudio.Presentation
         /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
         /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="aliased"></param>
         public void DrawPolygon(ICollection<Point> points, Color fillColor, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false)
         {
             var polygon = Create<Polygon>();
 
             polygon.Fill = GetBrush(fillColor);
-            SetStroke(polygon, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            SetStroke(polygon, strokeColor, thickness, lineJoin, dashArray, dashOffset, false);
 
-            polygon.Points = new PointCollection(points);
+            polygon.Points = ToPointCollection(points, aliased);
         }
 
         /// <summary>
@@ -203,17 +206,18 @@ namespace SiliconStudio.Presentation
         /// <param name="lineJoin">The type of join that is used at the vertices of the shape.</param>
         /// <param name="dashArray">The pattern of dashes and gaps that is used to outline the shape.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="aliased"></param>
         public void DrawPolyline(IList<Point> points, Color strokeColor,
-            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0)
+            double thickness = 1.0, PenLineJoin lineJoin = PenLineJoin.Miter, ICollection<double> dashArray = null, double dashOffset = 0, bool aliased = false)
         {
             if (thickness < BalancedLineDrawingThicknessLimit)
             {
-                DrawPolylineBalanced(points, strokeColor, thickness, lineJoin, dashArray);
+                DrawPolylineBalanced(points, strokeColor, thickness, lineJoin, dashArray, aliased);
             }
 
             var polyline = Create<Polyline>();
-            SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, dashOffset);
-            polyline.Points = new PointCollection(points);
+            SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
+            polyline.Points = ToPointCollection(points, aliased);
         }
 
         /// <summary>
@@ -232,7 +236,7 @@ namespace SiliconStudio.Presentation
             var rectangle = Create<Rectangle>(rect.Left, rect.Top);
 
             rectangle.Fill = GetBrush(fillColor);
-            SetStroke(rectangle, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            SetStroke(rectangle, strokeColor, thickness, lineJoin, dashArray, dashOffset, false);
 
             rectangle.Height = rect.Height;
             rectangle.Width = rect.Width;
@@ -336,22 +340,23 @@ namespace SiliconStudio.Presentation
         /// <param name="lineJoin">The line join.</param>
         /// <param name="dashArray">The dash array. Use <c>null</c> to get a solid line.</param>
         /// <param name="dashOffset">The distance within the dash pattern where a dash begins.</param>
+        /// <param name="aliased"></param>
         /// <remarks>Using stream geometry seems to be slightly faster than using path geometry.</remarks>
         private void DrawLineSegmentsByStreamGeometry(IList<Point> points, Color strokeColor,
-            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset)
+            double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased)
         {
             var streamGeometry = new StreamGeometry();
 
             var streamGeometryContext = streamGeometry.Open();
             for (var i = 0; i < points.Count - 1; i += 2)
             {
-                streamGeometryContext.BeginFigure(points[i], false, false);
-                streamGeometryContext.LineTo(points[i + 1], true, false);
+                streamGeometryContext.BeginFigure(aliased ? ToPixelAlignedPoint(points[i]) : points[i], false, false);
+                streamGeometryContext.LineTo(aliased ? ToPixelAlignedPoint(points[i + 1]) : points[i + 1], true, false);
             }
             streamGeometryContext.Close();
 
             var path = Create<Path>();
-            SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+            SetStroke(path, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
             path.Data = streamGeometry;
         }
 
@@ -363,14 +368,15 @@ namespace SiliconStudio.Presentation
         /// <param name="thickness">The thickness.</param>
         /// <param name="lineJoin">The line join.</param>
         /// <param name="dashArray">The dash array. Use <c>null</c> to get a solid line.</param>
+        /// <param name="aliased"></param>
         /// <remarks>See <a href="https://oxyplot.codeplex.com/discussions/456679">discussion</a>.</remarks>
-        private void DrawPolylineBalanced(IList<Point> points, Color strokeColor, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray)
+        private void DrawPolylineBalanced(IList<Point> points, Color strokeColor, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, bool aliased)
         {
             // balance the number of points per polyline and the number of polylines
             var numPointsPerPolyline = Math.Max(points.Count / MaxPolylinesPerLine, MinPointsPerPolyline);
 
             var polyline = Create<Polyline>();
-            SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, 0);
+            SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, 0, aliased);
             var pointCollection = new PointCollection(numPointsPerPolyline);
 
             var pointCount = points.Count;
@@ -379,7 +385,7 @@ namespace SiliconStudio.Presentation
             var last = new Point();
             for (var i = 0; i < pointCount; i++)
             {
-                var current = points[i];
+                var current = aliased ? ToPixelAlignedPoint(points[i]) : points[i];
                 pointCollection.Add(current);
 
                 // get line length
@@ -405,7 +411,7 @@ namespace SiliconStudio.Presentation
                         // start a new polyline at last point so there is no gap (it is not necessary to use the % operator)
                         var dashOffset = dashPatternLength > 0 ? lineLength / thickness : 0;
                         polyline = Create<Polyline>();
-                        SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, dashOffset);
+                        SetStroke(polyline, strokeColor, thickness, lineJoin, dashArray, dashOffset, aliased);
                         pointCollection = new PointCollection(numPointsPerPolyline) { pointCollection.Last() };
                     }
                 }
@@ -444,7 +450,7 @@ namespace SiliconStudio.Presentation
             return brush;
         }
 
-        private void SetStroke(Shape shape, Color color, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset)
+        private void SetStroke(Shape shape, Color color, double thickness, PenLineJoin lineJoin, ICollection<double> dashArray, double dashOffset, bool aliased)
         {
             shape.Stroke = GetBrush(color);
             shape.StrokeThickness = thickness;
@@ -454,7 +460,35 @@ namespace SiliconStudio.Presentation
                 shape.StrokeDashArray = new DoubleCollection(dashArray);
                 shape.StrokeDashOffset = dashOffset;
             }
+
+            if (aliased)
+            {
+                shape.SetValue(RenderOptions.EdgeModeProperty, EdgeMode.Aliased);
+                shape.SnapsToDevicePixels = true;
+            }
         }
 
+        /// <summary>
+        /// Converts a <see cref="Point" /> to a pixel aligned<see cref="Point" />.
+        /// </summary>
+        /// <param name="point">The point.</param>
+        /// <returns>A pixel aligned <see cref="Point" />.</returns>
+        private static Point ToPixelAlignedPoint(Point point)
+        {
+            // adding 0.5 to get pixel boundary alignment, seems to work
+            // http://weblogs.asp.net/mschwarz/archive/2008/01/04/silverlight-rectangles-paths-and-line-comparison.aspx
+            return new Point(0.5 + (int)point.X, 0.5 + (int)point.Y);
+        }
+
+        /// <summary>
+        /// Creates a point collection from the specified points.
+        /// </summary>
+        /// <param name="points">The points to convert.</param>
+        /// <param name="aliased">Convert to pixel aligned points if set to <c>true</c>.</param>
+        /// <returns>The point collection.</returns>
+        private static PointCollection ToPointCollection(IEnumerable<Point> points, bool aliased)
+        {
+            return new PointCollection(aliased ? points.Select(ToPixelAlignedPoint) : points);
+        }
     }
 }
