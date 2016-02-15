@@ -27,9 +27,7 @@ using System.Diagnostics;
 using Windows.Graphics.Display;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Core.Mathematics;
-#if SILICONSTUDIO_PLATFORM_WINDOWS_10
 using Windows.Foundation;
-#endif
 using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
