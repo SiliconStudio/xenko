@@ -4,10 +4,34 @@ using SiliconStudio.Core.Mathematics;
 namespace SiliconStudio.Presentation.Extensions
 {
     using WindowsPoint = System.Windows.Point;
+    using WindowsRect = System.Windows.Rect;
+    using WindowsThickness = System.Windows.Thickness;
     using WindowsVector = System.Windows.Vector;
 
     public static class MathExtensions
     {
+        /// <summary>
+        /// Returns a rectangle that is shrunk by the specified thickness, in all directions.
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="t">The thickness to apply to the rectangle.</param>
+        /// <returns>The deflated rectangle.</returns>
+        public static WindowsRect Deflate(this WindowsRect r, WindowsThickness t)
+        {
+            return new WindowsRect(r.Left + t.Left, r.Top + t.Top, r.Width - t.Left - t.Right, r.Height - t.Top - t.Bottom);
+        }
+
+        /// <summary>
+        /// Returns a rectangle that is expanded by the specified thickness, in all directions.
+        /// </summary>
+        /// <param name="r"></param>
+        /// <param name="t">The thickness to apply to the rectangle.</param>
+        /// <returns>The inflated rectangle.</returns>
+        public static WindowsRect Inflate(this WindowsRect r, WindowsThickness t)
+        {
+            return new WindowsRect(r.Left - t.Left, r.Top - t.Top, r.Width + t.Left + t.Right, r.Height + t.Top + t.Bottom);
+        }
+
         /// <summary>
         /// Converts a <see cref="WindowsPoint"/> to a <see cref="Vector2"/>.
         /// </summary>
