@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         {
             RequiredFields.Add(ParticleFields.Quaternion);
             RequiredFields.Add(ParticleFields.RandomSeed);
+            InheritLocation = InheritLocation.Rotation;
         }
 
         public unsafe override void Initialize(ParticlePool pool, int startIdx, int endIdx, int maxCapacity)
@@ -41,14 +42,6 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 i = (i + 1) % maxCapacity;
             }
         }
-
-        /// <summary>
-        /// Note on inheritance. The current values only change once per frame, when the SetParentTRS is called. 
-        /// This is intentional and reduces overhead, because SetParentTRS is called exactly once/turn.
-        /// </summary>
-        [DataMember(5)]
-        [Display("Inheritance")]
-        public InheritLocation InheritLocation { get; set; } = InheritLocation.Rotation;
 
         [DataMember(8)]
         [Display("Seed offset")]
