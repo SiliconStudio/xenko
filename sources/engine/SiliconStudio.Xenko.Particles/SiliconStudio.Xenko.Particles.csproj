@@ -92,6 +92,7 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>ParticleEffect.xkfx</DependentUpon>
     </Compile>
+    <Compile Include="ShapeBuilders\ShapeBuilderCommon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderHexagon.cs" />
     <Compile Include="ShapeBuilders\ShapeBuilderQuad.cs" />
     <Compile Include="Sorters\ParticleSorter.cs" />

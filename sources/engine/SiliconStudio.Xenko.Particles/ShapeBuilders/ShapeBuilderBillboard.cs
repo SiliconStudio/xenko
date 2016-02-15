@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
     [DataContract("ShapeBuilderBillboard")]
     [Display("Billboard")]
-    public class ShapeBuilderBillboard : ShapeBuilder
+    public class ShapeBuilderBillboard : ShapeBuilderCommon
     {
         public override int QuadsPerParticle { get; protected set; } = 1;
 
@@ -19,10 +19,13 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
         public unsafe override int BuildVertexBuffer(ParticleVertexBuilder vtxBuilder, Vector3 invViewX, Vector3 invViewY, 
             ref Vector3 spaceTranslation, ref Quaternion spaceRotation, float spaceScale, ParticleSorter sorter)
         {
+            base.BuildVertexBuffer(vtxBuilder, invViewX, invViewY, ref spaceTranslation, ref spaceRotation, spaceScale, sorter);
+
             // Get all the required particle fields
             var positionField = sorter.GetField(ParticleFields.Position);
             if (!positionField.IsValid())
                 return 0;
+            var lifeField = sorter.GetField(ParticleFields.Life);
             var sizeField = sorter.GetField(ParticleFields.Size);
             var angleField = sorter.GetField(ParticleFields.Angle);
             var hasAngle = angleField.IsValid();
@@ -41,9 +44,9 @@ namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 
             foreach (var particle in sorter)
             {
-                var centralPos = particle.Get(positionField);
+                var centralPos = GetParticlePosition(particle, positionField, lifeField);
 
-                var particleSize = sizeField.IsValid() ? particle.Get(sizeField) : 1f;
+                var particleSize = GetParticleSize(particle, sizeField, lifeField);
 
                 if (!trsIdentity)
                 {
