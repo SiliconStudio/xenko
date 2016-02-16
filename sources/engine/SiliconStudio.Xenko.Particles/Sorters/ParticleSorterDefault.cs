@@ -45,8 +45,10 @@ namespace SiliconStudio.Xenko.Particles.Sorters
         {           
         }
 
+        /// <inheritdoc />
         public override void Sort() { }
 
+        /// <inheritdoc />
         public override IEnumerator<Particle> GetEnumerator()
         {
             return ParticlePool.GetEnumerator();

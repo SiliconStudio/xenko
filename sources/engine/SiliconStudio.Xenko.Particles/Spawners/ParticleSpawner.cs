@@ -66,6 +66,21 @@ namespace SiliconStudio.Xenko.Particles.Spawners
     [DataContract("ParticleSpawner")]
     public abstract class ParticleSpawner 
     {
+        [DataMemberIgnore]
+        private ParticleEmitter emitter;
+
+        [DataMemberIgnore]
+        private SpawnerState state = SpawnerState.Inactive;
+
+        [DataMemberIgnore]
+        private float stateDuration;
+
+        [DataMemberIgnore]
+        private RandomSeed randomSeed = new RandomSeed(0);
+
+        [DataMemberIgnore]
+        private UInt32 randomOffset = 0;
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleSpawner"/> is enabled.
         /// </summary>
@@ -76,38 +91,46 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
 
+        /// <summary>
+        /// Indicates if the spawner should loop, and if there is a delay every time it loops
+        /// </summary>
+        /// <userdoc>
+        /// Indicates if the spawner should loop, and if there is a delay every time it loops
+        /// </userdoc>
         [DataMember(5)]
         [Display("Loop")]
         public SpawnerLoopCondition LoopCondition = SpawnerLoopCondition.Looping;
 
+        /// <summary>
+        /// The minimum and maximum time the spawner should wait before starting to emit particles
+        /// </summary>
+        /// <userdoc>
+        /// The minimum and maximum time the spawner should wait before starting to emit particles
+        /// </userdoc>
         [DataMember(10)]
         [Display("Delay")]
         public Vector2 Delay = new Vector2(0, 0);
 
+        /// <summary>
+        /// The minimum and maximum duration the spawner will be active once it starts spawning particles
+        /// </summary>
+        /// <userdoc>
+        /// The minimum and maximum duration the spawner will be active once it starts spawning particles
+        /// </userdoc>
         [DataMember(15)]
         [Display("Duration")]
         public Vector2 Duration = new Vector2(1, 1);
 
-        [DataMemberIgnore]
-        protected ParticleEmitter emitter = null;
 
-        [DataMemberIgnore]
-        private SpawnerState state = SpawnerState.Inactive;
-
-        [DataMemberIgnore]
-        private float stateDuration = 0f;
-
+        /// <summary>
+        /// Restarts the spawner setting it to inactive state and elapsed time = 0
+        /// </summary>
         internal virtual void RestartSimulation()
         {
             state = SpawnerState.Inactive;
             stateDuration = 0f;
         }
 
-        [DataMemberIgnore]
-        private RandomSeed randomSeed = new RandomSeed(0);
-
-        [DataMemberIgnore]
-        private UInt32 randomOffset = 0;
 
         /// <summary>
         /// Marking the spawner as dirty will notify the parent emitter that the maximum number of particles need to be recalculated
@@ -120,11 +143,19 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             }
         }
 
+        /// <summary>
+        /// Gets a next random float value from the random seed
+        /// </summary>
+        /// <returns>Random float value in the range [0..1)</returns>
         private float NextFloat()
         {
             return randomSeed.GetFloat(unchecked(randomOffset++));
         }
 
+        /// <summary>
+        /// Changes the spawners internal state (active, rest, etc.) to a new value.
+        /// </summary>
+        /// <param name="newState">The new state</param>
         private void SwitchToState(SpawnerState newState)
         {
             state = newState;
@@ -144,6 +175,12 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             }
         }
 
+        /// <summary>
+        /// Updates and gets the current internal state
+        /// </summary>
+        /// <param name="dt">Delta time in seconds since the last <see cref="GetUpdatedState"/> was called</param>
+        /// <param name="emitter">Parent <see cref="ParticleEmitter"/> for this spawner</param>
+        /// <returns></returns>
         protected SpawnerState GetUpdatedState(float dt, ParticleEmitter emitter)
         {
             // If this is the first time we activate the spawner add it to the emitter list and initialize its random seed

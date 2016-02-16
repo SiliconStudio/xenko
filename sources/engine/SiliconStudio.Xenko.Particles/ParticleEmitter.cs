@@ -931,11 +931,12 @@ namespace SiliconStudio.Xenko.Particles
         /// <param name="color">Color scale (color shade) for all particles</param>
         public void KickVertexBuffer(GraphicsDevice device, RenderContext context, ref Matrix viewMatrix, ref Matrix projMatrix, Color4 color)
         {
+            // Calling the method here causes mismatching vertex declarations in the EffectInputSignature (correct) and VertexAttributeLayout (wrong)
+            if (Material.Effect != null) vertexBuilder.CreateVAO(device, Material.Effect);
+
             Material.Setup(device, context, viewMatrix, projMatrix, color);
 
             Material.ApplyEffect(device);
-
-            vertexBuilder.CreateVAO(device, Material.Effect);
 
             vertexBuilder.Draw(device);
         }

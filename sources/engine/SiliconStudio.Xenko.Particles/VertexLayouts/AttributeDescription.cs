@@ -3,6 +3,9 @@
 
 namespace SiliconStudio.Xenko.Particles.VertexLayouts
 {
+    /// <summary>
+    /// Attribute description code used for defining vertex attributes in the <see cref="ParticleVertexBuilder"/>
+    /// </summary>
     public struct AttributeDescription
     {
         private readonly int hashCode;
