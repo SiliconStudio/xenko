@@ -44,7 +44,7 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         private int nextFreeIndex;
 
-        private bool disposed = false;
+        private bool disposed;
 
         public const int DefaultMaxFielsPerPool = 16;
 
@@ -220,6 +220,7 @@ namespace SiliconStudio.Xenko.Particles
             DisposeParticleData();
 
             if (!disposing)
+                // ReSharper disable once RedundantJumpStatement
                 return;
 
             // Dispose managed resources

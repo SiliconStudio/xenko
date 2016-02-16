@@ -1,15 +1,11 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
-using System;
 using System.Collections.Generic;
-using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Core.Threading;
 using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Games;
-using SiliconStudio.Xenko.Graphics;
-using SiliconStudio.Xenko.Rendering;
 
 namespace SiliconStudio.Xenko.Particles.Components
 {
@@ -27,24 +23,26 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// <inheritdoc/>
         protected override void OnSystemAdd()
         {
-            // TODO Create or reference systems
+            // Create or reference systems
             //var game = Services.GetSafeServiceAs<IGame>();
             //game.GameSystems.Add(particleEngine);
             //var graphicsDevice = Services.GetSafeServiceAs<IGraphicsDeviceService>()?.GraphicsDevice;
             //var sceneSystem = Services.GetSafeServiceAs<SceneSystem>();
         }
 
+        /// <inheritdoc />
         protected override void OnSystemRemove()
         {
-            // TODO Clean-up particleEngine
+            // Clean-up particleEngine
         }
 
+        /// <inheritdoc />
         protected override void OnEntityComponentAdding(Entity entity, ParticleSystemComponent component, ParticleSystemComponentState data)
         {
             // Do some particle system initialization
-
         }
 
+        /// <inheritdoc />
         protected override void OnEntityComponentRemoved(Entity entity, ParticleSystemComponent component, ParticleSystemComponentState data)
         {
             component.ParticleSystem.Dispose();
@@ -98,10 +96,7 @@ namespace SiliconStudio.Xenko.Particles.Components
             particleSystem.Update(deltaTime * speed);
         }
 
-        /// <summary>
-        /// Update the particle system's state and particles.
-        /// </summary>
-        /// <param name="time"></param>
+        /// <inheritdoc />
         public override void Update(GameTime time)
         {
             base.Update(time);
@@ -143,16 +138,7 @@ namespace SiliconStudio.Xenko.Particles.Components
             }
         }
 
-        /// <summary>
-        /// Draw the particle system using the RenderContext.
-        /// </summary>
-        /// <param name="context"></param>
-        public override void Draw(RenderContext context)
-        {
-            base.Draw(context);
-        }
-
-
+        /// <inheritdoc />
         protected override ParticleSystemComponentState GenerateComponentData(Entity entity, ParticleSystemComponent component)
         {
             return new ParticleSystemComponentState
@@ -162,6 +148,7 @@ namespace SiliconStudio.Xenko.Particles.Components
             };
         }
 
+        /// <inheritdoc />
         protected override bool IsAssociatedDataValid(Entity entity, ParticleSystemComponent component, ParticleSystemComponentState associatedData)
         {
             return
@@ -169,6 +156,9 @@ namespace SiliconStudio.Xenko.Particles.Components
                 entity.Transform == associatedData.TransformComponent;
         }
 
+        /// <summary>
+        /// Base component state for this processor. Every particle system requires a locator, so the <see cref="TransformComponent"/> is mandatory
+        /// </summary>
         public class ParticleSystemComponentState
         {
             public ParticleSystemComponent ParticleSystemComponent;
