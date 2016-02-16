@@ -1,8 +1,6 @@
 ﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel;
 
@@ -16,8 +14,6 @@ using SiliconStudio.Core.MicroThreading;
 using SiliconStudio.Core.Serialization.Assets;
 
 using System.Threading;
-using SiliconStudio.Core.Serialization;
-using SiliconStudio.Core.Settings;
 using SiliconStudio.Xenko.Assets;
 using SiliconStudio.Xenko.Graphics;
 
@@ -177,8 +173,6 @@ namespace SiliconStudio.Assets.CompilerApp
 
         private BuildResultCode BuildGetGraphicsPlatform()
         {
-            Debugger.Launch();
-
             var localLogger = new LoggerResult();
             var simplePackage = Package.Load(localLogger, builderOptions.PackageFile, new PackageLoadParameters { AutoLoadTemporaryAssets = true, LoadAssemblyReferences = false, AutoCompileProjects = false });
             if (simplePackage == null
