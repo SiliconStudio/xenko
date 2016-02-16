@@ -192,6 +192,7 @@
     <Compile Include="Audio\SoundAsset.cs" />
     <Compile Include="Audio\RawMusicAssetImporter.cs" />
     <Compile Include="Debugging\AssemblyReloader.cs" />
+    <Compile Include="EditorSettings.cs" />
     <Compile Include="Effect\EffectByteCodeToSourceCodeWriter.cs" />
     <Compile Include="Effect\EffectCompileCommand.cs" />
     <Compile Include="Effect\EffectCompositorAsset.cs" />

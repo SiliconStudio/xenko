@@ -20,18 +20,5 @@ namespace SiliconStudio.Xenko.Assets
                 DisplayName = "Record used effects"
             };
         }
-
-        public static class Editor
-        {
-            public static SettingsKey<RenderingMode> EditorRenderingMode = new SettingsKey<RenderingMode>("Package/Game/Editor/RenderingMode", PackageUserSettings.SettingsContainer, RenderingMode.HDR)
-            {
-                DisplayName = "Editor Rendering Mode"
-            };
-
-            public static T GetValueForPackage<T>(SettingsKey<T> settingsKey, Package package)
-            {
-                return settingsKey.GetValue(package.UserSettings.Profile, true);
-            }
-        }
     }
 }

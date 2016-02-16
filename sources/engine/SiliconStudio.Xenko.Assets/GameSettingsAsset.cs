@@ -214,7 +214,6 @@ namespace SiliconStudio.Xenko.Assets
                         renderingMode = RenderingMode.LDR;
                     }
                 }
-                GameUserSettings.Editor.EditorRenderingMode.SetValue(renderingMode, context.Package.UserSettings.Profile);
                 asset.RemoveChild("RenderingMode");
 
                 var configurations = new DynamicYamlArray(new YamlSequenceNode());
@@ -227,6 +226,10 @@ namespace SiliconStudio.Xenko.Assets
                 renderingSettings.ColorSpace = colorSpace;
                 renderingSettings.DisplayOrientation = displayOrientation;
                 asset.Defaults.Add(renderingSettings);
+
+                dynamic editorSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Assets.EditorSettings,SiliconStudio.Xenko.Assets" });
+                editorSettings.RenderingMode = renderingMode;
+                asset.Defaults.Add(editorSettings);
 
                 dynamic textSettings = new DynamicYamlMapping(new YamlMappingNode { Tag = "!SiliconStudio.Xenko.Assets.Textures.TextureSettings,SiliconStudio.Xenko.Assets" });
                 textSettings.TextureQuality = textureQuality;
