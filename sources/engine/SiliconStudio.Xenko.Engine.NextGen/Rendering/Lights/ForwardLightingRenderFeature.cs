@@ -303,7 +303,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
         /// <inheritdoc/>
         public override void Draw(RenderDrawContext context, RenderView renderView, RenderViewStage renderViewStage, int startIndex, int endIndex)
         {
-            shadowMapRenderer.ClearAtlasRenderTargets(context.CommandList);
+            shadowMapRenderer?.ClearAtlasRenderTargets(context.CommandList);
         }
 
         protected void RegisterLightGroupRenderer(Type lightType, LightGroupRendererBase renderer)
