@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SiliconStudio.Core;
+using SiliconStudio.Core.Extensions;
 using SiliconStudio.Xenko.Engine;
 
 namespace SiliconStudio.Xenko.Rendering
@@ -89,8 +90,8 @@ namespace SiliconStudio.Xenko.Rendering
                 {
                     RenderModel = renderModel,
                     Mesh = mesh,
-                    Material = modelComponent.Materials[materialIndex]  // Check ModelComponent.Materials first
-                                     ?? model.Materials[materialIndex], // Otherwise, fallback to Model.Materials
+                    Material = modelComponent.Materials.GetItemOrNull(materialIndex)  // Check ModelComponent.Materials first
+                                     ?? model.Materials.GetItemOrNull(materialIndex), // Otherwise, fallback to Model.Materials
                 };
             }
 
