@@ -10,7 +10,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public class DepthMinMax : ImageEffect
     {
-        internal static ParameterKey<bool> IsFirstPassKey = ParameterKeys.New<bool>();
+        internal static PermutationParameterKey<bool> IsFirstPassKey = ParameterKeys.NewPermutation<bool>();
 
         // TODO: Currently capturing two effects, because xkfx permutation triggers DynamicEffectCompiler
         private ImageEffectShader effectFirstPass, effectNotFirstPass;
@@ -48,11 +48,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 downTexture = NewScopedRenderTarget2D(nextSize, nextSize, PixelFormat.R32G32_Float, 1);
 
                 var effect = isFirstPass ? effectFirstPass : effectNotFirstPass;
-                effect.Parameters.SetResourceSlow(DepthMinMaxShaderKeys.TextureMap, fromTexture);
-                effect.Parameters.SetResourceSlow(DepthMinMaxShaderKeys.TextureReduction, fromTexture);
+                effect.Parameters.Set(DepthMinMaxShaderKeys.TextureMap, fromTexture);
+                effect.Parameters.Set(DepthMinMaxShaderKeys.TextureReduction, fromTexture);
 
                 effect.SetOutput(downTexture);
-                effect.Parameters.SetValueSlow(IsFirstPassKey, isFirstPass);
+                effect.Parameters.Set(IsFirstPassKey, isFirstPass);
                 ((RendererBase)effect).Draw(context);
 
                 fromTexture = downTexture;

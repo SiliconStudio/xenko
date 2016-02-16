@@ -30,13 +30,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private class LightSkyBoxShaderGroup : LightShaderGroupAndDataPool<LightSkyBoxShaderGroupData>
         {
-            internal readonly ParameterKey<float> IntensityKey;
-            internal readonly ParameterKey<Matrix> SkyMatrixKey;
-            internal readonly ParameterKey<ShaderSource> LightDiffuseColorKey;
-            internal readonly ParameterKey<ShaderSource> LightSpecularColorKey;
-            internal readonly ParameterKey<Color3> SphericalColorsKey;
-            internal readonly ParameterKey<Texture> SpecularCubeMapkey;
-            internal readonly ParameterKey<float> SpecularMipCountKey;
+            internal readonly ValueParameterKey<float> IntensityKey;
+            internal readonly ValueParameterKey<Matrix> SkyMatrixKey;
+            internal readonly PermutationParameterKey<ShaderSource> LightDiffuseColorKey;
+            internal readonly PermutationParameterKey<ShaderSource> LightSpecularColorKey;
+            internal readonly ValueParameterKey<Color3> SphericalColorsKey;
+            internal readonly ObjectParameterKey<Texture> SpecularCubeMapkey;
+            internal readonly ValueParameterKey<float> SpecularMipCountKey;
 
             public LightSkyBoxShaderGroup(ShaderSource mixin, string compositionName)
                 : base(mixin, compositionName, null)
@@ -59,13 +59,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
         private class LightSkyBoxShaderGroupData : LightShaderGroupData
         {
-            private readonly ParameterKey<float> intensityKey;
+            private readonly ValueParameterKey<float> intensityKey;
 
-            private readonly ParameterKey<Matrix> skyMatrixKey;
+            private readonly ValueParameterKey<Matrix> skyMatrixKey;
 
-            private readonly ParameterKey<ShaderSource> lightDiffuseColorKey;
+            private readonly PermutationParameterKey<ShaderSource> lightDiffuseColorKey;
 
-            private readonly ParameterKey<ShaderSource> lightSpecularColorKey;
+            private readonly PermutationParameterKey<ShaderSource> lightSpecularColorKey;
 
             private float intensity;
 
@@ -77,11 +77,11 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 
             private Color3[] sphericalColors;
 
-            private readonly ParameterKey<Color3> sphericalColorsKey;
+            private readonly ValueParameterKey<Color3> sphericalColorsKey;
 
-            private readonly ParameterKey<Texture> specularCubeMapkey;
+            private readonly ObjectParameterKey<Texture> specularCubeMapkey;
 
-            private readonly ParameterKey<float> specularMipCountKey;
+            private readonly ValueParameterKey<float> specularMipCountKey;
 
             private static readonly ShaderClassSource EmptyComputeEnvironmentColorSource = new ShaderClassSource("IComputeEnvironmentColor");
 
@@ -121,14 +121,14 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 var diffuseParameters = skybox.DiffuseLightingParameters;
                 var specularParameters = skybox.SpecularLightingParameters;
 
-                specularCubemap = specularParameters.GetResourceSlow(SkyboxKeys.CubeMap);
+                specularCubemap = specularParameters.Get(SkyboxKeys.CubeMap);
                 if (specularCubemap != null)
                 {
                     specularCubemapLevels = specularCubemap.MipLevels;
                 }
-                sphericalColors = diffuseParameters.GetValuesSlow(SphericalHarmonicsEnvironmentColorKeys.SphericalColors);
-                lightDiffuseColorShader = diffuseParameters.GetResourceSlow(SkyboxKeys.Shader) ?? EmptyComputeEnvironmentColorSource;
-                lightSpecularColorShader = specularParameters.GetResourceSlow(SkyboxKeys.Shader) ?? EmptyComputeEnvironmentColorSource;
+                sphericalColors = diffuseParameters.GetValues(SphericalHarmonicsEnvironmentColorKeys.SphericalColors);
+                lightDiffuseColorShader = diffuseParameters.Get(SkyboxKeys.Shader) ?? EmptyComputeEnvironmentColorSource;
+                lightSpecularColorShader = specularParameters.Get(SkyboxKeys.Shader) ?? EmptyComputeEnvironmentColorSource;
 
                 previousSkybox = skybox;
             }
@@ -142,13 +142,13 @@ namespace SiliconStudio.Xenko.Rendering.Lights
             protected override void ApplyParametersInternal(NextGenParameterCollection parameters)
             {
                 // global parameters
-                parameters.SetValueSlow(intensityKey, intensity);
-                parameters.SetValueSlow(skyMatrixKey, rotationMatrix);
+                parameters.Set(intensityKey, intensity);
+                parameters.Set(skyMatrixKey, rotationMatrix);
 
                 // This need to be working with new system
-                parameters.SetValueSlow(sphericalColorsKey, sphericalColors);
-                parameters.SetResourceSlow(specularCubeMapkey, specularCubemap);
-                parameters.SetValueSlow(specularMipCountKey, specularCubemapLevels);
+                parameters.Set(sphericalColorsKey, sphericalColors);
+                parameters.Set(specularCubeMapkey, specularCubemap);
+                parameters.Set(specularMipCountKey, specularCubemapLevels);
             }
         }
     }

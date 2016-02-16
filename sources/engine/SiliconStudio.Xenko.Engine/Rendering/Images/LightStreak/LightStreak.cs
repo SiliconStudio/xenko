@@ -257,7 +257,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             colorAberration.Y = (float)MathUtil.Lerp(1.0, ColorAberrationCoefficients.Y, ColorAberrationStrength);
             colorAberration.Z = (float)MathUtil.Lerp(1.0, ColorAberrationCoefficients.Z, ColorAberrationStrength);
 
-            lightStreakEffect.Parameters.SetValueSlow(LightStreakShaderKeys.ColorAberrationCoefficients, colorAberration);
+            lightStreakEffect.Parameters.Set(LightStreakShaderKeys.ColorAberrationCoefficients, colorAberration);
 
             for (int streak = 0; streak < StreakCount; streak++)
             {
@@ -290,11 +290,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     if (level == 0) currentInput = originalDownsize;
                     currentOutput = writeToScratchA ? scratchTextureA : scratchTextureB;
 
-                    lightStreakEffect.EffectInstance.SetPermutationValue(LightStreakKeys.Count, TapsPerIteration);
-                    lightStreakEffect.EffectInstance.SetPermutationValue(LightStreakKeys.AnamorphicCount, AnamorphicOffsetsWeights.Length);
-                    lightStreakEffect.Parameters.SetValueSlow(LightStreakShaderKeys.TapOffsetsWeights, tapOffsetsWeights);
-                    lightStreakEffect.Parameters.SetValueSlow(LightStreakShaderKeys.AnamorphicOffsetsWeight, AnamorphicOffsetsWeights);
-                    lightStreakEffect.Parameters.SetValueSlow(LightStreakShaderKeys.Direction, direction);
+                    lightStreakEffect.Parameters.Set(LightStreakKeys.Count, TapsPerIteration);
+                    lightStreakEffect.Parameters.Set(LightStreakKeys.AnamorphicCount, AnamorphicOffsetsWeights.Length);
+                    lightStreakEffect.Parameters.Set(LightStreakShaderKeys.TapOffsetsWeights, tapOffsetsWeights);
+                    lightStreakEffect.Parameters.Set(LightStreakShaderKeys.AnamorphicOffsetsWeight, AnamorphicOffsetsWeights);
+                    lightStreakEffect.Parameters.Set(LightStreakShaderKeys.Direction, direction);
                     lightStreakEffect.SetInput(0, currentInput);
                     lightStreakEffect.SetOutput(currentOutput);
                     lightStreakEffect.Draw(contextParameters, lightStreakDebugStrings[(streak * IterationCount) + level]);

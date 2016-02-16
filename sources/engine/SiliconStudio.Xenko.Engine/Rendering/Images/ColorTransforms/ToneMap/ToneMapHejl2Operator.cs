@@ -35,11 +35,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapHejl2OperatorShaderKeys.WhitePoint);
+                return Parameters.Get(ToneMapHejl2OperatorShaderKeys.WhitePoint);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapHejl2OperatorShaderKeys.WhitePoint, value);
+                Parameters.Set(ToneMapHejl2OperatorShaderKeys.WhitePoint, value);
             }
         }
     }

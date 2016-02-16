@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class SpriteBaseKeys
     {
-        public static readonly ParameterKey<Matrix> MatrixTransform = ParameterKeys.New<Matrix>();
+        public static readonly ValueParameterKey<Matrix> MatrixTransform = ParameterKeys.NewValue<Matrix>();
     }
 }

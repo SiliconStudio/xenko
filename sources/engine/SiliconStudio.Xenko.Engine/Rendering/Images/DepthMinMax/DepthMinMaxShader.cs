@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class DepthMinMaxShaderKeys
     {
-        public static readonly ParameterKey<Texture> TextureMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<Texture> TextureReduction = ParameterKeys.New<Texture>();
+        public static readonly ObjectParameterKey<Texture> TextureMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ObjectParameterKey<Texture> TextureReduction = ParameterKeys.NewObject<Texture>();
     }
 }

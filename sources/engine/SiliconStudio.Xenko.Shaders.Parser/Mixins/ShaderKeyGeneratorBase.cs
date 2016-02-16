@@ -120,15 +120,33 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             var variableMap = variable.Attributes.OfType<AttributeDeclaration>().Where(x => x.Name == "Map").Select(x => (string)x.Parameters[0].Value).FirstOrDefault();
 
             // ParameterKey shouldn't contain only the underlying type in case of arrays (we use slots)
-            var variableTypeWithoutArray = variable.Type;
-            while (variableTypeWithoutArray is ArrayType)
+            var parameterType = variable.Type;
+
+            string parameterKeyType;
+            if (IsXkfx)
             {
-                variableTypeWithoutArray = ((ArrayType)variableTypeWithoutArray).Type;
+                parameterKeyType = "Permutation";
+            }
+            else
+            {
+                while (parameterType is ArrayType)
+                {
+                    parameterType = ((ArrayType)parameterType).Type;
+                }
+
+                if (parameterType is ObjectType || IsTextureType(parameterType) || IsBufferType(parameterType))
+                {
+                    parameterKeyType = "Object";
+                }
+                else
+                {
+                    parameterKeyType = "Value";
+                }
             }
 
-            Write("public static readonly ParameterKey<");
+            Write($"public static readonly {parameterKeyType}ParameterKey<");
             if (variableType == null)
-                VisitDynamic(variableTypeWithoutArray);
+                VisitDynamic(parameterType);
             else
                 Write(variableType);
             Write("> ");
@@ -136,9 +154,9 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
             Write(" = ");
             if (variableMap == null)
             {
-                Write("ParameterKeys.New<");
+                Write($"ParameterKeys.New{parameterKeyType}<");
                 if (variableType == null)
-                    VisitDynamic(variableTypeWithoutArray);
+                    VisitDynamic(parameterType);
                 else
                     Write(variableType);
                 Write(">(");
@@ -303,6 +321,18 @@ namespace SiliconStudio.Xenko.Shaders.Parser.Mixins
         protected static bool IsStringInList(string value, params string[] list)
         {
             return list.Any(str => CultureInfo.InvariantCulture.CompareInfo.Compare(value, str, CompareOptions.IgnoreCase) == 0);
+        }
+
+        protected static bool IsTextureType(TypeBase type)
+        {
+            // TODO we should improve AST type system
+            return type is TextureType || (type is GenericType && type.Name.Text.Contains("Texture"));
+        }
+
+        protected static bool IsBufferType(TypeBase type)
+        {
+            // TODO we should improve AST type system
+            return type is GenericType && type.Name.Text.Contains("Buffer");
         }
     }
 }

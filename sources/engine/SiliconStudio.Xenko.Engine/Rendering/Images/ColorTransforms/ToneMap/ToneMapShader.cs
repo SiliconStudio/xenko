@@ -18,12 +18,12 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     internal static partial class ToneMapShaderKeys
     {
-        public static readonly ParameterKey<Texture> LuminanceTexture = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<float> KeyValue = ParameterKeys.New<float>(0.18f);
-        public static readonly ParameterKey<float> LuminanceLocalFactor = ParameterKeys.New<float>(0.0f);
-        public static readonly ParameterKey<float> LuminanceAverageGlobal = ParameterKeys.New<float>();
-        public static readonly ParameterKey<float> Contrast = ParameterKeys.New<float>(0.0f);
-        public static readonly ParameterKey<float> Brightness = ParameterKeys.New<float>(0.0f);
-        public static readonly ParameterKey<float> Exposure = ParameterKeys.New<float>(1.0f);
+        public static readonly ObjectParameterKey<Texture> LuminanceTexture = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<float> KeyValue = ParameterKeys.NewValue<float>(0.18f);
+        public static readonly ValueParameterKey<float> LuminanceLocalFactor = ParameterKeys.NewValue<float>(0.0f);
+        public static readonly ValueParameterKey<float> LuminanceAverageGlobal = ParameterKeys.NewValue<float>();
+        public static readonly ValueParameterKey<float> Contrast = ParameterKeys.NewValue<float>(0.0f);
+        public static readonly ValueParameterKey<float> Brightness = ParameterKeys.NewValue<float>(0.0f);
+        public static readonly ValueParameterKey<float> Exposure = ParameterKeys.NewValue<float>(1.0f);
     }
 }

@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class TestGenericsKeys
     {
-        public static readonly ParameterKey<float> myMember = ParameterKeys.New<float>(2.0f);
+        public static readonly ValueParameterKey<float> myMember = ParameterKeys.NewValue<float>(2.0f);
     }
 }

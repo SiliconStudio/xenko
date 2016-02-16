@@ -34,11 +34,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapU2FilmicOperatorShaderKeys.ShoulderStrength);
+                return Parameters.Get(ToneMapU2FilmicOperatorShaderKeys.ShoulderStrength);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapU2FilmicOperatorShaderKeys.ShoulderStrength, value);
+                Parameters.Set(ToneMapU2FilmicOperatorShaderKeys.ShoulderStrength, value);
             }
         }
 
@@ -52,11 +52,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapU2FilmicOperatorShaderKeys.LinearStrength);
+                return Parameters.Get(ToneMapU2FilmicOperatorShaderKeys.LinearStrength);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapU2FilmicOperatorShaderKeys.LinearStrength, value);
+                Parameters.Set(ToneMapU2FilmicOperatorShaderKeys.LinearStrength, value);
             }
         }
 
@@ -70,11 +70,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapU2FilmicOperatorShaderKeys.LinearAngle);
+                return Parameters.Get(ToneMapU2FilmicOperatorShaderKeys.LinearAngle);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapU2FilmicOperatorShaderKeys.LinearAngle, value);
+                Parameters.Set(ToneMapU2FilmicOperatorShaderKeys.LinearAngle, value);
             }
         }
 
@@ -88,11 +88,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapU2FilmicOperatorShaderKeys.ToeStrength);
+                return Parameters.Get(ToneMapU2FilmicOperatorShaderKeys.ToeStrength);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapU2FilmicOperatorShaderKeys.ToeStrength, value);
+                Parameters.Set(ToneMapU2FilmicOperatorShaderKeys.ToeStrength, value);
             }
         }
 
@@ -106,11 +106,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapU2FilmicOperatorShaderKeys.ToeNumerator);
+                return Parameters.Get(ToneMapU2FilmicOperatorShaderKeys.ToeNumerator);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapU2FilmicOperatorShaderKeys.ToeNumerator, value);
+                Parameters.Set(ToneMapU2FilmicOperatorShaderKeys.ToeNumerator, value);
             }
         }
 
@@ -124,11 +124,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapU2FilmicOperatorShaderKeys.ToeDenominator);
+                return Parameters.Get(ToneMapU2FilmicOperatorShaderKeys.ToeDenominator);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapU2FilmicOperatorShaderKeys.ToeDenominator, value);
+                Parameters.Set(ToneMapU2FilmicOperatorShaderKeys.ToeDenominator, value);
             }
         }
 
@@ -142,11 +142,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapU2FilmicOperatorShaderKeys.LinearWhite);
+                return Parameters.Get(ToneMapU2FilmicOperatorShaderKeys.LinearWhite);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapU2FilmicOperatorShaderKeys.LinearWhite, value);
+                Parameters.Set(ToneMapU2FilmicOperatorShaderKeys.LinearWhite, value);
             }
         }
     }

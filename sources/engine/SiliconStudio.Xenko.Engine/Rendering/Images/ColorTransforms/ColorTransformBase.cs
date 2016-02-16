@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetResourceSlow(ColorTransformKeys.Shader);
+                return Parameters.Get(ColorTransformKeys.Shader);
             }
             set
             {
@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     throw new ArgumentNullException("value");
                 }
 
-                Parameters.SetResourceSlow(ColorTransformKeys.Shader, value);
+                Parameters.Set(ColorTransformKeys.Shader, value);
             }
         }
 
@@ -62,11 +62,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetResourceSlow(ColorTransformKeys.GenericArguments);
+                return Parameters.Get(ColorTransformKeys.GenericArguments);
             }
             set
             {
-                Parameters.SetResourceSlow(ColorTransformKeys.GenericArguments, value);
+                Parameters.Set(ColorTransformKeys.GenericArguments, value);
             }
         }
 
@@ -88,11 +88,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ColorTransformKeys.Enabled);
+                return Parameters.Get(ColorTransformKeys.Enabled);
             }
             set
             {
-                Parameters.SetValueSlow(ColorTransformKeys.Enabled, value);
+                Parameters.Set(ColorTransformKeys.Enabled, value);
             }
         }
 

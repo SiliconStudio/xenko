@@ -11,6 +11,7 @@ using SiliconStudio.Core.Serialization.Contents;
 using SiliconStudio.Xenko.Rendering.Materials.ComputeColors;
 using SiliconStudio.Xenko.Rendering.Materials;
 using SiliconStudio.Xenko.Graphics;
+using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {

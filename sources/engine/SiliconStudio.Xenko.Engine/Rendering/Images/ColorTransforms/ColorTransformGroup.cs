@@ -202,7 +202,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // NOTE: This is very important to reset the transforms here, as pre-caching by DynamicEffectCompiler is done on parameters changes
             // and as we have a list here, modifying a list doesn't trigger a change for the specified key
             // TODO: if the list was the same than previous one, we could optimize this and not setup the value
-            Parameters.SetResourceSlow(ColorTransformGroupKeys.Transforms, enabledTransforms);
+            Parameters.Set(ColorTransformGroupKeys.Transforms, enabledTransforms);
         }
 
         private ParameterKey GetComposedKey(ParameterKey key, int transformIndex)

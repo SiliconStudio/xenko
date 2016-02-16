@@ -67,7 +67,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         protected override void SetDefaultParameters()
         {
             // TODO: Do not use slow version
-            Parameters.SetResourceSlow(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
+            Parameters.Set(TexturingKeys.Sampler, GraphicsDevice.SamplerStates.LinearClamp);
         }
 
         protected override void PreDrawCore(RenderDrawContext context)
@@ -94,8 +94,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 {
                     var texturingKeys = texture.Dimension == TextureDimension.TextureCube ? TexturingKeys.TextureCubes : TexturingKeys.DefaultTextures;
                     // TODO GRAPHICS REFACTOR Do not use slow version
-                    Parameters.SetResourceSlow(texturingKeys[i], texture);
-                    Parameters.SetValueSlow(TexturingKeys.TexturesTexelSize[i], new Vector2(1.0f / texture.ViewWidth, 1.0f / texture.ViewHeight));
+                    Parameters.Set(texturingKeys[i], texture);
+                    Parameters.Set(TexturingKeys.TexturesTexelSize[i], new Vector2(1.0f / texture.ViewWidth, 1.0f / texture.ViewHeight));
                 }
                 else
                 {

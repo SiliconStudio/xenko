@@ -1,10 +1,10 @@
 namespace SiliconStudio.Xenko.Rendering
 {
-    public struct ResourceParameter<T> where T : class
+    public struct PermutationParameter<T>
     {
         internal readonly int Index;
 
-        internal ResourceParameter(int index)
+        internal PermutationParameter(int index)
         {
             this.Index = index;
         }

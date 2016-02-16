@@ -60,7 +60,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                         continue;
 
                     var parameters = renderSkybox.Background == SkyboxBackground.Irradiance ? renderSkybox.Skybox.DiffuseLightingParameters : renderSkybox.Skybox.Parameters;
-                    renderEffect.EffectValidator.ValidateParameter(SkyboxKeys.Shader, parameters.GetResourceSlow(SkyboxKeys.Shader));
+                    renderEffect.EffectValidator.ValidateParameter(SkyboxKeys.Shader, parameters.Get(SkyboxKeys.Shader));
                 }
             }
 
@@ -103,8 +103,8 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
 
                     parameters.UpdateLayout(parameterCollectionLayout);
 
-                    renderSkybox.RotationParameter = parameters.GetValueParameter(SkyboxKeys.Rotation);
-                    renderSkybox.SkyMatrixParameter = parameters.GetValueParameter(SkyboxKeys.SkyMatrix);
+                    renderSkybox.RotationParameter = parameters.GetAccessor(SkyboxKeys.Rotation);
+                    renderSkybox.SkyMatrixParameter = parameters.GetAccessor(SkyboxKeys.SkyMatrix);
 
                     // TODO: Cache that
                     renderSkybox.ResourceGroupLayout = ResourceGroupLayout.New(RenderSystem.GraphicsDevice, descriptorLayoutBuilder, renderEffect.Effect.Bytecode, "PerLighting");
@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
                 // Set resource bindings in PerLighting resource set
                 for (int resourceSlot = 0; resourceSlot < descriptorLayoutBuilder.ElementCount; ++resourceSlot)
                 {
-                    descriptorSet.SetValue(resourceSlot, parameters.ResourceValues[resourceSlot]);
+                    descriptorSet.SetValue(resourceSlot, parameters.ObjectValues[resourceSlot]);
                 }
 
                 // Process PerLighting cbuffer

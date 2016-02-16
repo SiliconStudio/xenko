@@ -5,3 +5,5 @@
 // To generate it yourself, please install SiliconStudio.Xenko.VisualStudio.Package .vsix
 // and re-save the associated .xkfx.
 // </auto-generated>
+
+// Nothing to generate

@@ -25,16 +25,18 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 context.Mixin(mixin, "McIntoshOptimizedShader");
 
                 {
-                    var __subMixin = new ShaderMixinSource() { Parent = mixin };
+                    var __mixinToCompose__ = "DepthAwareDirectionalBlurUtil";
+                    var __subMixin = new ShaderMixinSource();
                     context.PushComposition(mixin, "directionalBlurA", __subMixin);
-                    context.Mixin(__subMixin, "DepthAwareDirectionalBlurUtil", context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap));
+                    context.Mixin(__subMixin, __mixinToCompose__, context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap));
                     context.PopComposition();
                 }
 
                 {
-                    var __subMixin = new ShaderMixinSource() { Parent = mixin };
+                    var __mixinToCompose__ = "DepthAwareDirectionalBlurUtil";
+                    var __subMixin = new ShaderMixinSource();
                     context.PushComposition(mixin, "directionalBlurB", __subMixin);
-                    context.Mixin(__subMixin, "DepthAwareDirectionalBlurUtil", context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap));
+                    context.Mixin(__subMixin, __mixinToCompose__, context.GetParam(DepthAwareDirectionalBlurKeys.Count), context.GetParam(DepthAwareDirectionalBlurKeys.TotalTap));
                     context.PopComposition();
                 }
             }

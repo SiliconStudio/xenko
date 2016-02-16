@@ -78,7 +78,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             };
 
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
-            simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Texture0, UVTexture);
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, UVTexture);
 
             // TODO GRAPHICS REFACTOR
             //vao = VertexArrayObject.New(GraphicsDevice, mesh.Draw.IndexBuffer, mesh.Draw.VertexBuffers);
@@ -115,8 +115,8 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             for (var i = 0; i < myDraws.Length; ++i)
             {
-                simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Sampler, myDraws[i].Sampler);
-                simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, myDraws[i].Transform);
+                simpleEffect.Parameters.Set(TexturingKeys.Sampler, myDraws[i].Sampler);
+                simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, myDraws[i].Transform);
                 simpleEffect.Apply(GraphicsCommandList);
                 GraphicsCommandList.DrawIndexed(6);
             }

@@ -44,9 +44,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             public Buffer ConstantBuffer;
             public ShaderConstantBufferDescription ConstantBufferReflection;
 
-            public ResourceParameter<ShaderSource> PixelStageSurfaceShaders;
-            public ResourceParameter<ShaderSource> PixelStageStreamInitializer;
-            public ResourceParameter<ShaderSource> PixelStageSurfaceFilter;
+            public PermutationParameter<ShaderSource> PixelStageSurfaceShaders;
+            public PermutationParameter<ShaderSource> PixelStageStreamInitializer;
+            public PermutationParameter<ShaderSource> PixelStageSurfaceFilter;
             public RenderEffect RenderEffect;
 
             public MaterialInfo(Material material)
@@ -97,9 +97,9 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                         material.RenderData = materialInfo;
                         allMaterialInfos.Add(materialInfo);
 
-                        materialInfo.PixelStageSurfaceShaders = material.Parameters.GetResourceParameter(MaterialKeys.PixelStageSurfaceShaders);
-                        materialInfo.PixelStageStreamInitializer = material.Parameters.GetResourceParameter(MaterialKeys.PixelStageStreamInitializer);
-                        materialInfo.PixelStageSurfaceFilter = material.Parameters.GetResourceParameter(MaterialKeys.PixelStageSurfaceFilter);
+                        materialInfo.PixelStageSurfaceShaders = material.Parameters.GetAccessor(MaterialKeys.PixelStageSurfaceShaders);
+                        materialInfo.PixelStageStreamInitializer = material.Parameters.GetAccessor(MaterialKeys.PixelStageStreamInitializer);
+                        materialInfo.PixelStageSurfaceFilter = material.Parameters.GetAccessor(MaterialKeys.PixelStageSurfaceFilter);
 
                         materialInfo.RenderEffect = renderEffect;
                     }
@@ -159,7 +159,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
                 // Set resource bindings in PerMaterial resource set
                 for (int resourceSlot = 0; resourceSlot < materialInfo.ResourceCount; ++resourceSlot)
                 {
-                    materialInfo.Resources.DescriptorSet.SetValue(resourceSlot, material.Parameters.ResourceValues[resourceSlot]);
+                    materialInfo.Resources.DescriptorSet.SetValue(resourceSlot, material.Parameters.ObjectValues[resourceSlot]);
                 }
 
                 // Process PerMaterial cbuffer

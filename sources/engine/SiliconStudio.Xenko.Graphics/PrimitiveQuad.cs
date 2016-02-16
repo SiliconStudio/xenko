@@ -37,7 +37,7 @@ namespace SiliconStudio.Xenko.Graphics
 
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
             simpleEffect.UpdateEffect(graphicsDevice);
-            simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
+            simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
 
             pipelineState.State.SetDefaults();
             pipelineState.State.InputElements = VertexDeclaration.CreateInputElements();
@@ -91,9 +91,9 @@ namespace SiliconStudio.Xenko.Graphics
         public void Draw(CommandList commandList, Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
         {
             // Make sure that we are using our vertex shader
-            simpleEffect.Parameters.SetValueSlow(SpriteEffectKeys.Color, color);
-            simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Texture0, texture);
-            simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
+            simpleEffect.Parameters.Set(SpriteEffectKeys.Color, color);
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, texture);
+            simpleEffect.Parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
             simpleEffect.Apply(commandList);
 
             pipelineState.State.Output.CaptureState(commandList);

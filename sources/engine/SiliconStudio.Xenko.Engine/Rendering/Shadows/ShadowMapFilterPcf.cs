@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     public static partial class ShadowMapFilterPcfKeys
     {
-        public static readonly ParameterKey<float> Bias = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> Bias = ParameterKeys.NewValue<float>();
     }
 }

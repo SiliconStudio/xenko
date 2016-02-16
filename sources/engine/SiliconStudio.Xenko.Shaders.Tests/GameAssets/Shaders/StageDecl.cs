@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class StageDeclKeys
     {
-        public static readonly ParameterKey<int> myStageVar = ParameterKeys.New<int>(1);
+        public static readonly ValueParameterKey<int> myStageVar = ParameterKeys.NewValue<int>(1);
     }
 }

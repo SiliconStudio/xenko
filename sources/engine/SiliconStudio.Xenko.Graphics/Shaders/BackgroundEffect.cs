@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class BackgroundEffectKeys
     {
-        public static readonly ParameterKey<float> Intensity = ParameterKeys.New<float>();
+        public static readonly ValueParameterKey<float> Intensity = ParameterKeys.NewValue<float>();
     }
 }
