@@ -10,11 +10,12 @@ using SiliconStudio.Core;
 
 namespace SiliconStudio.Xenko.Particles
 {
+    /// <summary>
+    /// The <see cref="ParticlePool"/> is a class which manages an unmanaged memory block used for the particles.
+    /// The maximum required size calculated on the number of particles and their fields' sizes is calculated every time the sizes or the count change
+    /// </summary>
     public class ParticlePool : IDisposable, IEnumerable
-    {
-        // TODO Perf?
-        // private Func<IntPtr, int, int, IntPtr, int, int> CopyParticlePoolFunc;
-             
+    {             
         public delegate void CopyParticlePoolDelegate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize);
 
         public enum ListPolicy
@@ -38,32 +39,43 @@ namespace SiliconStudio.Xenko.Particles
         private readonly ListPolicy listPolicy;
 
         /// <summary>
-        /// ParticleData is where the memory block (particle pool) actually resides.
-        /// Its size equals <see cref="ParticleSize"/> * <see cref="ParticleCapacity"/>
+        /// For ring implementations, the index just increases, looping when it reaches max count.
+        /// For stack implementations, the index points to the top of the stack and can reach 0 when there are no living particles.
         /// </summary>
-        public IntPtr ParticleData { get; private set; } = IntPtr.Zero;
+        private int nextFreeIndex;
+
+        private bool disposed = false;
+
+        public const int DefaultMaxFielsPerPool = 16;
+
+        private readonly Dictionary<ParticleFieldDescription, ParticleField> fields = new Dictionary<ParticleFieldDescription, ParticleField>(DefaultMaxFielsPerPool);
+
+        private readonly List<ParticleFieldDescription> fieldDescriptions = new List<ParticleFieldDescription>(DefaultMaxFielsPerPool);
+
+
 
         /// <summary>
-        /// The maximum allowed number of particles in this <see cref="ParticlePool"/>.
-        /// Use <see cref="SetCapacity"/> if you need to change it.
+        /// <see cref="ParticlePool"/> constructor
         /// </summary>
-        public int ParticleCapacity { get; private set; }
-
-        /// <summary>
-        /// Set a different capacity (maximum <see cref="Particle"/> count for this pool)
-        /// Whenever possible, existing particles will be copied and continue simulation
-        /// </summary>
-        /// <param name="newCapacity">New maximum capacity</param>
-        public void SetCapacity(int newCapacity)
+        /// <param name="size">Initial size in bytes of a single particle</param>
+        /// <param name="capacity">Initial capacity (maximum number of particles) of the pool</param>
+        /// <param name="listPolicy">List policy - stack (living particles are in the front) or ring</param>
+        public ParticlePool(int size, int capacity, ListPolicy listPolicy = ListPolicy.Stack)
         {
-            if (newCapacity < 0 || newCapacity == ParticleCapacity)
-                return;
+            this.listPolicy = listPolicy;
 
-            if (nextFreeIndex > newCapacity)
-                nextFreeIndex = newCapacity;
+            nextFreeIndex = 0;
 
-            ReallocatePool(ParticleSize, newCapacity, CapacityChangedRelocate);
+            ReallocatePool(size, capacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
         }
+
+
+
+        /// <summary>
+        /// <see cref="NextFreeIndex"/> points to the next index ready for allocation, between 0 and <see cref="ParticleCapacity"/> - 1.
+        /// In case of stack list the <see cref="NextFreeIndex"/> equals the number of living particles in the pool.
+        /// </summary>
+        public int NextFreeIndex => nextFreeIndex;
 
         /// <summary>
         /// Returns the size of a single particle.
@@ -74,7 +86,6 @@ namespace SiliconStudio.Xenko.Particles
 #endif
         /// </summary>
         public int ParticleSize { get; private set; }
-
 
         /// <summary>
         /// Gets how many more particles can be spawned
@@ -105,26 +116,41 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         /// <summary>
-        /// For ring implementations, the index just increases, looping when it reaches max count.
-        /// For stack implementations, the index points to the top of the stack and can reach 0 when there are no living particles.
+        /// ParticleData is where the memory block (particle pool) actually resides.
+        /// Its size equals <see cref="ParticleSize"/> * <see cref="ParticleCapacity"/>
         /// </summary>
-        private int nextFreeIndex;
+        public IntPtr ParticleData { get; private set; } = IntPtr.Zero;
 
         /// <summary>
-        /// <see cref="NextFreeIndex"/> points to the next index ready for allocation, between 0 and <see cref="ParticleCapacity"/> - 1.
-        /// In case of stack list the <see cref="NextFreeIndex"/> equals the number of living particles in the pool.
+        /// The maximum allowed number of particles in this <see cref="ParticlePool"/>.
+        /// Use <see cref="SetCapacity"/> if you need to change it.
         /// </summary>
-        public int NextFreeIndex => nextFreeIndex;
+        public int ParticleCapacity { get; private set; }
 
-        public ParticlePool(int size, int capacity, ListPolicy listPolicy = ListPolicy.Stack)
+
+
+        /// <summary>
+        /// Set a different capacity (maximum <see cref="Particle"/> count for this pool)
+        /// Whenever possible, existing particles will be copied and continue simulation
+        /// </summary>
+        /// <param name="newCapacity">New maximum capacity</param>
+        public void SetCapacity(int newCapacity)
         {
-            this.listPolicy = listPolicy;
+            if (newCapacity < 0 || newCapacity == ParticleCapacity)
+                return;
 
-            nextFreeIndex = 0;
+            if (nextFreeIndex > newCapacity)
+                nextFreeIndex = newCapacity;
 
-            ReallocatePool(size, capacity, (pool, oldCapacity, oldSize, newPool, newCapacity, newSize) => { });
+            ReallocatePool(ParticleSize, newCapacity, ReallocateForCapacityChanged);
         }
 
+        /// <summary>
+        /// Moves the particle pool data to a new location, copying existing particles where possible
+        /// </summary>
+        /// <param name="newSize">New size for a single particle</param>
+        /// <param name="newCapacity">New capacity (maximum number of particles)</param>
+        /// <param name="poolCopy">Method to use for copying the particle data</param>
         private void ReallocatePool(int newSize, int newCapacity, CopyParticlePoolDelegate poolCopy)
         {
             if (newCapacity == ParticleCapacity && newSize == ParticleSize)
@@ -148,11 +174,11 @@ namespace SiliconStudio.Xenko.Particles
             ParticleCapacity = newCapacity;
             ParticleSize = newSize;
 
-            RecalculateFieldsSoA();
+            RecalculateFieldsArrays();
         }
 
         /// <summary>
-        /// Clears all fields, but keeps the particle capacity the same.
+        /// Clears all particle fields, but keeps the particle capacity the same.
         /// </summary>
         public void Reset()
         {
@@ -162,8 +188,6 @@ namespace SiliconStudio.Xenko.Particles
         }
 
         #region Dispose
-
-        private bool disposed = false;
 
         ~ParticlePool()
         {
@@ -204,7 +228,11 @@ namespace SiliconStudio.Xenko.Particles
         #endregion Dispose
 
 
-
+        /// <summary>
+        /// Copy data from one particle index to another
+        /// </summary>
+        /// <param name="dst">Index of the destination particle</param>
+        /// <param name="src">Index of the source particle</param>
         private void CopyParticleData(int dst, int src)
         {
             var dstParticle = FromIndex(dst);
@@ -221,6 +249,11 @@ namespace SiliconStudio.Xenko.Particles
 #endif
         }
 
+        /// <summary>
+        /// Get a particle from its index in the pool
+        /// </summary>
+        /// <param name="idx"></param>
+        /// <returns></returns>
 #if PARTICLES_SOA
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         static public Particle FromIndex(int idx)
@@ -253,6 +286,12 @@ namespace SiliconStudio.Xenko.Particles
             return FromIndex(nextFreeIndex++);
         }
 
+        /// <summary>
+        /// Removes the current particle
+        /// </summary>
+        /// <param name="particle">Reference to the particle being removed</param>
+        /// <param name="oldIndex">Reference to the old current index so we can reposition it to point before the particle</param>
+        /// <param name="indexMax">Maximum index value for this pool</param>
         private void RemoveCurrent(ref Particle particle, ref int oldIndex, ref int indexMax)
         {
             // In case of a Ring list we don't bother to remove dead particles
@@ -275,11 +314,11 @@ namespace SiliconStudio.Xenko.Particles
         }
 
 #region Fields
-        public const int DefaultMaxFielsPerPool = 16;
-        private readonly Dictionary<ParticleFieldDescription, ParticleField> fields = new Dictionary<ParticleFieldDescription, ParticleField>(DefaultMaxFielsPerPool);
-        private readonly List<ParticleFieldDescription> fieldDescriptions = new List<ParticleFieldDescription>(DefaultMaxFielsPerPool);
 
-        private void RecalculateFieldsSoA()
+        /// <summary>
+        /// Recalculates the fields' offsets and strides. The methods are different for SoA and AoS policies
+        /// </summary>
+        private void RecalculateFieldsArrays()
         {
 #if PARTICLES_SOA
             var fieldOffset = 0;
@@ -299,6 +338,11 @@ namespace SiliconStudio.Xenko.Particles
 #endif
         }
 
+        /// <summary>
+        /// Adds a particle field to this pool with the specified description, or gets an existing one
+        /// </summary>
+        /// <param name="fieldDesc">Description of the field</param>
+        /// <returns>The newly added or already existing field</returns>
         internal ParticleField AddField(ParticleFieldDescription fieldDesc)
         {
             // Fields with a stride of 0 are meaningless and cannot be added or removed
@@ -323,12 +367,21 @@ namespace SiliconStudio.Xenko.Particles
             fieldDescriptions.Add(fieldDesc);
             fields.Add(fieldDesc, newField);
 
-            ReallocatePool(newParticleSize, ParticleCapacity, FieldAddedRelocate);
+            ReallocatePool(newParticleSize, ParticleCapacity, ReallocateForFieldAdded);
 
             return fields[fieldDesc];
         }
 
-        private void FieldAddedRelocate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize)
+        /// <summary>
+        /// Reallocate the particles to a new memory block due to a newly added field
+        /// </summary>
+        /// <param name="oldPool">Old memory block</param>
+        /// <param name="oldCapacity">Old capacity (maximum particle count) of the block</param>
+        /// <param name="oldSize">Old size of a single particle</param>
+        /// <param name="newPool">New memory block</param>
+        /// <param name="newCapacity">New capacity (maximum particle count) of the block</param>
+        /// <param name="newSize">New size of a single particle</param>
+        private void ReallocateForFieldAdded(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize)
         {
             // Old particle capacity and new particle capacity should be the same when only the size changes.
             // If this is not the case, something went wrong. Reset the particle count and do not copy.
@@ -355,7 +408,16 @@ namespace SiliconStudio.Xenko.Particles
 #endif
         }
 
-        private void CapacityChangedRelocate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize)
+        /// <summary>
+        /// Reallocate the particles to a new memory block due to a change in the pool's capacity
+        /// </summary>
+        /// <param name="oldPool">Old memory block</param>
+        /// <param name="oldCapacity">Old capacity (maximum particle count) of the block</param>
+        /// <param name="oldSize">Old size of a single particle</param>
+        /// <param name="newPool">New memory block</param>
+        /// <param name="newCapacity">New capacity (maximum particle count) of the block</param>
+        /// <param name="newSize">New size of a single particle</param>
+        private void ReallocateForCapacityChanged(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize)
         {
             // Old particle size and new particle size should be the same when only the capacity changes.
             // If this is not the case, something went wrong. Reset the particle count and do not copy.
@@ -397,6 +459,11 @@ namespace SiliconStudio.Xenko.Particles
 #endif
         }
 
+        /// <summary>
+        /// Removes a particle field from this pool with the specified description, or gets an existing one
+        /// </summary>
+        /// <param name="fieldDesc">Description of the field</param>
+        /// <returns><c>true</c> if the field was successfully removed, <c>false</c> otherwise</returns>
         public bool RemoveField(ParticleFieldDescription fieldDesc)
         {
             // Fields with a stride of 0 are meaningless and cannot be added or removed
@@ -421,14 +488,23 @@ namespace SiliconStudio.Xenko.Particles
 #endif
 
             // The field is not removed yet. During relocation it will appear as having Size and Offset of 0, and should be ignored for the purpose of copying memory
-            ReallocatePool(newParticleSize, ParticleCapacity, FieldRemovedRelocate);
+            ReallocatePool(newParticleSize, ParticleCapacity, ReallocateForFieldRemoved);
 
             fields.Remove(fieldDesc);
 
             return true;
         }
 
-        private void FieldRemovedRelocate(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize)
+        /// <summary>
+        /// Reallocate the particles to a new memory block due to a deleted field
+        /// </summary>
+        /// <param name="oldPool">Old memory block</param>
+        /// <param name="oldCapacity">Old capacity (maximum particle count) of the block</param>
+        /// <param name="oldSize">Old size of a single particle</param>
+        /// <param name="newPool">New memory block</param>
+        /// <param name="newCapacity">New capacity (maximum particle count) of the block</param>
+        /// <param name="newSize">New size of a single particle</param>
+        private void ReallocateForFieldRemoved(IntPtr oldPool, int oldCapacity, int oldSize, IntPtr newPool, int newCapacity, int newSize)
         {
             // Old particle capacity and new particle capacity should be the same when only the size changes.
             // If this is not the case, something went wrong. Reset the particle count and do not copy.
@@ -515,6 +591,13 @@ namespace SiliconStudio.Xenko.Particles
                 ParticleFieldAccessor<T>.Invalid();
         }
 
+        /// <summary>
+        /// Gets the particle field with the specified description if the field exists in this pool
+        /// </summary>
+        /// <typeparam name="T">Type data for the field</typeparam>
+        /// <param name="fieldDesc">Field's decription</param>
+        /// <param name="accessor">Accessor for the field</param>
+        /// <returns></returns>
         public bool TryGetField<T>(ParticleFieldDescription<T> fieldDesc, out ParticleFieldAccessor<T> accessor) where T : struct
         {
             ParticleField field;
@@ -528,6 +611,12 @@ namespace SiliconStudio.Xenko.Particles
             return true;
         }
 
+        /// <summary>
+        /// Polls if a filed with this description exists in the pool and optionally forces creation of a new field
+        /// </summary>
+        /// <param name="fieldDesc">Description of the field</param>
+        /// <param name="forceCreate">Force the creation of non-existing fields if <c>true</c></param>
+        /// <returns></returns>
         public bool FieldExists(ParticleFieldDescription fieldDesc, bool forceCreate = false)
         {
             ParticleField field;
@@ -642,10 +731,9 @@ namespace SiliconStudio.Xenko.Particles
             }
 
             /// <summary>
-            /// Removes the current particle. A reference to the particle is required so that the addressing can be updated and
-            /// prevent illegal access.
+            /// Removes the current particle. A reference to the particle is required so that the addressing can be updated and prevent illegal access.
             /// </summary>
-            /// <param name="particle"></param>
+            /// <param name="particle">Reference to the particle being removed</param>
             public void RemoveCurrent(ref Particle particle)
             {
                 // Cannot remove particle which is not current

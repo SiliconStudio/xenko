@@ -42,10 +42,148 @@ namespace SiliconStudio.Xenko.Particles
         ByAge = 2,
     }
 
-
+    /// <summary>
+    /// The <see cref="ParticleEmitter"/> is the base manager for any given pool of particles, holding all particles and
+    /// initializers, updaters, spawners, materials and shape builders associated with the particles.
+    /// </summary>
     [DataContract("ParticleEmitter")]
     public class ParticleEmitter : IDisposable
     {
+        /// <summary>
+        /// Used to indicate if Dispose(...) has been called already
+        /// </summary>
+        private bool disposed;
+
+        /// <summary>
+        /// The sorting policy we used for the <see cref="ParticleSorter"/>
+        /// </summary>
+        private EmitterSortingPolicy sortingPolicy = EmitterSortingPolicy.None;
+
+        /// <summary>
+        /// Depth vector to use in case of depth policy sorting
+        /// </summary>
+        [DataMemberIgnore]
+        private Vector3 depthSortVector = new Vector3(0, 0, -1);
+
+        /// <summary>
+        /// Number of particles waiting to be spawned
+        /// </summary>
+        [DataMemberIgnore]
+        private int particlesToSpawn;
+
+        /// <summary>
+        /// The pool contains all particles in the current <see cref="ParticleEmitter"/>
+        /// </summary>
+        [DataMemberIgnore]
+        private readonly ParticlePool pool;
+
+        /// <summary>
+        /// Enumerator which accesses all relevant particles in a sorted manner
+        /// </summary>
+        [DataMemberIgnore]
+        internal ParticleSorter ParticleSorter;
+        
+        /// <summary>
+        /// The RNG provides an easy seed-based random numbers
+        /// </summary>
+        [DataMemberIgnore]
+        internal ParticleRandomSeedGenerator RandomSeedGenerator;
+
+        /// <summary>
+        /// RNG based on time uses the clock ticks and is almost always guaranteed to use different generators
+        /// </summary>
+        [DataMemberIgnore]
+        private EmitterRandomSeedMethod randomSeedMethod = EmitterRandomSeedMethod.Time;
+
+        [DataMemberIgnore]
+        private readonly InitialDefaultFields initialDefaultFields;
+
+        /// <summary>
+        /// The default simulation space is World.
+        /// </summary>
+        [DataMemberIgnore]
+        private EmitterSimulationSpace simulationSpace = EmitterSimulationSpace.World;
+
+        /// <summary>
+        /// Some parameters should be initialized when the emitter first runs, rather than in the constructor
+        /// </summary>
+        [DataMemberIgnore]
+        private bool delayInit;
+
+        /// <summary>
+        /// Particles will live at least that much when spawned
+        /// </summary>
+        [DataMemberIgnore]
+        private float particleMinLifetime = 1;
+
+        /// <summary>
+        /// Particles will live at most that much when spawned
+        /// </summary>
+        [DataMemberIgnore]
+        private float particleMaxLifetime = 1;
+
+        // Draw location can be different than the particle position if we are using local coordinate system
+        private Vector3 drawPosition = new Vector3(0, 0, 0);
+        private Quaternion drawRotation = new Quaternion(0, 0, 0, 1);
+        private float drawScale = 1f;
+
+        /// <summary>
+        /// A list of the required particle fields for the <see cref="ParticlePool"/>
+        /// </summary>
+        private readonly Dictionary<ParticleFieldDescription, int> requiredFields;
+
+        /// <summary>
+        /// If more than 0, the maxParticlesOverride will override the estimate for <see cref="MaxParticles"/>
+        /// </summary>
+        private int maxParticlesOverride;
+
+        /// <summary>
+        /// The vertex builder is used for rendering, and it builds the actual vertex buffer stream from particle data
+        /// </summary>
+        private ParticleVertexBuilder vertexBuilder = new ParticleVertexBuilder();
+
+
+        /// <summary>
+        /// Default constructor. Initializes the pool and all collections contained in the <see cref="ParticleEmitter"/>
+        /// </summary>
+        public ParticleEmitter()
+        {
+            pool = new ParticlePool(0, 0);
+            PoolChangedNotification();
+            requiredFields = new Dictionary<ParticleFieldDescription, int>();
+
+            // For now all particles require Life and RandomSeed fields, always
+            AddRequiredField(ParticleFields.RemainingLife);
+            AddRequiredField(ParticleFields.RandomSeed);
+            AddRequiredField(ParticleFields.Position);
+
+            initialDefaultFields = new InitialDefaultFields();
+
+            Initializers = new TrackingCollection<ParticleInitializer>();
+            Initializers.CollectionChanged += ModulesChanged;
+
+            Updaters = new TrackingCollection<ParticleUpdater>();
+            Updaters.CollectionChanged += ModulesChanged;
+
+            Spawners = new TrackingCollection<ParticleSpawner>();
+            Spawners.CollectionChanged += SpawnersChanged;        
+        }
+
+        /// <summary>
+        /// Gets the current living particles from this emitter's pool
+        /// </summary>
+        [DataMemberIgnore]
+        public int LivingParticles => pool.LivingParticles;
+
+        /// <summary>
+        /// Maximum number of particles this <see cref="ParticleEmitter"/> can have at any given time
+        /// </summary>
+        [DataMemberIgnore]
+        public int MaxParticles { get; private set; }
+
+        [DataMemberIgnore]
+        internal bool DirtyParticlePool { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ParticleEmitter"/> is enabled.
         /// </summary>
@@ -55,6 +193,150 @@ namespace SiliconStudio.Xenko.Particles
         [DataMember(-10)]
         [DefaultValue(true)]
         public bool Enabled { get; set; } = true;
+
+        /// <summary>
+        /// Maximum particles (if positive) overrides the maximum particle count limitation
+        /// </summary>
+        /// <userdoc>
+        /// Leave it 0 for unlimited (automatic) pool size. If positive, it limits the maximum number of living particles this Emitter can have at any given time.
+        /// </userdoc>
+        [DataMember(5)]
+        [Display("Max particles")]
+        public int MaxParticlesOverride
+        {
+            get { return maxParticlesOverride; }
+            set
+            {
+                DirtyParticlePool = true;
+                maxParticlesOverride = value;
+            }
+        }
+
+        /// <summary>
+        /// Minimum particle lifetime, in seconds. Should be positive and no bigger than <see cref="ParticleMaxLifetime"/>
+        /// </summary>
+        /// <userdoc>
+        /// When a new particle is born it will have at least that much Lifetime remaining (in seconds)
+        /// </userdoc>
+        [DataMember(8)]
+        [Display("Lifespan min")]
+        public float ParticleMinLifetime
+        {
+            get { return particleMinLifetime; }
+            set
+            {
+                if (value <= 0) //  || value > particleMaxLifetime - there is a problem with reading data when MaxLifetime is still not initialized
+                    return;
+
+                DirtyParticlePool = true;
+                particleMinLifetime = value;
+            }
+        }
+
+        /// <summary>
+        /// Maximum particle lifetime, in seconds. Should be positive and no smaller than <see cref="ParticleMinLifetime"/>
+        /// </summary>
+        /// <userdoc>
+        /// When a new particle is born it will have at most that much Lifetime remaining (in seconds)
+        /// </userdoc>
+        [DataMember(10)]
+        [Display("Lifespan max")]
+        public float ParticleMaxLifetime
+        {
+            get { return particleMaxLifetime; }
+            set
+            {
+                if (value < particleMinLifetime)
+                    return;
+
+                DirtyParticlePool = true;
+                particleMaxLifetime = value;
+            }
+        }
+
+        /// <summary>
+        /// Simulation space defines if the particles should be born in world space, or local to the emitter
+        /// </summary>
+        /// <userdoc>
+        /// World space particles persist in world space after they are born and do not automatically change with the Emitter. Local space particles persist in the Emitter's local space and follow it whenever the Emitter's locator changes.
+        /// </userdoc>
+        [DataMember(11)]
+        [Display("Space")]
+        public EmitterSimulationSpace SimulationSpace
+        {
+            get { return simulationSpace; }
+            set
+            {
+                if (value == simulationSpace)
+                    return;
+
+                simulationSpace = value;
+
+                SimulationSpaceChanged();
+            }
+        }
+
+        /// <summary>
+        /// Random numbers in the <see cref="ParticleSystem"/> are generated based on a seed, which in turn can be generated using several methods.
+        /// </summary>
+        /// <userdoc>
+        /// All random numbers in the Particle System are based on a seed. If you use deterministic seeds, your particles will always behave the same way every time you start the simulation.
+        /// </userdoc>
+        [DataMember(12)]
+        [Display("Randomize")]
+        public EmitterRandomSeedMethod RandomSeedMethod
+        {
+            get
+            {
+                return randomSeedMethod;
+            }
+
+            set
+            {
+                randomSeedMethod = value;
+                delayInit = false;
+            }
+        }
+
+        /// <summary>
+        /// How and if particles are sorted, and how they are access during rendering
+        /// </summary>
+        /// <userdoc>
+        /// Choose if the particles should be soretd by depth (visually correct), age or not at all (fastest, good for additive blending)
+        /// </userdoc>
+        [DataMember(35)]
+        [Display("Sorting")]
+        public EmitterSortingPolicy SortingPolicy
+        {
+            get { return sortingPolicy; }
+            set
+            {
+                sortingPolicy = value;
+                PoolChangedNotification();
+            }
+        }
+
+        /// <summary>
+        /// The <see cref="ShapeBuilders.ShapeBuilder"/> expands all living particles to vertex buffers for rendering
+        /// </summary>
+        /// <userdoc>
+        /// The shape defines how each particle is expanded when rendered (camera-facing billboards, oriented quads, ribbons, etc.)
+        /// </userdoc>
+        [DataMember(40)]
+        [Display("Shape")]
+        [NotNull]
+        public ShapeBuilder ShapeBuilder { get; set; } = new ShapeBuilderBillboard();
+
+        /// <summary>
+        /// The <see cref="ParticleMaterial"/> may update the vertex buffer, and it also applies the <see cref="Effect"/> required for rendering
+        /// </summary>
+        /// <userdoc>
+        /// Material defines what effects, textures, coloring and other techniques are used when rendering the particles.
+        /// </userdoc>
+        [DataMember(50)]
+        [Display("Material")]
+        [NotNull]
+        public ParticleMaterial Material { get; set; } = new ParticleMaterialComputeColor();
 
         /// <summary>
         /// List of <see cref="ParticleSpawner"/> to spawn particles in this <see cref="ParticleEmitter"/>
@@ -68,24 +350,38 @@ namespace SiliconStudio.Xenko.Particles
         [MemberCollection(CanReorderItems = true)]
         public readonly TrackingCollection<ParticleSpawner> Spawners;
 
-        // Exposing for debug drawing
-        [DataMemberIgnore]
-        public readonly ParticlePool pool;
+        /// <summary>
+        /// List of <see cref="ParticleInitializer"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
+        /// </summary>
+        /// <userdoc>
+        /// Initializers set initial values for fields of particles which just spawned. Have no effect on already spawned particles.
+        /// </userdoc>
+        [DataMember(200)]
+        [Display("Initializers")]
+        [NotNullItems]
+        [MemberCollection(CanReorderItems = true)]
+        public readonly TrackingCollection<ParticleInitializer> Initializers;
 
-        [DataMemberIgnore]
-        private Vector3 depthSortVector = new Vector3(0, 0, -1);
+        /// <summary>
+        /// List of <see cref="ParticleUpdater"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
+        /// </summary>
+        /// <userdoc>
+        /// Updaters change the fields of all living particles every frame, like position, velocity, color, size etc.
+        /// </userdoc>
+        [DataMember(300)]
+        [Display("Updaters")]
+        [NotNullItems]
+        [MemberCollection(CanReorderItems = true)]
+        public readonly TrackingCollection<ParticleUpdater> Updaters;
 
-        [DataMemberIgnore]
-        internal ParticleSorter ParticleSorter;
 
         #region Dispose
-        private bool disposed = false;
 
         ~ParticleEmitter()
         {
             Dispose(false);
         }
-       
+
         public void Dispose()
         {
             Dispose(true);
@@ -106,10 +402,11 @@ namespace SiliconStudio.Xenko.Particles
             // Dispose managed resources
             pool?.Dispose();
         }
-
         #endregion Dispose
 
-
+        /// <summary>
+        /// If the particle pool has changed the sorter must also be updated to reflect those changes
+        /// </summary>
         private void PoolChangedNotification()
         {
             if (SortingPolicy == EmitterSortingPolicy.None || pool.ParticleCapacity <= 0)
@@ -142,81 +439,14 @@ namespace SiliconStudio.Xenko.Particles
             ParticleSorter = new ParticleSorterDefault(pool);
         }
 
-        private EmitterSortingPolicy sortingPolicy = EmitterSortingPolicy.None;
-
-        /// <summary>
-        /// How and if particles are sorted, and how they are access during rendering
-        /// </summary>
-        /// <userdoc>
-        /// Choose if the particles should be soretd by depth (visually correct), age or not at all (fastest, good for additive blending)
-        /// </userdoc>
-        [DataMember(35)]
-        [Display("Sorting")]
-        public EmitterSortingPolicy SortingPolicy
-        {
-            get { return sortingPolicy; }
-            set
-            {
-                sortingPolicy = value;
-                PoolChangedNotification();
-            }
-        }
-
-        [DataMemberIgnore]
-        internal ParticleRandomSeedGenerator RandomSeedGenerator;
-
-        public ParticleEmitter()
-        {
-            pool = new ParticlePool(0, 0);
-            PoolChangedNotification();
-            requiredFields = new Dictionary<ParticleFieldDescription, int>();
-
-            // For now all particles require Life and RandomSeed fields, always
-            AddRequiredField(ParticleFields.RemainingLife);
-            AddRequiredField(ParticleFields.RandomSeed);
-            AddRequiredField(ParticleFields.Position);
-
-            initialDefaultFields = new InitialDefaultFields();
-
-            Initializers = new TrackingCollection<ParticleInitializer>();
-            Initializers.CollectionChanged += ModulesChanged;
-
-            Updaters = new TrackingCollection<ParticleUpdater>();
-            Updaters.CollectionChanged += ModulesChanged;
-
-            Spawners = new TrackingCollection<ParticleSpawner>();
-            Spawners.CollectionChanged += SpawnersChanged;        
-        }
-
         #region Modules
 
         /// <summary>
-        /// List of <see cref="ParticleInitializer"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
+        /// Notification that the modules (plugins) have changed.
+        /// Pool's fields may need to be updated if new are required or old ones are no longer needed.
         /// </summary>
-        /// <userdoc>
-        /// Initializers set initial values for fields of particles which just spawned. Have no effect on already spawned particles.
-        /// </userdoc>
-        [DataMember(200)]
-        [Display("Initializers")]
-        [NotNullItems]
-        [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleInitializer> Initializers;
-
-        [DataMemberIgnore]
-        private readonly InitialDefaultFields initialDefaultFields;
-
-        /// <summary>
-        /// List of <see cref="ParticleUpdater"/> within thie <see cref="ParticleEmitter"/>. Adjust <see cref="requiredFields"/> automatically
-        /// </summary>
-        /// <userdoc>
-        /// Updaters change the fields of all living particles every frame, like position, velocity, color, size etc.
-        /// </userdoc>
-        [DataMember(300)]
-        [Display("Updaters")]
-        [NotNullItems]
-        [MemberCollection(CanReorderItems = true)]
-        public readonly TrackingCollection<ParticleUpdater> Updaters;
-
+        /// <param name="sender">Sender</param>
+        /// <param name="e">Event arguments</param>
         private void ModulesChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
             var module = e.Item as ParticleModule;
@@ -241,9 +471,14 @@ namespace SiliconStudio.Xenko.Particles
             }
         }
 
+        /// <summary>
+        /// Spawners have changed.
+        /// </summary>
+        /// <param name="sender"></param>
+        /// <param name="e"></param>
         private void SpawnersChanged(object sender, TrackingCollectionChangedEventArgs e)
         {
-            Dirty = true;
+            DirtyParticlePool = true;
         }
         #endregion
 
@@ -282,9 +517,6 @@ namespace SiliconStudio.Xenko.Particles
 
             ApplyParticlePostUpdaters(dt);
         }
-
-        [DataMemberIgnore]
-        private bool delayInit = false;
 
         /// <summary>
         /// Some parameters should be initialized when the emitter first runs, rather than in the constructor
@@ -329,9 +561,12 @@ namespace SiliconStudio.Xenko.Particles
 
         }
 
+        /// <summary>
+        /// Restarts the simulation, deleting all particles and starting from Time = 0
+        /// </summary>
         public void RestartSimulation()
         {
-            Dirty = true;
+            DirtyParticlePool = true;
             pool.SetCapacity(0);
 
             // Restart all spawners
@@ -397,10 +632,10 @@ namespace SiliconStudio.Xenko.Particles
         /// </summary>
         private void EnsurePoolCapacity()
         {
-            if (!Dirty)
+            if (!DirtyParticlePool)
                 return;
 
-            Dirty = false;
+            DirtyParticlePool = false;
 
             if (MaxParticlesOverride > 0)
             {
@@ -568,8 +803,7 @@ namespace SiliconStudio.Xenko.Particles
 
         #endregion
 
-        #region Fields
-        private readonly Dictionary<ParticleFieldDescription, int> requiredFields;
+        #region ParticleFields
 
         /// <summary>
         /// Add a particle field required by some dependent module. If the module already exists in the pool, only its reference counter is increased.
@@ -621,30 +855,6 @@ namespace SiliconStudio.Xenko.Particles
         #endregion
 
         #region Rendering
-
-        /// <summary>
-        /// The <see cref="ShapeBuilders.ShapeBuilder"/> expands all living particles to vertex buffers for rendering
-        /// </summary>
-        /// <userdoc>
-        /// The shape defines how each particle is expanded when rendered (camera-facing billboards, oriented quads, ribbons, etc.)
-        /// </userdoc>
-        [DataMember(40)]
-        [Display("Shape")]
-        [NotNull]
-        public ShapeBuilder ShapeBuilder { get; set; } = new ShapeBuilderBillboard();
-
-        /// <summary>
-        /// The <see cref="ParticleMaterial"/> may update the vertex buffer, and it also applies the <see cref="Effect"/> required for rendering
-        /// </summary>
-        /// <userdoc>
-        /// Material defines what effects, textures, coloring and other techniques are used when rendering the particles.
-        /// </userdoc>
-        [DataMember(50)]
-        [Display("Material")]
-        [NotNull]
-        public ParticleMaterial Material { get; set; } = new ParticleMaterialComputeColor();
-
-        private ParticleVertexBuilder vertexBuilder = new ParticleVertexBuilder();
 
         /// <summary>
         /// <see cref="PrepareForDraw"/> prepares and updates the Material, ShapeBuilder and VertexBuilder if necessary
@@ -710,7 +920,6 @@ namespace SiliconStudio.Xenko.Particles
             vertexBuilder.UnmapBuffer(device);
         }
 
-
         /// <summary>
         /// Setup the material and kick the vertex buffer
         /// Should come after <see cref="BuildVertexBuffer"/>
@@ -733,8 +942,6 @@ namespace SiliconStudio.Xenko.Particles
         #endregion
 
         #region Particles
-        [DataMemberIgnore]
-        private int particlesToSpawn = 0;
 
         /// <summary>
         /// Requests the emitter to spawn several new particles.
@@ -745,105 +952,6 @@ namespace SiliconStudio.Xenko.Particles
         {
             particlesToSpawn += count;
         }
-
-        [DataMemberIgnore]
-        public bool Dirty { get; internal set; }
-
-        private int maxParticlesOverride;
-        /// <summary>
-        /// Maximum particles (if positive) overrides the maximum particle count limitation
-        /// </summary>
-        /// <userdoc>
-        /// Leave it 0 for unlimited (automatic) pool size. If positive, it limits the maximum number of living particles this Emitter can have at any given time.
-        /// </userdoc>
-        [DataMember(5)]
-        [Display("Max particles")]
-        public int MaxParticlesOverride
-        {
-            get { return maxParticlesOverride; }
-            set
-            {
-                Dirty = true;
-                maxParticlesOverride = value;
-            }
-        }
-
-        [DataMemberIgnore]
-        public int MaxParticles { get; private set; }
-
-        private float particleMinLifetime = 1;
-
-        /// <summary>
-        /// Minimum particle lifetime, in seconds. Should be positive and no bigger than <see cref="ParticleMaxLifetime"/>
-        /// </summary>
-        /// <userdoc>
-        /// When a new particle is born it will have at least that much Lifetime remaining (in seconds)
-        /// </userdoc>
-        [DataMember(8)]
-        [Display("Lifespan min")]
-        public float ParticleMinLifetime
-        {
-            get { return particleMinLifetime; }
-            set
-            {
-                if (value <= 0) //  || value > particleMaxLifetime - there is a problem with reading data when MaxLifetime is still not initialized
-                    return;
-
-                Dirty = true;
-                particleMinLifetime = value;
-            }
-        }
-
-        private float particleMaxLifetime = 1;
-
-        /// <summary>
-        /// Maximum particle lifetime, in seconds. Should be positive and no smaller than <see cref="ParticleMinLifetime"/>
-        /// </summary>
-        /// <userdoc>
-        /// When a new particle is born it will have at most that much Lifetime remaining (in seconds)
-        /// </userdoc>
-        [DataMember(10)]
-        [Display("Lifespan max")]
-        public float ParticleMaxLifetime
-        {
-            get { return particleMaxLifetime; }
-            set
-            {
-                if (value < particleMinLifetime)
-                    return;
-
-                Dirty = true;
-                particleMaxLifetime = value;
-            }
-        }
-
-        private EmitterSimulationSpace simulationSpace = EmitterSimulationSpace.World;
-
-        /// <summary>
-        /// Simulation space defines if the particles should be born in world space, or local to the emitter
-        /// </summary>
-        /// <userdoc>
-        /// World space particles persist in world space after they are born and do not automatically change with the Emitter. Local space particles persist in the Emitter's local space and follow it whenever the Emitter's locator changes.
-        /// </userdoc>
-        [DataMember(11)]
-        [Display("Space")]
-        public EmitterSimulationSpace SimulationSpace
-        {
-            get { return simulationSpace; }
-            set
-            {
-                if (value == simulationSpace)
-                    return;
-
-                simulationSpace = value;
-
-                SimulationSpaceChanged();
-            }
-        }
-
-        private Vector3 drawPosition    = new Vector3(0, 0, 0);
-        private Quaternion drawRotation = new Quaternion(0, 0, 0, 1);
-        private float drawScale         = 1f;
 
         /// <summary>
         /// Changes the particle fields whenever the simulation space changes (World to Local or Local to World)
@@ -995,30 +1103,6 @@ namespace SiliconStudio.Xenko.Particles
 
                 // TODO Rotation
 
-            }
-        }
-
-        private EmitterRandomSeedMethod randomSeedMethod = EmitterRandomSeedMethod.Time;
-
-        /// <summary>
-        /// Random numbers in the <see cref="ParticleSystem"/> are generated based on a seed, which in turn can be generated using several methods.
-        /// </summary>
-        /// <userdoc>
-        /// All random numbers in the Particle System are based on a seed. If you use deterministic seeds, your particles will always behave the same way every time you start the simulation.
-        /// </userdoc>
-        [DataMember(12)]
-        [Display("Randomize")]
-        public EmitterRandomSeedMethod RandomSeedMethod
-        {
-            get
-            {
-                return randomSeedMethod;
-            }
-
-            set
-            {
-                randomSeedMethod = value;
-                delayInit = false;
             }
         }
 
