@@ -108,7 +108,6 @@
     <Compile Include="Commands\ICommandBase.cs" />
     <Compile Include="Behaviors\DropCommandParameters.cs" />
     <Compile Include="Behaviors\GridViewAutoSizeBehavior.cs" />
-    <Compile Include="Behaviors\ListBoxRectangleSelectionBehavior.cs" />
     <Compile Include="Behaviors\OnPropertyChangedCommandBehavior.cs" />
     <Compile Include="Behaviors\OnEventCommandBehavior.cs" />
     <Compile Include="Behaviors\OnFocusBindingInterruptionBehavior.cs" />
