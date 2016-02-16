@@ -13,7 +13,7 @@ namespace SiliconStudio.Core.Mathematics
     /// The <see cref="RandomSeed"/> is a structure for deterministically acquiring random values.
     /// One <see cref="RandomSeed"/> should be able to reproduce the same pseudo-random value for a fixed offset, but
     /// provide enough random distribution for different offsets or different random seeds
-    /// Although other methods exist, the current implementation can easily be replicated in the shaders in required
+    /// Although other methods exist, the current implementation can easily be replicated in the shaders if required
     /// </summary>
     public struct RandomSeed
     {

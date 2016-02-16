@@ -15,6 +15,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         {
             RequiredFields.Add(ParticleFields.Size);
             RequiredFields.Add(ParticleFields.RandomSeed);
+
             InheritLocation = InheritLocation.Scale;
         }
 

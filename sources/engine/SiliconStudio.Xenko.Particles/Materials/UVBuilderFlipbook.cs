@@ -9,6 +9,11 @@ using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
+    /// <summary>
+    /// Animates the texture coordinates in a flipbook fashion, based on the particle's life
+    /// The order of the frames is left to right, top to bottom
+    /// The flipbook assumes uniform sizes for all frames
+    /// </summary>
     [DataContract("UVBuilderFlipbook")]
     [Display("Flipbook")]
     public class UVBuilderFlipbook : UVBuilder
@@ -93,6 +98,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             set { animationSpeedOverLife = value; }
         }
 
+        /// <inheritdoc />
         public unsafe override void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);

@@ -34,7 +34,7 @@ namespace SiliconStudio.Xenko.Particles.BoundingShapes
             return cachedBox;
         }
 
-        public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
             debugDrawShape = DebugDrawShape.Cube;
             scale = new Vector3(Radius, Radius, Radius);
