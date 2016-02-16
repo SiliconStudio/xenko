@@ -600,11 +600,11 @@ public:
 			if (hasSkinningPosition || hasSkinningNormal || totalClusterCount > 0)
 			{
 				if (hasSkinningPosition)
-					meshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
+					meshData->Parameters->SetValueSlow(MaterialKeys::HasSkinningPosition, true);
 				if (hasSkinningNormal)
-					meshData->Parameters->Set(MaterialKeys::HasSkinningNormal, true);
+					meshData->Parameters->SetValueSlow(MaterialKeys::HasSkinningNormal, true);
 				if (totalClusterCount > 0)
-					meshData->Parameters->Set(MaterialKeys::SkinningBones, totalClusterCount);
+					meshData->Parameters->SetValueSlow(MaterialKeys::SkinningBones, totalClusterCount);
 			}
 			modelData->Meshes->Add(meshData);
 		}

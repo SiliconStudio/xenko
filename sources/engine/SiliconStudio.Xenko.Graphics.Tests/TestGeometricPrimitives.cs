@@ -22,8 +22,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private float timeSeconds;
 
-        private ParameterCollection parameterCollection;
-
         private bool isWireframe;
 
         private RasterizerStateDescription wireframeState;
@@ -53,10 +51,9 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             wireframeState = new RasterizerStateDescription(CullMode.Back) { FillMode = FillMode.Wireframe };
 
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
-            parameterCollection = new ParameterCollection();
-            throw new NotImplementedException();
-            //parameterCollectionGroup = new EffectParameterCollectionGroup(GraphicsDevice, simpleEffect, new [] { parameterCollection });
-            parameterCollection.Set(TexturingKeys.Texture0, UVTexture);
+
+            // TODO GRAPHICS REFACTOR
+            simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Texture0, UVTexture);
 
             primitives = new List<GeometricPrimitive>();
 

@@ -94,9 +94,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 (float)((1 - s) * w - c));
 
             // Don't call base, as we are rewriting all parameters for the shader
-            Parameters.Set(ToneMapMikeDayOperatorShaderKeys.ToeCoeffs, toe);
-            Parameters.Set(ToneMapMikeDayOperatorShaderKeys.ShoulderCoeffs, shoulder);
-            Parameters.Set(ToneMapMikeDayOperatorShaderKeys.MiddleCrossOver, CrossOver);
+            Parameters.SetValueSlow(ToneMapMikeDayOperatorShaderKeys.ToeCoeffs, toe);
+            Parameters.SetValueSlow(ToneMapMikeDayOperatorShaderKeys.ShoulderCoeffs, shoulder);
+            Parameters.SetValueSlow(ToneMapMikeDayOperatorShaderKeys.MiddleCrossOver, CrossOver);
         }
     }
 }

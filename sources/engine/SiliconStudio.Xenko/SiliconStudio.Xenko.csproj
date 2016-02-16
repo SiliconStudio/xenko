@@ -106,8 +106,6 @@
     <Compile Include="Graphics\TextureFilter.cs" />
     <Compile Include="Graphics\WICHelper.cs" />
     <Compile Include="Graphics\WICFlags.cs" />
-    <Compile Include="Effects\IParameterCollectionInheritance.cs" />
-    <Compile Include="Effects\IParameterCollectionInheritanceInternal.cs" />
     <Compile Include="Effects\ParameterCollection.cs" />
     <Compile Include="Effects\ParameterCollectionExtensions.cs" />
     <Compile Include="Effects\ParameterKey.cs" />

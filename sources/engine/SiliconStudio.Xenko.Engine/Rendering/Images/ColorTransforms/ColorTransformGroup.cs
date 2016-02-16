@@ -19,7 +19,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
     [Display("Color Transforms")]
     public class ColorTransformGroup : ImageEffect
     {
-        private readonly ParameterCollection transformsParameters;
+        private readonly NextGenParameterCollection transformsParameters;
         private ImageEffectShader transformGroupEffect;
         private readonly Dictionary<ParameterCompositeKey, ParameterKey> compositeKeys;
         private readonly ColorTransformCollection preTransforms;
@@ -50,7 +50,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             postTransforms = new ColorTransformCollection();
             enabledTransforms = new List<ColorTransform>();
             collectTransforms = new List<ColorTransform>();
-            transformsParameters = new ParameterCollection();
+            transformsParameters = new NextGenParameterCollection();
             colorTransformGroupEffectName = colorTransformGroupEffect ?? "ColorTransformGroupEffect";
         }
 
@@ -60,6 +60,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             base.InitializeCore();
 
             transformGroupEffect = new ImageEffectShader(colorTransformGroupEffectName);
+            // TODO GRAPHICS REFACTOR
             throw new NotImplementedException();
             //transformGroupEffect.SharedParameterCollections.Add(Parameters);
             transformGroupEffect.Initialize(Context);
@@ -177,7 +178,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             // Grab all color transforms
             CollectTransforms();
 
-            transformsParameters.Clear();
+            // TODO GRAPHICS REFACTOR
+            throw new NotImplementedException();
+            //transformsParameters.Clear();
             for (int i = 0; i < enabledTransforms.Count; i++)
             {
                 var transform = enabledTransforms[i];
@@ -186,11 +189,13 @@ namespace SiliconStudio.Xenko.Rendering.Images
 
                 // Copy transform parameters back to the composition with the current index
                 var sourceParameters = transform.Parameters;
-                foreach (var parameterValue in sourceParameters.Keys)
-                {
-                    var key = GetComposedKey(parameterValue, i);
-                    sourceParameters.CopySharedTo(parameterValue, key, transformsParameters);
-                }
+                // TODO GRAPHICS REFACTOR
+                throw new NotImplementedException();
+                //foreach (var parameterValue in sourceParameters.Keys)
+                //{
+                //    var key = GetComposedKey(parameterValue, i);
+                //    sourceParameters.CopySharedTo(parameterValue, key, transformsParameters);
+                //}
             }
 
             // NOTE: This is very important to reset the transforms here, as pre-caching by DynamicEffectCompiler is done on parameters changes

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Collections;
@@ -25,6 +26,8 @@ namespace SiliconStudio.Xenko.Rendering
         public IntPtr DataValues;
         public int DataValuesSize;
         public object[] ResourceValues;
+
+        public IEnumerable<ParameterKeyInfo> ParameterKeyInfos => parameterKeyInfos;
 
         public bool HasLayout => layoutParameterKeyInfos.Items != null;
 
@@ -409,6 +412,5 @@ namespace SiliconStudio.Xenko.Rendering
                 }
             }
         }
-
     }
 }

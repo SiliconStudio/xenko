@@ -18,11 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
         private bool pipelineStateDirty = true;
 
         public ComputeEffectShader(RenderContext context)
-            : this(context, null)
-        {
-        }
-
-        public ComputeEffectShader(RenderContext context, params ParameterCollection[] sharedParameterCollections)
             : base(context, null)
         {
             // Setup the effect compiler

@@ -15,8 +15,7 @@ namespace SiliconStudio.Xenko.Rendering.Data
                 var parameters = new Dictionary<ParameterKey, object>();
                 foreach (var parameter in parameterCollection.InternalValues)
                 {
-                    if (parameterCollection.IsValueOwner(parameter.Value))
-                        parameters.Add(parameter.Key, parameter.Value.Object);
+                    parameters.Add(parameter.Key, parameter.Value.Object);
                 }
                 stream.Write(parameters);
             }

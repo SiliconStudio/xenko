@@ -22,8 +22,6 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly SharedData sharedData;
         private const int QuadCount = 3;
 
-        private readonly ParameterCollection parameters;
-
         public static readonly VertexDeclaration VertexDeclaration = VertexPositionNormalTexture.Layout;
         public static readonly PrimitiveType PrimitiveType = PrimitiveType.TriangleList;
 
@@ -35,12 +33,11 @@ namespace SiliconStudio.Xenko.Graphics
         public PrimitiveQuad(GraphicsDevice graphicsDevice)
         {
             GraphicsDevice = graphicsDevice;
-            parameters = new ParameterCollection();
-            parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
             sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice));
 
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
             simpleEffect.UpdateEffect(graphicsDevice);
+            simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
 
             pipelineState.State.SetDefaults();
             pipelineState.State.InputElements = VertexDeclaration.CreateInputElements();
@@ -59,13 +56,7 @@ namespace SiliconStudio.Xenko.Graphics
         /// Gets the parameters used.
         /// </summary>
         /// <value>The parameters.</value>
-        public ParameterCollection Parameters
-        {
-            get
-            {
-                return parameters;
-            }
-        }
+        public NextGenParameterCollection Parameters => simpleEffect.Parameters;
 
         /// <summary>
         /// Draws a quad. The effect must have been applied before calling this method with pixel shader having the signature float2:TEXCOORD.

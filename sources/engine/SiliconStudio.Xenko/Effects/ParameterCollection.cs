@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering
     [DebuggerTypeProxy(typeof(CollectionDebugView))]
     [DebuggerDisplay("Count = {Count}")]
     [DataContract("!ParameterCollection")]
-    public class ParameterCollection : IParameterCollectionInheritanceInternal, IDictionary<ParameterKey, object>
+    public class ParameterCollection : IDictionary<ParameterKey, object>
     {
         // Internal values
         internal FastListStruct<KeyValuePair<ParameterKey, InternalValue>> InternalValues;
@@ -34,9 +34,6 @@ namespace SiliconStudio.Xenko.Rendering
         // Updated every time InternalValues.Keys is changed
         internal int KeyVersion = 1;
 
-        // Either a ParameterCollection (inherits everything) or an InheritanceDefinition (inherits only specific key, ability to remap them as well)
-        private readonly List<IParameterCollectionInheritanceInternal> sources;
-        
         // TODO: Maybe make this structure more simpler (second Dictionary is only here for event with ParameterKey == null mapping to all keys)
         private Dictionary<ValueChangedEventKey, Dictionary<ParameterKey, InternalValueChangedDelegate>> valueChangedEvents;
 
@@ -58,7 +55,6 @@ namespace SiliconStudio.Xenko.Rendering
         public ParameterCollection(string name)
         {
             Name = name;
-            sources = new List<IParameterCollectionInheritanceInternal>();
             InternalValues = new FastListStruct<KeyValuePair<ParameterKey, InternalValue>>(4);
         }
 
@@ -71,15 +67,6 @@ namespace SiliconStudio.Xenko.Rendering
         [DataMemberIgnore]
         public string Name { get; set; }
 
-        /// <summary>
-        /// Gets the sources for this collection.
-        /// </summary>
-        [DataMemberIgnore]
-        public IParameterCollectionInheritance[] Sources
-        {
-            get { return sources.ToArray(); }
-        }
-
         void ICollection<KeyValuePair<ParameterKey, object>>.Add(KeyValuePair<ParameterKey, object> item)
         {
             SetObject(item.Key, item.Value);
@@ -88,7 +75,6 @@ namespace SiliconStudio.Xenko.Rendering
         public void Clear()
         {
             // TODO: Proper clean that also propagate events to sources?
-            sources.Clear();
             InternalValues.Clear();
             if (valueChangedEvents != null)
                 valueChangedEvents.Clear();
@@ -403,12 +389,9 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (index < 0)
             {
-                lock (sources)
-                {
-                    index = ~index;
-                    InternalValues.Insert(index, new KeyValuePair<ParameterKey, InternalValue>(key, null));
-                    KeyVersion++;
-                }
+                index = ~index;
+                InternalValues.Insert(index, new KeyValuePair<ParameterKey, InternalValue>(key, null));
+                KeyVersion++;
             }
 
             return index;
@@ -656,23 +639,20 @@ namespace SiliconStudio.Xenko.Rendering
         /// <exception cref="InvalidOperationException">If trying to remove a key from a collection that is not the owner. Or trying to remove a key that is referenced by a dynamic key</exception>
         public void Remove(ParameterKey key)
         {
-            lock (sources)
-            {
-                int index = GetKeyIndex(key); //mapKeyToIndex[key]);
-                if (index < 0) return;
-                var internalValue = InternalValues.Items[index].Value;
-                ReleaseValue(InternalValues.Items[index].Key, InternalValues.Items[index].Value);
-                InternalValues.Items[index] = new KeyValuePair<ParameterKey, InternalValue>(key, null);
-                //mapKeyToIndex.Remove(key);
-                InternalValues.RemoveAt(index);
-                KeyVersion++;
-                //IndexedInternalValues = InternalValues.Items;
-                OnKeyUpdate(key, null, internalValue);
+            int index = GetKeyIndex(key); //mapKeyToIndex[key]);
+            if (index < 0) return;
+            var internalValue = InternalValues.Items[index].Value;
+            ReleaseValue(InternalValues.Items[index].Key, InternalValues.Items[index].Value);
+            InternalValues.Items[index] = new KeyValuePair<ParameterKey, InternalValue>(key, null);
+            //mapKeyToIndex.Remove(key);
+            InternalValues.RemoveAt(index);
+            KeyVersion++;
+            //IndexedInternalValues = InternalValues.Items;
+            OnKeyUpdate(key, null, internalValue);
 
-                // TODO: Should try to inherit this value from another collection (if present)
+            // TODO: Should try to inherit this value from another collection (if present)
 
-                if (OnUpdateValue != null) OnUpdateValue(this, key, null);
-            }
+            if (OnUpdateValue != null) OnUpdateValue(this, key, null);
         }
 
         /// <summary>
@@ -703,103 +683,6 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         /// <summary>
-        /// Adds the sources.
-        /// </summary>
-        /// <param name="parameterCollections">The effect variable collections.</param>
-        public void AddSources(params IParameterCollectionInheritance[] newSources)
-        {
-            //if (OnUpdateValue != null)
-            //    throw new NotSupportedException("Adding sources to ParameterCollection which are inherited is not supported yet.");
-
-            // TODO: Check for multiple inheritance
-
-            var oldSources = sources.ToArray();
-            foreach (IParameterCollectionInheritanceInternal source in newSources)
-            {
-                if (sources.Contains(source))
-                    continue;
-
-                // Add the new source collection
-                sources.Add(source);
-            }
-
-            UpdateSources(oldSources);
-
-            if (OnUpdateValue != null) OnUpdateValue(this, null, null);
-
-            lock (sources)
-            {
-                // Iterate on new hierarchy
-                for (int i = oldSources.Length; i < sources.Count; ++i)
-                {
-                    InternalValues.EnsureCapacity(sources[i].GetInternalValueCount());
-
-                    // Iterate on each keys
-                    foreach (var sourceInternalValue in sources[i].GetInternalValues())
-                    {
-                        var key = sourceInternalValue.Key;
-
-                        var localIndex = GetKeyIndex(key);
-
-                        if (localIndex != -1)
-                        {
-                            if (FindOverrideGroupIndex(InternalValues.Items[localIndex]) >= FindOverrideGroupIndex(sourceInternalValue))
-                                continue;
-                        }
-
-                        InheritValue(sourceInternalValue.Value, key);
-                        localIndex = GetKeyIndex(key);
-                        if (OnUpdateValue != null) OnUpdateValue(this, key, InternalValues.Items[localIndex].Value);
-                    }
-                }
-                KeyVersion++;
-            }
-        }
-
-        /// <summary>
-        /// Removes the sources.
-        /// </summary>
-        /// <param name="parameterCollection">The source parameter collection.</param>
-        public bool RemoveSource(IParameterCollectionInheritance removedInheritance)
-        {
-            var oldSources = sources.ToArray();
-
-            var internalValueSources = InternalValues.Select(x =>
-                {
-                    var sourceIndex = FindOverrideGroupIndex(x);
-                    return sourceIndex == sources.Count ? null : sources[sourceIndex];
-                }).ToArray();
-
-            if (!sources.Remove((IParameterCollectionInheritanceInternal)removedInheritance))
-                return false;
-
-            UpdateSources(oldSources);
-            if (OnUpdateValue != null) OnUpdateValue(this, null, null);
-
-            var removedSources = oldSources.Except(sources).ToArray();
-
-            lock (sources)
-            {
-                for (int index = 0, index2 = 0; index < this.InternalCount; ++index, ++index2)
-                {
-                    var internalValue = InternalValues[index];
-                    var key = internalValue.Key;
-                    var source = internalValueSources[index2];
-                    if (source != null && removedSources.Contains(source))
-                    {
-                        // TODO: Inherit from another value (if any)
-                        InternalValues.RemoveAt(index--);
-                        if (OnUpdateValue != null) OnUpdateValue(this, key, null);
-                        OnKeyUpdate(key, null, internalValue.Value);
-                    }
-                }
-                KeyVersion++;
-            }
-
-            return true;
-        }
-
-        /// <summary>
         /// Copy a shared value from this instance to another instance.
         /// </summary>
         /// <param name="fromKey">From key.</param>
@@ -815,10 +698,6 @@ namespace SiliconStudio.Xenko.Rendering
         {
             if (fromKey == null) throw new ArgumentNullException("fromKey");
             if (toCollection == null) throw new ArgumentNullException("toCollection");
-            if (sources.Count > 0)
-            {
-                throw new InvalidOperationException("CopyingReadOnly is not supporting Sources from origin");
-            }
 
             toKey = toKey ?? fromKey;
 
@@ -855,18 +734,6 @@ namespace SiliconStudio.Xenko.Rendering
             if (index == -1)
                 return;
 
-            // If overriden in a source, inherits it
-            for (int i = sources.Count - 1; i >= 0; --i)
-            {
-                var source = sources[i];
-                var internalValue = source.GetInternalValue(key);
-                if (internalValue != null)
-                {
-                    InheritValue(internalValue, key);
-                    return;
-                }
-            }
-
             // Otherwise, simply remove it
             var oldInternalValue = InternalValues.Items[index].Value;
             InternalValues.RemoveAt(index);
@@ -876,20 +743,6 @@ namespace SiliconStudio.Xenko.Rendering
             OnKeyUpdate(key, null, oldInternalValue);
         }
 
-        /// <summary>
-        /// Determines whether [is value owner] of [the specified key].
-        /// </summary>
-        /// <param name="key">The key.</param>
-        /// <returns>
-        ///   <c>true</c> if [is value owner] of [the specified key]; otherwise, <c>false</c>.
-        /// </returns>
-        public bool IsValueOwner(InternalValue internalValue)
-        {
-            if (internalValue != null)
-                return internalValue.Owner == this;
-            return false;
-        }
-
         /// <inheritdoc/>
         protected void Destroy()
         {
@@ -897,14 +750,6 @@ namespace SiliconStudio.Xenko.Rendering
 
             if (OnUpdateValue != null)
                 throw new InvalidOperationException("Cannot dispose a parameter collection that is used as a source.");
-
-            // Unsubscribes from all sources
-            for (int i = 0; i < sources.Count; ++i)
-            {
-                var parameterCollection = sources[i].GetParameterCollection();
-                var updateValueDelegate = sources[i].GetUpdateValueDelegate(effectVariableCollection_OnUpdateValue);
-                parameterCollection.OnUpdateValue -= updateValueDelegate;
-            }
 
             for (int i = 0; i < InternalCount; i++)
             {
@@ -933,150 +778,6 @@ namespace SiliconStudio.Xenko.Rendering
             if (keyMapping != null)
             {
                 UpdateKeyMapping(key, internalValue);
-            }
-        }
-
-        /// <summary>
-        /// Inherits an InternalValue.
-        /// </summary>
-        /// <param name="internalValue"></param>
-        /// <param name="key"></param>
-        private void InheritValue(InternalValue internalValue, ParameterKey key)
-        {
-            int index = GetKeyIndex(key);
-            var oldInternalValue = index != -1 ? InternalValues.Items[index].Value : null;
-
-            // Copy the InternalValue in this ParameterCollection
-            index = GetOrCreateKeyIndex(key);
-            InternalValues.Items[index] = new KeyValuePair<ParameterKey, InternalValue>(key, internalValue);
-
-            // Notify InternalValue change
-            OnKeyUpdate(key, internalValue, oldInternalValue);
-        }
-        
-        /// <summary>
-        /// Updates OnUpdateValue delegate for newly added/removed sources.
-        /// </summary>
-        /// <param name="oldSources"></param>
-        private void UpdateSources(IParameterCollectionInheritance[] oldSources)
-        {
-            foreach (IParameterCollectionInheritanceInternal source in oldSources)
-            {
-                if (sources.Contains(source))
-                    continue;
-                var parameterCollection = source.GetParameterCollection();
-                var updateValueDelegate = source.GetUpdateValueDelegate(effectVariableCollection_OnUpdateValue);
-                parameterCollection.OnUpdateValue -= updateValueDelegate;
-            }
-
-            foreach (IParameterCollectionInheritanceInternal source in sources)
-            {
-                if (oldSources.Contains(source))
-                    continue;
-                var parameterCollection = source.GetParameterCollection();
-                var updateValueDelegate = source.GetUpdateValueDelegate(effectVariableCollection_OnUpdateValue);
-                parameterCollection.OnUpdateValue += updateValueDelegate;
-            }
-        }
-
-        /// <summary>
-        /// Returns index in flattened hierarchy if positive, otherwise sources.Count (this) or -1 (not found).
-        /// </summary>
-        /// <param name="internalValue"></param>
-        /// <returns></returns>
-        private int FindOverrideGroupIndex(KeyValuePair<ParameterKey, InternalValue> internalValue)
-        {
-            if (internalValue.Value.Owner == this)
-                return sources.Count;
-
-            // Fast lookup
-            if (internalValue.Value.Owner != null)
-            {
-                int flattenedIndex = sources.IndexOf(internalValue.Value.Owner);
-                if (flattenedIndex != -1)
-                    return flattenedIndex;
-            }
-
-            // Otherwise check values
-            for (int i = sources.Count - 1; i >= 0; --i)
-            {
-                var source = sources[i];
-                if (source.GetInternalValues().Any(x => x.Value == internalValue.Value))
-                {
-                    return i;
-                }
-            }
-
-            return -1;
-        }
-
-        /// <summary>
-        /// Called when an InternalValue has been updated.
-        /// It will recursively notify dependents ParameterCollection as well.
-        /// </summary>
-        private void effectVariableCollection_OnUpdateValue(ParameterCollection source, ParameterKey key, InternalValue sourceInternalValue)
-        {
-            effectVariableCollection_OnUpdateValueLocal(source, key, sourceInternalValue);
-            if (OnUpdateValue != null)
-                OnUpdateValue(this, key, sourceInternalValue);
-        }
-
-        private void effectVariableCollection_OnUpdateValueLocal(ParameterCollection source, ParameterKey key, InternalValue sourceInternalValue)
-        {
-            // Sources changed
-            if (key == null)
-            {
-                return;
-            }
-
-            var sourceIndex = sources.IndexOf(source);
-
-            if (sourceInternalValue == null)
-            {
-                int currentIndex = GetKeyIndex(key);
-                if (currentIndex == -1)
-                    return;
-
-                var currentSourceIndex = FindOverrideGroupIndex(InternalValues.Items[currentIndex]);
-
-                if (currentSourceIndex > sourceIndex && currentSourceIndex != -1)
-                    return;
-
-                // Deleted key
-                // First, check if another inherited value is still available
-                for (int i = sourceIndex - 1; i >= 0; --i)
-                {
-                    var newSource = sources[i];
-                    var internalValue = newSource.GetInternalValue(key);
-                    if (internalValue != null)
-                    {
-                        InheritValue(internalValue, key);
-                        return;
-                    }
-                }
-
-                // Otherwise simply remove it
-                Remove(key);
-                return;
-            }
-
-            var sourceKey = key; //sourceInternalValue.Key;
-            var index = GetKeyIndex(sourceKey);
-
-            if (index != -1)
-            {
-                // We already have a value, check if this one is a better override
-                var currentValueSourceIndex = FindOverrideGroupIndex(InternalValues.Items[index]);
-
-                if (sourceIndex >= currentValueSourceIndex) // || currentValueSourceIndex == -1)
-                {
-                    InheritValue(sourceInternalValue, sourceKey);
-                }
-            }
-            else
-            {
-                // New key
-                InheritValue(sourceInternalValue, sourceKey);
             }
         }
 
@@ -1178,10 +879,7 @@ namespace SiliconStudio.Xenko.Rendering
             if (internalValue == null)
                 return;
 
-            if (!key.IsValueType && internalValue.Owner == this)
-            {
-                internalValue.Object = null;
-            }
+            internalValue.Object = null;
         }
 
         /// <summary>
@@ -1211,50 +909,17 @@ namespace SiliconStudio.Xenko.Rendering
             var internalValue = oldInternalValue;
             newValue = false;
 
-            if (internalValue.Value != null && internalValue.Value.Owner != this)
-            {
-                internalValue = new KeyValuePair<ParameterKey, InternalValue>(internalValue.Key, null);
-            }
             if (internalValue.Value == null)
             {
                 newValue = true;
                 InternalValues.Items[index] = internalValue = new KeyValuePair<ParameterKey, InternalValue>(key, CreateInternalValue(key));
-                internalValue.Value.Owner = this;
 
                 OnKeyUpdate(key, internalValue.Value, oldInternalValue.Value);
             }
             return internalValue.Value;
         }
 
-        #region Implements IParameterCollectionInheritanceInternal
-
-        int IParameterCollectionInheritanceInternal.GetInternalValueCount()
-        {
-            return InternalCount;
-        }
-
-        InternalValue IParameterCollectionInheritanceInternal.GetInternalValue(ParameterKey key)
-        {
-            return GetInternalValue(key);
-        }
-
-        IEnumerable<KeyValuePair<ParameterKey, InternalValue>> IParameterCollectionInheritanceInternal.GetInternalValues()
-        {
-            return InternalValues;
-        }
-
-        ParameterCollection IParameterCollectionInheritanceInternal.GetParameterCollection()
-        {
-            return this;
-        }
-
-        OnUpdateValueDelegate IParameterCollectionInheritanceInternal.GetUpdateValueDelegate(ParameterCollection.OnUpdateValueDelegate original)
-        {
-            return original;
-        }
-
-        #endregion
-        
+       
         /// <summary>
         /// Dynamic values use this class when pointing to a source.
         /// </summary>
@@ -1270,7 +935,6 @@ namespace SiliconStudio.Xenko.Rendering
         public abstract class InternalValue
         {
             public int Counter;
-            public ParameterCollection Owner;
             internal InternalValueChangedDelegate ValueChanged;
             internal InternalValueReference[] Dependencies;
 
@@ -1311,7 +975,7 @@ namespace SiliconStudio.Xenko.Rendering
             public override string ToString()
             {
                 var builder = new StringBuilder();
-                builder.AppendFormat("({0}) {1} Count {2}", Owner.Name, Object, Counter);
+                builder.AppendFormat("{0} Count {1}", Object, Counter);
                 return builder.ToString();
             }
         }

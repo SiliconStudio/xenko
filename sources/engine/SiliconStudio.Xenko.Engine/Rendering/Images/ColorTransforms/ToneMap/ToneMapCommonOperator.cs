@@ -27,11 +27,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ToneMapCommonOperatorShaderKeys.LuminanceSaturation);
+                return Parameters.GetValueSlow(ToneMapCommonOperatorShaderKeys.LuminanceSaturation);
             }
             set
             {
-                Parameters.Set(ToneMapCommonOperatorShaderKeys.LuminanceSaturation, value);
+                Parameters.SetValueSlow(ToneMapCommonOperatorShaderKeys.LuminanceSaturation, value);
             }
         }
 
@@ -45,11 +45,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ToneMapCommonOperatorShaderKeys.WhiteLevel);
+                return Parameters.GetValueSlow(ToneMapCommonOperatorShaderKeys.WhiteLevel);
             }
             set
             {
-                Parameters.Set(ToneMapCommonOperatorShaderKeys.WhiteLevel, value);
+                Parameters.SetValueSlow(ToneMapCommonOperatorShaderKeys.WhiteLevel, value);
             }
         }
     }
