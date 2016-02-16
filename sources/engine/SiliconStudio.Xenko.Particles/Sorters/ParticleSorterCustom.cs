@@ -9,7 +9,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
 {
 
     /// <summary>
-    /// The default sorter doesn not sort the particles, but only passes them directly to the renderer
+    /// The custom sorter uses a user-defined method for generating sort index from a user-defined field
     /// </summary>
     public class ParticleSorterCustom<T> : ParticleSorter where T : struct
     {

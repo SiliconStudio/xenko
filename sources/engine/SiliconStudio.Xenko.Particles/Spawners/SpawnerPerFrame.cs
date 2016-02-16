@@ -13,9 +13,32 @@ namespace SiliconStudio.Xenko.Particles.Spawners
     [Display("Per frame")]
     public sealed class SpawnerPerFrame : ParticleSpawner
     {
+        [DataMemberIgnore]
         private float carryOver;
 
+        [DataMemberIgnore]
         private float spawnCount;
+
+        [DataMemberIgnore]
+        private float defaultFramerate = 60;
+
+
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        public SpawnerPerFrame()
+        {
+            spawnCount = 1f;
+            carryOver = 0;
+        }
+
+
+        /// <summary>
+        /// The amount of particles this spawner will emit each frame
+        /// </summary>
+        /// <userdoc>
+        /// The amount of particles this spawner will emit each frame
+        /// </userdoc>
         [DataMember(40)]
         [Display("Particles/frame")]
         public float SpawnCount
@@ -28,7 +51,12 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             }
         }
 
-        private float defaultFramerate = 60;
+        /// <summary>
+        /// The maximum framerate you expect your game to achieve. It is only used for maximum particles estimation, not for actual spawning rate
+        /// </summary>
+        /// <userdoc>
+        /// The maximum framerate you expect your game to achieve. It is only used for maximum particles estimation, not for actual spawning rate
+        /// </userdoc>
         [DataMember(45)]
         [Display("Framerate")]
         public float Framerate
@@ -41,18 +69,13 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             }
         }
 
+        /// <inheritdoc />
         public override int GetMaxParticlesPerSecond()
         {
             return (int)Math.Ceiling(SpawnCount * defaultFramerate);
         }
 
-
-        public SpawnerPerFrame()
-        {
-            spawnCount = 1f;
-            carryOver = 0;
-        }
-
+        /// <inheritdoc />
         public override void SpawnNew(float dt, ParticleEmitter emitter)
         {
             var spawnerState = GetUpdatedState(dt, emitter);
