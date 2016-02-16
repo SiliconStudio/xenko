@@ -143,15 +143,15 @@ namespace SiliconStudio.Xenko.Particles.Modules
         [DataMemberIgnore]
         private float parentScale = 1f;
 
-        public override void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
+        public override void SetParentTrs(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
         {
-            base.SetParentTRS(ref Translation, ref Rotation, Scale);
+            base.SetParentTrs(ref Translation, ref Rotation, Scale);
 
             var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
             parentScale = (hasScl) ? Scale : 1f;
         }
 
-        public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
             rotation = new Quaternion(0, 0, 0, 1);
             scale = new Vector3(1, 1, 1);

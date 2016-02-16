@@ -71,7 +71,7 @@ namespace SiliconStudio.Xenko.Particles
             {
                 foreach (var initializer in particleEmitter.Initializers)
                 {
-                    if (initializer.DebugDraw && initializer.TryGetDebugDrawShape(ref debugDrawShape, ref translation, ref rotation, ref scale))
+                    if (initializer.DebugDraw && initializer.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                     {
                         // Convert to world space if local
                         if (particleEmitter.SimulationSpace == EmitterSimulationSpace.Local)
@@ -83,7 +83,7 @@ namespace SiliconStudio.Xenko.Particles
 
                 foreach (var updater in particleEmitter.Updaters)
                 {
-                    if (updater.DebugDraw && updater.TryGetDebugDrawShape(ref debugDrawShape, ref translation, ref rotation, ref scale))
+                    if (updater.DebugDraw && updater.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                     {
                         // Convert to world space if local
                         if (particleEmitter.SimulationSpace == EmitterSimulationSpace.Local)
@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Particles
                 }
             }
 
-            if (DebugDraw && BoundingShape.TryGetDebugDrawShape(ref debugDrawShape, ref translation, ref rotation, ref scale))
+            if (DebugDraw && BoundingShape.TryGetDebugDrawShape(out debugDrawShape, out translation, out rotation, out scale))
                 return ToWorldSpace(ref translation, ref rotation, ref scale);
 
             return false;
@@ -125,6 +125,7 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// Gets the current AABB of the <see cref="ParticleSystem"/>
         /// </summary>
+        // ReSharper disable once InconsistentNaming
         public BoundingBox GetAABB()
         {
             return BoundingShape?.GetAABB(Translation, Rotation, UniformScale) ?? new BoundingBox(new Vector3(-1), new Vector3(1));
@@ -281,12 +282,12 @@ namespace SiliconStudio.Xenko.Particles
         /// <summary>
         /// isPaused shows if the simulation progresses by delta time every frame or no
         /// </summary>
-        private bool isPaused = false;
+        private bool isPaused;
 
         /// <summary>
         /// hasStarted shows if the simulation has started yet or no
         /// </summary>
-        private bool hasStarted = false;
+        private bool hasStarted;
 
         /// <summary>
         /// Pauses the particle system simulation
@@ -316,7 +317,7 @@ namespace SiliconStudio.Xenko.Particles
 
 
         #region Dispose
-        private bool disposed = false;
+        private bool disposed;
 
         ~ParticleSystem()
         {

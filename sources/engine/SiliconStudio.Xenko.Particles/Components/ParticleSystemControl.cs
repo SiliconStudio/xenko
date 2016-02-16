@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         private float resetSeconds = 5f;
 
         [DataMemberIgnore]
-        private float currentElapsedTime = 0f;
+        private float currentElapsedTime;
 
 
         /// <summary>

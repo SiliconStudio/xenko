@@ -7,7 +7,6 @@ using System.ComponentModel;
 using SiliconStudio.Core;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Particles.DebugDraw;
-using SiliconStudio.Xenko.Particles.Updaters.FieldShapes;
 
 namespace SiliconStudio.Xenko.Particles
 {
@@ -20,7 +19,7 @@ namespace SiliconStudio.Xenko.Particles
     }
 
     /// <summary>
-    /// The <see cref="PaticleModuleBase"/> is a base class for all plugins (initializers and updaters) used by the emitter
+    /// The <see cref="ParticleModule"/> is a base class for all plugins (initializers and updaters) used by the emitter
     /// Each plugin operates over one or several <see cref="ParticleFields"/> updating or setting up the particle state
     /// Additionally, each plugin can inherit some properties from the parent particle system, which are usually passed by the user.
     /// </summary>
@@ -52,8 +51,12 @@ namespace SiliconStudio.Xenko.Particles
         [DefaultValue(false)]
         public bool DebugDraw { get; set; } = false;
 
-        public virtual bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        public virtual bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
+            debugDrawShape = DebugDrawShape.None;
+            scale = new Vector3(1, 1, 1);
+            translation = new Vector3(0, 0, 0);
+            rotation = new Quaternion(0, 0, 0, 1);
             return false;
         }
 
@@ -65,8 +68,8 @@ namespace SiliconStudio.Xenko.Particles
         public List<ParticleFieldDescription> RequiredFields = new List<ParticleFieldDescription>(ParticlePool.DefaultMaxFielsPerPool);
 
         /// <summary>
-        /// Note on inheritance. The current values only change once per frame, when the SetParentTRS is called. 
-        /// This is intentional and reduces overhead, because SetParentTRS is called exactly once/turn.
+        /// Note on inheritance. The current values only change once per frame, when the SetParentTrs is called. 
+        /// This is intentional and reduces overhead, because SetParentTrs is called exactly once/turn.
         /// </summary>
         [DataMember(1)]
         [Display("Inheritance")]
@@ -87,22 +90,22 @@ namespace SiliconStudio.Xenko.Particles
         /// Sets the parent (particle system's) translation, rotation and scale (uniform)
         /// The module can choose to inherit, use or ignore any of the elements
         /// </summary>
-        /// <param name="Translation">Particle System's translation (from the Transform component)</param>
-        /// <param name="Rotation">Particle System's quaternion rotation (from the Transform component)</param>
-        /// <param name="Scale">Particle System's uniform scale (from the Transform component)</param>
-        public virtual void SetParentTRS(ref Vector3 Translation, ref Quaternion Rotation, float Scale)
+        /// <param name="translation">Particle System's translation (from the Transform component)</param>
+        /// <param name="rotation">Particle System's quaternion rotation (from the Transform component)</param>
+        /// <param name="scale">Particle System's uniform scale (from the Transform component)</param>
+        public virtual void SetParentTrs(ref Vector3 translation, ref Quaternion rotation, float scale)
         {
             var hasPos = InheritLocation.HasFlag(InheritLocation.Position);
             var hasRot = InheritLocation.HasFlag(InheritLocation.Rotation);
             var hasScl = InheritLocation.HasFlag(InheritLocation.Scale);
 
-            WorldScale = (hasScl) ? ParticleLocator.Scale * Scale : ParticleLocator.Scale;
+            WorldScale = (hasScl) ? ParticleLocator.Scale * scale : ParticleLocator.Scale;
 
-            WorldRotation = (hasRot) ? ParticleLocator.Rotation * Rotation : ParticleLocator.Rotation;
+            WorldRotation = (hasRot) ? ParticleLocator.Rotation * rotation : ParticleLocator.Rotation;
 
             var offsetTranslation = ParticleLocator.Translation * WorldScale;
             WorldRotation.Rotate(ref offsetTranslation);
-            WorldPosition = (hasPos) ? Translation + offsetTranslation : offsetTranslation;
+            WorldPosition = (hasPos) ? translation + offsetTranslation : offsetTranslation;
         }
     }
 }

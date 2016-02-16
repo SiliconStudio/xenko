@@ -595,16 +595,16 @@ namespace SiliconStudio.Xenko.Particles
             if (simulationSpace == EmitterSimulationSpace.World)
             {
                 // Update sub-systems
-                initialDefaultFields.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                initialDefaultFields.SetParentTrs(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
 
                 foreach (var initializer in Initializers)
                 {
-                    initializer.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                    initializer.SetParentTrs(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
                 }
 
                 foreach (var updater in Updaters)
                 {
-                    updater.SetParentTRS(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
+                    updater.SetParentTrs(ref parentSystem.Translation, ref parentSystem.Rotation, parentSystem.UniformScale);
                 }
             }
             else
@@ -613,16 +613,16 @@ namespace SiliconStudio.Xenko.Particles
                 var rotIdentity = new Quaternion(0, 0, 0, 1);
 
                 // Update sub-systems
-                initialDefaultFields.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
+                initialDefaultFields.SetParentTrs(ref posIdentity, ref rotIdentity, 1f);
 
                 foreach (var initializer in Initializers)
                 {
-                    initializer.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
+                    initializer.SetParentTrs(ref posIdentity, ref rotIdentity, 1f);
                 }
 
                 foreach (var updater in Updaters)
                 {
-                    updater.SetParentTRS(ref posIdentity, ref rotIdentity, 1f);
+                    updater.SetParentTrs(ref posIdentity, ref rotIdentity, 1f);
                 }
             }
         }
