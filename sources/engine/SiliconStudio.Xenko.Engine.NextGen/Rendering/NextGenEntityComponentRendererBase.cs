@@ -8,7 +8,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// A default implementation for a <see cref="INextGenEntityComponentRenderer"/>.
     /// </summary>
-    public abstract class EntityComponentRendererBase : EntityComponentRendererCoreBase, INextGenEntityComponentRenderer
+    public abstract class NextGenEntityComponentRendererBase : EntityComponentRendererCoreBase, INextGenEntityComponentRenderer
     {
         public abstract void Extract(NextGenRenderSystem renderSystem);
 

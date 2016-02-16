@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Skyboxes
     /// <summary>
     /// A default entity processor for <see cref="SkyboxComponent"/>.
     /// </summary>
-    public class SkyboxProcessor : EntityProcessor<SkyboxComponent, RenderSkybox>
+    public class NextGenSkyboxProcessor : EntityProcessor<SkyboxComponent, RenderSkybox>
     {
         private NextGenRenderSystem renderSystem;
 

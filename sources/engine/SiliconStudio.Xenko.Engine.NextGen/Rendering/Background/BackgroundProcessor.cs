@@ -11,7 +11,7 @@ namespace SiliconStudio.Xenko.Rendering.Background
     /// <summary>
     /// A default entity processor for <see cref="BackgroundComponent"/>.
     /// </summary>
-    public class BackgroundProcessor : EntityProcessor<BackgroundComponent, RenderBackground>
+    public class NextGenBackgroundProcessor : EntityProcessor<BackgroundComponent, RenderBackground>
     {
         private NextGenRenderSystem renderSystem;
 

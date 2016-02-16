@@ -6,7 +6,7 @@ namespace SiliconStudio.Xenko.Rendering
     /// <summary>
     /// A dedicated batch renderer of <see cref="IEntityComponentRenderer"/>
     /// </summary>
-    public sealed class EntityComponentRendererBatch : GraphicsRendererCollectionBase<INextGenEntityComponentRenderer>, INextGenEntityComponentRenderer
+    public sealed class NextGenEntityComponentRendererBatch : GraphicsRendererCollectionBase<INextGenEntityComponentRenderer>, INextGenEntityComponentRenderer
     {
         public void Extract(NextGenRenderSystem renderSystem)
         {

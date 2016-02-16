@@ -18,7 +18,6 @@ Profiles:
         InheritProfiles: []
         AssetFolders:
             -   Path: GameAssets
-            -   Path: Effects
         OutputGroupDirectories: {}
         Properties: {}
         ProjectReferences:
