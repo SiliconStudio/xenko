@@ -100,7 +100,7 @@ namespace SiliconStudio.Quantum.Contents
             if (collectionDescriptor != null)
             {
                 var index = (int)itemIndex;
-                if (collectionDescriptor.GetCollectionCount(Value) == index)
+                if (collectionDescriptor.GetCollectionCount(Value) == index || !collectionDescriptor.HasInsert)
                 {
                     collectionDescriptor.Add(Value, newItem);
                 }

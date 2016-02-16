@@ -133,7 +133,7 @@ namespace SiliconStudio.Xenko.Assets.Entities
         
             protected override void RemoveItem(int index)
             {
-                var item = items[index];
+                //var item = Items[index];
                 base.RemoveItem(index);
                 //item.Container = null;
             }

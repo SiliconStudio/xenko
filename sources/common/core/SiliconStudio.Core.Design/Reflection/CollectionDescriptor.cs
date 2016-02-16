@@ -22,7 +22,6 @@ namespace SiliconStudio.Core.Reflection
         private readonly Action<object, int, object> CollectionInsertFunction;
         private readonly Action<object, int> CollectionRemoveAtFunction;
         private readonly Action<object> CollectionClearFunction;
-        private readonly bool hasIndexerAccessors;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CollectionDescriptor" /> class.
@@ -33,7 +32,7 @@ namespace SiliconStudio.Core.Reflection
         public CollectionDescriptor(ITypeDescriptorFactory factory, Type type) : base(factory, type)
         {
             if (!IsCollection(type))
-                throw new ArgumentException("Expecting a type inheriting from System.Collections.ICollection", "type");
+                throw new ArgumentException(@"Expecting a type inheriting from System.Collections.ICollection", nameof(type));
 
             // Gets the element type
             var collectionType = type.GetInterface(typeof(IEnumerable<>));
@@ -41,36 +40,8 @@ namespace SiliconStudio.Core.Reflection
             Category = DescriptorCategory.Collection;
             bool typeSupported = false;
 
-            // implements ICollection<T> 
-            Type itype = type.GetInterface(typeof(ICollection<>));
-            if (itype != null)
-            {
-                var add = itype.GetMethod("Add", new[] {ElementType});
-                CollectionAddFunction = (obj, value) => add.Invoke(obj, new[] {value});
-                var clear = itype.GetMethod("Clear", Type.EmptyTypes);
-                CollectionClearFunction = obj => clear.Invoke(obj, EmptyObjects);
-                var countMethod = itype.GetProperty("Count").GetGetMethod();
-                GetCollectionCountFunction = o => (int)countMethod.Invoke(o, null);
-                var isReadOnly = itype.GetProperty("IsReadOnly").GetGetMethod();
-                IsReadOnlyFunction = obj => (bool)isReadOnly.Invoke(obj, null);
-                typeSupported = true;
-            }
-            // implements IList<T>
-            itype = type.GetInterface(typeof(IList<>));
-            if (itype != null)
-            {
-                var insert = itype.GetMethod("Insert", new[] { typeof(int), ElementType });
-                CollectionInsertFunction = (obj, index, value) => insert.Invoke(obj, new[] { index, value });
-                var removeAt = itype.GetMethod("RemoveAt", new[] { typeof(int) });
-                CollectionRemoveAtFunction = (obj, index) => removeAt.Invoke(obj, new object[] { index });
-                var getItem = itype.GetMethod("get_Item", new[] { typeof(int) });
-                var setItem = itype.GetMethod("set_Item", new[] { typeof(int), ElementType });
-                GetIndexedItem = (obj, index) => getItem.Invoke(obj, new object[] { index });
-                SetIndexedItem = (obj, index, value) => setItem.Invoke(obj, new[] { index, value });
-                hasIndexerAccessors = true;
-            }
             // implements IList
-            if (!typeSupported && typeof(IList).IsAssignableFrom(type))
+            if (typeof(IList).IsAssignableFrom(type))
             {
                 CollectionAddFunction = (obj, value) => ((IList)obj).Add(value);
                 CollectionClearFunction = obj => ((IList)obj).Clear();
@@ -80,13 +51,63 @@ namespace SiliconStudio.Core.Reflection
                 GetIndexedItem = (obj, index) => ((IList)obj)[index];
                 SetIndexedItem = (obj, index, value) => ((IList)obj)[index] = value;
                 IsReadOnlyFunction = obj => ((IList)obj).IsReadOnly;
-                hasIndexerAccessors = true;
+                HasIndexerAccessors = true;
                 typeSupported = true;
+            }
+            var itype = type.GetInterface(typeof(ICollection<>));
+
+            // implements ICollection<T> 
+            if (!typeSupported && itype != null)
+            {
+                var add = itype.GetMethod(nameof(ICollection<object>.Add), new[] {ElementType});
+                CollectionAddFunction = (obj, value) => add.Invoke(obj, new[] {value});
+                var clear = itype.GetMethod(nameof(ICollection<object>.Clear), Type.EmptyTypes);
+                CollectionClearFunction = obj => clear.Invoke(obj, EmptyObjects);
+                var countMethod = itype.GetProperty(nameof(ICollection<object>.Count)).GetGetMethod();
+                GetCollectionCountFunction = o => (int)countMethod.Invoke(o, null);
+                var isReadOnly = itype.GetProperty(nameof(ICollection<object>.IsReadOnly)).GetGetMethod();
+                IsReadOnlyFunction = obj => (bool)isReadOnly.Invoke(obj, null);
+                typeSupported = true;
+                // implements IList<T>
+                itype = type.GetInterface(typeof(IList<>));
+                if (itype != null)
+                {
+                    var insert = itype.GetMethod(nameof(IList<object>.Insert), new[] { typeof(int), ElementType });
+                    CollectionInsertFunction = (obj, index, value) => insert.Invoke(obj, new[] { index, value });
+                    var removeAt = itype.GetMethod(nameof(IList<object>.RemoveAt), new[] { typeof(int) });
+                    CollectionRemoveAtFunction = (obj, index) => removeAt.Invoke(obj, new object[] { index });
+                    var getItem = itype.GetMethod("get_Item", new[] { typeof(int) });
+                    GetIndexedItem = (obj, index) => getItem.Invoke(obj, new object[] { index });
+                    var setItem = itype.GetMethod("set_Item", new[] { typeof(int), ElementType });
+                    SetIndexedItem = (obj, index, value) => setItem.Invoke(obj, new[] { index, value });
+                    HasIndexerAccessors = true;
+                }
+                else
+                {
+                    // Attempt to retrieve IList<> accessors from ICollection.
+                    var insert = type.GetMethod(nameof(IList<object>.Insert), new[] { typeof(int), ElementType });
+                    if (insert != null)
+                        CollectionInsertFunction = (obj, index, value) => insert.Invoke(obj, new[] { index, value });
+
+                    var removeAt = type.GetMethod(nameof(IList<object>.RemoveAt), new[] { typeof(int) });
+                    if (removeAt != null)
+                    CollectionRemoveAtFunction = (obj, index) => removeAt.Invoke(obj, new object[] { index });
+
+                    var getItem = type.GetMethod("get_Item", new[] { typeof(int) });
+                    if (getItem != null)
+                        GetIndexedItem = (obj, index) => getItem.Invoke(obj, new object[] { index });
+
+                    var setItem = type.GetMethod("set_Item", new[] { typeof(int), ElementType });
+                    if (setItem != null)
+                        SetIndexedItem = (obj, index, value) => setItem.Invoke(obj, new[] { index, value });
+
+                    HasIndexerAccessors = getItem != null && setItem != null;
+                }
             }
 
             if (!typeSupported)
             {
-                throw new ArgumentException("Type [{0}] is not supported as a modifiable collection".ToFormat(type), "type");
+                throw new ArgumentException("Type [{0}] is not supported as a modifiable collection".ToFormat(type), nameof(type));
             }
         }
 
@@ -94,56 +115,33 @@ namespace SiliconStudio.Core.Reflection
         /// Gets or sets the type of the element.
         /// </summary>
         /// <value>The type of the element.</value>
-        public Type ElementType { get; private set; }
+        public Type ElementType { get; }
 
         /// <summary>
         /// Gets a value indicating whether this collection type has add method.
         /// </summary>
         /// <value><c>true</c> if this instance has add; otherwise, <c>false</c>.</value>
-        public bool HasAdd
-        {
-            get
-            {
-                return CollectionAddFunction != null;
-            }
-        }
+        public bool HasAdd => CollectionAddFunction != null;
 
 
         /// <summary>
         /// Gets a value indicating whether this collection type has insert method.
         /// </summary>
         /// <value><c>true</c> if this instance has insert; otherwise, <c>false</c>.</value>
-        public bool HasInsert
-        {
-            get
-            {
-                return CollectionInsertFunction != null;
-            }
-        }
+        public bool HasInsert => CollectionInsertFunction != null;
+
         /// <summary>
         /// Gets a value indicating whether this collection type has RemoveAt method.
         /// </summary>
         /// <value><c>true</c> if this instance has RemoveAt; otherwise, <c>false</c>.</value>
-        public bool HasRemoveAt
-        {
-            get
-            {
-                return CollectionRemoveAtFunction != null;
-            }
-        }
+        public bool HasRemoveAt => CollectionRemoveAtFunction != null;
 
         /// <summary>
         /// Gets a value indicating whether this collection type has valid indexer accessors.
-        /// If so, <see cref="SetValue"/> and <see cref="GetValue"/> can be invoked.
+        /// If so, <see cref="SetValue(object, object, object)"/> and <see cref="GetValue(object, object)"/> can be invoked.
         /// </summary>
         /// <value><c>true</c> if this instance has a valid indexer setter; otherwise, <c>false</c>.</value>
-        public bool HasIndexerAccessors
-        {
-            get
-            {
-                return hasIndexerAccessors;
-            }
-        }
+        public bool HasIndexerAccessors { get; }
 
         /// <summary>
         /// Returns the value matching the given index in the collection.
@@ -152,7 +150,7 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="index">The index.</param>
         public object GetValue(object list, object index)
         {
-            if (list == null) throw new ArgumentNullException("list");
+            if (list == null) throw new ArgumentNullException(nameof(list));
             if (!(index is int)) throw new ArgumentException("The index must be an int.");
             return GetValue(list, (int)index);
         }
@@ -164,20 +162,20 @@ namespace SiliconStudio.Core.Reflection
         /// <param name="index">The index.</param>
         public object GetValue(object list, int index)
         {
-            if (list == null) throw new ArgumentNullException("list");
+            if (list == null) throw new ArgumentNullException(nameof(list));
             return GetIndexedItem(list, index);
         }
 
         public void SetValue(object list, object index, object value)
         {
-            if (list == null) throw new ArgumentNullException("list");
+            if (list == null) throw new ArgumentNullException(nameof(list));
             if (!(index is int)) throw new ArgumentException("The index must be an int.");
             SetValue(list, (int)index, value);
         }
 
         public void SetValue(object list, int index, object value)
         {
-            if (list == null) throw new ArgumentNullException("list");
+            if (list == null) throw new ArgumentNullException(nameof(list));
             SetIndexedItem(list, index, value);
         }
 
