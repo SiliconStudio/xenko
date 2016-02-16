@@ -9,10 +9,14 @@ using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
+    /// <summary>
+    /// Shape builder which builds each particle as a camera-facing hexagon
+    /// </summary>
     [DataContract("ShapeBuilderHexagon")]
     [Display("Hexagon")]
     public class ShapeBuilderHexagon : ShapeBuilder
     {
+        /// <inheritdoc />
         public override int QuadsPerParticle { get; protected set; } = 2;
 
         /// <inheritdoc />

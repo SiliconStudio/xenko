@@ -10,10 +10,14 @@ using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
+    /// <summary>
+    /// Shape builder which builds each particle as a camera-facing quad
+    /// </summary>
     [DataContract("ShapeBuilderBillboard")]
     [Display("Billboard")]
     public class ShapeBuilderBillboard : ShapeBuilderCommon
     {
+        /// <inheritdoc />
         public override int QuadsPerParticle { get; protected set; } = 1;
 
         /// <inheritdoc />
