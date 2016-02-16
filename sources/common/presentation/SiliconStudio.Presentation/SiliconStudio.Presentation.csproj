@@ -48,6 +48,7 @@
     <Compile Include="Behaviors\HyperlinkCloseWindowBehavior.cs" />
     <Compile Include="Behaviors\ListBoxBindableSelectedItemsBehavior.cs" />
     <Compile Include="Behaviors\MenuItemCloseWindowBehavior.cs" />
+    <Compile Include="Behaviors\MouseMoveCaptureBehaviorBase.cs" />
     <Compile Include="Behaviors\NumericTextBoxTransactionalRepeatButtonsBehavior.cs" />
     <Compile Include="Behaviors\OnEventBehavior.cs" />
     <Compile Include="Behaviors\OnEventSetPropertyBehavior.cs" />
