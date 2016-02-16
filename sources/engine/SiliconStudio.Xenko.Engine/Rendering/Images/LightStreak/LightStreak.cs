@@ -290,8 +290,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     if (level == 0) currentInput = originalDownsize;
                     currentOutput = writeToScratchA ? scratchTextureA : scratchTextureB;
 
-                    lightStreakEffect.Parameters.SetValueSlow(LightStreakKeys.Count, TapsPerIteration);
-                    lightStreakEffect.Parameters.SetValueSlow(LightStreakKeys.AnamorphicCount, AnamorphicOffsetsWeights.Length);
+                    lightStreakEffect.EffectInstance.SetPermutationValue(LightStreakKeys.Count, TapsPerIteration);
+                    lightStreakEffect.EffectInstance.SetPermutationValue(LightStreakKeys.AnamorphicCount, AnamorphicOffsetsWeights.Length);
                     lightStreakEffect.Parameters.SetValueSlow(LightStreakShaderKeys.TapOffsetsWeights, tapOffsetsWeights);
                     lightStreakEffect.Parameters.SetValueSlow(LightStreakShaderKeys.AnamorphicOffsetsWeight, AnamorphicOffsetsWeights);
                     lightStreakEffect.Parameters.SetValueSlow(LightStreakShaderKeys.Direction, direction);

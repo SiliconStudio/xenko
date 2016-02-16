@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 
 using SiliconStudio.Core;
+using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Graphics;
 
 namespace SiliconStudio.Xenko.Rendering.Images
@@ -61,25 +62,6 @@ namespace SiliconStudio.Xenko.Rendering.Images
         }
 
         /// <summary>
-        /// Optional shared parameters. This list must be setup before calling <see cref="Initialize"/>.
-        /// </summary>
-        [DataMemberIgnore]
-        public List<NextGenParameterCollection> SharedParameterCollections { get { throw new InvalidOperationException(); } }
-
-        /// <summary>
-        /// Gets the parameter collections used by this effect.
-        /// </summary>
-        /// <value>The parameter collections.</value>
-        [DataMemberIgnore]
-        public List<NextGenParameterCollection> ParameterCollections
-        {
-            get
-            {
-                throw new InvalidOperationException();
-            }
-        }
-
-        /// <summary>
         /// Sets the default parameters (called at constructor time and if <see cref="Reset"/> is called)
         /// </summary>
         protected override void SetDefaultParameters()
@@ -111,8 +93,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 if (i < TexturingKeys.DefaultTextures.Count)
                 {
                     var texturingKeys = texture.Dimension == TextureDimension.TextureCube ? TexturingKeys.TextureCubes : TexturingKeys.DefaultTextures;
-                    // TODO: Do not use slow version
+                    // TODO GRAPHICS REFACTOR Do not use slow version
                     Parameters.SetResourceSlow(texturingKeys[i], texture);
+                    Parameters.SetValueSlow(TexturingKeys.TexturesTexelSize[i], new Vector2(1.0f / texture.ViewWidth, 1.0f / texture.ViewHeight));
                 }
                 else
                 {
