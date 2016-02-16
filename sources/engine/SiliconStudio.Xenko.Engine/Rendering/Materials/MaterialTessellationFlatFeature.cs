@@ -27,7 +27,7 @@ namespace SiliconStudio.Xenko.Rendering.Materials
             var tessellationShader = new ShaderMixinSource();
             tessellationShader.Mixins.Add(new ShaderClassSource("TessellationFlat"));
 
-            context.Parameters.SetResourceSlow(MaterialKeys.TessellationShader, tessellationShader);
+            context.Parameters.Set(MaterialKeys.TessellationShader, tessellationShader);
         }
     }
 }

@@ -94,7 +94,7 @@ namespace SiliconStudio.Xenko.Shaders
         /// <param name="paramKey">The parameter key.</param>
         /// <returns>The value or default value associated to this parameter key.</returns>
         /// <exception cref="System.ArgumentNullException">key</exception>
-        public T GetParam<T>(ParameterKey<T> paramKey)
+        public T GetParam<T>(PermutationParameterKey<T> paramKey)
         {
             if (paramKey == null)
                 throw new ArgumentNullException("paramKey");
@@ -135,7 +135,7 @@ namespace SiliconStudio.Xenko.Shaders
             return value;
         }
 
-        private ParameterCollection FindKeyValue<T>(ParameterKey<T> key, out ParameterKey<T> selectedKey)
+        private ParameterCollection FindKeyValue<T>(PermutationParameterKey<T> key, out PermutationParameterKey<T> selectedKey)
         {
             // Try to get a value from registered containers
             selectedKey = null;
@@ -156,7 +156,7 @@ namespace SiliconStudio.Xenko.Shaders
             return null;
         }
 
-        private ParameterKey<T> GetComposeKey<T>(ParameterKey<T> key)
+        private PermutationParameterKey<T> GetComposeKey<T>(PermutationParameterKey<T> key)
         {
             if (compositionString == null)
             {
@@ -166,7 +166,7 @@ namespace SiliconStudio.Xenko.Shaders
             return key;
         }
 
-        public void SetParam<T>(ParameterKey<T> key, T value)
+        public void SetParam<T>(PermutationParameterKey<T> key, T value)
         {
             if (key == null)
                 throw new ArgumentNullException("key");

@@ -46,17 +46,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.InitializeCore();
 
-            // Use shared SharedParameters for blurH and blurV
             blurH = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect"));
-            blurH.Initialize(Context);
-
-            // Setup specific Horizontal parameter for blurH
-            blurH.EffectInstance.SetPermutationValue(GaussianBlurKeys.VerticalBlur, false);
-
             blurV = ToLoadAndUnload(new ImageEffectShader("GaussianBlurEffect"));
+            blurH.Initialize(Context);
             blurV.Initialize(Context);
-            // Setup specific Vertical parameter for blurV
-            blurV.EffectInstance.SetPermutationValue(GaussianBlurKeys.VerticalBlur, true);
+
+            // Setup Horizontal parameters
+            blurH.Parameters.Set(GaussianBlurKeys.VerticalBlur, false);
+            blurV.Parameters.Set(GaussianBlurKeys.VerticalBlur, true);
         }
 
         /// <summary>
@@ -137,10 +134,10 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Update shared parameters
-            blurH.EffectInstance.SetPermutationValue(GaussianBlurKeys.Count, offsetsWeights.Length);
-            blurV.EffectInstance.SetPermutationValue(GaussianBlurKeys.Count, offsetsWeights.Length);
-            blurH.Parameters.SetValueSlow(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
-            blurV.Parameters.SetValueSlow(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
+            blurH.Parameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
+            blurV.Parameters.Set(GaussianBlurKeys.Count, offsetsWeights.Length);
+            blurH.Parameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
+            blurV.Parameters.Set(GaussianBlurShaderKeys.OffsetsWeights, offsetsWeights);
 
             // Horizontal pass
             blurH.SetInput(inputTexture);

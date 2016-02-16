@@ -202,8 +202,8 @@ namespace SiliconStudio.Xenko.Assets.Model
                     // Resource
                     for (int i = 0; i < parameterKeyInfo.Size; ++i)
                     {
-                        var object1 = parameters0.ResourceValues[parameterKeyInfo.BindingSlot + i];
-                        var object2 = parameters1.ResourceValues[otherParameterKeyInfo.BindingSlot + i];
+                        var object1 = parameters0.ObjectValues[parameterKeyInfo.BindingSlot + i];
+                        var object2 = parameters1.ObjectValues[otherParameterKeyInfo.BindingSlot + i];
                         if (object1 == null && object2 == null)
                             continue;
                         if ((object1 == null && object2 != null) || (object2 == null && object1 != null))

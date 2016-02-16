@@ -983,14 +983,14 @@ private:
   //                  case sizeof(double):
   //                      {
 		//					auto value = *((double*)pProp->mData);
-//							ParameterKey<float>^ key = gcnew ParameterKey<float>(propertyName, 1);
+//							ValueParameterKey<float>^ key = gcnew ValueParameterKey<float>(propertyName, 1);
   //                          finalMaterial->SetParameter(key, (float)value);
   //                      }
   //                      break;
   //                  case 3*sizeof(double):
   //                      {
   //                          auto value = (double*)pProp->mData;
-//                            ParameterKey<Vector3>^ key = gcnew ParameterKey<Vector3>(propertyName, 1);
+//                            ValueParameterKey<Vector3>^ key = gcnew ValueParameterKey<Vector3>(propertyName, 1);
   //                          finalMaterial->SetParameter(key, Vector3((float)value[0], (float)value[1], (float)value[2]));
   //                      }
   //                      break;
@@ -1368,11 +1368,11 @@ private:
 					if (meshInfo->HasSkinningPosition || meshInfo->HasSkinningNormal || meshInfo->TotalClusterCount > 0)
 					{
 						if (meshInfo->HasSkinningPosition)
-							nodeMeshData->Parameters->SetValueSlow(MaterialKeys::HasSkinningPosition, true);
+							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
 						if (meshInfo->HasSkinningNormal)
-							nodeMeshData->Parameters->SetValueSlow(MaterialKeys::HasSkinningNormal, true);
+							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningNormal, true);
 						if (meshInfo->TotalClusterCount > 0)
-							nodeMeshData->Parameters->SetValueSlow(MaterialKeys::SkinningBones, meshInfo->TotalClusterCount);
+							nodeMeshData->Parameters->Set(MaterialKeys::SkinningBones, meshInfo->TotalClusterCount);
 					}
 					modelData->Meshes->Add(nodeMeshData);
 				}

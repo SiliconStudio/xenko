@@ -18,6 +18,6 @@ namespace SiliconStudio.Xenko.Rendering.Lights
 {
     public static partial class LightSimpleAmbientKeys
     {
-        public static readonly ParameterKey<Color3> AmbientLight = ParameterKeys.New<Color3>();
+        public static readonly ValueParameterKey<Color3> AmbientLight = ParameterKeys.NewValue<Color3>();
     }
 }

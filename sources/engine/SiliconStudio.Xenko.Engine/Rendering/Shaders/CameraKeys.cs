@@ -12,7 +12,7 @@ namespace SiliconStudio.Xenko.Rendering
         /// <summary>
         /// Camera focus distance
         /// </summary>
-        public static readonly ParameterKey<float> FocusDistance = ParameterKeys.New(0.0f);
+        public static readonly ValueParameterKey<float> FocusDistance = ParameterKeys.NewValue(0.0f);
 
         // TODO GRAPHICS REFACTOR
         //private static void ZProjectionACalculate(ref float nearClipPlane, ref float farClipPlane, ref Vector2 output)

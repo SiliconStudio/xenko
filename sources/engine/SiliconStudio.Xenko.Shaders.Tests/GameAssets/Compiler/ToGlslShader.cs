@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class ToGlslShaderKeys
     {
-        public static readonly ParameterKey<Vector4> BaseColor = ParameterKeys.New<Vector4>();
-        public static readonly ParameterKey<float[]> TestArray = ParameterKeys.New<float[]>();
+        public static readonly ValueParameterKey<Vector4> BaseColor = ParameterKeys.NewValue<Vector4>();
+        public static readonly ValueParameterKey<float> TestArray = ParameterKeys.NewValue<float>();
     }
 }

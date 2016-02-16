@@ -49,8 +49,17 @@ namespace SiliconStudio.Xenko.Shaders.Tests
             try
             {
                 var source = File.ReadAllText(filePath);
-                var content = ShaderMixinCodeGen.GenerateCsharp(source, filePath.Replace("C:", "D:"));
-                var destPath = Path.ChangeExtension(filePath, ".cs");
+                var content = ShaderMixinCodeGen.GenerateCsharp(source, filePath);
+
+                // Sometimes, we have a collision with the .cs file, so generated filename might be postfixed with 1
+                var destPath = Path.Combine(Path.GetDirectoryName(filePath), Path.GetFileNameWithoutExtension(filePath) + "1.cs");
+                if (!File.Exists(destPath))
+                    destPath = Path.ChangeExtension(filePath, ".cs");
+                if (!File.Exists(destPath))
+                {
+                    Console.WriteLine("Target file {0} doesn't exist", destPath);
+                    return;
+                }
                 File.WriteAllText(destPath, content, Encoding.UTF8);
                 Console.WriteLine("File generated {0}", filePath);
             }

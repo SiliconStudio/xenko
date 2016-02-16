@@ -37,11 +37,6 @@ namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
 
         private const float ReferenceShadowSize = 1024;
 
-        internal static readonly ParameterKey<ShadowMapReceiverInfo[]> Receivers = ParameterKeys.New(new ShadowMapReceiverInfo[1]);
-        internal static readonly ParameterKey<ShadowMapReceiverVsmInfo[]> ReceiversVsm = ParameterKeys.New(new ShadowMapReceiverVsmInfo[1]);
-        internal static readonly ParameterKey<ShadowMapCascadeLevel[]> LevelReceivers = ParameterKeys.New(new ShadowMapCascadeLevel[1]);
-        internal static readonly ParameterKey<int> ShadowMapLightCount = ParameterKeys.New(0);
-
         public readonly Dictionary<LightComponent, LightShadowMapTexture> LightComponentsWithShadows;
 
         public ShadowMapRenderer(NextGenRenderSystem renderSystem, RenderStage shadowmapRenderStage)

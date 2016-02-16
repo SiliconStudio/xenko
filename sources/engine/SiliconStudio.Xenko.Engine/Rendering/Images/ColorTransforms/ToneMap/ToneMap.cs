@@ -88,11 +88,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapKeys.AutoKey);
+                return Parameters.Get(ToneMapKeys.AutoKey);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapKeys.AutoKey, value);
+                Parameters.Set(ToneMapKeys.AutoKey, value);
             }
         }
 
@@ -106,11 +106,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapShaderKeys.KeyValue);
+                return Parameters.Get(ToneMapShaderKeys.KeyValue);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapShaderKeys.KeyValue, value);
+                Parameters.Set(ToneMapShaderKeys.KeyValue, value);
             }
         }
 
@@ -124,11 +124,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapKeys.AutoExposure);
+                return Parameters.Get(ToneMapKeys.AutoExposure);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapKeys.AutoExposure, value);
+                Parameters.Set(ToneMapKeys.AutoExposure, value);
             }
         }
 
@@ -171,11 +171,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapShaderKeys.LuminanceLocalFactor);
+                return Parameters.Get(ToneMapShaderKeys.LuminanceLocalFactor);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapShaderKeys.LuminanceLocalFactor, value);
+                Parameters.Set(ToneMapShaderKeys.LuminanceLocalFactor, value);
             }
         }
 
@@ -189,11 +189,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapShaderKeys.Contrast);
+                return Parameters.Get(ToneMapShaderKeys.Contrast);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapShaderKeys.Contrast, value);
+                Parameters.Set(ToneMapShaderKeys.Contrast, value);
             }
         }
 
@@ -207,11 +207,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.GetValueSlow(ToneMapShaderKeys.Brightness);
+                return Parameters.Get(ToneMapShaderKeys.Brightness);
             }
             set
             {
-                Parameters.SetValueSlow(ToneMapShaderKeys.Brightness, value);
+                Parameters.Set(ToneMapShaderKeys.Brightness, value);
             }
         }
 
@@ -228,7 +228,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var elapsedTime = timer.Elapsed;
             timer.Restart();
 
-            var luminanceResult = context.SharedParameters.GetValueSlow(LuminanceEffect.LuminanceResult);
+            var luminanceResult = context.SharedParameters.Get(LuminanceEffect.LuminanceResult);
 
             // Get the average luminance
             float adaptedLum = luminanceResult.AverageLuminance;
@@ -247,9 +247,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Setup parameters
-            Parameters.SetResourceSlow(ToneMapShaderKeys.LuminanceTexture, luminanceResult.LocalTexture);
-            Parameters.SetValueSlow(ToneMapShaderKeys.LuminanceAverageGlobal, (float)Math.Log(adaptedLum, 2));
-            Parameters.SetValueSlow(ToneMapShaderKeys.Exposure, (float)Math.Pow(2.0, Exposure));
+            Parameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.LocalTexture);
+            Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, (float)Math.Log(adaptedLum, 2));
+            Parameters.Set(ToneMapShaderKeys.Exposure, (float)Math.Pow(2.0, Exposure));
 
             // Update operator parameters
             Operator.UpdateParameters(context);

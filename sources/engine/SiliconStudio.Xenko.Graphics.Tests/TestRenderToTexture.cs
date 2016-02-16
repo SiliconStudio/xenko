@@ -48,7 +48,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
             geometry = GeometricPrimitive.Cube.New(GraphicsDevice);
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
-            simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Texture0, UVTexture);
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, UVTexture);
             
             // TODO DisposeBy is not working with device reset
             offlineTarget0 = Texture.New2D(GraphicsDevice, 512, 512, PixelFormat.R8G8B8A8_UNorm, TextureFlags.ShaderResource | TextureFlags.RenderTarget).DisposeBy(this);
@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
 
         private void DrawGeometry()
         {
-            simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, worldViewProjection);
+            simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, worldViewProjection);
             simpleEffect.Apply(GraphicsCommandList);
             geometry.Draw(GraphicsCommandList, simpleEffect);
         }

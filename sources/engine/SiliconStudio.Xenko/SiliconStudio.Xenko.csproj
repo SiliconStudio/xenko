@@ -116,7 +116,8 @@
     <Compile Include="Rendering\NextGenParameterCollection.cs" />
     <Compile Include="Rendering\NextGenParameterCollectionLayout.cs" />
     <Compile Include="Rendering\ParameterKeyInfo.cs" />
-    <Compile Include="Rendering\ResourceParameter.cs" />
+    <Compile Include="Rendering\PermutationParameter.cs" />
+    <Compile Include="Rendering\ObjectParameterAccessor.cs" />
     <Compile Include="Rendering\ValueParameter.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -53,7 +53,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
             simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
 
             // TODO GRAPHICS REFACTOR
-            simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Texture0, UVTexture);
+            simpleEffect.Parameters.Set(TexturingKeys.Texture0, UVTexture);
 
             primitives = new List<GeometricPrimitive>();
 
@@ -153,7 +153,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 //GraphicsDevice.SetRasterizerState(isWireframe? wireframeState: defaultRasterizerState);
 
                 // Draw the primitive using BasicEffect
-                simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
+                simpleEffect.Parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
                 simpleEffect.Apply(GraphicsCommandList);
                 primitive.Draw(GraphicsCommandList, simpleEffect);
             }

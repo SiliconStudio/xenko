@@ -26,7 +26,7 @@ namespace SiliconStudio.Xenko.Rendering
 
         // Store current effect
         protected Effect effect;
-        protected bool effectDirty = true;
+        protected int permutationCounter = -1;
 
         // Describes how to update resource bindings
         private ResourceGroupBufferUploader bufferUploader;
@@ -55,9 +55,9 @@ namespace SiliconStudio.Xenko.Rendering
 
         public void UpdateEffect(GraphicsDevice graphicsDevice)
         {
-            if (effectDirty)
+            if (permutationCounter != Parameters.PermutationCounter)
             {
-                effectDirty = false;
+                permutationCounter = Parameters.PermutationCounter;
 
                 ChooseEffect(graphicsDevice);
 
@@ -128,7 +128,7 @@ namespace SiliconStudio.Xenko.Rendering
             }
 
             // Set resources
-            if (Parameters.ResourceValues != null)
+            if (Parameters.ObjectValues != null)
             {
                 var descriptorStartSlot = 0;
                 var bufferStartOffset = 0;
@@ -140,7 +140,7 @@ namespace SiliconStudio.Xenko.Rendering
 
                     for (int resourceSlot = 0; resourceSlot < layout.ElementCount; ++resourceSlot)
                     {
-                        descriptorSet.SetValue(resourceSlot, Parameters.ResourceValues[descriptorStartSlot + resourceSlot]);
+                        descriptorSet.SetValue(resourceSlot, Parameters.ObjectValues[descriptorStartSlot + resourceSlot]);
                     }
 
                     descriptorStartSlot += layout.ElementCount;

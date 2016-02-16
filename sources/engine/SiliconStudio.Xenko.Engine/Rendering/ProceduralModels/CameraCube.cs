@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering
 {
     public static partial class CameraCubeKeys
     {
-        public static readonly ParameterKey<Vector3> CameraWorldPosition = ParameterKeys.New<Vector3>();
-        public static readonly ParameterKey<Matrix[]> CameraViewProjectionMatrices = ParameterKeys.New<Matrix[]>();
+        public static readonly ValueParameterKey<Vector3> CameraWorldPosition = ParameterKeys.NewValue<Vector3>();
+        public static readonly ValueParameterKey<Matrix> CameraViewProjectionMatrices = ParameterKeys.NewValue<Matrix>();
     }
 }

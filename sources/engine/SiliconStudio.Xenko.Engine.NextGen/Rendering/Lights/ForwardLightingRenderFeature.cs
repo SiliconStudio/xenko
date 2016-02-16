@@ -274,7 +274,7 @@ namespace SiliconStudio.Xenko.Rendering.Lights
                 // Set resource bindings in PerLighting resource set
                 for (int resourceSlot = 0; resourceSlot < lightShadersPermutation.ResourceCount; ++resourceSlot)
                 {
-                    lightShadersPermutation.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ResourceValues[resourceSlot]);
+                    lightShadersPermutation.Resources.DescriptorSet.SetValue(resourceSlot, parameters.ObjectValues[resourceSlot]);
                 }
 
                 // Process PerMaterial cbuffer

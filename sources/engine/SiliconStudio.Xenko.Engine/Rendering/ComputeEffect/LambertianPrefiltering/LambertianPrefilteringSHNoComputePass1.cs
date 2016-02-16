@@ -18,7 +18,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
 {
     public static partial class LambertianPrefilteringSHNoComputePass1Keys
     {
-        public static readonly ParameterKey<Texture> RadianceMap = ParameterKeys.New<Texture>();
-        public static readonly ParameterKey<int> CoefficientIndex = ParameterKeys.New<int>();
+        public static readonly ObjectParameterKey<Texture> RadianceMap = ParameterKeys.NewObject<Texture>();
+        public static readonly ValueParameterKey<int> CoefficientIndex = ParameterKeys.NewValue<int>();
     }
 }

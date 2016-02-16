@@ -25,7 +25,9 @@ namespace SiliconStudio.Xenko.Rendering
         //   However, maybe ref locals would make this not needed anymore?
         public IntPtr DataValues;
         public int DataValuesSize;
-        public object[] ResourceValues;
+        public object[] ObjectValues;
+
+        public int PermutationCounter;
 
         public IEnumerable<ParameterKeyInfo> ParameterKeyInfos => parameterKeyInfos;
 
@@ -40,45 +42,36 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        public ResourceParameter<T> GetResourceParameter<T>(ParameterKey<T> parameterKey) where T : class
+        /// <summary>
+        /// Gets an accessor to get and set objects more quickly.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameterKey"></param>
+        /// <returns></returns>
+        public ObjectParameterAccessor<T> GetAccessor<T>(ObjectParameterKey<T> parameterKey)
         {
-            // Find existing first
-            for (int i = 0; i < parameterKeyInfos.Count; ++i)
-            {
-                if (parameterKeyInfos[i].Key == parameterKey)
-                {
-                    return new ResourceParameter<T>(i);
-                }
-            }
-
-            // Check layout if it exists
-            if (layoutParameterKeyInfos.Count > 0)
-            {
-                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
-                {
-                    if (layoutParameterKeyInfo.Key == parameterKey)
-                    {
-                        parameterKeyInfos.Add(layoutParameterKeyInfo);
-                        return new ResourceParameter<T>(parameterKeyInfos.Count - 1);
-                    }
-                }
-            }
-
-            // Create info entry
-            var resourceValuesSize = ResourceValues?.Length ?? 0;
-            Array.Resize(ref ResourceValues, resourceValuesSize + 1);
-            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, resourceValuesSize));
-
-            // Initialize default value
-            if (parameterKey.DefaultValueMetadata != null)
-            {
-                ResourceValues[resourceValuesSize] = parameterKey.DefaultValueMetadata.GetDefaultValue();
-            }
-
-            return new ResourceParameter<T>(parameterKeyInfos.Count - 1);
+            return GetObjectParameterHelper(parameterKey, false);
         }
 
-        public ValueParameter<T> GetValueParameter<T>(ParameterKey<T> parameterKey, int elementCount = 1) where T : struct
+        /// <summary>
+        /// Gets an accessor to get and set permutations more quickly.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameterKey"></param>
+        /// <returns></returns>
+        public PermutationParameter<T> GetAccessor<T>(PermutationParameterKey<T> parameterKey)
+        {
+            // Remap it as PermutationParameter
+            return new PermutationParameter<T>(GetObjectParameterHelper(parameterKey, true).Index);
+        }
+
+        /// <summary>
+        /// Gets an accessor to get and set blittable values more quickly.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameterKey"></param>
+        /// <returns></returns>
+        public ValueParameter<T> GetAccessor<T>(ValueParameterKey<T> parameterKey, int elementCount = 1) where T : struct
         {
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
@@ -129,7 +122,7 @@ namespace SiliconStudio.Xenko.Rendering
         }
 
         [Obsolete]
-        public ValueParameter<T> GetValueParameterArray<T>(ParameterKey<T[]> parameterKey, int elementCount = 1) where T : struct
+        public ValueParameter<T> GetValueParameterArray<T>(ValueParameterKey<T> parameterKey, int elementCount = 1) where T : struct
         {
             // Find existing first
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
@@ -179,39 +172,103 @@ namespace SiliconStudio.Xenko.Rendering
             return result;
         }
 
+        /// <summary>
+        /// Gets pointer to directly copy blittable values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
         public IntPtr GetValuePointer<T>(ValueParameter<T> parameter) where T : struct
         {
             return DataValues + parameterKeyInfos[parameter.Index].Offset;
         }
 
-        public void SetResourceSlow<T>(ParameterKey<T> parameter, T value) where T : class
+        /// <summary>
+        /// Sets an object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public void Set<T>(ObjectParameterKey<T> parameter, T value)
         {
-            Set(GetResourceParameter(parameter), value);
+            Set(GetAccessor(parameter), value);
         }
 
-        public T GetResourceSlow<T>(ParameterKey<T> parameter) where T : class
+        /// <summary>
+        /// Gets an object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public T Get<T>(ObjectParameterKey<T> parameter)
         {
-            return Get(GetResourceParameter(parameter));
+            return Get(GetAccessor(parameter));
         }
 
-        public void SetValueSlow<T>(ParameterKey<T> parameter, T value) where T : struct
+        /// <summary>
+        /// Sets a permutation.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public void Set<T>(PermutationParameterKey<T> parameter, T value)
         {
-            Set(GetValueParameter(parameter), value);
+            Set(GetAccessor(parameter), value);
         }
 
-        public void SetValueSlow<T>(ParameterKey<T> parameter, T[] values) where T : struct
+        /// <summary>
+        /// Gets a permutation.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public T Get<T>(PermutationParameterKey<T> parameter)
         {
-            Set(GetValueParameter(parameter, values.Length), values);
+            return Get(GetAccessor(parameter));
         }
 
-        public T GetValueSlow<T>(ParameterKey<T> parameter) where T : struct
+        /// <summary>
+        /// Sets a blittable value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public void Set<T>(ValueParameterKey<T> parameter, T value) where T : struct
         {
-            return Get(GetValueParameter(parameter));
+            Set(GetAccessor(parameter), value);
         }
 
-        public T[] GetValuesSlow<T>(ParameterKey<T> key) where T : struct
+        /// <summary>
+        /// Sets blittable values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="values"></param>
+        public void Set<T>(ValueParameterKey<T> parameter, T[] values) where T : struct
         {
-            var parameter = GetValueParameter(key);
+            Set(GetAccessor(parameter, values.Length), values);
+        }
+
+        /// <summary>
+        /// Gets a blittable value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public T Get<T>(ValueParameterKey<T> parameter) where T : struct
+        {
+            return Get(GetAccessor(parameter));
+        }
+
+        /// <summary>
+        /// Gets blittable values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        public T[] GetValues<T>(ValueParameterKey<T> key) where T : struct
+        {
+            var parameter = GetAccessor(key);
             var data = GetValuePointer(parameter);
 
             // Align to float4
@@ -227,16 +284,34 @@ namespace SiliconStudio.Xenko.Rendering
             return values;
         }
 
+        /// <summary>
+        /// Sets a blittable value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
         public void Set<T>(ValueParameter<T> parameter, T value) where T : struct
         {
             Utilities.Write(DataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
         }
 
+        /// <summary>
+        /// Sets a blittable value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
         public void Set<T>(ValueParameter<T> parameter, ref T value) where T : struct
         {
             Utilities.Write(DataValues + parameterKeyInfos[parameter.Index].Offset, ref value);
         }
 
+        /// <summary>
+        /// Sets blittable values.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="values"></param>
         public void Set<T>(ValueParameter<T> parameter, T[] values) where T : struct
         {
             var data = GetValuePointer(parameter);
@@ -255,19 +330,60 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
-        public void Set<T>(ResourceParameter<T> parameter, T value) where T : class
+        /// <summary>
+        /// Sets a permutation.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <param name="value"></param>
+        public void Set<T>(PermutationParameter<T> parameter, T value)
         {
-            ResourceValues[parameterKeyInfos[parameter.Index].BindingSlot] = value;
+            PermutationCounter++;
+            ObjectValues[parameterKeyInfos[parameter.Index].BindingSlot] = value;
         }
 
+        /// <summary>
+        /// Sets an object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameterAccessor"></param>
+        /// <param name="value"></param>
+        public void Set<T>(ObjectParameterAccessor<T> parameterAccessor, T value)
+        {
+            ObjectValues[parameterKeyInfos[parameterAccessor.Index].BindingSlot] = value;
+        }
+
+        /// <summary>
+        /// Gets a value.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
         public T Get<T>(ValueParameter<T> parameter) where T : struct
         {
             return Utilities.Read<T>(DataValues + parameterKeyInfos[parameter.Index].Offset);
         }
 
-        public T Get<T>(ResourceParameter<T> parameter) where T : class
+        /// <summary>
+        /// Gets a permutation.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameter"></param>
+        /// <returns></returns>
+        public T Get<T>(PermutationParameter<T> parameter)
         {
-            return (T)ResourceValues[parameterKeyInfos[parameter.Index].BindingSlot];
+            return (T)ObjectValues[parameterKeyInfos[parameter.Index].BindingSlot];
+        }
+
+        /// <summary>
+        /// Gets an object.
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <param name="parameterAccessor"></param>
+        /// <returns></returns>
+        public T Get<T>(ObjectParameterAccessor<T> parameterAccessor)
+        {
+            return (T)ObjectValues[parameterKeyInfos[parameterAccessor.Index].BindingSlot];
         }
 
         public void Remove<T>(ParameterKey<T> key)
@@ -282,6 +398,11 @@ namespace SiliconStudio.Xenko.Rendering
             }
         }
 
+        /// <summary>
+        /// Determines whether current collection contains a value for this key.
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
         public bool ContainsKey(ParameterKey key)
         {
             for (int i = 0; i < parameterKeyInfos.Count; ++i)
@@ -388,7 +509,7 @@ namespace SiliconStudio.Xenko.Rendering
                 else if (newParameterKeyInfo.BindingSlot != -1)
                 {
                     // It's a resource
-                    newResourceValues[newParameterKeyInfo.BindingSlot] = ResourceValues[parameterKeyInfo.BindingSlot];
+                    newResourceValues[newParameterKeyInfo.BindingSlot] = ObjectValues[parameterKeyInfo.BindingSlot];
                 }
             }
 
@@ -398,7 +519,48 @@ namespace SiliconStudio.Xenko.Rendering
             Marshal.FreeHGlobal(DataValues);
             DataValues = newDataValues;
             DataValuesSize = bufferSize;
-            ResourceValues = newResourceValues;
+            ObjectValues = newResourceValues;
+        }
+
+        private ObjectParameterAccessor<T> GetObjectParameterHelper<T>(ParameterKey<T> parameterKey, bool permutation)
+        {
+            // Find existing first
+            for (int i = 0; i < parameterKeyInfos.Count; ++i)
+            {
+                if (parameterKeyInfos[i].Key == parameterKey)
+                {
+                    return new ObjectParameterAccessor<T>(i);
+                }
+            }
+
+            if (permutation)
+                PermutationCounter++;
+
+            // Check layout if it exists
+            if (layoutParameterKeyInfos.Count > 0)
+            {
+                foreach (var layoutParameterKeyInfo in layoutParameterKeyInfos)
+                {
+                    if (layoutParameterKeyInfo.Key == parameterKey)
+                    {
+                        parameterKeyInfos.Add(layoutParameterKeyInfo);
+                        return new ObjectParameterAccessor<T>(parameterKeyInfos.Count - 1);
+                    }
+                }
+            }
+
+            // Create info entry
+            var resourceValuesSize = ObjectValues?.Length ?? 0;
+            Array.Resize(ref ObjectValues, resourceValuesSize + 1);
+            parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, resourceValuesSize));
+
+            // Initialize default value
+            if (parameterKey.DefaultValueMetadata != null)
+            {
+                ObjectValues[resourceValuesSize] = parameterKey.DefaultValueMetadata.GetDefaultValue();
+            }
+
+            return new ObjectParameterAccessor<T>(parameterKeyInfos.Count - 1);
         }
 
         public class Serializer : ClassDataSerializer<NextGenParameterCollection>
@@ -406,7 +568,7 @@ namespace SiliconStudio.Xenko.Rendering
             public override void Serialize(ref NextGenParameterCollection parameterCollection, ArchiveMode mode, SerializationStream stream)
             {
                 stream.Serialize(ref parameterCollection.parameterKeyInfos, mode);
-                stream.SerializeExtended(ref parameterCollection.ResourceValues, mode);
+                stream.SerializeExtended(ref parameterCollection.ObjectValues, mode);
                 stream.Serialize(ref parameterCollection.DataValuesSize, mode);
 
                 if (parameterCollection.DataValuesSize > 0)

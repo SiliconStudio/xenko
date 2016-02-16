@@ -28,11 +28,11 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                return parameters.GetValueSlow(PhysicsDebugEffectKeys.Color);
+                return parameters.Get(PhysicsDebugEffectKeys.Color);
             }
             set
             {
-                parameters.SetValueSlow(PhysicsDebugEffectKeys.Color, value);
+                parameters.Set(PhysicsDebugEffectKeys.Color, value);
             }
         }
 
@@ -40,12 +40,12 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                return parameters.GetValueSlow(PhysicsDebugEffectKeys.WorldViewProj);
+                return parameters.Get(PhysicsDebugEffectKeys.WorldViewProj);
             }
 
             set
             {
-                parameters.SetValueSlow(PhysicsDebugEffectKeys.WorldViewProj, value);
+                parameters.Set(PhysicsDebugEffectKeys.WorldViewProj, value);
             }
         }
 
@@ -53,11 +53,11 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                return parameters.GetValueSlow(PhysicsDebugEffectKeys.UseUv) > 0.5;
+                return parameters.Get(PhysicsDebugEffectKeys.UseUv) > 0.5;
             }
             set
             {
-                parameters.SetValueSlow(PhysicsDebugEffectKeys.UseUv, value ? 1.0f : 0.0f);
+                parameters.Set(PhysicsDebugEffectKeys.UseUv, value ? 1.0f : 0.0f);
             }
         }
 

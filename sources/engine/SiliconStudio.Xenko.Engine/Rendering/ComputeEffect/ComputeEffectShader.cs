@@ -77,9 +77,9 @@ namespace SiliconStudio.Xenko.Rendering.ComputeEffect
             if (string.IsNullOrEmpty(ShaderSourceName))
                 return;
 
-            EffectInstance.SetPermutationValue(ComputeEffectShaderKeys.ThreadNumbers, ThreadNumbers);
-            EffectInstance.SetPermutationValue(ComputeEffectShaderKeys.ComputeShaderName, ShaderSourceName);
-            Parameters.SetValueSlow(ComputeShaderBaseKeys.ThreadGroupCountGlobal, ThreadGroupCounts);
+            Parameters.Set(ComputeEffectShaderKeys.ThreadNumbers, ThreadNumbers);
+            Parameters.Set(ComputeEffectShaderKeys.ComputeShaderName, ShaderSourceName);
+            Parameters.Set(ComputeShaderBaseKeys.ThreadGroupCountGlobal, ThreadGroupCounts);
 
             if (pipelineStateDirty)
             {
