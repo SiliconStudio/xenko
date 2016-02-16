@@ -819,7 +819,8 @@ namespace SiliconStudio.Assets
                     Assets.Add(item);
                 }
 
-                var dirtyAssets = outputItems.Where(o => o.IsDirty)
+                // Don't delete SourceCodeAssets as their files are handled by the package upgrader
+                var dirtyAssets = outputItems.Where(o => o.IsDirty && !(o.Asset is SourceCodeAsset))
                     .Join(TemporaryAssets, o => o.Id, t => t.Id, (o, t) => t)
                     .ToList();
                 // Dirty assets (except in system package) should be mark as deleted so that are properly saved again later.
@@ -1029,15 +1030,6 @@ namespace SiliconStudio.Assets
             var sourceCodeAsset = asset as SourceCodeAsset;
             if (sourceCodeAsset != null)
             {
-                // Keep text in memory if package upgrading produced custom content
-                if (assetContent != null)
-                {
-                    using (var reader = new StreamReader(new MemoryStream(assetContent)))
-                    {
-                        sourceCodeAsset.Text = reader.ReadToEnd();
-                    }
-                }
-
                 // Use an id generated from the location instead of the default id
                 sourceCodeAsset.Id = SourceCodeAsset.GenerateGuidFromLocation(assetPath);
                 sourceCodeAsset.AbsoluteSourceLocation = assetFullPath;
