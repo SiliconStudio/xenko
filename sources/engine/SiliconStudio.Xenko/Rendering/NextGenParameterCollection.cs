@@ -68,6 +68,13 @@ namespace SiliconStudio.Xenko.Rendering
             var resourceValuesSize = ResourceValues?.Length ?? 0;
             Array.Resize(ref ResourceValues, resourceValuesSize + 1);
             parameterKeyInfos.Add(new ParameterKeyInfo(parameterKey, resourceValuesSize));
+
+            // Initialize default value
+            if (parameterKey.DefaultValueMetadata != null)
+            {
+                ResourceValues[resourceValuesSize] = parameterKey.DefaultValueMetadata.GetDefaultValue();
+            }
+
             return new ResourceParameter<T>(parameterKeyInfos.Count - 1);
         }
 
@@ -399,7 +406,7 @@ namespace SiliconStudio.Xenko.Rendering
             public override void Serialize(ref NextGenParameterCollection parameterCollection, ArchiveMode mode, SerializationStream stream)
             {
                 stream.Serialize(ref parameterCollection.parameterKeyInfos, mode);
-                stream.Serialize(ref parameterCollection.ResourceValues, mode);
+                stream.SerializeExtended(ref parameterCollection.ResourceValues, mode);
                 stream.Serialize(ref parameterCollection.DataValuesSize, mode);
 
                 if (parameterCollection.DataValuesSize > 0)

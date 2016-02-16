@@ -138,7 +138,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var flareRenderTargetInitial = NewScopedRenderTarget2D(halfSizeRenderTarget.Description);
             var flareRenderTarget = NewScopedRenderTarget2D(halfSizeRenderTarget.Description);
 
-            flareArtifactEffect.Parameters.SetValueSlow(FlareArtifactKeys.Count, ZoomOffsetsDistortions.Length);
+            flareArtifactEffect.EffectInstance.SetPermutationValue(FlareArtifactKeys.Count, ZoomOffsetsDistortions.Length);
             flareArtifactEffect.Parameters.SetValueSlow(FlareArtifactShaderKeys.ZoomOffsetsDistortions, ZoomOffsetsDistortions);
             flareArtifactEffect.Parameters.SetValueSlow(FlareArtifactShaderKeys.AberrationStrength, ColorAberrationStrength);
             flareArtifactEffect.Parameters.SetValueSlow(FlareArtifactShaderKeys.ColorAberrations, ColorAberrations);

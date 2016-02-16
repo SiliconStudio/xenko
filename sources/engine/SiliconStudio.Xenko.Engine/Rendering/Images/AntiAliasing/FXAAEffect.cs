@@ -59,8 +59,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
         protected override void PreDrawCore(RenderDrawContext context)
         {
             base.PreDrawCore(context);
-            Parameters.SetValueSlow(GreenAsLumaKey, InputLuminanceInAlpha ? 0 : 1);
-            Parameters.SetValueSlow(QualityKey, Quality);
+            EffectInstance.SetPermutationValue(GreenAsLumaKey, InputLuminanceInAlpha ? 0 : 1);
+            EffectInstance.SetPermutationValue(QualityKey, Quality);
         }
     }
 }

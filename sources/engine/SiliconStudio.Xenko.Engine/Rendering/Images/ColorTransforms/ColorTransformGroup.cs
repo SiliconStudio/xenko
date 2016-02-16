@@ -66,7 +66,8 @@ namespace SiliconStudio.Xenko.Rendering.Images
             transformGroupEffect.Initialize(Context);
 
             // we are adding parameter collections after as transform parameters should override previous parameters
-            transformGroupEffect.ParameterCollections.Add(transformsParameters);
+            // TODO GRAPHICS REFACTOR
+            //transformGroupEffect.ParameterCollections.Add(transformsParameters);
 
             this.transformContext = new ColorTransformContext(this, Context);
         }

@@ -41,6 +41,20 @@ namespace SiliconStudio.Xenko.Rendering
                 Texture3D2,
                 Texture3D3,
             });
+
+            TexturesTexelSize = new ReadOnlyCollection<ParameterKey<Vector2>>(new List<ParameterKey<Vector2>>()
+            {
+                Texture0TexelSize,
+                Texture1TexelSize,
+                Texture2TexelSize,
+                Texture3TexelSize,
+                Texture4TexelSize,
+                Texture5TexelSize,
+                Texture6TexelSize,
+                Texture7TexelSize,
+                Texture8TexelSize,
+                Texture9TexelSize,
+            });
         }
 
         /// <summary>
@@ -57,5 +71,10 @@ namespace SiliconStudio.Xenko.Rendering
         /// The 3d textures used by this class (<see cref="Texture3D0"/>, <see cref="Texture3D1"/>...etc.)
         /// </summary>
         public static readonly IReadOnlyList<ParameterKey<Texture>> Textures3D;
+
+        /// <summary>
+        /// Default textures size used by this class (<see cref="Texture0TexelSize"/>, <see cref="Texture1TexelSize"/>...etc.)
+        /// </summary>
+        public static readonly IReadOnlyList<ParameterKey<Vector2>> TexturesTexelSize;
     }
 }
