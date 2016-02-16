@@ -128,8 +128,37 @@ namespace SiliconStudio.Xenko.Graphics
             }
         }
 
+        private static bool CheckGraphicsPlatform(PlatformType platform, PreferredGraphicsPlatform preferredGraphicsPlatform)
+        {
+            switch (platform)
+            {
+                case PlatformType.Shared:
+                    return false;                
+                case PlatformType.WindowsPhone:
+                case PlatformType.WindowsStore:
+                case PlatformType.Windows10:
+                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11;
+                case PlatformType.Windows:
+                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.Direct3D11 || preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL;
+                case PlatformType.Android:
+                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
+                case PlatformType.iOS:
+                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGLES;
+                case PlatformType.Linux:
+                    return preferredGraphicsPlatform == PreferredGraphicsPlatform.OpenGL;
+                default:
+                    throw new ArgumentOutOfRangeException(nameof(platform), platform, null);
+            }
+        }
+
         public static GraphicsPlatform GetGraphicsPlatform(PlatformType platform, PreferredGraphicsPlatform preferredGraphicsPlatform)
         {
+            //revert to default if platforms are not compatible
+            if (!CheckGraphicsPlatform(platform, preferredGraphicsPlatform))
+            {
+                return GetDefaultGraphicsPlatform(platform);
+            }
+
             GraphicsPlatform graphicsPlatform;
             switch (preferredGraphicsPlatform)
             {
