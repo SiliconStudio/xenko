@@ -63,8 +63,11 @@ namespace SiliconStudio.Xenko.Input
 
         void Mouse_Move(object sender, MouseMoveEventArgs e)
         {
+            var previousMousePosition = CurrentMousePosition;
             CurrentMousePosition = new Vector2(e.X / ControlWidth, e.Y / ControlHeight);
-            
+
+            CurrentMouseDelta += CurrentMousePosition - previousMousePosition;
+
             // trigger touch move events
             foreach (MouseButton button in Enum.GetValues(typeof(MouseButton)))
             {
