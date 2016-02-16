@@ -9,7 +9,7 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Rendering
 {
-    public class NextGenRenderSystem
+    public partial class NextGenRenderSystem
     {
         // Public registered object management
         public TrackingHashSet<RenderObject> RenderObjects = new TrackingHashSet<RenderObject>();
