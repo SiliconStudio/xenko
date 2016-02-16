@@ -10,10 +10,6 @@ using SiliconStudio.Xenko.Engine;
 using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Shadows;
 using SiliconStudio.Xenko.Shaders;
-using ILightShadowMapRenderer = SiliconStudio.Xenko.Rendering.Shadows.NextGen.ILightShadowMapRenderer;
-using LightDirectionalShadowMapRenderer = SiliconStudio.Xenko.Rendering.Shadows.NextGen.LightDirectionalShadowMapRenderer;
-using LightSpotShadowMapRenderer = SiliconStudio.Xenko.Rendering.Shadows.NextGen.LightSpotShadowMapRenderer;
-using ShadowMapRenderer = SiliconStudio.Xenko.Rendering.Shadows.NextGen.ShadowMapRenderer;
 
 namespace SiliconStudio.Xenko.Rendering.Lights
 {

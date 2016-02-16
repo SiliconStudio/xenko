@@ -5,18 +5,28 @@ using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
+    public interface ILightShadowRenderer
+    {
+        /// <summary>
+        /// Reset the state of this instance before calling Render method multiple times for different shadow map textures. See remarks.
+        /// </summary>
+        /// <remarks>
+        /// This method allows the implementation to prepare some internal states before being rendered.
+        /// </remarks>
+        void Reset();
+    }
+
     /// <summary>
     /// Interface to render a shadow map.
     /// </summary>
-    // TODO GRAPHICS REFACTOR remove temporary duplicate interface
-    public interface ILightShadowMapRenderer : Shadows.ILightShadowMapRenderer
+    public interface ILightShadowMapRenderer : ILightShadowRenderer
     {
-        //LightShadowType GetShadowType(LightShadowMap lightShadowMap);
+        LightShadowType GetShadowType(LightShadowMap lightShadowMap);
 
-        //ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
-        
+        ILightShadowMapShaderGroupData CreateShaderGroupData(string compositionKey, LightShadowType shadowType, int maxLightCount);
+
         void Extract(RenderContext context, ShadowMapRenderer shadowMapRenderer, LightShadowMapTexture lightShadowMap);
 
         void GetCascadeViewParameters(LightShadowMapTexture shadowMapTexture, int cascadeIndex, out Matrix view, out Matrix projection);

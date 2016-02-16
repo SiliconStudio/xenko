@@ -296,7 +296,6 @@
     <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\SubRenderFeature.cs" />
     <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
-    <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
     <Compile Include="Rendering\Utils\Picking.cs">
       <DependentUpon>Picking.xkfx</DependentUpon>
       <AutoGen>True</AutoGen>

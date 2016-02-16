@@ -10,7 +10,7 @@ using SiliconStudio.Xenko.Rendering.Images;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     /// <summary>
     /// Renders a shadow map from a directional light.

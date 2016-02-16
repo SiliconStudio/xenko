@@ -14,7 +14,7 @@ using SiliconStudio.Xenko.Graphics;
 using SiliconStudio.Xenko.Rendering.Lights;
 using SiliconStudio.Xenko.Shaders;
 
-namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     /// <summary>
     /// Handles rendering of shadow map casters.
