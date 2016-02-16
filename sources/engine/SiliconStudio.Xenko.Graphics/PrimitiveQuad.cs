@@ -13,7 +13,12 @@ namespace SiliconStudio.Xenko.Graphics
     /// </summary>
     public class PrimitiveQuad : ComponentBase
     {
-        private readonly Effect simpleEffect;
+        /// <summary>
+        /// The pipeline state.
+        /// </summary>
+        private readonly MutablePipelineState pipelineState = new MutablePipelineState();
+
+        private readonly EffectInstance simpleEffect;
         private readonly SharedData sharedData;
         private const int QuadCount = 3;
 
@@ -33,6 +38,15 @@ namespace SiliconStudio.Xenko.Graphics
             parameters = new ParameterCollection();
             parameters.Set(SpriteBaseKeys.MatrixTransform, Matrix.Identity);
             sharedData = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerDevice, "PrimitiveQuad::VertexBuffer", d => new SharedData(GraphicsDevice));
+
+            simpleEffect = new EffectInstance(new Effect(GraphicsDevice, SpriteEffect.Bytecode));
+            simpleEffect.UpdateEffect(graphicsDevice);
+
+            pipelineState.State.SetDefaults();
+            pipelineState.State.InputElements = VertexDeclaration.CreateInputElements();
+            pipelineState.State.PrimitiveType = PrimitiveType;
+            pipelineState.State.RootSignature = simpleEffect.RootSignature;
+            pipelineState.State.EffectBytecode = simpleEffect.Effect.Bytecode;
         }
 
         /// <summary>
@@ -86,11 +100,15 @@ namespace SiliconStudio.Xenko.Graphics
         public void Draw(CommandList commandList, Texture texture, SamplerState samplerState, Color4 color, bool applyEffectStates = false)
         {
             // Make sure that we are using our vertex shader
-            parameters.Set(SpriteEffectKeys.Color, color);
-            parameters.Set(TexturingKeys.Texture0, texture);
-            parameters.Set(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
-            //simpleEffect.Apply(GraphicsDevice, parameterCollectionGroup, applyEffectStates);
-            throw new InvalidOperationException();
+            simpleEffect.Parameters.SetValueSlow(SpriteEffectKeys.Color, color);
+            simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Texture0, texture);
+            simpleEffect.Parameters.SetResourceSlow(TexturingKeys.Sampler, samplerState ?? GraphicsDevice.SamplerStates.LinearClamp);
+            simpleEffect.Apply(commandList);
+
+            pipelineState.State.Output.CaptureState(commandList);
+            pipelineState.Update(GraphicsDevice);
+            commandList.SetPipelineState(pipelineState.CurrentState);
+
             Draw(commandList);
 
             // TODO ADD QUICK UNBIND FOR SRV

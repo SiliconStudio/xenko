@@ -123,7 +123,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, worldViewProjection);
             simpleEffect.Apply(GraphicsCommandList);
-            geometry.Draw(GraphicsCommandList);
+            geometry.Draw(GraphicsCommandList, simpleEffect);
         }
 
         public static void Main()

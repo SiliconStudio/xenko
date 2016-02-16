@@ -158,7 +158,7 @@ namespace SiliconStudio.Xenko.Graphics.Tests
                 // Draw the primitive using BasicEffect
                 simpleEffect.Parameters.SetValueSlow(SpriteBaseKeys.MatrixTransform, Matrix.Multiply(world, Matrix.Multiply(view, projection)));
                 simpleEffect.Apply(GraphicsCommandList);
-                primitive.Draw(GraphicsCommandList);
+                primitive.Draw(GraphicsCommandList, simpleEffect);
             }
         }
         
