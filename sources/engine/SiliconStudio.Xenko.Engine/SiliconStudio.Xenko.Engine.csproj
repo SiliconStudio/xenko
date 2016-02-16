@@ -197,6 +197,104 @@
     </Compile>
     <Compile Include="Rendering\Materials\MaterialFeature.cs" />
     <Compile Include="Rendering\Materials\MaterialTransparencyBlendFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Effects\GBuffer.cs">
+      <DependentUpon>GBuffer.xkfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Effects\GBufferShader.cs">
+      <DependentUpon>GBufferShader.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Effects\TestEffect.cs">
+      <DependentUpon>TestEffect.xkfx</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Effects\TestShader.cs">
+      <DependentUpon>TestShader.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Effects\WhiteAmbient.cs">
+      <DependentUpon>WhiteAmbient.xksl</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Background\BackgroundProcessor.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Background\BackgroundRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Background\RenderBackground.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\ConstantBufferOffsetReference.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\DataArrayInfo.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Editor\PickingRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\EffectDescriptorSetReference.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\EffectPermutationSlot.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\EffectValidator.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\INextGenEntityComponentRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Lights\ForwardLightingRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Lights\LightAmbientRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Lights\LightComponentCollection.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Lights\LightComponentCollectionGroup.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Lights\LightDirectionalGroupRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Lights\LightGroupRendererBase.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Lights\LightPointGroupRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Lights\LightShaderGroup.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Lights\LightSkyboxRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Lights\LightSpotlGroupRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Materials\MaterialRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\MeshRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\NextGenEntityComponentRendererBase.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\NextGenEntityComponentRendererBatch.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\NextGenModelProcessor.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\NextGenRenderContext.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\NextGenRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\NextGenRenderSystem.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Nodes\EffectObjectNode.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Nodes\ObjectNode.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Nodes\RenderNode.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Nodes\StaticObjectNodeReference.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Nodes\ViewNodeReference.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Nodes\ViewObjectNode.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Properties.cs">
+      <DependentUpon>Properties.tt</DependentUpon>
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+    </Compile>
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\RenderEffect.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\RenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\RenderModel.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\RenderStage.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\RenderSystemResourceGroupLayout.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\RenderView.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\RenderViewFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\RenderViewFeatureStage.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\RootEffectRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\RootRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Shadows\ILightShadowMapRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Shadows\LightDirectionalShadowMapRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Shadows\LightShadowMapRendererBase.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Shadows\LightSpotShadowMapRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Shadows\ShadowMapCascadeInfo.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Shadows\ShadowMapCascadeLevel.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Shadows\ShadowMapReceiverInfo.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Shadows\ShadowMapReceiverVsmInfo.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Shadows\ShadowMapRenderer.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Shadows\ShadowMapRenderView.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\SkinningRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Skyboxes\RenderSkybox.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Skyboxes\SkyboxProcessor.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Skyboxes\SkyboxRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Sprites\NextGenSpriteProcessor.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Sprites\RenderSprite.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Sprites\SpriteRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\SubRenderFeature.cs" />
+    <Compile Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\TransformRenderFeature.cs" />
     <Compile Include="Rendering\RenderDrawContext.cs" />
     <Compile Include="Rendering\Shadows\ILightShadowMapRenderer.cs" />
     <Compile Include="Rendering\Utils\Picking.cs">
@@ -244,7 +342,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DesignTime>True</DesignTime>
     </Compile>
-    <Compile Include="Rendering\Lights\LightComponentCollectionGroup.cs" />
     <Compile Include="Rendering\Lights\LightPointGroup.cs">
       <DependentUpon>LightPointGroup.xksl</DependentUpon>
       <AutoGen>True</AutoGen>
@@ -1578,7 +1675,6 @@
     <Compile Include="Rendering\Lights\LightAmbient.cs" />
     <Compile Include="Rendering\Colors\ColorRgbProvider.cs" />
     <Compile Include="Engine\LightComponent.cs" />
-    <Compile Include="Rendering\Lights\LightComponentCollection.cs" />
     <Compile Include="Rendering\Lights\LightDirectional.cs" />
     <Compile Include="Rendering\Lights\LightDirectionalGroup.cs">
       <DependentUpon>LightDirectionalGroup.xksl</DependentUpon>
@@ -3276,6 +3372,26 @@
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>MaterialVertexStream.cs</LastGenOutput>
     </None>
+    <None Include="..\SiliconStudio.Xenko.Engine.NextGen\Effects\GBuffer.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBuffer.cs</LastGenOutput>
+    </None>
+    <None Include="..\SiliconStudio.Xenko.Engine.NextGen\Effects\GBufferShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>GBufferShader.cs</LastGenOutput>
+    </None>
+    <None Include="..\SiliconStudio.Xenko.Engine.NextGen\Effects\TestEffect.xkfx">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>TestEffect.cs</LastGenOutput>
+    </None>
+    <None Include="..\SiliconStudio.Xenko.Engine.NextGen\Effects\TestShader.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>TestShader.cs</LastGenOutput>
+    </None>
+    <None Include="..\SiliconStudio.Xenko.Engine.NextGen\Effects\WhiteAmbient.xksl">
+      <Generator>XenkoShaderKeyGenerator</Generator>
+      <LastGenOutput>WhiteAmbient.cs</LastGenOutput>
+    </None>
     <None Include="Rendering\Utils\Picking.xkfx">
       <Generator>XenkoShaderKeyGenerator</Generator>
       <LastGenOutput>Picking.cs</LastGenOutput>
@@ -3594,6 +3710,12 @@
       <Name>SiliconStudio.Xenko</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\SiliconStudio.Xenko.Engine.NextGen\Rendering\Properties.tt">
+      <Generator>TextTemplatingFileGenerator</Generator>
+      <LastGenOutput>Properties.cs</LastGenOutput>
+    </Content>
   </ItemGroup>
   <Choose>
     <When Condition="'$(XenkoEffectCompiler)' == 'true'">
