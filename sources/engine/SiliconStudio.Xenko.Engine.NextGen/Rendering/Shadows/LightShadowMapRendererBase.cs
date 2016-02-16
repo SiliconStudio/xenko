@@ -5,7 +5,7 @@ using System;
 using SiliconStudio.Core.Mathematics;
 using SiliconStudio.Xenko.Rendering.Lights;
 
-namespace SiliconStudio.Xenko.Rendering.Shadows.NextGen
+namespace SiliconStudio.Xenko.Rendering.Shadows
 {
     public abstract class LightShadowMapRendererBase : ILightShadowMapRenderer
     {
