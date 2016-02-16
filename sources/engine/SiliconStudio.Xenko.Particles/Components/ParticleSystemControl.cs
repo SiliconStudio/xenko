@@ -11,8 +11,18 @@ namespace SiliconStudio.Xenko.Particles.Components
     [DataContract("ParticleSystemControl")]
     public class ParticleSystemControl
     {
+        [DataMemberIgnore]
+        private StateControl oldControl = StateControl.Play;
+
+        [DataMemberIgnore]
+        private float resetSeconds = 5f;
+
+        [DataMemberIgnore]
+        private float currentElapsedTime;
+
+
         /// <summary>
-        /// Resets the <see cref="ParticleSystem"/> every X seconds, starting the simulation over again.
+        /// Resets the <see cref="ParticleSystem"/> every X seconds, starting the simulation over again. Setting it to 0 means the particle system won't be resetted
         /// </summary>
         /// <userdoc>
         /// Resets the particle system every X seconds, starting the simulation over again. Setting it to 0 means the particle system won't be resetted
@@ -36,19 +46,7 @@ namespace SiliconStudio.Xenko.Particles.Components
         /// State control used to Play, Pause or Stop the particle system
         /// </userdoc>
         [DataMember(30)]
-        public StateControl Control = StateControl.Play;
-
-        [DataMemberIgnore]
-        private StateControl oldControl = StateControl.Play;
-
-        [DataMemberIgnore]
-        public float resetSeconds = 5f;
-
-        [DataMemberIgnore]
-        private float totalElapsedTime = 0f;
-
-        [DataMemberIgnore]
-        private float currentElapsedTime = 0f;
+        public StateControl Control { get; set; } = StateControl.Play;
 
         /// <summary>
         /// Update the control with delta time. It will pause or restart the <see cref="ParticleSystem"/> if necessary
@@ -82,7 +80,6 @@ namespace SiliconStudio.Xenko.Particles.Components
             if (Control != StateControl.Play)
                 return;
 
-            totalElapsedTime += dt;
             currentElapsedTime += dt;
 
             if (resetSeconds <= 0)

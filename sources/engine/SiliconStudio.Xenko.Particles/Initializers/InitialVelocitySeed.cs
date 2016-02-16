@@ -59,7 +59,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
                 i = (i + 1) % maxCapacity;
             }
         }
-
+        
         [DataMember(8)]
         [Display("Seed offset")]
         public UInt32 SeedOffset { get; set; } = 0;
@@ -72,7 +72,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [Display("Velocity max")]
         public Vector3 VelocityMax { get; set; } = new Vector3(1, 1, 1);
         
-        public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
             debugDrawShape = DebugDrawShape.Cube;
 

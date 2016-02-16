@@ -8,6 +8,9 @@ using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
+    /// <summary>
+    /// Animates the texture coordinates starting with one rectangle and scrolling/zooming it to an ending rectangle over the particle's life
+    /// </summary>
     [DataContract("UVBuilderScroll")]
     [Display("Scrolling")]
     public class UVBuilderScroll : UVBuilder
@@ -32,6 +35,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         [Display("End frame")]
         public Vector4 EndFrame { get; set; } = new Vector4(0, 1, 1, 2);
 
+        /// <inheritdoc />
         public unsafe override void BuildUVCoordinates(ParticleVertexBuilder vertexBuilder, ParticleSorter sorter, AttributeDescription texCoordsDescription)
         {
             var lifeField = sorter.GetField(ParticleFields.RemainingLife);

@@ -29,8 +29,15 @@ namespace SiliconStudio.Xenko.Particles
             return new Particle(int.MaxValue);
         }
 #else
+        /// <summary>
+        /// Pointer to the particle data block
+        /// </summary>
         public readonly IntPtr Pointer;
 
+        /// <summary>
+        /// Creates a particle from a raw pointer, assuming the pointer references valid particle data block
+        /// </summary>
+        /// <param name="pointer"></param>
         public Particle(IntPtr pointer)
         {
             Pointer = pointer;
@@ -47,23 +54,6 @@ namespace SiliconStudio.Xenko.Particles
 #endif
 
         #region Accessors
-        /*
-
-        /// <summary>
-        /// Gets the particle's field value. However, you should try to use the indexer wherever possible.
-        /// </summary>
-        /// <typeparam name="T">The field type.</typeparam>
-        /// <param name="accessor">The field accessor</param>
-        /// <returns>The field value.</returns>
-        public T Get<T>(ParticleFieldAccessor accessor) where T : struct
-        {
-#if PARTICLES_SOA
-            return Utilities.Read<T>(accessor[Index]);
-#else
-            return Utilities.Read<T>(Pointer + accessor);
-#endif
-        }
-        */
 
         /// <summary>
         /// Gets the particle's field value. However, you should try to use the indexer wherever possible.

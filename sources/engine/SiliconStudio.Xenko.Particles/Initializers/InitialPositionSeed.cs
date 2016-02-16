@@ -16,6 +16,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         {
             RequiredFields.Add(ParticleFields.Position);
             RequiredFields.Add(ParticleFields.RandomSeed);
+
             InheritLocation = InheritLocation.Position | InheritLocation.Rotation | InheritLocation.Scale;
         }
 
@@ -73,7 +74,7 @@ namespace SiliconStudio.Xenko.Particles.Initializers
         [Display("Position max")]
         public Vector3 PositionMax { get; set; } = new Vector3(1, 1, 1);
  
-        public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
             debugDrawShape = DebugDrawShape.Cube;
 

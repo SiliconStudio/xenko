@@ -29,7 +29,7 @@ namespace SiliconStudio.Xenko.Particles.Tests
 
             emitter.Update(0.016f, dummySystem);
 
-            Assert.That(emitter.pool.LivingParticles, Is.EqualTo(5));
+            Assert.That(emitter.LivingParticles, Is.EqualTo(5));
         }
     }
 }

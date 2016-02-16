@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+﻿// Copyright (c) 2014-2016 Silicon Studio Corp. (http://siliconstudio.co.jp)
 // This file is distributed under GPL v3. See LICENSE.md for details.
 
 using System;
@@ -16,10 +16,24 @@ using SiliconStudio.Xenko.Shaders;
 
 namespace SiliconStudio.Xenko.Particles.Materials
 {
+    /// <summary>
+    /// <see cref="ParticleMaterialComputeColor"/> uses a <see cref="IComputeColor"/> tree to calculate the pixel's emissive value
+    /// </summary>
     [DataContract("ParticleMaterialComputeColor")]
     [Display("DynamicEmissive")]
     public class ParticleMaterialComputeColor : ParticleMaterialSimple
     {
+        [DataMemberIgnore]
+        private ShaderGeneratorContext shaderGeneratorContext;
+
+        // TODO Part of the graphics improvement XK-3052
+        private int shadersUpdateCounter;
+
+        // TODO Part of the graphics improvement XK-3052
+        private ShaderSource shaderSource;
+
+
+
         [DataMemberIgnore]
         protected override string EffectName { get; set; } = "ParticleEffect";
 
@@ -41,7 +55,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(200)]
         [Display("UV coords")]
-        public UVBuilder UVBuilder;
+        public UVBuilder UVBuilder { get; set; }
 
         /// <summary>
         /// Forces the creation of texture coordinates as vertex attribute
@@ -51,26 +65,31 @@ namespace SiliconStudio.Xenko.Particles.Materials
         /// </userdoc>
         [DataMember(300)]
         [Display("Force texcoords")]
-        public bool ForceTexCoords = false;
+        public bool ForceTexCoords { get; set; } = false;
 
-        [DataMemberIgnore]
-        private ShaderGeneratorContext shaderGeneratorContext;
 
+
+        /// <inheritdoc />
         protected override void InitializeCore(RenderContext context)
         {
             base.InitializeCore(context);
 
-            UpdateShaders(context);
+            UpdateShaders(context.GraphicsDevice);
         }
 
-        private int shadersUpdateCounter;
-        private void UpdateShaders(RenderContext context)
+        /// <summary>
+        /// Polls the shader generator if the shader code has changed and has to be reloaded
+        /// </summary>
+        /// <param name="graphicsDevice">The current <see cref="GraphicsDevice"/></param>
+        private void UpdateShaders(GraphicsDevice graphicsDevice)
         {
-            // TODO Don't do this every frame!!! <- Propagate changes
+            // TODO Part of the graphics improvement XK-3052
+            // Don't do this every frame, we have to propagate changes better
             if (--shadersUpdateCounter > 0)
                 return;
             shadersUpdateCounter = 10;
 
+            // TODO Part of the graphics improvement XK-3052
             // Weird bug? If the shaderGeneratorContext.Parameters stay the same the particles disappear
             if (shaderGeneratorContext != null)
             {
@@ -80,7 +99,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
             if (shaderGeneratorContext == null)
             {
-                shaderGeneratorContext = new ShaderGeneratorContext(context.GraphicsDevice);
+                shaderGeneratorContext = new ShaderGeneratorContext(graphicsDevice);
                 ParameterCollections.Add(shaderGeneratorContext.Parameters);
             }
 
@@ -89,7 +108,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
             if (ComputeColor != null)
             {
                 // Don't forget to set the proper color space!
-                shaderGeneratorContext.ColorSpace = context.GraphicsDevice.ColorSpace;
+                shaderGeneratorContext.ColorSpace = graphicsDevice.ColorSpace;
 
                 var shaderBaseColor = ComputeColor.GenerateShaderSource(shaderGeneratorContext, new MaterialComputeColorKeys(ParticleBaseKeys.EmissiveMap, ParticleBaseKeys.EmissiveValue, Color.White));
 
@@ -104,72 +123,76 @@ namespace SiliconStudio.Xenko.Particles.Materials
             }
         }
 
-        private ShaderSource shaderSource;
-
+        /// <inheritdoc />
         public override void UpdateVertexBuilder(ParticleVertexBuilder vertexBuilder)
         {
             base.UpdateVertexBuilder(vertexBuilder);
 
-            // The arguments we need are in the GenericArguments, which is again just an array of strings
-            // We could search it element by element, but in the end getting the entire string and searching it instead is the same
-
-            var code = shaderSource?.ToString();
-
-            if (code?.Contains("COLOR0") ?? false)
+            // TODO Part of the graphics improvement XK-3052
+            //  Ideally, the whole code here should be extracting information from the ShaderBytecode instead as it is quite unreliable and hacky to extract semantics with text matching.
+            //  The arguments we need are in the GenericArguments, which is again just an array of strings
+            //  We could search it element by element, but in the end getting the entire string and searching it instead is the same
             {
-                vertexBuilder.AddVertexElement(ParticleVertexElements.Color);                
-            }
+                var code = shaderSource?.ToString();
 
-            var coordIndex = code?.IndexOf("TEXCOORD", 0, StringComparison.Ordinal) ?? -1;
-
-            if (coordIndex < 0)
-            {
-                // If there is no explicit texture coordinate usage, but we can still force it
-                if (ForceTexCoords)
+                if (code?.Contains("COLOR0") ?? false)
                 {
-                    vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[0]);
-                }
-            }
-
-            while (coordIndex >= 0)
-            {
-                var semanticIndex = 0;
-                var subStr = code.Substring(coordIndex + 8);
-
-                if (int.TryParse(Regex.Match(subStr, @"\d+").Value, out semanticIndex))
-                {
-                    semanticIndex = (semanticIndex <  0) ?  0 : semanticIndex;
-                    semanticIndex = (semanticIndex > 15) ? 15 : semanticIndex;
-
-                    vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[semanticIndex]);
+                    vertexBuilder.AddVertexElement(ParticleVertexElements.Color);
                 }
 
-                coordIndex = code.IndexOf("TEXCOORD", coordIndex + 1);
-            }
+                var coordIndex = code?.IndexOf("TEXCOORD", 0, StringComparison.Ordinal) ?? -1;
+
+                if (coordIndex < 0)
+                {
+                    // If there is no explicit texture coordinate usage, but we can still force it
+                    if (ForceTexCoords)
+                    {
+                        vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[0]);
+                    }
+                }
+
+                while (coordIndex >= 0)
+                {
+                    var semanticIndex = 0;
+                    var subStr = code.Substring(coordIndex + 8);
+
+                    if (int.TryParse(Regex.Match(subStr, @"\d+").Value, out semanticIndex))
+                    {
+                        semanticIndex = (semanticIndex < 0) ? 0 : semanticIndex;
+                        semanticIndex = (semanticIndex > 15) ? 15 : semanticIndex;
+
+                        vertexBuilder.AddVertexElement(ParticleVertexElements.TexCoord[semanticIndex]);
+                    }
+
+                    coordIndex = code.IndexOf("TEXCOORD", coordIndex + 1);
+                }
+            } // Part of the graphics improvement XK-3052
+
         }
 
+        /// <inheritdoc />
         public override void Setup(GraphicsDevice graphicsDevice, RenderContext context, Matrix viewMatrix, Matrix projMatrix, Color4 color)
         {
             base.Setup(graphicsDevice, context, viewMatrix, projMatrix, color);
             
-            UpdateShaders(context);
+            UpdateShaders(graphicsDevice);
         }
 
-
+        /// <inheritdoc />
         public unsafe override void PatchVertexBuffer(ParticleVertexBuilder vertexBuilder, Vector3 invViewX, Vector3 invViewY, ParticleSorter sorter)
         {
-            // If you want, you can integrate the base builder here and not call it. It should result in slight speed up
+            // If you want, you can implement the base builder here and not call it. It should result in slight speed up
             base.PatchVertexBuffer(vertexBuilder, invViewX, invViewY, sorter);
 
+            //  The UV Builder, if present, animates the basic (0, 0, 1, 1) uv coordinates of each billboard
             UVBuilder?.BuildUVCoordinates(vertexBuilder, sorter, vertexBuilder.DefaultTexCoords);
-
-            // TODO Copy Texture fields
+            vertexBuilder.RestartBuffer();
 
             // If the particles have color field, the base class should have already passed the information
             if (HasColorField)
                 return;
 
-            // If there is no color stream we don't need to fill anything
+            // If the particles don't have color field but there is no color stream either we don't need to fill anything
             var colAttribute = vertexBuilder.GetAccessor(VertexAttributes.Color);
             if (colAttribute.Size <= 0)
                 return;
@@ -177,7 +200,6 @@ namespace SiliconStudio.Xenko.Particles.Materials
             // Since the particles don't have their own color field, set the default color to white
             var color = 0xFFFFFFFF;
 
-            vertexBuilder.RestartBuffer();
             foreach (var particle in sorter)
             {
                 vertexBuilder.SetAttributePerParticle(colAttribute, (IntPtr)(&color));

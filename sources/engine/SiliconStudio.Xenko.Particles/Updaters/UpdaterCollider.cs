@@ -83,7 +83,6 @@ namespace SiliconStudio.Xenko.Particles.Modules
 
             var posField = pool.GetField(ParticleFields.Position);
             var velField = pool.GetField(ParticleFields.Velocity);
-//          var colField = pool.GetField(ParticleFields.Color);
             var lifeField = pool.GetField(ParticleFields.Life);
 
             foreach (var particle in pool)
@@ -134,7 +133,7 @@ namespace SiliconStudio.Xenko.Particles.Modules
         [Display("Shape")]
         public FieldShape FieldShape { get; set; }
 
-        public override bool TryGetDebugDrawShape(ref DebugDrawShape debugDrawShape, ref Vector3 translation, ref Quaternion rotation, ref Vector3 scale)
+        public override bool TryGetDebugDrawShape(out DebugDrawShape debugDrawShape, out Vector3 translation, out Quaternion rotation, out Vector3 scale)
         {
             rotation = new Quaternion(0, 0, 0, 1);
             scale = new Vector3(1, 1, 1);

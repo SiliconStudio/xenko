@@ -116,7 +116,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
         {
             if (emitter != null)
             {
-                emitter.Dirty = true;
+                emitter.DirtyParticlePool = true;
             }
         }
 
@@ -151,7 +151,7 @@ namespace SiliconStudio.Xenko.Particles.Spawners
             {
                 this.emitter = emitter;
                 randomSeed = emitter.RandomSeedGenerator.GetNextSeed();
-                emitter.Dirty = true;
+                emitter.DirtyParticlePool = true;
             }
 
             var remainingTime = dt;
