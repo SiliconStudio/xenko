@@ -62,14 +62,16 @@ namespace SiliconStudio.Xenko.Rendering.Images
                 // TODO: Make this gone with graphics refactor :)
                 if (value != null && @operator != null && @operator != value)
                 {
-                    foreach (var parameter in @operator.Parameters.InternalValues)
-                    {
-                        var internalValue = value.Parameters.GetInternalValue(parameter.Key);
-                        if (internalValue != null)
-                        {
-                            internalValue.Counter = parameter.Value.Counter + 1;
-                        }
-                    }
+                    // TODO GRAPHICS REFACTOR
+                    throw new NotImplementedException();
+                    //foreach (var parameter in @operator.Parameters.InternalValues)
+                    //{
+                    //    var internalValue = value.Parameters.GetInternalValue(parameter.Key);
+                    //    if (internalValue != null)
+                    //    {
+                    //        internalValue.Counter = parameter.Value.Counter + 1;
+                    //    }
+                    //}
                 }
 
                 @operator = value;
@@ -86,11 +88,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ToneMapKeys.AutoKey);
+                return Parameters.GetValueSlow(ToneMapKeys.AutoKey);
             }
             set
             {
-                Parameters.Set(ToneMapKeys.AutoKey, value);
+                Parameters.SetValueSlow(ToneMapKeys.AutoKey, value);
             }
         }
 
@@ -104,11 +106,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ToneMapShaderKeys.KeyValue);
+                return Parameters.GetValueSlow(ToneMapShaderKeys.KeyValue);
             }
             set
             {
-                Parameters.Set(ToneMapShaderKeys.KeyValue, value);
+                Parameters.SetValueSlow(ToneMapShaderKeys.KeyValue, value);
             }
         }
 
@@ -122,11 +124,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ToneMapKeys.AutoExposure);
+                return Parameters.GetValueSlow(ToneMapKeys.AutoExposure);
             }
             set
             {
-                Parameters.Set(ToneMapKeys.AutoExposure, value);
+                Parameters.SetValueSlow(ToneMapKeys.AutoExposure, value);
             }
         }
 
@@ -169,11 +171,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ToneMapShaderKeys.LuminanceLocalFactor);
+                return Parameters.GetValueSlow(ToneMapShaderKeys.LuminanceLocalFactor);
             }
             set
             {
-                Parameters.Set(ToneMapShaderKeys.LuminanceLocalFactor, value);
+                Parameters.SetValueSlow(ToneMapShaderKeys.LuminanceLocalFactor, value);
             }
         }
 
@@ -187,11 +189,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ToneMapShaderKeys.Contrast);
+                return Parameters.GetValueSlow(ToneMapShaderKeys.Contrast);
             }
             set
             {
-                Parameters.Set(ToneMapShaderKeys.Contrast, value);
+                Parameters.SetValueSlow(ToneMapShaderKeys.Contrast, value);
             }
         }
 
@@ -205,11 +207,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ToneMapShaderKeys.Brightness);
+                return Parameters.GetValueSlow(ToneMapShaderKeys.Brightness);
             }
             set
             {
-                Parameters.Set(ToneMapShaderKeys.Brightness, value);
+                Parameters.SetValueSlow(ToneMapShaderKeys.Brightness, value);
             }
         }
 
@@ -226,7 +228,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
             var elapsedTime = timer.Elapsed;
             timer.Restart();
 
-            var luminanceResult = context.SharedParameters.Get(LuminanceEffect.LuminanceResult);
+            var luminanceResult = context.SharedParameters.GetValueSlow(LuminanceEffect.LuminanceResult);
 
             // Get the average luminance
             float adaptedLum = luminanceResult.AverageLuminance;
@@ -245,24 +247,26 @@ namespace SiliconStudio.Xenko.Rendering.Images
             }
 
             // Setup parameters
-            Parameters.Set(ToneMapShaderKeys.LuminanceTexture, luminanceResult.LocalTexture);
-            Parameters.Set(ToneMapShaderKeys.LuminanceAverageGlobal, (float)Math.Log(adaptedLum, 2));
-            Parameters.Set(ToneMapShaderKeys.Exposure, (float)Math.Pow(2.0, Exposure));
+            Parameters.SetResourceSlow(ToneMapShaderKeys.LuminanceTexture, luminanceResult.LocalTexture);
+            Parameters.SetValueSlow(ToneMapShaderKeys.LuminanceAverageGlobal, (float)Math.Log(adaptedLum, 2));
+            Parameters.SetValueSlow(ToneMapShaderKeys.Exposure, (float)Math.Pow(2.0, Exposure));
 
             // Update operator parameters
             Operator.UpdateParameters(context);
 
+            // TODO GRAPHICS REFACTOR
+            throw new NotImplementedException();
             // Copy sub parameters from composition to this transform
-            foreach (var key in Operator.Parameters.Keys)
-            {
-                ParameterKey tonemapKey;
-                if (!tonemapKeys.TryGetValue(key, out tonemapKey))
-                {
-                    tonemapKey = key.ComposeWith("ToneMapOperator");
-                    tonemapKeys.Add(key, tonemapKey);
-                }
-                Operator.Parameters.CopySharedTo(key, tonemapKey, Parameters);
-            }
+            //foreach (var key in Operator.Parameters.Keys)
+            //{
+            //    ParameterKey tonemapKey;
+            //    if (!tonemapKeys.TryGetValue(key, out tonemapKey))
+            //    {
+            //        tonemapKey = key.ComposeWith("ToneMapOperator");
+            //        tonemapKeys.Add(key, tonemapKey);
+            //    }
+            //    Operator.Parameters.CopySharedTo(key, tonemapKey, Parameters);
+            //}
         }
     }
 }

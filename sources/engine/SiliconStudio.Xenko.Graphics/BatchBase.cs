@@ -94,8 +94,6 @@ namespace SiliconStudio.Xenko.Graphics
         private readonly int vertexStructSize;
         private readonly int indexStructSize;
 
-        private readonly ParameterCollection parameters;
-
         /// <summary>
         /// Boolean indicating if we are between a call of Begin and End.
         /// </summary>
@@ -138,8 +136,6 @@ namespace SiliconStudio.Xenko.Graphics
             indexStructSize = indexSize;
             vertexStructSize = vertexDeclaration.CalculateSize();
 
-            parameters = new ParameterCollection();
-            
             // Creates the vertex buffer (shared by within a device context).
             ResourceContext = GraphicsDevice.GetOrCreateSharedData(GraphicsDeviceSharedDataType.PerContext, resourceBufferInfo.ResourceKey, d => new DeviceResourceContext(GraphicsDevice, DefaultEffect.Effect, vertexDeclaration, resourceBufferInfo, indexStructSize));
         }

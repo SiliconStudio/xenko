@@ -64,14 +64,14 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// Optional shared parameters. This list must be setup before calling <see cref="Initialize"/>.
         /// </summary>
         [DataMemberIgnore]
-        public List<ParameterCollection> SharedParameterCollections { get { throw new InvalidOperationException(); } }
+        public List<NextGenParameterCollection> SharedParameterCollections { get { throw new InvalidOperationException(); } }
 
         /// <summary>
         /// Gets the parameter collections used by this effect.
         /// </summary>
         /// <value>The parameter collections.</value>
         [DataMemberIgnore]
-        public List<ParameterCollection> ParameterCollections
+        public List<NextGenParameterCollection> ParameterCollections
         {
             get
             {

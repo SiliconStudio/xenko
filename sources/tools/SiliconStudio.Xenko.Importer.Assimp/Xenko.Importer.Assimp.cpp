@@ -1049,7 +1049,7 @@ private:
 		hasSpecPower = (AI_SUCCESS == pMaterial->Get(AI_MATKEY_SHININESS, specPower) && specPower > 0);
 		if(pMaterial->Get(AI_MATKEY_OPACITY, opacity) == AI_SUCCESS && opacity < 1.0)
 		{
-			finalMaterial->Parameters->Set(MaterialKeys::HasTransparency, true);
+			//finalMaterial->Parameters->Set(MaterialKeys::HasTransparency, true);
 			hasOpacity = true;
 		}
 
@@ -1368,11 +1368,11 @@ private:
 					if (meshInfo->HasSkinningPosition || meshInfo->HasSkinningNormal || meshInfo->TotalClusterCount > 0)
 					{
 						if (meshInfo->HasSkinningPosition)
-							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningPosition, true);
+							nodeMeshData->Parameters->SetValueSlow(MaterialKeys::HasSkinningPosition, true);
 						if (meshInfo->HasSkinningNormal)
-							nodeMeshData->Parameters->Set(MaterialKeys::HasSkinningNormal, true);
+							nodeMeshData->Parameters->SetValueSlow(MaterialKeys::HasSkinningNormal, true);
 						if (meshInfo->TotalClusterCount > 0)
-							nodeMeshData->Parameters->Set(MaterialKeys::SkinningBones, meshInfo->TotalClusterCount);
+							nodeMeshData->Parameters->SetValueSlow(MaterialKeys::SkinningBones, meshInfo->TotalClusterCount);
 					}
 					modelData->Meshes->Add(nodeMeshData);
 				}

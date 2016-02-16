@@ -70,15 +70,15 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.UpdateParameters(context);
 
-            Parameters.Set(FilmGrainShaderKeys.Amount, Amount * 4 * 0.02f);
-            Parameters.Set(FilmGrainShaderKeys.GrainSize, GrainSize);
-            Parameters.Set(FilmGrainShaderKeys.LuminanceFactor, LuminanceFactor);
+            Parameters.SetValueSlow(FilmGrainShaderKeys.Amount, Amount * 4 * 0.02f);
+            Parameters.SetValueSlow(FilmGrainShaderKeys.GrainSize, GrainSize);
+            Parameters.SetValueSlow(FilmGrainShaderKeys.LuminanceFactor, LuminanceFactor);
             if (Animate)
             {
                 time += 0.1f;
                 if (time > 100f) time = 1f;
             }
-            Parameters.Set(FilmGrainShaderKeys.Time, time);
+            Parameters.SetValueSlow(FilmGrainShaderKeys.Time, time);
         }
 
     }

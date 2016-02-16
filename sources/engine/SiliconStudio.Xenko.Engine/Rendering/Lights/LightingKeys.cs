@@ -21,12 +21,12 @@ namespace SiliconStudio.Xenko.Rendering
        
         private static readonly List<ShaderSource> DefaultAmbientLighting = new List<ShaderSource>() { new ShaderClassSource("LightSimpleAmbient"), };
 
-        public static void EnableFixedAmbientLight(ParameterCollection parameters, bool enable)
+        public static void EnableFixedAmbientLight(NextGenParameterCollection parameters, bool enable)
         {
             if (parameters == null) throw new ArgumentNullException("parameters");
             if (enable)
             {
-                parameters.Set(EnvironmentLights, DefaultAmbientLighting);
+                parameters.SetResourceSlow(EnvironmentLights, DefaultAmbientLighting);
             }
             else
             {

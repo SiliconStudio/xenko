@@ -30,11 +30,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ToneMapDragoOperatorShaderKeys.DragoBias);
+                return Parameters.GetValueSlow(ToneMapDragoOperatorShaderKeys.DragoBias);
             }
             set
             {
-                Parameters.Set(ToneMapDragoOperatorShaderKeys.DragoBias, value);
+                Parameters.SetValueSlow(ToneMapDragoOperatorShaderKeys.DragoBias, value);
             }
         }
     }

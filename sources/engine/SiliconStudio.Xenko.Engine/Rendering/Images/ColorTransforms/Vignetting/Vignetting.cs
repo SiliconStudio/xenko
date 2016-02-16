@@ -58,9 +58,9 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             base.UpdateParameters(context);
 
-            Parameters.Set(VignettingShaderKeys.Amount, Amount);
-            Parameters.Set(VignettingShaderKeys.RadiusBegin, Radius);
-            Parameters.Set(VignettingShaderKeys.Color, Color.ToColorSpace(context.RenderContext.GraphicsDevice.ColorSpace));
+            Parameters.SetValueSlow(VignettingShaderKeys.Amount, Amount);
+            Parameters.SetValueSlow(VignettingShaderKeys.RadiusBegin, Radius);
+            Parameters.SetValueSlow(VignettingShaderKeys.Color, Color.ToColorSpace(context.RenderContext.GraphicsDevice.ColorSpace));
         }
     }
 }

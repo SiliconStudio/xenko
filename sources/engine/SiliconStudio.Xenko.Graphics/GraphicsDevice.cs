@@ -28,7 +28,6 @@ namespace SiliconStudio.Xenko.Graphics
         internal readonly bool NeedWorkAroundForUpdateSubResource;
         internal Effect CurrentEffect;
         private readonly bool isDeferred;
-        private readonly ParameterCollection parameters = new ParameterCollection();
 
         private readonly Dictionary<object, IDisposable> sharedDataPerDevice;
         private readonly Dictionary<object, IDisposable> sharedDataPerDeviceContext = new Dictionary<object, IDisposable>();
@@ -189,18 +188,6 @@ namespace SiliconStudio.Xenko.Graphics
             set
             {
                 colorSpace = value;
-            }
-        }
-
-        /// <summary>
-        ///     Gets the parameters attached to this particular device. This Parameters are used to override <see cref="Effect" /> parameters.
-        /// </summary>
-        /// <value>The parameters used to override all effects.</value>
-        public ParameterCollection Parameters
-        {
-            get
-            {
-                return parameters;
             }
         }
 

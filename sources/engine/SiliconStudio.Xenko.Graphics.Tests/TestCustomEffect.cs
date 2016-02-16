@@ -16,8 +16,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
     [TestFixture]
     public class TestCustomEffect : GraphicTestGameBase
     {
-        private ParameterCollection effectParameters;
-
         private DynamicEffectInstance effectInstance;
 
         private float switchEffectLevel;
@@ -38,8 +36,6 @@ namespace SiliconStudio.Xenko.Graphics.Tests
         {
             await base.LoadContent();
 
-
-            effectParameters = new ParameterCollection();
             effectInstance = new DynamicEffectInstance("CustomEffect.CustomSubEffect");
             effectInstance.Initialize(Services);
         }

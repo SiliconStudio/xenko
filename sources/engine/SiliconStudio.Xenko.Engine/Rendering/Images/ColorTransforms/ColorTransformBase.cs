@@ -23,7 +23,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         protected ColorTransformBase(string colorTransformShader)
         {
             if (colorTransformShader == null) throw new ArgumentNullException("colorTransformShader");
-            Parameters = new ParameterCollection();
+            Parameters = new NextGenParameterCollection();
 
             // Initialize all Parameters with values coming from each ParameterKey
             InitializeProperties();
@@ -40,7 +40,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ColorTransformKeys.Shader);
+                return Parameters.GetResourceSlow(ColorTransformKeys.Shader);
             }
             set
             {
@@ -49,7 +49,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
                     throw new ArgumentNullException("value");
                 }
 
-                Parameters.Set(ColorTransformKeys.Shader, value);
+                Parameters.SetResourceSlow(ColorTransformKeys.Shader, value);
             }
         }
 
@@ -62,11 +62,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ColorTransformKeys.GenericArguments);
+                return Parameters.GetResourceSlow(ColorTransformKeys.GenericArguments);
             }
             set
             {
-                Parameters.Set(ColorTransformKeys.GenericArguments, value);
+                Parameters.SetResourceSlow(ColorTransformKeys.GenericArguments, value);
             }
         }
 
@@ -76,7 +76,7 @@ namespace SiliconStudio.Xenko.Rendering.Images
         /// </summary>
         /// <value>The parameters.</value>
         [DataMemberIgnore]
-        public ParameterCollection Parameters { get; private set; }
+        public NextGenParameterCollection Parameters { get; private set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ColorTransformBase"/> is enabled.
@@ -88,11 +88,11 @@ namespace SiliconStudio.Xenko.Rendering.Images
         {
             get
             {
-                return Parameters.Get(ColorTransformKeys.Enabled);
+                return Parameters.GetValueSlow(ColorTransformKeys.Enabled);
             }
             set
             {
-                Parameters.Set(ColorTransformKeys.Enabled, value);
+                Parameters.SetValueSlow(ColorTransformKeys.Enabled, value);
             }
         }
 

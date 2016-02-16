@@ -63,11 +63,11 @@ namespace SiliconStudio.Xenko.Rendering
 
                     if (renderMesh.Mesh.Skinning != null)
                     {
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningPosition, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningPosition));
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningTangent));
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningBones, renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningBones));
-                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.Get(MaterialKeys.HasSkinningNormal));
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningPosition, renderMesh.Mesh.Parameters.GetValueSlow(MaterialKeys.HasSkinningPosition));
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.GetValueSlow(MaterialKeys.HasSkinningNormal));
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningTangent, renderMesh.Mesh.Parameters.GetValueSlow(MaterialKeys.HasSkinningTangent));
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningBones, renderMesh.Mesh.Parameters.GetValueSlow(MaterialKeys.SkinningBones));
+                        renderEffect.EffectValidator.ValidateParameter(MaterialKeys.HasSkinningNormal, renderMesh.Mesh.Parameters.GetValueSlow(MaterialKeys.HasSkinningNormal));
                         //renderEffect.EffectValidator.ValidateParameter(MaterialKeys.SkinningMaxBones, renderMesh.Mesh.Parameters.Get(MaterialKeys.SkinningMaxBones));
                     }
                 }

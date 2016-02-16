@@ -13,12 +13,12 @@ namespace SiliconStudio.Xenko.Physics
     {
         private static EffectBytecode bytecode;
 
-        private readonly ParameterCollection parameters;
+        private readonly NextGenParameterCollection parameters;
 
         public PhysicsDebugEffect(GraphicsDevice graphicsDevice)
             : base(graphicsDevice, bytecode ?? (bytecode = EffectBytecode.FromBytesSafe(binaryBytecode)))
         {
-            parameters = new ParameterCollection();
+            parameters = new NextGenParameterCollection();
             Color = new Color4(1.0f);
             WorldViewProj = Matrix.Identity;
             UseUv = true;
@@ -28,11 +28,11 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                return parameters.Get(PhysicsDebugEffectKeys.Color);
+                return parameters.GetValueSlow(PhysicsDebugEffectKeys.Color);
             }
             set
             {
-                parameters.Set(PhysicsDebugEffectKeys.Color, value);
+                parameters.SetValueSlow(PhysicsDebugEffectKeys.Color, value);
             }
         }
 
@@ -40,12 +40,12 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                return parameters.Get(PhysicsDebugEffectKeys.WorldViewProj);
+                return parameters.GetValueSlow(PhysicsDebugEffectKeys.WorldViewProj);
             }
 
             set
             {
-                parameters.Set(PhysicsDebugEffectKeys.WorldViewProj, value);
+                parameters.SetValueSlow(PhysicsDebugEffectKeys.WorldViewProj, value);
             }
         }
 
@@ -53,16 +53,17 @@ namespace SiliconStudio.Xenko.Physics
         {
             get
             {
-                return parameters.Get(PhysicsDebugEffectKeys.UseUv) > 0.5;
+                return parameters.GetValueSlow(PhysicsDebugEffectKeys.UseUv) > 0.5;
             }
             set
             {
-                parameters.Set(PhysicsDebugEffectKeys.UseUv, value ? 1.0f : 0.0f);
+                parameters.SetValueSlow(PhysicsDebugEffectKeys.UseUv, value ? 1.0f : 0.0f);
             }
         }
 
         public void Apply()
         {
+            // TODO GRAPHICS REFACTOR
             //Apply(parameters);
             throw new NotImplementedException();
         }
