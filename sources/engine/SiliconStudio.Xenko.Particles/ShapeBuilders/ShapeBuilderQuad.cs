@@ -9,10 +9,14 @@ using SiliconStudio.Xenko.Particles.VertexLayouts;
 
 namespace SiliconStudio.Xenko.Particles.ShapeBuilders
 {
+    /// <summary>
+    /// Shape builder which builds each particle as a up-facing quad, further rotated by the particle's rotation in 3d space
+    /// </summary>
     [DataContract("ShapeBuilderQuad")]
     [Display("Quad")]
     public class ShapeBuilderQuad : ShapeBuilder
     {
+        /// <inheritdoc />
         public override int QuadsPerParticle { get; protected set; } = 1;
 
         /// <inheritdoc />

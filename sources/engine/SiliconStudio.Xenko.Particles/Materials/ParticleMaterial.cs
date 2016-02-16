@@ -121,7 +121,7 @@ namespace SiliconStudio.Xenko.Particles.Materials
 
 
         /// <summary>
-        /// Patch the particle's vertex buffer which was already built by the <see cref="ShapeBuilder"/>
+        /// Patch the particle's vertex buffer which was already built by the <see cref="ShapeBuilders.ShapeBuilder"/>
         /// This involes animating hte uv coordinates and filling per-particle fields, such as the color field
         /// </summary>
         /// <param name="vertexBuilder">The target buffer builder to use for patching the vertex data</param>

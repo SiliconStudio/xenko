@@ -23,6 +23,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             currentLivingParticles = 0;
         }
 
+        /// <inheritdoc />
         public override void Sort()
         {
             var i = 0;
@@ -52,6 +53,7 @@ namespace SiliconStudio.Xenko.Particles.Sorters
             currentLivingParticles = i;
         }
 
+        /// <inheritdoc />
         public override IEnumerator<Particle> GetEnumerator()
         {
             return new Enumerator(particleList, currentLivingParticles);

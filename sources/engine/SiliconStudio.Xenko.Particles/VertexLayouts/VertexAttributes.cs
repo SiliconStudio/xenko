@@ -1,17 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SiliconStudio.Xenko.Graphics;
+﻿// Copyright (c) 2014 Silicon Studio Corp. (http://siliconstudio.co.jp)
+// This file is distributed under GPL v3. See LICENSE.md for details.
 
 namespace SiliconStudio.Xenko.Particles.VertexLayouts
 {
+    /// <summary>
+    /// A list of common <see cref="AttributeDescription"/> used to access the vertex fileds in a <see cref="ParticleVertexBuilder"/>
+    /// </summary>
     public static class VertexAttributes
     {
         public static AttributeDescription Position = new AttributeDescription("POSITION");
-
-//        public static AttributeDescription TexCoord = new AttributeDescription("TEXCOORD");
 
         public static AttributeDescription Color = new AttributeDescription("COLOR");
 
