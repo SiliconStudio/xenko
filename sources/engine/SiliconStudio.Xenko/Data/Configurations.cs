@@ -8,13 +8,13 @@ namespace SiliconStudio.Xenko.Data
     public enum ConfigPlatforms
     {
         None = 0,
-        Windows = 1 << 0,
-        Windows10 = 1 << 1,
-        WindowsStore = 1 << 2,
-        WindowsPhone = 1 << 3,
-        iOS = 1 << 4,
-        Android = 1 << 5,
-        Linux = 1 << 6
+        Windows = 1 << PlatformType.Windows,
+        Windows10 = 1 << PlatformType.Windows10,
+        WindowsStore = 1 << PlatformType.WindowsStore,
+        WindowsPhone = 1 << PlatformType.WindowsPhone,
+        iOS = 1 << PlatformType.iOS,
+        Android = 1 << PlatformType.Android,
+        Linux = 1 << PlatformType.Linux
     }
 
     [DataContract]
